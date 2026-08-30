@@ -42,12 +42,26 @@ async def get_settings():
     }
 
 @router.post("/telegram")
-async def update_telegram_config(config: TelegramConfigUpdate):
+async def update_telegram_config(config: TelegramConfigUpdate, db: AsyncSession = Depends(get_db)):
     settings.TELEGRAM_BOT_TOKEN = config.bot_token
     settings.TELEGRAM_CHAT_ID = config.chat_id
     telegram_vault_service.bot_token = config.bot_token
     telegram_vault_service.chat_id = config.chat_id
+
+    # Persist to database SQLite SystemSetting table
+    from app.db.models import SystemSetting
+    for k, v in [("telegram_bot_token", config.bot_token), ("telegram_chat_id", config.chat_id)]:
+        stmt = select(SystemSetting).where(SystemSetting.key == k)
+        res = await db.execute(stmt)
+        setting_obj = res.scalar_one_or_none()
+        if setting_obj:
+            setting_obj.value = v
+        else:
+            db.add(SystemSetting(key=k, value=v))
+    await db.commit()
+
     return {"status": "updated", "configured": telegram_vault_service.is_configured}
+
 
 @router.post("/telegram/test")
 async def test_telegram_alert():

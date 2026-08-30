@@ -19,6 +19,28 @@ class TelegramVaultService:
     def is_configured(self) -> bool:
         return bool(self.bot_token and self.chat_id)
 
+    async def load_credentials_from_db(self):
+        """Loads Bot Token and Chat ID from database if available."""
+        try:
+            from app.db.session import AsyncSessionLocal
+            from app.db.models import SystemSetting
+            from sqlalchemy import select
+            async with AsyncSessionLocal() as session:
+                stmt = select(SystemSetting).where(SystemSetting.key.in_(["telegram_bot_token", "telegram_chat_id"]))
+                res = await session.execute(stmt)
+                settings_list = res.scalars().all()
+                for s in settings_list:
+                    if s.key == "telegram_bot_token" and s.value:
+                        self.bot_token = s.value
+                        settings.TELEGRAM_BOT_TOKEN = s.value
+                    elif s.key == "telegram_chat_id" and s.value:
+                        self.chat_id = s.value
+                        settings.TELEGRAM_CHAT_ID = s.value
+                if self.is_configured:
+                    logger.info("✅ Credenciais do Telegram carregadas do banco de dados SQLite.")
+        except Exception as e:
+            logger.warning(f"Não foi possível carregar credenciais do Telegram do banco: {e}")
+
     def is_paused(self) -> bool:
         if not self.pause_until:
             return False
@@ -26,6 +48,7 @@ class TelegramVaultService:
             return True
         self.pause_until = None
         return False
+
 
     def pause_alerts(self, minutes: int):
         self.pause_until = datetime.datetime.now() + datetime.timedelta(minutes=minutes)
@@ -174,7 +197,10 @@ class TelegramVaultService:
     ) -> bool:
         """Dispatches watermarked snapshot to Telegram using the classic template."""
         if not self.is_configured:
-            logger.debug("Telegram Bot not configured, skipping alert.")
+            await self.load_credentials_from_db()
+
+        if not self.is_configured:
+            logger.warning("Telegram Bot not configured (bot_token/chat_id missing), skipping alert.")
             return False
 
         if self.is_paused():
@@ -194,13 +220,19 @@ class TelegramVaultService:
 
         url = f"https://api.telegram.org/bot{self.bot_token}/sendPhoto"
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
+            logger.info(f"📤 Enviando foto de alerta para o Telegram ({self.chat_id})...")
+            async with httpx.AsyncClient(timeout=10.0) as client:
                 files = {"photo": ("snapshot.jpg", watermarked, "image/jpeg")}
                 data = {"chat_id": self.chat_id, "caption": caption}
                 resp = await client.post(url, data=data, files=files)
-                return resp.status_code == 200
+                if resp.status_code == 200:
+                    logger.info("✅ Foto de alerta entregue com sucesso ao Telegram!")
+                    return True
+                else:
+                    logger.error(f"❌ Telegram sendPhoto falhou (HTTP {resp.status_code}): {resp.text}")
+                    return False
         except Exception as e:
-            logger.error(f"Failed to send Telegram photo alert: {e}")
+            logger.error(f"❌ Erro de rede ao enviar foto para o Telegram: {e}")
             return False
 
     async def send_alert_video(
@@ -213,6 +245,9 @@ class TelegramVaultService:
         friendly_name: Optional[str] = None
     ) -> bool:
         """Dispatches MP4 clip to Telegram using the classic template."""
+        if not self.is_configured:
+            await self.load_credentials_from_db()
+
         if not self.is_configured or self.is_paused():
             return False
 
@@ -227,14 +262,21 @@ class TelegramVaultService:
             is_video=True
         )
         try:
-            async with httpx.AsyncClient(timeout=30.0) as client:
+            logger.info(f"📤 Enviando vídeo MP4 de alerta para o Telegram ({self.chat_id})...")
+            async with httpx.AsyncClient(timeout=45.0) as client:
                 files = {"video": ("event.mp4", video_bytes, "video/mp4")}
                 data = {"chat_id": self.chat_id, "caption": caption}
                 resp = await client.post(url, data=data, files=files)
-                return resp.status_code == 200
+                if resp.status_code == 200:
+                    logger.info("✅ Vídeo MP4 entregue com sucesso ao Telegram!")
+                    return True
+                else:
+                    logger.error(f"❌ Telegram sendVideo falhou (HTTP {resp.status_code}): {resp.text}")
+                    return False
         except Exception as e:
-            logger.error(f"Failed to send Telegram video clip: {e}")
+            logger.error(f"❌ Erro de rede ao enviar vídeo para o Telegram: {e}")
             return False
+
 
 
     async def get_system_status_text(self) -> str:

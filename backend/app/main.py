@@ -22,6 +22,11 @@ async def lifespan(app: FastAPI):
     await init_db()
     logger.info("Database SQLite assíncrono inicializado.")
 
+    # Load Telegram Credentials from DB
+    from app.services.telegram_vault import telegram_vault_service
+    await telegram_vault_service.load_credentials_from_db()
+
+
     # Start Background MQTT Listener
     mqtt_task = asyncio.create_task(mqtt_service.start_listening())
     
