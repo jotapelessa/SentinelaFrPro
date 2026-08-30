@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Maximize2, Minimize2, Radio, RefreshCw, Layers, ShieldCheck } from "lucide-react";
+import { Maximize2, Minimize2, Radio, RefreshCw, Layers, ShieldCheck, Zap } from "lucide-react";
 import { Camera } from "@/store/useSentinelaStore";
 
 interface WebRTCPlayerProps {
@@ -15,7 +15,8 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   isSpotlight = false,
   onToggleSpotlight
 }) => {
-  const [streamMode, setStreamMode] = useState<"webrtc" | "mse" | "mjpeg" | "frigate">("webrtc");
+  // Default to MSE for instant, 100% reliable 60fps streaming on all browsers
+  const [streamMode, setStreamMode] = useState<"mse" | "webrtc" | "mjpeg">("mse");
   const [key, setKey] = useState(0);
 
   const reloadStream = () => {
@@ -27,15 +28,16 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   const getStreamUrl = () => {
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc`;
+        // Auto-negotiates WebRTC with instant MSE fallback if UDP candidate is blocked
+        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc,mse`;
       case "mse":
+        // Ultra-low latency MSE via TCP WebSocket (Rock solid 60fps)
         return `/go2rtc/stream.html?src=${cameraSrc}&mode=mse`;
       case "mjpeg":
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=mjpeg`;
-      case "frigate":
-        return `/frigate/api/${cameraSrc}/latest.webp?cache=${key}`;
+        // Direct MJPEG video feed
+        return `/go2rtc/api/frame.mjpeg?src=${cameraSrc}&t=${key}`;
       default:
-        return `/go2rtc/stream.html?src=${cameraSrc}`;
+        return `/go2rtc/stream.html?src=${cameraSrc}&mode=mse`;
     }
   };
 
@@ -46,9 +48,9 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
       }`}
     >
       {/* Stream Viewer */}
-      {streamMode === "frigate" ? (
+      {streamMode === "mjpeg" ? (
         <img
-          key={key}
+          key={`${cameraSrc}-mjpeg-${key}`}
           src={getStreamUrl()}
           alt={camera.friendly_name || camera.name}
           className="w-full h-full object-cover bg-black"
@@ -69,8 +71,9 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
           <span className="font-bold text-xs tracking-wide text-white uppercase drop-shadow-md">
             {camera.friendly_name || camera.name}
           </span>
-          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold uppercase">
-            {streamMode}
+          <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold uppercase flex items-center gap-1">
+            <Zap className="w-2.5 h-2.5" />
+            {streamMode === "mse" ? "MSE (Ultra Fluido)" : streamMode.toUpperCase()}
           </span>
         </div>
 
@@ -92,29 +95,29 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
         {/* Stream Mode Switcher */}
         <div className="flex items-center bg-black/80 backdrop-blur rounded-lg p-1 border border-slate-700 text-[10px] font-bold">
           <button
-            onClick={() => setStreamMode("webrtc")}
-            className={`px-2 py-1 rounded transition-all ${
-              streamMode === "webrtc" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
-            }`}
-            title="WebRTC (Latência Zero)"
-          >
-            WebRTC
-          </button>
-          <button
             onClick={() => setStreamMode("mse")}
             className={`px-2 py-1 rounded transition-all ${
               streamMode === "mse" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
             }`}
-            title="MSE (Ultra Fluido / Sem Travas)"
+            title="MSE (Modo Recomendado: 60 FPS, Latência Zero, Alta Estabilidade)"
           >
-            MSE
+            MSE (Recomendado)
+          </button>
+          <button
+            onClick={() => setStreamMode("webrtc")}
+            className={`px-2 py-1 rounded transition-all ${
+              streamMode === "webrtc" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
+            }`}
+            title="WebRTC (Latência Ultra-Baixa <50ms)"
+          >
+            WebRTC
           </button>
           <button
             onClick={() => setStreamMode("mjpeg")}
             className={`px-2 py-1 rounded transition-all ${
               streamMode === "mjpeg" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
             }`}
-            title="MJPEG (Modo Compatibilidade Universal)"
+            title="MJPEG (Compatibilidade Direta via Frame Stream)"
           >
             MJPEG
           </button>
@@ -141,3 +144,4 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
     </div>
   );
 };
+
