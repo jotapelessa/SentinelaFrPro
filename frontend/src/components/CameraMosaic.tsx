@@ -152,6 +152,7 @@ export const CameraMosaic: React.FC = () => {
             camera={spotlightCamera}
             isSpotlight={true}
             onToggleSpotlight={() => setSpotlightCamera(null)}
+            onCameraUpdated={fetchCameras}
           />
         </div>
       ) : (
@@ -162,10 +163,12 @@ export const CameraMosaic: React.FC = () => {
               camera={camera}
               isSpotlight={cameras.length === 1}
               onToggleSpotlight={() => setSpotlightCamera(camera)}
+              onCameraUpdated={fetchCameras}
             />
           ))}
         </div>
       )}
+
 
       {/* Modal Adicionar Câmera / Scanner ONVIF */}
       {isAddModalOpen && (

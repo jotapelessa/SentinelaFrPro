@@ -14,7 +14,17 @@ class Camera(Base):
     onvif_port = Column(Integer, default=80)
     enabled = Column(Boolean, default=True)
     zones = Column(Text, nullable=True) # JSON array of zones
+    objects_to_track = Column(String(256), default='["person", "car", "motorcycle", "dog"]')
+    min_score = Column(Float, default=0.70)
+    record_mode = Column(String(32), default="motion") # all, motion
+    record_retain_days = Column(Integer, default=14)
+    record_audio = Column(Boolean, default=False)
+    notify_telegram = Column(Boolean, default=True)
+    notify_tv = Column(Boolean, default=True)
+    notify_audio = Column(Boolean, default=True)
+    cooldown_seconds = Column(Integer, default=10)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
+
 
 class EventRecord(Base):
     __tablename__ = "events"

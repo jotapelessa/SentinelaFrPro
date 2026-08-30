@@ -58,3 +58,51 @@ async def add_camera(cam: CameraCreate, db: AsyncSession = Depends(get_db)):
     await db.commit()
     await db.refresh(db_cam)
     return db_cam
+
+class CameraUpdate(BaseModel):
+    friendly_name: Optional[str] = None
+
+    rtsp_main: Optional[str] = None
+    rtsp_sub: Optional[str] = None
+    ip_address: Optional[str] = None
+    onvif_port: Optional[int] = None
+    enabled: Optional[bool] = None
+    zones: Optional[str] = None
+    objects_to_track: Optional[str] = None
+    min_score: Optional[float] = None
+    record_mode: Optional[str] = None
+    record_retain_days: Optional[int] = None
+    record_audio: Optional[bool] = None
+    notify_telegram: Optional[bool] = None
+    notify_tv: Optional[bool] = None
+    notify_audio: Optional[bool] = None
+    cooldown_seconds: Optional[int] = None
+
+@router.patch("/{camera_id}")
+async def update_camera(camera_id: int, update: CameraUpdate, db: AsyncSession = Depends(get_db)):
+    stmt = select(Camera).where(Camera.id == camera_id)
+    res = await db.execute(stmt)
+    cam = res.scalar_one_or_none()
+    if not cam:
+        raise HTTPException(status_code=404, detail="Camera not found")
+
+    update_data = update.model_dump(exclude_unset=True)
+    for field, value in update_data.items():
+        setattr(cam, field, value)
+
+    await db.commit()
+    await db.refresh(cam)
+    return cam
+
+@router.delete("/{camera_id}")
+async def delete_camera(camera_id: int, db: AsyncSession = Depends(get_db)):
+    stmt = select(Camera).where(Camera.id == camera_id)
+    res = await db.execute(stmt)
+    cam = res.scalar_one_or_none()
+    if not cam:
+        raise HTTPException(status_code=404, detail="Camera not found")
+
+    await db.delete(cam)
+    await db.commit()
+    return {"status": "deleted", "id": camera_id}
+

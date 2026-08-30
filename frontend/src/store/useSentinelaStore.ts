@@ -52,9 +52,20 @@ export interface Camera {
   rtsp_main: string;
   rtsp_sub?: string;
   ip_address?: string;
+  onvif_port?: number;
   enabled: boolean;
   zones?: string[];
+  objects_to_track?: string;
+  min_score?: number;
+  record_mode?: string;
+  record_retain_days?: number;
+  record_audio?: boolean;
+  notify_telegram?: boolean;
+  notify_tv?: boolean;
+  notify_audio?: boolean;
+  cooldown_seconds?: number;
 }
+
 
 export interface DiscoveredDevice {
   ip: string;
