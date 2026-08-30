@@ -4,12 +4,30 @@ import React, { useEffect } from "react";
 import { useSentinelaStore, SecurityEvent } from "@/store/useSentinelaStore";
 
 export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { setTelemetry, addEvent, setWsConnected } = useSentinelaStore();
+  const { setTelemetry, addEvent, setEvents, setWsConnected } = useSentinelaStore();
 
   useEffect(() => {
+    // 1. Fetch initial historical events detected by Frigate
+    const loadInitialEvents = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+        const res = await fetch(`${apiUrl}/events?limit=50`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            setEvents(data);
+          }
+        }
+      } catch (e) {
+        console.error("Failed to load initial events:", e);
+      }
+    };
+    loadInitialEvents();
+
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout;
     let isActive = true;
+
 
     function connect() {
       try {
