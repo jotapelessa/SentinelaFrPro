@@ -15,6 +15,12 @@ detectors:
     type: cpu
     num_threads: 1
 
+# Motion Detection Fine-Tuning (Intel N5105 Optimized)
+motion:
+  threshold: 25
+  contour_area: 10
+  improve_contrast: true
+
 # Global Object Tracking Defaults
 objects:
   track:
@@ -25,6 +31,7 @@ objects:
     - truck
     - dog
     - cat
+
 
 # Video Recording Policy (NVMe SSD)
 record:
