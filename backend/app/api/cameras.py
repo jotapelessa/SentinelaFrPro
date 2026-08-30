@@ -17,28 +17,30 @@ class CameraCreate(BaseModel):
     onvif_port: Optional[int] = 80
     enabled: Optional[bool] = True
 
-class CameraResponse(CameraCreate):
-    id: int
-    created_at: Optional[str] = None
-
 @router.get("/")
 async def list_cameras(db: AsyncSession = Depends(get_db)):
     stmt = select(Camera)
     result = await db.execute(stmt)
     cameras = result.scalars().all()
-    # If DB is empty, provide configured camera
-    if not cameras:
-        return [
-            {
-                "id": 1,
-                "name": "camera_principal",
-                "friendly_name": "Câmera Principal (IP 192.168.1.6)",
-                "rtsp_main": "rtsp://192.168.1.6:8554/stream",
-                "ip_address": "192.168.1.6",
-                "enabled": True,
-                "zones": ["zona_monitoramento"]
-            }
-        ]
+    
+    # Auto-provision real camera if not present
+    if not cameras or not any(c.ip_address == "192.168.1.6" for c in cameras):
+        # Clear mock cameras and insert real camera
+        for c in cameras:
+            await db.delete(c)
+        real_cam = Camera(
+            name="camera_principal",
+            friendly_name="Câmera Principal (IP 192.168.1.6)",
+            rtsp_main="rtsp://192.168.1.6:8554/stream",
+            ip_address="192.168.1.6",
+            enabled=True,
+            onvif_port=80
+        )
+        db.add(real_cam)
+        await db.commit()
+        await db.refresh(real_cam)
+        return [real_cam]
+
     return cameras
 
 @router.post("/")
