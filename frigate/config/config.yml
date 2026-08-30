@@ -5,16 +5,18 @@ mqtt:
   topic_prefix: frigate
   client_id: frigate_nvr
 
-# Hardware Acceleration & Stream Generic Defaults
+# Intel Jasper Lake N5105 Hardware Acceleration
 ffmpeg:
   hwaccel_args: preset-vaapi
+
+# OpenVINO Model & Detector Settings
+model:
+  path: /openvino-model/ssdlite_mobilenet_v2.xml
 
 detectors:
   ov:
     type: openvino
     device: GPU
-    model:
-      path: /openvino-model/ssdlite_mobilenet_v2.xml
 
 objects:
   track:
@@ -56,7 +58,7 @@ go2rtc:
       - 127.0.0.1:8555
       - stun:8555
 
-# Câmera Principal
+# Configured Camera
 cameras:
   camera_principal:
     ffmpeg:
