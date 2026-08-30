@@ -5,17 +5,15 @@ mqtt:
   topic_prefix: frigate
   client_id: frigate_nvr
 
-# Intel Jasper Lake N5105 Hardware Acceleration (VAAPI)
+# Hardware Acceleration & Stream Generic Defaults
 ffmpeg:
   hwaccel_args: preset-vaapi
 
-# OpenVINO AI Object Detector (Intel iGPU / CPU AVX2)
 detectors:
   ov:
     type: openvino
-    device: GPU # Uses Intel UHD Gen11 /dev/dri/renderD128, fallback to CPU
+    device: GPU # Intel UHD Gen11 iGPU
 
-# Global Object Tracking Defaults
 objects:
   track:
     - person
@@ -25,15 +23,7 @@ objects:
     - truck
     - dog
     - cat
-  filters:
-    person:
-      min_score: 0.60
-      threshold: 0.70
-    car:
-      min_score: 0.60
-      threshold: 0.70
 
-# Video Recording and Retention Policy (SSD NVMe)
 record:
   enabled: true
   retain:
@@ -45,45 +35,37 @@ record:
     retain:
       default: 30
       mode: motion
-      objects:
-        person: 45
-        car: 45
 
-# High-resolution Snapshots for Alerts
 snapshots:
   enabled: true
   clean_copy: true
   timestamp: true
   bounding_box: true
-  crop: false
-  retain:
-    default: 30
 
-# Live WebRTC & RTSP Hub (go2rtc)
+# go2rtc WebRTC Hub
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:8554/stream
-      - ffmpeg:camera_principal#video=h264#hardware
+      - rtsp://192.168.1.6:8554/stream#transport=tcp
+      - "ffmpeg:camera_principal#video=h264"
   webrtc:
     listen: ":8555"
     candidates:
       - 127.0.0.1:8555
       - stun:8555
 
-# Configured Cameras
+# Câmera Principal
 cameras:
   camera_principal:
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/camera_principal
+        - path: rtsp://192.168.1.6:8554/stream
+          input_args: preset-rtsp-generic
           roles:
             - detect
             - record
     detect:
       enabled: true
-      width: 1280
-      height: 720
       fps: 5
     zones:
       zona_monitoramento:
