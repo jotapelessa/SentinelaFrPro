@@ -60,6 +60,17 @@ async def update_status(device_id: int, update: DeviceStatusUpdate, db: AsyncSes
     await db.commit()
     return dev
 
+@router.delete("/{device_id}")
+async def delete_device(device_id: int, db: AsyncSession = Depends(get_db)):
+    stmt = select(PairedDevice).where(PairedDevice.id == device_id)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev:
+        raise HTTPException(status_code=404, detail="Device not found")
+    await db.delete(dev)
+    await db.commit()
+    return {"status": "deleted", "id": device_id}
+
 @router.post("/test-pip")
 async def test_pip(req: TestPiPRequest):
     res = await pip_gateway_service.dispatch_pip_alert(
