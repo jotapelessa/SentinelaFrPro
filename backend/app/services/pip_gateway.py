@@ -1,12 +1,28 @@
 import httpx
 import logging
 import datetime
+import asyncio
 from typing import Dict, Any, List, Optional
 from app.db.session import AsyncSessionLocal
 from app.db.models import PairedDevice
 from sqlalchemy import select
 
 logger = logging.getLogger(__name__)
+
+def _cast_sync(ip: str, media_url: str, content_type: str = "image/jpeg") -> bool:
+    try:
+        import pychromecast
+        chromecasts, browser = pychromecast.get_chromecasts(known_hosts=[ip])
+        if chromecasts:
+            cast = chromecasts[0]
+            cast.wait()
+            mc = cast.media_controller
+            mc.play_media(media_url, content_type)
+            mc.block_until_active(timeout=3)
+            return True
+    except Exception as e:
+        logger.debug(f"Chromecast cast error on {ip}: {e}")
+    return False
 
 class PiPGatewayService:
     def __init__(self):
@@ -51,8 +67,8 @@ class PiPGatewayService:
         position: int = 1 # Top-Right
     ) -> Dict[str, Any]:
         """
-        Dispatches Picture-in-Picture floating notification to all registered TVs.
-        Compatible with PiP-Up and Notifications for Android TV protocols.
+        Dispatches Picture-in-Picture or Google Cast notification to registered TVs.
+        Supports Native Google Cast / Chromecast, PiP-Up, and Notifications for Android TV protocols.
         """
         if self.is_in_dnd():
             logger.info("PiP alert skipped due to active Do-Not-Disturb (DND) schedule.")
@@ -60,7 +76,7 @@ class PiPGatewayService:
 
         devices = await self.get_active_tv_devices()
         if not devices:
-            logger.info("No paired Android TV devices found for PiP dispatch.")
+            logger.info("No paired TV devices found for PiP dispatch.")
             return {"status": "no_devices", "dispatched": 0}
 
         results = []
@@ -70,33 +86,49 @@ class PiPGatewayService:
                 if not target_ip:
                     continue
 
-                # PiP-Up / Notifications for Android TV standard payload
-                payload = {
-                    "title": f"🛡️ Sentinela: {label.upper()}",
-                    "message": f"Movimento detectado em {camera_name}",
-                    "duration": duration_seconds,
-                    "position": position,
-                    "image": snapshot_url,
-                    "video": stream_url or snapshot_url,
-                    "type": 2 # PiP overlay
-                }
-
-                # Try standard PiP ports (7986 for PiP-Up, 5463 for NfATV)
-                target_urls = [
-                    f"http://{target_ip}:7986/notify",
-                    f"http://{target_ip}:5463/notify"
-                ]
-
                 dispatched = False
-                for url in target_urls:
+
+                # 1. Native Google Cast / Chromecast for Google TV / TCL
+                if dev.get("type") in ["android_tv", "chromecast", "google_tv", "tcl"]:
                     try:
-                        resp = await client.post(url, json=payload)
-                        if resp.status_code in [200, 201, 204]:
+                        cast_success = await asyncio.to_thread(
+                            _cast_sync,
+                            target_ip,
+                            snapshot_url,
+                            "image/jpeg"
+                        )
+                        if cast_success:
                             dispatched = True
-                            results.append({"device": dev["name"], "ip": target_ip, "status": "delivered"})
-                            break
+                            results.append({"device": dev["name"], "ip": target_ip, "status": "delivered", "protocol": "google_cast"})
                     except Exception as e:
-                        logger.debug(f"Failed to post to {url}: {e}")
+                        logger.debug(f"Google Cast attempt failed for {target_ip}: {e}")
+
+                # 2. PiP-Up / Notifications for Android TV REST HTTP fallback
+                if not dispatched:
+                    payload = {
+                        "title": f"🛡️ Sentinela: {label.upper()}",
+                        "message": f"Movimento detectado em {camera_name}",
+                        "duration": duration_seconds,
+                        "position": position,
+                        "image": snapshot_url,
+                        "video": stream_url or snapshot_url,
+                        "type": 2 # PiP overlay
+                    }
+
+                    target_urls = [
+                        f"http://{target_ip}:7986/notify",
+                        f"http://{target_ip}:5463/notify"
+                    ]
+
+                    for url in target_urls:
+                        try:
+                            resp = await client.post(url, json=payload)
+                            if resp.status_code in [200, 201, 204]:
+                                dispatched = True
+                                results.append({"device": dev["name"], "ip": target_ip, "status": "delivered", "protocol": "pip_rest"})
+                                break
+                        except Exception as e:
+                            logger.debug(f"Failed to post to {url}: {e}")
 
                 if not dispatched:
                     results.append({"device": dev["name"], "ip": target_ip, "status": "failed_or_offline"})
