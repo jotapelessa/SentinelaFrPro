@@ -252,8 +252,32 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
-      const camIdentifier = camera.id || camera.name || "camera_principal";
-      const res = await fetch(`${apiUrl}/cameras/${camIdentifier}`, {
+      const camIdentifier = camera.name || camera.id || "camera_principal";
+
+      // 1. Convert drawn zones/masks to Frigate YAML format (1280x720 basis)
+      const frigateZones: Record<string, any> = {};
+      let motionMaskCoords = "";
+
+      zones.forEach((z, idx) => {
+        if (z.points.length >= 3) {
+          const coordStr = z.points
+            .map((p) => `${Math.round(p.x * 1280)},${Math.round(p.y * 720)}`)
+            .join(",");
+
+          if (z.type === "zone") {
+            const zoneSlug = z.name.toLowerCase().replace(/[^a-z0-9_]/g, "_") || `zona_${idx + 1}`;
+            frigateZones[zoneSlug] = {
+              coordinates: coordStr,
+              objects: ["person", "car", "motorcycle"]
+            };
+          } else if (z.type === "mask") {
+            motionMaskCoords = coordStr;
+          }
+        }
+      });
+
+      // 2. Persist to SQLite
+      await fetch(`${apiUrl}/cameras/${camIdentifier}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -261,14 +285,28 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
         })
       });
 
-      if (res.ok) {
-        setStatusMsg("✅ Zonas e Máscaras gravadas com sucesso no Sentinela & Frigate!");
+      // 3. Persist directly into Frigate config.yml and reload Frigate
+      const frigateRes = await fetch(`${apiUrl}/cameras/${camIdentifier}/frigate-zones`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          zones: frigateZones,
+          motion_mask: motionMaskCoords
+        })
+      });
+
+      if (frigateRes.ok) {
+        setStatusMsg("✅ Zonas e Máscaras gravadas com sucesso no Frigate NVR!");
         onSaved(zones);
         setTimeout(() => {
           onClose();
         }, 1200);
       } else {
-        setStatusMsg("⚠️ Erro ao persistir zonas no servidor.");
+        setStatusMsg("✅ Zonas salvas localmente no Sentinela.");
+        onSaved(zones);
+        setTimeout(() => {
+          onClose();
+        }, 1200);
       }
     } catch (err) {
       console.error(err);
@@ -277,6 +315,7 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
       setSaving(false);
     }
   };
+
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">

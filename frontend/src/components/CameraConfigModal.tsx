@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { Camera } from "@/store/useSentinelaStore";
-import { X, Settings, Wifi, Eye, HardDrive, Bell, Save, Trash2, Check, User, Car, Zap, Shield, Sparkles } from "lucide-react";
+import { X, Settings, Wifi, Eye, HardDrive, Bell, Save, Trash2, Check, User, Car, Zap, Shield, Sparkles, Sliders } from "lucide-react";
+
 import { ZoneCanvasModal, ZoneItem } from "./ZoneCanvasModal";
 
 interface CameraConfigModalProps {
@@ -315,23 +316,37 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                 </span>
               </div>
 
-              {/* Interactive ROI Zones & Masks Button */}
-              <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-500/30 flex items-center justify-between">
+              {/* Dual ROI Zones & Masks Options */}
+              <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-500/30 space-y-3">
                 <div>
-                  <strong className="text-cyan-300 block font-bold">Editor Visual de Zonas & Máscaras (ROI):</strong>
-                  <span className="text-[10px] text-slate-400">Desenhe polígonos de alerta e áreas de movimento ignoradas na imagem ao vivo.</span>
+                  <strong className="text-cyan-300 block font-bold text-sm">Zonas & Máscaras de Detecção (Frigate NVR):</strong>
+                  <span className="text-[10px] text-slate-400">Configure perímetros de invasão (Zonas) ou ignore árvores e reflexos (Máscaras).</span>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setIsZoneModalOpen(true)}
-                  className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-md shadow-cyan-500/20 flex items-center gap-1.5 transition-all"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>Desenhar Zonas</span>
-                </button>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsZoneModalOpen(true)}
+                    className="px-3.5 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-md shadow-cyan-500/20 flex items-center justify-center gap-1.5 transition-all"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    <span>🎨 Editor Visual Sentinela</span>
+                  </button>
+
+                  <a
+                    href={`/frigate/cameras/${camera.name || "camera_principal"}/zones`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center"
+                  >
+                    <Sliders className="w-4 h-4 text-emerald-400" />
+                    <span>🎯 Estúdio Oficial Frigate ↗</span>
+                  </a>
+                </div>
               </div>
             </div>
           )}
+
 
 
           {/* TAB 3: GRAVAÇÃO & RETENÇÃO */}

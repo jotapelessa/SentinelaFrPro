@@ -48,6 +48,8 @@ services:
     volumes:
       - ./backend/data:/app/data
       - ./frigate/storage:/media/frigate:ro
+      - ./frigate/config:/config
+
     environment:
       - MQTT_BROKER=mosquitto
       - MQTT_PORT=1883
