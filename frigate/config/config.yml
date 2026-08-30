@@ -1,0 +1,128 @@
+mqtt:
+  enabled: true
+  host: mosquitto
+  port: 1883
+  topic_prefix: frigate
+  client_id: frigate_nvr
+
+# Intel Jasper Lake N5105 Hardware Acceleration (VAAPI)
+ffmpeg:
+  hwaccel_args: preset-vaapi
+
+# OpenVINO AI Object Detector (Intel iGPU / CPU AVX2)
+detectors:
+  ov:
+    type: openvino
+    device: GPU # Uses Intel UHD Gen11 /dev/dri/renderD128, fallback to CPU
+
+# Global Object Tracking Defaults
+objects:
+  track:
+    - person
+    - car
+    - motorcycle
+    - bus
+    - truck
+    - dog
+    - cat
+  filters:
+    person:
+      min_score: 0.60
+      threshold: 0.70
+    car:
+      min_score: 0.60
+      threshold: 0.70
+
+# Video Recording and Retention Policy (SSD NVMe)
+record:
+  enabled: true
+  retain:
+    days: 14
+    mode: all
+  events:
+    pre_capture: 10
+    post_capture: 15
+    retain:
+      default: 30
+      mode: motion
+      objects:
+        person: 45
+        car: 45
+
+# High-resolution Snapshots for Alerts
+snapshots:
+  enabled: true
+  clean_copy: true
+  timestamp: true
+  bounding_box: true
+  crop: false
+  retain:
+    default: 30
+
+# Live WebRTC & RTSP Hub (go2rtc)
+go2rtc:
+  streams:
+    portao_principal:
+      - rtsp://admin:admin123@192.168.1.100:554/live/ch0
+      - ffmpeg:portao_principal#video=h264#hardware
+    portao_sub:
+      - rtsp://admin:admin123@192.168.1.100:554/live/ch1
+    garagem:
+      - rtsp://admin:admin123@192.168.1.101:554/live/ch0
+      - ffmpeg:garagem#video=h264#hardware
+    garagem_sub:
+      - rtsp://admin:admin123@192.168.1.101:554/live/ch1
+  webrtc:
+    listen: ":8555"
+    candidates:
+      - 127.0.0.1:8555
+      - stun:8555
+
+# Configured Cameras (Dual-Stream Architecture)
+cameras:
+  portao_principal:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/portao_sub
+          roles:
+            - detect
+        - path: rtsp://127.0.0.1:8554/portao_principal
+          roles:
+            - record
+    detect:
+      enabled: true
+      width: 896
+      height: 512
+      fps: 5
+    zones:
+      zona_calcada:
+        coordinates: 0,512,896,512,896,300,0,300
+        objects:
+          - person
+          - car
+          - motorcycle
+      zona_portao:
+        coordinates: 150,512,750,512,750,150,150,150
+        objects:
+          - person
+
+  garagem:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/garagem_sub
+          roles:
+            - detect
+        - path: rtsp://127.0.0.1:8554/garagem
+          roles:
+            - record
+    detect:
+      enabled: true
+      width: 896
+      height: 512
+      fps: 5
+    zones:
+      zona_estacionamento:
+        coordinates: 0,512,896,512,896,200,0,200
+        objects:
+          - person
+          - car
