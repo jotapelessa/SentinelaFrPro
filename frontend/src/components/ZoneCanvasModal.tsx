@@ -27,7 +27,7 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [snapshotUrl, setSnapshotUrl] = useState<string>(
-    `/go2rtc/api/frame.jpeg?src=${camera.name || "camera_principal"}&t=${Date.now()}`
+    `/frigate/api/${camera.name || "camera_principal"}/latest.jpg?t=${Date.now()}`
   );
   const [imgLoaded, setImgLoaded] = useState(false);
   const [bgImage, setBgImage] = useState<HTMLImageElement | null>(null);
@@ -39,7 +39,6 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
         if (typeof camera.zones === "string") {
           return JSON.parse(camera.zones);
         } else if (Array.isArray(camera.zones)) {
-          // If strings array
           return camera.zones.map((z, idx) => ({
             id: `zone_${idx}`,
             name: typeof z === "string" ? z : "Zona " + idx,
@@ -61,33 +60,83 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
 
-  // Load snapshot image
+  // Load snapshot image with resilient fallback
   useEffect(() => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.src = snapshotUrl;
-    img.onload = () => {
-      setBgImage(img);
-      setImgLoaded(true);
+    let isMounted = true;
+    const loadImg = (url: string, isRetry = false) => {
+      const img = new Image();
+      img.onload = () => {
+        if (isMounted) {
+          setBgImage(img);
+          setImgLoaded(true);
+        }
+      };
+      img.onerror = () => {
+        if (isMounted && !isRetry) {
+          const altUrl = `/go2rtc/api/frame.jpeg?src=${camera.name || "camera_principal"}&t=${Date.now()}`;
+          loadImg(altUrl, true);
+        } else if (isMounted) {
+          setImgLoaded(true); // Allow drawing on grid even if snapshot is unavailable
+        }
+      };
+      img.src = url;
     };
-  }, [snapshotUrl]);
+
+    const initialUrl = `/frigate/api/${camera.name || "camera_principal"}/latest.jpg?t=${Date.now()}`;
+    loadImg(initialUrl);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [snapshotUrl, camera.name]);
 
   const refreshSnapshot = () => {
-    setSnapshotUrl(`/go2rtc/api/frame.jpeg?src=${camera.name || "camera_principal"}&t=${Date.now()}`);
+    setSnapshotUrl(`/frigate/api/${camera.name || "camera_principal"}/latest.jpg?t=${Date.now()}`);
   };
 
   // Draw Canvas
   const redraw = () => {
     const canvas = canvasRef.current;
-    if (!canvas || !bgImage) return;
+    if (!canvas) return;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Clear
+    // Clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Draw background camera frame
-    ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    // Draw background (Real camera snapshot or High-Tech Grid Fallback)
+    if (bgImage) {
+      ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+    } else {
+      ctx.fillStyle = "#020617";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Grid
+      ctx.strokeStyle = "#1e293b";
+      ctx.lineWidth = 1;
+      for (let x = 0; x < canvas.width; x += 40) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+      }
+      for (let y = 0; y < canvas.height; y += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "#64748b";
+      ctx.font = "bold 12px sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText(
+        `📷 Frame ao Vivo (${camera.friendly_name || camera.name}) - Clique para desenhar`,
+        canvas.width / 2,
+        canvas.height / 2
+      );
+      ctx.textAlign = "left";
+    }
 
     // Draw existing zones
     zones.forEach((zone) => {
@@ -102,7 +151,7 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
       // Style
       ctx.strokeStyle = zone.color || (zone.type === "zone" ? "#06b6d4" : "#f43f5e");
       ctx.lineWidth = 3;
-      ctx.fillStyle = zone.type === "zone" ? "rgba(6, 182, 212, 0.25)" : "rgba(244, 63, 94, 0.35)";
+      ctx.fillStyle = zone.type === "zone" ? "rgba(6, 182, 212, 0.3)" : "rgba(244, 63, 94, 0.4)";
       ctx.fill();
       ctx.stroke();
 
@@ -112,8 +161,8 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
       ctx.font = "bold 12px sans-serif";
       ctx.fillText(
         `● ${zone.name} (${zone.type === "zone" ? "Alerta" : "Máscara"})`,
-        firstPt.x * canvas.width + 5,
-        firstPt.y * canvas.height - 5
+        firstPt.x * canvas.width + 6,
+        firstPt.y * canvas.height - 6
       );
     });
 
@@ -126,7 +175,7 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
       });
 
       ctx.strokeStyle = currentType === "zone" ? "#22d3ee" : "#fb7185";
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 2.5;
       ctx.setLineDash([6, 4]);
       ctx.stroke();
       ctx.setLineDash([]);
@@ -134,11 +183,11 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
       // Draw handles
       currentPoints.forEach((pt, idx) => {
         ctx.beginPath();
-        ctx.arc(pt.x * canvas.width, pt.y * canvas.height, 5, 0, 2 * Math.PI);
+        ctx.arc(pt.x * canvas.width, pt.y * canvas.height, 6, 0, 2 * Math.PI);
         ctx.fillStyle = idx === 0 ? "#10b981" : "#38bdf8";
         ctx.fill();
         ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 2;
         ctx.stroke();
       });
     }
@@ -148,17 +197,31 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
     redraw();
   }, [bgImage, zones, currentPoints, currentType]);
 
-  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+  const addPointFromCoords = (clientX: number, clientY: number) => {
     const canvas = canvasRef.current;
     if (!canvas) return;
     const rect = canvas.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / rect.width;
-    const y = (e.clientY - rect.top) / rect.height;
+    const x = (clientX - rect.left) / rect.width;
+    const y = (clientY - rect.top) / rect.height;
 
-    // Normalized point (0.0 - 1.0)
-    const newPt: Point = { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) };
+    const newPt: Point = {
+      x: Number(Math.max(0, Math.min(1, x)).toFixed(3)),
+      y: Number(Math.max(0, Math.min(1, y)).toFixed(3))
+    };
     setCurrentPoints((prev) => [...prev, newPt]);
   };
+
+  const handleCanvasClick = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    addPointFromCoords(e.clientX, e.clientY);
+  };
+
+  const handleCanvasTouch = (e: React.TouchEvent<HTMLCanvasElement>) => {
+    if (e.touches && e.touches.length > 0) {
+      addPointFromCoords(e.touches[0].clientX, e.touches[0].clientY);
+    }
+  };
+
+
 
   const handleCompletePolygon = () => {
     if (currentPoints.length < 3) {
@@ -266,8 +329,10 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
               width={640}
               height={360}
               onClick={handleCanvasClick}
+              onTouchStart={handleCanvasTouch}
               className="w-full h-auto max-h-[55vh] object-contain cursor-crosshair"
             />
+
             <div className="absolute top-2 left-2 bg-black/70 backdrop-blur px-2.5 py-1 rounded-md text-[10px] font-mono text-slate-300 border border-slate-700">
               {currentPoints.length === 0
                 ? "💡 Clique na imagem para iniciar o desenho"
