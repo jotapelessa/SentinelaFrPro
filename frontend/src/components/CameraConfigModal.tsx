@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { Camera } from "@/store/useSentinelaStore";
-import { X, Settings, Wifi, Eye, HardDrive, Bell, Save, Trash2, Check, User, Car, Zap, Shield } from "lucide-react";
+import { X, Settings, Wifi, Eye, HardDrive, Bell, Save, Trash2, Check, User, Car, Zap, Shield, Sparkles } from "lucide-react";
+import { ZoneCanvasModal, ZoneItem } from "./ZoneCanvasModal";
 
 interface CameraConfigModalProps {
   camera: Camera;
@@ -14,6 +15,8 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [activeTab, setActiveTab] = useState<"conn" | "ai" | "record" | "alerts">("conn");
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [isZoneModalOpen, setIsZoneModalOpen] = useState(false);
+
 
   // Form State
   const [friendlyName, setFriendlyName] = useState(camera.friendly_name || camera.name);
@@ -311,8 +314,25 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   Valores mais altos (ex: 75%+) reduzem falsos positivos. Valores mais baixos aumentam a sensibilidade.
                 </span>
               </div>
+
+              {/* Interactive ROI Zones & Masks Button */}
+              <div className="p-4 rounded-xl bg-cyan-950/20 border border-cyan-500/30 flex items-center justify-between">
+                <div>
+                  <strong className="text-cyan-300 block font-bold">Editor Visual de Zonas & Máscaras (ROI):</strong>
+                  <span className="text-[10px] text-slate-400">Desenhe polígonos de alerta e áreas de movimento ignoradas na imagem ao vivo.</span>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setIsZoneModalOpen(true)}
+                  className="px-3.5 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-md shadow-cyan-500/20 flex items-center gap-1.5 transition-all"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>Desenhar Zonas</span>
+                </button>
+              </div>
             </div>
           )}
+
 
           {/* TAB 3: GRAVAÇÃO & RETENÇÃO */}
           {activeTab === "record" && (
@@ -468,6 +488,17 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
           </div>
         </form>
       </div>
+
+      {isZoneModalOpen && (
+        <ZoneCanvasModal
+          camera={camera}
+          onClose={() => setIsZoneModalOpen(false)}
+          onSaved={() => {
+            onSaved();
+          }}
+        />
+      )}
     </div>
   );
 };
+

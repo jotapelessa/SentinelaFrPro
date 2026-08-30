@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { WebRTCPlayer } from "./WebRTCPlayer";
+import { TimelinePlayback } from "./TimelinePlayback";
 import { useSentinelaStore, Camera } from "@/store/useSentinelaStore";
 import { Grid, Maximize, Video, ShieldAlert, RefreshCw, Plus, User, Car, Zap, X, Search, Check } from "lucide-react";
 
@@ -10,6 +11,8 @@ export const CameraMosaic: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [scanningONVIF, setScanningONVIF] = useState(false);
   const [discoveredCams, setDiscoveredCams] = useState<any[]>([]);
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
+  const [selectedVideoTitle, setSelectedVideoTitle] = useState<string>("Gravação NVMe");
   const [formCam, setFormCam] = useState({
     name: "",
     friendly_name: "",
@@ -17,6 +20,7 @@ export const CameraMosaic: React.FC = () => {
     ip_address: ""
   });
   const [addMessage, setAddMessage] = useState<string | null>(null);
+
 
   const fetchCameras = async () => {
     try {
@@ -147,27 +151,87 @@ export const CameraMosaic: React.FC = () => {
 
       {/* Cameras View (Spotlight vs Grid) */}
       {spotlightCamera ? (
-        <div className="w-full">
+        <div className="w-full space-y-3">
           <WebRTCPlayer
             camera={spotlightCamera}
             isSpotlight={true}
             onToggleSpotlight={() => setSpotlightCamera(null)}
             onCameraUpdated={fetchCameras}
           />
+          <TimelinePlayback
+            camera={spotlightCamera}
+            onOpenClip={(url, title) => {
+              setSelectedVideoUrl(url);
+              setSelectedVideoTitle(title);
+            }}
+          />
         </div>
       ) : (
-        <div className={`grid gap-4 ${cameras.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
-          {cameras.map((camera) => (
-            <WebRTCPlayer
-              key={camera.id || camera.name}
-              camera={camera}
-              isSpotlight={cameras.length === 1}
-              onToggleSpotlight={() => setSpotlightCamera(camera)}
-              onCameraUpdated={fetchCameras}
+        <div className="space-y-4">
+          <div className={`grid gap-4 ${cameras.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
+            {cameras.map((camera) => (
+              <WebRTCPlayer
+                key={camera.id || camera.name}
+                camera={camera}
+                isSpotlight={cameras.length === 1}
+                onToggleSpotlight={() => setSpotlightCamera(camera)}
+                onCameraUpdated={fetchCameras}
+              />
+            ))}
+          </div>
+
+          {cameras.length > 0 && (
+            <TimelinePlayback
+              camera={cameras[0]}
+              onOpenClip={(url, title) => {
+                setSelectedVideoUrl(url);
+                setSelectedVideoTitle(title);
+              }}
             />
-          ))}
+          )}
         </div>
       )}
+
+      {/* MP4 Timeline Video Playback Modal */}
+      {selectedVideoUrl && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 animate-in fade-in duration-200">
+          <div className="w-full max-w-3xl bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div className="p-4 bg-slate-950 border-b border-slate-800 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-pulse" />
+                <h3 className="text-sm font-bold text-white">{selectedVideoTitle}</h3>
+              </div>
+              <button
+                onClick={() => setSelectedVideoUrl(null)}
+                className="p-1 rounded-lg text-slate-400 hover:text-white"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="aspect-video bg-black flex items-center justify-center">
+              <video
+                src={selectedVideoUrl}
+                controls
+                autoPlay
+                className="w-full h-full object-contain"
+              >
+                Seu navegador não suporta reprodução de vídeo HTML5.
+              </video>
+            </div>
+
+            <div className="p-3 bg-slate-950 border-t border-slate-800 flex items-center justify-end">
+              <button
+                onClick={() => setSelectedVideoUrl(null)}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold"
+              >
+                Fechar Vídeo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
 
 
       {/* Modal Adicionar Câmera / Scanner ONVIF */}
