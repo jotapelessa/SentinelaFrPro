@@ -45,6 +45,7 @@ go2rtc:
   streams:
     camera_principal:
       - rtsp://192.168.1.6:8554/stream
+      - "ffmpeg:camera_principal#video=h264"
   webrtc:
     listen: ":8555"
     candidates:
@@ -57,13 +58,15 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-generic
+          input_args: preset-rtsp-restream
           roles:
             - detect
             - record
     detect:
       enabled: true
       fps: 5
+    live:
+      stream_name: camera_principal
     zones:
       zona_monitoramento:
         coordinates: 0,720,1280,720,1280,100,0,100
