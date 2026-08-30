@@ -5,19 +5,11 @@ mqtt:
   topic_prefix: frigate
   client_id: frigate_nvr
 
-# Intel Jasper Lake N5105 Hardware Acceleration
+# Intel Jasper Lake N5105 Hardware Acceleration (VAAPI)
 ffmpeg:
   hwaccel_args: preset-vaapi
 
-# OpenVINO Model & Detector Settings
-model:
-  path: /openvino-model/ssdlite_mobilenet_v2.xml
-
-detectors:
-  ov:
-    type: openvino
-    device: GPU
-
+# Global Object Tracking Defaults
 objects:
   track:
     - person
@@ -28,6 +20,7 @@ objects:
     - dog
     - cat
 
+# Video Recording Policy (NVMe SSD)
 record:
   enabled: true
   retain:
@@ -40,6 +33,7 @@ record:
       default: 30
       mode: motion
 
+# Watermarked High-Res Snapshots
 snapshots:
   enabled: true
   clean_copy: true
@@ -58,7 +52,7 @@ go2rtc:
       - 127.0.0.1:8555
       - stun:8555
 
-# Configured Camera
+# Câmera Principal
 cameras:
   camera_principal:
     ffmpeg:
