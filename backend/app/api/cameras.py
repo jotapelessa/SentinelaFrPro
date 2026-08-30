@@ -79,10 +79,23 @@ class CameraUpdate(BaseModel):
     cooldown_seconds: Optional[int] = None
 
 @router.patch("/{camera_id}")
-async def update_camera(camera_id: int, update: CameraUpdate, db: AsyncSession = Depends(get_db)):
-    stmt = select(Camera).where(Camera.id == camera_id)
-    res = await db.execute(stmt)
-    cam = res.scalar_one_or_none()
+async def update_camera(camera_id: str, update: CameraUpdate, db: AsyncSession = Depends(get_db)):
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+
+    if not cam:
+        stmt_first = select(Camera)
+        res_first = await db.execute(stmt_first)
+        cam = res_first.scalars().first()
+
     if not cam:
         raise HTTPException(status_code=404, detail="Camera not found")
 
@@ -95,14 +108,23 @@ async def update_camera(camera_id: int, update: CameraUpdate, db: AsyncSession =
     return cam
 
 @router.delete("/{camera_id}")
-async def delete_camera(camera_id: int, db: AsyncSession = Depends(get_db)):
-    stmt = select(Camera).where(Camera.id == camera_id)
-    res = await db.execute(stmt)
-    cam = res.scalar_one_or_none()
+async def delete_camera(camera_id: str, db: AsyncSession = Depends(get_db)):
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+
     if not cam:
         raise HTTPException(status_code=404, detail="Camera not found")
 
     await db.delete(cam)
     await db.commit()
     return {"status": "deleted", "id": camera_id}
+
 

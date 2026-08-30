@@ -35,3 +35,31 @@ async def get_db():
 async def init_db():
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+        
+        # SQLite automatic column migration for existing databases
+        columns_to_add = [
+            ("friendly_name", "VARCHAR(128)"),
+            ("rtsp_sub", "VARCHAR(512)"),
+            ("ip_address", "VARCHAR(64)"),
+            ("onvif_port", "INTEGER DEFAULT 80"),
+            ("enabled", "BOOLEAN DEFAULT 1"),
+            ("zones", "TEXT"),
+            ("objects_to_track", 'VARCHAR(256) DEFAULT \'["person", "car", "motorcycle", "dog"]\''),
+            ("min_score", "FLOAT DEFAULT 0.70"),
+            ("record_mode", "VARCHAR(32) DEFAULT 'motion'"),
+            ("record_retain_days", "INTEGER DEFAULT 14"),
+            ("record_audio", "BOOLEAN DEFAULT 0"),
+            ("notify_telegram", "BOOLEAN DEFAULT 1"),
+            ("notify_tv", "BOOLEAN DEFAULT 1"),
+            ("notify_audio", "BOOLEAN DEFAULT 1"),
+            ("cooldown_seconds", "INTEGER DEFAULT 10")
+        ]
+        
+        for col_name, col_def in columns_to_add:
+            try:
+                from sqlalchemy import text
+                await conn.execute(text(f"ALTER TABLE cameras ADD COLUMN {col_name} {col_def}"))
+            except Exception:
+                # Column already exists, ignore
+                pass
+
