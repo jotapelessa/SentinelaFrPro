@@ -81,13 +81,26 @@ class MQTTService:
 
                 # 2. Telegram Alert Dispatch (< 1.2s)
                 telegram_ok = False
+                friendly_name = None
+                try:
+                    from app.db.models import Camera
+                    async with AsyncSessionLocal() as session:
+                        cam_stmt = select(Camera).where((Camera.name == camera) | (Camera.ip_address == camera))
+                        cam_res = await session.execute(cam_stmt)
+                        cam_obj = cam_res.scalar_one_or_none()
+                        if cam_obj and cam_obj.friendly_name:
+                            friendly_name = cam_obj.friendly_name
+                except Exception:
+                    pass
+
                 if snapshot_bytes:
                     telegram_ok = await telegram_vault_service.send_alert_photo(
                         image_bytes=snapshot_bytes,
                         camera_name=camera,
                         label=label,
                         zone=zone_name,
-                        score=score
+                        score=score,
+                        friendly_name=friendly_name
                     )
 
                 # 3. PiP Gateway Dispatch (Smart TVs & Tablets)
@@ -137,6 +150,22 @@ class MQTTService:
             has_clip = after.get("has_clip", False)
             if has_clip and event_id:
                 logger.info(f"Event {event_id} finished with video clip.")
+                start_t = after.get("start_time", 0)
+                end_t = after.get("end_time", 0)
+                dur = max(1.0, float(end_t - start_t)) if (end_t and start_t) else 15.0
+
+                friendly_name = None
+                try:
+                    from app.db.models import Camera
+                    async with AsyncSessionLocal() as session:
+                        cam_stmt = select(Camera).where((Camera.name == camera) | (Camera.ip_address == camera))
+                        cam_res = await session.execute(cam_stmt)
+                        cam_obj = cam_res.scalar_one_or_none()
+                        if cam_obj and cam_obj.friendly_name:
+                            friendly_name = cam_obj.friendly_name
+                except Exception:
+                    pass
+
                 # Download clip and send to Telegram
                 async with httpx.AsyncClient(timeout=30.0) as client:
                     try:
@@ -145,10 +174,14 @@ class MQTTService:
                             await telegram_vault_service.send_alert_video(
                                 video_bytes=clip_resp.content,
                                 camera_name=camera,
-                                label=label
+                                label=label,
+                                duration_s=dur,
+                                score=score,
+                                friendly_name=friendly_name
                             )
                     except Exception as e:
                         logger.warning(f"Failed to fetch event clip: {e}")
+
 
                 # Update in DB
                 async with AsyncSessionLocal() as session:
