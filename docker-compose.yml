@@ -4,23 +4,23 @@ services:
     privileged: true
     restart: unless-stopped
     image: ghcr.io/blakeblackshear/frigate:stable
-    shm_size: "1gb" # Crucial for high-res streams without frame drops
+    shm_size: "1gb"
     devices:
-      - /dev/dri/renderD128:/dev/dri/renderD128 # Intel Jasper Lake iGPU
+      - /dev/dri/renderD128:/dev/dri/renderD128
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./frigate/config:/config
       - ./frigate/storage:/media/frigate
-      - type: tmpfs # 1GB RAM tmpfs for ultra-low latency cache
+      - type: tmpfs
         target: /tmp/cache
         tmpfs:
           size: 1000000000
     ports:
       - "5000:5000"
-      - "8554:8554"   # RTSP Feeds
-      - "8555:8555/tcp" # WebRTC
-      - "8555:8555/udp" # WebRTC
-      - "1984:1984"   # go2rtc API
+      - "8554:8554"
+      - "8555:8555/tcp"
+      - "8555:8555/udp"
+      - "1984:1984"
     environment:
       - FRIGATE_RTSP_PASSWORD=sentinela_secret
     depends_on:
@@ -43,6 +43,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
+    ports:
+      - "8080:8080"
     volumes:
       - ./backend/data:/app/data
       - ./frigate/storage:/media/frigate:ro
