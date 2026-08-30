@@ -9,6 +9,12 @@ mqtt:
 ffmpeg:
   hwaccel_args: preset-vaapi
 
+# Detectors: Limit detector threads to prevent CPU spikes
+detectors:
+  cpu1:
+    type: cpu
+    num_threads: 1
+
 # Global Object Tracking Defaults
 objects:
   track:
@@ -64,6 +70,8 @@ cameras:
             - record
     detect:
       enabled: true
+      width: 1280
+      height: 720
       fps: 5
     live:
       stream_name: camera_principal
