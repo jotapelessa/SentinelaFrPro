@@ -30,7 +30,7 @@ export interface TelemetryData {
 }
 
 export interface SecurityEvent {
-  id?: number;
+  id?: number | string;
   event_id?: string;
   frigate_event_id?: string;
   camera: string;
@@ -40,8 +40,10 @@ export interface SecurityEvent {
   zone?: string;
   timestamp: string;
   snapshot_url?: string;
+  clip_url?: string;
   has_clip?: boolean;
 }
+
 
 export interface Camera {
   id: number;
