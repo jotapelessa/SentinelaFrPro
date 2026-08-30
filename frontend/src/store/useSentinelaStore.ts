@@ -98,23 +98,12 @@ export const useSentinelaStore = create<SentinelaState>((set) => ({
   cameras: [
     {
       id: 1,
-      name: "portao_principal",
-      friendly_name: "Portão Principal",
-      rtsp_main: "rtsp://192.168.1.100:554/live/ch0",
-      rtsp_sub: "rtsp://192.168.1.100:554/live/ch1",
-      ip_address: "192.168.1.100",
+      name: "camera_principal",
+      friendly_name: "Câmera Principal (IP 192.168.1.6)",
+      rtsp_main: "rtsp://192.168.1.6:8554/stream",
+      ip_address: "192.168.1.6",
       enabled: true,
-      zones: ["zona_calcada", "zona_portao"]
-    },
-    {
-      id: 2,
-      name: "garagem",
-      friendly_name: "Garagem",
-      rtsp_main: "rtsp://192.168.1.101:554/live/ch0",
-      rtsp_sub: "rtsp://192.168.1.101:554/live/ch1",
-      ip_address: "192.168.1.101",
-      enabled: true,
-      zones: ["zona_estacionamento"]
+      zones: ["zona_monitoramento"]
     }
   ],
   events: [],

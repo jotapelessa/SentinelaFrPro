@@ -26,28 +26,17 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
     stmt = select(Camera)
     result = await db.execute(stmt)
     cameras = result.scalars().all()
-    # If DB is empty, provide default setup cameras
+    # If DB is empty, provide configured camera
     if not cameras:
         return [
             {
                 "id": 1,
-                "name": "portao_principal",
-                "friendly_name": "Portão Principal",
-                "rtsp_main": "rtsp://192.168.1.100:554/live/ch0",
-                "rtsp_sub": "rtsp://192.168.1.100:554/live/ch1",
-                "ip_address": "192.168.1.100",
+                "name": "camera_principal",
+                "friendly_name": "Câmera Principal (IP 192.168.1.6)",
+                "rtsp_main": "rtsp://192.168.1.6:8554/stream",
+                "ip_address": "192.168.1.6",
                 "enabled": True,
-                "zones": ["zona_calcada", "zona_portao"]
-            },
-            {
-                "id": 2,
-                "name": "garagem",
-                "friendly_name": "Garagem",
-                "rtsp_main": "rtsp://192.168.1.101:554/live/ch0",
-                "rtsp_sub": "rtsp://192.168.1.101:554/live/ch1",
-                "ip_address": "192.168.1.101",
-                "enabled": True,
-                "zones": ["zona_estacionamento"]
+                "zones": ["zona_monitoramento"]
             }
         ]
     return cameras

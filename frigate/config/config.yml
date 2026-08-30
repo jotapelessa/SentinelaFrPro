@@ -62,67 +62,33 @@ snapshots:
 # Live WebRTC & RTSP Hub (go2rtc)
 go2rtc:
   streams:
-    portao_principal:
-      - rtsp://admin:admin123@192.168.1.100:554/live/ch0
-      - ffmpeg:portao_principal#video=h264#hardware
-    portao_sub:
-      - rtsp://admin:admin123@192.168.1.100:554/live/ch1
-    garagem:
-      - rtsp://admin:admin123@192.168.1.101:554/live/ch0
-      - ffmpeg:garagem#video=h264#hardware
-    garagem_sub:
-      - rtsp://admin:admin123@192.168.1.101:554/live/ch1
+    camera_principal:
+      - rtsp://192.168.1.6:8554/stream
+      - ffmpeg:camera_principal#video=h264#hardware
   webrtc:
     listen: ":8555"
     candidates:
       - 127.0.0.1:8555
       - stun:8555
 
-# Configured Cameras (Dual-Stream Architecture)
+# Configured Cameras
 cameras:
-  portao_principal:
+  camera_principal:
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/portao_sub
+        - path: rtsp://127.0.0.1:8554/camera_principal
           roles:
             - detect
-        - path: rtsp://127.0.0.1:8554/portao_principal
-          roles:
             - record
     detect:
       enabled: true
-      width: 896
-      height: 512
+      width: 1280
+      height: 720
       fps: 5
     zones:
-      zona_calcada:
-        coordinates: 0,512,896,512,896,300,0,300
+      zona_monitoramento:
+        coordinates: 0,720,1280,720,1280,100,0,100
         objects:
           - person
           - car
           - motorcycle
-      zona_portao:
-        coordinates: 150,512,750,512,750,150,150,150
-        objects:
-          - person
-
-  garagem:
-    ffmpeg:
-      inputs:
-        - path: rtsp://127.0.0.1:8554/garagem_sub
-          roles:
-            - detect
-        - path: rtsp://127.0.0.1:8554/garagem
-          roles:
-            - record
-    detect:
-      enabled: true
-      width: 896
-      height: 512
-      fps: 5
-    zones:
-      zona_estacionamento:
-        coordinates: 0,512,896,512,896,200,0,200
-        objects:
-          - person
-          - car
