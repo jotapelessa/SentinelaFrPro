@@ -12,7 +12,9 @@ ffmpeg:
 detectors:
   ov:
     type: openvino
-    device: GPU # Intel UHD Gen11 iGPU
+    device: GPU
+    model:
+      path: /openvino-model/ssdlite_mobilenet_v2.xml
 
 objects:
   track:
