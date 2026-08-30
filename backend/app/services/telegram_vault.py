@@ -133,4 +133,19 @@ class TelegramVaultService:
             f"{pause_status}"
         )
 
+    async def test_connection(self) -> Dict[str, Any]:
+        """Tests telegram bot connection and sends a confirmation text."""
+        if not self.is_configured:
+            return {"status": "error", "message": "Bot Token ou Chat ID não preenchidos."}
+        url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
+        try:
+            async with httpx.AsyncClient(timeout=6.0) as client:
+                text = "🔔 *Sentinela Frigate Pro*\n\n✅ *Teste de Conexão com Sucesso!*\nSeu bot do Telegram está 100% configurado e pronto para disparar alertas e fotos das câmeras."
+                resp = await client.post(url, json={"chat_id": self.chat_id, "text": text, "parse_mode": "Markdown"})
+                if resp.status_code == 200:
+                    return {"status": "success", "message": "Mensagem de teste enviada com sucesso para o Telegram!"}
+                return {"status": "error", "message": f"Erro do Telegram: {resp.text}"}
+        except Exception as e:
+            return {"status": "error", "message": f"Falha de rede: {str(e)}"}
+
 telegram_vault_service = TelegramVaultService()

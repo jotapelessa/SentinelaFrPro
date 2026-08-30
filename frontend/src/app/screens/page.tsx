@@ -186,6 +186,9 @@ export default function ScreensPage() {
     }
   };
 
+  // Kiosk Mode State
+  const [kioskMode, setKioskMode] = useState(false);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -205,6 +208,23 @@ export default function ScreensPage() {
         </div>
 
         <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => {
+              if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                setKioskMode(true);
+              } else {
+                document.exitFullscreen().catch(() => {});
+                setKioskMode(false);
+              }
+            }}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold transition-all"
+            title="Modo Painel de Portaria em Tela Cheia"
+          >
+            <Tablet className="w-4 h-4" />
+            <span>{kioskMode ? "Sair do Quiosque" : "Modo Painel Quiosque"}</span>
+          </button>
+
           <button
             disabled={scanningTVs}
             onClick={handleScanTVs}
