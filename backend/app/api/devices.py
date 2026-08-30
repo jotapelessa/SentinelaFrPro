@@ -7,7 +7,15 @@ from app.db.session import get_db
 from app.db.models import PairedDevice
 from app.services.pip_gateway import pip_gateway_service
 
+from app.services.scanner_service import scanner_service
+
 router = APIRouter(prefix="/devices", tags=["Devices"])
+
+@router.get("/discover")
+async def discover_tvs():
+    """Scans LAN subnet for Smart TVs and Chromecast devices."""
+    return await scanner_service.discover_smart_tvs()
+
 
 class DeviceCreate(BaseModel):
     device_identifier: str

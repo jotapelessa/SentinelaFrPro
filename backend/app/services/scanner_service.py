@@ -174,12 +174,58 @@ class ScannerService:
             else:
                 merged[ip] = dev
 
-        devices_list = list(merged.values())
-        return {
-            "subnet": f"{primary_subnet}.0/24",
-            "total_found": len(devices_list),
-            "devices": devices_list,
-            "all_ips_raw": "\n".join([d["ip"] for d in devices_list])
+    async def discover_smart_tvs(self, base_subnet: str = "192.168.1") -> List[Dict[str, Any]]:
+        """Scans the local network for Smart TVs (Google Cast, TCL, Samsung, LG, Android TV)."""
+        tv_ports = {
+            8009: "Google Cast / TCL / Android TV",
+            8001: "Samsung Smart TV (Tizen)",
+            8002: "Samsung Smart TV (SSL)",
+            3000: "LG Smart TV (webOS)",
+            7986: "PiP-Up Android TV",
+            5463: "Notifications for Android TV",
+            9197: "Samsung DLNA Media",
+            49152: "UPnP / DLNA Smart TV"
         }
 
+        found_tvs = []
+        target_hosts = list(range(1, 255))
+
+        async def check_tv(host_num: int):
+            ip = f"{base_subnet}.{host_num}"
+            # Quick check if any TV port is open
+            open_tv_ports = []
+            for port, desc in tv_ports.items():
+                is_open = await self.scan_port(ip, port, timeout=0.25)
+                if is_open:
+                    open_tv_ports.append((port, desc))
+
+            if open_tv_ports:
+                # Classify TV
+                port_nums = [p[0] for p in open_tv_ports]
+                if 8009 in port_nums or 7986 in port_nums or 5463 in port_nums:
+                    tv_type = "android_tv"
+                    friendly_name = f"TCL / Google TV ({ip})"
+                elif 8001 in port_nums or 8002 in port_nums or 9197 in port_nums:
+                    tv_type = "samsung_tizen"
+                    friendly_name = f"Samsung Smart TV ({ip})"
+                elif 3000 in port_nums:
+                    tv_type = "lg_webos"
+                    friendly_name = f"LG Smart TV ({ip})"
+                else:
+                    tv_type = "chromecast"
+                    friendly_name = f"Smart TV DLNA ({ip})"
+
+                found_tvs.append({
+                    "ip": ip,
+                    "friendly_name": friendly_name,
+                    "device_type": tv_type,
+                    "open_ports": port_nums,
+                    "services": [p[1] for p in open_tv_ports]
+                })
+
+        tasks = [check_tv(h) for h in target_hosts]
+        await asyncio.gather(*tasks)
+        return found_tvs
+
 scanner_service = ScannerService()
+

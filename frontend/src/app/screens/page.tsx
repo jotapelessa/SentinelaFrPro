@@ -19,6 +19,10 @@ export default function ScreensPage() {
   const [testingPiP, setTestingPiP] = useState(false);
   const [testResult, setTestResult] = useState<string | null>(null);
 
+  // Scanner State
+  const [scanningTVs, setScanningTVs] = useState(false);
+  const [discoveredTVs, setDiscoveredTVs] = useState<any[]>([]);
+
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newDevice, setNewDevice] = useState({
@@ -47,6 +51,58 @@ export default function ScreensPage() {
   useEffect(() => {
     fetchDevices();
   }, []);
+
+  const handleScanTVs = async () => {
+    setScanningTVs(true);
+    setTestResult(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const res = await fetch(`${apiUrl}/devices/discover`);
+      if (res.ok) {
+        const data = await res.json();
+        setDiscoveredTVs(data);
+        if (data.length > 0) {
+          setTestResult(`🔍 Encontrada(s) ${data.length} Smart TV(s) na sua rede!`);
+        } else {
+          setTestResult("Nenhuma Smart TV respondeu na rede local no momento.");
+        }
+      }
+    } catch (e) {
+      console.error("Failed to scan TVs:", e);
+      setTestResult("Erro ao escanear a rede.");
+    } finally {
+      setScanningTVs(false);
+      setTimeout(() => setTestResult(null), 6000);
+    }
+  };
+
+  const handleQuickPair = async (tv: any) => {
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const identifier = `tv_${tv.friendly_name.toLowerCase().replace(/[^a-z0-9]/g, "_")}`;
+      const res = await fetch(`${apiUrl}/devices/`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          device_identifier: identifier,
+          friendly_name: tv.friendly_name,
+          device_type: tv.device_type,
+          ip_address: tv.ip,
+          tailscale_ip: null,
+          permission_status: "allowed"
+        })
+      });
+
+      if (res.ok) {
+        setDiscoveredTVs(prev => prev.filter(t => t.ip !== tv.ip));
+        await fetchDevices();
+        setTestResult(`🎉 ${tv.friendly_name} pareada com sucesso!`);
+        setTimeout(() => setTestResult(null), 5000);
+      }
+    } catch (err) {
+      console.error("Failed to quick pair:", err);
+    }
+  };
 
   const handleAddDevice = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -109,7 +165,7 @@ export default function ScreensPage() {
       if (data.dispatched_count > 0) {
         setTestResult(`🎉 Alerta PiP enviado com sucesso para ${data.dispatched_count} TV(s)!`);
       } else {
-        setTestResult("⚠️ Disparo enviado! Certifique-se de que a TV está ligada com o app PiP ativo.");
+        setTestResult("⚠️ Disparo enviado! Certifique-se de que a TV está ligada na mesma rede.");
       }
     } catch {
       setTestResult("⚠️ Erro ao enviar comando de teste.");
@@ -148,13 +204,22 @@ export default function ScreensPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            disabled={scanningTVs}
+            onClick={handleScanTVs}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all disabled:opacity-50"
+          >
+            <RefreshCw className={`w-4 h-4 ${scanningTVs ? "animate-spin" : ""}`} />
+            <span>{scanningTVs ? "Escaneando Rede..." : "Escanear Smart TVs"}</span>
+          </button>
+
           <button
             onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all"
+            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-all"
           >
             <Plus className="w-4 h-4" />
-            <span>Adicionar Smart TV</span>
+            <span>Adicionar Manual</span>
           </button>
 
           <button
@@ -163,10 +228,49 @@ export default function ScreensPage() {
             className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50"
           >
             <Play className="w-4 h-4 fill-current" />
-            <span>{testingPiP ? "Enviando para TVs..." : "Testar Alerta na TV"}</span>
+            <span>{testingPiP ? "Enviando..." : "Testar Alerta na TV"}</span>
           </button>
         </div>
       </div>
+
+      {/* Discovered TVs Banner */}
+      {discoveredTVs.length > 0 && (
+        <div className="p-5 rounded-2xl bg-cyan-950/40 border border-cyan-500/40 shadow-xl space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-black text-cyan-300 flex items-center gap-2">
+              <Tv className="w-4 h-4 text-cyan-400" />
+              Smart TVs Encontradas na Rede Local ({discoveredTVs.length})
+            </h2>
+            <button
+              onClick={() => setDiscoveredTVs([])}
+              className="text-xs text-slate-400 hover:text-white"
+            >
+              Fechar
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {discoveredTVs.map((tv) => (
+              <div
+                key={tv.ip}
+                className="p-3.5 rounded-xl bg-slate-900/90 border border-cyan-500/30 flex items-center justify-between gap-3"
+              >
+                <div>
+                  <h3 className="font-bold text-xs text-white">{tv.friendly_name}</h3>
+                  <p className="text-[11px] font-mono text-cyan-300">IP: {tv.ip}</p>
+                  <p className="text-[10px] text-slate-400">Serviços: {tv.services.join(", ")}</p>
+                </div>
+                <button
+                  onClick={() => handleQuickPair(tv)}
+                  className="px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-md shadow-cyan-500/20 whitespace-nowrap transition-all"
+                >
+                  Parear TV ⚡
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {testResult && (
         <div className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 text-xs font-bold flex items-center gap-2">
