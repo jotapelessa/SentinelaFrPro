@@ -333,15 +333,19 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                     <span>🎨 Editor Visual Sentinela</span>
                   </button>
 
-                  <a
-                    href={`/frigate/cameras/${camera.name || "camera_principal"}/zones`}
-                    target="_blank"
-                    rel="noreferrer"
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const host = typeof window !== "undefined" ? window.location.hostname : "127.0.0.1";
+                      const camName = camera.name || "camera_principal";
+                      window.open(`http://${host}:5000/cameras/${camName}/zones`, "_blank");
+                    }}
                     className="px-3.5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-all text-center"
                   >
                     <Sliders className="w-4 h-4 text-emerald-400" />
                     <span>🎯 Estúdio Oficial Frigate ↗</span>
-                  </a>
+                  </button>
+
                 </div>
               </div>
             </div>
