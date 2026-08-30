@@ -20,6 +20,7 @@ export default function SettingsPage() {
   const [dndEnabled, setDndEnabled] = useState(false);
   const [dndStart, setDndStart] = useState(23);
   const [dndEnd, setDndEnd] = useState(6);
+  const [dndSaved, setDndSaved] = useState(false);
 
   const fetchSettings = async () => {
     try {
@@ -27,9 +28,16 @@ export default function SettingsPage() {
       const res = await fetch(`${apiUrl}/settings/`);
       if (res.ok) {
         const data = await res.json();
-        setDndEnabled(data.dnd_enabled || false);
-        setDndStart(data.dnd_start_hour || 23);
-        setDndEnd(data.dnd_end_hour || 6);
+        if (data.bot_token) setBotToken(data.bot_token);
+        if (data.chat_id) setChatId(data.chat_id);
+        setDndEnabled(Boolean(data.dnd_enabled));
+        setDndStart(Number(data.dnd_start_hour || 23));
+        setDndEnd(Number(data.dnd_end_hour || 6));
+      }
+      
+      const storedSound = localStorage.getItem("sentinela_sound_alerts");
+      if (storedSound !== null) {
+        setSoundEnabled(storedSound === "true");
       }
     } catch (e) {
       console.error("Failed to fetch settings:", e);
@@ -39,6 +47,13 @@ export default function SettingsPage() {
   useEffect(() => {
     fetchSettings();
   }, []);
+
+  const toggleSound = () => {
+    const nextState = !soundEnabled;
+    setSoundEnabled(nextState);
+    localStorage.setItem("sentinela_sound_alerts", String(nextState));
+    if (nextState) playChimeSound();
+  };
 
   const playChimeSound = () => {
     try {
@@ -98,18 +113,21 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSaveDND = async () => {
+  const handleSaveDND = async (enabledVal = dndEnabled, startVal = dndStart, endVal = dndEnd) => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       await fetch(`${apiUrl}/settings/dnd`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ enabled: dndEnabled, start_hour: dndStart, end_hour: dndEnd })
+        body: JSON.stringify({ enabled: enabledVal, start_hour: startVal, end_hour: endVal })
       });
+      setDndSaved(true);
+      setTimeout(() => setDndSaved(false), 2000);
     } catch (e) {
       console.error(e);
     }
   };
+
 
   const handleDownloadBackup = async () => {
     try {
@@ -234,10 +252,8 @@ export default function SettingsPage() {
             <h2 className="text-base font-bold text-white">Alertas Sonoros no Navegador</h2>
           </div>
           <button
-            onClick={() => {
-              setSoundEnabled(!soundEnabled);
-              if (!soundEnabled) playChimeSound();
-            }}
+            type="button"
+            onClick={toggleSound}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
               soundEnabled ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30" : "bg-slate-800 text-slate-400 border-slate-700"
             }`}
@@ -249,6 +265,7 @@ export default function SettingsPage() {
           Toca um sinal sonoro elegante no navegador toda vez que uma pessoa for detectada no portão.
         </p>
         <button
+          type="button"
           onClick={playChimeSound}
           className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold flex items-center gap-1.5"
         >
@@ -262,13 +279,15 @@ export default function SettingsPage() {
           <div className="flex items-center gap-2.5">
             <Moon className="w-5 h-5 text-indigo-400" />
             <h2 className="text-base font-bold text-white">Modo Não Perturbe (DND Noturno)</h2>
+            {dndSaved && <span className="text-[10px] text-emerald-400 font-bold bg-emerald-950/50 px-2 py-0.5 rounded border border-emerald-500/30">✓ Salvo</span>}
           </div>
           <input
             type="checkbox"
             checked={dndEnabled}
             onChange={(e) => {
-              setDndEnabled(e.target.checked);
-              handleSaveDND();
+              const checked = e.target.checked;
+              setDndEnabled(checked);
+              handleSaveDND(checked, dndStart, dndEnd);
             }}
             className="w-5 h-5 accent-cyan-500 cursor-pointer"
           />
@@ -284,8 +303,9 @@ export default function SettingsPage() {
             max={23}
             value={dndStart}
             onChange={(e) => {
-              setDndStart(Number(e.target.value));
-              handleSaveDND();
+              const val = Number(e.target.value);
+              setDndStart(val);
+              handleSaveDND(dndEnabled, val, dndEnd);
             }}
             className="w-16 px-2 py-1 rounded bg-obsidian-950 border border-slate-800 text-white font-bold"
           />
@@ -296,8 +316,9 @@ export default function SettingsPage() {
             max={23}
             value={dndEnd}
             onChange={(e) => {
-              setDndEnd(Number(e.target.value));
-              handleSaveDND();
+              const val = Number(e.target.value);
+              setDndEnd(val);
+              handleSaveDND(dndEnabled, dndStart, val);
             }}
             className="w-16 px-2 py-1 rounded bg-obsidian-950 border border-slate-800 text-white font-bold"
           />
@@ -307,6 +328,7 @@ export default function SettingsPage() {
 
       {/* Backup & System Data */}
       <div className="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+
         <div className="flex items-center gap-2.5">
           <ShieldCheck className="w-5 h-5 text-emerald-400" />
           <h2 className="text-base font-bold text-white">Backup do Sistema & Configurações</h2>

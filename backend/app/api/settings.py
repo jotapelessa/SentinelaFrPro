@@ -29,16 +29,35 @@ class ZoneUpdate(BaseModel):
     coordinates: str # e.g. "0,720,1280,720,1280,100,0,100"
 
 @router.get("/")
-async def get_settings():
+async def get_settings(db: AsyncSession = Depends(get_db)):
+    # Ensure in-memory vault is loaded from DB
+    await telegram_vault_service.load_credentials_from_db()
+
+    # Load DND settings from DB
+    from app.db.models import SystemSetting
+    stmt = select(SystemSetting)
+    res = await db.execute(stmt)
+    all_settings = {s.key: s.value for s in res.scalars().all()}
+
+    dnd_enabled_val = all_settings.get("dnd_enabled", "false").lower() == "true"
+    dnd_start_val = int(all_settings.get("dnd_start_hour", "23"))
+    dnd_end_val = int(all_settings.get("dnd_end_hour", "6"))
+
+    pip_gateway_service._dnd_enabled = dnd_enabled_val
+    pip_gateway_service._dnd_start_hour = dnd_start_val
+    pip_gateway_service._dnd_end_hour = dnd_end_val
+
     return {
         "telegram_configured": telegram_vault_service.is_configured,
-        "telegram_chat_id": settings.TELEGRAM_CHAT_ID[:4] + "***" if settings.TELEGRAM_CHAT_ID else "",
+        "bot_token": telegram_vault_service.bot_token or "",
+        "chat_id": telegram_vault_service.chat_id or "",
+        "telegram_chat_id": telegram_vault_service.chat_id or "",
         "alerts_paused": telegram_vault_service.is_paused(),
         "frigate_url": settings.FRIGATE_API_URL,
         "mqtt_broker": f"{settings.MQTT_BROKER}:{settings.MQTT_PORT}",
-        "dnd_enabled": pip_gateway_service._dnd_enabled,
-        "dnd_start_hour": pip_gateway_service._dnd_start_hour,
-        "dnd_end_hour": pip_gateway_service._dnd_end_hour
+        "dnd_enabled": dnd_enabled_val,
+        "dnd_start_hour": dnd_start_val,
+        "dnd_end_hour": dnd_end_val
     }
 
 @router.post("/telegram")
@@ -62,25 +81,46 @@ async def update_telegram_config(config: TelegramConfigUpdate, db: AsyncSession 
 
     return {"status": "updated", "configured": telegram_vault_service.is_configured}
 
-
 @router.post("/telegram/test")
 async def test_telegram_alert():
     return await telegram_vault_service.test_connection()
 
 @router.get("/dnd")
-async def get_dnd_settings():
+async def get_dnd_settings(db: AsyncSession = Depends(get_db)):
+    from app.db.models import SystemSetting
+    stmt = select(SystemSetting)
+    res = await db.execute(stmt)
+    all_settings = {s.key: s.value for s in res.scalars().all()}
+
+    dnd_enabled_val = all_settings.get("dnd_enabled", "false").lower() == "true"
+    dnd_start_val = int(all_settings.get("dnd_start_hour", "23"))
+    dnd_end_val = int(all_settings.get("dnd_end_hour", "6"))
+
     return {
-        "enabled": pip_gateway_service._dnd_enabled,
-        "start_hour": pip_gateway_service._dnd_start_hour,
-        "end_hour": pip_gateway_service._dnd_end_hour
+        "enabled": dnd_enabled_val,
+        "start_hour": dnd_start_val,
+        "end_hour": dnd_end_val
     }
 
 @router.post("/dnd")
-async def update_dnd_settings(cfg: DNDConfigUpdate):
+async def update_dnd_settings(cfg: DNDConfigUpdate, db: AsyncSession = Depends(get_db)):
     pip_gateway_service._dnd_enabled = cfg.enabled
     pip_gateway_service._dnd_start_hour = cfg.start_hour
     pip_gateway_service._dnd_end_hour = cfg.end_hour
+
+    from app.db.models import SystemSetting
+    for k, v in [("dnd_enabled", str(cfg.enabled).lower()), ("dnd_start_hour", str(cfg.start_hour)), ("dnd_end_hour", str(cfg.end_hour))]:
+        stmt = select(SystemSetting).where(SystemSetting.key == k)
+        res = await db.execute(stmt)
+        setting_obj = res.scalar_one_or_none()
+        if setting_obj:
+            setting_obj.value = v
+        else:
+            db.add(SystemSetting(key=k, value=v))
+    await db.commit()
+
     return {"status": "updated", "dnd": cfg.model_dump()}
+
 
 @router.post("/pause")
 async def pause_alerts(req: PauseAlertsRequest):
