@@ -44,12 +44,11 @@ snapshots:
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:8554/stream#transport=tcp
-      - "ffmpeg:camera_principal#video=h264"
+      - rtsp://192.168.1.6:8554/stream
   webrtc:
     listen: ":8555"
     candidates:
-      - 127.0.0.1:8555
+      - 192.168.1.252:8555
       - stun:8555
 
 # Câmera Principal
@@ -57,7 +56,7 @@ cameras:
   camera_principal:
     ffmpeg:
       inputs:
-        - path: rtsp://192.168.1.6:8554/stream
+        - path: rtsp://127.0.0.1:8554/camera_principal
           input_args: preset-rtsp-generic
           roles:
             - detect
