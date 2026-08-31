@@ -190,9 +190,12 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
     if (!confirm(`Deseja realmente remover a câmera "${friendlyName}"?`)) return;
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
-      await fetch(`${apiUrl}/cameras/${camera.id}`, { method: "DELETE" });
-      onSaved();
-      onClose();
+      const camIdentifier = camera.id || camera.name || "camera_principal";
+      const res = await fetch(`${apiUrl}/cameras/${camIdentifier}`, { method: "DELETE" });
+      if (res.ok) {
+        onSaved();
+        onClose();
+      }
     } catch (err) {
       console.error(err);
     }

@@ -20,22 +20,19 @@ export const CameraMosaic: React.FC = () => {
     ip_address: ""
   });
   const [addMessage, setAddMessage] = useState<string | null>(null);
-
-
   const fetchCameras = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const res = await fetch(`${apiUrl}/cameras`);
       if (res.ok) {
         const data = await res.json();
-        if (data && data.length > 0) {
-          setCameras(data);
-        }
+        setCameras(Array.isArray(data) ? data : []);
       }
     } catch (e) {
       console.error("Error fetching cameras:", e);
     }
   };
+
 
   useEffect(() => {
     fetchCameras();
@@ -98,24 +95,21 @@ export const CameraMosaic: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
-            <Video className="w-5 h-5 text-cyan-400" />
-            <h2 className="text-sm font-bold uppercase tracking-wider text-slate-200">
-              Mosaico ao Vivo
-            </h2>
-            <span className="text-xs font-mono px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-              {cameras.length} Ativa{cameras.length > 1 ? "s" : ""}
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse shadow-lg shadow-emerald-500/50" />
+            <span className="text-xs font-mono font-bold text-slate-200">
+              {cameras.length} {cameras.length === 1 ? "Câmera Ativa" : "Câmeras Ativas"}
             </span>
           </div>
 
-          {/* Live HUD Badges */}
-          <div className="hidden sm:flex items-center gap-2 text-xs font-mono">
-            <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-900 border border-slate-800 text-slate-300">
-              <User className="w-3.5 h-3.5 text-cyan-400" />
-              Pessoas: <strong className="text-white">{totalPersons}</strong>
+          {/* Quick HUD Badges */}
+          <div className="flex items-center gap-1.5 border-l border-slate-800 pl-3">
+            <span className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[11px] font-bold flex items-center gap-1">
+              <User className="w-3 h-3" />
+              <span>{totalPersons}</span>
             </span>
-            <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-900 border border-slate-800 text-slate-300">
-              <Car className="w-3.5 h-3.5 text-teal-400" />
-              Veículos: <strong className="text-white">{totalVehicles}</strong>
+            <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-bold flex items-center gap-1">
+              <Car className="w-3 h-3" />
+              <span>{totalVehicles}</span>
             </span>
           </div>
         </div>
@@ -149,38 +143,72 @@ export const CameraMosaic: React.FC = () => {
         </div>
       </div>
 
-      {/* Cameras View (Spotlight vs Grid) */}
-      {spotlightCamera ? (
-        <div className="w-full space-y-3">
-          <WebRTCPlayer
-            camera={spotlightCamera}
-            isSpotlight={true}
-            onToggleSpotlight={() => setSpotlightCamera(null)}
-            onCameraUpdated={fetchCameras}
-          />
-          <TimelinePlayback
-            camera={spotlightCamera}
-            onOpenClip={(url, title) => {
-              setSelectedVideoUrl(url);
-              setSelectedVideoTitle(title);
-            }}
-          />
-        </div>
-      ) : (
-        <div className="space-y-4">
-          <div className={`grid gap-4 ${cameras.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
-            {cameras.map((camera) => (
-              <WebRTCPlayer
-                key={camera.id || camera.name}
-                camera={camera}
-                isSpotlight={cameras.length === 1}
-                onToggleSpotlight={() => setSpotlightCamera(camera)}
-                onCameraUpdated={fetchCameras}
-              />
-            ))}
+      {/* Empty State */}
+      {cameras.length === 0 && (
+        <div className="p-12 text-center rounded-2xl glass-panel border border-slate-800 space-y-4 bg-slate-950/40">
+          <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto">
+            <Video className="w-8 h-8" />
           </div>
+          <div className="space-y-1 max-w-md mx-auto">
+            <h3 className="text-base font-bold text-white">Nenhuma Câmera Cadastrada</h3>
+            <p className="text-xs text-slate-400">
+              Adicione uma câmera RTSP manualmente ou use o scanner ONVIF para encontrar câmeras automaticamente na rede.
+            </p>
+          </div>
+          <div className="flex items-center justify-center gap-3 pt-2">
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Adicionar Câmera RTSP</span>
+            </button>
+            <button
+              onClick={() => {
+                setIsAddModalOpen(true);
+                handleScanONVIF();
+              }}
+              className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold text-xs flex items-center gap-2 transition-all"
+            >
+              <Search className="w-4 h-4" />
+              <span>Escanear Rede (ONVIF)</span>
+            </button>
+          </div>
+        </div>
+      )}
 
-          {cameras.length > 0 && (
+      {/* Cameras View (Spotlight vs Grid) */}
+      {cameras.length > 0 && (
+        spotlightCamera ? (
+          <div className="w-full space-y-3">
+            <WebRTCPlayer
+              camera={spotlightCamera}
+              isSpotlight={true}
+              onToggleSpotlight={() => setSpotlightCamera(null)}
+              onCameraUpdated={fetchCameras}
+            />
+            <TimelinePlayback
+              camera={spotlightCamera}
+              onOpenClip={(url, title) => {
+                setSelectedVideoUrl(url);
+                setSelectedVideoTitle(title);
+              }}
+            />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className={`grid gap-4 ${cameras.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
+              {cameras.map((camera) => (
+                <WebRTCPlayer
+                  key={camera.id || camera.name}
+                  camera={camera}
+                  isSpotlight={cameras.length === 1}
+                  onToggleSpotlight={() => setSpotlightCamera(camera)}
+                  onCameraUpdated={fetchCameras}
+                />
+              ))}
+            </div>
+
             <TimelinePlayback
               camera={cameras[0]}
               onOpenClip={(url, title) => {
@@ -188,8 +216,8 @@ export const CameraMosaic: React.FC = () => {
                 setSelectedVideoTitle(title);
               }}
             />
-          )}
-        </div>
+          </div>
+        )
       )}
 
       {/* MP4 Timeline Video Playback Modal */}

@@ -25,26 +25,7 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
     stmt = select(Camera)
     result = await db.execute(stmt)
     cameras = result.scalars().all()
-    
-    # Auto-provision real camera if not present
-    if not cameras or not any(c.ip_address == "192.168.1.6" for c in cameras):
-        # Clear mock cameras and insert real camera
-        for c in cameras:
-            await db.delete(c)
-        real_cam = Camera(
-            name="camera_principal",
-            friendly_name="Câmera Principal (IP 192.168.1.6)",
-            rtsp_main="rtsp://192.168.1.6:554/stream",
-            ip_address="192.168.1.6",
-            enabled=True,
-            onvif_port=80
-        )
-        db.add(real_cam)
-        await db.commit()
-        await db.refresh(real_cam)
-        return [real_cam]
-
-    return cameras
+    return list(cameras)
 
 @router.post("/")
 async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Depends(get_db)):
@@ -500,6 +481,58 @@ async def sync_camera_to_frigate(cam: Camera):
             logger.warning(f"Failed to write config file: {e}")
 
 
+async def remove_camera_from_frigate(cam_name: str):
+    import os
+    import yaml
+    import httpx
+    from app.core.config import settings
+
+    config_path = get_frigate_config_path()
+    cfg = {}
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
+            if resp.status_code == 200:
+                cfg = yaml.safe_load(resp.text) or {}
+    except Exception:
+        pass
+
+    if not cfg and os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f) or {}
+        except Exception:
+            pass
+
+    changed = False
+    if "go2rtc" in cfg and "streams" in cfg["go2rtc"]:
+        if cam_name in cfg["go2rtc"]["streams"]:
+            del cfg["go2rtc"]["streams"][cam_name]
+            changed = True
+
+    if "cameras" in cfg and cam_name in cfg["cameras"]:
+        del cfg["cameras"][cam_name]
+        changed = True
+
+    if changed:
+        updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                await client.post(
+                    f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
+                    content=updated_yaml,
+                    headers={"Content-Type": "text/plain"}
+                )
+        except Exception as e:
+            logger.warning(f"Failed to post updated config to Frigate API: {e}")
+
+        if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
+            try:
+                with open(config_path, "w", encoding="utf-8") as f:
+                    f.write(updated_yaml)
+            except Exception:
+                pass
+
 @router.delete("/{camera_id}")
 async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):
     cam = None
@@ -519,6 +552,12 @@ async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Dep
     cam_name = cam.name
     await db.delete(cam)
     await db.commit()
+
+    try:
+        await remove_camera_from_frigate(cam_name)
+    except Exception as e:
+        logger.warning(f"Error removing camera from Frigate: {e}")
+
     await audit_service.log(
         action="CAMERA_DELETED",
         module="CAMERA",
@@ -526,7 +565,7 @@ async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Dep
         details=f"Câmera {cam_name} removida do Sentinela.",
         client_ip=request.client.host if request.client else "unknown"
     )
-    return {"status": "deleted", "id": camera_id}
+    return {"status": "deleted", "id": camera_id, "camera_name": cam_name}
 
 
 class FrigateZonesPayload(BaseModel):
