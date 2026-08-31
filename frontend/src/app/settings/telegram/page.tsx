@@ -17,7 +17,14 @@ import {
   VolumeX,
   Sliders,
   Sparkles,
-  Layers
+  Layers,
+  Loader2,
+  Activity,
+  FileText,
+  Camera,
+  Video,
+  Cpu,
+  Siren
 } from "lucide-react";
 
 export default function TelegramSettingsPage() {
@@ -34,9 +41,14 @@ export default function TelegramSettingsPage() {
   // Status & Feedback State
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [testingTelegram, setTestingTelegram] = useState(false);
+  const [testingPhoto, setTestingPhoto] = useState(false);
+  const [testingVideo, setTestingVideo] = useState(false);
+  const [testingLogs, setTestingLogs] = useState(false);
+  const [testingStatus, setTestingStatus] = useState(false);
+  const [simulatingAlert, setSimulatingAlert] = useState(false);
+
   const [telegramStatus, setTelegramStatus] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
-  const [simulating, setSimulating] = useState(false);
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
 
@@ -125,20 +137,13 @@ export default function TelegramSettingsPage() {
         body: JSON.stringify({ bot_token: botToken.trim(), chat_id: chatId.trim() })
       });
 
-      if (!res.ok) {
-        const errData = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
-        setIsError(true);
-        setTelegramStatus(`⚠️ Erro de comunicação (${errData.detail || `HTTP ${res.status}`}).`);
-        return;
-      }
-
-      const data = await res.json();
-      if (data.status === "success") {
+      const data = await res.json().catch(() => ({ status: "error", message: `HTTP ${res.status}` }));
+      if (res.ok && data.status === "success") {
         setIsError(false);
         setTelegramStatus(`✅ ${data.message}`);
       } else {
         setIsError(true);
-        setTelegramStatus(`⚠️ ${data.message || "Erro ao conectar com Telegram."}`);
+        setTelegramStatus(`⚠️ ${data.message || data.detail || "Erro ao conectar com Telegram."}`);
       }
     } catch (err: any) {
       console.error("Test error:", err);
@@ -149,8 +154,98 @@ export default function TelegramSettingsPage() {
     }
   };
 
-  const handleTriggerMockEvent = async () => {
-    setSimulating(true);
+  const handleTestPhoto = async () => {
+    setTestingPhoto(true);
+    setTelegramStatus(null);
+    setIsError(false);
+    try {
+      const res = await fetch(`${apiUrl}/settings/telegram/test-photo`, { method: "POST" });
+      const data = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+      if (res.ok) {
+        setIsError(false);
+        setTelegramStatus(`📸 ${data.message || "Foto de teste entregue no Telegram com sucesso!"}`);
+      } else {
+        setIsError(true);
+        setTelegramStatus(`⚠️ Falha ao enviar foto: ${data.detail || "Erro interno"}`);
+      }
+    } catch (e: any) {
+      setIsError(true);
+      setTelegramStatus(`⚠️ Erro de conexão: ${e.message}`);
+    } finally {
+      setTestingPhoto(false);
+    }
+  };
+
+  const handleTestVideo = async () => {
+    setTestingVideo(true);
+    setTelegramStatus(null);
+    setIsError(false);
+    try {
+      const res = await fetch(`${apiUrl}/settings/telegram/test-video`, { method: "POST" });
+      const data = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+      if (res.ok) {
+        setIsError(false);
+        setTelegramStatus(`🎥 ${data.message || "Vídeo de teste entregue no Telegram com sucesso!"}`);
+      } else {
+        setIsError(true);
+        setTelegramStatus(`⚠️ Falha ao enviar vídeo: ${data.detail || "Erro interno"}`);
+      }
+    } catch (e: any) {
+      setIsError(true);
+      setTelegramStatus(`⚠️ Erro de conexão: ${e.message}`);
+    } finally {
+      setTestingVideo(false);
+    }
+  };
+
+  const handleTestLogs = async () => {
+    setTestingLogs(true);
+    setTelegramStatus(null);
+    setIsError(false);
+    try {
+      const res = await fetch(`${apiUrl}/settings/telegram/test-logs`, { method: "POST" });
+      const data = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+      if (res.ok) {
+        setIsError(false);
+        setTelegramStatus(`📋 ${data.message || "Relatório de logs enviado para o Telegram!"}`);
+      } else {
+        setIsError(true);
+        setTelegramStatus(`⚠️ Falha ao enviar logs: ${data.detail || "Erro interno"}`);
+      }
+    } catch (e: any) {
+      setIsError(true);
+      setTelegramStatus(`⚠️ Erro de conexão: ${e.message}`);
+    } finally {
+      setTestingLogs(false);
+    }
+  };
+
+  const handleTestStatus = async () => {
+    setTestingStatus(true);
+    setTelegramStatus(null);
+    setIsError(false);
+    try {
+      const res = await fetch(`${apiUrl}/settings/telegram/test-status`, { method: "POST" });
+      const data = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+      if (res.ok) {
+        setIsError(false);
+        setTelegramStatus(`⚡ ${data.message || "Status de hardware enviado para o Telegram!"}`);
+      } else {
+        setIsError(true);
+        setTelegramStatus(`⚠️ Falha ao enviar status: ${data.detail || "Erro interno"}`);
+      }
+    } catch (e: any) {
+      setIsError(true);
+      setTelegramStatus(`⚠️ Erro de conexão: ${e.message}`);
+    } finally {
+      setTestingStatus(false);
+    }
+  };
+
+  const handleSimulateAlert = async () => {
+    setSimulatingAlert(true);
+    setTelegramStatus(null);
+    setIsError(false);
     try {
       const res = await fetch(`${apiUrl}/devices/test-pip`, {
         method: "POST",
@@ -158,12 +253,17 @@ export default function TelegramSettingsPage() {
         body: JSON.stringify({ camera_name: "camera_principal", label: "person" })
       });
       if (res.ok) {
-        alert("Alerta de teste enviado com sucesso!");
+        setIsError(false);
+        setTelegramStatus("🚨 Simulação de intrusão disparada com sucesso! Verifique seu Telegram e TVs pareadas.");
+      } else {
+        setIsError(true);
+        setTelegramStatus("⚠️ Erro ao disparar simulação.");
       }
-    } catch (e) {
-      console.error(e);
+    } catch (e: any) {
+      setIsError(true);
+      setTelegramStatus(`⚠️ Erro: ${e.message}`);
     } finally {
-      setSimulating(false);
+      setSimulatingAlert(false);
     }
   };
 
@@ -369,6 +469,164 @@ export default function TelegramSettingsPage() {
         </div>
 
       </form>
+
+      {/* 3. Central de Testes de Envio Imediato (Telegram) */}
+      <div className="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 space-y-5 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-white">Central de Testes de Envio do Telegram</h2>
+              <p className="text-xs text-slate-400">Valide instantaneamente o recebimento de mídias, vídeos com HUD, logs e relatórios no seu chat</p>
+            </div>
+          </div>
+          <span className="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-[11px] font-mono text-cyan-400 self-start sm:self-auto">
+            MODO TESTE ATIVO
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          
+          {/* 1. Test Photo */}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 hover:border-cyan-500/40 transition-all flex flex-col justify-between space-y-3">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-xs font-bold text-cyan-300">
+                  <Camera className="w-4 h-4 text-cyan-400" />
+                  Foto / Snapshot HUD
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-cyan-950/60 text-cyan-400 border border-cyan-800/50 font-mono">
+                  JPEG HD
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Dispara foto instantânea com marca d&apos;água HUD de segurança e tags inteligentes para o Telegram.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={testingPhoto}
+              onClick={handleTestPhoto}
+              className="w-full py-2.5 px-3 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+            >
+              {testingPhoto ? <Loader2 className="w-4 h-4 animate-spin text-cyan-400" /> : <Camera className="w-4 h-4 text-cyan-400" />}
+              <span>{testingPhoto ? "Enviando Foto..." : "Enviar Foto de Teste"}</span>
+            </button>
+          </div>
+
+          {/* 2. Test Video */}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 hover:border-emerald-500/40 transition-all flex flex-col justify-between space-y-3">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-xs font-bold text-emerald-300">
+                  <Video className="w-4 h-4 text-emerald-400" />
+                  Vídeo de Evento MP4
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/50 font-mono">
+                  H.264 MP4
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Dispara clipe de vídeo gravado com aceleração de hardware e legenda completa no chat do Telegram.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={testingVideo}
+              onClick={handleTestVideo}
+              className="w-full py-2.5 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+            >
+              {testingVideo ? <Loader2 className="w-4 h-4 animate-spin text-emerald-400" /> : <Video className="w-4 h-4 text-emerald-400" />}
+              <span>{testingVideo ? "Enviando Vídeo MP4..." : "Enviar Vídeo de Teste"}</span>
+            </button>
+          </div>
+
+          {/* 3. Test Logs */}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 hover:border-sky-500/40 transition-all flex flex-col justify-between space-y-3">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-xs font-bold text-sky-300">
+                  <FileText className="w-4 h-4 text-sky-400" />
+                  Relatório de Logs Recentes
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-sky-950/60 text-sky-400 border border-sky-800/50 font-mono">
+                  AUDIT 24/7
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Gera e envia resumo formatado com os últimos eventos de auditoria e segurança do Sentinela.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={testingLogs}
+              onClick={handleTestLogs}
+              className="w-full py-2.5 px-3 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/30 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+            >
+              {testingLogs ? <Loader2 className="w-4 h-4 animate-spin text-sky-400" /> : <FileText className="w-4 h-4 text-sky-400" />}
+              <span>{testingLogs ? "Enviando Logs..." : "Enviar Logs ao Chat"}</span>
+            </button>
+          </div>
+
+          {/* 4. Test System Status / Telemetry */}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-3">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-xs font-bold text-amber-300">
+                  <Cpu className="w-4 h-4 text-amber-400" />
+                  Telemetria & Hardware
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-950/60 text-amber-400 border border-amber-800/50 font-mono">
+                  STATUS SYS
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Envia diagnóstico da CPU Jasper Lake, temperatura, RAM, SSD NVMe e taxa de rede ao vivo.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={testingStatus}
+              onClick={handleTestStatus}
+              className="w-full py-2.5 px-3 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
+            >
+              {testingStatus ? <Loader2 className="w-4 h-4 animate-spin text-amber-400" /> : <Activity className="w-4 h-4 text-amber-400" />}
+              <span>{testingStatus ? "Coletando Status..." : "Enviar Status do Servidor"}</span>
+            </button>
+          </div>
+
+          {/* 5. Simulate Full Intrusion Alert */}
+          <div className="p-4 rounded-xl bg-slate-950/80 border border-slate-800/80 hover:border-rose-500/40 transition-all flex flex-col justify-between space-y-3 md:col-span-2 lg:col-span-2">
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-xs font-bold text-rose-400">
+                  <Siren className="w-4 h-4 text-rose-400 animate-pulse" />
+                  Simulação de Alerta de Intrusão (Pessoa Detectada)
+                </span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-rose-950/60 text-rose-400 border border-rose-800/50 font-mono font-bold">
+                  ALTA PRIORIDADE
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-400 leading-relaxed">
+                Dispara o pipeline completo de alarme: aciona alerta sonoro na interface, notificação pop-up PiP nas Smart TVs conectadas e disparo de mídia no Telegram.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={simulatingAlert}
+              onClick={handleSimulateAlert}
+              className="w-full py-2.5 px-4 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-rose-950/50"
+            >
+              {simulatingAlert ? <Loader2 className="w-4 h-4 animate-spin" /> : <BellRing className="w-4 h-4" />}
+              <span>{simulatingAlert ? "Disparando Simulação..." : "Simular Alerta de Intrusão Completo"}</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
 
       {/* 3. Fast Setup Guide Box */}
       <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3">

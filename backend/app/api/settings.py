@@ -184,6 +184,219 @@ async def test_telegram_alert(request: Request, payload: Optional[TelegramTestPa
     return res
 
 
+@router.post("/telegram/test-photo")
+async def test_telegram_photo(request: Request):
+    import io
+    import httpx
+    from PIL import Image, ImageDraw
+    client_ip = request.client.host if request.client else "unknown"
+    if not telegram_vault_service.is_configured:
+        await telegram_vault_service.load_credentials_from_db()
+    if not telegram_vault_service.is_configured:
+        raise HTTPException(status_code=400, detail="Telegram não configurado. Preencha o Bot Token e Chat ID.")
+
+    snapshot_bytes = None
+    # 1. Try from Frigate
+    try:
+        async with httpx.AsyncClient(timeout=4.0) as client:
+            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/camera_principal/latest.jpg")
+            if resp.status_code == 200 and len(resp.content) > 1000:
+                snapshot_bytes = resp.content
+    except Exception:
+        pass
+
+    # 2. Try from go2rtc
+    if not snapshot_bytes:
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                resp = await client.get(f"{settings.GO2RTC_API_URL}/api/frame.jpeg?src=camera_principal")
+                if resp.status_code == 200 and len(resp.content) > 1000:
+                    snapshot_bytes = resp.content
+        except Exception:
+            pass
+
+    # 3. Synthetic frame with HUD overlay
+    if not snapshot_bytes:
+        img = Image.new("RGB", (1280, 720), color=(15, 23, 42))
+        draw = ImageDraw.Draw(img)
+        for x in range(0, 1280, 80):
+            draw.line([(x, 0), (x, 720)], fill=(30, 41, 59), width=1)
+        for y in range(0, 720, 60):
+            draw.line([(0, y), (1280, y)], fill=(30, 41, 59), width=1)
+        
+        draw.rectangle([(400, 160), (880, 620)], outline=(6, 182, 212), width=4)
+        draw.rectangle([(400, 120), (660, 160)], fill=(6, 182, 212))
+        draw.text((410, 130), "TESTE: PESSOA DETECTADA (97%)", fill=(0, 0, 0))
+
+        buf = io.BytesIO()
+        img.save(buf, format="JPEG", quality=90)
+        snapshot_bytes = buf.getvalue()
+
+    ok = await telegram_vault_service.send_alert_photo(
+        image_bytes=snapshot_bytes,
+        camera_name="camera_principal",
+        label="person",
+        zone="Entrada Principal",
+        score=0.97,
+        friendly_name="Câmera de Teste"
+    )
+
+    await audit_service.log(
+        action="TELEGRAM_PHOTO_TEST",
+        module="TELEGRAM",
+        severity="SUCCESS" if ok else "WARNING",
+        details="Teste de envio de Foto/Snapshot disparado para o Telegram.",
+        client_ip=client_ip
+    )
+
+    if ok:
+        return {"status": "success", "message": "📸 Foto de teste enviada com sucesso para o Telegram!"}
+    else:
+        raise HTTPException(status_code=500, detail="Falha ao enviar foto para o Telegram.")
+
+
+@router.post("/telegram/test-video")
+async def test_telegram_video(request: Request):
+    import os
+    import httpx
+    import subprocess
+    client_ip = request.client.host if request.client else "unknown"
+    if not telegram_vault_service.is_configured:
+        await telegram_vault_service.load_credentials_from_db()
+    if not telegram_vault_service.is_configured:
+        raise HTTPException(status_code=400, detail="Telegram não configurado.")
+
+    video_bytes = None
+    # 1. Try from Frigate API
+    try:
+        async with httpx.AsyncClient(timeout=6.0) as client:
+            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/camera_principal/latest.mp4")
+            if resp.status_code == 200 and len(resp.content) > 5000:
+                video_bytes = resp.content
+    except Exception:
+        pass
+
+    # 2. Try recordings on disk
+    if not video_bytes:
+        storage_dir = "/media/frigate/recordings"
+        if os.path.exists(storage_dir):
+            for root, _, files in os.walk(storage_dir):
+                for file in files:
+                    if file.endswith(".mp4"):
+                        fp = os.path.join(root, file)
+                        try:
+                            if os.path.getsize(fp) > 5000:
+                                with open(fp, "rb") as vf:
+                                    video_bytes = vf.read()
+                                break
+                        except Exception:
+                            pass
+                if video_bytes:
+                    break
+
+    # 3. Synthetic sample video via ffmpeg
+    if not video_bytes:
+        try:
+            cmd = [
+                "ffmpeg", "-y", "-f", "lavfi",
+                "-i", "testsrc=size=640x360:rate=15",
+                "-t", "3",
+                "-pix_fmt", "yuv420p",
+                "-c:v", "libx264",
+                "-f", "mp4",
+                "-"
+            ]
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=8)
+            if proc.returncode == 0 and len(proc.stdout) > 1000:
+                video_bytes = proc.stdout
+        except Exception:
+            pass
+
+    if not video_bytes:
+        raise HTTPException(status_code=404, detail="Nenhum vídeo disponível no momento. O Frigate ainda está gerando as primeiras gravações.")
+
+    ok = await telegram_vault_service.send_alert_video(
+        video_bytes=video_bytes,
+        camera_name="camera_principal",
+        label="person",
+        duration_s=15.0,
+        score=0.95,
+        friendly_name="Câmera de Teste"
+    )
+
+    await audit_service.log(
+        action="TELEGRAM_VIDEO_TEST",
+        module="TELEGRAM",
+        severity="SUCCESS" if ok else "WARNING",
+        details="Teste de envio de Vídeo MP4 disparado para o Telegram.",
+        client_ip=client_ip
+    )
+
+    if ok:
+        return {"status": "success", "message": "🎥 Vídeo MP4 de teste entregue com sucesso no Telegram!"}
+    else:
+        raise HTTPException(status_code=500, detail="Falha ao enviar vídeo MP4 para o Telegram.")
+
+
+@router.post("/telegram/test-logs")
+async def test_telegram_logs(request: Request):
+    client_ip = request.client.host if request.client else "unknown"
+    if not telegram_vault_service.is_configured:
+        await telegram_vault_service.load_credentials_from_db()
+    if not telegram_vault_service.is_configured:
+        raise HTTPException(status_code=400, detail="Telegram não configurado.")
+
+    logs = await audit_service.get_logs(limit=10)
+    lines = ["📋 <b>SENTINELA — AUDITORIA DE LOGS RECENTES</b>\n━━━━━━━━━━━━━━━━━━━━"]
+    for l in logs[:8]:
+        sev = l.severity
+        icon = "✅" if sev == "SUCCESS" else "⚠️" if sev == "WARNING" else "🚨" if sev == "ERROR" else "ℹ️"
+        lines.append(f"{icon} <code>[{l.created_at[:19]}]</code> [{l.module}] <b>{l.action}</b>: {l.details}")
+    lines.append("━━━━━━━━━━━━━━━━━━━━\n🔒 <i>Sentinela Frigate Pro System</i>")
+
+    text = "\n".join(lines)
+    ok = await telegram_vault_service.send_message(text)
+
+    await audit_service.log(
+        action="TELEGRAM_LOGS_TEST",
+        module="TELEGRAM",
+        severity="SUCCESS" if ok else "WARNING",
+        details="Relatório de logs enviado para o Telegram.",
+        client_ip=client_ip
+    )
+
+    if ok:
+        return {"status": "success", "message": "📋 Relatório de logs enviado com sucesso para o Telegram!"}
+    else:
+        raise HTTPException(status_code=500, detail="Falha ao enviar logs para o Telegram.")
+
+
+@router.post("/telegram/test-status")
+async def test_telegram_status(request: Request):
+    client_ip = request.client.host if request.client else "unknown"
+    if not telegram_vault_service.is_configured:
+        await telegram_vault_service.load_credentials_from_db()
+    if not telegram_vault_service.is_configured:
+        raise HTTPException(status_code=400, detail="Telegram não configurado.")
+
+    status_text = await telegram_vault_service.get_system_status_text()
+    ok = await telegram_vault_service.send_message(status_text)
+
+    await audit_service.log(
+        action="TELEGRAM_STATUS_TEST",
+        module="TELEGRAM",
+        severity="SUCCESS" if ok else "WARNING",
+        details="Diagnóstico de telemetria enviado para o Telegram.",
+        client_ip=client_ip
+    )
+
+    if ok:
+        return {"status": "success", "message": "⚡ Diagnóstico de hardware enviado com sucesso para o Telegram!"}
+    else:
+        raise HTTPException(status_code=500, detail="Falha ao enviar diagnóstico para o Telegram.")
+
+
+
 
 
 @router.get("/dnd")
