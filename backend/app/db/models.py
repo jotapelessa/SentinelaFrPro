@@ -63,3 +63,15 @@ class SystemSetting(Base):
     key = Column(String(64), primary_key=True, index=True)
     value = Column(Text, nullable=True)
     updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+
+class AuditLog(Base):
+    __tablename__ = "audit_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    action = Column(String(64), index=True, nullable=False) # e.g. CONFIG_UPDATE, TELEGRAM_ALERT, FRIGATE_RETAIN, ZONE_EDIT
+    module = Column(String(32), index=True, default="SYSTEM") # CAMERA, TELEGRAM, PIP, FRIGATE, SETTINGS
+    severity = Column(String(16), default="INFO") # INFO, WARNING, ERROR, SUCCESS
+    details = Column(Text, nullable=True)
+    client_ip = Column(String(64), nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+

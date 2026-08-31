@@ -38,11 +38,27 @@ export interface SecurityEvent {
   score?: number;
   top_score?: number;
   zone?: string;
+  zones?: string[];
   timestamp: string;
   snapshot_url?: string;
+  snapshot_clean_url?: string;
   clip_url?: string;
   has_clip?: boolean;
+  has_snapshot?: boolean;
+  retained?: boolean;
+  data?: Record<string, any>;
 }
+
+export interface AuditLogItem {
+  id: number;
+  action: string;
+  module: string;
+  severity: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+  details?: string;
+  client_ip?: string;
+  created_at: string;
+}
+
 
 
 export interface Camera {

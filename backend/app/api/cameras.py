@@ -1,11 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
+import logging
 from app.db.session import get_db
 from app.db.models import Camera
+from app.services.audit_service import audit_service
 
+logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/cameras", tags=["Cameras"])
 
 class CameraCreate(BaseModel):
@@ -44,7 +47,7 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
     return cameras
 
 @router.post("/")
-async def add_camera(cam: CameraCreate, db: AsyncSession = Depends(get_db)):
+async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Depends(get_db)):
     db_cam = Camera(
         name=cam.name,
         friendly_name=cam.friendly_name or cam.name,
@@ -57,7 +60,15 @@ async def add_camera(cam: CameraCreate, db: AsyncSession = Depends(get_db)):
     db.add(db_cam)
     await db.commit()
     await db.refresh(db_cam)
+    await audit_service.log(
+        action="CAMERA_ADDED",
+        module="CAMERA",
+        severity="SUCCESS",
+        details=f"Nova câmera cadastrada: {db_cam.name} ({db_cam.ip_address})",
+        client_ip=request.client.host if request.client else "unknown"
+    )
     return db_cam
+
 
 class CameraUpdate(BaseModel):
     friendly_name: Optional[str] = None
@@ -79,7 +90,7 @@ class CameraUpdate(BaseModel):
     cooldown_seconds: Optional[int] = None
 
 @router.patch("/{camera_id}")
-async def update_camera(camera_id: str, update: CameraUpdate, db: AsyncSession = Depends(get_db)):
+async def update_camera(camera_id: str, update: CameraUpdate, request: Request, db: AsyncSession = Depends(get_db)):
     cam = None
     if camera_id.isdigit():
         stmt = select(Camera).where(Camera.id == int(camera_id))
@@ -105,10 +116,17 @@ async def update_camera(camera_id: str, update: CameraUpdate, db: AsyncSession =
 
     await db.commit()
     await db.refresh(cam)
+    await audit_service.log(
+        action="CAMERA_UPDATED",
+        module="CAMERA",
+        severity="INFO",
+        details=f"Parâmetros da câmera {cam.name} alterados ({', '.join(update_data.keys())})",
+        client_ip=request.client.host if request.client else "unknown"
+    )
     return cam
 
 @router.delete("/{camera_id}")
-async def delete_camera(camera_id: str, db: AsyncSession = Depends(get_db)):
+async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):
     cam = None
     if camera_id.isdigit():
         stmt = select(Camera).where(Camera.id == int(camera_id))
@@ -123,9 +141,18 @@ async def delete_camera(camera_id: str, db: AsyncSession = Depends(get_db)):
     if not cam:
         raise HTTPException(status_code=404, detail="Camera not found")
 
+    cam_name = cam.name
     await db.delete(cam)
     await db.commit()
+    await audit_service.log(
+        action="CAMERA_DELETED",
+        module="CAMERA",
+        severity="WARNING",
+        details=f"Câmera {cam_name} removida do Sentinela.",
+        client_ip=request.client.host if request.client else "unknown"
+    )
     return {"status": "deleted", "id": camera_id}
+
 
 class FrigateZonesPayload(BaseModel):
     zones: Optional[Dict[str, Any]] = None
@@ -277,12 +304,20 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
         except Exception as e:
             logger.warning(f"File save failed: {e}")
 
+    await audit_service.log(
+        action="ZONES_UPDATED",
+        module="FRIGATE",
+        severity="SUCCESS",
+        details=f"Zonas e Máscaras da câmera {cam_name} atualizadas e sincronizadas com Frigate NVR."
+    )
+
     return {
         "status": "saved",
         "camera": cam_name,
         "saved_via_api": saved_via_api,
         "message": "Zonas e Máscaras gravadas com sucesso no Frigate NVR!"
     }
+
 
 
 
