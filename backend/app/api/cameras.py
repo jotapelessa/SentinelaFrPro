@@ -681,6 +681,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
     """
     Sanitizes Frigate 0.17 configuration to strictly satisfy Pydantic models.
     Guarantees every camera has valid ffmpeg.inputs and detect blocks, preventing KeyError: 'ffmpeg'.
+    Resolves any invalid go2rtc stream aliases.
     """
     if not isinstance(cfg, dict):
         cfg = {}
@@ -690,6 +691,27 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         cfg["go2rtc"] = {}
     if "streams" not in cfg["go2rtc"] or not isinstance(cfg["go2rtc"]["streams"], dict):
         cfg["go2rtc"]["streams"] = {}
+
+    # 0. Sanitize go2rtc stream definitions (resolve bare stream aliases)
+    for s_name, s_val in list(cfg["go2rtc"]["streams"].items()):
+        if isinstance(s_val, str) and not s_val.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
+            target = s_val.strip()
+            if target in cfg["go2rtc"]["streams"] and target != s_name and isinstance(cfg["go2rtc"]["streams"][target], list):
+                cfg["go2rtc"]["streams"][s_name] = cfg["go2rtc"]["streams"][target]
+            else:
+                cfg["go2rtc"]["streams"][s_name] = [f"rtsp://127.0.0.1:8554/{target}"]
+        elif isinstance(s_val, list):
+            new_list = []
+            for item in s_val:
+                if isinstance(item, str) and not item.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
+                    target = item.strip()
+                    if target in cfg["go2rtc"]["streams"] and target != s_name and isinstance(cfg["go2rtc"]["streams"][target], list):
+                        new_list.extend(cfg["go2rtc"]["streams"][target])
+                    else:
+                        new_list.append(f"rtsp://127.0.0.1:8554/{target}")
+                else:
+                    new_list.append(item)
+            cfg["go2rtc"]["streams"][s_name] = new_list
 
     for cam_name, cam_cfg in list(cfg["cameras"].items()):
         if not isinstance(cam_cfg, dict):

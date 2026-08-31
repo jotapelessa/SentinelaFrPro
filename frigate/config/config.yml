@@ -60,7 +60,9 @@ go2rtc:
       - rtsp://192.168.1.6:8554/
       - ffmpeg:rtsp://192.168.1.6:8554/stream#video=h264
     cam_192_168_1_6:
-      - camera_principal
+      - rtsp://192.168.1.6:8554/stream#transport=tcp
+      - rtsp://192.168.1.6:8554/live#transport=tcp
+      - rtsp://192.168.1.6:8554/
   webrtc:
     candidates:
       - 192.168.1.252:8555
