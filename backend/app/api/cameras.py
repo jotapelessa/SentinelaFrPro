@@ -34,7 +34,7 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
         real_cam = Camera(
             name="camera_principal",
             friendly_name="Câmera Principal (IP 192.168.1.6)",
-            rtsp_main="rtsp://192.168.1.6:8554/stream",
+            rtsp_main="rtsp://192.168.1.6:554/stream",
             ip_address="192.168.1.6",
             enabled=True,
             onvif_port=80
@@ -137,7 +137,7 @@ class RtspTestPayload(BaseModel):
 
 @router.post("/test-rtsp")
 async def test_rtsp_connection(payload: RtspTestPayload):
-    """Tests TCP connectivity to the camera's RTSP endpoint."""
+    """Tests TCP connectivity to the camera's RTSP endpoint with predictive port scanning."""
     import re
     import asyncio
 
@@ -160,20 +160,260 @@ async def test_rtsp_connection(payload: RtspTestPayload):
             "port": port,
             "message": f"Conexão bem-sucedida! Porta RTSP {port} em {host} está aberta e respondendo."
         }
-    except asyncio.TimeoutError:
-        return {
-            "success": False,
-            "host": host,
-            "port": port,
-            "message": f"Timeout ao conectar em {host}:{port}. Verifique se a câmera está ligada e no mesmo IP."
-        }
     except Exception as e:
+        # Predictive Port Scan: if user typed a port other than 554 (e.g. 8554), check if standard 554 is open!
+        suggested_url = None
+        suggested_port = None
+        if port != 554:
+            try:
+                fut554 = asyncio.open_connection(host, 554)
+                r554, w554 = await asyncio.wait_for(fut554, timeout=1.5)
+                w554.close()
+                await w554.wait_closed()
+                suggested_port = 554
+                suggested_url = re.sub(r":\d+", ":554", rtsp_url)
+            except Exception:
+                pass
+
+        if suggested_port:
+            return {
+                "success": False,
+                "host": host,
+                "port": port,
+                "suggested_port": suggested_port,
+                "suggested_url": suggested_url,
+                "message": f"A porta {port} recusou conexão em {host}. No entanto, a porta padrão 554 de câmeras IP está ABERTA e respondendo!"
+            }
+
         return {
             "success": False,
             "host": host,
             "port": port,
             "message": f"Falha de conexão com {host}:{port}: {str(e)}"
         }
+
+@router.get("/{camera_id}/diagnostics")
+async def get_camera_diagnostics(camera_id: str, db: AsyncSession = Depends(get_db)):
+    """Aggregates real-time Frigate stats, go2rtc stream health, filtered ffmpeg/watchdog logs and SQLite audit trail."""
+    import httpx
+    from app.core.config import settings
+    from app.db.models import AuditLog
+
+    cam_name = camera_id if not camera_id.isdigit() else "camera_principal"
+    
+    # Fetch camera from DB
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+
+    if cam:
+        cam_name = cam.name
+
+    # 1. Fetch Frigate Stats & Version
+    frigate_stats = {}
+    frigate_online = False
+    camera_fps = 0.0
+    detection_fps = 0.0
+    process_fps = 0.0
+    pid = None
+    is_fallback = False
+
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            stats_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/stats")
+            if stats_resp.status_code == 200:
+                frigate_online = True
+                frigate_stats = stats_resp.json()
+                cams_stats = frigate_stats.get("cameras", {})
+                cam_stat = cams_stats.get(cam_name, {})
+                camera_fps = cam_stat.get("camera_fps", 0.0)
+                detection_fps = cam_stat.get("detection_fps", 0.0)
+                process_fps = cam_stat.get("process_fps", 0.0)
+                pid = cam_stat.get("pid")
+    except Exception:
+        pass
+
+    # 2. Fetch go2rtc Stream Info
+    go2rtc_info = {}
+    go2rtc_online = False
+    producers_count = 0
+    consumers_count = 0
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            g_resp = await client.get("http://frigate:1984/api/streams")
+            if g_resp.status_code == 200:
+                go2rtc_online = True
+                g_data = g_resp.json()
+                stream_data = g_data.get(cam_name, {})
+                if isinstance(stream_data, dict):
+                    producers = stream_data.get("producers", [])
+                    consumers = stream_data.get("consumers", [])
+                    producers_count = len(producers) if isinstance(producers, list) else 0
+                    consumers_count = len(consumers) if isinstance(consumers, list) else 0
+                    go2rtc_info = stream_data
+                    for p in producers:
+                        if isinstance(p, dict) and "testsrc" in str(p.get("url", "")):
+                            is_fallback = True
+    except Exception:
+        pass
+
+    # 3. Fetch Recent Frigate / go2rtc logs filtered for this camera
+    filtered_logs = []
+    try:
+        async with httpx.AsyncClient(timeout=4.0) as client:
+            logs_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/logs/frigate")
+            if logs_resp.status_code == 200:
+                data = logs_resp.json()
+                raw_lines = data.get("lines", []) if isinstance(data, dict) else str(logs_resp.text).splitlines()
+                for line in raw_lines:
+                    if any(k in str(line).lower() for k in [cam_name.lower(), "ffmpeg", "watchdog", "video", "rtsp"]):
+                        filtered_logs.append(str(line))
+    except Exception:
+        pass
+
+    if not filtered_logs:
+        filtered_logs = [
+            f"[{cam_name}] Status do pipeline: {'🟢 Online' if camera_fps > 0 else '⚠️ Aguardando quadros'}",
+            f"[{cam_name}] Detecção de objetos: {'Ativa' if cam and cam.enabled else 'Desativada'}",
+            f"[{cam_name}] Endereço RTSP: {cam.rtsp_main if cam else 'N/A'}"
+        ]
+
+    # 4. Fetch SQLite Audit Logs for this camera
+    stmt_audit = select(AuditLog).where(
+        (AuditLog.module.in_(["CAMERA", "FRIGATE"])) |
+        (AuditLog.details.ilike(f"%{cam_name}%"))
+    ).order_by(AuditLog.id.desc()).limit(15)
+    
+    res_audit = await db.execute(stmt_audit)
+    audit_entries = res_audit.scalars().all()
+    audit_history = [
+        {
+            "id": a.id,
+            "action": a.action,
+            "severity": a.severity,
+            "details": a.details,
+            "created_at": a.created_at.strftime("%d/%m/%Y %H:%M:%S") if a.created_at else "",
+            "client_ip": a.client_ip
+        }
+        for a in audit_entries
+    ]
+
+    return {
+        "camera_name": cam_name,
+        "friendly_name": cam.friendly_name if cam else cam_name,
+        "enabled": cam.enabled if cam else True,
+        "is_fallback": is_fallback,
+        "health": {
+            "frigate_online": frigate_online,
+            "go2rtc_online": go2rtc_online,
+            "status": "online" if camera_fps > 0 else ("fallback" if is_fallback else "offline"),
+            "camera_fps": round(camera_fps, 1),
+            "detection_fps": round(detection_fps, 1),
+            "process_fps": round(process_fps, 1),
+            "pid": pid,
+            "producers": producers_count,
+            "consumers": consumers_count
+        },
+        "logs": filtered_logs[-50:],
+        "audit_history": audit_history
+    }
+
+@router.post("/{camera_id}/toggle-fallback")
+async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):
+    """Toggles virtual SMPTE test pattern stream vs real RTSP stream in Frigate configuration."""
+    import os
+    import yaml
+    import httpx
+    from app.core.config import settings
+
+    cam_name = camera_id if not camera_id.isdigit() else "camera_principal"
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+
+    config_path = get_frigate_config_path()
+    cfg = {}
+    try:
+        async with httpx.AsyncClient(timeout=4.0) as client:
+            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
+            if resp.status_code == 200:
+                cfg = yaml.safe_load(resp.text) or {}
+    except Exception:
+        pass
+
+    if not cfg and os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f) or {}
+        except Exception:
+            pass
+
+    if "go2rtc" not in cfg:
+        cfg["go2rtc"] = {}
+    if "streams" not in cfg["go2rtc"]:
+        cfg["go2rtc"]["streams"] = {}
+
+    current_stream = cfg["go2rtc"]["streams"].get(cam_name, [])
+    is_currently_fallback = False
+    if isinstance(current_stream, list) and current_stream:
+        if any("testsrc" in str(s) for s in current_stream):
+            is_currently_fallback = True
+
+    new_fallback_state = not is_currently_fallback
+    test_pattern_url = f"exec:ffmpeg -re -f lavfi -i testsrc=size=1280x720:rate=15 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 1000k -f rtsp rtsp://127.0.0.1:8554/{cam_name}"
+    
+    if new_fallback_state:
+        cfg["go2rtc"]["streams"][cam_name] = [test_pattern_url]
+    else:
+        real_url = cam.rtsp_main if (cam and cam.rtsp_main) else "rtsp://192.168.1.6:554/stream"
+        real_tagged = real_url if ("#" in real_url) else f"{real_url}#transport=tcp"
+        cfg["go2rtc"]["streams"][cam_name] = [real_tagged]
+
+    updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
+
+    try:
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            await client.post(
+                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
+                content=updated_yaml,
+                headers={"Content-Type": "text/plain"}
+            )
+    except Exception as e:
+        logger.warning(f"Error posting config save to Frigate: {e}")
+
+    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
+        try:
+            with open(config_path, "w", encoding="utf-8") as f:
+                f.write(updated_yaml)
+        except Exception as e:
+            pass
+
+    action_desc = "Ativado Stream de Teste Virtual (SMPTE)" if new_fallback_state else "Restaurado Stream RTSP Real"
+    await audit_service.log(
+        action="CAMERA_FALLBACK_TOGGLED",
+        module="CAMERA",
+        severity="INFO",
+        details=f"{action_desc} para a câmera {cam_name}",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+
+    return {
+        "status": "success",
+        "is_fallback": new_fallback_state,
+        "message": f"Modo alterado com sucesso: {action_desc}."
+    }
 
 async def sync_camera_to_frigate(cam: Camera):
     import os

@@ -65,7 +65,7 @@ snapshots:
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:8554/stream#transport=tcp
+      - rtsp://192.168.1.6:554/stream#transport=tcp
   webrtc:
     listen: ":8555"
     candidates:

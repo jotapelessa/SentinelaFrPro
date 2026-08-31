@@ -1,8 +1,12 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Camera } from "@/store/useSentinelaStore";
-import { X, Settings, Wifi, Eye, HardDrive, Bell, Save, Trash2, Check, User, Car, Zap, Shield, Sparkles, Sliders } from "lucide-react";
+import { 
+  X, Settings, Wifi, Eye, HardDrive, Bell, Save, Trash2, Check, 
+  User, Car, Zap, Shield, Sparkles, Sliders, Activity, Terminal, 
+  Copy, RefreshCw, AlertTriangle, Play, Pause, CheckCircle2, History, Search
+} from "lucide-react";
 
 import { ZoneCanvasModal, ZoneItem } from "./ZoneCanvasModal";
 
@@ -13,12 +17,19 @@ interface CameraConfigModalProps {
 }
 
 export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, onClose, onSaved }) => {
-  const [activeTab, setActiveTab] = useState<"conn" | "ai" | "record" | "alerts">("conn");
+  const [activeTab, setActiveTab] = useState<"conn" | "ai" | "record" | "alerts" | "diag">("conn");
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [isZoneModalOpen, setIsZoneModalOpen] = useState(false);
   const [testingRtsp, setTestingRtsp] = useState(false);
-  const [rtspTestResult, setRtspTestResult] = useState<{ success: boolean; message: string } | null>(null);
+  const [rtspTestResult, setRtspTestResult] = useState<{ success: boolean; message: string; suggested_port?: number; suggested_url?: string } | null>(null);
+
+  // Diagnostics State
+  const [loadingDiag, setLoadingDiag] = useState(false);
+  const [diagData, setDiagData] = useState<any>(null);
+  const [togglingFallback, setTogglingFallback] = useState(false);
+  const [copiedLogs, setCopiedLogs] = useState(false);
+  const [logFilter, setLogFilter] = useState("");
 
   // Form State
   const [friendlyName, setFriendlyName] = useState(camera.friendly_name || camera.name);
@@ -27,6 +38,53 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [ipAddress, setIpAddress] = useState(camera.ip_address || "");
   const [onvifPort, setOnvifPort] = useState(camera.onvif_port || 80);
   const [enabled, setEnabled] = useState(camera.enabled ?? true);
+
+  const fetchDiagnostics = async () => {
+    setLoadingDiag(true);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const camId = camera.id || camera.name || "camera_principal";
+      const res = await fetch(`${apiUrl}/cameras/${camId}/diagnostics`);
+      if (res.ok) {
+        const data = await res.json();
+        setDiagData(data);
+      }
+    } catch (err) {
+      console.error("Error fetching diagnostics:", err);
+    } finally {
+      setLoadingDiag(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "diag") {
+      fetchDiagnostics();
+    }
+  }, [activeTab]);
+
+  const handleToggleFallback = async () => {
+    setTogglingFallback(true);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const camId = camera.id || camera.name || "camera_principal";
+      const res = await fetch(`${apiUrl}/cameras/${camId}/toggle-fallback`, { method: "POST" });
+      if (res.ok) {
+        await fetchDiagnostics();
+        onSaved();
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setTogglingFallback(false);
+    }
+  };
+
+  const handleCopyLogs = () => {
+    if (!diagData?.logs?.length) return;
+    navigator.clipboard.writeText(diagData.logs.join("\n"));
+    setCopiedLogs(true);
+    setTimeout(() => setCopiedLogs(false), 2000);
+  };
 
   const handleTestRtsp = async () => {
     if (!rtspMain) return;
@@ -45,6 +103,13 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
       setRtspTestResult({ success: false, message: `Erro ao conectar com API: ${err.message}` });
     } finally {
       setTestingRtsp(false);
+    }
+  };
+
+  const applyPortFix = () => {
+    if (rtspTestResult?.suggested_url) {
+      setRtspMain(rtspTestResult.suggested_url);
+      setRtspTestResult(null);
     }
   };
 
@@ -202,6 +267,17 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
             <Bell className="w-4 h-4" />
             <span>4. Canais de Alerta</span>
           </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("diag")}
+            className={`flex items-center gap-1.5 py-3 px-3 border-b-2 transition-all ${
+              activeTab === "diag" ? "border-cyan-400 text-cyan-300" : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Terminal className="w-4 h-4" />
+            <span>5. Logs & Diagnóstico</span>
+          </button>
         </div>
 
         {/* Form Body */}
@@ -249,7 +325,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   type="text"
                   value={rtspMain}
                   onChange={(e) => setRtspMain(e.target.value)}
-                  placeholder="Ex: rtsp://192.168.1.6:8554/stream ou rtsp://admin:senha@192.168.1.6:554/live/ch0"
+                  placeholder="Ex: rtsp://192.168.1.6:554/stream ou rtsp://admin:senha@192.168.1.6:554/live/ch0"
                   required
                   className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono focus:outline-none focus:border-cyan-500"
                 />
@@ -263,7 +339,22 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                     <span>{rtspTestResult.message}</span>
                   </div>
                 )}
-                <span className="text-[10px] text-slate-500 block mt-1">Usado para gravação de alta definição e visualização ao vivo.</span>
+                {rtspTestResult?.suggested_url && (
+                  <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mt-2">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-400 shrink-0" />
+                      <span className="text-[11px] font-semibold">Porta {rtspTestResult.suggested_port} detectada aberta no IP da câmera!</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={applyPortFix}
+                      className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-bold text-xs flex items-center gap-1 shrink-0 shadow transition-all"
+                    >
+                      <span>✨ Corrigir para Porta 554</span>
+                    </button>
+                  </div>
+                )}
+                <span className="text-[10px] text-slate-500 block mt-1">Usado para gravação de alta definição e detecção com aceleração por hardware Intel Jasper Lake.</span>
               </div>
 
               <div>
@@ -272,7 +363,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   type="text"
                   value={rtspSub}
                   onChange={(e) => setRtspSub(e.target.value)}
-                  placeholder="Ex: rtsp://192.168.1.6:8554/substream"
+                  placeholder="Ex: rtsp://192.168.1.6:554/substream"
                   className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono focus:outline-none focus:border-cyan-500"
                 />
               </div>
@@ -397,8 +488,6 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
             </div>
           )}
 
-
-
           {/* TAB 3: GRAVAÇÃO & RETENÇÃO */}
           {activeTab === "record" && (
             <div className="space-y-4">
@@ -517,6 +606,182 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   <option value={30}>30 segundos</option>
                   <option value={60}>60 segundos</option>
                 </select>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 5: LOGS & DIAGNÓSTICO */}
+          {activeTab === "diag" && (
+            <div className="space-y-4">
+              {/* Health Summary Card */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Activity className="w-4 h-4 text-cyan-400" />
+                    <span className="font-bold text-white text-xs">Saúde do Pipeline em Tempo Real</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={fetchDiagnostics}
+                    disabled={loadingDiag}
+                    className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold flex items-center gap-1 transition-all"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${loadingDiag ? "animate-spin text-cyan-400" : ""}`} />
+                    <span>Atualizar</span>
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 block font-semibold">Estado do Stream</span>
+                    <span className={`text-xs font-black flex items-center gap-1.5 mt-0.5 ${
+                      diagData?.health?.status === "online" 
+                        ? "text-emerald-400" 
+                        : diagData?.health?.status === "fallback" 
+                        ? "text-amber-400" 
+                        : "text-rose-400"
+                    }`}>
+                      <span className="w-2 h-2 rounded-full bg-current animate-pulse" />
+                      {diagData?.health?.status === "online" ? "ONLINE" : diagData?.health?.status === "fallback" ? "FALLBACK VIRTUAL" : "OFFLINE"}
+                    </span>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 block font-semibold">FPS da Câmera</span>
+                    <span className="text-xs font-mono font-bold text-cyan-300 block mt-0.5">
+                      {diagData?.health?.camera_fps ?? 0} fps
+                    </span>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 block font-semibold">FPS de Detecção</span>
+                    <span className="text-xs font-mono font-bold text-purple-300 block mt-0.5">
+                      {diagData?.health?.detection_fps ?? 0} fps
+                    </span>
+                  </div>
+
+                  <div className="p-2.5 rounded-lg bg-slate-900 border border-slate-800">
+                    <span className="text-[10px] text-slate-400 block font-semibold">FFmpeg PID</span>
+                    <span className="text-xs font-mono font-bold text-slate-300 block mt-0.5">
+                      {diagData?.health?.pid ? `#${diagData.health.pid}` : "Inativo"}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Virtual Fallback Mode Switch */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-slate-950 border border-amber-500/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <Sparkles className="w-4 h-4 text-amber-400" />
+                    <strong className="text-amber-300 text-xs font-bold">Modo Stream Virtual de Teste (SMPTE)</strong>
+                  </div>
+                  <p className="text-[10px] text-slate-400 mt-0.5">
+                    Gera um stream sintético 720p diretamente no go2rtc para evitar loops de 404 e testar IA quando a câmera estiver fora do ar.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleToggleFallback}
+                  disabled={togglingFallback}
+                  className={`px-3.5 py-2 rounded-xl font-bold text-xs shrink-0 shadow-lg flex items-center gap-1.5 transition-all ${
+                    diagData?.is_fallback 
+                      ? "bg-emerald-500 hover:bg-emerald-400 text-obsidian-950 shadow-emerald-500/20" 
+                      : "bg-amber-500 hover:bg-amber-400 text-obsidian-950 shadow-amber-500/20"
+                  }`}
+                >
+                  {togglingFallback ? (
+                    <span className="animate-spin">⏳</span>
+                  ) : diagData?.is_fallback ? (
+                    <Play className="w-3.5 h-3.5" />
+                  ) : (
+                    <Zap className="w-3.5 h-3.5" />
+                  )}
+                  <span>
+                    {togglingFallback 
+                      ? "Alternando..." 
+                      : diagData?.is_fallback 
+                      ? "Restaurar RTSP Real" 
+                      : "Ativar Stream Virtual"}
+                  </span>
+                </button>
+              </div>
+
+              {/* Live Log Terminal */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Terminal className="w-4 h-4 text-slate-400" />
+                    <span className="font-bold text-slate-200 text-xs">Logs Recentes do Frigate / FFmpeg</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="relative">
+                      <Search className="w-3 h-3 text-slate-400 absolute left-2 top-2" />
+                      <input
+                        type="text"
+                        placeholder="Filtrar logs..."
+                        value={logFilter}
+                        onChange={(e) => setLogFilter(e.target.value)}
+                        className="pl-6 pr-2 py-1 rounded bg-slate-800 border border-slate-700 text-white text-[10px] focus:outline-none focus:border-cyan-500 w-28 sm:w-36"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={handleCopyLogs}
+                      className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-bold flex items-center gap-1 transition-all"
+                    >
+                      <Copy className="w-3 h-3 text-cyan-400" />
+                      <span>{copiedLogs ? "Copiado!" : "Copiar"}</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 font-mono text-[10px] max-h-48 overflow-y-auto space-y-1 select-text">
+                  {diagData?.logs?.length ? (
+                    diagData.logs
+                      .filter((l: string) => !logFilter || l.toLowerCase().includes(logFilter.toLowerCase()))
+                      .map((log: string, idx: number) => {
+                        const isError = log.includes("ERROR") || log.includes("404") || log.includes("refused");
+                        const isWarn = log.includes("WARNING") || log.includes("WRN");
+                        const isSuccess = log.includes("INFO") || log.includes("OK") || log.includes("started");
+                        return (
+                          <div 
+                            key={idx} 
+                            className={`leading-relaxed break-all ${
+                              isError ? "text-rose-400" : isWarn ? "text-amber-300" : isSuccess ? "text-slate-300" : "text-slate-400"
+                            }`}
+                          >
+                            {log}
+                          </div>
+                        );
+                      })
+                  ) : (
+                    <div className="text-slate-500 py-4 text-center">Nenhum registro recente encontrado para esta câmera.</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Audit History Timeline */}
+              <div className="space-y-2">
+                <div className="flex items-center gap-2">
+                  <History className="w-4 h-4 text-slate-400" />
+                  <span className="font-bold text-slate-200 text-xs">Trilha de Auditoria & Alterações</span>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2 max-h-36 overflow-y-auto">
+                  {diagData?.audit_history?.length ? (
+                    diagData.audit_history.map((audit: any) => (
+                      <div key={audit.id} className="flex items-start justify-between text-[10px] border-b border-slate-800/60 pb-1.5 last:border-0 last:pb-0">
+                        <div className="space-y-0.5">
+                          <span className="font-bold text-cyan-300 block">{audit.action}</span>
+                          <span className="text-slate-400">{audit.details}</span>
+                        </div>
+                        <span className="text-slate-500 font-mono shrink-0 ml-2">{audit.created_at}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-slate-500 text-[10px] text-center py-2">Nenhuma alteração registrada recentemente.</div>
+                  )}
+                </div>
               </div>
             </div>
           )}
