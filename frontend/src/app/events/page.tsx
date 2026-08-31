@@ -29,6 +29,20 @@ export default function EventsPage() {
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
 
+  const [syncingFrigate, setSyncingFrigate] = useState<boolean>(false);
+
+  const handleSyncFrigateEvents = async () => {
+    setSyncingFrigate(true);
+    try {
+      await fetch(`${apiUrl}/events/sync-frigate`, { method: "POST" });
+      await fetchEvents();
+    } catch (e) {
+      console.error("Erro ao sincronizar eventos com o Frigate:", e);
+    } finally {
+      setSyncingFrigate(false);
+    }
+  };
+
   // Fetch Frigate events directly
   const fetchEvents = async () => {
     setLoadingEvents(true);
@@ -133,9 +147,10 @@ export default function EventsPage() {
     }
   };
 
+  // Export CSV
   const exportCSV = () => {
     if (events.length === 0) return;
-    const headers = ["ID", "Camera", "Objeto", "Confianca", "Data_Hora", "Zona", "Retido_NVMe"];
+    const headers = ["ID", "Camera", "Tipo_Objeto", "Confianca", "Data_Hora", "Zona", "Retido_NVMe"];
     const rows = events.map((ev, i) => [
       ev.id || i + 1,
       ev.camera,
@@ -284,7 +299,17 @@ export default function EventsPage() {
             </div>
 
             {/* Selects & Export Controls */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
+              <button
+                onClick={handleSyncFrigateEvents}
+                disabled={syncingFrigate}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all disabled:opacity-50"
+                title="Sincronizar eventos históricos diretamente do Frigate NVR"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${syncingFrigate ? "animate-spin text-cyan-400" : ""}`} />
+                <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Frigate"}</span>
+              </button>
+
               <select
                 value={filterCamera}
                 onChange={(e) => setFilterCamera(e.target.value)}
@@ -317,12 +342,22 @@ export default function EventsPage() {
 
           {/* Events Grid */}
           {events.length === 0 ? (
-            <div className="p-16 text-center glass-panel rounded-2xl border border-dashed border-slate-800 space-y-3">
+            <div className="p-16 text-center glass-panel rounded-2xl border border-dashed border-slate-800 space-y-4">
               <ShieldAlert className="w-12 h-12 text-slate-600 mx-auto" />
-              <h3 className="text-base font-bold text-slate-300">Nenhum evento registrado</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                Assim que pessoas ou veículos cruzarem os perímetros das câmeras, as evidências e clipes serão exibidos aqui.
-              </p>
+              <div className="space-y-1">
+                <h3 className="text-base font-bold text-slate-300">Nenhum evento registrado</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Assim que pessoas ou veículos cruzarem os perímetros das câmeras, as evidências e clipes serão exibidos aqui.
+                </p>
+              </div>
+              <button
+                onClick={handleSyncFrigateEvents}
+                disabled={syncingFrigate}
+                className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 inline-flex items-center gap-2 transition-all disabled:opacity-50"
+              >
+                <RefreshCw className={`w-4 h-4 ${syncingFrigate ? "animate-spin" : ""}`} />
+                <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Histórico do Frigate"}</span>
+              </button>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">

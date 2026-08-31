@@ -34,18 +34,24 @@ export interface SecurityEvent {
   event_id?: string;
   frigate_event_id?: string;
   camera: string;
+  friendly_name?: string;
   label: string;
+  sub_label?: string;
   score?: number;
   top_score?: number;
   zone?: string;
   zones?: string[];
   timestamp: string;
+  start_time?: number;
+  end_time?: number;
+  duration?: number;
   snapshot_url?: string;
   snapshot_clean_url?: string;
   clip_url?: string;
   has_clip?: boolean;
   has_snapshot?: boolean;
   retained?: boolean;
+  box?: number[];
   data?: Record<string, any>;
 }
 
