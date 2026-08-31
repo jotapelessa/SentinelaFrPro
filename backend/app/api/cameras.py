@@ -852,6 +852,22 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                     if "retain" in cam_cfg["record"]["events"] and isinstance(cam_cfg["record"]["events"]["retain"], (int, float)):
                         del cam_cfg["record"]["events"]["retain"]
 
+        # 5. Guarantee snapshots block
+        if "snapshots" not in cam_cfg or not isinstance(cam_cfg["snapshots"], dict):
+            cam_cfg["snapshots"] = {
+                "enabled": True,
+                "bounding_box": True
+            }
+
+        # 6. Guarantee review alerts block for zones
+        if "zones" in cam_cfg and isinstance(cam_cfg["zones"], dict) and cam_cfg["zones"]:
+            if "review" not in cam_cfg or not isinstance(cam_cfg["review"], dict):
+                cam_cfg["review"] = {}
+            if "alerts" not in cam_cfg["review"] or not isinstance(cam_cfg["review"]["alerts"], dict):
+                cam_cfg["review"]["alerts"] = {}
+            if "required_zones" not in cam_cfg["review"]["alerts"]:
+                cam_cfg["review"]["alerts"]["required_zones"] = list(cam_cfg["zones"].keys())
+
     return cfg
 
 async def sync_camera_to_frigate(cam: Camera):
