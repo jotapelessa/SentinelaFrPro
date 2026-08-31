@@ -188,3 +188,45 @@ async def export_backup(db: AsyncSession = Depends(get_db)):
         "dnd_enabled": pip_gateway_service._dnd_enabled
     }
 
+@router.get("/backup/db")
+async def download_database_file():
+    """Returns the sentinela.db SQLite binary file directly as a download."""
+    import os
+    from fastapi.responses import FileResponse
+    db_paths = ["/app/data/sentinela.db", "./data/sentinela.db", "data/sentinela.db"]
+    for p in db_paths:
+        if os.path.exists(p):
+            return FileResponse(
+                path=p,
+                filename="sentinela.db",
+                media_type="application/x-sqlite3"
+            )
+    raise HTTPException(status_code=404, detail="Banco de dados sentinela.db não encontrado no servidor.")
+
+@router.post("/backup/telegram")
+async def dispatch_backup_to_telegram():
+    """Dispatches the database sentinela.db directly to the configured Telegram chat."""
+    import os
+    import datetime
+    db_paths = ["/app/data/sentinela.db", "./data/sentinela.db", "data/sentinela.db"]
+    found_path = None
+    for p in db_paths:
+        if os.path.exists(p):
+            found_path = p
+            break
+    if not found_path:
+        raise HTTPException(status_code=404, detail="Banco de dados SQLite sentinela.db não encontrado.")
+
+    with open(found_path, "rb") as f:
+        content = f.read()
+
+    now_tag = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+    filename = f"sentinela_backup_{now_tag}.db"
+    caption = f"💾 *Backup do Banco de Dados Sentinela*\nArquivo: `{filename}` ({len(content) // 1024} KB)\nData: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+    
+    success = await telegram_vault_service.send_document(content, filename=filename, caption=caption)
+    if success:
+        return {"status": "success", "message": "Backup enviado com sucesso para o seu Telegram!"}
+    raise HTTPException(status_code=500, detail="Falha ao enviar documento para o Telegram. Verifique Token e Chat ID.")
+
+

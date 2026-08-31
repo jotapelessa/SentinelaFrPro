@@ -144,7 +144,9 @@ export const Header: React.FC = () => {
           <nav className="flex items-center gap-1 bg-obsidian-900/90 p-1 rounded-lg border border-slate-800">
             {navItems.map((item) => {
               const Icon = item.icon;
-              const isActive = pathname === item.href;
+              const isActive = item.href === "/"
+                ? (pathname === "/" || pathname === "/cameras")
+                : pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.href}
@@ -160,6 +162,7 @@ export const Header: React.FC = () => {
                 </Link>
               );
             })}
+
           </nav>
         </div>
 
