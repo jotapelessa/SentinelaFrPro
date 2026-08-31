@@ -66,22 +66,22 @@ go2rtc:
   streams:
     camera_principal:
       - rtsp://192.168.1.6:8554/stream#transport=tcp
+      - rtsp://192.168.1.6:8554/stream
     cam_192_168_1_6:
       - rtsp://192.168.1.6:8554/stream#transport=tcp
+      - rtsp://192.168.1.6:8554/stream
   webrtc:
-    listen: ":8555"
     candidates:
       - 192.168.1.252:8555
       - stun:8555
-
 
 # Câmeras Ativas
 cameras:
   camera_principal:
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream
+        - path: rtsp://192.168.1.6:8554/stream
+          input_args: preset-rtsp-generic
           roles:
             - detect
             - record
@@ -103,8 +103,8 @@ cameras:
   cam_192_168_1_6:
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/cam_192_168_1_6
-          input_args: preset-rtsp-restream
+        - path: rtsp://192.168.1.6:8554/stream
+          input_args: preset-rtsp-generic
           roles:
             - detect
             - record
@@ -115,4 +115,5 @@ cameras:
       fps: 5
     live:
       stream_name: cam_192_168_1_6
+
 
