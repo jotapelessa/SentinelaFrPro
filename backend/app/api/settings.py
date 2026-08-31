@@ -117,8 +117,8 @@ class TelegramTestPayload(BaseModel):
     chat_id: Optional[str] = None
 
 @router.post("/telegram/test")
-async def test_telegram_alert(payload: Optional[TelegramTestPayload] = None, request: Optional[Request] = None):
-    client_ip = request.client.host if request and request.client else "unknown"
+async def test_telegram_alert(request: Request, payload: Optional[TelegramTestPayload] = None):
+    client_ip = request.client.host if request.client else "unknown"
     if payload and payload.bot_token and payload.chat_id:
         # Temporary test with provided values
         orig_token = telegram_vault_service.bot_token
@@ -148,6 +148,7 @@ async def test_telegram_alert(payload: Optional[TelegramTestPayload] = None, req
         client_ip=client_ip
     )
     return res
+
 
 
 
