@@ -725,9 +725,20 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         cfg["detectors"] = {
             "ov": {
                 "type": "openvino",
-                "device": "AUTO"
+                "device": "AUTO",
+                "model": {
+                    "path": "/openvino-model/ssdlite_mobilenet_v2.xml"
+                }
             }
         }
+    else:
+        for det_name, det_cfg in cfg["detectors"].items():
+            if isinstance(det_cfg, dict) and det_cfg.get("type") == "openvino":
+                det_cfg["device"] = det_cfg.get("device") or "AUTO"
+                if "model" not in det_cfg or not isinstance(det_cfg["model"], dict):
+                    det_cfg["model"] = {"path": "/openvino-model/ssdlite_mobilenet_v2.xml"}
+                elif "path" not in det_cfg["model"] or not det_cfg["model"]["path"]:
+                    det_cfg["model"]["path"] = "/openvino-model/ssdlite_mobilenet_v2.xml"
 
     # 3. Guarantee Motion, Snapshots, Objects defaults (Optimized for Intel N5105)
     if "motion" not in cfg or not isinstance(cfg["motion"], dict):
@@ -757,14 +768,15 @@ def sanitize_frigate_config(cfg: dict) -> dict:
     if "streams" not in cfg["go2rtc"] or not isinstance(cfg["go2rtc"]["streams"], dict):
         cfg["go2rtc"]["streams"] = {}
 
-    # 4. Sanitize go2rtc stream definitions (resolve bare stream aliases)
+    # 4. Sanitize go2rtc stream definitions & inject failover stream so Frigate never crashes when camera is offline
     for s_name, s_val in list(cfg["go2rtc"]["streams"].items()):
+        fallback_testsrc = f"exec:ffmpeg -re -f lavfi -i testsrc=size=1280x720:rate=5 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 600k -f rtsp rtsp://127.0.0.1:8554/{s_name}"
         if isinstance(s_val, str) and not s_val.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
             target = s_val.strip()
             if target in cfg["go2rtc"]["streams"] and target != s_name and isinstance(cfg["go2rtc"]["streams"][target], list):
                 cfg["go2rtc"]["streams"][s_name] = cfg["go2rtc"]["streams"][target]
             else:
-                cfg["go2rtc"]["streams"][s_name] = [f"rtsp://127.0.0.1:8554/{target}"]
+                cfg["go2rtc"]["streams"][s_name] = [f"rtsp://127.0.0.1:8554/{target}", fallback_testsrc]
         elif isinstance(s_val, list):
             new_list = []
             for item in s_val:
@@ -776,6 +788,8 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                         new_list.append(f"rtsp://127.0.0.1:8554/{target}")
                 else:
                     new_list.append(item)
+            if not any("exec:ffmpeg" in str(x) for x in new_list):
+                new_list.append(fallback_testsrc)
             cfg["go2rtc"]["streams"][s_name] = new_list
 
     for cam_name, cam_cfg in list(cfg["cameras"].items()):
