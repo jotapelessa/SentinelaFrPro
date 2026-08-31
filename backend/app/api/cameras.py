@@ -704,7 +704,14 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         if "enabled" not in cfg["mqtt"]:
             cfg["mqtt"]["enabled"] = True
 
-    # 2. Guarantee Detectors section with OpenVINO GPU Acceleration
+    # 2. Guarantee Model & Detectors section with OpenVINO GPU Acceleration
+    if "model" not in cfg or not isinstance(cfg["model"], dict):
+        cfg["model"] = {
+            "path": "/openvino-model/ssdlite_mobilenet_v2.xml"
+        }
+    elif "path" not in cfg["model"] or not cfg["model"]["path"]:
+        cfg["model"]["path"] = "/openvino-model/ssdlite_mobilenet_v2.xml"
+
     if "detectors" not in cfg or not isinstance(cfg["detectors"], dict) or len(cfg["detectors"]) == 0:
         cfg["detectors"] = {
             "ov": {
