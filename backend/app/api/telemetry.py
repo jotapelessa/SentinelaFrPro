@@ -220,4 +220,50 @@ FIM DO RELATÓRIO DE DIAGNÓSTICO
         headers={"Content-Disposition": f"attachment; filename=sentinela_diagnostico_{now_file}.txt"}
     )
 
+from fastapi import Depends, Query
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, desc
+from app.db.session import get_db
+from app.db.models import AuditLog
+
+@router.get("/audit")
+async def get_audit_logs(
+    module: str = Query("ALL", description="Filter by area: ALL, CAMERA, TELEGRAM, PIP, FRIGATE, SYSTEM"),
+    severity: str = Query("ALL", description="Filter by severity: ALL, INFO, WARNING, ERROR, SUCCESS"),
+    search: str = Query("", description="Search term"),
+    limit: int = Query(200, description="Max logs to return"),
+    db: AsyncSession = Depends(get_db)
+):
+    """Returns application audit logs with newest events at the top (DESC order)."""
+    stmt = select(AuditLog)
+    
+    if module != "ALL":
+        stmt = stmt.where(AuditLog.module == module.upper())
+    if severity != "ALL":
+        stmt = stmt.where(AuditLog.severity == severity.upper())
+    if search:
+        search_pattern = f"%{search}%"
+        stmt = stmt.where(AuditLog.details.ilike(search_pattern) | AuditLog.action.ilike(search_pattern))
+        
+    stmt = stmt.order_by(desc(AuditLog.created_at)).limit(limit)
+    res = await db.execute(stmt)
+    items = res.scalars().all()
+    
+    return {
+        "total": len(items),
+        "logs": [
+            {
+                "id": log.id,
+                "action": log.action,
+                "module": log.module,
+                "severity": log.severity,
+                "details": log.details,
+                "client_ip": log.client_ip or "127.0.0.1",
+                "created_at": log.created_at.strftime("%d/%m/%Y, %H:%M:%S") if log.created_at else ""
+            }
+            for log in items
+        ]
+    }
+
+
 

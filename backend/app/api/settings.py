@@ -14,6 +14,11 @@ router = APIRouter(prefix="/settings", tags=["Settings"])
 class TelegramConfigUpdate(BaseModel):
     bot_token: str
     chat_id: str
+    clip_duration_seconds: Optional[int] = 15
+    snapshot_resolution: Optional[str] = "1080p"
+    video_quality: Optional[str] = "balanced"
+    include_audio: Optional[bool] = True
+    send_mode: Optional[str] = "both"
 
 class PauseAlertsRequest(BaseModel):
     minutes: int = 60
@@ -37,6 +42,11 @@ async def get_settings(db: AsyncSession = Depends(get_db)):
 
     saved_token = all_settings.get("telegram_bot_token") or telegram_vault_service.bot_token or ""
     saved_chat_id = all_settings.get("telegram_chat_id") or telegram_vault_service.chat_id or ""
+    clip_dur = int(all_settings.get("telegram_clip_duration_seconds", "15"))
+    snap_res = all_settings.get("telegram_snapshot_resolution", "1080p")
+    vid_qual = all_settings.get("telegram_video_quality", "balanced")
+    inc_audio = all_settings.get("telegram_include_audio", "true").lower() == "true"
+    send_md = all_settings.get("telegram_send_mode", "both")
 
     # Sync back to in-memory vault
     if saved_token:
@@ -59,6 +69,11 @@ async def get_settings(db: AsyncSession = Depends(get_db)):
         "bot_token": saved_token,
         "chat_id": saved_chat_id,
         "telegram_chat_id": saved_chat_id,
+        "clip_duration_seconds": clip_dur,
+        "snapshot_resolution": snap_res,
+        "video_quality": vid_qual,
+        "include_audio": inc_audio,
+        "send_mode": send_md,
         "alerts_paused": telegram_vault_service.is_paused(),
         "frigate_url": settings.FRIGATE_API_URL,
         "mqtt_broker": f"{settings.MQTT_BROKER}:{settings.MQTT_PORT}",
@@ -74,15 +89,29 @@ from fastapi import Request
 async def update_telegram_config(config: TelegramConfigUpdate, request: Request, db: AsyncSession = Depends(get_db)):
     clean_token = config.bot_token.strip()
     clean_chat_id = config.chat_id.strip()
+    clip_dur = str(config.clip_duration_seconds or 15)
+    snap_res = str(config.snapshot_resolution or "1080p")
+    vid_qual = str(config.video_quality or "balanced")
+    inc_audio = "true" if config.include_audio else "false"
+    send_md = str(config.send_mode or "both")
 
     settings.TELEGRAM_BOT_TOKEN = clean_token
     settings.TELEGRAM_CHAT_ID = clean_chat_id
     telegram_vault_service.bot_token = clean_token
     telegram_vault_service.chat_id = clean_chat_id
 
-    # Persist to database SQLite SystemSetting table
+    # Persist all Telegram parameters to SQLite SystemSetting table
     from app.db.models import SystemSetting
-    for k, v in [("telegram_bot_token", clean_token), ("telegram_chat_id", clean_chat_id)]:
+    updates = [
+        ("telegram_bot_token", clean_token),
+        ("telegram_chat_id", clean_chat_id),
+        ("telegram_clip_duration_seconds", clip_dur),
+        ("telegram_snapshot_resolution", snap_res),
+        ("telegram_video_quality", vid_qual),
+        ("telegram_include_audio", inc_audio),
+        ("telegram_send_mode", send_md)
+    ]
+    for k, v in updates:
         stmt = select(SystemSetting).where(SystemSetting.key == k)
         res = await db.execute(stmt)
         setting_obj = res.scalar_one_or_none()
@@ -97,10 +126,10 @@ async def update_telegram_config(config: TelegramConfigUpdate, request: Request,
         telegram_vault_service.start_polling_task()
 
     await audit_service.log(
-        action="TELEGRAM_CREDENTIALS_SAVED",
+        action="TELEGRAM_CONFIG_SAVED",
         module="TELEGRAM",
         severity="SUCCESS",
-        details=f"Credenciais do Telegram Cloud Vault atualizadas (Chat ID: {clean_chat_id}).",
+        details=f"Parâmetros de mídia do Telegram salvos (Duração: {clip_dur}s, Resolução: {snap_res}, Qualidade: {vid_qual}, Áudio: {inc_audio}, Modo: {send_md}).",
         client_ip=request.client.host if request.client else "unknown"
     )
 
@@ -108,7 +137,12 @@ async def update_telegram_config(config: TelegramConfigUpdate, request: Request,
         "status": "updated",
         "configured": telegram_vault_service.is_configured,
         "bot_token": clean_token,
-        "chat_id": clean_chat_id
+        "chat_id": clean_chat_id,
+        "clip_duration_seconds": int(clip_dur),
+        "snapshot_resolution": snap_res,
+        "video_quality": vid_qual,
+        "include_audio": config.include_audio,
+        "send_mode": send_md
     }
 
 
