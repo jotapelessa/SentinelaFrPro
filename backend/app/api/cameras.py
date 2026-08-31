@@ -643,6 +643,7 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
         real_tagged = real_url if ("#" in real_url) else f"{real_url}#transport=tcp"
         cfg["go2rtc"]["streams"][cam_name] = [real_tagged]
 
+    cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
     try:
@@ -680,11 +681,59 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
 def sanitize_frigate_config(cfg: dict) -> dict:
     """
     Sanitizes Frigate 0.17 configuration to strictly satisfy Pydantic models.
-    Guarantees every camera has valid ffmpeg.inputs and detect blocks, preventing KeyError: 'ffmpeg'.
-    Resolves any invalid go2rtc stream aliases.
+    Guarantees mandatory top-level blocks (mqtt, detectors, ffmpeg, go2rtc, cameras),
+    ensuring Frigate never crashes with 'mqtt - Field required' or 'KeyError: ffmpeg'.
     """
     if not isinstance(cfg, dict):
         cfg = {}
+
+    # 1. Guarantee MQTT section
+    if "mqtt" not in cfg or not isinstance(cfg["mqtt"], dict):
+        cfg["mqtt"] = {
+            "enabled": True,
+            "host": "mosquitto",
+            "port": 1883,
+            "topic_prefix": "frigate",
+            "client_id": "frigate_nvr"
+        }
+    else:
+        if "host" not in cfg["mqtt"] or not cfg["mqtt"]["host"]:
+            cfg["mqtt"]["host"] = "mosquitto"
+        if "port" not in cfg["mqtt"]:
+            cfg["mqtt"]["port"] = 1883
+        if "enabled" not in cfg["mqtt"]:
+            cfg["mqtt"]["enabled"] = True
+
+    # 2. Guarantee Detectors section
+    if "detectors" not in cfg or not isinstance(cfg["detectors"], dict) or len(cfg["detectors"]) == 0:
+        cfg["detectors"] = {
+            "cpu1": {
+                "type": "cpu",
+                "num_threads": 2
+            }
+        }
+
+    # 3. Guarantee Motion, Snapshots, Objects defaults
+    if "motion" not in cfg or not isinstance(cfg["motion"], dict):
+        cfg["motion"] = {
+            "threshold": 25,
+            "contour_area": 10,
+            "improve_contrast": True
+        }
+
+    if "objects" not in cfg or not isinstance(cfg["objects"], dict):
+        cfg["objects"] = {
+            "track": ["person", "car", "motorcycle", "bus", "dog", "cat"]
+        }
+
+    if "snapshots" not in cfg or not isinstance(cfg["snapshots"], dict):
+        cfg["snapshots"] = {
+            "enabled": True,
+            "clean_copy": True,
+            "timestamp": True,
+            "bounding_box": True
+        }
+
     if "cameras" not in cfg or not isinstance(cfg["cameras"], dict):
         cfg["cameras"] = {}
     if "go2rtc" not in cfg or not isinstance(cfg["go2rtc"], dict):
@@ -692,7 +741,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
     if "streams" not in cfg["go2rtc"] or not isinstance(cfg["go2rtc"]["streams"], dict):
         cfg["go2rtc"]["streams"] = {}
 
-    # 0. Sanitize go2rtc stream definitions (resolve bare stream aliases)
+    # 4. Sanitize go2rtc stream definitions (resolve bare stream aliases)
     for s_name, s_val in list(cfg["go2rtc"]["streams"].items()):
         if isinstance(s_val, str) and not s_val.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
             target = s_val.strip()
