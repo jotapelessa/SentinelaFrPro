@@ -3,8 +3,9 @@ import socket
 import struct
 import uuid
 import re
+import time
 import psutil
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 
 ONVIF_PROBE_XML = """<?xml version="1.0" encoding="utf-8"?>
 <Envelope xmlns:dn="http://www.onvif.org/ver10/network/wsdl" xmlns="http://www.w3.org/2003/05/soap-envelope">
@@ -20,22 +21,24 @@ ONVIF_PROBE_XML = """<?xml version="1.0" encoding="utf-8"?>
   </Body>
 </Envelope>"""
 
-CCTV_PORTS = {
-    554: "RTSP Padrão",
-    8554: "RTSP Alternativo (go2rtc / Xiaomi / Stream Server)",
+PRIMARY_CCTV_PORTS = {
+    554: "RTSP Padrão (H.264 / H.265)",
+    8554: "RTSP Alternativo (go2rtc / Stream)",
     37777: "Intelbras / Dahua Nativo",
     34567: "Xiongmai / XMeye Nativo",
     4747: "DroidCam Smartphone",
-    8080: "IP Webcam Android / HTTP",
-    8081: "IP Webcam Stream Alternativo",
-    80: "HTTP / ONVIF Web"
+    8000: "Hikvision / Intelbras Media Port"
 }
 
-EXCLUDED_PORTS = {1935, 8888}
+SECONDARY_WEB_PORTS = {
+    80: "HTTP / ONVIF Web",
+    8080: "IP Webcam / HTTP Alt",
+    8081: "Stream Web Alternativo"
+}
 
 class ScannerService:
     def get_local_subnets(self) -> List[str]:
-        """Discovers all local subnets, always including 192.168.1."""
+        """Discovers all local subnets, always prioritizing 192.168.1."""
         subnets = set()
         subnets.add("192.168.1") # Default primary LAN
 
@@ -53,14 +56,29 @@ class ScannerService:
 
     async def scan_port(self, ip: str, port: int, timeout: float = 0.5) -> bool:
         """Tries to connect to a specific port on an IP address."""
-        if port in EXCLUDED_PORTS:
-            return False
         try:
             fut = asyncio.open_connection(ip, port)
             reader, writer = await asyncio.wait_for(fut, timeout=timeout)
             writer.close()
             await writer.wait_closed()
             return True
+        except Exception:
+            return False
+
+    async def verify_rtsp_stream(self, ip: str, port: int = 554, timeout: float = 0.8) -> bool:
+        """Sends an authentic RTSP OPTIONS probe to verify real video stream capability."""
+        try:
+            reader, writer = await asyncio.wait_for(
+                asyncio.open_connection(ip, port),
+                timeout=timeout
+            )
+            req = f"OPTIONS rtsp://{ip}:{port}/ RTSP/1.0\r\nCSeq: 1\r\nUser-Agent: SentinelaFrigatePro/1.0\r\n\r\n"
+            writer.write(req.encode())
+            await writer.drain()
+            data = await asyncio.wait_for(reader.read(512), timeout=timeout)
+            writer.close()
+            await writer.wait_closed()
+            return b"RTSP" in data or b"200 OK" in data or b"401" in data or b"Public:" in data
         except Exception:
             return False
 
@@ -101,6 +119,7 @@ class ScannerService:
                         
                         devices.append({
                             "ip": ip,
+                            "friendly_name": f"Câmera ONVIF ({ip})",
                             "protocol": "ONVIF (WS-Discovery)",
                             "port": 3702,
                             "open_ports": [554, 3702],
@@ -122,57 +141,115 @@ class ScannerService:
         return devices
 
     async def scan_subnet_cctv_ports(self, base_subnet: str = "192.168.1", start_host: int = 1, end_host: int = 254) -> List[Dict[str, Any]]:
-        """Concurrently scans CCTV ports across the subnet."""
+        """Concurrently scans CCTV ports with semaphore control and real stream verification."""
         found_devices = {}
+        sem = asyncio.Semaphore(35) # Safe concurrency limit
 
-        # Prioritize known camera IPs first
-        target_hosts = [6, 100, 101, 10, 20, 50, 60] + [h for h in range(start_host, min(end_host + 1, 255)) if h not in [6, 100, 101, 10, 20, 50, 60]]
+        # Prioritize known camera IPs (6, 100, etc.)
+        priority_hosts = [6, 10, 20, 50, 60, 100, 101, 102, 105, 108, 110, 120, 150, 200]
+        other_hosts = [h for h in range(start_host, min(end_host + 1, 255)) if h not in priority_hosts]
+        target_hosts = [h for h in priority_hosts if start_host <= h <= end_host] + other_hosts
 
         async def check_host(host_num: int):
             ip = f"{base_subnet}.{host_num}"
-            open_ports = []
-            for port, desc in CCTV_PORTS.items():
-                is_open = await self.scan_port(ip, port, timeout=0.35)
-                if is_open:
-                    open_ports.append((port, desc))
-            
-            if open_ports:
-                has_rtsp = any(p[0] in [554, 8554, 37777, 34567] for p in open_ports)
-                rtsp_port = 8554 if any(p[0] == 8554 for p in open_ports) else 554
-                stream_path = "stream" if rtsp_port == 8554 else "live/ch0"
-                found_devices[ip] = {
-                    "ip": ip,
-                    "open_ports": [p[0] for p in open_ports],
-                    "services": [p[1] for p in open_ports],
-                    "rtsp_url_hint": f"rtsp://{ip}:{rtsp_port}/{stream_path}",
-                    "confidence": "high" if has_rtsp else "medium"
-                }
+            async with sem:
+                # 1. First probe primary CCTV video ports
+                open_primary = []
+                for port, desc in PRIMARY_CCTV_PORTS.items():
+                    is_open = await self.scan_port(ip, port, timeout=0.45)
+                    if is_open:
+                        open_primary.append((port, desc))
+
+                # 2. Check if verified RTSP
+                is_real_rtsp = False
+                if any(p[0] in [554, 8554] for p in open_primary):
+                    rtsp_port = 554 if any(p[0] == 554 for p in open_primary) else 8554
+                    is_real_rtsp = await self.verify_rtsp_stream(ip, port=rtsp_port, timeout=0.6)
+
+                # 3. If primary CCTV port open (or verified RTSP)
+                if open_primary or is_real_rtsp:
+                    # Also probe secondary web port for ONVIF
+                    open_sec = []
+                    for port, desc in SECONDARY_WEB_PORTS.items():
+                        if await self.scan_port(ip, port, timeout=0.3):
+                            open_sec.append((port, desc))
+
+                    all_ports = open_primary + open_sec
+                    port_nums = [p[0] for p in all_ports]
+                    service_names = [p[1] for p in all_ports]
+
+                    # Pick appropriate RTSP hint
+                    if 37777 in port_nums:
+                        protocol_name = "Intelbras / Dahua CFTV"
+                        rtsp_hint = f"rtsp://admin:admin@{ip}:554/cam/realmonitor?channel=1&subtype=0"
+                    elif 34567 in port_nums:
+                        protocol_name = "Xiongmai / XMeye CFTV"
+                        rtsp_hint = f"rtsp://admin:admin@{ip}:554/live/ch0"
+                    elif 4747 in port_nums:
+                        protocol_name = "DroidCam IP"
+                        rtsp_hint = f"http://{ip}:4747/video"
+                    elif 8554 in port_nums and 554 not in port_nums:
+                        protocol_name = "RTSP Stream (Porta 8554)"
+                        rtsp_hint = f"rtsp://{ip}:8554/stream"
+                    else:
+                        protocol_name = "Câmera RTSP IP"
+                        rtsp_hint = f"rtsp://{ip}:554/live/ch0"
+
+                    found_devices[ip] = {
+                        "ip": ip,
+                        "friendly_name": f"{protocol_name} ({ip})",
+                        "protocol": protocol_name,
+                        "open_ports": port_nums,
+                        "services": service_names,
+                        "rtsp_url_hint": rtsp_hint,
+                        "confidence": "high" if (is_real_rtsp or 554 in port_nums or 37777 in port_nums) else "medium"
+                    }
 
         tasks = [check_host(h) for h in target_hosts]
         await asyncio.gather(*tasks)
         return list(found_devices.values())
 
-    async def run_full_scan(self) -> Dict[str, Any]:
-        """Runs scan on 192.168.1.0/24 and all detected subnets."""
-        subnets = self.get_local_subnets()
-        primary_subnet = "192.168.1"
+    async def run_full_scan(self, subnet: Optional[str] = None) -> Dict[str, Any]:
+        """Runs verified scan on specified or detected subnets without fake devices."""
+        start_time = time.time()
+        subnets_to_scan = [subnet.strip()] if subnet and subnet.strip() else self.get_local_subnets()
+        if "192.168.1" not in subnets_to_scan and not subnet:
+            subnets_to_scan.insert(0, "192.168.1")
 
-        onvif_results, port_results = await asyncio.gather(
-            self.discover_onvif_devices(timeout=1.5),
-            self.scan_subnet_cctv_ports(base_subnet=primary_subnet, start_host=1, end_host=254)
-        )
+        onvif_task = self.discover_onvif_devices(timeout=1.8)
+        port_tasks = [self.scan_subnet_cctv_ports(base_subnet=sub, start_host=1, end_host=254) for sub in subnets_to_scan]
 
-        merged = {}
+        results = await asyncio.gather(onvif_task, *port_tasks)
+        onvif_results = results[0]
+        port_results = []
+        for r in results[1:]:
+            port_results.extend(r)
+
+        merged: Dict[str, Dict[str, Any]] = {}
         for dev in onvif_results:
             merged[dev["ip"]] = dev
 
         for dev in port_results:
             ip = dev["ip"]
             if ip in merged:
-                merged[ip]["open_ports"] = list(set(merged[ip].get("open_ports", []) + dev["open_ports"]))
+                merged[ip]["open_ports"] = sorted(list(set(merged[ip].get("open_ports", []) + dev["open_ports"])))
                 merged[ip]["services"] = list(set(merged[ip].get("services", []) + dev["services"]))
+                if dev.get("confidence") == "high":
+                    merged[ip]["confidence"] = "high"
             else:
                 merged[ip] = dev
+
+        duration = round(time.time() - start_time, 2)
+        device_list = list(merged.values())
+        device_list.sort(key=lambda d: [int(x) if x.isdigit() else 0 for x in d["ip"].split(".")])
+
+        return {
+            "status": "ok",
+            "devices": device_list,
+            "count": len(device_list),
+            "subnets": subnets_to_scan,
+            "duration_seconds": duration
+        }
 
     async def discover_smart_tvs(self, base_subnet: str = "192.168.1") -> List[Dict[str, Any]]:
         """Scans the local network for Smart TVs (Google Cast, TCL, Samsung, LG, Android TV)."""

@@ -85,6 +85,7 @@ export interface Camera {
 
 export interface DiscoveredDevice {
   ip: string;
+  friendly_name?: string;
   protocol?: string;
   port?: number;
   open_ports?: number[];
