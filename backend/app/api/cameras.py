@@ -854,18 +854,21 @@ async def sync_camera_to_frigate(cam: Camera):
     config_path = get_frigate_config_path()
     cfg = {}
 
-    try:
-        async with httpx.AsyncClient(timeout=3.0) as client:
-            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
-            if resp.status_code == 200:
-                cfg = yaml.safe_load(resp.text) or {}
-    except Exception:
-        pass
-
-    if not cfg and os.path.exists(config_path):
+    # 1. Authoritative: Read complete config from disk first
+    if os.path.exists(config_path):
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 cfg = yaml.safe_load(f) or {}
+        except Exception as e:
+            logger.warning(f"Could not read config from disk: {e}")
+
+    # 2. Fallback to API if disk file wasn't found
+    if not cfg:
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
+                if resp.status_code == 200:
+                    cfg = yaml.safe_load(resp.text) or {}
         except Exception:
             pass
 
@@ -915,22 +918,24 @@ async def sync_camera_to_frigate(cam: Camera):
     cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            await client.post(
-                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
-                content=updated_yaml,
-                headers={"Content-Type": "text/plain"}
-            )
-    except Exception as e:
-        logger.warning(f"Failed to post updated config to Frigate API: {e}")
-
     if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
         try:
             with open(config_path, "w", encoding="utf-8") as f:
                 f.write(updated_yaml)
         except Exception as e:
             logger.warning(f"Failed to write config file: {e}")
+
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.post(
+                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
+                content=updated_yaml,
+                headers={"Content-Type": "text/plain"}
+            )
+            if resp.status_code != 200:
+                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+    except Exception as e:
+        logger.warning(f"Failed to post updated config to Frigate API: {e}")
 
 
 async def remove_camera_from_frigate(cam_name: str):
@@ -978,6 +983,23 @@ async def remove_camera_from_frigate(cam_name: str):
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
     if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
+        try:
+            with open(config_path, "w", encoding="utf-8") as f:
+                f.write(updated_yaml)
+        except Exception as e:
+            logger.warning(f"Failed to write config file: {e}")
+
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            resp = await client.post(
+                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
+                content=updated_yaml,
+                headers={"Content-Type": "text/plain"}
+            )
+            if resp.status_code != 200:
+                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+    except Exception as e:
+        logger.warning(f"Failed to notify Frigate API: {e}")
         try:
             with open(config_path, "w", encoding="utf-8") as f:
                 f.write(updated_yaml)
