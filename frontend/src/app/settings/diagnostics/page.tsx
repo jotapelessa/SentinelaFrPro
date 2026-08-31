@@ -25,7 +25,10 @@ import {
   ListOrdered,
   Video,
   Radio,
-  ExternalLink
+  ExternalLink,
+  Copy,
+  Check,
+  Terminal
 } from "lucide-react";
 import { useSentinelaStore } from "@/store/useSentinelaStore";
 
@@ -40,6 +43,47 @@ export default function DiagnosticsSettingsPage() {
   // Benchmark States
   const [runningBench, setRunningBench] = useState<string | null>(null);
   const [benchResult, setBenchResult] = useState<any>(null);
+  const [copiedLogs, setCopiedLogs] = useState(false);
+
+  const handleCopyLogs = () => {
+    const reportLines = [
+      "==================================================",
+      " 🛡️ RELATÓRIO DE DIAGNÓSTICO & LOGS SENTINELA ⟷ FRIGATE",
+      " Data/Hora: " + new Date().toLocaleString(),
+      "==================================================",
+      "",
+      "--- [STATUS DE HARDWARE & SISTEMA] ---",
+      `CPU: ${statsData?.snapshot?.cpu?.usage_percent ?? telemetry?.cpu?.usage_percent ?? 0}% | Temp: ${statsData?.snapshot?.cpu?.temperature_celsius ?? telemetry?.cpu?.temperature_celsius ?? 0}°C`,
+      `RAM: ${statsData?.snapshot?.ram?.used_mb ?? telemetry?.ram?.used_mb ?? 0}MB / ${statsData?.snapshot?.ram?.total_mb ?? telemetry?.ram?.total_mb ?? 0}MB`,
+      `SSD NVMe: ${statsData?.snapshot?.disk?.free_gb ?? telemetry?.disk?.free_gb ?? 0}GB livres de ${statsData?.snapshot?.disk?.total_gb ?? telemetry?.disk?.total_gb ?? 0}GB`,
+      `Rede: RX ${statsData?.snapshot?.network?.rx_kbs ?? telemetry?.network?.rx_kbs ?? 0} KB/s | TX ${statsData?.snapshot?.network?.tx_kbs ?? telemetry?.network?.tx_kbs ?? 0} KB/s`,
+      "",
+      "--- [STATUS FRIGATE & GO2RTC] ---",
+      `Frigate REST API: ${frigateStatus?.frigate_http ? `Conectado (${frigateStatus.frigate_version || "OK"})` : "Desconectado"}`,
+      `go2rtc WebRTC Hub: ${frigateStatus?.go2rtc_http ? `${frigateStatus.go2rtc_streams?.length || 0} Streams Ativos (${(frigateStatus.go2rtc_streams || []).join(", ")})` : "Offline"}`,
+      `Detectores de IA: ${frigateStatus?.detectors_online ? "Ativo (OpenVINO/VAAPI)" : "Standby/Offline"}`,
+      `Câmeras Ativas no NVR: ${(frigateStatus?.cameras_active || []).join(", ") || "Nenhuma"}`,
+      `Uptime NVR: ${frigateStatus?.uptime_seconds || 0}s`,
+      "",
+      "--- [LOGS RECENTES DE SONDAGEM & CONECTIVIDADE] ---"
+    ];
+
+    if (frigateStatus?.logs && frigateStatus.logs.length > 0) {
+      frigateStatus.logs.forEach((l: any) => {
+        reportLines.push(`[${l.timestamp}] [${l.status}] ${l.target} (${l.latency_ms}ms) -> ${l.detail}`);
+      });
+    } else {
+      reportLines.push("Nenhum log de sonda registrado no momento.");
+    }
+
+    reportLines.push("");
+    reportLines.push("==================================================");
+
+    const fullReport = reportLines.join("\n");
+    navigator.clipboard.writeText(fullReport);
+    setCopiedLogs(true);
+    setTimeout(() => setCopiedLogs(false), 3000);
+  };
 
   const fetchDetailedStats = async () => {
     try {
@@ -172,7 +216,20 @@ export default function DiagnosticsSettingsPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              onClick={handleCopyLogs}
+              className={`px-3 py-1.5 rounded-xl font-bold text-xs transition-all flex items-center gap-1.5 shadow-md ${
+                copiedLogs
+                  ? "bg-emerald-500 text-obsidian-950 shadow-emerald-500/20"
+                  : "bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 shadow-cyan-500/20"
+              }`}
+              title="Copiar relatório completo e logs recentes para a área de transferência"
+            >
+              {copiedLogs ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copiedLogs ? "✅ Logs Copiados!" : "📋 Copiar Logs de Diagnóstico"}</span>
+            </button>
+
             <button
               onClick={handleSyncFrigate}
               disabled={syncingFrigate}
@@ -224,7 +281,7 @@ export default function DiagnosticsSettingsPage() {
 
           {/* Detectors Status */}
           <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
-            <span className="text-[11px] text-slate-400 block font-semibold">Detectores de IA (TFLite)</span>
+            <span className="text-[11px] text-slate-400 block font-semibold">Detectores de IA (OpenVINO / VAAPI)</span>
             <div className="flex items-center gap-2">
               <span className={`w-2 h-2 rounded-full ${frigateStatus?.detectors_online ? "bg-emerald-400" : "bg-amber-400"}`} />
               <strong className="text-xs text-slate-200">
@@ -242,6 +299,45 @@ export default function DiagnosticsSettingsPage() {
                 {frigateStatus?.cameras_active?.length ? `${frigateStatus.cameras_active.length} Detectando` : "Carregando..."}
               </strong>
             </div>
+          </div>
+        </div>
+
+        {/* Real-time Probe Communication Logs */}
+        <div className="pt-2 border-t border-slate-800/80 space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-slate-300 flex items-center gap-2">
+              <Terminal className="w-4 h-4 text-cyan-400" />
+              Histórico de Sondas & Conectividade Sentinela ⟷ Frigate
+            </span>
+            <span className="text-[10px] font-mono text-slate-400">
+              {frigateStatus?.logs?.length || 0} sondagens registradas
+            </span>
+          </div>
+
+          <div className="max-h-48 overflow-y-auto rounded-xl bg-slate-950 p-3 border border-slate-800 font-mono text-[11px] space-y-1.5 select-text">
+            {frigateStatus?.logs && frigateStatus.logs.length > 0 ? (
+              frigateStatus.logs.map((log: any, idx: number) => (
+                <div key={idx} className="flex items-start gap-2 leading-relaxed">
+                  <span className="text-slate-500 shrink-0">[{log.timestamp}]</span>
+                  <span
+                    className={`px-1.5 py-0.2 rounded text-[10px] font-bold shrink-0 ${
+                      log.status === "SUCCESS"
+                        ? "bg-emerald-950 text-emerald-400 border border-emerald-800"
+                        : "bg-rose-950 text-rose-400 border border-rose-800"
+                    }`}
+                  >
+                    {log.status}
+                  </span>
+                  <span className="text-cyan-300 font-bold shrink-0">{log.target}</span>
+                  <span className="text-slate-400 shrink-0">({log.latency_ms}ms)</span>
+                  <span className="text-slate-300 truncate">{log.detail}</span>
+                </div>
+              ))
+            ) : (
+              <div className="text-slate-500 py-2 text-center">
+                Aguardando primeiras sondas de conectividade...
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -7,15 +7,33 @@ import subprocess
 from typing import Dict, Any, Optional, List
 from app.core.config import settings
 
+import time
+from collections import deque
+import datetime
+
 logger = logging.getLogger(__name__)
 
 class FrigateBridgeService:
     def __init__(self):
         self.frigate_url = settings.FRIGATE_API_URL.rstrip("/")
         self.go2rtc_url = settings.GO2RTC_API_URL.rstrip("/")
+        self._connectivity_logs = deque(maxlen=200)
+
+    def log_probe(self, target: str, status: str, latency_ms: float, detail: str):
+        entry = {
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "target": target,
+            "status": status,
+            "latency_ms": round(latency_ms, 1),
+            "detail": detail
+        }
+        self._connectivity_logs.appendleft(entry)
+
+    def get_connectivity_logs(self) -> List[Dict[str, Any]]:
+        return list(self._connectivity_logs)
 
     async def check_connectivity(self) -> Dict[str, Any]:
-        """Performs deep health check of all Frigate & go2rtc communication channels."""
+        """Performs deep health check of all Frigate & go2rtc communication channels with probe logs."""
         status = {
             "frigate_http": False,
             "frigate_version": None,
@@ -24,24 +42,34 @@ class FrigateBridgeService:
             "cameras_active": [],
             "detectors_online": False,
             "uptime_seconds": 0,
-            "service_url": self.frigate_url
+            "service_url": self.frigate_url,
+            "logs": []
         }
 
-        # 1. Check Frigate REST API
+        # 1. Check Frigate REST API (/api/version)
+        t0 = time.perf_counter()
         try:
             async with httpx.AsyncClient(timeout=3.0) as client:
                 res = await client.get(f"{self.frigate_url}/api/version")
+                latency = (time.perf_counter() - t0) * 1000
                 if res.status_code == 200:
                     status["frigate_http"] = True
                     status["frigate_version"] = res.text.strip()
+                    self.log_probe("Frigate /api/version", "SUCCESS", latency, f"HTTP 200 (Versão {res.text.strip()})")
+                else:
+                    self.log_probe("Frigate /api/version", "ERROR", latency, f"HTTP {res.status_code}")
         except Exception as e:
+            latency = (time.perf_counter() - t0) * 1000
+            self.log_probe("Frigate /api/version", "ERROR", latency, f"Falha de conexão: {str(e)[:80]}")
             logger.debug(f"Frigate HTTP check failed: {e}")
 
-        # 2. Check Frigate Stats & Detectors
+        # 2. Check Frigate Stats & Detectors (/api/stats)
         if status["frigate_http"]:
+            t0 = time.perf_counter()
             try:
                 async with httpx.AsyncClient(timeout=3.0) as client:
                     res = await client.get(f"{self.frigate_url}/api/stats")
+                    latency = (time.perf_counter() - t0) * 1000
                     if res.status_code == 200:
                         stats_data = res.json()
                         status["uptime_seconds"] = stats_data.get("uptime", 0)
@@ -50,20 +78,33 @@ class FrigateBridgeService:
                         status["detectors_stats"] = detectors
                         cams = stats_data.get("cameras", {})
                         status["cameras_active"] = list(cams.keys())
+                        self.log_probe("Frigate /api/stats", "SUCCESS", latency, f"{len(cams)} câmeras ativas, {len(detectors)} detector(es)")
+                    else:
+                        self.log_probe("Frigate /api/stats", "ERROR", latency, f"HTTP {res.status_code}")
             except Exception as e:
+                latency = (time.perf_counter() - t0) * 1000
+                self.log_probe("Frigate /api/stats", "ERROR", latency, f"Falha ao ler stats: {str(e)[:80]}")
                 logger.debug(f"Frigate stats check failed: {e}")
 
-        # 3. Check go2rtc HTTP API
+        # 3. Check go2rtc HTTP API (/api/streams)
+        t0 = time.perf_counter()
         try:
             async with httpx.AsyncClient(timeout=3.0) as client:
                 res = await client.get(f"{self.go2rtc_url}/api/streams")
+                latency = (time.perf_counter() - t0) * 1000
                 if res.status_code == 200:
                     status["go2rtc_http"] = True
                     streams_data = res.json()
                     status["go2rtc_streams"] = list(streams_data.keys()) if isinstance(streams_data, dict) else []
+                    self.log_probe("go2rtc /api/streams", "SUCCESS", latency, f"HTTP 200 ({len(status['go2rtc_streams'])} streams)")
+                else:
+                    self.log_probe("go2rtc /api/streams", "ERROR", latency, f"HTTP {res.status_code}")
         except Exception as e:
+            latency = (time.perf_counter() - t0) * 1000
+            self.log_probe("go2rtc /api/streams", "ERROR", latency, f"Falha de conexão: {str(e)[:80]}")
             logger.debug(f"go2rtc HTTP check failed: {e}")
 
+        status["logs"] = self.get_connectivity_logs()
         return status
 
     async def get_live_snapshot(self, camera_name: str = "camera_principal") -> Optional[bytes]:
