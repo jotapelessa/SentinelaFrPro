@@ -704,21 +704,21 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         if "enabled" not in cfg["mqtt"]:
             cfg["mqtt"]["enabled"] = True
 
-    # 2. Guarantee Detectors section
+    # 2. Guarantee Detectors section with OpenVINO GPU Acceleration
     if "detectors" not in cfg or not isinstance(cfg["detectors"], dict) or len(cfg["detectors"]) == 0:
         cfg["detectors"] = {
-            "cpu1": {
-                "type": "cpu",
-                "num_threads": 2
+            "ov": {
+                "type": "openvino",
+                "device": "GPU"
             }
         }
 
-    # 3. Guarantee Motion, Snapshots, Objects defaults
+    # 3. Guarantee Motion, Snapshots, Objects defaults (Optimized for Intel N5105)
     if "motion" not in cfg or not isinstance(cfg["motion"], dict):
         cfg["motion"] = {
-            "threshold": 25,
-            "contour_area": 10,
-            "improve_contrast": True
+            "threshold": 30,
+            "contour_area": 15,
+            "improve_contrast": False
         }
 
     if "objects" not in cfg or not isinstance(cfg["objects"], dict):

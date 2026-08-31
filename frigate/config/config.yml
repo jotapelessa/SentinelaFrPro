@@ -19,18 +19,18 @@ ffmpeg:
   hwaccel_args: preset-vaapi
 
 
-# Detectors: Multi-Core TensorFlow Lite Load Balancing (Jasper Lake 4 Cores)
+# Detectors: Intel OpenVINO GPU Acceleration (Intel UHD Graphics 11th Gen N5105)
 detectors:
-  cpu1:
-    type: cpu
-    num_threads: 2
+  ov:
+    type: openvino
+    device: GPU
 
 
-# Motion Detection Fine-Tuning (Intel N5105 Optimized)
+# Motion Detection Fine-Tuning (Intel N5105 Optimized - Low CPU)
 motion:
-  threshold: 25
-  contour_area: 10
-  improve_contrast: true
+  threshold: 30
+  contour_area: 15
+  improve_contrast: false
 
 # Global Object Tracking Defaults
 objects:
