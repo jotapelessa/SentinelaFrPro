@@ -92,6 +92,23 @@ cameras:
           - car
           - motorcycle
 
+  cam_192_168_1_6:
+    ffmpeg:
+      inputs:
+        - path: rtsp://127.0.0.1:8554/cam_192_168_1_6
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
+            - record
+    detect:
+      enabled: true
+      width: 1280
+      height: 720
+      fps: 5
+    record:
+      enabled: true
+
+
 
 
 

@@ -677,6 +677,68 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
         "message": f"Modo alterado com sucesso: {action_desc}."
     }
 
+def sanitize_frigate_config(cfg: dict) -> dict:
+    """
+    Sanitizes Frigate 0.17 configuration to strictly satisfy Pydantic models.
+    Guarantees every camera has valid ffmpeg.inputs and detect blocks, preventing KeyError: 'ffmpeg'.
+    """
+    if not isinstance(cfg, dict):
+        cfg = {}
+    if "cameras" not in cfg or not isinstance(cfg["cameras"], dict):
+        cfg["cameras"] = {}
+    if "go2rtc" not in cfg or not isinstance(cfg["go2rtc"], dict):
+        cfg["go2rtc"] = {}
+    if "streams" not in cfg["go2rtc"] or not isinstance(cfg["go2rtc"]["streams"], dict):
+        cfg["go2rtc"]["streams"] = {}
+
+    for cam_name, cam_cfg in list(cfg["cameras"].items()):
+        if not isinstance(cam_cfg, dict):
+            cfg["cameras"][cam_name] = {}
+            cam_cfg = cfg["cameras"][cam_name]
+
+        # 1. Clean forbidden keys
+        if "live" in cam_cfg:
+            del cam_cfg["live"]
+
+        # 2. Guarantee ffmpeg.inputs block
+        if "ffmpeg" not in cam_cfg or not isinstance(cam_cfg["ffmpeg"], dict):
+            cam_cfg["ffmpeg"] = {}
+        if "inputs" not in cam_cfg["ffmpeg"] or not isinstance(cam_cfg["ffmpeg"]["inputs"], list) or len(cam_cfg["ffmpeg"]["inputs"]) == 0:
+            cam_cfg["ffmpeg"]["inputs"] = [
+                {
+                    "path": f"rtsp://127.0.0.1:8554/{cam_name}",
+                    "input_args": "preset-rtsp-restream",
+                    "roles": ["detect", "record"]
+                }
+            ]
+
+        # 3. Guarantee detect block
+        if "detect" not in cam_cfg or not isinstance(cam_cfg["detect"], dict):
+            cam_cfg["detect"] = {
+                "enabled": True,
+                "width": 1280,
+                "height": 720,
+                "fps": 5
+            }
+        else:
+            if "width" not in cam_cfg["detect"]:
+                cam_cfg["detect"]["width"] = 1280
+            if "height" not in cam_cfg["detect"]:
+                cam_cfg["detect"]["height"] = 720
+            if "fps" not in cam_cfg["detect"]:
+                cam_cfg["detect"]["fps"] = 5
+
+        # 4. Guarantee record block syntax
+        if "record" in cam_cfg:
+            if isinstance(cam_cfg["record"], dict):
+                if "retain_days" in cam_cfg["record"]:
+                    del cam_cfg["record"]["retain_days"]
+                if "events" in cam_cfg["record"] and isinstance(cam_cfg["record"]["events"], dict):
+                    if "retain" in cam_cfg["record"]["events"] and isinstance(cam_cfg["record"]["events"]["retain"], (int, float)):
+                        del cam_cfg["record"]["events"]["retain"]
+
+    return cfg
+
 async def sync_camera_to_frigate(cam: Camera):
     import os
     import yaml
@@ -701,7 +763,7 @@ async def sync_camera_to_frigate(cam: Camera):
         except Exception:
             pass
 
-    if not cfg:
+    if not isinstance(cfg, dict):
         cfg = {}
 
     if "go2rtc" not in cfg:
@@ -741,10 +803,10 @@ async def sync_camera_to_frigate(cam: Camera):
     else:
         if "detect" in cfg["cameras"][cam_name] and isinstance(cfg["cameras"][cam_name]["detect"], dict):
             cfg["cameras"][cam_name]["detect"]["enabled"] = bool(cam.enabled)
-        # Ensure forbidden live block is cleaned up if present
         if "live" in cfg["cameras"][cam_name]:
             del cfg["cameras"][cam_name]["live"]
 
+    cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
     try:
@@ -1153,6 +1215,7 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
                     cam_data["objects"]["filters"][label] = {}
                 cam_data["objects"]["filters"][label]["mask"] = mask_val.strip()
 
+    cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
     saved_via_api = False
