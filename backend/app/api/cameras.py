@@ -656,8 +656,7 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
         cfg["go2rtc"]["streams"][cam_name] = [test_pattern_url]
     else:
         real_url = cam.rtsp_main if (cam and cam.rtsp_main) else "rtsp://192.168.1.6:554/stream"
-        real_tagged = real_url if ("#" in real_url) else f"{real_url}#transport=tcp"
-        cfg["go2rtc"]["streams"][cam_name] = [real_tagged]
+        cfg["go2rtc"]["streams"][cam_name] = [real_url.strip()]
 
     cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
@@ -908,11 +907,9 @@ async def sync_camera_to_frigate(cam: Camera):
     cam_name = cam.name or "camera_principal"
     rtsp_url = cam.rtsp_main
     if rtsp_url:
-        rtsp_url_tagged = rtsp_url if ("#" in rtsp_url) else f"{rtsp_url}#transport=tcp"
-        cfg["go2rtc"]["streams"][cam_name] = [rtsp_url_tagged]
+        cfg["go2rtc"]["streams"][cam_name] = [rtsp_url.strip()]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
-        sub_tagged = cam.rtsp_sub.strip() if ("#" in cam.rtsp_sub) else f"{cam.rtsp_sub.strip()}#transport=tcp"
-        cfg["go2rtc"]["streams"][f"{cam_name}_sub"] = [sub_tagged]
+        cfg["go2rtc"]["streams"][f"{cam_name}_sub"] = [cam.rtsp_sub.strip()]
 
     if "cameras" not in cfg or not isinstance(cfg["cameras"], dict):
         cfg["cameras"] = {}
