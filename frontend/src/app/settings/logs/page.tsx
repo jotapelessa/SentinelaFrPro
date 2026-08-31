@@ -40,11 +40,69 @@ export default function LogsSettingsPage() {
     }
   }, [logs, autoRefresh]);
 
-  const handleCopyLogs = () => {
-    navigator.clipboard.writeText(logs.join("\n"));
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const copyToClipboard = async (text: string): Promise<boolean> => {
+    // 1. Try modern Async Clipboard API (works on HTTPS / localhost)
+    if (navigator?.clipboard && typeof navigator.clipboard.writeText === "function") {
+      try {
+        await navigator.clipboard.writeText(text);
+        return true;
+      } catch (err) {
+        console.warn("Async clipboard failed, trying fallback textarea:", err);
+      }
+    }
+
+    // 2. Fallback for non-HTTPS / local HTTP (http://sentinela.local)
+    try {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.width = "2em";
+      textArea.style.height = "2em";
+      textArea.style.padding = "0";
+      textArea.style.border = "none";
+      textArea.style.outline = "none";
+      textArea.style.boxShadow = "none";
+      textArea.style.background = "transparent";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      const successful = document.execCommand("copy");
+      document.body.removeChild(textArea);
+      return successful;
+    } catch (err) {
+      console.error("Fallback execCommand copy failed:", err);
+      return false;
+    }
   };
+
+  const handleCopyLogs = async () => {
+    const textToCopy = filteredLogs.length > 0 ? filteredLogs.join("\n") : logs.join("\n");
+    if (!textToCopy) return;
+
+    const success = await copyToClipboard(textToCopy);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } else {
+      alert("Não foi possível copiar automaticamente. Selecione o texto do terminal e use Ctrl+C / Cmd+C.");
+    }
+  };
+
+  const handleDownloadCurrentLogs = () => {
+    const textToDownload = filteredLogs.length > 0 ? filteredLogs.join("\n") : logs.join("\n");
+    const blob = new Blob([textToDownload], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `sentinela_${service}_logs_${new Date().toISOString().slice(0, 19).replace(/:/g, "-")}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+  };
+
 
   const handleDownloadDiagnostic = async () => {
     setDownloading(true);
@@ -178,13 +236,28 @@ export default function LogsSettingsPage() {
           {/* Copy Button */}
           <button
             onClick={handleCopyLogs}
-            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition-all"
-            title="Copiar Logs para Área de Transferência"
+            className={`px-3 py-1.5 rounded-xl border text-xs font-bold transition-all flex items-center gap-1.5 ${
+              copied
+                ? "bg-emerald-500 text-obsidian-950 border-emerald-400 font-black shadow-md shadow-emerald-500/20"
+                : "bg-slate-800 hover:bg-slate-700 text-slate-200 border-slate-700"
+            }`}
+            title="Copiar Logs para a Área de Transferência"
           >
-            {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
+            {copied ? <Check className="w-3.5 h-3.5 stroke-[3]" /> : <Copy className="w-3.5 h-3.5 text-cyan-400" />}
+            <span>{copied ? "Copiado!" : "Copiar Logs"}</span>
+          </button>
+
+          {/* Download Current Tab Logs */}
+          <button
+            onClick={handleDownloadCurrentLogs}
+            className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs transition-all"
+            title={`Baixar arquivo .txt desta aba (${service})`}
+          >
+            <Download className="w-3.5 h-3.5 text-slate-400" />
           </button>
         </div>
       </div>
+
 
       {/* Terminal Viewport */}
       <div
