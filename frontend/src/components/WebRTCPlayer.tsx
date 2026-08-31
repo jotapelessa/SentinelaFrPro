@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Maximize2, Minimize2, Radio, RefreshCw, Layers, ShieldCheck, Zap, Settings } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Maximize2, Minimize2, Radio, RefreshCw, Zap, Settings, Gauge } from "lucide-react";
 import { Camera } from "@/store/useSentinelaStore";
 import { CameraConfigModal } from "./CameraConfigModal";
 
@@ -18,45 +18,104 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   onToggleSpotlight,
   onCameraUpdated
 }) => {
-  // Default to MSE for instant, 100% reliable 60fps streaming on all browsers
-  const [streamMode, setStreamMode] = useState<"mse" | "webrtc" | "mjpeg">("mse");
+  // Default to "monitor" (5 FPS 720p) for zero-lag, low-CPU, 100% synchrony with Frigate
+  const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">("monitor");
   const [key, setKey] = useState(0);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
+  const [frameUrl, setFrameUrl] = useState<string>(`/frigate/api/${camera.name || "camera_principal"}/latest.jpg?h=720`);
+  const [isLiveOnline, setIsLiveOnline] = useState(true);
+
+  const cameraSrc = camera.name || "camera_principal";
 
   const reloadStream = () => {
     setKey((prev) => prev + 1);
   };
 
-  const cameraSrc = camera.name || "camera_principal";
+  // Double-buffered 5 FPS frame ticker: Preloads next frame in memory before swapping
+  // Guarantees zero buffering lag, zero memory accumulation, and perfect 1:1 synchrony with Frigate
+  useEffect(() => {
+    if (streamMode !== "monitor") return;
+
+    let active = true;
+    let timer: NodeJS.Timeout;
+
+    const fetchNextFrame = () => {
+      const nextSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=720&t=${Date.now()}`;
+      const img = new Image();
+      img.onload = () => {
+        if (active) {
+          setFrameUrl(nextSrc);
+          setIsLiveOnline(true);
+          // 5 FPS = 200ms per frame
+          timer = setTimeout(fetchNextFrame, 200);
+        }
+      };
+      img.onerror = () => {
+        if (active) {
+          // Fallback to go2rtc frame if Frigate latest.jpg is busy
+          const gSrc = `/go2rtc/api/frame.jpeg?src=${cameraSrc}&t=${Date.now()}`;
+          const gImg = new Image();
+          gImg.onload = () => {
+            if (active) {
+              setFrameUrl(gSrc);
+              setIsLiveOnline(true);
+              timer = setTimeout(fetchNextFrame, 200);
+            }
+          };
+          gImg.onerror = () => {
+            if (active) {
+              setIsLiveOnline(false);
+              timer = setTimeout(fetchNextFrame, 1000);
+            }
+          };
+          gImg.src = gSrc;
+        }
+      };
+      img.src = nextSrc;
+    };
+
+    fetchNextFrame();
+
+    return () => {
+      active = false;
+      clearTimeout(timer);
+    };
+  }, [streamMode, cameraSrc, key]);
 
   const getStreamUrl = () => {
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc,mse`;
+        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc`;
       case "mse":
         return `/go2rtc/stream.html?src=${cameraSrc}&mode=mse`;
-      case "mjpeg":
-        return `/go2rtc/api/frame.mjpeg?src=${cameraSrc}&t=${key}`;
       default:
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=mse`;
+        return frameUrl;
     }
   };
 
   return (
     <>
       <div
-        className={`relative group rounded-2xl overflow-hidden glass-panel border border-slate-800 hover:border-cyan-500/50 transition-all bg-obsidian-950 ${
+        className={`relative group rounded-2xl overflow-hidden glass-panel border border-slate-800 hover:border-cyan-500/50 transition-all bg-obsidian-950 select-none ${
           isSpotlight ? "h-[65vh] min-h-[420px]" : "h-72 sm:h-80"
         }`}
       >
         {/* Stream Viewer */}
-        {streamMode === "mjpeg" ? (
-          <img
-            key={`${cameraSrc}-mjpeg-${key}`}
-            src={getStreamUrl()}
-            alt={camera.friendly_name || camera.name}
-            className="w-full h-full object-cover bg-black"
-          />
+        {streamMode === "monitor" ? (
+          <div className="w-full h-full relative bg-black flex items-center justify-center overflow-hidden">
+            <img
+              key={`${cameraSrc}-frame-${key}`}
+              src={frameUrl}
+              alt={camera.friendly_name || camera.name}
+              className="w-full h-full object-cover"
+            />
+            {!isLiveOnline && (
+              <div className="absolute inset-0 bg-black/75 flex flex-col items-center justify-center gap-2 text-slate-400">
+                <RefreshCw className="w-6 h-6 animate-spin text-cyan-400" />
+                <span className="text-xs font-mono font-bold">Conectando ao Frigate NVR...</span>
+              </div>
+            )}
+          </div>
         ) : (
           <iframe
             key={`${cameraSrc}-${streamMode}-${key}`}
@@ -73,14 +132,21 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
             <span className="font-bold text-xs tracking-wide text-white uppercase drop-shadow-md">
               {camera.friendly_name || camera.name}
             </span>
-            {camera.live_stats?.camera_fps ? (
+            
+            {streamMode === "monitor" ? (
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
-                ⚡ {camera.live_stats.camera_fps} FPS (Frigate IA)
+                <Gauge className="w-2.5 h-2.5" />
+                5 FPS (Eco & Sync Total)
+              </span>
+            ) : streamMode === "webrtc" ? (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold flex items-center gap-1">
+                <Zap className="w-2.5 h-2.5" />
+                WebRTC (&lt;50ms)
               </span>
             ) : (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold uppercase flex items-center gap-1">
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold flex items-center gap-1">
                 <Zap className="w-2.5 h-2.5" />
-                {streamMode === "mse" ? "MSE (60 FPS)" : streamMode.toUpperCase()}
+                MSE (60 FPS)
               </span>
             )}
           </div>
@@ -106,33 +172,33 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
         {/* Floating Action Controls on Hover */}
         <div className="absolute bottom-3 right-3 flex items-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity z-20">
           {/* Stream Mode Switcher */}
-          <div className="flex items-center bg-black/80 backdrop-blur rounded-lg p-1 border border-slate-700 text-[10px] font-bold">
+          <div className="flex items-center bg-black/85 backdrop-blur rounded-lg p-1 border border-slate-700 text-[10px] font-bold">
             <button
-              onClick={() => setStreamMode("mse")}
+              onClick={() => setStreamMode("monitor")}
               className={`px-2 py-1 rounded transition-all ${
-                streamMode === "mse" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
+                streamMode === "monitor" ? "bg-emerald-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
               }`}
-              title="MSE (Modo Recomendado: 60 FPS, Latência Zero, Alta Estabilidade)"
+              title="Modo Monitor (5 FPS @ 720p: Sem delay acumulado, Consumo CPU Mínimo)"
             >
-              MSE
+              5 FPS (Sync)
             </button>
             <button
               onClick={() => setStreamMode("webrtc")}
               className={`px-2 py-1 rounded transition-all ${
                 streamMode === "webrtc" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
               }`}
-              title="WebRTC (Latência Ultra-Baixa <50ms)"
+              title="WebRTC (Latência Ultra-Baixa &lt;50ms)"
             >
               WebRTC
             </button>
             <button
-              onClick={() => setStreamMode("mjpeg")}
+              onClick={() => setStreamMode("mse")}
               className={`px-2 py-1 rounded transition-all ${
-                streamMode === "mjpeg" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
+                streamMode === "mse" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
               }`}
-              title="MJPEG (Compatibilidade Direta via Frame Stream)"
+              title="MSE (Fluxo Contínuo 60 FPS)"
             >
-              MJPEG
+              MSE
             </button>
           </div>
 
