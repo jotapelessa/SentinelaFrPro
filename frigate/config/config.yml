@@ -21,6 +21,10 @@ ffmpeg:
 
 # Model Configuration for OpenVINO (Pre-baked in Frigate)
 model:
+  width: 300
+  height: 300
+  input_tensor: nhwc
+  input_pixel_format: bgr
   path: /openvino-model/ssdlite_mobilenet_v2.xml
 
 # Detectors: Intel OpenVINO Hardware Acceleration (Auto GPU/CPU fallback)
@@ -29,6 +33,10 @@ detectors:
     type: openvino
     device: AUTO
     model:
+      width: 300
+      height: 300
+      input_tensor: nhwc
+      input_pixel_format: bgr
       path: /openvino-model/ssdlite_mobilenet_v2.xml
 
 

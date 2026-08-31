@@ -713,22 +713,28 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         if "enabled" not in cfg["mqtt"]:
             cfg["mqtt"]["enabled"] = True
 
-    # 2. Guarantee Model & Detectors section with OpenVINO GPU Acceleration
+    # 2. Guarantee Model & Detectors section with OpenVINO GPU Acceleration (300x300 for ssdlite)
+    ov_model_defaults = {
+        "width": 300,
+        "height": 300,
+        "input_tensor": "nhwc",
+        "input_pixel_format": "bgr",
+        "path": "/openvino-model/ssdlite_mobilenet_v2.xml"
+    }
+
     if "model" not in cfg or not isinstance(cfg["model"], dict):
-        cfg["model"] = {
-            "path": "/openvino-model/ssdlite_mobilenet_v2.xml"
-        }
-    elif "path" not in cfg["model"] or not cfg["model"]["path"]:
-        cfg["model"]["path"] = "/openvino-model/ssdlite_mobilenet_v2.xml"
+        cfg["model"] = dict(ov_model_defaults)
+    else:
+        for k, v in ov_model_defaults.items():
+            if k not in cfg["model"] or not cfg["model"][k]:
+                cfg["model"][k] = v
 
     if "detectors" not in cfg or not isinstance(cfg["detectors"], dict) or len(cfg["detectors"]) == 0:
         cfg["detectors"] = {
             "ov": {
                 "type": "openvino",
                 "device": "AUTO",
-                "model": {
-                    "path": "/openvino-model/ssdlite_mobilenet_v2.xml"
-                }
+                "model": dict(ov_model_defaults)
             }
         }
     else:
@@ -736,9 +742,11 @@ def sanitize_frigate_config(cfg: dict) -> dict:
             if isinstance(det_cfg, dict) and det_cfg.get("type") == "openvino":
                 det_cfg["device"] = det_cfg.get("device") or "AUTO"
                 if "model" not in det_cfg or not isinstance(det_cfg["model"], dict):
-                    det_cfg["model"] = {"path": "/openvino-model/ssdlite_mobilenet_v2.xml"}
-                elif "path" not in det_cfg["model"] or not det_cfg["model"]["path"]:
-                    det_cfg["model"]["path"] = "/openvino-model/ssdlite_mobilenet_v2.xml"
+                    det_cfg["model"] = dict(ov_model_defaults)
+                else:
+                    for k, v in ov_model_defaults.items():
+                        if k not in det_cfg["model"] or not det_cfg["model"][k]:
+                            det_cfg["model"][k] = v
 
     # 3. Guarantee Motion, Snapshots, Objects defaults (Optimized for Intel N5105)
     if "motion" not in cfg or not isinstance(cfg["motion"], dict):
