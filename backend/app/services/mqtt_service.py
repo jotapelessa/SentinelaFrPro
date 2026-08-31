@@ -201,7 +201,7 @@ class MQTTService:
                 async with Client(
                     hostname=settings.MQTT_BROKER,
                     port=settings.MQTT_PORT,
-                    client_id=settings.MQTT_CLIENT_ID
+                    identifier=settings.MQTT_CLIENT_ID
                 ) as client:
                     topic = f"{settings.MQTT_TOPIC_PREFIX}/events"
                     await client.subscribe(topic)
