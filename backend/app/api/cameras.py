@@ -616,20 +616,27 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
 
     config_path = get_frigate_config_path()
     cfg = {}
-    try:
-        async with httpx.AsyncClient(timeout=4.0) as client:
-            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
-            if resp.status_code == 200:
-                cfg = yaml.safe_load(resp.text) or {}
-    except Exception:
-        pass
 
-    if not cfg and os.path.exists(config_path):
+    # 1. Authoritative: Read disk config first
+    if os.path.exists(config_path):
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 cfg = yaml.safe_load(f) or {}
         except Exception:
             pass
+
+    # Fallback to API if disk file wasn't present
+    if not cfg:
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
+                if resp.status_code == 200:
+                    cfg = yaml.safe_load(resp.text) or {}
+        except Exception:
+            pass
+
+    if not isinstance(cfg, dict):
+        cfg = {}
 
     if "go2rtc" not in cfg:
         cfg["go2rtc"] = {}
@@ -655,22 +662,24 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
     cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
-    try:
-        async with httpx.AsyncClient(timeout=8.0) as client:
-            await client.post(
-                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
-                content=updated_yaml,
-                headers={"Content-Type": "text/plain"}
-            )
-    except Exception as e:
-        logger.warning(f"Error posting config save to Frigate: {e}")
-
     if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
         try:
             with open(config_path, "w", encoding="utf-8") as f:
                 f.write(updated_yaml)
         except Exception as e:
             pass
+
+    try:
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            resp = await client.post(
+                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
+                content=updated_yaml,
+                headers={"Content-Type": "text/plain"}
+            )
+            if resp.status_code != 200:
+                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+    except Exception as e:
+        logger.warning(f"Error posting config save to Frigate: {e}")
 
     action_desc = "Ativado Stream de Teste Virtual (SMPTE)" if new_fallback_state else "Restaurado Stream RTSP Real"
     await audit_service.log(
