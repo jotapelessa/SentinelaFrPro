@@ -149,11 +149,13 @@ class PiPGatewayService:
     async def test_single_device(
         self,
         device_id: int,
-        camera_name: str = "camera_principal"
+        camera_name: Optional[str] = None
     ) -> Dict[str, Any]:
-        """Dispatches an interactive test PiP alert to a specific TV using real Frigate camera frame."""
+        """Dispatches an interactive test PiP alert to a specific TV using real accessible camera frame."""
+        import socket
         from app.core.config import settings
         from app.services.audit_service import audit_service
+        from app.db.models import CameraConfig
 
         async with AsyncSessionLocal() as session:
             stmt = select(PairedDevice).where(PairedDevice.id == device_id)
@@ -165,8 +167,32 @@ class PiPGatewayService:
             target_ip = dev.tailscale_ip if dev.tailscale_ip else dev.ip_address
             dev_name = dev.friendly_name
 
-        snapshot_url = f"{settings.FRIGATE_API_URL}/api/{camera_name}/latest.jpg"
-        stream_url = f"rtsp://{camera_name}"
+            # Dynamically select an existing active camera if specified one is missing
+            cam_stmt = select(CameraConfig).where(CameraConfig.enabled == True)
+            cam_res = await session.execute(cam_stmt)
+            active_cams = cam_res.scalars().all()
+            
+            chosen_cam = None
+            if camera_name:
+                chosen_cam = next((c for c in active_cams if c.name == camera_name), None)
+            if not chosen_cam and active_cams:
+                chosen_cam = active_cams[0]
+                camera_name = chosen_cam.name
+            elif not chosen_cam:
+                camera_name = "sentinela"
+
+        # Resolve server LAN IP so the TV on the local network can fetch the snapshot image
+        server_ip = "192.168.1.252"
+        try:
+            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+            s.connect((target_ip, 80))
+            server_ip = s.getsockname()[0]
+            s.close()
+        except Exception:
+            pass
+
+        snapshot_url = f"http://{server_ip}:5000/api/{camera_name}/latest.jpg" if active_cams else f"http://{server_ip}:8088/icon-192.png"
+        stream_url = f"rtsp://{server_ip}:8554/{camera_name}" if active_cams else ""
 
         dispatched = False
         protocol_used = "none"
@@ -221,11 +247,11 @@ class PiPGatewayService:
                 action="PIP_TEST_FAILED",
                 module="PIP",
                 severity="WARNING",
-                details=f"Tentativa de teste PiP falhou para {dev_name} ({target_ip}). Verifique se a TV está ligada."
+                details=f"Tentativa de teste PiP falhou para {dev_name} ({target_ip}). Verifique se a TV está ligada e com o app PiP-Up/Notifications ativo ou Google Cast liberado."
             )
             return {
                 "status": "warning",
-                "message": f"Comando enviado para {dev_name} ({target_ip}), mas o dispositivo não confirmou recebimento. Verifique se o app PiP-Up está aberto.",
+                "message": f"Comando enviado para {dev_name} ({target_ip}), mas o dispositivo não confirmou recebimento. Dica: Na TV TCL/Android TV, instale o app 'PiP-Up' ou 'Notifications for Android TV' da Play Store para notificações flutuantes durante o uso de outros apps.",
                 "target_ip": target_ip
             }
 
