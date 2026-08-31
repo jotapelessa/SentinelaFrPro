@@ -146,6 +146,15 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
                         existing.rtsp_main = rtsp_url
                         db_changed = True
 
+        # Purge any DB cameras that are not in Frigate config
+        if isinstance(frigate_cams, dict) and len(frigate_cams) > 0:
+            stmt_all = select(Camera)
+            res_all = await db.execute(stmt_all)
+            for db_c in res_all.scalars().all():
+                if db_c.name not in frigate_cams:
+                    await db.delete(db_c)
+                    db_changed = True
+
         if db_changed:
             try:
                 await db.commit()
