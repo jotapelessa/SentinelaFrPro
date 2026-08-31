@@ -175,6 +175,7 @@ class MQTTService:
                                 video_bytes=clip_resp.content,
                                 camera_name=camera,
                                 label=label,
+                                zone=zone_name,
                                 duration_s=dur,
                                 score=score,
                                 friendly_name=friendly_name

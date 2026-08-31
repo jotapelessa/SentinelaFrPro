@@ -101,6 +101,7 @@ class TelegramVaultService:
         camera_name: str,
         friendly_name: Optional[str] = None,
         label: str = "person",
+        zone: Optional[str] = None,
         score: float = 0.0,
         duration_s: float = 0.0,
         size_bytes: int = 0,
@@ -178,6 +179,10 @@ class TelegramVaultService:
             f"#{periodo}",
             "#video_mp4" if is_video else "#foto_jpg"
         ]
+
+        if zone and zone.strip():
+            z_slug = zone.lower().replace(" ", "_").replace("-", "_")
+            tags.append(f"#{z_slug}")
         
         seen = set()
         unique_tags = []
@@ -188,10 +193,14 @@ class TelegramVaultService:
                 
         tags_str = " ".join(unique_tags)
 
+        local_line = f"📍 𝗟𝗼𝗰𝗮𝗹: {cam_display} ({camera_name})"
+        if zone and zone.strip():
+            local_line += f" • 📌 𝗭𝗼𝗻𝗮: {zone.replace('_', ' ').title()}"
+
         return (
             f"{header_type} • 𝗦𝗲𝗻𝘁𝗶𝗻𝗲𝗹𝗮 𝗙𝗿𝗶𝗴𝗮𝘁𝗲 𝗣𝗿𝗼\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"📍 𝗟𝗼𝗰𝗮𝗹: {cam_display} ({camera_name})\n"
+            f"{local_line}\n"
             f"⏱ 𝗗𝗮𝘁𝗮/𝗛𝗼𝗿𝗮: {date_str} às {time_str} ({weekday_str})\n"
             f"📊 𝗜𝗻𝘁𝗲𝗻𝘀𝗶𝗱𝗮𝗱𝗲: {score_pct}% de precisão ({label_pt})\n"
             f"⏳ 𝗗𝘂𝗿𝗮𝗰̧𝗮̃𝗼: {dur_str}\n"
@@ -228,6 +237,7 @@ class TelegramVaultService:
             camera_name=camera_name,
             friendly_name=friendly_name,
             label=label,
+            zone=zone,
             score=score,
             duration_s=0.0,
             size_bytes=len(image_bytes),
@@ -256,6 +266,7 @@ class TelegramVaultService:
         video_bytes: bytes,
         camera_name: str,
         label: str,
+        zone: Optional[str] = None,
         duration_s: float = 0.0,
         score: float = 0.0,
         friendly_name: Optional[str] = None,
@@ -273,12 +284,12 @@ class TelegramVaultService:
             logger.info("Telegram alerts currently paused, skipping video.")
             return False
 
-
         url = f"https://api.telegram.org/bot{self.bot_token}/sendVideo"
         caption = self.format_event_message(
             camera_name=camera_name,
             friendly_name=friendly_name,
             label=label,
+            zone=zone,
             score=score,
             duration_s=duration_s,
             size_bytes=len(video_bytes),
