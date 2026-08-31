@@ -62,20 +62,24 @@ export default function TelegramSettingsPage() {
     setTelegramStatus(null);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
-      const res = await fetch(`${apiUrl}/settings/telegram/test`, { method: "POST" });
+      const res = await fetch(`${apiUrl}/settings/telegram/test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ bot_token: botToken, chat_id: chatId })
+      });
       const data = await res.json();
       if (data.status === "success") {
-        setTelegramStatus("✅ Mensagem de teste enviada com sucesso no seu Telegram!");
+        setTelegramStatus(`✅ ${data.message}`);
       } else {
         setTelegramStatus(`⚠️ ${data.message || "Erro ao conectar com Telegram"}`);
       }
-    } catch {
+    } catch (err: any) {
       setTelegramStatus("⚠️ Falha ao se comunicar com o backend.");
     } finally {
       setTestingTelegram(false);
-      setTimeout(() => setTelegramStatus(null), 6000);
     }
   };
+
 
   const handleTriggerMockEvent = async () => {
     setSimulating(true);

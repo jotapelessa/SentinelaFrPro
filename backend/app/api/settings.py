@@ -101,9 +101,25 @@ async def update_telegram_config(config: TelegramConfigUpdate, db: AsyncSession 
     }
 
 
+class TelegramTestPayload(BaseModel):
+    bot_token: Optional[str] = None
+    chat_id: Optional[str] = None
+
 @router.post("/telegram/test")
-async def test_telegram_alert():
+async def test_telegram_alert(payload: Optional[TelegramTestPayload] = None):
+    if payload and payload.bot_token and payload.chat_id:
+        # Temporary test with provided values
+        orig_token = telegram_vault_service.bot_token
+        orig_chat = telegram_vault_service.chat_id
+        telegram_vault_service.bot_token = payload.bot_token.strip()
+        telegram_vault_service.chat_id = payload.chat_id.strip()
+        res = await telegram_vault_service.test_connection()
+        if res.get("status") != "success":
+            telegram_vault_service.bot_token = orig_token
+            telegram_vault_service.chat_id = orig_chat
+        return res
     return await telegram_vault_service.test_connection()
+
 
 @router.get("/dnd")
 async def get_dnd_settings(db: AsyncSession = Depends(get_db)):

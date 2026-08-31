@@ -299,6 +299,60 @@ class TelegramVaultService:
             f"{pause_status}"
         )
 
+    async def test_connection(self) -> Dict[str, Any]:
+        """Validates bot credentials with Telegram API and sends a confirmation test message."""
+        if not self.is_configured:
+            await self.load_credentials_from_db()
+        if not self.is_configured:
+            return {"status": "error", "message": "Bot Token ou Chat ID não preenchidos. Salve as credenciais primeiro."}
+
+        # 1. Verify Bot Token with getMe
+        try:
+            async with httpx.AsyncClient(timeout=8.0) as client:
+                me_resp = await client.get(f"https://api.telegram.org/bot{self.bot_token}/getMe")
+                if me_resp.status_code != 200:
+                    return {"status": "error", "message": f"Token inválido (Telegram retornou HTTP {me_resp.status_code})."}
+                bot_info = me_resp.json().get("result", {})
+                bot_name = bot_info.get("first_name", "Bot")
+                bot_user = bot_info.get("username", "bot")
+        except Exception as e:
+            return {"status": "error", "message": f"Erro ao contatar servidores do Telegram: {e}"}
+
+        # 2. Send Test Message to Chat ID
+        now_str = datetime.datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
+        test_msg = (
+            "🛡️ *SENTINELA FRIGATE PRO — TESTE DE CONEXÃO*\n"
+            "━━━━━━━━━━━━━━━━━━━━\n"
+            f"✅ *Conexão bem-sucedida com o Telegram!*\n"
+            f"🤖 *Robô:* @{bot_user} ({bot_name})\n"
+            f"⏱️ *Data/Hora:* `{now_str}`\n"
+            "━━━━━━━━━━━━━━━━━━━━\n"
+            "⚡ *Vigilância ativa: você receberá fotos e vídeos de intrusão aqui.*"
+        )
+        
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                send_resp = await client.post(
+                    f"https://api.telegram.org/bot{self.bot_token}/sendMessage",
+                    json={"chat_id": self.chat_id, "text": test_msg, "parse_mode": "Markdown"}
+                )
+                if send_resp.status_code == 200:
+                    logger.info(f"✅ Mensagem de teste enviada com sucesso para o Telegram ({self.chat_id})")
+                    return {
+                        "status": "success",
+                        "message": f"Conectado com sucesso ao robô @{bot_user}! Mensagem de teste entregue.",
+                        "bot_username": bot_user
+                    }
+                else:
+                    err_desc = send_resp.json().get("description", send_resp.text)
+                    logger.error(f"❌ Telegram sendMessage falhou: {err_desc}")
+                    return {
+                        "status": "error",
+                        "message": f"Erro do Telegram: {err_desc} (Dica: envie /start para @{bot_user} primeiro se for chat privado)."
+                    }
+        except Exception as e:
+            return {"status": "error", "message": f"Falha de rede ao enviar mensagem de teste: {e}"}
+
     async def send_message(self, text: str, parse_mode: str = "Markdown") -> bool:
         """Sends a text message to the configured Telegram chat."""
         if not self.is_configured:
@@ -313,6 +367,7 @@ class TelegramVaultService:
         except Exception as e:
             logger.error(f"Erro ao enviar mensagem para Telegram: {e}")
             return False
+
 
     async def send_document(self, doc_bytes: bytes, filename: str, caption: str = "") -> bool:
         """Sends a document (e.g. database backup) to Telegram."""
