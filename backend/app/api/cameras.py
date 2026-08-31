@@ -116,6 +116,13 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
 
     await db.commit()
     await db.refresh(cam)
+
+    # Sync RTSP and camera state directly with Frigate config
+    try:
+        await sync_camera_to_frigate(cam)
+    except Exception as e:
+        logger.warning(f"Error syncing camera to Frigate config: {e}")
+
     await audit_service.log(
         action="CAMERA_UPDATED",
         module="CAMERA",
@@ -124,6 +131,134 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
         client_ip=request.client.host if request.client else "unknown"
     )
     return cam
+
+class RtspTestPayload(BaseModel):
+    rtsp_url: str
+
+@router.post("/test-rtsp")
+async def test_rtsp_connection(payload: RtspTestPayload):
+    """Tests TCP connectivity to the camera's RTSP endpoint."""
+    import re
+    import asyncio
+
+    rtsp_url = payload.rtsp_url.strip()
+    m = re.search(r"rtsp://(?:[^@]+@)?([^:/]+)(?::(\d+))?", rtsp_url)
+    if not m:
+        return {"success": False, "message": "URL RTSP inválida. Formato esperado: rtsp://[user:pass@]ip[:porta]/caminho"}
+    
+    host = m.group(1)
+    port = int(m.group(2)) if m.group(2) else 554
+
+    try:
+        fut = asyncio.open_connection(host, port)
+        reader, writer = await asyncio.wait_for(fut, timeout=2.5)
+        writer.close()
+        await writer.wait_closed()
+        return {
+            "success": True,
+            "host": host,
+            "port": port,
+            "message": f"Conexão bem-sucedida! Porta RTSP {port} em {host} está aberta e respondendo."
+        }
+    except asyncio.TimeoutError:
+        return {
+            "success": False,
+            "host": host,
+            "port": port,
+            "message": f"Timeout ao conectar em {host}:{port}. Verifique se a câmera está ligada e no mesmo IP."
+        }
+    except Exception as e:
+        return {
+            "success": False,
+            "host": host,
+            "port": port,
+            "message": f"Falha de conexão com {host}:{port}: {str(e)}"
+        }
+
+async def sync_camera_to_frigate(cam: Camera):
+    import os
+    import yaml
+    import httpx
+    from app.core.config import settings
+
+    config_path = get_frigate_config_path()
+    cfg = {}
+
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
+            if resp.status_code == 200:
+                cfg = yaml.safe_load(resp.text) or {}
+    except Exception:
+        pass
+
+    if not cfg and os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f) or {}
+        except Exception:
+            pass
+
+    if not cfg:
+        cfg = {}
+
+    if "go2rtc" not in cfg:
+        cfg["go2rtc"] = {}
+    if "streams" not in cfg["go2rtc"]:
+        cfg["go2rtc"]["streams"] = {}
+
+    cam_name = cam.name or "camera_principal"
+    rtsp_url = cam.rtsp_main
+    if rtsp_url:
+        rtsp_url_tagged = rtsp_url if ("#" in rtsp_url) else f"{rtsp_url}#transport=tcp"
+        cfg["go2rtc"]["streams"][cam_name] = [rtsp_url_tagged]
+
+    if "cameras" not in cfg:
+        cfg["cameras"] = {}
+    if cam_name not in cfg["cameras"]:
+        cfg["cameras"][cam_name] = {
+            "ffmpeg": {
+                "inputs": [
+                    {
+                        "path": f"rtsp://127.0.0.1:8554/{cam_name}",
+                        "input_args": "preset-rtsp-restream",
+                        "roles": ["detect", "record"]
+                    }
+                ]
+            },
+            "detect": {
+                "enabled": bool(cam.enabled),
+                "width": 1280,
+                "height": 720,
+                "fps": 5
+            },
+            "live": {
+                "stream_name": cam_name
+            }
+        }
+    else:
+        if "detect" in cfg["cameras"][cam_name]:
+            cfg["cameras"][cam_name]["detect"]["enabled"] = bool(cam.enabled)
+
+    updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
+
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            await client.post(
+                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
+                content=updated_yaml,
+                headers={"Content-Type": "text/plain"}
+            )
+    except Exception as e:
+        logger.warning(f"Failed to post updated config to Frigate API: {e}")
+
+    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
+        try:
+            with open(config_path, "w", encoding="utf-8") as f:
+                f.write(updated_yaml)
+        except Exception as e:
+            logger.warning(f"Failed to write config file: {e}")
+
 
 @router.delete("/{camera_id}")
 async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):

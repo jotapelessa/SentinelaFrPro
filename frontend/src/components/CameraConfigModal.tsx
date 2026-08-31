@@ -17,7 +17,8 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [isZoneModalOpen, setIsZoneModalOpen] = useState(false);
-
+  const [testingRtsp, setTestingRtsp] = useState(false);
+  const [rtspTestResult, setRtspTestResult] = useState<{ success: boolean; message: string } | null>(null);
 
   // Form State
   const [friendlyName, setFriendlyName] = useState(camera.friendly_name || camera.name);
@@ -26,6 +27,26 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [ipAddress, setIpAddress] = useState(camera.ip_address || "");
   const [onvifPort, setOnvifPort] = useState(camera.onvif_port || 80);
   const [enabled, setEnabled] = useState(camera.enabled ?? true);
+
+  const handleTestRtsp = async () => {
+    if (!rtspMain) return;
+    setTestingRtsp(true);
+    setRtspTestResult(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const res = await fetch(`${apiUrl}/cameras/test-rtsp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rtsp_url: rtspMain })
+      });
+      const data = await res.json();
+      setRtspTestResult(data);
+    } catch (err: any) {
+      setRtspTestResult({ success: false, message: `Erro ao conectar com API: ${err.message}` });
+    } finally {
+      setTestingRtsp(false);
+    }
+  };
 
   // AI & Detection State
   const initialObjects: string[] = camera.objects_to_track
@@ -208,16 +229,41 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
               </div>
 
               <div>
-                <label className="block text-slate-300 font-bold mb-1">Fluxo RTSP Principal (High-Res):</label>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-slate-300 font-bold">Fluxo RTSP Principal (High-Res):</label>
+                  <button
+                    type="button"
+                    onClick={handleTestRtsp}
+                    disabled={testingRtsp || !rtspMain}
+                    className="px-2.5 py-1 rounded-md bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500 hover:text-obsidian-950 font-bold text-[10px] transition-all flex items-center gap-1.5 disabled:opacity-50"
+                  >
+                    {testingRtsp ? (
+                      <span className="animate-spin">⏳</span>
+                    ) : (
+                      <Zap className="w-3 h-3 text-cyan-400" />
+                    )}
+                    <span>{testingRtsp ? "Testando..." : "Testar Conexão RTSP"}</span>
+                  </button>
+                </div>
                 <input
                   type="text"
                   value={rtspMain}
                   onChange={(e) => setRtspMain(e.target.value)}
-                  placeholder="Ex: rtsp://192.168.1.6:8554/stream"
+                  placeholder="Ex: rtsp://192.168.1.6:8554/stream ou rtsp://admin:senha@192.168.1.6:554/live/ch0"
                   required
                   className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono focus:outline-none focus:border-cyan-500"
                 />
-                <span className="text-[10px] text-slate-500">Usado para gravação de alta definição e visualização ao vivo.</span>
+                {rtspTestResult && (
+                  <div className={`mt-2 p-2.5 rounded-lg text-[11px] border font-medium flex items-center gap-2 ${
+                    rtspTestResult.success 
+                      ? "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
+                      : "bg-rose-950/40 border-rose-500/40 text-rose-300"
+                  }`}>
+                    <span>{rtspTestResult.success ? "🟢" : "🔴"}</span>
+                    <span>{rtspTestResult.message}</span>
+                  </div>
+                )}
+                <span className="text-[10px] text-slate-500 block mt-1">Usado para gravação de alta definição e visualização ao vivo.</span>
               </div>
 
               <div>
