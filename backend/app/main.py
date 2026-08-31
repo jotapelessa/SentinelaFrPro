@@ -33,11 +33,16 @@ async def lifespan(app: FastAPI):
     # Start Background Telemetry WebSocket loop
     telemetry_task = asyncio.create_task(ws.telemetry_broadcast_loop())
 
+    # Start Background Telegram Bot Poller
+    telegram_task = telegram_vault_service.start_polling_task()
+
     yield
 
     logger.info("Encerrando serviços Sentinela...")
     mqtt_task.cancel()
     telemetry_task.cancel()
+    if telegram_task:
+        telegram_task.cancel()
     try:
         await asyncio.gather(mqtt_task, telemetry_task, return_exceptions=True)
     except Exception:

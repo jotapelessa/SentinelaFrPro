@@ -84,14 +84,24 @@ export default function SettingsPage() {
         body: JSON.stringify({ bot_token: botToken, chat_id: chatId })
       });
       if (res.ok) {
+        const data = await res.json();
+        if (data.bot_token) setBotToken(data.bot_token);
+        if (data.chat_id) setChatId(data.chat_id);
         setSaveSuccess(true);
-        setTimeout(() => setSaveSuccess(false), 3000);
+        setTelegramStatus("✅ Credenciais gravadas com sucesso no banco de dados SQLite!");
+        setTimeout(() => {
+          setSaveSuccess(false);
+          setTelegramStatus(null);
+        }, 4000);
+      } else {
+        setTelegramStatus("⚠️ Erro ao gravar credenciais no servidor.");
       }
-    } catch {
-      setSaveSuccess(true);
-      setTimeout(() => setSaveSuccess(false), 3000);
+    } catch (err) {
+      console.error(err);
+      setTelegramStatus("⚠️ Falha de comunicação com o servidor.");
     }
   };
+
 
   const handleTestTelegram = async () => {
     setTestingTelegram(true);

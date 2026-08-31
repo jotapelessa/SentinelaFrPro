@@ -299,19 +299,192 @@ class TelegramVaultService:
             f"{pause_status}"
         )
 
-    async def test_connection(self) -> Dict[str, Any]:
-        """Tests telegram bot connection and sends a confirmation text."""
+    async def send_message(self, text: str, parse_mode: str = "Markdown") -> bool:
+        """Sends a text message to the configured Telegram chat."""
         if not self.is_configured:
-            return {"status": "error", "message": "Bot Token ou Chat ID não preenchidos."}
+            await self.load_credentials_from_db()
+        if not self.is_configured:
+            return False
         url = f"https://api.telegram.org/bot{self.bot_token}/sendMessage"
         try:
-            async with httpx.AsyncClient(timeout=6.0) as client:
-                text = "🔔 *Sentinela Frigate Pro*\n\n✅ *Teste de Conexão com Sucesso!*\nSeu bot do Telegram está 100% configurado e pronto para disparar alertas e fotos das câmeras."
-                resp = await client.post(url, json={"chat_id": self.chat_id, "text": text, "parse_mode": "Markdown"})
-                if resp.status_code == 200:
-                    return {"status": "success", "message": "Mensagem de teste enviada com sucesso para o Telegram!"}
-                return {"status": "error", "message": f"Erro do Telegram: {resp.text}"}
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(url, json={"chat_id": self.chat_id, "text": text, "parse_mode": parse_mode})
+                return resp.status_code == 200
         except Exception as e:
-            return {"status": "error", "message": f"Falha de rede: {str(e)}"}
+            logger.error(f"Erro ao enviar mensagem para Telegram: {e}")
+            return False
+
+    async def send_document(self, doc_bytes: bytes, filename: str, caption: str = "") -> bool:
+        """Sends a document (e.g. database backup) to Telegram."""
+        if not self.is_configured:
+            await self.load_credentials_from_db()
+        if not self.is_configured:
+            return False
+        url = f"https://api.telegram.org/bot{self.bot_token}/sendDocument"
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                files = {"document": (filename, doc_bytes, "application/octet-stream")}
+                data = {"chat_id": self.chat_id, "caption": caption}
+                resp = await client.post(url, data=data, files=files)
+                return resp.status_code == 200
+        except Exception as e:
+            logger.error(f"Erro ao enviar documento para Telegram: {e}")
+            return False
+
+    async def handle_command(self, raw_text: str):
+        """Processes interactive bot commands received via Telegram chat."""
+        import os
+        parts = raw_text.strip().split()
+        if not parts:
+            return
+        cmd = parts[0].lower().split("@")[0] # strip bot username if present
+        args = parts[1:]
+
+        logger.info(f"🤖 Telegram Bot comando recebido: '{cmd}' com args: {args}")
+
+        if cmd in ["/start", "/ajuda", "/help"]:
+            help_text = (
+                "🛡️ *SENTINELA FRIGATE PRO — COMANDOS DO BOT*\n"
+                "━━━━━━━━━━━━━━━━━━━━\n\n"
+                "📸 `/snapshot` — Captura e envia foto ao vivo da Câmera Principal\n"
+                "📸 `/snapshot <camera>` — Captura foto de uma câmera específica\n"
+                "📊 `/status` — Telemetria do hardware (CPU, Temp, RAM, SSD)\n"
+                "⏸️ `/pausar [minutos]` — Suspende alertas (ex: `/pausar 60`)\n"
+                "▶️ `/retomar` — Reativa envio de alertas imediatamente\n"
+                "💾 `/backup` — Envia o arquivo do banco de dados `sentinela.db`\n"
+                "❓ `/ajuda` — Exibe este menu de ajuda\n"
+                "━━━━━━━━━━━━━━━━━━━━\n"
+                "⚡ *Sistema operacional e vigilância 24/7 ativa.*"
+            )
+            await self.send_message(help_text)
+
+        elif cmd == "/status":
+            status_text = await self.get_system_status_text()
+            await self.send_message(status_text)
+
+        elif cmd == "/snapshot":
+            cam_name = args[0] if args else "camera_principal"
+            url = f"{settings.FRIGATE_API_URL}/api/{cam_name}/latest.jpg"
+            try:
+                async with httpx.AsyncClient(timeout=8.0) as client:
+                    resp = await client.get(url)
+                    if resp.status_code == 200 and resp.content:
+                        watermarked = self.apply_watermark(resp.content, cam_name, "SNAPSHOT MANUAL")
+                        now_str = datetime.datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
+                        caption = (
+                            f"📸 𝗦𝗡𝗔𝗣𝗦𝗛𝗢𝗧 𝗔𝗢 𝗩𝗜𝗩𝗢 • 𝗦𝗲𝗻𝘁𝗶𝗻𝗲𝗹𝗮 𝗙𝗿𝗶𝗴𝗮𝘁𝗲 𝗣𝗿𝗼\n"
+                            f"━━━━━━━━━━━━━━━━━━━━\n"
+                            f"📍 Câmera: `{cam_name}`\n"
+                            f"⏱ Solicitado em: {now_str}\n"
+                            f"━━━━━━━━━━━━━━━━━━━━"
+                        )
+                        url_photo = f"https://api.telegram.org/bot{self.bot_token}/sendPhoto"
+                        async with httpx.AsyncClient(timeout=15.0) as photo_client:
+                            files = {"photo": ("snapshot.jpg", watermarked, "image/jpeg")}
+                            data = {"chat_id": self.chat_id, "caption": caption}
+                            await photo_client.post(url_photo, data=data, files=files)
+                    else:
+                        await self.send_message(f"⚠️ Não foi possível obter frame da câmera `{cam_name}` (HTTP {resp.status_code}).")
+            except Exception as e:
+                await self.send_message(f"⚠️ Erro ao capturar snapshot de `{cam_name}`: {e}")
+
+        elif cmd == "/pausar":
+            mins = 60
+            if args and args[0].isdigit():
+                mins = int(args[0])
+            self.pause_alerts(mins)
+            until_str = self.pause_until.strftime("%H:%M:%S")
+            await self.send_message(f"⏸️ *Alertas Suspensos!*\nNotificações pausadas por *{mins} minutos* (até às `{until_str}`).\n\nEnvie `/retomar` para reativar antes do prazo.")
+
+        elif cmd == "/retomar":
+            self.pause_until = None
+            await self.send_message("▶️ *Alertas Reativados!*\nO Sentinela voltou a enviar notificações de movimento normalmente.")
+
+        elif cmd == "/backup":
+            db_paths = ["/app/data/sentinela.db", "./data/sentinela.db", "data/sentinela.db"]
+            found_path = None
+            for p in db_paths:
+                if os.path.exists(p):
+                    found_path = p
+                    break
+            
+            if found_path:
+                try:
+                    with open(found_path, "rb") as f:
+                        content = f.read()
+                    now_tag = datetime.datetime.now().strftime("%Y%m%d_%H%M")
+                    filename = f"sentinela_backup_{now_tag}.db"
+                    caption = f"💾 *Backup do Banco de Dados Sentinela*\nArquivo: `{filename}` ({len(content) // 1024} KB)\nData: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+                    sent = await self.send_document(content, filename=filename, caption=caption)
+                    if not sent:
+                        await self.send_message("⚠️ Falha no envio do arquivo de backup.")
+                except Exception as e:
+                    await self.send_message(f"⚠️ Erro ao ler banco de dados para backup: {e}")
+            else:
+                await self.send_message("⚠️ Arquivo de banco de dados SQLite `sentinela.db` não encontrado no servidor.")
+
+        else:
+            await self.send_message(f"❓ Comando `{cmd}` não reconhecido. Digite `/ajuda` para ver as opções disponíveis.")
+
+    async def start_polling(self):
+        """Continuous lightweight long-polling loop for Telegram Bot updates."""
+        import asyncio
+        self.update_offset = 0
+        logger.info("🤖 Iniciando loop de escuta de comandos do Telegram Bot...")
+
+        while True:
+            try:
+                if not self.is_configured:
+                    await self.load_credentials_from_db()
+
+                if not self.is_configured:
+                    await asyncio.sleep(5)
+                    continue
+
+                url = f"https://api.telegram.org/bot{self.bot_token}/getUpdates"
+                params = {
+                    "offset": self.update_offset,
+                    "timeout": 25,
+                    "allowed_updates": ["message"]
+                }
+
+                async with httpx.AsyncClient(timeout=35.0) as client:
+                    resp = await client.get(url, params=params)
+                    if resp.status_code == 200:
+                        data = resp.json()
+                        if data.get("ok"):
+                            updates = data.get("result", [])
+                            for upd in updates:
+                                self.update_offset = upd["update_id"] + 1
+                                msg = upd.get("message", {})
+                                from_chat = str(msg.get("chat", {}).get("id", ""))
+                                text = msg.get("text", "").strip()
+
+                                # Security check: only respond to authorized chat_id
+                                if text and (from_chat == str(self.chat_id) or str(self.chat_id) in from_chat):
+                                    await self.handle_command(text)
+                                elif text and text.startswith("/"):
+                                    logger.warning(f"⚠️ Comando do Telegram rejeitado de chat não autorizado: {from_chat}")
+                    elif resp.status_code in [401, 404]:
+                        logger.warning(f"⚠️ Telegram Bot Token inválido (HTTP {resp.status_code}). Aguardando atualização...")
+                        await asyncio.sleep(15)
+                    else:
+                        await asyncio.sleep(3)
+
+            except asyncio.CancelledError:
+                logger.info("Encerrando polling do Telegram Bot...")
+                break
+            except Exception as e:
+                logger.debug(f"Aviso no polling do Telegram (normal em timeout): {e}")
+                await asyncio.sleep(3)
+
+    def start_polling_task(self):
+        """Spawns or restarts the background polling task."""
+        import asyncio
+        if hasattr(self, "_polling_task") and self._polling_task and not self._polling_task.done():
+            self._polling_task.cancel()
+        self._polling_task = asyncio.create_task(self.start_polling())
+        return self._polling_task
 
 telegram_vault_service = TelegramVaultService()
+
