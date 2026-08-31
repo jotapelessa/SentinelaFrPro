@@ -8,12 +8,29 @@ from app.db.session import init_db
 from app.api import cameras, events, telemetry, scanner, devices, settings as settings_api, ws
 from app.services.mqtt_service import mqtt_service
 
+import time
+from starlette.requests import Request
+from starlette.responses import Response
+from app.core.logging_handler import MemoryRingBufferHandler
+
 # Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
+log_formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(name)s: %(message)s")
+
+root_logger = logging.getLogger()
+root_logger.setLevel(logging.INFO)
+
+# Console handler
+console_handler = logging.StreamHandler()
+console_handler.setFormatter(log_formatter)
+root_logger.addHandler(console_handler)
+
+# Memory ring buffer handler for UI log streaming
+ring_handler = MemoryRingBufferHandler()
+ring_handler.setFormatter(log_formatter)
+root_logger.addHandler(ring_handler)
+
 logger = logging.getLogger("sentinela")
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -62,6 +79,26 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def audit_http_requests(request: Request, call_next):
+    start_t = time.perf_counter()
+    try:
+        response: Response = await call_next(request)
+        duration_ms = (time.perf_counter() - start_t) * 1000
+        client_ip = request.client.host if request.client else "unknown"
+        path = request.url.path
+
+        # Log detailed line, except high frequency polling (only log errors on polling)
+        if not path.startswith("/api/telemetry") or response.status_code >= 400:
+            logger.info(f"🌐 [HTTP] {request.method} {path} -> {response.status_code} ({duration_ms:.1f}ms) [{client_ip}]")
+        return response
+    except Exception as exc:
+        duration_ms = (time.perf_counter() - start_t) * 1000
+        client_ip = request.client.host if request.client else "unknown"
+        logger.error(f"❌ [HTTP FAIL] {request.method} {request.url.path} ({duration_ms:.1f}ms) [{client_ip}] - Error: {exc}", exc_info=True)
+        raise exc
+
 
 # Register API Routers
 app.include_router(telemetry.router, prefix="/api")

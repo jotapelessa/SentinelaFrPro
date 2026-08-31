@@ -5,9 +5,19 @@ mqtt:
   topic_prefix: frigate
   client_id: frigate_nvr
 
+# Detailed Structured Logging
+logger:
+  default: info
+  logs:
+    frigate.record: info
+    frigate.detectors: info
+    frigate.events: info
+    frigate.video: info
+
 # Intel Jasper Lake N5105 Hardware Acceleration (VAAPI)
 ffmpeg:
   hwaccel_args: preset-vaapi
+
 
 # Detectors: Limit detector threads to prevent CPU spikes
 detectors:
