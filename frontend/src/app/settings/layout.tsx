@@ -13,8 +13,12 @@ import {
   Tv,
   Radio,
   Server,
-  ShieldCheck
+  ShieldCheck,
+  ExternalLink,
+  Video,
+  Shield
 } from "lucide-react";
+
 import { useSentinelaStore } from "@/store/useSentinelaStore";
 
 export default function SettingsLayout({
@@ -135,7 +139,62 @@ export default function SettingsLayout({
                 );
               })}
             </nav>
+
+            {/* External Direct Links */}
+            <div className="pt-3 border-t border-slate-800/80 space-y-1.5">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 flex items-center justify-between">
+                <span>Atalhos Externos</span>
+                <ExternalLink className="w-3 h-3 text-slate-500" />
+              </div>
+              
+              <a
+                href="http://sentinela.local:5000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-2.5 rounded-xl text-slate-300 hover:text-cyan-300 hover:bg-slate-800/60 border border-transparent hover:border-cyan-500/30 transition-all group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 group-hover:scale-105 transition-transform">
+                    <Video className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold leading-tight flex items-center gap-1">
+                      Frigate NVR
+                      <ExternalLink className="w-2.5 h-2.5 opacity-50 group-hover:opacity-100" />
+                    </div>
+                    <div className="text-[10px] text-slate-400 leading-tight">Porta 5000</div>
+                  </div>
+                </div>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-cyan-400">
+                  :5000
+                </span>
+              </a>
+
+              <a
+                href="https://login.tailscale.com/admin/machines"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between p-2.5 rounded-xl text-slate-300 hover:text-emerald-300 hover:bg-slate-800/60 border border-transparent hover:border-emerald-500/30 transition-all group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 group-hover:scale-105 transition-transform">
+                    <Shield className="w-3.5 h-3.5" />
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold leading-tight flex items-center gap-1">
+                      Tailscale Admin
+                      <ExternalLink className="w-2.5 h-2.5 opacity-50 group-hover:opacity-100" />
+                    </div>
+                    <div className="text-[10px] text-slate-400 leading-tight">VPN Remota</div>
+                  </div>
+                </div>
+                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-emerald-400">
+                  VPN
+                </span>
+              </a>
+            </div>
           </div>
+
 
           {/* Quick System Badge Box */}
           <div className="hidden lg:block p-4 rounded-2xl bg-slate-950/90 border border-slate-800/80 space-y-2.5">

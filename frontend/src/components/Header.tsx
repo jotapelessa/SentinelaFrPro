@@ -15,8 +15,10 @@ import {
   Video, 
   Bell, 
   Settings as SettingsIcon,
-  Radio
+  Radio,
+  ExternalLink
 } from "lucide-react";
+
 import { useSentinelaStore } from "@/store/useSentinelaStore";
 
 export const Header: React.FC = () => {
@@ -114,6 +116,32 @@ export const Header: React.FC = () => {
 
         {/* ZONE 3: ACTIONS & NAVIGATION */}
         <div className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0">
+          {/* External Links: Frigate & Tailscale */}
+          <div className="hidden lg:flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-lg border border-slate-800">
+            <a
+              href="http://sentinela.local:5000"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold text-slate-300 hover:text-cyan-300 hover:bg-slate-800 transition-all group"
+              title="Abrir Frigate NVR (Porta 5000)"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
+              <span>Frigate</span>
+              <ExternalLink className="w-2.5 h-2.5 opacity-60 group-hover:opacity-100" />
+            </a>
+            <a
+              href="https://login.tailscale.com/admin/machines"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold text-slate-300 hover:text-emerald-300 hover:bg-slate-800 transition-all group"
+              title="Abrir Console Tailscale VPN"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+              <span>Tailscale</span>
+              <ExternalLink className="w-2.5 h-2.5 opacity-60 group-hover:opacity-100" />
+            </a>
+          </div>
+
           {/* Scanner Button */}
           <button
             onClick={() => setIsScannerOpen(true)}
@@ -121,8 +149,9 @@ export const Header: React.FC = () => {
             title="Escanear câmeras ONVIF na rede"
           >
             <Search className="w-3.5 h-3.5" />
-            <span className="hidden lg:inline">Scanner CFTV</span>
+            <span className="hidden xl:inline">Scanner CFTV</span>
           </button>
+
 
           {/* Mobile Scanner Icon Button */}
           <button

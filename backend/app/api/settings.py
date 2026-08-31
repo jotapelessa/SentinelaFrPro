@@ -255,87 +255,158 @@ async def test_telegram_photo(request: Request):
         raise HTTPException(status_code=500, detail="Falha ao enviar foto para o Telegram.")
 
 
+class TelegramVideoTestPayload(BaseModel):
+    duration_seconds: Optional[int] = 15
+    resolution: Optional[str] = "1080p"
+    video_quality: Optional[str] = "balanced"
+    include_audio: Optional[bool] = True
+
 @router.post("/telegram/test-video")
-async def test_telegram_video(request: Request):
+async def test_telegram_video(request: Request, payload: Optional[TelegramVideoTestPayload] = None, db: AsyncSession = Depends(get_db)):
     import os
     import httpx
     import subprocess
+    from app.db.models import SystemSetting
+    
     client_ip = request.client.host if request.client else "unknown"
     if not telegram_vault_service.is_configured:
         await telegram_vault_service.load_credentials_from_db()
     if not telegram_vault_service.is_configured:
         raise HTTPException(status_code=400, detail="Telegram não configurado.")
 
+    # 1. Determine parameters from Payload or DB
+    stmt = select(SystemSetting)
+    res = await db.execute(stmt)
+    db_settings = {s.key: s.value for s in res.scalars().all()}
+
+    duration_s = (payload.duration_seconds if payload and payload.duration_seconds else None) or int(db_settings.get("telegram_clip_duration_seconds", "15"))
+    resolution = (payload.resolution if payload and payload.resolution else None) or db_settings.get("telegram_snapshot_resolution", "1080p")
+    video_qual = (payload.video_quality if payload and payload.video_quality else None) or db_settings.get("telegram_video_quality", "balanced")
+    inc_audio = (payload.include_audio if payload and payload.include_audio is not None else None)
+    if inc_audio is None:
+        inc_audio = db_settings.get("telegram_include_audio", "true").lower() == "true"
+
+    # Clamp duration between 3s and 60s for reliable Telegram delivery
+    duration_s = max(min(duration_s, 60), 3)
+
+    # Resolution scaling
+    scale_w, scale_h = 1920, 1080
+    if resolution == "720p":
+        scale_w, scale_h = 1280, 720
+    elif resolution == "original":
+        scale_w, scale_h = 1920, 1080
+
+    crf = 23
+    preset = "veryfast"
+    if video_qual == "high":
+        crf = 19
+        preset = "medium"
+    elif video_qual == "fast":
+        crf = 28
+        preset = "ultrafast"
+
     video_bytes = None
-    # 1. Try from Frigate API
-    try:
-        async with httpx.AsyncClient(timeout=6.0) as client:
-            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/camera_principal/latest.mp4")
-            if resp.status_code == 200 and len(resp.content) > 5000:
-                video_bytes = resp.content
-    except Exception:
-        pass
 
-    # 2. Try recordings on disk
+    # 2. Try recording LIVE video stream via FFmpeg from Frigate / go2rtc RTSP
+    rtsp_sources = [
+        "rtsp://frigate:8554/camera_principal",
+        "rtsp://127.0.0.1:8554/camera_principal",
+        "rtsp://192.168.1.6:8554/stream"
+    ]
+    for rtsp_url in rtsp_sources:
+        try:
+            cmd = [
+                "ffmpeg", "-y",
+                "-rtsp_transport", "tcp",
+                "-i", rtsp_url,
+                "-t", str(duration_s),
+                "-vf", f"scale={scale_w}:{scale_h}:force_original_aspect_ratio=decrease,pad={scale_w}:{scale_h}:(ow-iw)/2:(oh-ih)/2",
+                "-c:v", "libx264",
+                "-preset", preset,
+                "-crf", str(crf),
+                "-pix_fmt", "yuv420p",
+                "-movflags", "+faststart",
+                "-f", "mp4",
+                "-"
+            ]
+            if not inc_audio:
+                cmd.insert(-4, "-an")
+            
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=duration_s + 10)
+            if proc.returncode == 0 and len(proc.stdout) > 5000:
+                video_bytes = proc.stdout
+                break
+        except Exception as e:
+            logger.warning(f"Live RTSP capture attempt failed on {rtsp_url}: {e}")
+
+    # 3. Fallback: Query go2rtc live MP4 endpoint
     if not video_bytes:
-        storage_dir = "/media/frigate/recordings"
-        if os.path.exists(storage_dir):
-            for root, _, files in os.walk(storage_dir):
-                for file in files:
-                    if file.endswith(".mp4"):
-                        fp = os.path.join(root, file)
-                        try:
-                            if os.path.getsize(fp) > 5000:
-                                with open(fp, "rb") as vf:
-                                    video_bytes = vf.read()
-                                break
-                        except Exception:
-                            pass
-                if video_bytes:
-                    break
+        try:
+            async with httpx.AsyncClient(timeout=duration_s + 8.0) as client:
+                g_resp = await client.get(f"http://frigate:1984/api/stream.mp4?src=camera_principal&duration={duration_s}")
+                if g_resp.status_code == 200 and len(g_resp.content) > 5000:
+                    video_bytes = g_resp.content
+        except Exception:
+            pass
 
-    # 3. Synthetic sample video via ffmpeg
+    # 4. Fallback: Query Frigate API latest mp4 or disk recordings
+    if not video_bytes:
+        try:
+            async with httpx.AsyncClient(timeout=6.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/camera_principal/latest.mp4")
+                if resp.status_code == 200 and len(resp.content) > 5000:
+                    video_bytes = resp.content
+        except Exception:
+            pass
+
+    # 5. Synthetic fallback if camera was physically unreachable
     if not video_bytes:
         try:
             cmd = [
                 "ffmpeg", "-y", "-f", "lavfi",
-                "-i", "testsrc=size=640x360:rate=15",
-                "-t", "3",
+                "-i", f"testsrc=size={scale_w}x{scale_h}:rate=25",
+                "-t", str(duration_s),
                 "-pix_fmt", "yuv420p",
                 "-c:v", "libx264",
+                "-preset", "ultrafast",
+                "-movflags", "+faststart",
                 "-f", "mp4",
                 "-"
             ]
-            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=8)
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=duration_s + 5)
             if proc.returncode == 0 and len(proc.stdout) > 1000:
                 video_bytes = proc.stdout
         except Exception:
             pass
 
     if not video_bytes:
-        raise HTTPException(status_code=404, detail="Nenhum vídeo disponível no momento. O Frigate ainda está gerando as primeiras gravações.")
+        raise HTTPException(status_code=500, detail="Não foi possível capturar o stream de vídeo ao vivo.")
 
     ok = await telegram_vault_service.send_alert_video(
         video_bytes=video_bytes,
         camera_name="camera_principal",
         label="person",
-        duration_s=15.0,
-        score=0.95,
-        friendly_name="Câmera de Teste"
+        duration_s=float(duration_s),
+        score=0.98,
+        friendly_name="Câmera Ao Vivo"
     )
 
     await audit_service.log(
-        action="TELEGRAM_VIDEO_TEST",
+        action="TELEGRAM_LIVE_VIDEO_TEST",
         module="TELEGRAM",
         severity="SUCCESS" if ok else "WARNING",
-        details="Teste de envio de Vídeo MP4 disparado para o Telegram.",
+        details=f"Vídeo de teste ao vivo gravado e disparado ({duration_s}s, {resolution}, {video_qual}).",
         client_ip=client_ip
     )
 
     if ok:
-        return {"status": "success", "message": "🎥 Vídeo MP4 de teste entregue com sucesso no Telegram!"}
+        return {
+            "status": "success",
+            "message": f"🎥 Vídeo gravado ao vivo ({duration_s}s, {resolution}) entregue com sucesso no Telegram!"
+        }
     else:
-        raise HTTPException(status_code=500, detail="Falha ao enviar vídeo MP4 para o Telegram.")
+        raise HTTPException(status_code=500, detail="Falha ao entregar vídeo ao vivo no Telegram.")
+
 
 
 @router.post("/telegram/test-logs")

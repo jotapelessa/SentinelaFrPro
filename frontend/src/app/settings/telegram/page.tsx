@@ -181,14 +181,23 @@ export default function TelegramSettingsPage() {
     setTelegramStatus(null);
     setIsError(false);
     try {
-      const res = await fetch(`${apiUrl}/settings/telegram/test-video`, { method: "POST" });
+      const res = await fetch(`${apiUrl}/settings/telegram/test-video`, { 
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          duration_seconds: clipDuration,
+          resolution: snapshotResolution,
+          video_quality: videoQuality,
+          include_audio: includeAudio
+        })
+      });
       const data = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
       if (res.ok) {
         setIsError(false);
-        setTelegramStatus(`🎥 ${data.message || "Vídeo de teste entregue no Telegram com sucesso!"}`);
+        setTelegramStatus(`🎥 ${data.message || "Vídeo gravado ao vivo entregue no Telegram com sucesso!"}`);
       } else {
         setIsError(true);
-        setTelegramStatus(`⚠️ Falha ao enviar vídeo: ${data.detail || "Erro interno"}`);
+        setTelegramStatus(`⚠️ Falha ao gravar/enviar vídeo ao vivo: ${data.detail || "Erro interno"}`);
       }
     } catch (e: any) {
       setIsError(true);
@@ -197,6 +206,7 @@ export default function TelegramSettingsPage() {
       setTestingVideo(false);
     }
   };
+
 
   const handleTestLogs = async () => {
     setTestingLogs(true);
@@ -522,14 +532,14 @@ export default function TelegramSettingsPage() {
               <div className="flex items-center justify-between">
                 <span className="flex items-center gap-2 text-xs font-bold text-emerald-300">
                   <Video className="w-4 h-4 text-emerald-400" />
-                  Vídeo de Evento MP4
+                  Gravação de Vídeo Ao Vivo
                 </span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-950/60 text-emerald-400 border border-emerald-800/50 font-mono">
-                  H.264 MP4
+                  {clipDuration}s • {snapshotResolution}
                 </span>
               </div>
               <p className="text-[11px] text-slate-400 leading-relaxed">
-                Dispara clipe de vídeo gravado com aceleração de hardware e legenda completa no chat do Telegram.
+                Grava {clipDuration}s de vídeo <strong>ao vivo em tempo real</strong> da câmera de acordo com a resolução ({snapshotResolution}) e qualidade ({videoQuality}) configuradas.
               </p>
             </div>
             <button
@@ -539,7 +549,7 @@ export default function TelegramSettingsPage() {
               className="w-full py-2.5 px-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-sm"
             >
               {testingVideo ? <Loader2 className="w-4 h-4 animate-spin text-emerald-400" /> : <Video className="w-4 h-4 text-emerald-400" />}
-              <span>{testingVideo ? "Enviando Vídeo MP4..." : "Enviar Vídeo de Teste"}</span>
+              <span>{testingVideo ? `Gravando ${clipDuration}s ao vivo...` : `Gravar e Enviar Vídeo (${clipDuration}s)`}</span>
             </button>
           </div>
 
@@ -624,6 +634,67 @@ export default function TelegramSettingsPage() {
             </button>
           </div>
 
+        </div>
+      </div>
+
+      {/* 4. External Shortcuts: Frigate NVR & Tailscale VPN */}
+      <div className="p-5 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 space-y-3 shadow-xl">
+        <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <ExternalLink className="w-4 h-4 text-cyan-400" />
+            <h3 className="text-sm font-bold text-white uppercase tracking-wider">Atalhos Externos de Infraestrutura</h3>
+          </div>
+          <span className="text-[10px] font-mono text-slate-400">ACESSO DIRETO</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Frigate Shortcut */}
+          <a
+            href="http://sentinela.local:5000"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center font-bold">
+                <Video className="w-5 h-5" />
+              </div>
+              <div>
+                <strong className="text-xs font-bold text-white group-hover:text-cyan-400 transition-colors flex items-center gap-1.5">
+                  Frigate NVR Nativo (Porta 5000)
+                  <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-cyan-400 transition-colors" />
+                </strong>
+                <p className="text-[11px] text-slate-400">Painel nativo com gravações 24/7, eventos e debug</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-1 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/60 font-bold">
+              :5000
+            </span>
+          </a>
+
+          {/* Tailscale Shortcut */}
+          <a
+            href="https://login.tailscale.com/admin/machines"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-emerald-500/50 transition-all flex items-center justify-between group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                <Shield className="w-5 h-5" />
+              </div>
+              <div>
+                <strong className="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors flex items-center gap-1.5">
+                  Tailscale VPN Admin Console
+                  <ExternalLink className="w-3 h-3 text-slate-500 group-hover:text-emerald-400 transition-colors" />
+                </strong>
+                <p className="text-[11px] text-slate-400">Acesso remoto seguro de fora de casa (4G/5G)</p>
+              </div>
+            </div>
+            <span className="text-[10px] font-mono px-2 py-1 rounded bg-emerald-950 text-emerald-400 border border-emerald-800/60 font-bold">
+              VPN
+            </span>
+          </a>
         </div>
       </div>
 
