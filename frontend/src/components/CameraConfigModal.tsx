@@ -188,6 +188,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
 
   const handleDelete = async () => {
     if (!confirm(`Deseja realmente remover a câmera "${friendlyName}"?`)) return;
+    setSaving(true);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const camIdentifier = camera.id || camera.name || "camera_principal";
@@ -195,9 +196,15 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
       if (res.ok) {
         onSaved();
         onClose();
+      } else {
+        const errJson = await res.json().catch(() => ({}));
+        alert(`Erro ao remover: ${errJson.detail || "Falha no servidor"}`);
       }
     } catch (err) {
       console.error(err);
+      alert("Falha de comunicação ao remover câmera.");
+    } finally {
+      setSaving(false);
     }
   };
 

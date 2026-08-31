@@ -59,10 +59,6 @@ go2rtc:
       - rtsp://192.168.1.6:8554/live#transport=udp
       - rtsp://192.168.1.6:8554/
       - ffmpeg:rtsp://192.168.1.6:8554/stream#video=h264
-    cam_192_168_1_6:
-      - rtsp://192.168.1.6:8554/stream#transport=tcp
-      - rtsp://192.168.1.6:8554/live#transport=tcp
-      - rtsp://192.168.1.6:8554/
   webrtc:
     candidates:
       - 192.168.1.252:8555
@@ -94,21 +90,6 @@ cameras:
           - car
           - motorcycle
 
-  cam_192_168_1_6:
-    ffmpeg:
-      inputs:
-        - path: rtsp://127.0.0.1:8554/cam_192_168_1_6
-          input_args: preset-rtsp-restream
-          roles:
-            - detect
-            - record
-    detect:
-      enabled: true
-      width: 1280
-      height: 720
-      fps: 5
-    record:
-      enabled: true
 
 
 

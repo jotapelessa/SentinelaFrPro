@@ -46,24 +46,24 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
     except Exception:
         pass
 
-    # 2. Fetch live Frigate config
-    try:
-        async with httpx.AsyncClient(timeout=2.5) as client:
-            cfg_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config")
-            if cfg_resp.status_code == 200:
-                cfg_data = cfg_resp.json()
-    except Exception:
-        pass
+    # 2. Fetch authoritative local config from disk first
+    config_path = get_frigate_config_path()
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg_data = yaml.safe_load(f) or {}
+        except Exception:
+            pass
 
-    # Fallback to local config file if API was unreachable
+    # Fallback to Frigate API if local file was not found
     if not cfg_data:
-        config_path = get_frigate_config_path()
-        if os.path.exists(config_path):
-            try:
-                with open(config_path, "r", encoding="utf-8") as f:
-                    cfg_data = yaml.safe_load(f) or {}
-            except Exception:
-                pass
+        try:
+            async with httpx.AsyncClient(timeout=2.0) as client:
+                cfg_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config")
+                if cfg_resp.status_code == 200:
+                    cfg_data = cfg_resp.json()
+        except Exception:
+            pass
 
     if isinstance(cfg_data, dict):
         frigate_cams = cfg_data.get("cameras", {})
@@ -857,18 +857,20 @@ async def remove_camera_from_frigate(cam_name: str):
 
     config_path = get_frigate_config_path()
     cfg = {}
-    try:
-        async with httpx.AsyncClient(timeout=3.0) as client:
-            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
-            if resp.status_code == 200:
-                cfg = yaml.safe_load(resp.text) or {}
-    except Exception:
-        pass
 
-    if not cfg and os.path.exists(config_path):
+    if os.path.exists(config_path):
         try:
             with open(config_path, "r", encoding="utf-8") as f:
                 cfg = yaml.safe_load(f) or {}
+        except Exception:
+            pass
+
+    if not cfg:
+        try:
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
+                if resp.status_code == 200:
+                    cfg = yaml.safe_load(resp.text) or {}
         except Exception:
             pass
 
@@ -877,35 +879,37 @@ async def remove_camera_from_frigate(cam_name: str):
 
     changed = False
     if "go2rtc" in cfg and isinstance(cfg["go2rtc"], dict) and "streams" in cfg["go2rtc"] and isinstance(cfg["go2rtc"]["streams"], dict):
-        if cam_name in cfg["go2rtc"]["streams"]:
-            del cfg["go2rtc"]["streams"][cam_name]
-            changed = True
-        if f"{cam_name}_sub" in cfg["go2rtc"]["streams"]:
-            del cfg["go2rtc"]["streams"][f"{cam_name}_sub"]
-            changed = True
+        for k in list(cfg["go2rtc"]["streams"].keys()):
+            if k == cam_name or k == f"{cam_name}_sub":
+                del cfg["go2rtc"]["streams"][k]
+                changed = True
 
-    if "cameras" in cfg and isinstance(cfg["cameras"], dict) and cam_name in cfg["cameras"]:
-        del cfg["cameras"][cam_name]
-        changed = True
+    if "cameras" in cfg and isinstance(cfg["cameras"], dict):
+        for k in list(cfg["cameras"].keys()):
+            if k == cam_name:
+                del cfg["cameras"][k]
+                changed = True
 
-    if changed:
-        updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
+    cfg = sanitize_frigate_config(cfg)
+    updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
+
+    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
         try:
-            async with httpx.AsyncClient(timeout=5.0) as client:
-                await client.post(
-                    f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
-                    content=updated_yaml,
-                    headers={"Content-Type": "text/plain"}
-                )
+            with open(config_path, "w", encoding="utf-8") as f:
+                f.write(updated_yaml)
         except Exception as e:
-            logger.warning(f"Failed to post updated config to Frigate API: {e}")
+            logger.warning(f"Failed to write config file after camera deletion: {e}")
 
-        if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
-            try:
-                with open(config_path, "w", encoding="utf-8") as f:
-                    f.write(updated_yaml)
-            except Exception:
-                pass
+    try:
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            await client.post(
+                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
+                content=updated_yaml,
+                headers={"Content-Type": "text/plain"}
+            )
+    except Exception as e:
+        logger.warning(f"Failed to post updated config to Frigate API: {e}")
+
 
 @router.delete("/{camera_id}")
 async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):
@@ -916,19 +920,22 @@ async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Dep
         cam = res.scalar_one_or_none()
 
     if not cam:
-        stmt = select(Camera).where(Camera.name == camera_id)
+        stmt = select(Camera).where((Camera.name == camera_id) | (Camera.friendly_name == camera_id) | (Camera.ip_address == camera_id))
         res = await db.execute(stmt)
         cam = res.scalar_one_or_none()
 
-    if not cam:
-        raise HTTPException(status_code=404, detail="Camera not found")
+    cam_name = cam.name if cam else camera_id
+    if cam:
+        await db.delete(cam)
+        await db.commit()
 
-    cam_name = cam.name
-    await db.delete(cam)
-    await db.commit()
-
+    # Always ensure Frigate removes the camera definition and any associated IP slug
     try:
         await remove_camera_from_frigate(cam_name)
+        if cam and cam.ip_address:
+            ip_slug = f"cam_{cam.ip_address.replace('.', '_')}"
+            if ip_slug != cam_name:
+                await remove_camera_from_frigate(ip_slug)
     except Exception as e:
         logger.warning(f"Error removing camera from Frigate: {e}")
 
@@ -936,7 +943,7 @@ async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Dep
         action="CAMERA_DELETED",
         module="CAMERA",
         severity="WARNING",
-        details=f"Câmera {cam_name} removida do Sentinela.",
+        details=f"Câmera {cam_name} removida do Sentinela e Frigate.",
         client_ip=request.client.host if request.client else "unknown"
     )
     return {"status": "deleted", "id": camera_id, "camera_name": cam_name}
