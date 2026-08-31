@@ -1,8 +1,13 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Body
 from app.services.telemetry import telemetry_service
 from app.services.telegram_vault import telegram_vault_service
+from pydantic import BaseModel
+from typing import Optional
 
 router = APIRouter(prefix="/telemetry", tags=["Telemetry"])
+
+class BenchmarkPayload(BaseModel):
+    benchmark_type: str # '1080p', '2k', '4k', 'detection', 'image_hud'
 
 @router.get("/")
 async def get_telemetry():
@@ -12,6 +17,18 @@ async def get_telemetry():
         "paused": telegram_vault_service.is_paused()
     }
     return snapshot
+
+@router.get("/stats-detailed")
+async def get_detailed_stats():
+    """Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe partitions and Top Ubuntu processes."""
+    return telemetry_service.get_detailed_stats()
+
+@router.post("/benchmark")
+async def run_server_benchmark(payload: BenchmarkPayload):
+    """Runs on-demand stress & performance benchmarks for 1080p, 2K, 4K, IA detection and image processing."""
+    res = telemetry_service.run_benchmark(payload.benchmark_type)
+    return res
+
 
 @router.get("/diagnostics")
 async def get_system_diagnostics():
