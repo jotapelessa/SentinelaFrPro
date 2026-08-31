@@ -20,6 +20,8 @@ export const CameraMosaic: React.FC = () => {
     ip_address: ""
   });
   const [addMessage, setAddMessage] = useState<string | null>(null);
+  const [syncingFrigate, setSyncingFrigate] = useState(false);
+
   const fetchCameras = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
@@ -33,6 +35,18 @@ export const CameraMosaic: React.FC = () => {
     }
   };
 
+  const handleSyncFrigate = async () => {
+    setSyncingFrigate(true);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      await fetch(`${apiUrl}/cameras/sync-frigate`, { method: "POST" });
+      await fetchCameras();
+    } catch (err) {
+      console.error("Erro ao sincronizar com Frigate:", err);
+    } finally {
+      setSyncingFrigate(false);
+    }
+  };
 
   useEffect(() => {
     fetchCameras();
@@ -114,21 +128,23 @@ export const CameraMosaic: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={handleSyncFrigate}
+            disabled={syncingFrigate}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all disabled:opacity-50"
+            title="Sincronizar todas as câmeras diretamente com o Frigate NVR"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${syncingFrigate ? "animate-spin text-cyan-400" : ""}`} />
+            <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Frigate"}</span>
+          </button>
+
           <button
             onClick={() => setIsAddModalOpen(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-md shadow-cyan-500/20 transition-all"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Adicionar Câmera</span>
-          </button>
-
-          <button
-            onClick={fetchCameras}
-            className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all text-xs border border-slate-700"
-            title="Atualizar lista"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
           </button>
 
           {spotlightCamera && (
@@ -150,18 +166,19 @@ export const CameraMosaic: React.FC = () => {
             <Video className="w-8 h-8" />
           </div>
           <div className="space-y-1 max-w-md mx-auto">
-            <h3 className="text-base font-bold text-white">Nenhuma Câmera Cadastrada</h3>
+            <h3 className="text-base font-bold text-white">Nenhuma Câmera Ativa Encontrada</h3>
             <p className="text-xs text-slate-400">
-              Adicione uma câmera RTSP manualmente ou use o scanner ONVIF para encontrar câmeras automaticamente na rede.
+              Sincronize com as câmeras já configuradas no Frigate NVR ou utilize o Scanner ONVIF para encontrar novas fontes na rede.
             </p>
           </div>
-          <div className="flex items-center justify-center gap-3 pt-2">
+          <div className="flex items-center justify-center gap-3 pt-2 flex-wrap">
             <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition-all"
+              onClick={handleSyncFrigate}
+              disabled={syncingFrigate}
+              className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 flex items-center gap-2 transition-all disabled:opacity-50"
             >
-              <Plus className="w-4 h-4" />
-              <span>Adicionar Câmera RTSP</span>
+              <RefreshCw className={`w-4 h-4 ${syncingFrigate ? "animate-spin" : ""}`} />
+              <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Câmeras do Frigate"}</span>
             </button>
             <button
               onClick={() => {

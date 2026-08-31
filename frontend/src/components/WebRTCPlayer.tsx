@@ -68,15 +68,21 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
 
         {/* Camera HUD Header Overlay */}
         <div className="absolute top-0 left-0 right-0 p-3 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex items-center justify-between z-10">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping" />
             <span className="font-bold text-xs tracking-wide text-white uppercase drop-shadow-md">
               {camera.friendly_name || camera.name}
             </span>
-            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold uppercase flex items-center gap-1">
-              <Zap className="w-2.5 h-2.5" />
-              {streamMode === "mse" ? "MSE (Ultra Fluido)" : streamMode.toUpperCase()}
-            </span>
+            {camera.live_stats?.camera_fps ? (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
+                ⚡ {camera.live_stats.camera_fps} FPS (Frigate IA)
+              </span>
+            ) : (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold uppercase flex items-center gap-1">
+                <Zap className="w-2.5 h-2.5" />
+                {streamMode === "mse" ? "MSE (60 FPS)" : streamMode.toUpperCase()}
+              </span>
+            )}
           </div>
 
           <div className="flex items-center gap-2 font-mono text-[10px] text-slate-300">

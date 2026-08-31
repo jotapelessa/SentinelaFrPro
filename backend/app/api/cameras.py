@@ -22,10 +22,174 @@ class CameraCreate(BaseModel):
 
 @router.get("/")
 async def list_cameras(db: AsyncSession = Depends(get_db)):
+    """
+    Unified Camera Provider:
+    Returns all cameras. Automatically discovers and synchronizes any cameras and streams
+    configured in Frigate NVR and go2rtc into Sentinela. If a camera works in Frigate,
+    it is automatically present, active, and streaming in Sentinela.
+    """
+    import os
+    import json
+    import yaml
+    import httpx
+    from app.core.config import settings
+
+    frigate_stats = {}
+    cfg_data = {}
+
+    # 1. Fetch live telemetry / stats from Frigate
+    try:
+        async with httpx.AsyncClient(timeout=2.0) as client:
+            stats_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/stats")
+            if stats_resp.status_code == 200:
+                frigate_stats = stats_resp.json().get("cameras", {})
+    except Exception:
+        pass
+
+    # 2. Fetch live Frigate config
+    try:
+        async with httpx.AsyncClient(timeout=2.5) as client:
+            cfg_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config")
+            if cfg_resp.status_code == 200:
+                cfg_data = cfg_resp.json()
+    except Exception:
+        pass
+
+    # Fallback to local config file if API was unreachable
+    if not cfg_data:
+        config_path = get_frigate_config_path()
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    cfg_data = yaml.safe_load(f) or {}
+            except Exception:
+                pass
+
+    if isinstance(cfg_data, dict):
+        frigate_cams = cfg_data.get("cameras", {})
+        go2rtc_streams = cfg_data.get("go2rtc", {}).get("streams", {})
+
+        db_changed = False
+        if isinstance(frigate_cams, dict):
+            for cam_name, cam_cfg in frigate_cams.items():
+                if not cam_name or not isinstance(cam_cfg, dict):
+                    continue
+
+                stmt = select(Camera).where(Camera.name == cam_name)
+                res_c = await db.execute(stmt)
+                existing = res_c.scalar_one_or_none()
+
+                # Extract RTSP URL
+                rtsp_url = f"rtsp://frigate:8554/{cam_name}"
+                if isinstance(go2rtc_streams, dict) and cam_name in go2rtc_streams:
+                    g_stream = go2rtc_streams[cam_name]
+                    if isinstance(g_stream, list) and len(g_stream) > 0 and isinstance(g_stream[0], str) and g_stream[0].startswith("rtsp://"):
+                        rtsp_url = g_stream[0].split("#")[0]
+                    elif isinstance(g_stream, str) and g_stream.startswith("rtsp://"):
+                        rtsp_url = g_stream.split("#")[0]
+
+                # Parse Zones
+                detect_w = cam_cfg.get("detect", {}).get("width", 1280) if isinstance(cam_cfg.get("detect"), dict) else 1280
+                detect_h = cam_cfg.get("detect", {}).get("height", 720) if isinstance(cam_cfg.get("detect"), dict) else 720
+                cam_zones = cam_cfg.get("zones", {})
+                parsed_zone_items = []
+
+                if isinstance(cam_zones, dict):
+                    for z_idx, (z_name, z_info) in enumerate(cam_zones.items()):
+                        coords = z_info.get("coordinates") if isinstance(z_info, dict) else z_info
+                        if coords:
+                            pts = parse_frigate_coordinates(coords, detect_w, detect_h)
+                            if pts:
+                                parsed_zone_items.append({
+                                    "id": f"zone_{z_name}",
+                                    "name": z_name.replace("_", " ").title(),
+                                    "slug": z_name,
+                                    "type": "zone",
+                                    "color": ZONE_PALETTE[z_idx % len(ZONE_PALETTE)],
+                                    "points": pts,
+                                    "objects": z_info.get("objects", ["person", "car", "motorcycle"]) if isinstance(z_info, dict) else ["person", "car", "motorcycle"]
+                                })
+
+                motion_mask = cam_cfg.get("motion", {}).get("mask") if isinstance(cam_cfg.get("motion"), dict) else None
+                if motion_mask:
+                    m_pts = parse_frigate_coordinates(motion_mask, detect_w, detect_h)
+                    if m_pts:
+                        parsed_zone_items.append({
+                            "id": f"mask_{cam_name}",
+                            "name": "Máscara de Movimento",
+                            "slug": "motion_mask",
+                            "type": "mask",
+                            "color": "#f43f5e",
+                            "points": m_pts
+                        })
+
+                zones_json_str = json.dumps(parsed_zone_items) if parsed_zone_items else None
+
+                if not existing:
+                    friendly = "Câmera Principal" if cam_name == "camera_principal" else cam_name.replace("_", " ").title()
+                    new_c = Camera(
+                        name=cam_name,
+                        friendly_name=friendly,
+                        rtsp_main=rtsp_url,
+                        ip_address="192.168.1.6" if ("192_168_1_6" in cam_name or cam_name == "camera_principal") else "127.0.0.1",
+                        onvif_port=80,
+                        enabled=cam_cfg.get("enabled", True),
+                        zones=zones_json_str
+                    )
+                    db.add(new_c)
+                    db_changed = True
+                else:
+                    if zones_json_str and not existing.zones:
+                        existing.zones = zones_json_str
+                        db_changed = True
+                    if not existing.rtsp_main or existing.rtsp_main.startswith("rtsp://frigate"):
+                        existing.rtsp_main = rtsp_url
+                        db_changed = True
+
+        if db_changed:
+            try:
+                await db.commit()
+            except Exception as e:
+                logger.warning(f"Failed to auto-commit discovered cameras: {e}")
+
+    # 3. Retrieve all registered cameras from DB
     stmt = select(Camera)
     result = await db.execute(stmt)
     cameras = result.scalars().all()
-    return list(cameras)
+
+    # 4. Attach Frigate real-time stats and return
+    output = []
+    for c in cameras:
+        cam_stat = frigate_stats.get(c.name, {})
+        cam_dict = {
+            "id": c.id,
+            "name": c.name,
+            "friendly_name": c.friendly_name or c.name,
+            "rtsp_main": c.rtsp_main,
+            "rtsp_sub": c.rtsp_sub,
+            "ip_address": c.ip_address,
+            "onvif_port": c.onvif_port,
+            "enabled": c.enabled,
+            "zones": c.zones,
+            "objects_to_track": c.objects_to_track,
+            "min_score": c.min_score,
+            "record_mode": c.record_mode,
+            "record_retain_days": c.record_retain_days,
+            "record_audio": c.record_audio,
+            "notify_telegram": c.notify_telegram,
+            "notify_tv": c.notify_tv,
+            "notify_audio": c.notify_audio,
+            "cooldown_seconds": c.cooldown_seconds,
+            "live_stats": {
+                "camera_fps": cam_stat.get("camera_fps", 0),
+                "detection_fps": cam_stat.get("detection_fps", 0),
+                "process_fps": cam_stat.get("process_fps", 0),
+                "online": True if (c.name in frigate_stats or c.enabled) else False
+            }
+        }
+        output.append(cam_dict)
+
+    return output
 
 @router.post("/sync-frigate")
 async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends(get_db)):

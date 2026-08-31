@@ -70,7 +70,7 @@ export interface Camera {
   ip_address?: string;
   onvif_port?: number;
   enabled: boolean;
-  zones?: string[];
+  zones?: string[] | string | any;
   objects_to_track?: string;
   min_score?: number;
   record_mode?: string;
@@ -80,6 +80,12 @@ export interface Camera {
   notify_tv?: boolean;
   notify_audio?: boolean;
   cooldown_seconds?: number;
+  live_stats?: {
+    camera_fps?: number;
+    detection_fps?: number;
+    process_fps?: number;
+    online?: boolean;
+  };
 }
 
 
