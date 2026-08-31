@@ -725,7 +725,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         cfg["detectors"] = {
             "ov": {
                 "type": "openvino",
-                "device": "GPU"
+                "device": "AUTO"
             }
         }
 

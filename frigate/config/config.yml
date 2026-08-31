@@ -23,11 +23,11 @@ ffmpeg:
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
 
-# Detectors: Intel OpenVINO GPU Acceleration (Intel UHD Graphics 11th Gen N5105)
+# Detectors: Intel OpenVINO Hardware Acceleration (Auto GPU/CPU fallback)
 detectors:
   ov:
     type: openvino
-    device: GPU
+    device: AUTO
 
 
 # Motion Detection Fine-Tuning (Intel N5105 Optimized - Low CPU)
