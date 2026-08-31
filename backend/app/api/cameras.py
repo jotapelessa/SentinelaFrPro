@@ -1261,22 +1261,26 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
 
     cfg = None
     raw_yaml_text = None
+    config_path = get_frigate_config_path()
 
-    # 1. Fetch current raw YAML from Frigate API or File
-    try:
-        async with httpx.AsyncClient(timeout=4.0) as client:
-            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
-            if resp.status_code == 200:
-                raw_yaml_text = resp.text
-                cfg = yaml.safe_load(raw_yaml_text) or {}
-    except Exception:
-        pass
-
-    if not cfg:
-        config_path = get_frigate_config_path()
-        if os.path.exists(config_path):
+    # 1. Authoritative: Read complete config from disk first to preserve mqtt and all global sections
+    if os.path.exists(config_path):
+        try:
             with open(config_path, "r", encoding="utf-8") as f:
                 cfg = yaml.safe_load(f) or {}
+        except Exception as e:
+            logger.warning(f"Failed to read disk config in save_zones: {e}")
+
+    # Fallback to Frigate API if disk file was not present
+    if not cfg:
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
+                if resp.status_code == 200:
+                    raw_yaml_text = resp.text
+                    cfg = yaml.safe_load(raw_yaml_text) or {}
+        except Exception:
+            pass
 
     if not isinstance(cfg, dict):
         cfg = {}
@@ -1353,8 +1357,15 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
     cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
-    saved_via_api = False
-    # Try pushing directly to Frigate API (with automatic reload)
+    # 1. Direct file save on disk
+    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
+        try:
+            with open(config_path, "w", encoding="utf-8") as f:
+                f.write(updated_yaml)
+        except Exception as e:
+            logger.warning(f"File save failed in save_zones: {e}")
+
+    # 2. Push to Frigate API or trigger restart
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
             save_resp = await client.post(
@@ -1362,19 +1373,10 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
                 content=updated_yaml,
                 headers={"Content-Type": "text/plain"}
             )
-            if save_resp.status_code == 200:
-                saved_via_api = True
+            if save_resp.status_code != 200:
+                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
     except Exception as e:
-        logger.warning(f"Frigate API save failed: {e}")
-
-    # Fallback to direct file save
-    config_path = get_frigate_config_path()
-    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
-        try:
-            with open(config_path, "w", encoding="utf-8") as f:
-                f.write(updated_yaml)
-        except Exception as e:
-            logger.warning(f"File save failed: {e}")
+        logger.warning(f"Frigate API save failed in save_zones: {e}")
 
     # 4. Update SQLite DB for 100% synchronization
     try:
