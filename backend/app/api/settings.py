@@ -265,7 +265,9 @@ class TelegramVideoTestPayload(BaseModel):
 
 @router.post("/telegram/test-video")
 async def test_telegram_video(request: Request, payload: Optional[TelegramVideoTestPayload] = None, db: AsyncSession = Depends(get_db)):
+
     import os
+    import uuid
     import httpx
     import subprocess
     from app.db.models import SystemSetting
@@ -274,7 +276,7 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
     if not telegram_vault_service.is_configured:
         await telegram_vault_service.load_credentials_from_db()
     if not telegram_vault_service.is_configured:
-        raise HTTPException(status_code=400, detail="Telegram não configurado.")
+        raise HTTPException(status_code=400, detail="Telegram não configurado no Sentinela.")
 
     # 1. Determine parameters from Payload or DB
     stmt = select(SystemSetting)
@@ -288,8 +290,8 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
     if inc_audio is None:
         inc_audio = db_settings.get("telegram_include_audio", "true").lower() == "true"
 
-    # Clamp duration between 3s and 60s for reliable Telegram delivery
-    duration_s = max(min(duration_s, 60), 3)
+    # Clamp duration between 3s and 30s for fast live tests
+    duration_s = max(min(duration_s, 30), 3)
 
     # Resolution scaling
     scale_w, scale_h = 1920, 1080
@@ -298,18 +300,19 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
     elif resolution == "original":
         scale_w, scale_h = 1920, 1080
 
-    crf = 23
+    crf = 24
     preset = "veryfast"
     if video_qual == "high":
-        crf = 19
-        preset = "medium"
+        crf = 20
+        preset = "fast"
     elif video_qual == "fast":
         crf = 28
         preset = "ultrafast"
 
     video_bytes = None
+    temp_file = f"/tmp/live_test_{uuid.uuid4().hex[:8]}.mp4"
 
-    # 2. Try recording LIVE video stream via FFmpeg from Frigate / go2rtc RTSP
+    # 2. Try recording LIVE video stream via FFmpeg from RTSP sources to temporary disk file
     rtsp_sources = [
         "rtsp://frigate:8554/camera_principal",
         "rtsp://127.0.0.1:8554/camera_principal",
@@ -317,72 +320,95 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
     ]
     for rtsp_url in rtsp_sources:
         try:
+            logger.info(f"🎥 Tentando capturar {duration_s}s ao vivo de {rtsp_url}...")
             cmd = [
                 "ffmpeg", "-y",
                 "-rtsp_transport", "tcp",
+                "-stimeout", "4000000",
                 "-i", rtsp_url,
                 "-t", str(duration_s),
-                "-vf", f"scale={scale_w}:{scale_h}:force_original_aspect_ratio=decrease,pad={scale_w}:{scale_h}:(ow-iw)/2:(oh-ih)/2",
+                "-vf", f"scale={scale_w}:{scale_h}:force_original_aspect_ratio=decrease,pad={scale_w}:{scale_h}:(ow-iw)/2:(oh-ih)/2,format=yuv420p",
                 "-c:v", "libx264",
                 "-preset", preset,
                 "-crf", str(crf),
                 "-pix_fmt", "yuv420p",
                 "-movflags", "+faststart",
-                "-f", "mp4",
-                "-"
+                temp_file
             ]
             if not inc_audio:
-                cmd.insert(-4, "-an")
+                cmd.insert(-3, "-an")
             
             proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=duration_s + 10)
-            if proc.returncode == 0 and len(proc.stdout) > 5000:
-                video_bytes = proc.stdout
+            if proc.returncode == 0 and os.path.exists(temp_file) and os.path.getsize(temp_file) > 5000:
+                with open(temp_file, "rb") as vf:
+                    video_bytes = vf.read()
+                logger.info(f"✅ Vídeo ao vivo gravado com sucesso via FFmpeg ({len(video_bytes)} bytes)")
                 break
+            else:
+                stderr_msg = proc.stderr.decode('utf-8', errors='ignore')[-300:] if proc.stderr else ""
+                logger.warning(f"FFmpeg exit code {proc.returncode} for {rtsp_url}: {stderr_msg}")
         except Exception as e:
-            logger.warning(f"Live RTSP capture attempt failed on {rtsp_url}: {e}")
+            logger.warning(f"Live RTSP capture exception on {rtsp_url}: {e}")
+        finally:
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except Exception:
+                    pass
 
     # 3. Fallback: Query go2rtc live MP4 endpoint
     if not video_bytes:
         try:
-            async with httpx.AsyncClient(timeout=duration_s + 8.0) as client:
+            logger.info(f"🎥 Tentando fallback go2rtc live MP4 ({duration_s}s)...")
+            async with httpx.AsyncClient(timeout=duration_s + 10.0) as client:
                 g_resp = await client.get(f"http://frigate:1984/api/stream.mp4?src=camera_principal&duration={duration_s}")
                 if g_resp.status_code == 200 and len(g_resp.content) > 5000:
                     video_bytes = g_resp.content
-        except Exception:
-            pass
+                    logger.info(f"✅ Vídeo capturado via go2rtc endpoint ({len(video_bytes)} bytes)")
+        except Exception as e:
+            logger.warning(f"go2rtc live stream fallback failed: {e}")
 
     # 4. Fallback: Query Frigate API latest mp4 or disk recordings
     if not video_bytes:
         try:
-            async with httpx.AsyncClient(timeout=6.0) as client:
+            async with httpx.AsyncClient(timeout=8.0) as client:
                 resp = await client.get(f"{settings.FRIGATE_API_URL}/api/camera_principal/latest.mp4")
                 if resp.status_code == 200 and len(resp.content) > 5000:
                     video_bytes = resp.content
+                    logger.info("✅ Vídeo capturado via Frigate latest.mp4")
         except Exception:
             pass
 
-    # 5. Synthetic fallback if camera was physically unreachable
+    # 5. Synthetic fallback (generate valid live timestamp MP4 on disk)
     if not video_bytes:
         try:
+            logger.info("🎥 Gerando clipe animado de teste sintético...")
             cmd = [
-                "ffmpeg", "-y", "-f", "lavfi",
+                "ffmpeg", "-y",
+                "-f", "lavfi",
                 "-i", f"testsrc=size={scale_w}x{scale_h}:rate=25",
                 "-t", str(duration_s),
                 "-pix_fmt", "yuv420p",
                 "-c:v", "libx264",
                 "-preset", "ultrafast",
                 "-movflags", "+faststart",
-                "-f", "mp4",
-                "-"
+                temp_file
             ]
             proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=duration_s + 5)
-            if proc.returncode == 0 and len(proc.stdout) > 1000:
-                video_bytes = proc.stdout
-        except Exception:
-            pass
+            if proc.returncode == 0 and os.path.exists(temp_file) and os.path.getsize(temp_file) > 1000:
+                with open(temp_file, "rb") as vf:
+                    video_bytes = vf.read()
+        except Exception as e:
+            logger.error(f"Synthetic fallback failed: {e}")
+        finally:
+            if os.path.exists(temp_file):
+                try:
+                    os.remove(temp_file)
+                except Exception:
+                    pass
 
     if not video_bytes:
-        raise HTTPException(status_code=500, detail="Não foi possível capturar o stream de vídeo ao vivo.")
+        raise HTTPException(status_code=500, detail="Não foi possível capturar nem gerar o vídeo MP4.")
 
     ok = await telegram_vault_service.send_alert_video(
         video_bytes=video_bytes,
@@ -393,7 +419,6 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
         friendly_name="Câmera Ao Vivo",
         ignore_pause=True
     )
-
 
     await audit_service.log(
         action="TELEGRAM_LIVE_VIDEO_TEST",
@@ -409,11 +434,11 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
             "message": f"🎥 Vídeo gravado ao vivo ({duration_s}s, {resolution}) entregue com sucesso no Telegram!"
         }
     else:
-        raise HTTPException(status_code=500, detail="Falha ao entregar vídeo ao vivo no Telegram.")
-
+        raise HTTPException(status_code=500, detail="Falha ao entregar o vídeo no chat do Telegram. Verifique se o Bot Token e Chat ID estão corretos.")
 
 
 @router.post("/telegram/test-logs")
+
 async def test_telegram_logs(request: Request):
     client_ip = request.client.host if request.client else "unknown"
     if not telegram_vault_service.is_configured:

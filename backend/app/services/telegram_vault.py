@@ -285,10 +285,14 @@ class TelegramVaultService:
             is_video=True
         )
         try:
-            logger.info(f"📤 Enviando vídeo MP4 de alerta para o Telegram ({self.chat_id})...")
-            async with httpx.AsyncClient(timeout=45.0) as client:
+            logger.info(f"📤 Enviando vídeo MP4 de alerta para o Telegram ({self.chat_id}, {len(video_bytes)} bytes)...")
+            async with httpx.AsyncClient(timeout=60.0) as client:
                 files = {"video": ("event.mp4", video_bytes, "video/mp4")}
-                data = {"chat_id": self.chat_id, "caption": caption}
+                data = {
+                    "chat_id": self.chat_id,
+                    "caption": caption,
+                    "supports_streaming": "true"
+                }
                 resp = await client.post(url, data=data, files=files)
                 if resp.status_code == 200:
                     logger.info("✅ Vídeo MP4 entregue com sucesso ao Telegram!")
@@ -299,6 +303,7 @@ class TelegramVaultService:
         except Exception as e:
             logger.error(f"❌ Erro de rede ao enviar vídeo para o Telegram: {e}")
             return False
+
 
 
 
