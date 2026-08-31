@@ -302,15 +302,15 @@ class TelegramVaultService:
         disk = telem["disk"]
         net = telem["network"]
 
-        pause_status = f"⏸️ *Alertas:* Pausados até {self.pause_until.strftime('%H:%M')}" if self.is_paused() else "🟢 *Alertas:* Ativos"
+        pause_status = f"⏸️ <b>Alertas:</b> Pausados até {self.pause_until.strftime('%H:%M')}" if self.is_paused() else "🟢 <b>Alertas:</b> Ativos"
 
         return (
-            f"🛡️ *SENTINELA FRIGATE PRO — STATUS*\n\n"
-            f"🔥 *CPU:* `{cpu['usage_percent']}%` ({cpu['count']} Cores)\n"
-            f"🌡️ *Temperatura:* `{cpu['temperature_celsius']}°C`\n"
-            f"🧠 *RAM:* `{ram['used_mb']} MB` / `{ram['total_mb']} MB` (`{ram['percent']}%`)\n"
-            f"💾 *SSD NVMe:* `{disk['free_gb']} GB livres` / `{disk['total_gb']} GB`\n"
-            f"⚡ *Rede:* RX `{net['rx_kbs']} KB/s` | TX `{net['tx_kbs']} KB/s`\n\n"
+            f"🛡️ <b>SENTINELA FRIGATE PRO — STATUS</b>\n\n"
+            f"🔥 <b>CPU:</b> <code>{cpu['usage_percent']}%</code> ({cpu['count']} Cores)\n"
+            f"🌡️ <b>Temperatura:</b> <code>{cpu['temperature_celsius']}°C</code>\n"
+            f"🧠 <b>RAM:</b> <code>{ram['used_mb']} MB</code> / <code>{ram['total_mb']} MB</code> (<code>{ram['percent']}%</code>)\n"
+            f"💾 <b>SSD NVMe:</b> <code>{disk['free_gb']} GB livres</code> / <code>{disk['total_gb']} GB</code>\n"
+            f"⚡ <b>Rede:</b> RX <code>{net['rx_kbs']} KB/s</code> | TX <code>{net['tx_kbs']} KB/s</code>\n\n"
             f"{pause_status}"
         )
 
@@ -336,20 +336,20 @@ class TelegramVaultService:
         # 2. Send Test Message to Chat ID
         now_str = datetime.datetime.now().strftime("%d/%m/%Y às %H:%M:%S")
         test_msg = (
-            "🛡️ *SENTINELA FRIGATE PRO — TESTE DE CONEXÃO*\n"
+            "🛡️ <b>SENTINELA FRIGATE PRO — TESTE DE CONEXÃO</b>\n"
             "━━━━━━━━━━━━━━━━━━━━\n"
-            f"✅ *Conexão bem-sucedida com o Telegram!*\n"
-            f"🤖 *Robô:* @{bot_user} ({bot_name})\n"
-            f"⏱️ *Data/Hora:* `{now_str}`\n"
+            f"✅ <b>Conexão bem-sucedida com o Telegram!</b>\n"
+            f"🤖 <b>Robô:</b> @{bot_user} ({bot_name})\n"
+            f"⏱️ <b>Data/Hora:</b> <code>{now_str}</code>\n"
             "━━━━━━━━━━━━━━━━━━━━\n"
-            "⚡ *Vigilância ativa: você receberá fotos e vídeos de intrusão aqui.*"
+            "⚡ <b>Vigilância ativa: você receberá fotos e vídeos de intrusão aqui.</b>"
         )
         
         try:
             async with httpx.AsyncClient(timeout=10.0) as client:
                 send_resp = await client.post(
                     f"https://api.telegram.org/bot{self.bot_token}/sendMessage",
-                    json={"chat_id": self.chat_id, "text": test_msg, "parse_mode": "Markdown"}
+                    json={"chat_id": self.chat_id, "text": test_msg, "parse_mode": "HTML"}
                 )
                 if send_resp.status_code == 200:
                     logger.info(f"✅ Mensagem de teste enviada com sucesso para o Telegram ({self.chat_id})")
@@ -368,7 +368,7 @@ class TelegramVaultService:
         except Exception as e:
             return {"status": "error", "message": f"Falha de rede ao enviar mensagem de teste: {e}"}
 
-    async def send_message(self, text: str, parse_mode: str = "Markdown") -> bool:
+    async def send_message(self, text: str, parse_mode: str = "HTML") -> bool:
         """Sends a text message to the configured Telegram chat."""
         if not self.is_configured:
             await self.load_credentials_from_db()
@@ -414,17 +414,17 @@ class TelegramVaultService:
 
         if cmd in ["/start", "/ajuda", "/help"]:
             help_text = (
-                "🛡️ *SENTINELA FRIGATE PRO — COMANDOS DO BOT*\n"
+                "🛡️ <b>SENTINELA FRIGATE PRO — COMANDOS DO BOT</b>\n"
                 "━━━━━━━━━━━━━━━━━━━━\n\n"
-                "📸 `/snapshot` — Captura e envia foto ao vivo da Câmera Principal\n"
-                "📸 `/snapshot <camera>` — Captura foto de uma câmera específica\n"
-                "📊 `/status` — Telemetria do hardware (CPU, Temp, RAM, SSD)\n"
-                "⏸️ `/pausar [minutos]` — Suspende alertas (ex: `/pausar 60`)\n"
-                "▶️ `/retomar` — Reativa envio de alertas imediatamente\n"
-                "💾 `/backup` — Envia o arquivo do banco de dados `sentinela.db`\n"
-                "❓ `/ajuda` — Exibe este menu de ajuda\n"
+                "📸 <code>/snapshot</code> — Captura e envia foto ao vivo da Câmera Principal\n"
+                "📸 <code>/snapshot [camera]</code> — Captura foto de uma câmera específica\n"
+                "📊 <code>/status</code> — Telemetria do hardware (CPU, Temp, RAM, SSD)\n"
+                "⏸️ <code>/pausar [minutos]</code> — Suspende alertas (ex: <code>/pausar 60</code>)\n"
+                "▶️ <code>/retomar</code> — Reativa envio de alertas imediatamente\n"
+                "💾 <code>/backup</code> — Envia o arquivo do banco de dados <code>sentinela.db</code>\n"
+                "❓ <code>/ajuda</code> — Exibe este menu de ajuda\n"
                 "━━━━━━━━━━━━━━━━━━━━\n"
-                "⚡ *Sistema operacional e vigilância 24/7 ativa.*"
+                "⚡ <b>Vigilância ativa: sistema operacional 24/7.</b>"
             )
             await self.send_message(help_text)
 
@@ -444,7 +444,7 @@ class TelegramVaultService:
                         caption = (
                             f"📸 𝗦𝗡𝗔𝗣𝗦𝗛𝗢𝗧 𝗔𝗢 𝗩𝗜𝗩𝗢 • 𝗦𝗲𝗻𝘁𝗶𝗻𝗲𝗹𝗮 𝗙𝗿𝗶𝗴𝗮𝘁𝗲 𝗣𝗿𝗼\n"
                             f"━━━━━━━━━━━━━━━━━━━━\n"
-                            f"📍 Câmera: `{cam_name}`\n"
+                            f"📍 Câmera: {cam_name}\n"
                             f"⏱ Solicitado em: {now_str}\n"
                             f"━━━━━━━━━━━━━━━━━━━━"
                         )
@@ -454,9 +454,9 @@ class TelegramVaultService:
                             data = {"chat_id": self.chat_id, "caption": caption}
                             await photo_client.post(url_photo, data=data, files=files)
                     else:
-                        await self.send_message(f"⚠️ Não foi possível obter frame da câmera `{cam_name}` (HTTP {resp.status_code}).")
+                        await self.send_message(f"⚠️ Não foi possível obter frame da câmera <code>{cam_name}</code> (HTTP {resp.status_code}).")
             except Exception as e:
-                await self.send_message(f"⚠️ Erro ao capturar snapshot de `{cam_name}`: {e}")
+                await self.send_message(f"⚠️ Erro ao capturar snapshot de <code>{cam_name}</code>: {e}")
 
         elif cmd == "/pausar":
             mins = 60
@@ -464,11 +464,11 @@ class TelegramVaultService:
                 mins = int(args[0])
             self.pause_alerts(mins)
             until_str = self.pause_until.strftime("%H:%M:%S")
-            await self.send_message(f"⏸️ *Alertas Suspensos!*\nNotificações pausadas por *{mins} minutos* (até às `{until_str}`).\n\nEnvie `/retomar` para reativar antes do prazo.")
+            await self.send_message(f"⏸️ <b>Alertas Suspensos!</b>\nNotificações pausadas por <b>{mins} minutos</b> (até às <code>{until_str}</code>).\n\nEnvie <code>/retomar</code> para reativar antes do prazo.")
 
         elif cmd == "/retomar":
             self.pause_until = None
-            await self.send_message("▶️ *Alertas Reativados!*\nO Sentinela voltou a enviar notificações de movimento normalmente.")
+            await self.send_message("▶️ <b>Alertas Reativados!</b>\nO Sentinela voltou a enviar notificações de movimento normalmente.")
 
         elif cmd == "/backup":
             db_paths = ["/app/data/sentinela.db", "./data/sentinela.db", "data/sentinela.db"]
@@ -484,17 +484,17 @@ class TelegramVaultService:
                         content = f.read()
                     now_tag = datetime.datetime.now().strftime("%Y%m%d_%H%M")
                     filename = f"sentinela_backup_{now_tag}.db"
-                    caption = f"💾 *Backup do Banco de Dados Sentinela*\nArquivo: `{filename}` ({len(content) // 1024} KB)\nData: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
+                    caption = f"💾 <b>Backup do Banco de Dados Sentinela</b>\nArquivo: <code>{filename}</code> ({len(content) // 1024} KB)\nData: {datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')}"
                     sent = await self.send_document(content, filename=filename, caption=caption)
                     if not sent:
                         await self.send_message("⚠️ Falha no envio do arquivo de backup.")
                 except Exception as e:
                     await self.send_message(f"⚠️ Erro ao ler banco de dados para backup: {e}")
             else:
-                await self.send_message("⚠️ Arquivo de banco de dados SQLite `sentinela.db` não encontrado no servidor.")
+                await self.send_message("⚠️ Arquivo de banco de dados SQLite <code>sentinela.db</code> não encontrado no servidor.")
 
         else:
-            await self.send_message(f"❓ Comando `{cmd}` não reconhecido. Digite `/ajuda` para ver as opções disponíveis.")
+            await self.send_message(f"❓ Comando <code>{cmd}</code> não reconhecido. Digite <code>/ajuda</code> para ver as opções disponíveis.")
 
     async def start_polling(self):
         """Continuous lightweight long-polling loop for Telegram Bot updates."""
