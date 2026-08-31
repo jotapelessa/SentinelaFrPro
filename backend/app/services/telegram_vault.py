@@ -208,7 +208,8 @@ class TelegramVaultService:
         label: str,
         zone: Optional[str] = None,
         score: float = 0.0,
-        friendly_name: Optional[str] = None
+        friendly_name: Optional[str] = None,
+        ignore_pause: bool = False
     ) -> bool:
         """Dispatches watermarked snapshot to Telegram using the classic template."""
         if not self.is_configured:
@@ -218,7 +219,7 @@ class TelegramVaultService:
             logger.warning("Telegram Bot not configured (bot_token/chat_id missing), skipping alert.")
             return False
 
-        if self.is_paused():
+        if not ignore_pause and self.is_paused():
             logger.info("Telegram alerts currently paused.")
             return False
 
@@ -236,7 +237,7 @@ class TelegramVaultService:
         url = f"https://api.telegram.org/bot{self.bot_token}/sendPhoto"
         try:
             logger.info(f"📤 Enviando foto de alerta para o Telegram ({self.chat_id})...")
-            async with httpx.AsyncClient(timeout=10.0) as client:
+            async with httpx.AsyncClient(timeout=15.0) as client:
                 files = {"photo": ("snapshot.jpg", watermarked, "image/jpeg")}
                 data = {"chat_id": self.chat_id, "caption": caption}
                 resp = await client.post(url, data=data, files=files)
@@ -257,14 +258,21 @@ class TelegramVaultService:
         label: str,
         duration_s: float = 0.0,
         score: float = 0.0,
-        friendly_name: Optional[str] = None
+        friendly_name: Optional[str] = None,
+        ignore_pause: bool = False
     ) -> bool:
         """Dispatches MP4 clip to Telegram using the classic template."""
         if not self.is_configured:
             await self.load_credentials_from_db()
 
-        if not self.is_configured or self.is_paused():
+        if not self.is_configured:
+            logger.warning("Telegram Bot not configured, skipping video.")
             return False
+
+        if not ignore_pause and self.is_paused():
+            logger.info("Telegram alerts currently paused, skipping video.")
+            return False
+
 
         url = f"https://api.telegram.org/bot{self.bot_token}/sendVideo"
         caption = self.format_event_message(

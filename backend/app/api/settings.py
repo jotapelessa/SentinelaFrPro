@@ -238,8 +238,10 @@ async def test_telegram_photo(request: Request):
         label="person",
         zone="Entrada Principal",
         score=0.97,
-        friendly_name="Câmera de Teste"
+        friendly_name="Câmera de Teste",
+        ignore_pause=True
     )
+
 
     await audit_service.log(
         action="TELEGRAM_PHOTO_TEST",
@@ -388,8 +390,10 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
         label="person",
         duration_s=float(duration_s),
         score=0.98,
-        friendly_name="Câmera Ao Vivo"
+        friendly_name="Câmera Ao Vivo",
+        ignore_pause=True
     )
+
 
     await audit_service.log(
         action="TELEGRAM_LIVE_VIDEO_TEST",
