@@ -42,19 +42,6 @@ objects:
     - dog
     - cat
 
-# Video Recording Policy (NVMe SSD)
-record:
-  enabled: true
-  retain:
-    days: 14
-    mode: all
-  events:
-    pre_capture: 10
-    post_capture: 15
-    retain:
-      default: 30
-      mode: motion
-
 # Watermarked High-Res Snapshots
 snapshots:
   enabled: true
@@ -95,8 +82,8 @@ cameras:
       width: 1280
       height: 720
       fps: 5
-    live:
-      stream_name: camera_principal
+    record:
+      enabled: true
     zones:
       zona_monitoramento:
         coordinates: 0,720,1280,720,1280,100,0,100
