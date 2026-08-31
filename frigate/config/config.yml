@@ -19,11 +19,12 @@ ffmpeg:
   hwaccel_args: preset-vaapi
 
 
-# Detectors: Limit detector threads to prevent CPU spikes
+# Detectors: Multi-Core TensorFlow Lite Load Balancing (Jasper Lake 4 Cores)
 detectors:
   cpu1:
     type: cpu
-    num_threads: 1
+    num_threads: 2
+
 
 # Motion Detection Fine-Tuning (Intel N5105 Optimized)
 motion:
