@@ -30,8 +30,9 @@ class Settings(BaseSettings):
     MEDIA_DIR: str = "/media/frigate"
     
     # Telegram Cloud Vault
-    TELEGRAM_BOT_TOKEN: str = ""
-    TELEGRAM_CHAT_ID: str = ""
+    TELEGRAM_BOT_TOKEN: str = "8857963953:AAFsPQ965S6IgoEaWPkTghMbf6Qv6YCWu0E"
+    TELEGRAM_CHAT_ID: str = "-1003995215102"
+
     
     # Hardware & Performance
     TELEMETRY_INTERVAL_SECONDS: int = 3

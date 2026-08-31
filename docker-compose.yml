@@ -56,9 +56,10 @@ services:
       - FRIGATE_API_URL=http://frigate:5000
       - GO2RTC_API_URL=http://frigate:1984
       - DATABASE_URL=sqlite+aiosqlite:////app/data/sentinela.db
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-8857963953:AAFsPQ965S6IgoEaWPkTghMbf6Qv6YCWu0E}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:--1003995215102}
     depends_on:
+
       - mosquitto
       - frigate
 

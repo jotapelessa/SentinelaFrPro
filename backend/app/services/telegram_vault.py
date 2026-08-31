@@ -20,7 +20,7 @@ class TelegramVaultService:
         return bool(self.bot_token and self.chat_id)
 
     async def load_credentials_from_db(self):
-        """Loads Bot Token and Chat ID from database if available."""
+        """Loads Bot Token and Chat ID from database if available, or seeds defaults."""
         try:
             from app.db.session import AsyncSessionLocal
             from app.db.models import SystemSetting
@@ -29,17 +29,32 @@ class TelegramVaultService:
                 stmt = select(SystemSetting).where(SystemSetting.key.in_(["telegram_bot_token", "telegram_chat_id"]))
                 res = await session.execute(stmt)
                 settings_list = res.scalars().all()
+                found_token = False
+                found_chat = False
                 for s in settings_list:
                     if s.key == "telegram_bot_token" and s.value:
                         self.bot_token = s.value
                         settings.TELEGRAM_BOT_TOKEN = s.value
+                        found_token = True
                     elif s.key == "telegram_chat_id" and s.value:
                         self.chat_id = s.value
                         settings.TELEGRAM_CHAT_ID = s.value
+                        found_chat = True
+
+                # If not present in DB, seed from settings defaults
+                if not found_token and settings.TELEGRAM_BOT_TOKEN:
+                    self.bot_token = settings.TELEGRAM_BOT_TOKEN
+                    session.add(SystemSetting(key="telegram_bot_token", value=settings.TELEGRAM_BOT_TOKEN))
+                if not found_chat and settings.TELEGRAM_CHAT_ID:
+                    self.chat_id = settings.TELEGRAM_CHAT_ID
+                    session.add(SystemSetting(key="telegram_chat_id", value=settings.TELEGRAM_CHAT_ID))
+                await session.commit()
+
                 if self.is_configured:
-                    logger.info("✅ Credenciais do Telegram carregadas do banco de dados SQLite.")
+                    logger.info("✅ Credenciais do Telegram carregadas e ativas no Sentinela.")
         except Exception as e:
             logger.warning(f"Não foi possível carregar credenciais do Telegram do banco: {e}")
+
 
     def is_paused(self) -> bool:
         if not self.pause_until:
