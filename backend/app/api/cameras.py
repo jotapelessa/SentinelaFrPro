@@ -770,7 +770,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
 
     # 4. Sanitize go2rtc stream definitions & inject failover stream so Frigate never crashes when camera is offline
     for s_name, s_val in list(cfg["go2rtc"]["streams"].items()):
-        fallback_testsrc = f"exec:ffmpeg -re -f lavfi -i testsrc=size=1280x720:rate=5 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 600k -f rtsp rtsp://127.0.0.1:8554/{s_name}"
+        fallback_testsrc = "exec:ffmpeg -re -f lavfi -i testsrc=size=1280x720:rate=5 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 600k -f rtsp {output}"
         if isinstance(s_val, str) and not s_val.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
             target = s_val.strip()
             if target in cfg["go2rtc"]["streams"] and target != s_name and isinstance(cfg["go2rtc"]["streams"][target], list):

@@ -63,7 +63,7 @@ go2rtc:
       - rtsp://192.168.1.6:8554/stream#transport=tcp
       - rtsp://192.168.1.6:554/live#transport=tcp
       - rtsp://192.168.1.6:8554/live#transport=tcp
-      - exec:ffmpeg -re -f lavfi -i testsrc=size=1280x720:rate=5 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 600k -f rtsp rtsp://127.0.0.1:8554/camera_principal
+      - "exec:ffmpeg -re -f lavfi -i testsrc=size=1280x720:rate=5 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 600k -f rtsp {output}"
   webrtc:
     candidates:
       - 192.168.1.252:8555
