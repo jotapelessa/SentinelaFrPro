@@ -66,10 +66,18 @@ go2rtc:
   streams:
     camera_principal:
       - rtsp://192.168.1.6:8554/stream#transport=tcp
-      - rtsp://192.168.1.6:8554/stream
+      - rtsp://192.168.1.6:8554/stream#transport=udp
+      - rtsp://192.168.1.6:8554/live#transport=tcp
+      - rtsp://192.168.1.6:8554/live#transport=udp
+      - rtsp://192.168.1.6:8554/
+      - ffmpeg:rtsp://192.168.1.6:8554/stream#video=h264
     cam_192_168_1_6:
       - rtsp://192.168.1.6:8554/stream#transport=tcp
-      - rtsp://192.168.1.6:8554/stream
+      - rtsp://192.168.1.6:8554/stream#transport=udp
+      - rtsp://192.168.1.6:8554/live#transport=tcp
+      - rtsp://192.168.1.6:8554/live#transport=udp
+      - rtsp://192.168.1.6:8554/
+      - ffmpeg:rtsp://192.168.1.6:8554/stream#video=h264
   webrtc:
     candidates:
       - 192.168.1.252:8555
@@ -80,8 +88,8 @@ cameras:
   camera_principal:
     ffmpeg:
       inputs:
-        - path: rtsp://192.168.1.6:8554/stream
-          input_args: preset-rtsp-generic
+        - path: rtsp://127.0.0.1:8554/camera_principal
+          input_args: preset-rtsp-restream
           roles:
             - detect
             - record
@@ -103,8 +111,8 @@ cameras:
   cam_192_168_1_6:
     ffmpeg:
       inputs:
-        - path: rtsp://192.168.1.6:8554/stream
-          input_args: preset-rtsp-generic
+        - path: rtsp://127.0.0.1:8554/cam_192_168_1_6
+          input_args: preset-rtsp-restream
           roles:
             - detect
             - record
@@ -115,5 +123,6 @@ cameras:
       fps: 5
     live:
       stream_name: cam_192_168_1_6
+
 
 
