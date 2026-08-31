@@ -94,6 +94,9 @@ cameras:
       fps: 5
     record:
       enabled: true
+    snapshots:
+      enabled: true
+      bounding_box: true
     zones:
       zona_monitoramento:
         coordinates: 0,720,1280,720,1280,100,0,100
@@ -101,6 +104,10 @@ cameras:
           - person
           - car
           - motorcycle
+    review:
+      alerts:
+        required_zones:
+          - zona_monitoramento
 
 
 

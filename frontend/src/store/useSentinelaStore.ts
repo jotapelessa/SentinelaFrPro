@@ -106,6 +106,15 @@ export interface DiscoveredDevice {
   confidence?: string;
 }
 
+export interface ActiveDetection {
+  camera: string;
+  label: string;
+  score: number;
+  zone?: string;
+  box?: number[];
+  timestamp: number;
+}
+
 interface SentinelaState {
   telemetry: TelemetryData | null;
   cameras: Camera[];
@@ -116,6 +125,11 @@ interface SentinelaState {
   scanResults: DiscoveredDevice[];
   recentAlert: SecurityEvent | null;
   wsConnected: boolean;
+  activeDetections: Record<string, ActiveDetection>;
+  motionStatus: Record<string, boolean>;
+  liveObjectCounts: Record<string, Record<string, number>>;
+  audioAlertEnabled: boolean;
+  showZonesOverlay: boolean;
   
   setTelemetry: (data: TelemetryData) => void;
   setCameras: (cameras: Camera[]) => void;
@@ -127,6 +141,11 @@ interface SentinelaState {
   setScanResults: (results: DiscoveredDevice[]) => void;
   setRecentAlert: (alert: SecurityEvent | null) => void;
   setWsConnected: (connected: boolean) => void;
+  setActiveDetection: (cam: string, det: ActiveDetection | null) => void;
+  setMotionStatus: (cam: string, motion: boolean) => void;
+  setObjectCount: (cam: string, label: string, count: number) => void;
+  toggleAudioAlert: () => void;
+  toggleZonesOverlay: () => void;
 }
 
 export const useSentinelaStore = create<SentinelaState>((set) => ({
@@ -155,6 +174,11 @@ export const useSentinelaStore = create<SentinelaState>((set) => ({
   scanResults: [],
   recentAlert: null,
   wsConnected: false,
+  activeDetections: {},
+  motionStatus: {},
+  liveObjectCounts: {},
+  audioAlertEnabled: true,
+  showZonesOverlay: true,
 
   setTelemetry: (data) => set({ telemetry: data }),
   setCameras: (cameras) => set({ cameras }),
@@ -168,5 +192,28 @@ export const useSentinelaStore = create<SentinelaState>((set) => ({
   setIsScanning: (isScanning) => set({ isScanning }),
   setScanResults: (results) => set({ scanResults: results }),
   setRecentAlert: (alert) => set({ recentAlert: alert }),
-  setWsConnected: (connected) => set({ wsConnected: connected })
+  setWsConnected: (connected) => set({ wsConnected: connected }),
+  setActiveDetection: (cam, det) => set((state) => {
+    const next = { ...state.activeDetections };
+    if (det) {
+      next[cam] = det;
+    } else {
+      delete next[cam];
+    }
+    return { activeDetections: next };
+  }),
+  setMotionStatus: (cam, motion) => set((state) => ({
+    motionStatus: { ...state.motionStatus, [cam]: motion }
+  })),
+  setObjectCount: (cam, label, count) => set((state) => {
+    const currentCam = state.liveObjectCounts[cam] || {};
+    return {
+      liveObjectCounts: {
+        ...state.liveObjectCounts,
+        [cam]: { ...currentCam, [label]: count }
+      }
+    };
+  }),
+  toggleAudioAlert: () => set((state) => ({ audioAlertEnabled: !state.audioAlertEnabled })),
+  toggleZonesOverlay: () => set((state) => ({ showZonesOverlay: !state.showZonesOverlay }))
 }));

@@ -141,12 +141,32 @@ class MQTTService:
                     "label": label,
                     "score": round(score * 100),
                     "zone": zone_name,
+                    "box": after.get("box"),
                     "timestamp": datetime.datetime.utcnow().isoformat(),
                     "snapshot_url": snapshot_url
                 })
 
+            # Broadcast live active detection state to UI player (instant halo/badge)
+            await self.broadcast_event({
+                "type": "CAMERA_DETECTION_ACTIVE",
+                "camera": camera,
+                "label": label,
+                "score": round(score * 100) if score <= 1 else round(score),
+                "zone": zone_name,
+                "box": after.get("box"),
+                "active": True
+            })
+
         # Handle 'end' event (Clip is finalized by Frigate)
         elif event_type == "end":
+            # Clear active detection halo
+            await self.broadcast_event({
+                "type": "CAMERA_DETECTION_ACTIVE",
+                "camera": camera,
+                "label": label,
+                "active": False
+            })
+
             has_clip = after.get("has_clip", False)
             if has_clip and event_id:
                 logger.info(f"Event {event_id} finished with video clip.")
@@ -204,14 +224,47 @@ class MQTTService:
                     port=settings.MQTT_PORT,
                     identifier=settings.MQTT_CLIENT_ID
                 ) as client:
-                    topic = f"{settings.MQTT_TOPIC_PREFIX}/events"
-                    await client.subscribe(topic)
-                    logger.info(f"Subscribed to MQTT topic: {topic}")
+                    prefix = settings.MQTT_TOPIC_PREFIX
+                    # Subscribe to security events, live motion and object counts
+                    await client.subscribe(f"{prefix}/events")
+                    await client.subscribe(f"{prefix}/+/motion")
+                    await client.subscribe(f"{prefix}/+/person")
+                    await client.subscribe(f"{prefix}/+/car")
+                    await client.subscribe(f"{prefix}/+/motorcycle")
+                    logger.info(f"Subscribed to MQTT topics under: {prefix}/#")
 
                     async for message in client.messages:
                         try:
-                            payload = json.loads(message.payload.decode("utf-8"))
-                            await self.handle_frigate_event(payload)
+                            topic_str = str(message.topic)
+                            msg_bytes = message.payload
+                            msg_str = msg_bytes.decode("utf-8", errors="ignore")
+
+                            if topic_str.endswith("/events"):
+                                payload = json.loads(msg_str)
+                                await self.handle_frigate_event(payload)
+                            elif topic_str.endswith("/motion"):
+                                parts = topic_str.split("/")
+                                if len(parts) >= 2:
+                                    cam_name = parts[-2]
+                                    is_motion = (msg_str.strip().upper() == "ON" or msg_str.strip() == "1")
+                                    await self.broadcast_event({
+                                        "type": "CAMERA_MOTION_STATUS",
+                                        "camera": cam_name,
+                                        "motion": is_motion
+                                    })
+                            else:
+                                # Object live counts (e.g. frigate/camera_principal/person)
+                                parts = topic_str.split("/")
+                                if len(parts) >= 3:
+                                    cam_name = parts[-2]
+                                    obj_label = parts[-1]
+                                    count_val = int(msg_str) if msg_str.isdigit() else 0
+                                    await self.broadcast_event({
+                                        "type": "CAMERA_OBJECTS_COUNT",
+                                        "camera": cam_name,
+                                        "label": obj_label,
+                                        "count": count_val
+                                    })
                         except Exception as e:
                             logger.error(f"Error handling MQTT message: {e}")
             except MqttError as e:
