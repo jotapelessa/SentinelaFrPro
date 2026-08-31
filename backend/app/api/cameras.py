@@ -41,6 +41,13 @@ async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Dep
     db.add(db_cam)
     await db.commit()
     await db.refresh(db_cam)
+
+    # Sync immediately with Frigate and go2rtc
+    try:
+        await sync_camera_to_frigate(db_cam)
+    except Exception as e:
+        logger.warning(f"Error syncing new camera to Frigate: {e}")
+
     await audit_service.log(
         action="CAMERA_ADDED",
         module="CAMERA",
@@ -433,6 +440,9 @@ async def sync_camera_to_frigate(cam: Camera):
     if rtsp_url:
         rtsp_url_tagged = rtsp_url if ("#" in rtsp_url) else f"{rtsp_url}#transport=tcp"
         cfg["go2rtc"]["streams"][cam_name] = [rtsp_url_tagged]
+    if cam.rtsp_sub and cam.rtsp_sub.strip():
+        sub_tagged = cam.rtsp_sub.strip() if ("#" in cam.rtsp_sub) else f"{cam.rtsp_sub.strip()}#transport=tcp"
+        cfg["go2rtc"]["streams"][f"{cam_name}_sub"] = [sub_tagged]
 
     if "cameras" not in cfg:
         cfg["cameras"] = {}

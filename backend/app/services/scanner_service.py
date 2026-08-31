@@ -37,6 +37,23 @@ SECONDARY_WEB_PORTS = {
 }
 
 class ScannerService:
+    def get_self_ips(self) -> set:
+        """Collects all IP addresses belonging to the host itself so they are not detected as cameras."""
+        ips = {"127.0.0.1", "localhost", "0.0.0.0"}
+        try:
+            for iface, addrs in psutil.net_if_addrs().items():
+                for addr in addrs:
+                    if addr.family == socket.AF_INET:
+                        ips.add(addr.address)
+        except Exception:
+            pass
+        try:
+            host_ip = socket.gethostbyname(socket.gethostname())
+            ips.add(host_ip)
+        except Exception:
+            pass
+        return ips
+
     def get_local_subnets(self) -> List[str]:
         """Discovers all local subnets, always prioritizing 192.168.1."""
         subnets = set()
@@ -240,7 +257,8 @@ class ScannerService:
                 merged[ip] = dev
 
         duration = round(time.time() - start_time, 2)
-        device_list = list(merged.values())
+        self_ips = self.get_self_ips()
+        device_list = [d for d in merged.values() if d["ip"] not in self_ips]
         device_list.sort(key=lambda d: [int(x) if x.isdigit() else 0 for x in d["ip"].split(".")])
 
         return {
