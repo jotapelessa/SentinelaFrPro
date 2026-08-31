@@ -67,8 +67,11 @@ async def get_settings(db: AsyncSession = Depends(get_db)):
         "dnd_end_hour": dnd_end_val
     }
 
+from app.services.audit_service import audit_service
+from fastapi import Request
+
 @router.post("/telegram")
-async def update_telegram_config(config: TelegramConfigUpdate, db: AsyncSession = Depends(get_db)):
+async def update_telegram_config(config: TelegramConfigUpdate, request: Request, db: AsyncSession = Depends(get_db)):
     clean_token = config.bot_token.strip()
     clean_chat_id = config.chat_id.strip()
 
@@ -93,6 +96,14 @@ async def update_telegram_config(config: TelegramConfigUpdate, db: AsyncSession 
     if clean_token and clean_chat_id:
         telegram_vault_service.start_polling_task()
 
+    await audit_service.log(
+        action="TELEGRAM_CREDENTIALS_SAVED",
+        module="TELEGRAM",
+        severity="SUCCESS",
+        details=f"Credenciais do Telegram Cloud Vault atualizadas (Chat ID: {clean_chat_id}).",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+
     return {
         "status": "updated",
         "configured": telegram_vault_service.is_configured,
@@ -106,7 +117,8 @@ class TelegramTestPayload(BaseModel):
     chat_id: Optional[str] = None
 
 @router.post("/telegram/test")
-async def test_telegram_alert(payload: Optional[TelegramTestPayload] = None):
+async def test_telegram_alert(payload: Optional[TelegramTestPayload] = None, request: Optional[Request] = None):
+    client_ip = request.client.host if request and request.client else "unknown"
     if payload and payload.bot_token and payload.chat_id:
         # Temporary test with provided values
         orig_token = telegram_vault_service.bot_token
@@ -117,8 +129,26 @@ async def test_telegram_alert(payload: Optional[TelegramTestPayload] = None):
         if res.get("status") != "success":
             telegram_vault_service.bot_token = orig_token
             telegram_vault_service.chat_id = orig_chat
+        
+        await audit_service.log(
+            action="TELEGRAM_TEST_DISPATCHED",
+            module="TELEGRAM",
+            severity="SUCCESS" if res.get("status") == "success" else "WARNING",
+            details=f"Teste de conexão do Telegram: {res.get('message')}",
+            client_ip=client_ip
+        )
         return res
-    return await telegram_vault_service.test_connection()
+        
+    res = await telegram_vault_service.test_connection()
+    await audit_service.log(
+        action="TELEGRAM_TEST_DISPATCHED",
+        module="TELEGRAM",
+        severity="SUCCESS" if res.get("status") == "success" else "WARNING",
+        details=f"Teste de conexão do Telegram: {res.get('message')}",
+        client_ip=client_ip
+    )
+    return res
+
 
 
 @router.get("/dnd")

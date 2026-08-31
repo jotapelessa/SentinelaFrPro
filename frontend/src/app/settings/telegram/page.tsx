@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Send, Check, Shield, BellRing, Play, Terminal, HelpCircle } from "lucide-react";
+import { Send, Check, Shield, BellRing, Play, Terminal, HelpCircle, ExternalLink, AlertTriangle } from "lucide-react";
 
 export default function TelegramSettingsPage() {
   const [botToken, setBotToken] = useState("");
@@ -9,11 +9,13 @@ export default function TelegramSettingsPage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [testingTelegram, setTestingTelegram] = useState(false);
   const [telegramStatus, setTelegramStatus] = useState<string | null>(null);
+  const [isError, setIsError] = useState(false);
   const [simulating, setSimulating] = useState(false);
+
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
 
   const fetchSettings = async () => {
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const res = await fetch(`${apiUrl}/settings/`);
       if (res.ok) {
         const data = await res.json();
@@ -31,54 +33,83 @@ export default function TelegramSettingsPage() {
 
   const handleSaveTelegram = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!botToken.trim() || !chatId.trim()) {
+      setIsError(true);
+      setTelegramStatus("⚠️ Preencha o Bot Token e o Chat ID antes de salvar.");
+      return;
+    }
+
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const res = await fetch(`${apiUrl}/settings/telegram`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bot_token: botToken, chat_id: chatId })
+        body: JSON.stringify({ bot_token: botToken.trim(), chat_id: chatId.trim() })
       });
       if (res.ok) {
         const data = await res.json();
         if (data.bot_token) setBotToken(data.bot_token);
         if (data.chat_id) setChatId(data.chat_id);
         setSaveSuccess(true);
+        setIsError(false);
         setTelegramStatus("✅ Credenciais gravadas com sucesso no banco de dados SQLite!");
         setTimeout(() => {
           setSaveSuccess(false);
           setTelegramStatus(null);
-        }, 4000);
+        }, 5000);
       } else {
-        setTelegramStatus("⚠️ Erro ao gravar credenciais no servidor.");
+        const errData = await res.json().catch(() => ({ detail: "Erro desconhecido" }));
+        setIsError(true);
+        setTelegramStatus(`⚠️ Erro ao gravar credenciais: ${errData.detail || "Falha no servidor"}`);
       }
     } catch (err) {
       console.error(err);
-      setTelegramStatus("⚠️ Falha de comunicação com o servidor.");
+      setIsError(true);
+      setTelegramStatus("⚠️ Falha de comunicação com o backend Sentinela.");
     }
   };
 
   const handleTestTelegram = async () => {
+    if (!botToken.trim() || !chatId.trim()) {
+      setIsError(true);
+      setTelegramStatus("⚠️ Preencha o Bot Token e o Chat ID nos campos abaixo antes de testar.");
+      return;
+    }
+
     setTestingTelegram(true);
     setTelegramStatus(null);
+    setIsError(false);
+
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const res = await fetch(`${apiUrl}/settings/telegram/test`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ bot_token: botToken, chat_id: chatId })
+        body: JSON.stringify({ bot_token: botToken.trim(), chat_id: chatId.trim() })
       });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
+        setIsError(true);
+        setTelegramStatus(`⚠️ Erro de comunicação (${errData.detail || `HTTP ${res.status}`}). Certifique-se de que o backend está ativo.`);
+        return;
+      }
+
       const data = await res.json();
       if (data.status === "success") {
+        setIsError(false);
         setTelegramStatus(`✅ ${data.message}`);
       } else {
-        setTelegramStatus(`⚠️ ${data.message || "Erro ao conectar com Telegram"}`);
+        setIsError(true);
+        setTelegramStatus(`⚠️ ${data.message || "Erro ao conectar com Telegram."}`);
       }
     } catch (err: any) {
-      setTelegramStatus("⚠️ Falha ao se comunicar com o backend.");
+      console.error("Test error:", err);
+      setIsError(true);
+      setTelegramStatus("⚠️ Falha ao se comunicar com o backend. Verifique se o container backend está em execução.");
     } finally {
       setTestingTelegram(false);
     }
   };
+
 
 
   const handleTriggerMockEvent = async () => {
@@ -117,12 +148,48 @@ export default function TelegramSettingsPage() {
         </div>
 
         {telegramStatus && (
-          <div className="p-3 rounded-xl bg-slate-900 border border-sky-500/30 text-xs text-sky-300 font-semibold">
-            {telegramStatus}
+          <div
+            className={`p-4 rounded-xl text-xs font-semibold flex items-center gap-3 border transition-all ${
+              isError
+                ? "bg-rose-950/40 border-rose-500/40 text-rose-300"
+                : "bg-emerald-950/40 border-emerald-500/40 text-emerald-300"
+            }`}
+          >
+            {isError ? <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" /> : <Check className="w-4 h-4 text-emerald-400 shrink-0" />}
+            <span>{telegramStatus}</span>
           </div>
         )}
 
+        {/* Telegram Fast Setup Guide */}
+        <div className="p-4 rounded-xl bg-obsidian-950/80 border border-slate-800 text-xs space-y-2">
+          <h3 className="font-bold text-slate-200 flex items-center gap-2">
+            <HelpCircle className="w-4 h-4 text-sky-400" />
+            Como obter seu Token e Chat ID no Telegram em 1 minuto:
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-slate-400 pt-1">
+            <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+              <strong className="text-slate-200 block">1. Criar o Robô:</strong>
+              <p className="text-[11px]">
+                Abra o <strong>@BotFather</strong> no Telegram, envie <code>/newbot</code> e copie o <strong>HTTP API Token</strong> gerado.
+              </p>
+            </div>
+            <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+              <strong className="text-slate-200 block">2. Iniciar Conversa:</strong>
+              <p className="text-[11px]">
+                Procure o seu robô recém-criado no Telegram e clique no botão <strong>Iniciar (/start)</strong> para autorizar mensagens.
+              </p>
+            </div>
+            <div className="p-2.5 rounded-lg bg-slate-900/80 border border-slate-800 space-y-1">
+              <strong className="text-slate-200 block">3. Obter seu Chat ID:</strong>
+              <p className="text-[11px]">
+                Abra o robô <strong>@userinfobot</strong> no Telegram e copie o seu número de <strong>Id</strong> para colar abaixo.
+              </p>
+            </div>
+          </div>
+        </div>
+
         <form onSubmit={handleSaveTelegram} className="space-y-4">
+
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-semibold text-slate-300 mb-1.5">
