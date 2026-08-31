@@ -18,7 +18,14 @@ async def get_telemetry():
     }
     return snapshot
 
+@router.get("/frigate-status")
+async def get_frigate_deep_status():
+    """Returns deep connectivity status with Frigate NVR REST API, MQTT bus, go2rtc streams and active detectors."""
+    from app.services.frigate_bridge import frigate_bridge
+    return await frigate_bridge.check_connectivity()
+
 @router.get("/stats-detailed")
+
 async def get_detailed_stats():
     """Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe partitions and Top Ubuntu processes."""
     return telemetry_service.get_detailed_stats()

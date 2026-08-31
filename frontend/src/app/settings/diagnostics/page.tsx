@@ -22,14 +22,20 @@ import {
   Loader2,
   TrendingUp,
   BarChart3,
-  ListOrdered
+  ListOrdered,
+  Video,
+  Radio,
+  ExternalLink
 } from "lucide-react";
 import { useSentinelaStore } from "@/store/useSentinelaStore";
 
 export default function DiagnosticsSettingsPage() {
   const { telemetry } = useSentinelaStore();
   const [statsData, setStatsData] = useState<any>(null);
+  const [frigateStatus, setFrigateStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [syncingFrigate, setSyncingFrigate] = useState(false);
+  const [syncMsg, setSyncMsg] = useState<string | null>(null);
 
   // Benchmark States
   const [runningBench, setRunningBench] = useState<string | null>(null);
@@ -38,10 +44,17 @@ export default function DiagnosticsSettingsPage() {
   const fetchDetailedStats = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
-      const res = await fetch(`${apiUrl}/telemetry/stats-detailed`);
-      if (res.ok) {
-        const data = await res.json();
+      const [resStats, resFrigate] = await Promise.all([
+        fetch(`${apiUrl}/telemetry/stats-detailed`),
+        fetch(`${apiUrl}/telemetry/frigate-status`)
+      ]);
+      if (resStats.ok) {
+        const data = await resStats.json();
         setStatsData(data);
+      }
+      if (resFrigate.ok) {
+        const fData = await resFrigate.json();
+        setFrigateStatus(fData);
       }
     } catch (e) {
       console.error(e);
@@ -49,6 +62,27 @@ export default function DiagnosticsSettingsPage() {
       setLoading(false);
     }
   };
+
+  const handleSyncFrigate = async () => {
+    setSyncingFrigate(true);
+    setSyncMsg(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const res = await fetch(`${apiUrl}/cameras/sync-frigate`, { method: "POST" });
+      const data = await res.json();
+      if (res.ok) {
+        setSyncMsg(`✅ Sincronização concluída! ${data.synced_cameras} câmera(s) sincronizadas com o Frigate.`);
+      } else {
+        setSyncMsg(`⚠️ Falha ao sincronizar: ${data.detail || "Erro no Frigate"}`);
+      }
+    } catch (err: any) {
+      setSyncMsg(`⚠️ Erro de conexão: ${err.message}`);
+    } finally {
+      setSyncingFrigate(false);
+      fetchDetailedStats();
+    }
+  };
+
 
   useEffect(() => {
     fetchDetailedStats();
@@ -120,8 +154,101 @@ export default function DiagnosticsSettingsPage() {
         </div>
       </div>
 
-      {/* 2. Top Metric Cards Grid */}
+      {/* 2. Frigate NVR Deep Integration & Auto-Sync Card */}
+      <div className="p-5 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 space-y-4 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              <Video className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-sm font-bold text-white">Integração & Comunicação com Frigate NVR</h3>
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800/60 font-bold">
+                  PORTA 5000 / 1984
+                </span>
+              </div>
+              <p className="text-xs text-slate-400">Status dos canais de comunicação REST API, WebSockets, go2rtc e IA</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleSyncFrigate}
+              disabled={syncingFrigate}
+              className="px-3 py-1.5 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all flex items-center gap-1.5 disabled:opacity-50"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${syncingFrigate ? "animate-spin text-cyan-400" : ""}`} />
+              <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Câmeras"}</span>
+            </button>
+            <a
+              href="http://sentinela.local:5000"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-700"
+            >
+              <span>Abrir Frigate</span>
+              <ExternalLink className="w-3 h-3 text-slate-400" />
+            </a>
+          </div>
+        </div>
+
+        {syncMsg && (
+          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-cyan-300">
+            {syncMsg}
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+          {/* Frigate REST API */}
+          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+            <span className="text-[11px] text-slate-400 block font-semibold">Frigate REST API</span>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${frigateStatus?.frigate_http ? "bg-emerald-400 animate-pulse" : "bg-rose-500"}`} />
+              <strong className="text-xs text-slate-200">
+                {frigateStatus?.frigate_http ? `Conectado (${frigateStatus.frigate_version || "OK"})` : "Desconectado"}
+              </strong>
+            </div>
+          </div>
+
+          {/* go2rtc WebRTC Hub */}
+          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+            <span className="text-[11px] text-slate-400 block font-semibold">go2rtc WebRTC Hub</span>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${frigateStatus?.go2rtc_http ? "bg-emerald-400" : "bg-rose-500"}`} />
+              <strong className="text-xs text-slate-200">
+                {frigateStatus?.go2rtc_http ? `${frigateStatus.go2rtc_streams?.length || 0} Streams Ativos` : "Offline"}
+              </strong>
+            </div>
+          </div>
+
+          {/* Detectors Status */}
+          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+            <span className="text-[11px] text-slate-400 block font-semibold">Detectores de IA (TFLite)</span>
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${frigateStatus?.detectors_online ? "bg-emerald-400" : "bg-amber-400"}`} />
+              <strong className="text-xs text-slate-200">
+                {frigateStatus?.detectors_online ? "Multi-Core Ativo" : "Standby"}
+              </strong>
+            </div>
+          </div>
+
+          {/* Active Cameras In Frigate */}
+          <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/80 space-y-1">
+            <span className="text-[11px] text-slate-400 block font-semibold">Câmeras no NVR</span>
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400" />
+              <strong className="text-xs text-slate-200">
+                {frigateStatus?.cameras_active?.length ? `${frigateStatus.cameras_active.length} Detectando` : "Carregando..."}
+              </strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* 3. Top Metric Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+
         
         {/* CPU Total */}
         <div className="p-5 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-3 shadow-lg">

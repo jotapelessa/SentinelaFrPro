@@ -27,6 +27,75 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
     cameras = result.scalars().all()
     return list(cameras)
 
+@router.post("/sync-frigate")
+async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends(get_db)):
+    """Deep synchronization: Reads all active cameras from Frigate NVR API and creates or updates them in Sentinela."""
+    import httpx
+    from app.core.config import settings
+    
+    synced_count = 0
+    errors = []
+    try:
+        async with httpx.AsyncClient(timeout=4.0) as client:
+            res = await client.get(f"{settings.FRIGATE_API_URL}/api/config")
+            if res.status_code == 200:
+                cfg_data = res.json()
+                frigate_cams = cfg_data.get("cameras", {})
+                go2rtc_streams = cfg_data.get("go2rtc", {}).get("streams", {})
+
+                for cam_name, cam_cfg in frigate_cams.items():
+                    # Determine RTSP URL
+                    rtsp_url = f"rtsp://frigate:8554/{cam_name}"
+                    if cam_name in go2rtc_streams:
+                        g_stream = go2rtc_streams[cam_name]
+                        if isinstance(g_stream, list) and len(g_stream) > 0 and isinstance(g_stream[0], str) and g_stream[0].startswith("rtsp://"):
+                            rtsp_url = g_stream[0].split("#")[0]
+                        elif isinstance(g_stream, str) and g_stream.startswith("rtsp://"):
+                            rtsp_url = g_stream.split("#")[0]
+
+                    # Check if already in DB
+                    stmt = select(Camera).where(Camera.name == cam_name)
+                    res_c = await db.execute(stmt)
+                    existing = res_c.scalar_one_or_none()
+
+                    if not existing:
+                        friendly = "Câmera Principal" if cam_name == "camera_principal" else cam_name.replace("_", " ").title()
+                        new_c = Camera(
+                            name=cam_name,
+                            friendly_name=friendly,
+                            rtsp_main=rtsp_url,
+                            ip_address="192.168.1.6" if "192_168_1_6" in cam_name or cam_name == "camera_principal" else "127.0.0.1",
+                            onvif_port=80,
+                            enabled=cam_cfg.get("enabled", True)
+                        )
+                        db.add(new_c)
+                        synced_count += 1
+                    else:
+                        existing.enabled = cam_cfg.get("enabled", True)
+                        if not existing.rtsp_main or existing.rtsp_main.startswith("rtsp://frigate"):
+                            existing.rtsp_main = rtsp_url
+                        synced_count += 1
+
+                await db.commit()
+    except Exception as e:
+        errors.append(str(e))
+        logger.error(f"Error syncing from Frigate API: {e}")
+
+    await audit_service.log(
+        action="FRIGATE_CAMERAS_SYNCED",
+        module="FRIGATE",
+        severity="SUCCESS" if not errors else "WARNING",
+        details=f"Sincronização com Frigate concluída ({synced_count} câmeras sincronizadas).",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+
+    return {
+        "status": "success" if not errors else "partial",
+        "synced_cameras": synced_count,
+        "errors": errors
+    }
+
+
 @router.post("/")
 async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Depends(get_db)):
     db_cam = Camera(
