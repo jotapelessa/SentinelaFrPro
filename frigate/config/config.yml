@@ -28,10 +28,8 @@ objects:
     - car
     - motorcycle
     - bus
-    - truck
     - dog
     - cat
-
 
 # Video Recording Policy (NVMe SSD)
 record:
@@ -57,13 +55,13 @@ snapshots:
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:8554/stream
-      - "ffmpeg:camera_principal#video=h264"
+      - rtsp://192.168.1.6:8554/stream#transport=tcp
   webrtc:
     listen: ":8555"
     candidates:
       - 192.168.1.252:8555
       - stun:8555
+
 
 # Câmera Principal
 cameras:
