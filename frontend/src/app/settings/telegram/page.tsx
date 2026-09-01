@@ -650,7 +650,7 @@ export default function TelegramSettingsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {/* Frigate Shortcut */}
           <a
-            href="http://sentinela.local:5000"
+            href="http://frigate.local:5000"
             target="_blank"
             rel="noopener noreferrer"
             className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 transition-all flex items-center justify-between group"

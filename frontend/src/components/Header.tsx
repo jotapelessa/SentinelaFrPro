@@ -119,7 +119,7 @@ export const Header: React.FC = () => {
           {/* External Links: Frigate & Tailscale */}
           <div className="hidden lg:flex items-center gap-1 bg-slate-900/90 p-0.5 rounded-lg border border-slate-800">
             <a
-              href="http://sentinela.local:5000"
+              href="http://frigate.local:5000"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-1 px-2 py-1 rounded text-[11px] font-semibold text-slate-300 hover:text-cyan-300 hover:bg-slate-800 transition-all group"

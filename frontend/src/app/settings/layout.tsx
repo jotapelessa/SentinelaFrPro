@@ -148,7 +148,7 @@ export default function SettingsLayout({
               </div>
               
               <a
-                href="http://sentinela.local:5000"
+                href="http://frigate.local:5000"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center justify-between p-2.5 rounded-xl text-slate-300 hover:text-cyan-300 hover:bg-slate-800/60 border border-transparent hover:border-cyan-500/30 transition-all group"

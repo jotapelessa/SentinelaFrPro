@@ -239,7 +239,7 @@ export default function DiagnosticsSettingsPage() {
               <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Câmeras"}</span>
             </button>
             <a
-              href="http://sentinela.local:5000"
+              href="http://frigate.local:5000"
               target="_blank"
               rel="noopener noreferrer"
               className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition-all flex items-center gap-1.5 border border-slate-700"
