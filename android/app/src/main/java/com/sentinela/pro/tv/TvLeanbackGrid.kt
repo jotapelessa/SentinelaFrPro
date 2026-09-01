@@ -221,6 +221,7 @@ fun TvCameraCard(
     }
 }
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun TvFullScreenCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
     var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
