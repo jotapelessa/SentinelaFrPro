@@ -826,7 +826,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
             cam_cfg["ffmpeg"]["inputs"] = [
                 {
                     "path": f"rtsp://127.0.0.1:8554/{cam_name}",
-                    "input_args": "preset-rtsp-restream",
+                    "input_args": "preset-rtsp-generic",
                     "roles": ["detect", "record"]
                 }
             ]
@@ -955,7 +955,7 @@ async def sync_camera_to_frigate(cam: Camera):
                 "inputs": [
                     {
                         "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
-                        "input_args": "preset-rtsp-restream",
+                        "input_args": "preset-rtsp-generic",
                         "roles": ["detect", "record"]
                     }
                 ]

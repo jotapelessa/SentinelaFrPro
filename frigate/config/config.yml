@@ -77,9 +77,9 @@ snapshots:
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:8554/stream
-      - rtsp://192.168.1.6:8554/live
-      - ffmpeg:rtsp://192.168.1.6:8554/stream#video=copy
+      - rtsp://192.168.1.6:8554/stream#transport=tcp
+      - rtsp://192.168.1.6:8554/live#transport=tcp
+      - ffmpeg:rtsp://192.168.1.6:8554/stream#video=copy#audio=copy
   webrtc:
     candidates:
       - 192.168.1.252:8555
@@ -92,7 +92,7 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream
+          input_args: preset-rtsp-generic
           roles:
             - detect
             - record
