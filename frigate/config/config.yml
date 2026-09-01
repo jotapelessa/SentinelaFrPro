@@ -110,25 +110,34 @@ cameras:
       fps: 5
     record:
       enabled: true
+      retain:
+        days: 3
+        mode: motion
+      events:
+        retain:
+          default: 14
+          mode: active_objects
     snapshots:
       enabled: true
       bounding_box: true
     zones:
       zona_monitoramento:
-        coordinates: 50,670,1230,670,1230,50,50,50
+        coordinates: 10,720,1270,720,1270,10,10,10
         objects:
           - person
           - car
           - motorcycle
+          - bus
           - dog
           - cat
           - bicycle
       zona_entrada:
-        coordinates: 320,720,960,720,960,360,320,360
+        coordinates: 200,720,1080,720,1080,250,200,250
         objects:
           - person
           - car
           - motorcycle
+          - bus
           - dog
           - cat
           - bicycle
@@ -138,6 +147,7 @@ cameras:
           - person
           - car
           - motorcycle
+          - bus
           - dog
           - cat
           - bicycle
@@ -147,6 +157,7 @@ cameras:
           - person
           - car
           - motorcycle
+          - bus
           - dog
           - cat
           - bicycle

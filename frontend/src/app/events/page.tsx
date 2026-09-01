@@ -14,14 +14,26 @@ export default function EventsPage() {
   const { events, cameras, setEvents } = useSentinelaStore();
   const [activeTab, setActiveTab] = useState<"recordings" | "audit">("recordings");
   
+  // Helper for consistent local YYYY-MM-DD date representation
+  const getLocalDateString = (d: Date = new Date()) => {
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const day = String(d.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  };
+
+  const formatEventTime = (ts?: string) => {
+    if (!ts) return "--:--:--";
+    const d = new Date(ts);
+    if (isNaN(d.getTime())) return "--:--:--";
+    return d.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  };
+
   // Recordings state
   const [filterCamera, setFilterCamera] = useState<string>("all");
   const [filterLabel, setFilterLabel] = useState<string>("all");
   const [filterFavorites, setFilterFavorites] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<string>(() => {
-    const today = new Date();
-    return today.toISOString().split("T")[0];
-  });
+  const [selectedDate, setSelectedDate] = useState<string>(() => getLocalDateString(new Date()));
   const [selectedHourFilter, setSelectedHourFilter] = useState<number | null>(null);
 
   const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
@@ -118,12 +130,13 @@ export default function EventsPage() {
     return () => clearTimeout(timer);
   }, [showDeleteModal, deleteModalCountdown]);
 
-  // Filter events by selected date and hour
+  // Filter events by selected date and hour in Local Time
   const filteredEvents = useMemo(() => {
     return events.filter((ev) => {
       if (!ev.timestamp) return true;
       const evDate = new Date(ev.timestamp);
-      const evDateStr = evDate.toISOString().split("T")[0];
+      if (isNaN(evDate.getTime())) return true;
+      const evDateStr = getLocalDateString(evDate);
       
       if (selectedDate && evDateStr !== selectedDate) {
         return false;
@@ -137,7 +150,7 @@ export default function EventsPage() {
     });
   }, [events, selectedDate, selectedHourFilter]);
 
-  // Compute 24-hour timeline bins (24 hourly buckets with breakdown)
+  // Compute 24-hour timeline bins (24 hourly buckets with breakdown) in Local Time
   const timelineHourlyBins = useMemo(() => {
     const hours = Array.from({ length: 24 }, (_, i) => ({
       hour: i,
@@ -152,7 +165,8 @@ export default function EventsPage() {
     events.forEach((ev) => {
       if (!ev.timestamp) return;
       const evDate = new Date(ev.timestamp);
-      const evDateStr = evDate.toISOString().split("T")[0];
+      if (isNaN(evDate.getTime())) return;
+      const evDateStr = getLocalDateString(evDate);
 
       if (selectedDate && evDateStr !== selectedDate) return;
 
@@ -316,15 +330,14 @@ export default function EventsPage() {
 
   // Quick Date Selectors
   const setDateToday = () => {
-    const today = new Date().toISOString().split("T")[0];
-    setSelectedDate(today);
+    setSelectedDate(getLocalDateString(new Date()));
     setSelectedHourFilter(null);
   };
 
   const setDateYesterday = () => {
     const yest = new Date();
     yest.setDate(yest.getDate() - 1);
-    setSelectedDate(yest.toISOString().split("T")[0]);
+    setSelectedDate(getLocalDateString(yest));
     setSelectedHourFilter(null);
   };
 
@@ -866,7 +879,7 @@ export default function EventsPage() {
                       <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-2 border-t border-slate-800">
                         <span className="flex items-center gap-1">
                           <Clock className="w-3 h-3 text-slate-500" />
-                          {new Date(ev.timestamp).toLocaleTimeString("pt-BR")}
+                          {formatEventTime(ev.timestamp)}
                         </span>
 
                         <div className="flex items-center gap-1.5">

@@ -54,7 +54,7 @@ async def list_events(
                     score = item.get("top_score") or item.get("score") or 0.0
                     start_ts = item.get("start_time")
                     end_ts = item.get("end_time")
-                    time_str = datetime.datetime.fromtimestamp(start_ts).isoformat() if start_ts else datetime.datetime.utcnow().isoformat()
+                    time_str = datetime.datetime.fromtimestamp(start_ts, tz=datetime.timezone.utc).isoformat() if start_ts else datetime.datetime.now(datetime.timezone.utc).isoformat()
                     is_retained = item.get("retain_indefinitely", False)
                     event_id = item.get("id")
                     cam_name = item.get("camera", "camera_principal")

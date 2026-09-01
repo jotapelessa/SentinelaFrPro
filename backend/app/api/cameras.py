@@ -851,14 +851,23 @@ def sanitize_frigate_config(cfg: dict) -> dict:
             if "fps" not in cam_cfg["detect"]:
                 cam_cfg["detect"]["fps"] = 5
 
-        # 4. Guarantee record block syntax
-        if "record" in cam_cfg:
-            if isinstance(cam_cfg["record"], dict):
-                if "retain_days" in cam_cfg["record"]:
-                    del cam_cfg["record"]["retain_days"]
-                if "events" in cam_cfg["record"] and isinstance(cam_cfg["record"]["events"], dict):
-                    if "retain" in cam_cfg["record"]["events"] and isinstance(cam_cfg["record"]["events"]["retain"], (int, float)):
-                        del cam_cfg["record"]["events"]["retain"]
+        # 4. Guarantee record block syntax for Frigate 0.17
+        if "record" not in cam_cfg or not isinstance(cam_cfg["record"], dict):
+            cam_cfg["record"] = {
+                "enabled": True,
+                "retain": {"days": 3, "mode": "motion"},
+                "events": {"retain": {"default": 14, "mode": "active_objects"}}
+            }
+        else:
+            cam_cfg["record"]["enabled"] = cam_cfg["record"].get("enabled", True)
+            if "retain_days" in cam_cfg["record"]:
+                del cam_cfg["record"]["retain_days"]
+            if "retain" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["retain"], dict):
+                cam_cfg["record"]["retain"] = {"days": 3, "mode": "motion"}
+            if "events" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["events"], dict):
+                cam_cfg["record"]["events"] = {"retain": {"default": 14, "mode": "active_objects"}}
+            elif "retain" not in cam_cfg["record"]["events"] or not isinstance(cam_cfg["record"]["events"]["retain"], dict):
+                cam_cfg["record"]["events"]["retain"] = {"default": 14, "mode": "active_objects"}
 
         # 5. Guarantee snapshots block
         if "snapshots" not in cam_cfg or not isinstance(cam_cfg["snapshots"], dict):
@@ -869,38 +878,53 @@ def sanitize_frigate_config(cfg: dict) -> dict:
 
         # 6. Guarantee review alerts block for zones and clean orphan required_zones
         valid_zone_keys = list(cam_cfg["zones"].keys()) if ("zones" in cam_cfg and isinstance(cam_cfg["zones"], dict)) else []
+        all_security_labels = ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"]
         
         if "review" in cam_cfg and isinstance(cam_cfg["review"], dict):
             # Clean alerts required_zones
             if "alerts" in cam_cfg["review"] and isinstance(cam_cfg["review"]["alerts"], dict):
+                if "labels" not in cam_cfg["review"]["alerts"] or not isinstance(cam_cfg["review"]["alerts"]["labels"], list):
+                    cam_cfg["review"]["alerts"]["labels"] = all_security_labels
                 if "required_zones" in cam_cfg["review"]["alerts"] and isinstance(cam_cfg["review"]["alerts"]["required_zones"], list):
                     cam_cfg["review"]["alerts"]["required_zones"] = [
                         z for z in cam_cfg["review"]["alerts"]["required_zones"] if z in valid_zone_keys
                     ]
                 else:
                     cam_cfg["review"]["alerts"]["required_zones"] = []
+            else:
+                cam_cfg["review"]["alerts"] = {
+                    "labels": all_security_labels,
+                    "required_zones": []
+                }
 
             # Clean detections required_zones
             if "detections" in cam_cfg["review"] and isinstance(cam_cfg["review"]["detections"], dict):
+                if "labels" not in cam_cfg["review"]["detections"] or not isinstance(cam_cfg["review"]["detections"]["labels"], list):
+                    cam_cfg["review"]["detections"]["labels"] = all_security_labels
                 if "required_zones" in cam_cfg["review"]["detections"] and isinstance(cam_cfg["review"]["detections"]["required_zones"], list):
                     cam_cfg["review"]["detections"]["required_zones"] = [
                         z for z in cam_cfg["review"]["detections"]["required_zones"] if z in valid_zone_keys
                     ]
                 else:
                     cam_cfg["review"]["detections"]["required_zones"] = []
+            else:
+                cam_cfg["review"]["detections"] = {
+                    "labels": all_security_labels,
+                    "required_zones": []
+                }
         else:
             cam_cfg["review"] = {
                 "alerts": {
-                    "labels": ["person", "car", "motorcycle"],
+                    "labels": all_security_labels,
                     "required_zones": []
                 },
                 "detections": {
-                    "labels": ["person", "car", "motorcycle"],
+                    "labels": all_security_labels,
                     "required_zones": []
                 }
             }
 
-    return cfg
+        return cfg
 
 async def sync_camera_to_frigate(cam: Camera):
     import os
