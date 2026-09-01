@@ -536,7 +536,7 @@ fun PhoneSettingsTab() {
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Text("Versão do Aplicativo", color = Color(0xFF94A3B8), fontSize = 12.sp)
-                Text("001.000.000.001 (Smartphone Edition)", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text("${com.sentinela.pro.BuildConfig.VERSION_NAME} (Smartphone Edition)", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
