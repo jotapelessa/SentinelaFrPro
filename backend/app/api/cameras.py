@@ -1464,7 +1464,7 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
     return {
         "status": "saved",
         "camera": cam_name,
-        "saved_via_api": saved_via_api,
+        "saved_via_api": False,
         "message": "Zonas e Máscaras sincronizadas com sucesso no Frigate e no Sentinela!"
     }
 
