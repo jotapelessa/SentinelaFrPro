@@ -120,14 +120,16 @@ cameras:
     review:
       alerts:
         labels:
-          person:
-            min_score: 0.5
+          - person
+          - car
+          - motorcycle
         required_zones:
           - zona_monitoramento
       detections:
         labels:
-          person:
-            min_score: 0.45
+          - person
+          - car
+          - motorcycle
         required_zones: []
 
 
