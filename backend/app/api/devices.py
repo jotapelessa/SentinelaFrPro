@@ -160,3 +160,77 @@ async def test_pip(req: TestPiPRequest):
     )
     return res
 
+@router.get("/{device_id}/diagnostics")
+async def device_diagnostics(device_id: int, db: AsyncSession = Depends(get_db)):
+    from app.db.models import AuditLog
+    stmt = select(PairedDevice).where(PairedDevice.id == device_id)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev:
+        raise HTTPException(status_code=404, detail="Device not found")
+        
+    target_ip = dev.tailscale_ip if dev.tailscale_ip else dev.ip_address
+    
+    # 1. Ping Test
+    ping_cmd = f"ping -c 3 -W 1 {target_ip}"
+    proc = await asyncio.create_subprocess_shell(
+        ping_cmd,
+        stdout=asyncio.subprocess.PIPE,
+        stderr=asyncio.subprocess.PIPE
+    )
+    stdout, stderr = await proc.communicate()
+    ping_output = stdout.decode('utf-8', errors='ignore')
+    
+    import re
+    packet_loss_match = re.search(r'(\d+)% packet loss', ping_output)
+    avg_latency_match = re.search(r'min/avg/max/mdev = [\d\.]+/(.*?)/[\d\.]+/', ping_output)
+    if not avg_latency_match:
+        # Fallback for macOS ping output
+        avg_latency_match = re.search(r'min/avg/max/stddev = [\d\.]+/(.*?)/[\d\.]+/', ping_output)
+    
+    packet_loss = f"{packet_loss_match.group(1)}%" if packet_loss_match else "100%"
+    avg_latency = f"{avg_latency_match.group(1)} ms" if avg_latency_match else "N/A"
+    
+    # 2. Port Scan
+    ports_to_check = {8009: "Google Cast", 7986: "PiP REST", 5463: "PiP REST Alt"}
+    open_ports = []
+    
+    async def check_port(port, name):
+        try:
+            fut = asyncio.open_connection(target_ip, port)
+            reader, writer = await asyncio.wait_for(fut, timeout=0.5)
+            writer.close()
+            await writer.wait_closed()
+            open_ports.append(f"{port} ({name})")
+        except Exception:
+            pass
+            
+    await asyncio.gather(*[check_port(p, n) for p, n in ports_to_check.items()])
+    
+    # 3. Statistics
+    import datetime
+    yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    audit_stmt = select(AuditLog).where(
+        AuditLog.action == "PIP_TEST_SUCCESS",
+        AuditLog.timestamp >= yesterday,
+        AuditLog.details.like(f"%{dev.friendly_name}%")
+    )
+    audit_res = await db.execute(audit_stmt)
+    pip_count = len(audit_res.scalars().all())
+    
+    raw_lines = ping_output.strip().split('\n')
+    
+    return {
+        "device_id": dev.id,
+        "name": dev.friendly_name,
+        "target_ip": target_ip,
+        "ping_raw": raw_lines[-2:] if len(raw_lines) >= 2 else raw_lines,
+        "packet_loss": packet_loss,
+        "latency": avg_latency,
+        "open_ports": open_ports if open_ports else ["Nenhuma porta PiP/Cast detectada aberta"],
+        "stats": {
+            "pips_sent_24h": pip_count,
+            "status": dev.permission_status
+        }
+    }
+
