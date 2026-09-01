@@ -863,14 +863,41 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 "bounding_box": True
             }
 
-        # 6. Guarantee review alerts block for zones
-        if "zones" in cam_cfg and isinstance(cam_cfg["zones"], dict) and cam_cfg["zones"]:
-            if "review" not in cam_cfg or not isinstance(cam_cfg["review"], dict):
-                cam_cfg["review"] = {}
-            if "alerts" not in cam_cfg["review"] or not isinstance(cam_cfg["review"]["alerts"], dict):
-                cam_cfg["review"]["alerts"] = {}
-            if "required_zones" not in cam_cfg["review"]["alerts"]:
-                cam_cfg["review"]["alerts"]["required_zones"] = list(cam_cfg["zones"].keys())
+        # 6. Guarantee review alerts block for zones and clean orphan required_zones
+        valid_zone_keys = list(cam_cfg["zones"].keys()) if ("zones" in cam_cfg and isinstance(cam_cfg["zones"], dict)) else []
+        
+        if "review" in cam_cfg and isinstance(cam_cfg["review"], dict):
+            # Clean alerts required_zones
+            if "alerts" in cam_cfg["review"] and isinstance(cam_cfg["review"]["alerts"], dict):
+                if "required_zones" in cam_cfg["review"]["alerts"]:
+                    if isinstance(cam_cfg["review"]["alerts"]["required_zones"], list):
+                        cam_cfg["review"]["alerts"]["required_zones"] = [
+                            z for z in cam_cfg["review"]["alerts"]["required_zones"] if z in valid_zone_keys
+                        ]
+                        if not cam_cfg["review"]["alerts"]["required_zones"] and valid_zone_keys:
+                            cam_cfg["review"]["alerts"]["required_zones"] = valid_zone_keys
+                    else:
+                        cam_cfg["review"]["alerts"]["required_zones"] = valid_zone_keys
+                elif valid_zone_keys:
+                    cam_cfg["review"]["alerts"]["required_zones"] = valid_zone_keys
+
+            # Clean detections required_zones
+            if "detections" in cam_cfg["review"] and isinstance(cam_cfg["review"]["detections"], dict):
+                if "required_zones" in cam_cfg["review"]["detections"] and isinstance(cam_cfg["review"]["detections"]["required_zones"], list):
+                    cam_cfg["review"]["detections"]["required_zones"] = [
+                        z for z in cam_cfg["review"]["detections"]["required_zones"] if z in valid_zone_keys
+                    ]
+        elif valid_zone_keys:
+            cam_cfg["review"] = {
+                "alerts": {
+                    "labels": ["person", "car", "motorcycle"],
+                    "required_zones": valid_zone_keys
+                },
+                "detections": {
+                    "labels": ["person", "car", "motorcycle"],
+                    "required_zones": []
+                }
+            }
 
     return cfg
 
