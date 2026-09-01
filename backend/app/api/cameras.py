@@ -754,24 +754,28 @@ def sanitize_frigate_config(cfg: dict) -> dict:
     if "motion" not in cfg or not isinstance(cfg["motion"], dict):
         cfg["motion"] = {
             "threshold": 25,
-            "contour_area": 10,
-            "improve_contrast": True
+            "contour_area": 15,
+            "improve_contrast": False
         }
 
     if "objects" not in cfg or not isinstance(cfg["objects"], dict):
         cfg["objects"] = {
-            "track": ["person", "car", "motorcycle", "bus", "dog", "cat"],
+            "track": ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"],
             "filters": {
-                "person": {"min_score": 0.45, "threshold": 0.55},
-                "car": {"min_score": 0.45, "threshold": 0.55},
-                "motorcycle": {"min_score": 0.45, "threshold": 0.55}
+                "person": {"min_score": 0.40, "threshold": 0.50},
+                "car": {"min_score": 0.40, "threshold": 0.50},
+                "motorcycle": {"min_score": 0.40, "threshold": 0.50},
+                "dog": {"min_score": 0.40, "threshold": 0.50},
+                "cat": {"min_score": 0.40, "threshold": 0.50}
             }
         }
     elif "filters" not in cfg["objects"]:
         cfg["objects"]["filters"] = {
-            "person": {"min_score": 0.45, "threshold": 0.55},
-            "car": {"min_score": 0.45, "threshold": 0.55},
-            "motorcycle": {"min_score": 0.45, "threshold": 0.55}
+            "person": {"min_score": 0.40, "threshold": 0.50},
+            "car": {"min_score": 0.40, "threshold": 0.50},
+            "motorcycle": {"min_score": 0.40, "threshold": 0.50},
+            "dog": {"min_score": 0.40, "threshold": 0.50},
+            "cat": {"min_score": 0.40, "threshold": 0.50}
         }
 
     if "snapshots" not in cfg or not isinstance(cfg["snapshots"], dict):
@@ -1410,7 +1414,7 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
                     z_slug = item.get("slug") or item.get("name", f"zona_{idx + 1}").lower().replace(" ", "_").replace("-", "_")
                     converted_zones[z_slug] = {
                         "coordinates": coord_str,
-                        "objects": item.get("objects", ["person", "car", "motorcycle"])
+                        "objects": item.get("objects", ["person", "car", "motorcycle", "dog", "cat", "bicycle"])
                     }
                 elif i_type == "mask":
                     motion_masks_list.append(coord_str)
