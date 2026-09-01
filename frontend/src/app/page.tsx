@@ -27,7 +27,10 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2 font-mono text-xs text-slate-300">
+        <div className="flex items-center gap-2 font-mono text-xs text-slate-300 flex-wrap">
+          <span className="px-2.5 py-1 rounded-lg bg-cyan-950/90 border border-cyan-500/40 text-cyan-300 font-bold font-mono text-xs flex items-center gap-1.5 shadow-sm">
+            🛡️ SentinelaPro.001.000.000.005
+          </span>
           <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             VIGILÂNCIA ARMADA
