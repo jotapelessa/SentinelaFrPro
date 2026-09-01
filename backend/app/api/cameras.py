@@ -932,13 +932,11 @@ async def sync_camera_to_frigate(cam: Camera):
     if "cameras" not in cfg or not isinstance(cfg["cameras"], dict):
         cfg["cameras"] = {}
 
-    cam_name = cam.name or "camera_principal"
-    target_cam_key = cam_name
-    if target_cam_key not in cfg["cameras"]:
-        if "camera_principal" in cfg["cameras"]:
-            target_cam_key = "camera_principal"
-        elif len(cfg["cameras"]) == 1:
-            target_cam_key = list(cfg["cameras"].keys())[0]
+    import re
+    raw_name = (cam.name or "camera_principal").strip().lower()
+    target_cam_key = re.sub(r'[^a-zA-Z0-9_]', '_', raw_name)
+    if not target_cam_key:
+        target_cam_key = "camera_principal"
 
     if "go2rtc" not in cfg:
         cfg["go2rtc"] = {}
