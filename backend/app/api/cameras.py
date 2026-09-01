@@ -1149,6 +1149,7 @@ def parse_frigate_coordinates(raw_coords: Any, width: int = 1280, height: int = 
 
 ZONE_PALETTE = ["#06b6d4", "#3b82f6", "#10b981", "#8b5cf6", "#f59e0b", "#ec4899"]
 
+@router.get("/{camera_id}/zones")
 @router.get("/{camera_id}/frigate-zones")
 async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(get_db)):
     import os
@@ -1158,38 +1159,51 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
     from app.core.config import settings
 
     cam_name = camera_id if not camera_id.isdigit() else "camera_principal"
+    cam_row = None
     
-    # Try finding camera by ID if digit
-    if camera_id.isdigit():
-        c_stmt = select(Camera).where(Camera.id == int(camera_id))
-        c_res = await db.execute(c_stmt)
-        cam_row = c_res.scalar_one_or_none()
-        if cam_row and cam_row.name:
-            cam_name = cam_row.name
+    # Try finding camera by ID or Name
+    c_stmt = select(Camera).where(
+        (Camera.id == int(camera_id)) if camera_id.isdigit() else ((Camera.name == camera_id) | (Camera.ip_address == camera_id))
+    )
+    c_res = await db.execute(c_stmt)
+    cam_row = c_res.scalar_one_or_none()
+    if cam_row and cam_row.name:
+        cam_name = cam_row.name
 
     cfg = {}
 
-    # 1. Try fetching directly from Frigate REST API
-    try:
-        async with httpx.AsyncClient(timeout=4.0) as client:
-            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
-            if resp.status_code == 200:
-                cfg = yaml.safe_load(resp.text) or {}
-    except Exception:
-        pass
+    # 1. Authoritative: Read disk config first
+    config_path = get_frigate_config_path()
+    if os.path.exists(config_path):
+        try:
+            with open(config_path, "r", encoding="utf-8") as f:
+                cfg = yaml.safe_load(f) or {}
+        except Exception:
+            pass
 
-    # 2. Fallback to local file if API was unavailable
+    # 2. Fallback to Frigate REST API
     if not cfg:
-        config_path = get_frigate_config_path()
-        if os.path.exists(config_path):
-            try:
-                with open(config_path, "r", encoding="utf-8") as f:
-                    cfg = yaml.safe_load(f) or {}
-            except Exception:
-                pass
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config/raw")
+                if resp.status_code == 200:
+                    cfg = yaml.safe_load(resp.text) or {}
+        except Exception:
+            pass
 
     cameras_cfg = cfg.get("cameras", {}) if isinstance(cfg, dict) else {}
-    cam_data = cameras_cfg.get(cam_name, {}) if isinstance(cameras_cfg, dict) else {}
+    
+    # Resolve real camera name in Frigate config
+    target_cam_key = cam_name
+    if target_cam_key not in cameras_cfg:
+        if cam_row and cam_row.name in cameras_cfg:
+            target_cam_key = cam_row.name
+        elif "camera_principal" in cameras_cfg:
+            target_cam_key = "camera_principal"
+        elif len(cameras_cfg) == 1:
+            target_cam_key = list(cameras_cfg.keys())[0]
+
+    cam_data = cameras_cfg.get(target_cam_key, {}) if isinstance(cameras_cfg, dict) else {}
 
     detect_w = cam_data.get("detect", {}).get("width", 1280) if isinstance(cam_data.get("detect"), dict) else 1280
     detect_h = cam_data.get("detect", {}).get("height", 720) if isinstance(cam_data.get("detect"), dict) else 720
@@ -1231,7 +1245,7 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
         m_pts = parse_frigate_coordinates(motion_mask, detect_w, detect_h)
         if m_pts:
             parsed_items.append({
-                "id": f"mask_{cam_name}",
+                "id": f"mask_{target_cam_key}",
                 "name": "Máscara de Movimento",
                 "slug": "motion_mask",
                 "type": "mask",
@@ -1255,19 +1269,16 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
 
     # Fallback to Sentinela DB if Frigate had no zones defined
     if not parsed_items:
-        stmt = select(Camera).where((Camera.name == cam_name) | (Camera.ip_address == cam_name))
-        res_c = await db.execute(stmt)
-        db_cam = res_c.scalar_one_or_none()
-        if db_cam and db_cam.zones:
+        if cam_row and cam_row.zones:
             try:
-                db_items = json.loads(db_cam.zones)
+                db_items = json.loads(cam_row.zones)
                 if isinstance(db_items, list):
                     parsed_items = db_items
             except Exception:
                 pass
 
     return {
-        "camera": cam_name,
+        "camera": target_cam_key,
         "detect_resolution": {"width": detect_w, "height": detect_h},
         "zones": raw_zones,
         "motion_mask": motion_mask,
@@ -1275,6 +1286,7 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
         "parsed_items": parsed_items
     }
 
+@router.post("/{camera_id}/zones")
 @router.post("/{camera_id}/frigate-zones")
 async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload, db: AsyncSession = Depends(get_db)):
     import os
@@ -1284,13 +1296,15 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
     from app.core.config import settings
 
     cam_name = camera_id if not camera_id.isdigit() else "camera_principal"
+    cam_row = None
 
-    if camera_id.isdigit():
-        c_stmt = select(Camera).where(Camera.id == int(camera_id))
-        c_res = await db.execute(c_stmt)
-        cam_row = c_res.scalar_one_or_none()
-        if cam_row and cam_row.name:
-            cam_name = cam_row.name
+    c_stmt = select(Camera).where(
+        (Camera.id == int(camera_id)) if camera_id.isdigit() else ((Camera.name == camera_id) | (Camera.ip_address == camera_id))
+    )
+    c_res = await db.execute(c_stmt)
+    cam_row = c_res.scalar_one_or_none()
+    if cam_row and cam_row.name:
+        cam_name = cam_row.name
 
     cfg = None
     raw_yaml_text = None
@@ -1320,10 +1334,20 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
 
     if "cameras" not in cfg or not isinstance(cfg["cameras"], dict):
         cfg["cameras"] = {}
-    if cam_name not in cfg["cameras"] or not isinstance(cfg["cameras"][cam_name], dict):
-        cfg["cameras"][cam_name] = {}
 
-    cam_data = cfg["cameras"][cam_name]
+    # Resolve target camera key in Frigate config
+    target_cam_key = cam_name
+    if target_cam_key not in cfg["cameras"]:
+        if cam_row and cam_row.name in cfg["cameras"]:
+            target_cam_key = cam_row.name
+        elif "camera_principal" in cfg["cameras"]:
+            target_cam_key = "camera_principal"
+        elif len(cfg["cameras"]) == 1:
+            target_cam_key = list(cfg["cameras"].keys())[0]
+        else:
+            cfg["cameras"][target_cam_key] = {}
+
+    cam_data = cfg["cameras"][target_cam_key]
 
     # Clean forbidden keys
     if "live" in cam_data:
