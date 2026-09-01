@@ -278,6 +278,25 @@ async def delete_device(device_id: int, request: Request, db: AsyncSession = Dep
     )
     return {"status": "deleted", "id": device_id}
 
+@router.delete("/all/cleanup")
+async def cleanup_all_devices(request: Request, db: AsyncSession = Depends(get_db)):
+    """Removes all paired devices so fresh real devices can register via heartbeat."""
+    stmt = select(PairedDevice)
+    res = await db.execute(stmt)
+    all_devs = res.scalars().all()
+    count = len(all_devs)
+    for d in all_devs:
+        await db.delete(d)
+    await db.commit()
+    await audit_service.log(
+        action="DEVICES_CLEANUP",
+        module="PIP",
+        severity="WARNING",
+        details=f"Limpeza geral de telas: {count} dispositivo(s) removido(s).",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+    return {"status": "cleaned", "count": count}
+
 @router.post("/{device_id}/test")
 async def test_single_device(device_id: int, req: Optional[TestSingleDeviceRequest] = None):
     """Triggers an interactive PiP test to this single TV with the selected camera."""

@@ -512,6 +512,7 @@ fun PhoneLogsTab() {
 fun PhoneSettingsTab() {
     val context = LocalContext.current
     val prefs = remember { SentinelaPreferences(context) }
+    var currentHost by remember { mutableStateOf(prefs.serverHost) }
 
     LazyColumn(
         modifier = Modifier
@@ -532,8 +533,36 @@ fun PhoneSettingsTab() {
                     .padding(16.dp),
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Text("Servidor Sentinela Tailscale", color = Color(0xFF94A3B8), fontSize = 12.sp)
-                Text(SentinelaConfig.SERVER_HOST, color = Color(0xFF22D3EE), fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text("SERVIDOR SENTINELA (CONEXÃO ATUAL)", color = Color(0xFF94A3B8), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text(currentHost, color = Color(0xFF22D3EE), fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val presets = listOf(
+                        "sentinela.tail47a54f.ts.net" to "Tailscale",
+                        "sentinela.local" to "Local mDNS",
+                        "192.168.1.252:8000" to "IP Direto"
+                    )
+                    presets.forEach { (host, label) ->
+                        Button(
+                            onClick = {
+                                currentHost = host
+                                prefs.serverHost = host
+                                SentinelaConfig.currentHost = host
+                                Toast.makeText(context, "Conectando em $host", Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (currentHost == host) Color(0xFF06B6D4) else Color(0xFF1E293B)
+                            ),
+                            shape = RoundedCornerShape(8.dp),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(label, fontSize = 11.sp, maxLines = 1)
+                        }
+                    }
+                }
             }
         }
 
@@ -544,10 +573,13 @@ fun PhoneSettingsTab() {
                     .clip(RoundedCornerShape(12.dp))
                     .background(Color(0xFF0F172A))
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Versão do Aplicativo", color = Color(0xFF94A3B8), fontSize = 12.sp)
-                Text("${com.sentinela.pro.BuildConfig.VERSION_NAME} (Smartphone Edition)", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                Text("IDENTIFICAÇÃO DESTE SMARTPHONE EM /SCREENS", color = Color(0xFF94A3B8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("ID: ${prefs.deviceIdentifier}", color = Color(0xFF22D3EE), fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                Text("Nome: ${prefs.friendlyName}", color = Color.White, fontSize = 13.sp)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text("Versão: ${com.sentinela.pro.BuildConfig.VERSION_NAME} (Smartphone Edition)", color = Color(0xFF94A3B8), fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

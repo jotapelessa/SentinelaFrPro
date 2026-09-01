@@ -43,7 +43,23 @@ class MainActivity : ComponentActivity() {
         }
 
         val prefs = com.sentinela.pro.data.SentinelaPreferences(this)
+        SentinelaConfig.currentHost = prefs.serverHost
         val deviceType = if (isTv()) "android_tv" else "smartphone"
+
+        // Setup SSL bypass for Tailscale / LAN certificates
+        try {
+            val trustAllCerts = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
+                override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
+                override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+            })
+            val sslContext = javax.net.ssl.SSLContext.getInstance("SSL")
+            sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+            javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
+            javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
+        } catch (e: Exception) {
+            Log.w("MainActivity", "SSL setup: ${e.message}")
+        }
 
         setContent {
             val coroutineScope = rememberCoroutineScope()
@@ -53,6 +69,7 @@ class MainActivity : ComponentActivity() {
 
             fun loadCameras() {
                 coroutineScope.launch {
+                    SentinelaConfig.currentHost = prefs.serverHost
                     SentinelaRepository.registerOrHeartbeat(
                         deviceIdentifier = prefs.deviceIdentifier,
                         friendlyName = prefs.friendlyName,
@@ -67,6 +84,15 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
                 loadCameras()
+                // Periodic heartbeat every 25 seconds to keep device marked as online in /screens
+                while (true) {
+                    kotlinx.coroutines.delay(25000)
+                    SentinelaRepository.registerOrHeartbeat(
+                        deviceIdentifier = prefs.deviceIdentifier,
+                        friendlyName = prefs.friendlyName,
+                        deviceType = deviceType
+                    )
+                }
             }
 
             MaterialTheme {

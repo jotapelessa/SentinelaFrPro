@@ -855,7 +855,45 @@ fun TvSettingsTab() {
             }
         }
 
-        // App Version Info
+        // Server Host Selector
+        item {
+            var currentHost by remember { mutableStateOf(prefs.serverHost) }
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                Text(
+                    text = "SERVIDOR SENTINELA (CONEXÃO ATUAL)",
+                    color = Color(0xFF22D3EE),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "Host ativo: $currentHost",
+                    color = Color(0xFF94A3B8),
+                    fontSize = 12.sp,
+                    fontFamily = FontFamily.Monospace
+                )
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    val presets = listOf(
+                        "sentinela.tail47a54f.ts.net" to "Túnel Tailscale VPN",
+                        "sentinela.local" to "Rede Local (mDNS)",
+                        "192.168.1.252:8000" to "IP Direto (Porta 8000)"
+                    )
+                    items(presets) { (host, label) ->
+                        TvOptionPill(
+                            label = "$label ($host)",
+                            isSelected = currentHost == host,
+                            onSelect = {
+                                currentHost = host
+                                prefs.serverHost = host
+                                SentinelaConfig.currentHost = host
+                                Toast.makeText(context, "Servidor alterado para $host", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        // App Version & Pairing Info
         item {
             Column(
                 modifier = Modifier
@@ -866,15 +904,28 @@ fun TvSettingsTab() {
                 verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = "VERSÃO DO APLICATIVO",
+                    text = "IDENTIFICAÇÃO DESTE DISPOSITIVO EM /SCREENS",
                     color = Color(0xFF94A3B8),
                     fontSize = 11.sp,
                     fontWeight = FontWeight.Bold
                 )
                 Text(
-                    text = "${com.sentinela.pro.BuildConfig.VERSION_NAME} (Android TV Edition)",
+                    text = "ID: ${prefs.deviceIdentifier}",
+                    color = Color(0xFF22D3EE),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = FontFamily.Monospace
+                )
+                Text(
+                    text = "Nome: ${prefs.friendlyName}",
                     color = Color.White,
-                    fontSize = 15.sp,
+                    fontSize = 13.sp
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "VERSÃO DO APLICATIVO: ${com.sentinela.pro.BuildConfig.VERSION_NAME} (Android TV Edition)",
+                    color = Color(0xFF94A3B8),
+                    fontSize = 12.sp,
                     fontWeight = FontWeight.Bold
                 )
             }

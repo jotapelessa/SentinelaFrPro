@@ -55,11 +55,24 @@ async def init_db():
             ("cooldown_seconds", "INTEGER DEFAULT 10")
         ]
         
+        # SQLite automatic column migration for cameras
         for col_name, col_def in columns_to_add:
             try:
                 from sqlalchemy import text
                 await conn.execute(text(f"ALTER TABLE cameras ADD COLUMN {col_name} {col_def}"))
             except Exception:
-                # Column already exists, ignore
+                pass
+
+        # SQLite automatic column migration for paired_devices
+        paired_columns = [
+            ("allowed_cameras", "TEXT"),
+            ("tailscale_ip", "VARCHAR(64)"),
+            ("last_seen", "DATETIME")
+        ]
+        for col_name, col_def in paired_columns:
+            try:
+                from sqlalchemy import text
+                await conn.execute(text(f"ALTER TABLE paired_devices ADD COLUMN {col_name} {col_def}"))
+            except Exception:
                 pass
 
