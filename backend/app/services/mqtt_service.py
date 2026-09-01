@@ -141,7 +141,7 @@ class MQTTService:
                     "score": round(score * 100),
                     "zone": zone_name,
                     "box": after.get("box"),
-                    "timestamp": datetime.datetime.utcnow().isoformat(),
+                    "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat(),
                     "snapshot_url": snapshot_url
                 })
 
