@@ -883,6 +883,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
 async def sync_camera_to_frigate(cam: Camera):
     import os
     import yaml
+    import json
     import httpx
     from app.core.config import settings
 
@@ -910,26 +911,34 @@ async def sync_camera_to_frigate(cam: Camera):
     if not isinstance(cfg, dict):
         cfg = {}
 
+    if "cameras" not in cfg or not isinstance(cfg["cameras"], dict):
+        cfg["cameras"] = {}
+
+    cam_name = cam.name or "camera_principal"
+    target_cam_key = cam_name
+    if target_cam_key not in cfg["cameras"]:
+        if "camera_principal" in cfg["cameras"]:
+            target_cam_key = "camera_principal"
+        elif len(cfg["cameras"]) == 1:
+            target_cam_key = list(cfg["cameras"].keys())[0]
+
     if "go2rtc" not in cfg:
         cfg["go2rtc"] = {}
     if "streams" not in cfg["go2rtc"]:
         cfg["go2rtc"]["streams"] = {}
 
-    cam_name = cam.name or "camera_principal"
     rtsp_url = cam.rtsp_main
     if rtsp_url:
-        cfg["go2rtc"]["streams"][cam_name] = [rtsp_url.strip()]
+        cfg["go2rtc"]["streams"][target_cam_key] = [rtsp_url.strip()]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
-        cfg["go2rtc"]["streams"][f"{cam_name}_sub"] = [cam.rtsp_sub.strip()]
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
 
-    if "cameras" not in cfg or not isinstance(cfg["cameras"], dict):
-        cfg["cameras"] = {}
-    if cam_name not in cfg["cameras"] or not isinstance(cfg["cameras"][cam_name], dict):
-        cfg["cameras"][cam_name] = {
+    if target_cam_key not in cfg["cameras"] or not isinstance(cfg["cameras"][target_cam_key], dict):
+        cfg["cameras"][target_cam_key] = {
             "ffmpeg": {
                 "inputs": [
                     {
-                        "path": f"rtsp://127.0.0.1:8554/{cam_name}",
+                        "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
                         "input_args": "preset-rtsp-restream",
                         "roles": ["detect", "record"]
                     }
@@ -943,10 +952,44 @@ async def sync_camera_to_frigate(cam: Camera):
             }
         }
     else:
-        if "detect" in cfg["cameras"][cam_name] and isinstance(cfg["cameras"][cam_name]["detect"], dict):
-            cfg["cameras"][cam_name]["detect"]["enabled"] = bool(cam.enabled)
-        if "live" in cfg["cameras"][cam_name]:
-            del cfg["cameras"][cam_name]["live"]
+        cam_block = cfg["cameras"][target_cam_key]
+        if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
+            cam_block["detect"] = {"width": 1280, "height": 720, "fps": 5}
+        cam_block["detect"]["enabled"] = bool(cam.enabled)
+
+        # Sync tracked objects
+        if cam.objects_to_track:
+            try:
+                objs = json.loads(cam.objects_to_track) if isinstance(cam.objects_to_track, str) else cam.objects_to_track
+                if isinstance(objs, list):
+                    if "objects" not in cam_block or not isinstance(cam_block["objects"], dict):
+                        cam_block["objects"] = {}
+                    cam_block["objects"]["track"] = objs
+            except Exception:
+                pass
+
+        # Sync min_score
+        if cam.min_score is not None:
+            if "objects" not in cam_block or not isinstance(cam_block["objects"], dict):
+                cam_block["objects"] = {}
+            if "filters" not in cam_block["objects"] or not isinstance(cam_block["objects"]["filters"], dict):
+                cam_block["objects"]["filters"] = {}
+            if "person" not in cam_block["objects"]["filters"] or not isinstance(cam_block["objects"]["filters"]["person"], dict):
+                cam_block["objects"]["filters"]["person"] = {}
+            cam_block["objects"]["filters"]["person"]["threshold"] = float(cam.min_score)
+
+        # Sync record mode and retention
+        if cam.record_mode is not None:
+            if "record" not in cam_block or not isinstance(cam_block["record"], dict):
+                cam_block["record"] = {}
+            cam_block["record"]["enabled"] = (cam.record_mode != "off")
+            if cam.record_retain_days:
+                if "retain" not in cam_block["record"] or not isinstance(cam_block["record"]["retain"], dict):
+                    cam_block["record"]["retain"] = {}
+                cam_block["record"]["retain"]["days"] = int(cam.record_retain_days)
+
+        if "live" in cam_block:
+            del cam_block["live"]
 
     cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
