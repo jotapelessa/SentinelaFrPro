@@ -58,6 +58,43 @@ if [ "$OPTION" == "0" ]; then
     exit 0
 fi
 
+# Configure compatible JDK (Java 17 or 21) for Android Gradle Plugin
+CURRENT_JAVA_VER=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}' | cut -d'.' -f1 || echo "")
+
+if [ "$CURRENT_JAVA_VER" != "17" ] && [ "$CURRENT_JAVA_VER" != "21" ]; then
+    FOUND_JDK=false
+    for jpath in \
+        "/usr/lib/jvm/java-17-openjdk-amd64" \
+        "/usr/lib/jvm/java-17-openjdk" \
+        "/usr/lib/jvm/msopenjdk-17-amd64" \
+        "/usr/lib/jvm/temurin-17-jdk-amd64" \
+        "/usr/local/sdkman/candidates/java/17."* \
+        "/usr/lib/jvm/java-21-openjdk-amd64" \
+        "/usr/lib/jvm/java-21-openjdk" \
+        "/usr/local/sdkman/candidates/java/21."* \
+        "/opt/java/openjdk"; do
+        if [ -d "$jpath" ] && [ -f "$jpath/bin/javac" ]; then
+            export JAVA_HOME="$jpath"
+            export PATH="$JAVA_HOME/bin:$PATH"
+            FOUND_JDK=true
+            echo "☕ Usando JDK compatível: $JAVA_HOME"
+            break
+        fi
+    done
+
+    if [ "$FOUND_JDK" = false ]; then
+        if [ -s "$HOME/.sdkman/bin/sdkman-init.sh" ]; then
+            source "$HOME/.sdkman/bin/sdkman-init.sh"
+            sdk use java 17.0.10-tem 2>/dev/null || sdk install java 17.0.10-tem -y 2>/dev/null || true
+        elif command -v apt-get &>/dev/null; then
+            echo "☕ Instalando OpenJDK 17..."
+            sudo apt-get update -qq && sudo apt-get install -y -qq openjdk-17-jdk
+            export JAVA_HOME="/usr/lib/jvm/java-17-openjdk-amd64"
+            export PATH="$JAVA_HOME/bin:$PATH"
+        fi
+    fi
+fi
+
 # Navigate to android directory
 cd "$ANDROID_DIR"
 
