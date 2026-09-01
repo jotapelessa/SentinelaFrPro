@@ -77,8 +77,12 @@ class WebRtcManager(private val context: Context, private val go2rtcUrl: String)
     private fun sendOfferToGo2Rtc(cameraName: String, offerSdp: String) {
         kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
             try {
-                // go2rtc WebRTC API requires raw SDP in body, returns answer SDP
-                val url = "http://$go2rtcUrl:1984/api/webrtc?src=$cameraName"
+                val isSecure = go2rtcUrl.contains(".") && !go2rtcUrl.matches(Regex("\\d+\\.\\d+\\.\\d+\\.\\d+"))
+                val url = if (isSecure) {
+                    "https://$go2rtcUrl/api/webrtc?src=$cameraName"
+                } else {
+                    "http://$go2rtcUrl:1984/api/webrtc?src=$cameraName"
+                }
                 val response: HttpResponse = client.post(url) {
                     setBody(offerSdp)
                 }

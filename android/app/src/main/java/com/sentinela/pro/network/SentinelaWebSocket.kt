@@ -27,11 +27,21 @@ class SentinelaWebSocket(private val serverUrl: String) {
     suspend fun connectAndListen() {
         withContext(Dispatchers.IO) {
             while (isActive) {
-                try {
-                    val wsUrl = "ws://$serverUrl:8080/ws"
-                    Log.d("SentinelaWS", "Connecting to $wsUrl...")
+                    val isSecure = serverUrl.contains(".") && !serverUrl.matches(Regex("\\d+\\.\\d+\\.\\d+\\.\\d+"))
+                    val port = if (isSecure) 443 else 8080
+                    val scheme = if (isSecure) "wss" else "ws"
+                    Log.d("SentinelaWS", "Connecting to $scheme://$serverUrl:$port/ws...")
                     
-                    client.webSocket(method = HttpMethod.Get, host = serverUrl, port = 8080, path = "/ws") {
+                    val requestBuilder: HttpRequestBuilder.() -> Unit = {
+                        url {
+                            this.protocol = if (isSecure) URLProtocol.WSS else URLProtocol.WS
+                            this.host = serverUrl
+                            this.port = port
+                            this.path("ws")
+                        }
+                    }
+                    
+                    client.webSocket(request = requestBuilder) {
                         Log.d("SentinelaWS", "Connected successfully!")
                         
                         // Send identification

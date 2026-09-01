@@ -26,8 +26,8 @@ class OverlayService : Service() {
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
     
-    // Replace with actual server IP from Discovery
-    private val webSocket = SentinelaWebSocket("192.168.1.252")
+    // Embedded native server domain (Tailscale Funnel)
+    private val webSocket = SentinelaWebSocket(com.sentinela.pro.SentinelaConfig.SERVER_HOST)
     private var pipJob: Job? = null
 
     override fun onCreate() {
