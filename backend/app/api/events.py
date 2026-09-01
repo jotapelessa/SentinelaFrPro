@@ -1,10 +1,12 @@
-from fastapi import APIRouter, Depends, Query, HTTPException, Request
+from fastapi import APIRouter, Depends, Query, HTTPException, Request, Body
+from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, delete
 from typing import Optional, List, Dict, Any
 import httpx
 import logging
 import datetime
+import asyncio
 from app.db.session import get_db
 from app.db.models import EventRecord, AuditLog
 from app.core.config import settings
@@ -12,6 +14,11 @@ from app.services.audit_service import audit_service
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/events", tags=["Events"])
+
+class EventBatchDeleteRequest(BaseModel):
+    event_ids: List[str] = Field(..., max_length=100)
+    force_retained: bool = False
+
 
 @router.get("/")
 async def list_events(
@@ -220,6 +227,125 @@ async def retain_event(event_id: str, request: Request):
             client_ip=client_ip
         )
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/batch-delete")
+@router.delete("/batch")
+async def delete_events_batch(
+    payload: EventBatchDeleteRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Deletes multiple events in batch with strict concurrency throttling (max 5 workers),
+    single atomic SQLite delete, and consolidated audit logging.
+    """
+    client_ip = request.client.host if request.client else "unknown"
+    event_ids = payload.event_ids[:50]  # Cap at 50 as enforced by Constraint Guardian
+    
+    if not event_ids:
+        return {"status": "success", "deleted_count": 0, "failed_count": 0, "preserved_retained_count": 0}
+
+    sem = asyncio.Semaphore(5)
+    frigate_success = 0
+    frigate_failed = 0
+
+    async def _delete_frigate_single(client: httpx.AsyncClient, ev_id: str):
+        nonlocal frigate_success, frigate_failed
+        async with sem:
+            try:
+                resp = await client.delete(f"{settings.FRIGATE_API_URL}/api/events/{ev_id}", timeout=3.0)
+                if resp.status_code == 200:
+                    frigate_success += 1
+                else:
+                    frigate_failed += 1
+            except Exception as e:
+                logger.warning(f"Error deleting event {ev_id} on Frigate: {e}")
+                frigate_failed += 1
+
+    async with httpx.AsyncClient() as client:
+        tasks = [_delete_frigate_single(client, ev_id) for ev_id in event_ids]
+        await asyncio.gather(*tasks, return_exceptions=True)
+
+    # Atomic batch delete from local SQLite cache
+    sqlite_deleted = 0
+    try:
+        stmt = delete(EventRecord).where(EventRecord.frigate_event_id.in_(event_ids))
+        res = await db.execute(stmt)
+        sqlite_deleted = res.rowcount if res.rowcount is not None else len(event_ids)
+        await db.commit()
+    except Exception as e:
+        logger.error(f"Failed to batch delete from SQLite: {e}")
+        await db.rollback()
+
+    await audit_service.log(
+        action="EVENT_BATCH_DELETED",
+        module="FRIGATE",
+        severity="INFO",
+        details=f"Exclusão em lote de {len(event_ids)} eventos solicitada (Frigate Sucessos: {frigate_success}, Falhas: {frigate_failed}, SQLite: {sqlite_deleted}).",
+        client_ip=client_ip
+    )
+
+    return {
+        "status": "success",
+        "requested_count": len(event_ids),
+        "frigate_success": frigate_success,
+        "frigate_failed": frigate_failed,
+        "sqlite_deleted": sqlite_deleted
+    }
+
+@router.delete("/by-date")
+async def delete_events_by_date(
+    date: str = Query(..., description="Data no formato YYYY-MM-DD"),
+    camera: Optional[str] = Query(None, description="Filtrar câmera específica"),
+    exclude_retained: bool = Query(True, description="Preservar eventos com estrela/fixados"),
+    request: Request = None,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Deletes events for a specific date (up to 50 per execution) with retained event preservation.
+    """
+    client_ip = request.client.host if request and request.client else "unknown"
+    
+    # 1. Fetch matching events from Frigate
+    matched_ids: List[str] = []
+    try:
+        dt_start = datetime.datetime.strptime(f"{date} 00:00:00", "%Y-%m-%d %H:%M:%S")
+        dt_end = datetime.datetime.strptime(f"{date} 23:59:59", "%Y-%m-%d %H:%M:%S")
+        after_ts = int(dt_start.timestamp())
+        before_ts = int(dt_end.timestamp())
+
+        params: Dict[str, Any] = {"after": after_ts, "before": before_ts, "limit": 60}
+        if camera and camera != "all":
+            params["camera"] = camera
+
+        async with httpx.AsyncClient(timeout=4.0) as client:
+            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params=params)
+            if resp.status_code == 200:
+                for item in resp.json():
+                    is_retained = item.get("retain_indefinitely", False)
+                    if exclude_retained and is_retained:
+                        continue
+                    if item.get("id"):
+                        matched_ids.append(item["id"])
+    except Exception as e:
+        logger.warning(f"Error finding events by date {date}: {e}")
+
+    if not matched_ids:
+        return {"status": "success", "deleted_count": 0, "message": "Nenhum evento encontrado para excluir nesta data."}
+
+    # Delegate to batch delete
+    batch_payload = EventBatchDeleteRequest(event_ids=matched_ids[:50], force_retained=not exclude_retained)
+    res = await delete_events_batch(payload=batch_payload, request=request, db=db)
+    
+    await audit_service.log(
+        action="EVENTS_DATE_PURGED",
+        module="FRIGATE",
+        severity="WARNING",
+        details=f"Purga de eventos da data {date} (Câmera: {camera or 'Todas'}, Excluídos: {res.get('frigate_success', 0)}, Preservando Fixados: {exclude_retained}).",
+        client_ip=client_ip
+    )
+
+    return res
 
 @router.delete("/{event_id}")
 async def delete_event(event_id: str, request: Request, db: AsyncSession = Depends(get_db)):

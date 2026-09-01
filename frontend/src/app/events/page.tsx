@@ -1,11 +1,13 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useSentinelaStore, SecurityEvent, AuditLogItem } from "@/store/useSentinelaStore";
 import {
   Bell, Filter, Video, Clock, ShieldAlert, Calendar, RefreshCw, Play,
   Download, X, FileSpreadsheet, User, Car, Zap, Star, Trash2, Eye,
-  ShieldCheck, AlertTriangle, CheckCircle, Info, Activity, Sliders, ExternalLink
+  ShieldCheck, AlertTriangle, CheckCircle, Info, Activity, Sliders, ExternalLink,
+  CheckSquare, Square, ChevronLeft, ChevronRight, SkipBack, SkipForward,
+  AlertOctagon, CheckCheck, Trash, Layers, CalendarDays
 } from "lucide-react";
 
 export default function EventsPage() {
@@ -16,10 +18,24 @@ export default function EventsPage() {
   const [filterCamera, setFilterCamera] = useState<string>("all");
   const [filterLabel, setFilterLabel] = useState<string>("all");
   const [filterFavorites, setFilterFavorites] = useState<boolean>(false);
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const today = new Date();
+    return today.toISOString().split("T")[0];
+  });
+  const [selectedHourFilter, setSelectedHourFilter] = useState<number | null>(null);
+
   const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<SecurityEvent | null>(null);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
   const videoRef = useRef<HTMLVideoElement>(null);
+
+  // Multi-selection & Batch Deletion state
+  const [isSelectionMode, setIsSelectionMode] = useState<boolean>(false);
+  const [selectedEventIds, setSelectedEventIds] = useState<string[]>([]);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [deleteModalCountdown, setDeleteModalCountdown] = useState<number>(3);
+  const [forceDeleteRetained, setForceDeleteRetained] = useState<boolean>(false);
+  const [isDeletingBatch, setIsDeletingBatch] = useState<boolean>(false);
 
   // Audit state
   const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
@@ -28,7 +44,6 @@ export default function EventsPage() {
   const [auditSeverity, setAuditSeverity] = useState<string>("ALL");
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
-
   const [syncingFrigate, setSyncingFrigate] = useState<boolean>(false);
 
   const handleSyncFrigateEvents = async () => {
@@ -47,7 +62,7 @@ export default function EventsPage() {
   const fetchEvents = async () => {
     setLoadingEvents(true);
     try {
-      let url = `${apiUrl}/events?limit=60`;
+      let url = `${apiUrl}/events?limit=100`;
       if (filterCamera !== "all") url += `&camera=${filterCamera}`;
       if (filterLabel !== "all") url += `&label=${filterLabel}`;
       if (filterFavorites) url += `&favorites=1`;
@@ -92,9 +107,91 @@ export default function EventsPage() {
     }
   }, [activeTab, filterCamera, filterLabel, filterFavorites, auditModule, auditSeverity]);
 
+  // Safety countdown timer for batch delete modal
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (showDeleteModal && deleteModalCountdown > 0) {
+      timer = setTimeout(() => {
+        setDeleteModalCountdown((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearTimeout(timer);
+  }, [showDeleteModal, deleteModalCountdown]);
+
+  // Filter events by selected date and hour
+  const filteredEvents = useMemo(() => {
+    return events.filter((ev) => {
+      if (!ev.timestamp) return true;
+      const evDate = new Date(ev.timestamp);
+      const evDateStr = evDate.toISOString().split("T")[0];
+      
+      if (selectedDate && evDateStr !== selectedDate) {
+        return false;
+      }
+      
+      if (selectedHourFilter !== null && evDate.getHours() !== selectedHourFilter) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [events, selectedDate, selectedHourFilter]);
+
+  // Compute 24-hour timeline bins (24 hourly buckets with breakdown)
+  const timelineHourlyBins = useMemo(() => {
+    const hours = Array.from({ length: 24 }, (_, i) => ({
+      hour: i,
+      total: 0,
+      persons: 0,
+      vehicles: 0,
+      others: 0,
+      retained: 0,
+      events: [] as SecurityEvent[]
+    }));
+
+    events.forEach((ev) => {
+      if (!ev.timestamp) return;
+      const evDate = new Date(ev.timestamp);
+      const evDateStr = evDate.toISOString().split("T")[0];
+
+      if (selectedDate && evDateStr !== selectedDate) return;
+
+      const h = evDate.getHours();
+      if (h >= 0 && h < 24) {
+        hours[h].total += 1;
+        hours[h].events.push(ev);
+        const lbl = (ev.label || "").toLowerCase();
+        if (lbl === "person") hours[h].persons += 1;
+        else if (["car", "motorcycle", "bus", "truck"].includes(lbl)) hours[h].vehicles += 1;
+        else hours[h].others += 1;
+
+        if (ev.retained) hours[h].retained += 1;
+      }
+    });
+
+    return hours;
+  }, [events, selectedDate]);
+
+  // Toggle single item selection
+  const toggleSelectEvent = (id: string) => {
+    setSelectedEventIds((prev) =>
+      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id]
+    );
+  };
+
+  // Select all or clear
+  const handleSelectAllVisible = () => {
+    const visibleIds = filteredEvents.map((e) => String(e.id)).filter((id) => id && id !== "undefined");
+    if (selectedEventIds.length === visibleIds.length) {
+      setSelectedEventIds([]);
+    } else {
+      setSelectedEventIds(visibleIds);
+    }
+  };
+
   // Toggle Retain on Frigate
-  const handleToggleRetain = async (e: React.MouseEvent, ev: SecurityEvent) => {
-    e.stopPropagation();
+  const handleToggleRetain = async (e: React.MouseEvent | null, ev: SecurityEvent) => {
+    if (e) e.stopPropagation();
     if (!ev.id) return;
     try {
       const res = await fetch(`${apiUrl}/events/${ev.id}/retain`, { method: "POST" });
@@ -104,25 +201,82 @@ export default function EventsPage() {
             item.id === ev.id ? { ...item, retained: !item.retained } : item
           )
         );
+        if (selectedEvent?.id === ev.id) {
+          setSelectedEvent({ ...selectedEvent, retained: !selectedEvent.retained });
+        }
       }
     } catch (err) {
       console.error("Failed to toggle retain:", err);
     }
   };
 
-  // Delete event
-  const handleDeleteEvent = async (e: React.MouseEvent, ev: SecurityEvent) => {
-    e.stopPropagation();
+  // Batch Toggle Retain
+  const handleBatchToggleRetain = async () => {
+    if (selectedEventIds.length === 0) return;
+    for (const id of selectedEventIds) {
+      const ev = events.find((item) => String(item.id) === id);
+      if (ev) {
+        await handleToggleRetain(null, ev);
+      }
+    }
+    setSelectedEventIds([]);
+    setIsSelectionMode(false);
+  };
+
+  // Delete single event
+  const handleDeleteSingleEvent = async (e: React.MouseEvent | null, ev: SecurityEvent) => {
+    if (e) e.stopPropagation();
     if (!ev.id) return;
-    if (!confirm(`Deseja realmente apagar o evento ${ev.label.toUpperCase()} de ${ev.camera}?`)) return;
+    if (!confirm(`Deseja realmente excluir a gravação de ${ev.label.toUpperCase()} em ${ev.camera}?`)) return;
     try {
       const res = await fetch(`${apiUrl}/events/${ev.id}`, { method: "DELETE" });
       if (res.ok) {
-        setEvents(events.filter((item) => item.id !== ev.id));
-        if (selectedEvent?.id === ev.id) setSelectedEvent(null);
+        setEvents(events.filter((item) => String(item.id) !== String(ev.id)));
+        setSelectedEventIds((prev) => prev.filter((id) => id !== String(ev.id)));
+        if (String(selectedEvent?.id) === String(ev.id)) setSelectedEvent(null);
       }
     } catch (err) {
       console.error("Failed to delete event:", err);
+    }
+  };
+
+  // Open Safe Delete Modal
+  const openBatchDeleteModal = () => {
+    if (selectedEventIds.length === 0) return;
+    setDeleteModalCountdown(3);
+    setShowDeleteModal(true);
+  };
+
+  // Confirm Batch Delete
+  const handleConfirmBatchDelete = async () => {
+    if (selectedEventIds.length === 0) return;
+    setIsDeletingBatch(true);
+    try {
+      const res = await fetch(`${apiUrl}/events/batch`, {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          event_ids: selectedEventIds,
+          force_retained: forceDeleteRetained
+        })
+      });
+
+      if (res.ok) {
+        setEvents(events.filter((item) => item.id && !selectedEventIds.includes(String(item.id))));
+        if (selectedEvent?.id && selectedEventIds.includes(String(selectedEvent.id))) {
+          setSelectedEvent(null);
+        }
+        setSelectedEventIds([]);
+        setIsSelectionMode(false);
+        setShowDeleteModal(false);
+      } else {
+        alert("Ocorreu um erro ao excluir o lote de gravações.");
+      }
+    } catch (err) {
+      console.error("Erro na exclusão em lote:", err);
+      alert("Falha de comunicação ao tentar excluir gravações.");
+    } finally {
+      setIsDeletingBatch(false);
     }
   };
 
@@ -147,11 +301,38 @@ export default function EventsPage() {
     }
   };
 
-  // Export CSV
+  // Sequential event jumping in modal
+  const handleNavigateEvent = (direction: "prev" | "next") => {
+    if (!selectedEvent || filteredEvents.length === 0) return;
+    const currentIndex = filteredEvents.findIndex((e) => String(e.id) === String(selectedEvent.id));
+    if (currentIndex === -1) return;
+
+    if (direction === "prev" && currentIndex > 0) {
+      setSelectedEvent(filteredEvents[currentIndex - 1]);
+    } else if (direction === "next" && currentIndex < filteredEvents.length - 1) {
+      setSelectedEvent(filteredEvents[currentIndex + 1]);
+    }
+  };
+
+  // Quick Date Selectors
+  const setDateToday = () => {
+    const today = new Date().toISOString().split("T")[0];
+    setSelectedDate(today);
+    setSelectedHourFilter(null);
+  };
+
+  const setDateYesterday = () => {
+    const yest = new Date();
+    yest.setDate(yest.getDate() - 1);
+    setSelectedDate(yest.toISOString().split("T")[0]);
+    setSelectedHourFilter(null);
+  };
+
+  // Export Events CSV
   const exportCSV = () => {
-    if (events.length === 0) return;
+    if (filteredEvents.length === 0) return;
     const headers = ["ID", "Camera", "Tipo_Objeto", "Confianca", "Data_Hora", "Zona", "Retido_NVMe"];
-    const rows = events.map((ev, i) => [
+    const rows = filteredEvents.map((ev, i) => [
       ev.id || i + 1,
       ev.camera,
       ev.label,
@@ -164,12 +345,13 @@ export default function EventsPage() {
     const csvContent = "data:text/csv;charset=utf-8," + [headers.join(","), ...rows.map(e => e.join(","))].join("\n");
     const link = document.createElement("a");
     link.setAttribute("href", encodeURI(csvContent));
-    link.setAttribute("download", `sentinela_eventos_${new Date().toISOString().slice(0,10)}.csv`);
+    link.setAttribute("download", `sentinela_eventos_${selectedDate || "todos"}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  // Export Audit CSV
   const exportAuditCSV = () => {
     if (auditLogs.length === 0) return;
     const headers = ["ID", "Data_Hora", "Modulo", "Acao", "Severidade", "Detalhes", "IP_Cliente"];
@@ -192,20 +374,48 @@ export default function EventsPage() {
     document.body.removeChild(link);
   };
 
+  // Calculations for Batch Delete Modal Breakdown
+  const selectedEventsObjects = useMemo(() => {
+    return events.filter((e) => e.id && selectedEventIds.includes(String(e.id)));
+  }, [events, selectedEventIds]);
+
+  const batchBreakdown = useMemo(() => {
+    let persons = 0;
+    let vehicles = 0;
+    let others = 0;
+    let retained = 0;
+
+    selectedEventsObjects.forEach((ev) => {
+      const lbl = (ev.label || "").toLowerCase();
+      if (lbl === "person") persons++;
+      else if (["car", "motorcycle", "bus", "truck"].includes(lbl)) vehicles++;
+      else others++;
+
+      if (ev.retained) retained++;
+    });
+
+    return { persons, vehicles, others, retained };
+  }, [selectedEventsObjects]);
+
   return (
-    <div className="space-y-6">
-      {/* Header & Tab Selector */}
+    <div className="space-y-6 pb-20">
+      {/* ========================================================================= */}
+      {/* HEADER & VIEW SWITCHER */}
+      {/* ========================================================================= */}
       <div className="p-4 rounded-2xl glass-panel border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
             <Bell className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-lg font-black text-white tracking-wide">
+            <h1 className="text-lg font-black text-white tracking-wide flex items-center gap-2">
               Central de Eventos & Inteligência Frigate
+              <span className="px-2 py-0.5 rounded-full text-[10px] bg-cyan-500/20 text-cyan-300 font-mono border border-cyan-500/30">
+                24h Timeline
+              </span>
             </h1>
             <p className="text-xs text-slate-400">
-              Histórico consolidado no SSD NVMe, clipes MP4 sob demanda e auditoria de segurança operacional.
+              Linha do tempo contínua no NVMe, clipes de vídeo sob demanda e gestão segura de evidências.
             </p>
           </div>
         </div>
@@ -221,9 +431,9 @@ export default function EventsPage() {
             }`}
           >
             <Video className="w-4 h-4" />
-            <span>Gravações & Clipes IA</span>
+            <span>Gravações & Linha do Tempo</span>
             <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-obsidian-900/40 text-current">
-              {events.length}
+              {filteredEvents.length}
             </span>
           </button>
 
@@ -245,11 +455,168 @@ export default function EventsPage() {
       </div>
 
       {/* ========================================================================= */}
-      {/* TAB 1: RECORDINGS & FRIGATE CLIPS */}
+      {/* TAB 1: RECORDINGS & 24H VISUAL TIMELINE */}
       {/* ========================================================================= */}
       {activeTab === "recordings" && (
         <div className="space-y-4">
-          {/* Action and Filter Bar */}
+          {/* 1. INTERACTIVE 24-HOUR TIMELINE CARD */}
+          <div className="p-4 rounded-2xl glass-panel border border-slate-800 space-y-3.5 shadow-xl">
+            {/* Timeline Controls Header */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-800/80">
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <Activity className="w-4 h-4 text-cyan-400" />
+                  Linha do Tempo (24 Horas):
+                </span>
+
+                {/* Quick Date Selectors */}
+                <div className="flex items-center gap-1 bg-obsidian-950 p-0.5 rounded-lg border border-slate-800 text-xs">
+                  <button
+                    onClick={setDateToday}
+                    className={`px-2.5 py-1 rounded font-semibold transition-all ${
+                      selectedDate === new Date().toISOString().split("T")[0]
+                        ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    Hoje
+                  </button>
+                  <button
+                    onClick={setDateYesterday}
+                    className="px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-slate-200 transition-all"
+                  >
+                    Ontem
+                  </button>
+                </div>
+
+                {/* Custom Date Picker */}
+                <div className="flex items-center gap-1.5 bg-obsidian-950 px-2 py-1 rounded-lg border border-slate-800 text-xs text-slate-300">
+                  <CalendarDays className="w-3.5 h-3.5 text-cyan-400" />
+                  <input
+                    type="date"
+                    value={selectedDate}
+                    onChange={(e) => {
+                      setSelectedDate(e.target.value);
+                      setSelectedHourFilter(null);
+                    }}
+                    className="bg-transparent text-xs font-mono text-slate-200 focus:outline-none cursor-pointer"
+                  />
+                </div>
+
+                {selectedHourFilter !== null && (
+                  <button
+                    onClick={() => setSelectedHourFilter(null)}
+                    className="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs flex items-center gap-1"
+                  >
+                    <span>Filtro: {String(selectedHourFilter).padStart(2, "0")}:00h</span>
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
+
+              {/* Timeline Legend */}
+              <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono">
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-rose-500" /> Pessoa
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" /> Veículo
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-amber-500" /> Outro
+                </span>
+                <span className="flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-yellow-400" /> ⭐ Fixado
+                </span>
+              </div>
+            </div>
+
+            {/* Visual 24h Bar */}
+            <div className="relative pt-2 pb-6">
+              {/* Hour Grid Bars (24 Columns) */}
+              <div className="grid grid-cols-24 gap-0.5 h-14 bg-obsidian-950/80 rounded-xl p-1 border border-slate-800 overflow-hidden">
+                {timelineHourlyBins.map((bin) => {
+                  const isSelectedHour = selectedHourFilter === bin.hour;
+                  const hasActivity = bin.total > 0;
+                  
+                  const personHeight = hasActivity ? (bin.persons / bin.total) * 100 : 0;
+                  const vehicleHeight = hasActivity ? (bin.vehicles / bin.total) * 100 : 0;
+                  const otherHeight = hasActivity ? (bin.others / bin.total) * 100 : 0;
+
+                  return (
+                    <button
+                      key={bin.hour}
+                      onClick={() => {
+                        if (bin.total > 0) {
+                          setSelectedHourFilter(selectedHourFilter === bin.hour ? null : bin.hour);
+                          if (bin.events.length > 0 && selectedHourFilter !== bin.hour) {
+                            setSelectedEvent(bin.events[0]);
+                          }
+                        }
+                      }}
+                      title={`${String(bin.hour).padStart(2, "0")}:00h - ${bin.total} eventos (${bin.persons} pessoas, ${bin.vehicles} veículos)`}
+                      className={`relative h-full flex flex-col justify-end rounded group transition-all ${
+                        isSelectedHour
+                          ? "bg-cyan-500/30 ring-2 ring-cyan-400 z-10"
+                          : hasActivity
+                          ? "hover:bg-slate-800 cursor-pointer"
+                          : "bg-slate-900/40 cursor-default opacity-40"
+                      }`}
+                    >
+                      {/* Density Stack */}
+                      {hasActivity && (
+                        <div className="w-full flex flex-col justify-end h-full p-0.5">
+                          {bin.retained > 0 && (
+                            <div className="w-full bg-yellow-400 h-1 rounded-t mb-0.5" />
+                          )}
+                          {bin.persons > 0 && (
+                            <div
+                              style={{ height: `${Math.max(personHeight, 15)}%` }}
+                              className="w-full bg-rose-500 rounded-sm"
+                            />
+                          )}
+                          {bin.vehicles > 0 && (
+                            <div
+                              style={{ height: `${Math.max(vehicleHeight, 15)}%` }}
+                              className="w-full bg-blue-500 rounded-sm mt-0.5"
+                            />
+                          )}
+                          {bin.others > 0 && (
+                            <div
+                              style={{ height: `${Math.max(otherHeight, 15)}%` }}
+                              className="w-full bg-amber-500 rounded-sm mt-0.5"
+                            />
+                          )}
+                        </div>
+                      )}
+
+                      {/* Tooltip on Hover */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex flex-col items-center pointer-events-none z-30">
+                        <div className="px-2 py-1 rounded-md bg-slate-900 border border-slate-700 text-[10px] font-mono text-white shadow-xl whitespace-nowrap">
+                          <strong>{String(bin.hour).padStart(2, "0")}:00h</strong>: {bin.total} eventos
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Hour Labels Axis */}
+              <div className="flex justify-between text-[9px] font-mono text-slate-500 pt-1 px-1">
+                <span>00:00</span>
+                <span>03:00</span>
+                <span>06:00</span>
+                <span>09:00</span>
+                <span>12:00</span>
+                <span>15:00</span>
+                <span>18:00</span>
+                <span>21:00</span>
+                <span>23:59</span>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. TOOLBAR & FILTER BAR */}
           <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl glass-panel border border-slate-800">
             {/* Quick Labels Badges */}
             <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
@@ -261,7 +628,7 @@ export default function EventsPage() {
                     : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
                 }`}
               >
-                Todos
+                Todos ({events.length})
               </button>
               <button
                 onClick={() => setFilterLabel("person")}
@@ -298,8 +665,24 @@ export default function EventsPage() {
               </button>
             </div>
 
-            {/* Selects & Export Controls */}
+            {/* Selects, Multi-Selection Mode Toggle & Actions */}
             <div className="flex items-center gap-2 flex-wrap">
+              {/* Multi-Selection Mode Toggle */}
+              <button
+                onClick={() => {
+                  setIsSelectionMode(!isSelectionMode);
+                  if (isSelectionMode) setSelectedEventIds([]);
+                }}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                  isSelectionMode
+                    ? "bg-cyan-500 text-obsidian-950 border-cyan-400 shadow-md shadow-cyan-500/20"
+                    : "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
+                }`}
+              >
+                <Layers className="w-3.5 h-3.5" />
+                <span>{isSelectionMode ? "Concluir Seleção" : "Selecionar Múltiplos"}</span>
+              </button>
+
               <button
                 onClick={handleSyncFrigateEvents}
                 disabled={syncingFrigate}
@@ -340,39 +723,85 @@ export default function EventsPage() {
             </div>
           </div>
 
-          {/* Events Grid */}
-          {events.length === 0 ? (
+          {/* 3. EVENTS GRID */}
+          {filteredEvents.length === 0 ? (
             <div className="p-16 text-center glass-panel rounded-2xl border border-dashed border-slate-800 space-y-4">
               <ShieldAlert className="w-12 h-12 text-slate-600 mx-auto" />
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-slate-300">Nenhum evento registrado</h3>
+                <h3 className="text-base font-bold text-slate-300">Nenhum evento no período selecionado</h3>
                 <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  Assim que pessoas ou veículos cruzarem os perímetros das câmeras, as evidências e clipes serão exibidos aqui.
+                  {selectedHourFilter !== null
+                    ? `Nenhuma gravação registrada às ${String(selectedHourFilter).padStart(2, "0")}:00h.`
+                    : "Assim que pessoas ou veículos cruzarem os perímetros das câmeras, as evidências serão exibidas aqui."}
                 </p>
               </div>
-              <button
-                onClick={handleSyncFrigateEvents}
-                disabled={syncingFrigate}
-                className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 inline-flex items-center gap-2 transition-all disabled:opacity-50"
-              >
-                <RefreshCw className={`w-4 h-4 ${syncingFrigate ? "animate-spin" : ""}`} />
-                <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Histórico do Frigate"}</span>
-              </button>
+              <div className="flex items-center justify-center gap-3">
+                {selectedHourFilter !== null && (
+                  <button
+                    onClick={() => setSelectedHourFilter(null)}
+                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700"
+                  >
+                    Ver todas as 24 horas
+                  </button>
+                )}
+                <button
+                  onClick={handleSyncFrigateEvents}
+                  disabled={syncingFrigate}
+                  className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 inline-flex items-center gap-2 transition-all disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-4 h-4 ${syncingFrigate ? "animate-spin" : ""}`} />
+                  <span>Sincronizar Histórico</span>
+                </button>
+              </div>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {events.map((ev, idx) => {
-                const isPerson = ev.label.toLowerCase() === "person";
-                const isVehicle = ["car", "motorcycle", "bus", "truck"].includes(ev.label.toLowerCase());
+              {filteredEvents.map((ev, idx) => {
+                const isPerson = (ev.label || "").toLowerCase() === "person";
+                const isVehicle = ["car", "motorcycle", "bus", "truck"].includes((ev.label || "").toLowerCase());
+                const isSelected = ev.id ? selectedEventIds.includes(String(ev.id)) : false;
 
                 return (
                   <div
                     key={ev.id || idx}
-                    className="glass-panel rounded-2xl overflow-hidden border border-slate-800 hover:border-cyan-500/40 transition-all group flex flex-col justify-between"
+                    onClick={() => {
+                      if (isSelectionMode && ev.id) {
+                        toggleSelectEvent(String(ev.id));
+                      }
+                    }}
+                    className={`glass-panel rounded-2xl overflow-hidden border transition-all flex flex-col justify-between group relative ${
+                      isSelected
+                        ? "border-cyan-400 ring-2 ring-cyan-400/60 bg-cyan-950/20 shadow-lg shadow-cyan-500/10"
+                        : "border-slate-800 hover:border-cyan-500/40"
+                    }`}
                   >
+                    {/* Multi-selection Checkbox Overlay */}
+                    {isSelectionMode && (
+                      <div
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          if (ev.id) toggleSelectEvent(String(ev.id));
+                        }}
+                        className="absolute top-2 left-2 z-20 cursor-pointer p-1 rounded-lg bg-black/80 backdrop-blur-sm border border-slate-600 hover:border-cyan-400 transition-all"
+                      >
+                        {isSelected ? (
+                          <CheckSquare className="w-5 h-5 text-cyan-400 fill-cyan-400/20" />
+                        ) : (
+                          <Square className="w-5 h-5 text-slate-400" />
+                        )}
+                      </div>
+                    )}
+
                     {/* Media Thumbnail */}
                     <div
-                      onClick={() => setSelectedEvent(ev)}
+                      onClick={(e) => {
+                        if (isSelectionMode && ev.id) {
+                          e.stopPropagation();
+                          toggleSelectEvent(String(ev.id));
+                        } else {
+                          setSelectedEvent(ev);
+                        }
+                      }}
                       className="h-44 bg-obsidian-950 relative overflow-hidden flex items-center justify-center cursor-pointer"
                     >
                       <img
@@ -391,8 +820,8 @@ export default function EventsPage() {
                         </div>
                       </div>
 
-                      {/* Camera Badge */}
-                      <div className="absolute top-2 left-2 px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-slate-700 text-[10px] font-mono text-cyan-300">
+                      {/* Camera Badge (offset if selection mode active) */}
+                      <div className={`absolute top-2 ${isSelectionMode ? "left-10" : "left-2"} px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-slate-700 text-[10px] font-mono text-cyan-300`}>
                         {ev.camera}
                       </div>
 
@@ -454,11 +883,11 @@ export default function EventsPage() {
                             <Star className="w-3.5 h-3.5 fill-current" />
                           </button>
 
-                          {/* Delete Action */}
+                          {/* Delete Single Action */}
                           <button
-                            onClick={(e) => handleDeleteEvent(e, ev)}
+                            onClick={(e) => handleDeleteSingleEvent(e, ev)}
                             className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-700 transition-all"
-                            title="Excluir gravação"
+                            title="Excluir gravação individual"
                           >
                             <Trash2 className="w-3.5 h-3.5" />
                           </button>
@@ -476,6 +905,58 @@ export default function EventsPage() {
                   </div>
                 );
               })}
+            </div>
+          )}
+
+          {/* 4. FLOATING ACTION BAR (BOTTOM SHEET FOR BATCH ACTIONS) */}
+          {(isSelectionMode || selectedEventIds.length > 0) && (
+            <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-40 w-11/12 max-w-2xl bg-slate-900/95 backdrop-blur-md border border-cyan-500/40 p-3 rounded-2xl shadow-2xl flex items-center justify-between gap-3 animate-in fade-in slide-in-from-bottom-4 duration-200">
+              <div className="flex items-center gap-3">
+                <div className="px-3 py-1 rounded-xl bg-cyan-500 text-obsidian-950 font-black text-xs">
+                  {selectedEventIds.length} selecionados
+                </div>
+                <button
+                  onClick={handleSelectAllVisible}
+                  className="text-xs font-semibold text-slate-300 hover:text-cyan-400 underline transition-colors"
+                >
+                  {selectedEventIds.length === filteredEvents.length ? "Desmarcar Todos" : "Selecionar Todos"}
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {/* Batch Retain */}
+                <button
+                  onClick={handleBatchToggleRetain}
+                  disabled={selectedEventIds.length === 0}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 text-xs font-bold transition-all disabled:opacity-40"
+                  title="Fixar / Preservar itens selecionados no NVMe"
+                >
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <span className="hidden sm:inline">Fixar</span>
+                </button>
+
+                {/* Batch Delete Trigger */}
+                <button
+                  onClick={openBatchDeleteModal}
+                  disabled={selectedEventIds.length === 0}
+                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-black shadow-lg shadow-rose-600/30 transition-all disabled:opacity-40"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>Excluir Selecionados</span>
+                </button>
+
+                {/* Close Selection Mode */}
+                <button
+                  onClick={() => {
+                    setIsSelectionMode(false);
+                    setSelectedEventIds([]);
+                  }}
+                  className="p-1.5 rounded-xl text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-all"
+                  title="Cancelar seleção"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -606,6 +1087,97 @@ export default function EventsPage() {
       )}
 
       {/* ========================================================================= */}
+      {/* SAFE BATCH DELETION CONFIRMATION MODAL (WITH 3S SAFETY DELAY) */}
+      {/* ========================================================================= */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4 animate-in fade-in duration-150">
+          <div className="w-full max-w-md bg-slate-900 border border-rose-500/40 rounded-2xl overflow-hidden shadow-2xl p-5 space-y-4">
+            <div className="flex items-center gap-3 text-rose-400">
+              <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30">
+                <AlertOctagon className="w-6 h-6" />
+              </div>
+              <div>
+                <h3 className="font-bold text-base text-white">Confirmar Exclusão em Lote</h3>
+                <p className="text-xs text-slate-400">Esta ação apagará as gravações do Frigate e do SSD.</p>
+              </div>
+            </div>
+
+            {/* Breakdown Card */}
+            <div className="p-3.5 rounded-xl bg-obsidian-950 border border-slate-800 space-y-2 text-xs font-mono">
+              <div className="flex justify-between text-slate-300">
+                <span>Total de Itens:</span>
+                <strong className="text-white">{selectedEventIds.length} gravações</strong>
+              </div>
+              <div className="grid grid-cols-3 gap-2 pt-2 border-t border-slate-800 text-[11px]">
+                <div className="p-1.5 rounded bg-rose-950/30 border border-rose-500/20 text-rose-300 text-center">
+                  {batchBreakdown.persons} Pessoas
+                </div>
+                <div className="p-1.5 rounded bg-blue-950/30 border border-blue-500/20 text-blue-300 text-center">
+                  {batchBreakdown.vehicles} Veículos
+                </div>
+                <div className="p-1.5 rounded bg-amber-950/30 border border-amber-500/20 text-amber-300 text-center">
+                  {batchBreakdown.others} Outros
+                </div>
+              </div>
+
+              {batchBreakdown.retained > 0 && (
+                <div className="pt-2 text-[11px] text-amber-400 flex items-center gap-1.5">
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <span>
+                    {batchBreakdown.retained} {batchBreakdown.retained === 1 ? "gravação está fixada" : "gravações estão fixadas"}.
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Safety Options */}
+            {batchBreakdown.retained > 0 && (
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={forceDeleteRetained}
+                  onChange={(e) => setForceDeleteRetained(e.target.checked)}
+                  className="rounded border-slate-700 text-rose-500 focus:ring-rose-500 bg-obsidian-950"
+                />
+                <span>Forçar exclusão também das gravações fixadas (com estrela)</span>
+              </label>
+            )}
+
+            {/* Action Buttons with Countdown */}
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeletingBatch}
+                className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all"
+              >
+                Cancelar
+              </button>
+
+              <button
+                onClick={handleConfirmBatchDelete}
+                disabled={deleteModalCountdown > 0 || isDeletingBatch}
+                className="px-5 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-black shadow-lg shadow-rose-600/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              >
+                {isDeletingBatch ? (
+                  <>
+                    <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    <span>Excluindo...</span>
+                  </>
+                ) : deleteModalCountdown > 0 ? (
+                  <span>Aguarde ({deleteModalCountdown}s)...</span>
+                ) : (
+                  <>
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Excluir {selectedEventIds.length} Gravações</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ========================================================================= */}
       {/* VIDEO CLIP & SNAPSHOT INSPECTOR MODAL */}
       {/* ========================================================================= */}
       {selectedEvent && (
@@ -632,12 +1204,29 @@ export default function EventsPage() {
                 </div>
               </div>
 
-              <button
-                onClick={() => setSelectedEvent(null)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-all"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              {/* Sequential Controls & Close */}
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => handleNavigateEvent("prev")}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-all"
+                  title="Gravação Anterior"
+                >
+                  <SkipBack className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => handleNavigateEvent("next")}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-all"
+                  title="Próxima Gravação"
+                >
+                  <SkipForward className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 transition-all ml-2"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
             </div>
 
             {/* Video Player */}
@@ -675,6 +1264,28 @@ export default function EventsPage() {
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2">
+                {/* Retain Button */}
+                <button
+                  onClick={(e) => handleToggleRetain(e, selectedEvent)}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ${
+                    selectedEvent.retained
+                      ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                      : "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
+                  }`}
+                >
+                  <Star className="w-3.5 h-3.5 fill-current" />
+                  <span>{selectedEvent.retained ? "Desafixar" : "Fixar NVMe"}</span>
+                </button>
+
+                {/* Delete Button */}
+                <button
+                  onClick={(e) => handleDeleteSingleEvent(e, selectedEvent)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-950/40 hover:bg-rose-900/60 text-rose-300 border border-rose-500/30 text-xs font-semibold transition-all"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Excluir</span>
+                </button>
+
                 {/* Download Clean Snapshot */}
                 <a
                   href={selectedEvent.snapshot_clean_url || `/frigate/api/events/${selectedEvent.id}/snapshot.jpg?clean=1`}
@@ -702,4 +1313,3 @@ export default function EventsPage() {
     </div>
   );
 }
-
