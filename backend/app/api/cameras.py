@@ -670,15 +670,9 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
 
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
-            resp = await client.post(
-                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
-                content=updated_yaml,
-                headers={"Content-Type": "text/plain"}
-            )
-            if resp.status_code != 200:
-                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+            await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
     except Exception as e:
-        logger.warning(f"Error posting config save to Frigate: {e}")
+        logger.warning(f"Error restarting Frigate: {e}")
 
     action_desc = "Ativado Stream de Teste Virtual (SMPTE)" if new_fallback_state else "Restaurado Stream RTSP Real"
     await audit_service.log(
@@ -1003,15 +997,9 @@ async def sync_camera_to_frigate(cam: Camera):
 
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
-            resp = await client.post(
-                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
-                content=updated_yaml,
-                headers={"Content-Type": "text/plain"}
-            )
-            if resp.status_code != 200:
-                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+            await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
     except Exception as e:
-        logger.warning(f"Failed to post updated config to Frigate API: {e}")
+        logger.warning(f"Failed to trigger Frigate restart: {e}")
 
 
 async def remove_camera_from_frigate(cam_name: str):
@@ -1067,30 +1055,9 @@ async def remove_camera_from_frigate(cam_name: str):
 
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
-            resp = await client.post(
-                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
-                content=updated_yaml,
-                headers={"Content-Type": "text/plain"}
-            )
-            if resp.status_code != 200:
-                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+            await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
     except Exception as e:
-        logger.warning(f"Failed to notify Frigate API: {e}")
-        try:
-            with open(config_path, "w", encoding="utf-8") as f:
-                f.write(updated_yaml)
-        except Exception as e:
-            logger.warning(f"Failed to write config file after camera deletion: {e}")
-
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            await client.post(
-                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
-                content=updated_yaml,
-                headers={"Content-Type": "text/plain"}
-            )
-    except Exception as e:
-        logger.warning(f"Failed to post updated config to Frigate API: {e}")
+        logger.warning(f"Failed to trigger Frigate restart: {e}")
 
 
 @router.delete("/{camera_id}")
@@ -1465,18 +1432,12 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
         except Exception as e:
             logger.warning(f"File save failed in save_zones: {e}")
 
-    # 2. Push to Frigate API or trigger restart
+    # 2. Trigger Frigate hot-reload
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
-            save_resp = await client.post(
-                f"{settings.FRIGATE_API_URL}/api/config/save?restart=1",
-                content=updated_yaml,
-                headers={"Content-Type": "text/plain"}
-            )
-            if save_resp.status_code != 200:
-                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+            await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
     except Exception as e:
-        logger.warning(f"Frigate API save failed in save_zones: {e}")
+        logger.warning(f"Frigate restart failed in save_zones: {e}")
 
     # 4. Update SQLite DB for 100% synchronization
     try:
