@@ -10,7 +10,6 @@ services:
       - /dev/dri:/dev/dri
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
       - ./frigate/config:/config
       - ./frigate/storage:/media/frigate
       - type: tmpfs
@@ -56,7 +55,6 @@ services:
       - "8080:8080"
     volumes:
       - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
       - ./backend/data:/app/data
       - ./frigate/storage:/media/frigate:ro
       - ./frigate/config:/config
