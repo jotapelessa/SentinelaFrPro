@@ -128,6 +128,8 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun isTv(): Boolean {
+        if (BuildConfig.FLAVOR == "tv") return true
+        if (BuildConfig.FLAVOR == "smartphone") return false
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as UiModeManager
         return uiModeManager.currentModeType == Configuration.UI_MODE_TYPE_TELEVISION
     }

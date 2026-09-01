@@ -13,6 +13,6 @@ object SentinelaConfig {
     const val WS_URL = "wss://$SERVER_HOST/ws"
     
     fun getSnapshotUrl(cameraName: String, timestamp: Long): String {
-        return "$BASE_URL/api/$cameraName/latest.jpg?h=720&t=$timestamp"
+        return "$BASE_URL/frigate/api/$cameraName/latest.jpg?h=720&t=$timestamp"
     }
 }

@@ -1,7 +1,22 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
 }
+
+val versionPropsFile = rootProject.file("version.properties")
+val versionProps = Properties()
+if (versionPropsFile.exists()) {
+    versionProps.load(FileInputStream(versionPropsFile))
+}
+
+val vMajor = versionProps.getProperty("MAJOR", "001")
+val vMinor = versionProps.getProperty("MINOR", "000")
+val vPatch = versionProps.getProperty("PATCH", "000")
+val vBuild = versionProps.getProperty("BUILD", "001")
+val formattedVersion = "${vMajor}.${vMinor}.${vPatch}.${vBuild}"
 
 android {
     namespace = "com.sentinela.pro"
@@ -11,12 +26,26 @@ android {
         applicationId = "com.sentinela.pro"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = (vMajor.toIntOrNull() ?: 1) * 1000000 + (vMinor.toIntOrNull() ?: 0) * 1000 + (vBuild.toIntOrNull() ?: 1)
+        versionName = formattedVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
+        }
+    }
+
+    flavorDimensions += "device"
+    productFlavors {
+        create("tv") {
+            dimension = "device"
+            applicationIdSuffix = ".tv"
+            versionNameSuffix = "-tv"
+        }
+        create("smartphone") {
+            dimension = "device"
+            applicationIdSuffix = ".smartphone"
+            versionNameSuffix = "-smartphone"
         }
     }
 
@@ -38,6 +67,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.8"
