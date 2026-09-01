@@ -58,20 +58,33 @@ objects:
     - bicycle
   filters:
     person:
-      min_score: 0.40
-      threshold: 0.50
+      min_score: 0.65
+      threshold: 0.72
+      min_area: 1200
     car:
-      min_score: 0.40
-      threshold: 0.50
+      min_score: 0.70
+      threshold: 0.80
+      min_area: 5000
     motorcycle:
-      min_score: 0.40
-      threshold: 0.50
+      min_score: 0.70
+      threshold: 0.78
+      min_area: 3000
+    bus:
+      min_score: 0.70
+      threshold: 0.80
+      min_area: 7000
+    bicycle:
+      min_score: 0.70
+      threshold: 0.78
+      min_area: 2000
     dog:
-      min_score: 0.40
-      threshold: 0.50
+      min_score: 0.72
+      threshold: 0.80
+      min_area: 2000
     cat:
-      min_score: 0.40
-      threshold: 0.50
+      min_score: 0.72
+      threshold: 0.80
+      min_area: 1500
 
 # Watermarked High-Res Snapshots
 snapshots:

@@ -60,6 +60,12 @@ class MQTTService:
         if label not in CRITICAL_LABELS:
             return
 
+        # Filter out low-confidence false positives (shadows, noise, reflections)
+        min_required_score = 0.65 if label in ["dog", "cat", "car", "motorcycle"] else 0.60
+        if score > 0 and score < min_required_score:
+            logger.debug(f"Descartando detecção de baixa confiança: {label} ({score:.2f} < {min_required_score})")
+            return
+
         if event_type in ["new", "update"]:
             cooldown_key = f"{camera}:{label}"
             now_ts = asyncio.get_event_loop().time()
@@ -165,8 +171,7 @@ class MQTTService:
                 "active": False
             })
 
-            has_clip = after.get("has_clip", False)
-            if has_clip and event_id:
+            if event_id:
                 start_t = after.get("start_time", 0)
                 end_t = after.get("end_time", 0)
                 dur = max(1.0, float(end_t - start_t)) if (end_t and start_t) else 15.0
@@ -185,32 +190,64 @@ class MQTTService:
                 except Exception:
                     pass
 
-                async with httpx.AsyncClient(timeout=30.0) as client:
-                    try:
-                        clip_resp = await client.get(
-                            f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
-                        )
-                        if clip_resp.status_code == 200:
-                            await telegram_vault_service.send_alert_video(
-                                video_bytes=clip_resp.content,
-                                camera_name=camera,
-                                label=label,
-                                zone=zone_name,
-                                duration_s=dur,
-                                score=score,
-                                friendly_name=friendly_name
-                            )
-                    except Exception as e:
-                        logger.warning(f"Failed to fetch event clip: {e}")
+                # Launch resilient background retry task to deliver MP4 video to Telegram
+                asyncio.create_task(
+                    self._dispatch_telegram_video_with_retry(
+                        event_id=event_id,
+                        camera=camera,
+                        label=label,
+                        zone_name=zone_name,
+                        duration_s=dur,
+                        score=score,
+                        friendly_name=friendly_name
+                    )
+                )
 
-                async with AsyncSessionLocal() as session:
-                    stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
-                    res = await session.execute(stmt)
-                    ev = res.scalar_one_or_none()
-                    if ev:
-                        ev.has_clip = True
-                        ev.end_time = datetime.datetime.utcnow()
-                        await session.commit()
+    async def _dispatch_telegram_video_with_retry(
+        self,
+        event_id: str,
+        camera: str,
+        label: str,
+        zone_name: Optional[str],
+        duration_s: float,
+        score: float,
+        friendly_name: Optional[str]
+    ):
+        """Asynchronously polls Frigate for the finalized MP4 clip and sends to Telegram."""
+        delays = [2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
+        for attempt, delay in enumerate(delays, start=1):
+            await asyncio.sleep(delay)
+            try:
+                async with httpx.AsyncClient(timeout=35.0) as client:
+                    clip_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
+                    clip_resp = await client.get(clip_url)
+                    if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
+                        logger.info(f"✅ Clipe MP4 obtido do Frigate (tentativa {attempt}/{len(delays)}, {len(clip_resp.content)} bytes). Enviando ao Telegram...")
+                        sent_ok = await telegram_vault_service.send_alert_video(
+                            video_bytes=clip_resp.content,
+                            camera_name=camera,
+                            label=label,
+                            zone=zone_name,
+                            duration_s=duration_s,
+                            score=score,
+                            friendly_name=friendly_name
+                        )
+                        if sent_ok:
+                            async with AsyncSessionLocal() as session:
+                                stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
+                                res = await session.execute(stmt)
+                                ev = res.scalar_one_or_none()
+                                if ev:
+                                    ev.has_clip = True
+                                    ev.end_time = datetime.datetime.utcnow()
+                                    await session.commit()
+                            return
+                    else:
+                        logger.debug(f"Aguardando Frigate gravar MP4 ({attempt}/{len(delays)}: HTTP {clip_resp.status_code})...")
+            except Exception as e:
+                logger.warning(f"Tentativa {attempt} de envio de vídeo ao Telegram falhou: {e}")
+
+        logger.warning(f"⚠️ Clipe MP4 não finalizado a tempo pelo Frigate para o evento {event_id}.")
 
     async def start_listening(self):
         """Connects to MQTT and runs consumer loop with automatic reconnection."""

@@ -35,6 +35,7 @@ export default function EventsPage() {
   const [filterFavorites, setFilterFavorites] = useState<boolean>(false);
   const [selectedDate, setSelectedDate] = useState<string>(() => getLocalDateString(new Date()));
   const [selectedHourFilter, setSelectedHourFilter] = useState<number | null>(null);
+  const [selectedPeriod, setSelectedPeriod] = useState<"all" | "madrugada" | "manha" | "tarde" | "noite">("all");
 
   const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<SecurityEvent | null>(null);
@@ -472,14 +473,14 @@ export default function EventsPage() {
       {/* ========================================================================= */}
       {activeTab === "recordings" && (
         <div className="space-y-4">
-          {/* 1. INTERACTIVE 24-HOUR TIMELINE CARD */}
-          <div className="p-4 rounded-2xl glass-panel border border-slate-800 space-y-3.5 shadow-xl">
+          {/* 1. INTERACTIVE 24-HOUR VERTICAL TIMELINE CARD */}
+          <div className="p-4 rounded-2xl glass-panel border border-slate-800 space-y-4 shadow-xl">
             {/* Timeline Controls Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-2 border-b border-slate-800/80">
+            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-xs font-bold text-white flex items-center gap-1.5">
                   <Activity className="w-4 h-4 text-cyan-400" />
-                  Linha do Tempo (24 Horas):
+                  Linha do Tempo Vertical (24 Horas):
                 </span>
 
                 {/* Quick Date Selectors */}
@@ -487,7 +488,7 @@ export default function EventsPage() {
                   <button
                     onClick={setDateToday}
                     className={`px-2.5 py-1 rounded font-semibold transition-all ${
-                      selectedDate === new Date().toISOString().split("T")[0]
+                      selectedDate === getLocalDateString(new Date())
                         ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
                         : "text-slate-400 hover:text-slate-200"
                     }`}
@@ -519,10 +520,10 @@ export default function EventsPage() {
                 {selectedHourFilter !== null && (
                   <button
                     onClick={() => setSelectedHourFilter(null)}
-                    className="px-2 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs flex items-center gap-1"
+                    className="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs flex items-center gap-1 font-semibold"
                   >
-                    <span>Filtro: {String(selectedHourFilter).padStart(2, "0")}:00h</span>
-                    <X className="w-3 h-3" />
+                    <span>Filtro Ativo: {String(selectedHourFilter).padStart(2, "0")}:00h</span>
+                    <X className="w-3.5 h-3.5" />
                   </button>
                 )}
               </div>
@@ -530,34 +531,67 @@ export default function EventsPage() {
               {/* Timeline Legend */}
               <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono">
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-rose-500" /> Pessoa
+                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500" /> Pessoa
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" /> Veículo
+                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Veículo
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-amber-500" /> Outro
+                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Outro
                 </span>
                 <span className="flex items-center gap-1">
-                  <span className="w-2 h-2 rounded-full bg-yellow-400" /> ⭐ Fixado
+                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /> ⭐ Fixado
                 </span>
               </div>
             </div>
 
-            {/* Visual 24h Bar */}
-            <div className="relative pt-2 pb-6">
-              {/* Hour Grid Bars (24 Columns) */}
-              <div className="grid grid-cols-24 gap-0.5 h-14 bg-obsidian-950/80 rounded-xl p-1 border border-slate-800 overflow-hidden">
-                {timelineHourlyBins.map((bin) => {
+            {/* Period Tabs (Madrugada, Manhã, Tarde, Noite, Todos) */}
+            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
+              {[
+                { id: "all", label: "⚡ Todos os Horários (24h)", range: "00:00 - 23:59" },
+                { id: "madrugada", label: "🌙 Madrugada", range: "00:00 - 05:59" },
+                { id: "manha", label: "🌅 Manhã", range: "06:00 - 11:59" },
+                { id: "tarde", label: "☀️ Tarde", range: "12:00 - 17:59" },
+                { id: "noite", label: "🌆 Noite", range: "18:00 - 23:59" },
+              ].map((p) => {
+                const isSelected = selectedPeriod === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setSelectedPeriod(p.id as any)}
+                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 border transition-all whitespace-nowrap ${
+                      isSelected
+                        ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm"
+                        : "bg-obsidian-950 text-slate-400 border-slate-800/80 hover:text-slate-200"
+                    }`}
+                  >
+                    <span>{p.label}</span>
+                    <span className="text-[10px] opacity-60 font-mono">({p.range})</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Vertical Hours Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2.5 max-h-[380px] overflow-y-auto pr-1">
+              {timelineHourlyBins
+                .filter((bin) => {
+                  if (selectedPeriod === "madrugada") return bin.hour >= 0 && bin.hour <= 5;
+                  if (selectedPeriod === "manha") return bin.hour >= 6 && bin.hour <= 11;
+                  if (selectedPeriod === "tarde") return bin.hour >= 12 && bin.hour <= 17;
+                  if (selectedPeriod === "noite") return bin.hour >= 18 && bin.hour <= 23;
+                  return true;
+                })
+                .map((bin) => {
                   const isSelectedHour = selectedHourFilter === bin.hour;
                   const hasActivity = bin.total > 0;
                   
-                  const personHeight = hasActivity ? (bin.persons / bin.total) * 100 : 0;
-                  const vehicleHeight = hasActivity ? (bin.vehicles / bin.total) * 100 : 0;
-                  const otherHeight = hasActivity ? (bin.others / bin.total) * 100 : 0;
+                  const personPct = hasActivity ? (bin.persons / bin.total) * 100 : 0;
+                  const vehiclePct = hasActivity ? (bin.vehicles / bin.total) * 100 : 0;
+                  const otherPct = hasActivity ? (bin.others / bin.total) * 100 : 0;
 
                   return (
-                    <button
+                    <div
                       key={bin.hour}
                       onClick={() => {
                         if (bin.total > 0) {
@@ -567,65 +601,77 @@ export default function EventsPage() {
                           }
                         }
                       }}
-                      title={`${String(bin.hour).padStart(2, "0")}:00h - ${bin.total} eventos (${bin.persons} pessoas, ${bin.vehicles} veículos)`}
-                      className={`relative h-full flex flex-col justify-end rounded group transition-all ${
+                      className={`p-3 rounded-xl border flex flex-col justify-between transition-all select-none ${
                         isSelectedHour
-                          ? "bg-cyan-500/30 ring-2 ring-cyan-400 z-10"
+                          ? "bg-cyan-950/40 border-cyan-400 ring-2 ring-cyan-400/50 shadow-md shadow-cyan-950/50 cursor-pointer"
                           : hasActivity
-                          ? "hover:bg-slate-800 cursor-pointer"
-                          : "bg-slate-900/40 cursor-default opacity-40"
+                          ? "bg-obsidian-950/90 border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/60 cursor-pointer"
+                          : "bg-obsidian-950/40 border-slate-900/60 opacity-40 cursor-default"
                       }`}
                     >
-                      {/* Density Stack */}
-                      {hasActivity && (
-                        <div className="w-full flex flex-col justify-end h-full p-0.5">
-                          {bin.retained > 0 && (
-                            <div className="w-full bg-yellow-400 h-1 rounded-t mb-0.5" />
-                          )}
+                      {/* Top Row: Hour Title & Total Count Badge */}
+                      <div className="flex items-center justify-between gap-1 mb-2">
+                        <span className="text-xs font-bold font-mono text-white flex items-center gap-1.5">
+                          <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                          {String(bin.hour).padStart(2, "0")}:00 - {String(bin.hour).padStart(2, "0")}:59
+                        </span>
+
+                        <span
+                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
+                            isSelectedHour
+                              ? "bg-cyan-500 text-obsidian-950 font-black"
+                              : hasActivity
+                              ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                              : "bg-slate-900 text-slate-500"
+                          }`}
+                        >
+                          {bin.total} {bin.total === 1 ? "evento" : "eventos"}
+                        </span>
+                      </div>
+
+                      {/* Middle: Breakdown Tags */}
+                      {hasActivity ? (
+                        <div className="flex items-center gap-2 text-[10px] font-mono text-slate-300 mb-2.5 flex-wrap">
                           {bin.persons > 0 && (
-                            <div
-                              style={{ height: `${Math.max(personHeight, 15)}%` }}
-                              className="w-full bg-rose-500 rounded-sm"
-                            />
+                            <span className="flex items-center gap-1 text-rose-400 font-semibold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> {bin.persons} pess.
+                            </span>
                           )}
                           {bin.vehicles > 0 && (
-                            <div
-                              style={{ height: `${Math.max(vehicleHeight, 15)}%` }}
-                              className="w-full bg-blue-500 rounded-sm mt-0.5"
-                            />
+                            <span className="flex items-center gap-1 text-blue-400 font-semibold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> {bin.vehicles} veíc.
+                            </span>
                           )}
                           {bin.others > 0 && (
-                            <div
-                              style={{ height: `${Math.max(otherHeight, 15)}%` }}
-                              className="w-full bg-amber-500 rounded-sm mt-0.5"
-                            />
+                            <span className="flex items-center gap-1 text-amber-400 font-semibold">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> {bin.others} out.
+                            </span>
+                          )}
+                          {bin.retained > 0 && (
+                            <span className="flex items-center gap-1 text-yellow-300 font-semibold">
+                              ⭐ {bin.retained}
+                            </span>
                           )}
                         </div>
+                      ) : (
+                        <p className="text-[10px] text-slate-500 italic mb-2.5 font-mono">Sem detecções</p>
                       )}
 
-                      {/* Tooltip on Hover */}
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 hidden group-hover:flex flex-col items-center pointer-events-none z-30">
-                        <div className="px-2 py-1 rounded-md bg-slate-900 border border-slate-700 text-[10px] font-mono text-white shadow-xl whitespace-nowrap">
-                          <strong>{String(bin.hour).padStart(2, "0")}:00h</strong>: {bin.total} eventos
-                        </div>
+                      {/* Bottom: Proportional Color Bar */}
+                      <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden flex">
+                        {bin.persons > 0 && (
+                          <div style={{ width: `${personPct}%` }} className="h-full bg-rose-500" />
+                        )}
+                        {bin.vehicles > 0 && (
+                          <div style={{ width: `${vehiclePct}%` }} className="h-full bg-blue-500" />
+                        )}
+                        {bin.others > 0 && (
+                          <div style={{ width: `${otherPct}%` }} className="h-full bg-amber-500" />
+                        )}
                       </div>
-                    </button>
+                    </div>
                   );
                 })}
-              </div>
-
-              {/* Hour Labels Axis */}
-              <div className="flex justify-between text-[9px] font-mono text-slate-500 pt-1 px-1">
-                <span>00:00</span>
-                <span>03:00</span>
-                <span>06:00</span>
-                <span>09:00</span>
-                <span>12:00</span>
-                <span>15:00</span>
-                <span>18:00</span>
-                <span>21:00</span>
-                <span>23:59</span>
-              </div>
             </div>
           </div>
 
