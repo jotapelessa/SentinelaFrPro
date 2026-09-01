@@ -12,7 +12,10 @@ logger = logging.getLogger(__name__)
 def _cast_sync(ip: str, media_url: str, content_type: str = "image/jpeg") -> bool:
     try:
         import pychromecast
-        chromecasts, browser = pychromecast.get_chromecasts(known_hosts=[ip])
+        if hasattr(pychromecast, "get_listed_chromecasts"):
+            chromecasts, browser = pychromecast.get_listed_chromecasts(ips=[ip])
+        else:
+            chromecasts, browser = pychromecast.get_chromecasts(known_hosts=[ip])
         if chromecasts:
             cast = chromecasts[0]
             cast.wait()

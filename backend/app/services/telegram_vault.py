@@ -562,6 +562,14 @@ class TelegramVaultService:
                     elif resp.status_code in [401, 404]:
                         logger.warning(f"⚠️ Telegram Bot Token inválido (HTTP {resp.status_code}). Aguardando atualização...")
                         await asyncio.sleep(15)
+                    elif resp.status_code == 409:
+                        # 409 Conflict: another getUpdates is active or old session lingering
+                        logger.warning("⚠️ Telegram getUpdates retornou 409 Conflict (outra instância ativa). Aguardando liberação...")
+                        try:
+                            await client.post(f"https://api.telegram.org/bot{self.bot_token}/deleteWebhook", json={"drop_pending_updates": False})
+                        except Exception:
+                            pass
+                        await asyncio.sleep(10)
                     else:
                         await asyncio.sleep(3)
 

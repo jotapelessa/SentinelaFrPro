@@ -41,17 +41,19 @@ class MQTTService:
         self._processed_events[event_id] = True
 
     async def handle_frigate_event(self, payload: Dict[str, Any]):
+        if not isinstance(payload, dict):
+            return
         event_type = payload.get("type")
-        after = payload.get("after", {})
-        before = payload.get("before", {})
+        after = payload.get("after") or {}
+        before = payload.get("before") or {}
 
         event_id = after.get("id") or before.get("id")
         camera = after.get("camera") or before.get("camera", "camera")
         label = after.get("label") or before.get("label", "unknown")
         score = after.get("top_score") or after.get("score") or 0.0
         
-        current_zones = after.get("current_zones", [])
-        entered_zones = after.get("entered_zones", [])
+        current_zones = after.get("current_zones") or []
+        entered_zones = after.get("entered_zones") or []
         zones = list(set(current_zones + entered_zones))
         zone_name = zones[0] if zones else None
 
@@ -242,15 +244,16 @@ class MQTTService:
                             elif topic_str.endswith("/reviews"):
                                 try:
                                     rev = json.loads(msg_str)
-                                    rev_type = rev.get("type")
-                                    if rev_type in ["new", "update"]:
-                                        after = rev.get("after", {})
-                                        await self.broadcast_event({
-                                            "type": "FRIGATE_REVIEW",
-                                            "camera": after.get("camera", ""),
-                                            "severity": after.get("severity", "detection"),
-                                            "review_id": after.get("id"),
-                                        })
+                                    if isinstance(rev, dict):
+                                        rev_type = rev.get("type")
+                                        if rev_type in ["new", "update"]:
+                                            after = rev.get("after") or {}
+                                            await self.broadcast_event({
+                                                "type": "FRIGATE_REVIEW",
+                                                "camera": after.get("camera", ""),
+                                                "severity": after.get("severity", "detection"),
+                                                "review_id": after.get("id"),
+                                            })
                                 except Exception:
                                     pass
 
