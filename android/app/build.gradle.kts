@@ -108,4 +108,7 @@ dependencies {
     
     // Coil (Image loading for PiP snapshot)
     implementation("io.coil-kt:coil-compose:2.5.0")
+    
+    // Extended Material Icons
+    implementation("androidx.compose.material:material-icons-extended:1.6.2")
 }

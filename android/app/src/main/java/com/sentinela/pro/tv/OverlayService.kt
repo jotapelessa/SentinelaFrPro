@@ -53,10 +53,14 @@ class OverlayService : Service() {
 
     private fun showPiP(camera: String, label: String) {
         pipJob?.cancel()
+        val prefs = com.sentinela.pro.data.SentinelaPreferences(this)
+        val pipSize = prefs.currentPipSize
+        val pipPos = prefs.currentPipPosition
+        val pipDur = prefs.currentPipDuration
         
         if (overlayView == null) {
             val params = WindowManager.LayoutParams(
-                800, 450, // PiP size
+                pipSize.width, pipSize.height,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
                     WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
                 else
@@ -66,7 +70,7 @@ class OverlayService : Service() {
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
                 PixelFormat.TRANSLUCENT
             ).apply {
-                gravity = Gravity.TOP or Gravity.END
+                gravity = pipPos.gravity
                 x = 32
                 y = 32
             }
@@ -77,17 +81,17 @@ class OverlayService : Service() {
                 
                 val inner = FrameLayout(this@OverlayService).apply {
                     setBackgroundColor(0xFF000000.toInt())
-                    // Here we will inject the SurfaceViewRenderer from WebRtcManager
                 }
                 addView(inner)
             }
             windowManager.addView(overlayView, params)
         }
 
-        // Auto close after 15 seconds
-        pipJob = serviceScope.launch {
-            delay(15000)
-            removePiP()
+        if (pipDur.seconds > 0) {
+            pipJob = serviceScope.launch {
+                delay(pipDur.seconds * 1000L)
+                removePiP()
+            }
         }
     }
 

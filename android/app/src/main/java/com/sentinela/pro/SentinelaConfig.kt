@@ -1,10 +1,6 @@
 package com.sentinela.pro
 
-data class CameraItem(
-    val name: String,
-    val friendlyName: String = name,
-    val enabled: Boolean = true
-)
+import com.sentinela.pro.data.CameraItem
 
 object SentinelaConfig {
     // Endereço público nativo do Tailscale Funnel com HTTPS / WSS

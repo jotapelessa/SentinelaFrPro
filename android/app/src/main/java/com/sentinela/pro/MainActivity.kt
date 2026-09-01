@@ -16,17 +16,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import com.sentinela.pro.ui.MobileGridScreen
-import com.sentinela.pro.tv.TvLeanbackGrid
+import com.sentinela.pro.data.CameraItem
+import com.sentinela.pro.ui.SmartphoneYouTubeScreen
+import com.sentinela.pro.tv.TvNetflixScreen
 import com.sentinela.pro.tv.OverlayService
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.HttpURLConnection
-import java.net.URL
+import com.sentinela.pro.network.SentinelaRepository
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,7 +36,6 @@ class MainActivity : ComponentActivity() {
                 startService(intent)
             }
         } else if (isTv() && !hasOverlayPermission()) {
-            // Request overlay permission
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:$packageName"))
                 startActivity(intent)
@@ -49,84 +43,40 @@ class MainActivity : ComponentActivity() {
         }
 
         setContent {
+            val coroutineScope = rememberCoroutineScope()
             var cameras by remember { 
                 mutableStateOf(listOf(CameraItem("camera_principal", "Câmera Principal"))) 
             }
-            var isLoading by remember { mutableStateOf(true) }
+
+            fun loadCameras() {
+                coroutineScope.launch {
+                    val fetched = SentinelaRepository.getCameras()
+                    if (fetched.isNotEmpty()) {
+                        cameras = fetched
+                    }
+                }
+            }
 
             LaunchedEffect(Unit) {
-                val fetched = fetchCameras()
-                if (fetched.isNotEmpty()) {
-                    cameras = fetched
-                }
-                isLoading = false
+                loadCameras()
             }
 
             MaterialTheme {
                 Surface(modifier = Modifier.fillMaxSize()) {
                     if (isTv()) {
-                        TvLeanbackGrid(
+                        TvNetflixScreen(
                             cameras = cameras,
-                            onRefresh = {
-                                val fetched = runCatching { fetchCamerasSync() }.getOrDefault(emptyList())
-                                if (fetched.isNotEmpty()) cameras = fetched
-                            }
+                            onRefresh = { loadCameras() }
                         )
                     } else {
-                        MobileGridScreen(
+                        SmartphoneYouTubeScreen(
                             cameras = cameras,
-                            isLoading = isLoading,
-                            onRefresh = {
-                                val fetched = runCatching { fetchCamerasSync() }.getOrDefault(emptyList())
-                                if (fetched.isNotEmpty()) cameras = fetched
-                            }
+                            onRefresh = { loadCameras() }
                         )
                     }
                 }
             }
         }
-    }
-
-    private suspend fun fetchCameras(): List<CameraItem> = withContext(Dispatchers.IO) {
-        fetchCamerasSync()
-    }
-
-    private fun fetchCamerasSync(): List<CameraItem> {
-        val list = mutableListOf<CameraItem>()
-        try {
-            val url = URL("${SentinelaConfig.BASE_URL}/api/cameras")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
-                connectTimeout = 5000
-                readTimeout = 5000
-                requestMethod = "GET"
-                setRequestProperty("Accept", "application/json")
-            }
-
-            if (conn.responseCode == 200) {
-                val reader = BufferedReader(InputStreamReader(conn.inputStream))
-                val response = reader.readText()
-                reader.close()
-
-                val jsonArray = JSONArray(response)
-                for (i in 0 until jsonArray.length()) {
-                    val obj = jsonArray.getJSONObject(i)
-                    val name = obj.optString("name", "camera_$i")
-                    val friendlyName = obj.optString("friendly_name", name)
-                    val enabled = obj.optBoolean("enabled", true)
-                    list.add(CameraItem(name = name, friendlyName = friendlyName, enabled = enabled))
-                }
-            }
-            conn.disconnect()
-        } catch (e: Exception) {
-            Log.w("MainActivity", "Failed to fetch cameras from ${SentinelaConfig.BASE_URL}: ${e.message}")
-        }
-
-        if (list.isEmpty()) {
-            list.add(CameraItem("camera_principal", "Câmera Principal", true))
-        }
-        return list
-    }
-
     private fun isTv(): Boolean {
         if (BuildConfig.FLAVOR == "tv") return true
         if (BuildConfig.FLAVOR == "smartphone") return false
