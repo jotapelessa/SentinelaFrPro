@@ -279,12 +279,14 @@ fun PhoneCameraCard(
 // -------------------------------------------------------------
 @Composable
 fun PhoneCapturesTab() {
+    val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
     var captures by remember { mutableStateOf<List<CaptureEvent>>(emptyList()) }
     var selectedClip by remember { mutableStateOf<CaptureEvent?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        captures = SentinelaRepository.getCaptures()
+        captures = SentinelaRepository.getCaptures(prefs.deviceIdentifier)
         isLoading = false
     }
 
@@ -318,6 +320,8 @@ fun PhoneCapturesTab() {
                             model = ImageRequest.Builder(LocalContext.current)
                                 .data(ev.snapshotUrl)
                                 .crossfade(false)
+                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                .diskCachePolicy(CachePolicy.DISABLED)
                                 .build(),
                             contentDescription = ev.label,
                             contentScale = ContentScale.Crop,
@@ -356,6 +360,8 @@ fun PhoneCapturesTab() {
 // -------------------------------------------------------------
 @Composable
 fun PhoneToolsTab() {
+    val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
     val coroutineScope = rememberCoroutineScope()
     var speedResult by remember { mutableStateOf<SpeedTestResult?>(null) }
     var isTesting by remember { mutableStateOf(false) }
@@ -407,15 +413,20 @@ fun PhoneToolsTab() {
                     onClick = {
                         isTesting = true
                         coroutineScope.launch {
-                            speedResult = SentinelaRepository.runSpeedAndPingTest()
+                            speedResult = SentinelaRepository.runSpeedAndPingTest(
+                                deviceIdentifier = prefs.deviceIdentifier,
+                                friendlyName = prefs.friendlyName,
+                                deviceType = "smartphone"
+                            )
                             isTesting = false
+                            Toast.makeText(context, "✅ Smartphone sincronizado em http://sentinela.local/screens!", Toast.LENGTH_SHORT).show()
                         }
                     },
                     enabled = !isTesting,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF06B6D4)),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Text(if (isTesting) "Medindo Throughput..." else "Testar Conexão")
+                    Text(if (isTesting) "Medindo Throughput & Notificando Servidor..." else "Testar Conexão com Servidor")
                 }
             }
         }

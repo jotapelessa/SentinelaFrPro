@@ -4,8 +4,10 @@ from sqlalchemy import select
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import asyncio
+import json
+import datetime
 from app.db.session import get_db
-from app.db.models import PairedDevice
+from app.db.models import PairedDevice, Camera, AuditLog
 from app.services.pip_gateway import pip_gateway_service
 from app.services.scanner_service import scanner_service
 from app.services.audit_service import audit_service
@@ -28,10 +30,21 @@ async def discover_tvs(request: Request):
 class DeviceCreate(BaseModel):
     device_identifier: str
     friendly_name: str
-    device_type: str = "android_tv" # android_tv, tablet, web, kiosk
+    device_type: str = "android_tv" # android_tv, smartphone, tablet, web, kiosk
     ip_address: Optional[str] = None
     tailscale_ip: Optional[str] = None
     permission_status: str = "allowed"
+    allowed_cameras: Optional[List[str]] = None
+
+class DeviceHeartbeat(BaseModel):
+    device_identifier: str
+    friendly_name: str
+    device_type: str = "android_tv"
+    ip_address: Optional[str] = None
+    tailscale_ip: Optional[str] = None
+
+class DeviceAllowedCamerasUpdate(BaseModel):
+    allowed_cameras: List[str]
 
 class DeviceStatusUpdate(BaseModel):
     permission_status: str # allowed, blocked, paused
@@ -47,7 +60,133 @@ class TestSingleDeviceRequest(BaseModel):
 async def list_devices(db: AsyncSession = Depends(get_db)):
     stmt = select(PairedDevice)
     result = await db.execute(stmt)
-    return result.scalars().all()
+    devices = result.scalars().all()
+    out = []
+    for d in devices:
+        cams = []
+        if d.allowed_cameras:
+            try:
+                cams = json.loads(d.allowed_cameras)
+            except Exception:
+                cams = []
+        out.append({
+            "id": d.id,
+            "device_identifier": d.device_identifier,
+            "friendly_name": d.friendly_name,
+            "device_type": d.device_type,
+            "ip_address": d.ip_address,
+            "tailscale_ip": d.tailscale_ip,
+            "permission_status": d.permission_status,
+            "allowed_cameras": cams,
+            "last_seen": d.last_seen.isoformat() if d.last_seen else None,
+            "created_at": d.created_at.isoformat() if d.created_at else None
+        })
+    return out
+
+@router.post("/heartbeat")
+@router.post("/ping")
+async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSession = Depends(get_db)):
+    """Automatic heartbeat & registration from Android TV and Smartphone apps."""
+    client_ip = request.client.host if request.client else "127.0.0.1"
+    stmt = select(PairedDevice).where(PairedDevice.device_identifier == hb.device_identifier)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+
+    if dev:
+        dev.friendly_name = hb.friendly_name
+        dev.device_type = hb.device_type
+        if hb.ip_address:
+            dev.ip_address = hb.ip_address
+        elif not dev.ip_address:
+            dev.ip_address = client_ip
+        if hb.tailscale_ip:
+            dev.tailscale_ip = hb.tailscale_ip
+        dev.last_seen = datetime.datetime.utcnow()
+        await db.commit()
+    else:
+        dev = PairedDevice(
+            device_identifier=hb.device_identifier,
+            friendly_name=hb.friendly_name,
+            device_type=hb.device_type,
+            ip_address=hb.ip_address or client_ip,
+            tailscale_ip=hb.tailscale_ip,
+            permission_status="allowed",
+            last_seen=datetime.datetime.utcnow()
+        )
+        db.add(dev)
+        await db.commit()
+        await db.refresh(dev)
+        await audit_service.log(
+            action="DEVICE_AUTO_REGISTERED",
+            module="PIP",
+            severity="SUCCESS",
+            details=f"Dispositivo registrado automaticamente: {dev.friendly_name} ({dev.device_type})",
+            client_ip=client_ip
+        )
+
+    allowed = []
+    if dev.allowed_cameras:
+        try:
+            allowed = json.loads(dev.allowed_cameras)
+        except Exception:
+            allowed = []
+
+    return {
+        "status": "online",
+        "device_identifier": dev.device_identifier,
+        "permission_status": dev.permission_status,
+        "allowed_cameras": allowed,
+        "last_seen": dev.last_seen.isoformat() if dev.last_seen else None
+    }
+
+@router.get("/by-id/{device_identifier}/cameras")
+async def get_device_permitted_cameras(device_identifier: str, db: AsyncSession = Depends(get_db)):
+    """Returns the list of cameras permitted for a specific screen/device."""
+    stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+
+    # If device is explicitly blocked, return empty list
+    if dev and dev.permission_status == "blocked":
+        return []
+
+    # Get all enabled cameras
+    cam_stmt = select(Camera).where(Camera.enabled == True)
+    cam_res = await db.execute(cam_stmt)
+    all_cams = cam_res.scalars().all()
+
+    if not dev or not dev.allowed_cameras:
+        # If no specific camera restriction, return all enabled cameras
+        return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
+
+    try:
+        allowed_list = json.loads(dev.allowed_cameras)
+        if not allowed_list:
+            return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
+        return [
+            {"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled}
+            for c in all_cams if c.name in allowed_list
+        ]
+    except Exception:
+        return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
+
+@router.patch("/{device_id}/cameras")
+async def update_device_allowed_cameras(device_id: int, payload: DeviceAllowedCamerasUpdate, request: Request, db: AsyncSession = Depends(get_db)):
+    stmt = select(PairedDevice).where(PairedDevice.id == device_id)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev:
+        raise HTTPException(status_code=404, detail="Device not found")
+    dev.allowed_cameras = json.dumps(payload.allowed_cameras)
+    await db.commit()
+    await audit_service.log(
+        action="DEVICE_CAMERAS_UPDATED",
+        module="PIP",
+        severity="INFO",
+        details=f"Câmeras autorizadas atualizadas para {dev.friendly_name}: {payload.allowed_cameras}",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+    return {"status": "success", "allowed_cameras": payload.allowed_cameras}
 
 @router.get("/health")
 async def check_devices_health(db: AsyncSession = Depends(get_db)):

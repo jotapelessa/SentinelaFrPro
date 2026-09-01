@@ -19,8 +19,22 @@ class SentinelaPreferences(context: Context) {
         set(value) = prefs.edit().putInt("pip_duration_index", value).apply()
 
     var deviceIdentifier: String
-        get() = prefs.getString("device_id", "tela_principal") ?: "tela_principal"
+        get() {
+            val existing = prefs.getString("device_id", null)
+            if (existing != null) return existing
+            val defaultId = "device_" + android.os.Build.MODEL.toLowerCase().replace("[^a-z0-9]".toRegex(), "_") + "_" + (100..999).random()
+            prefs.edit().putString("device_id", defaultId).apply()
+            return defaultId
+        }
         set(value) = prefs.edit().putString("device_id", value).apply()
+
+    var friendlyName: String
+        get() = prefs.getString("friendly_name", "Android (${android.os.Build.MODEL})") ?: "Android TV"
+        set(value) = prefs.edit().putString("friendly_name", value).apply()
+
+    var serverHost: String
+        get() = prefs.getString("server_host", com.sentinela.pro.SentinelaConfig.SERVER_HOST) ?: com.sentinela.pro.SentinelaConfig.SERVER_HOST
+        set(value) = prefs.edit().putString("server_host", value).apply()
 
     var streamQuality: String
         get() = prefs.getString("stream_quality", "720p") ?: "720p"

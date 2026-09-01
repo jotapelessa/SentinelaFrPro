@@ -382,12 +382,14 @@ fun TvCameraListItem(
 // -------------------------------------------------------------
 @Composable
 fun TvCapturesTab() {
+    val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
     var captures by remember { mutableStateOf<List<CaptureEvent>>(emptyList()) }
     var selectedClip by remember { mutableStateOf<CaptureEvent?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        captures = SentinelaRepository.getCaptures()
+        captures = SentinelaRepository.getCaptures(prefs.deviceIdentifier)
         isLoading = false
     }
 
@@ -495,6 +497,8 @@ fun TvCaptureCard(event: CaptureEvent, onPlay: () -> Unit) {
 // -------------------------------------------------------------
 @Composable
 fun TvToolsTab() {
+    val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
     val coroutineScope = rememberCoroutineScope()
     var speedResult by remember { mutableStateOf<SpeedTestResult?>(null) }
     var isTesting by remember { mutableStateOf(false) }
@@ -551,15 +555,20 @@ fun TvToolsTab() {
                     onClick = {
                         isTesting = true
                         coroutineScope.launch {
-                            speedResult = SentinelaRepository.runSpeedAndPingTest()
+                            speedResult = SentinelaRepository.runSpeedAndPingTest(
+                                deviceIdentifier = prefs.deviceIdentifier,
+                                friendlyName = prefs.friendlyName,
+                                deviceType = "android_tv"
+                            )
                             isTesting = false
+                            Toast.makeText(context, "✅ Presença confirmada em http://sentinela.local/screens!", Toast.LENGTH_SHORT).show()
                         }
                     },
                     enabled = !isTesting,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914)),
                     shape = RoundedCornerShape(10.dp)
                 ) {
-                    Text(if (isTesting) "Medindo Throughput..." else "Iniciar Teste de Velocidade")
+                    Text(if (isTesting) "Medindo Throughput & Notificando Servidor..." else "Testar Conexão com Servidor")
                 }
             }
 

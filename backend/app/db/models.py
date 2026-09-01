@@ -54,6 +54,7 @@ class PairedDevice(Base):
     ip_address = Column(String(64), nullable=True)
     tailscale_ip = Column(String(64), nullable=True)
     permission_status = Column(String(16), default="allowed") # allowed, blocked, paused
+    allowed_cameras = Column(Text, nullable=True) # JSON list e.g. ["camera_principal"] or null for all
     last_seen = Column(DateTime, default=datetime.datetime.utcnow)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

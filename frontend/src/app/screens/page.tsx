@@ -15,6 +15,8 @@ interface PairedDevice {
   ip_address: string;
   tailscale_ip?: string;
   permission_status: "allowed" | "blocked" | "paused";
+  allowed_cameras?: string[];
+  last_seen?: string;
 }
 
 interface DeviceHealth {
@@ -595,6 +597,54 @@ export default function ScreensPage() {
                         managingDevice.permission_status === "allowed" ? "translate-x-6" : "translate-x-1"
                       }`} />
                     </button>
+                  </div>
+                </div>
+
+                {/* Câmeras Permitidas nesta Tela */}
+                <div className="p-4 rounded-2xl bg-obsidian-950/50 border border-slate-800 space-y-3">
+                  <h3 className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-cyan-400" />
+                    Câmeras Permitidas nesta Tela
+                  </h3>
+                  <p className="text-[11px] text-slate-400">
+                    Defina quais câmeras este dispositivo tem autorização para exibir:
+                  </p>
+                  <div className="space-y-1.5 pt-1">
+                    {cameras.map((c) => {
+                      const isAllowed = !managingDevice.allowed_cameras || managingDevice.allowed_cameras.length === 0 || managingDevice.allowed_cameras.includes(c.name);
+                      return (
+                        <label key={c.id} className="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 cursor-pointer text-xs text-slate-200">
+                          <span className="font-mono">{c.friendly_name || c.name}</span>
+                          <input
+                            type="checkbox"
+                            checked={isAllowed}
+                            onChange={async (e) => {
+                              const currentList = managingDevice.allowed_cameras && managingDevice.allowed_cameras.length > 0
+                                ? [...managingDevice.allowed_cameras]
+                                : cameras.map(cam => cam.name);
+                              let nextList: string[];
+                              if (e.target.checked) {
+                                nextList = Array.from(new Set([...currentList, c.name]));
+                              } else {
+                                nextList = currentList.filter(name => name !== c.name);
+                              }
+                              try {
+                                await fetch(`${apiUrl}/devices/${managingDevice.id}/cameras`, {
+                                  method: "PATCH",
+                                  headers: { "Content-Type": "application/json" },
+                                  body: JSON.stringify({ allowed_cameras: nextList })
+                                });
+                                setManagingDevice({ ...managingDevice, allowed_cameras: nextList });
+                                setDevices(prev => prev.map(d => d.id === managingDevice.id ? { ...d, allowed_cameras: nextList } : d));
+                              } catch (err) {
+                                console.error("Failed to update allowed cameras:", err);
+                              }
+                            }}
+                            className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 bg-obsidian-950"
+                          />
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
               </div>

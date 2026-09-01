@@ -42,6 +42,9 @@ class MainActivity : ComponentActivity() {
             }
         }
 
+        val prefs = com.sentinela.pro.data.SentinelaPreferences(this)
+        val deviceType = if (isTv()) "android_tv" else "smartphone"
+
         setContent {
             val coroutineScope = rememberCoroutineScope()
             var cameras by remember { 
@@ -50,7 +53,12 @@ class MainActivity : ComponentActivity() {
 
             fun loadCameras() {
                 coroutineScope.launch {
-                    val fetched = SentinelaRepository.getCameras()
+                    SentinelaRepository.registerOrHeartbeat(
+                        deviceIdentifier = prefs.deviceIdentifier,
+                        friendlyName = prefs.friendlyName,
+                        deviceType = deviceType
+                    )
+                    val fetched = SentinelaRepository.getCameras(prefs.deviceIdentifier)
                     if (fetched.isNotEmpty()) {
                         cameras = fetched
                     }
