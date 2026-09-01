@@ -34,7 +34,11 @@ class OverlayService : Service() {
         super.onCreate()
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
-        startForeground(1, buildNotification())
+        try {
+            startForeground(1, buildNotification())
+        } catch (e: Exception) {
+            android.util.Log.e("OverlayService", "Failed to start foreground notification: ${e.message}")
+        }
         
         serviceScope.launch {
             webSocket.connectAndListen()
@@ -124,6 +128,7 @@ class OverlayService : Service() {
 
     private fun buildNotification(): Notification {
         return NotificationCompat.Builder(this, "sentinela_pip")
+            .setSmallIcon(android.R.drawable.ic_menu_camera)
             .setContentTitle("Sentinela Pro")
             .setContentText("Monitorando eventos em segundo plano")
             .setPriority(NotificationCompat.PRIORITY_LOW)
