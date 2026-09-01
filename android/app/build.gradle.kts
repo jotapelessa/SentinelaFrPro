@@ -22,7 +22,7 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -73,8 +73,8 @@ dependencies {
     implementation("io.ktor:ktor-client-okhttp:2.3.8")
     implementation("io.ktor:ktor-client-websockets:2.3.8")
     
-    // WebRTC
-    implementation("org.webrtc:google-webrtc:1.0.32006")
+    // WebRTC (Modern drop-in binary on Maven Central)
+    implementation("io.getstream:stream-webrtc-android:1.3.0")
     
     // Coil (Image loading for PiP snapshot)
     implementation("io.coil-kt:coil-compose:2.5.0")
