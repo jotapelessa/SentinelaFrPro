@@ -374,6 +374,26 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
 
   // 4. Save to Frigate API & Sentinela Database
   const handleSaveToBackend = async () => {
+    // Validação Geométrica: Evitar zonas que ocupem 100% (ou muito próximo a isso) do canvas.
+    const invalidZones = zones.filter(z => {
+      if (z.points.length === 0) return false;
+      const minX = Math.min(...z.points.map(p => p.x));
+      const maxX = Math.max(...z.points.map(p => p.x));
+      const minY = Math.min(...z.points.map(p => p.y));
+      const maxY = Math.max(...z.points.map(p => p.y));
+      
+      // Se ocupar mais de 96% da largura e 96% da altura, rejeitar
+      return (minX <= 0.02 && maxX >= 0.98 && minY <= 0.02 && maxY >= 0.98);
+    });
+
+    if (invalidZones.length > 0) {
+      setStatusMsg({
+        text: "⚠️ Erro: Existem zonas que cobrem praticamente 100% da tela. O Frigate ignora zonas totais. Diminua o perímetro.",
+        type: "error"
+      });
+      return;
+    }
+
     setSaving(true);
     setStatusMsg({ text: "Sincronizando com Frigate NVR...", type: "info" });
 

@@ -3,7 +3,7 @@ import asyncio
 import logging
 import httpx
 import datetime
-from collections import OrderedDict
+from cachetools import TTLCache
 from typing import Dict, Any, Callable, List
 from aiomqtt import Client, MqttError
 from app.core.config import settings
@@ -22,7 +22,7 @@ _MAX_PROCESSED_EVENTS = 500
 class MQTTService:
     def __init__(self):
         self.ws_broadcast_callbacks: List[Callable[[Dict[str, Any]], Any]] = []
-        self._processed_events: OrderedDict = OrderedDict()
+        self._processed_events: TTLCache = TTLCache(maxsize=10000, ttl=86400)
         self._cooldowns: Dict[str, float] = {}
 
     def register_ws_callback(self, cb: Callable[[Dict[str, Any]], Any]):
@@ -39,8 +39,6 @@ class MQTTService:
 
     def _mark_processed(self, event_id: str):
         self._processed_events[event_id] = True
-        while len(self._processed_events) > _MAX_PROCESSED_EVENTS:
-            self._processed_events.popitem(last=False)
 
     async def handle_frigate_event(self, payload: Dict[str, Any]):
         event_type = payload.get("type")
@@ -51,6 +49,7 @@ class MQTTService:
         camera = after.get("camera") or before.get("camera", "camera")
         label = after.get("label") or before.get("label", "unknown")
         score = after.get("top_score") or after.get("score") or 0.0
+        
         current_zones = after.get("current_zones", [])
         entered_zones = after.get("entered_zones", [])
         zones = list(set(current_zones + entered_zones))
@@ -60,7 +59,7 @@ class MQTTService:
             return
 
         if event_type in ["new", "update"]:
-            cooldown_key = f"{camera}"
+            cooldown_key = f"{camera}:{label}"
             now_ts = asyncio.get_event_loop().time()
             last_time = self._cooldowns.get(cooldown_key, 0)
 
