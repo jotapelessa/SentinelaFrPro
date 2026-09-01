@@ -977,10 +977,16 @@ async def sync_camera_to_frigate(cam: Camera):
             if "record" not in cam_block or not isinstance(cam_block["record"], dict):
                 cam_block["record"] = {}
             cam_block["record"]["enabled"] = (cam.record_mode != "off")
+            
+            # Limpar a chave antiga 'retain' que causa erro no Frigate 0.17
+            if "retain" in cam_block["record"]:
+                del cam_block["record"]["retain"]
+                
             if cam.record_retain_days:
-                if "retain" not in cam_block["record"] or not isinstance(cam_block["record"]["retain"], dict):
-                    cam_block["record"]["retain"] = {}
-                cam_block["record"]["retain"]["days"] = int(cam.record_retain_days)
+                mode_key = "continuous" if cam.record_mode == "all" else "motion"
+                if mode_key not in cam_block["record"] or not isinstance(cam_block["record"][mode_key], dict):
+                    cam_block["record"][mode_key] = {}
+                cam_block["record"][mode_key]["days"] = int(cam.record_retain_days)
 
         if "live" in cam_block:
             del cam_block["live"]
