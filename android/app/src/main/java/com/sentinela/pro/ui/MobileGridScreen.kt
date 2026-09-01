@@ -27,7 +27,7 @@ import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
-import com.sentinela.pro.CameraItem
+import com.sentinela.pro.data.CameraItem
 import com.sentinela.pro.SentinelaConfig
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive

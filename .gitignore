@@ -34,11 +34,12 @@ yarn-error.log*
 *.db
 *.db-journal
 *.sqlite3
-data/
+/data/
 backend/data/
 mosquitto/data/
 mosquitto/log/
 frigate/storage/
+!android/**/data/**
 
 # Environment
 .env

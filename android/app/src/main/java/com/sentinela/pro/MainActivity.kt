@@ -77,6 +77,8 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
     private fun isTv(): Boolean {
         if (BuildConfig.FLAVOR == "tv") return true
         if (BuildConfig.FLAVOR == "smartphone") return false
