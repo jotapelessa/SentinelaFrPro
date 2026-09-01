@@ -759,14 +759,25 @@ def sanitize_frigate_config(cfg: dict) -> dict:
     # 3. Guarantee Motion, Snapshots, Objects defaults (Optimized for Intel N5105)
     if "motion" not in cfg or not isinstance(cfg["motion"], dict):
         cfg["motion"] = {
-            "threshold": 30,
-            "contour_area": 15,
-            "improve_contrast": False
+            "threshold": 25,
+            "contour_area": 10,
+            "improve_contrast": True
         }
 
     if "objects" not in cfg or not isinstance(cfg["objects"], dict):
         cfg["objects"] = {
-            "track": ["person", "car", "motorcycle", "bus", "dog", "cat"]
+            "track": ["person", "car", "motorcycle", "bus", "dog", "cat"],
+            "filters": {
+                "person": {"min_score": 0.45, "threshold": 0.55},
+                "car": {"min_score": 0.45, "threshold": 0.55},
+                "motorcycle": {"min_score": 0.45, "threshold": 0.55}
+            }
+        }
+    elif "filters" not in cfg["objects"]:
+        cfg["objects"]["filters"] = {
+            "person": {"min_score": 0.45, "threshold": 0.55},
+            "car": {"min_score": 0.45, "threshold": 0.55},
+            "motorcycle": {"min_score": 0.45, "threshold": 0.55}
         }
 
     if "snapshots" not in cfg or not isinstance(cfg["snapshots"], dict):

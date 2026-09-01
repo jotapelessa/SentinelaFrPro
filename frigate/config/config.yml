@@ -40,13 +40,13 @@ detectors:
       path: /openvino-model/ssdlite_mobilenet_v2.xml
 
 
-# Motion Detection Fine-Tuning (Intel N5105 Optimized - Low CPU)
+# Motion Detection Fine-Tuning (High Sensitivity, Low Noise)
 motion:
-  threshold: 30
-  contour_area: 15
-  improve_contrast: false
+  threshold: 25
+  contour_area: 10
+  improve_contrast: true
 
-# Global Object Tracking Defaults
+# Global Object Tracking Defaults & Detection Sensitivity
 objects:
   track:
     - person
@@ -55,6 +55,16 @@ objects:
     - bus
     - dog
     - cat
+  filters:
+    person:
+      min_score: 0.45
+      threshold: 0.55
+    car:
+      min_score: 0.45
+      threshold: 0.55
+    motorcycle:
+      min_score: 0.45
+      threshold: 0.55
 
 # Watermarked High-Res Snapshots
 snapshots:
@@ -99,7 +109,7 @@ cameras:
       bounding_box: true
     zones:
       zona_monitoramento:
-        coordinates: 0,720,1280,720,1280,100,0,100
+        coordinates: 0,720,1280,720,1280,0,0,0
         objects:
           - person
           - car

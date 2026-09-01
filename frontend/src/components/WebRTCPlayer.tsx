@@ -29,9 +29,21 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
 
   const cameraSrc = camera.name || "camera_principal";
 
-  const activeDet = activeDetections[cameraSrc] || activeDetections[camera.name];
-  const isMotion = !!(motionStatus[cameraSrc] || motionStatus[camera.name]);
-  const camCounts = liveObjectCounts[cameraSrc] || liveObjectCounts[camera.name] || {};
+  const activeDet = activeDetections[cameraSrc] ||
+                    (camera.name ? activeDetections[camera.name] : null) ||
+                    (camera.friendly_name ? activeDetections[camera.friendly_name] : null) ||
+                    activeDetections["camera_principal"] ||
+                    (Object.keys(activeDetections).length === 1 ? Object.values(activeDetections)[0] : null);
+
+  const isMotion = !!(motionStatus[cameraSrc] ||
+                      (camera.name ? motionStatus[camera.name] : false) ||
+                      (camera.friendly_name ? motionStatus[camera.friendly_name] : false) ||
+                      motionStatus["camera_principal"] ||
+                      (Object.keys(motionStatus).length === 1 ? Object.values(motionStatus)[0] : false));
+
+  const camCounts = liveObjectCounts[cameraSrc] ||
+                    (camera.name ? liveObjectCounts[camera.name] : null) ||
+                    liveObjectCounts["camera_principal"] || {};
 
   const reloadStream = () => {
     setKey((prev) => prev + 1);
