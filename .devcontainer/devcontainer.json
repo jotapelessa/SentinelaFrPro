@@ -1,0 +1,16 @@
+{
+    "name": "SentinelaFrPro-Codespace",
+    "image": "mcr.microsoft.com/devcontainers/java:1-17-bullseye",
+    "features": {
+        "ghcr.io/devcontainers/features/android:1": {}
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "vscjava.vscode-java-pack",
+                "mathiasfrohlich.Kotlin"
+            ]
+        }
+    },
+    "postCreateCommand": "cd android && gradle wrapper --gradle-version 8.5"
+}
