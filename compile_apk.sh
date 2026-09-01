@@ -21,7 +21,7 @@ PATCH=${PATCH:-000}
 BUILD=${BUILD:-001}
 
 # Format as 12-digit 000.000.000.000
-FORMATTED_VERSION="$(printf "%03d.%03d.%03d.%03d" 10#$MAJOR 10#$MINOR 10#$PATCH 10#$BUILD)"
+FORMATTED_VERSION="$(printf "%03d.%03d.%03d.%03d" "$((10#$MAJOR))" "$((10#$MINOR))" "$((10#$PATCH))" "$((10#$BUILD))")"
 
 echo "============================================================"
 echo "   🛡️  SENTINELA PRO - COMPILADOR ANDROID (CODESPACES)     "
@@ -47,7 +47,7 @@ MINOR=$MINOR
 PATCH=$PATCH
 BUILD=$BUILD
 VEOF
-    FORMATTED_VERSION="$(printf "%03d.%03d.%03d.%03d" 10#$MAJOR 10#$MINOR 10#$PATCH 10#$BUILD)"
+    FORMATTED_VERSION="$(printf "%03d.%03d.%03d.%03d" "$((10#$MAJOR))" "$((10#$MINOR))" "$((10#$PATCH))" "$((10#$BUILD))")"
     echo "✅ Versão incrementada para: $FORMATTED_VERSION"
     echo "Reiniciando menu de compilação..."
     exec "$0"
