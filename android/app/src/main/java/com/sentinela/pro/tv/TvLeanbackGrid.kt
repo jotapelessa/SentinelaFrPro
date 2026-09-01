@@ -17,8 +17,10 @@ import androidx.compose.ui.unit.sp
 import androidx.tv.foundation.lazy.grid.TvGridCells
 import androidx.tv.foundation.lazy.grid.TvLazyVerticalGrid
 import androidx.tv.foundation.lazy.grid.items
+import androidx.tv.material3.ExperimentalTvMaterial3Api
 import androidx.tv.material3.Text
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun TvLeanbackGrid(cameras: List<String>) {
     Box(
@@ -48,6 +50,7 @@ fun TvLeanbackGrid(cameras: List<String>) {
     }
 }
 
+@OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun TvCameraCard(cameraName: String) {
     val interactionSource = remember { MutableInteractionSource() }

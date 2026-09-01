@@ -4,7 +4,6 @@ import android.util.Log
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.websocket.*
-import io.ktor.http.*
 import io.ktor.websocket.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -27,23 +26,14 @@ class SentinelaWebSocket(private val serverUrl: String) {
     suspend fun connectAndListen() {
         withContext(Dispatchers.IO) {
             while (isActive) {
+                try {
                     val isSecure = serverUrl.contains(".") && !serverUrl.matches(Regex("\\d+\\.\\d+\\.\\d+\\.\\d+"))
-                    val port = if (isSecure) 443 else 8080
-                    val scheme = if (isSecure) "wss" else "ws"
-                    Log.d("SentinelaWS", "Connecting to $scheme://$serverUrl:$port/ws...")
-                    
-                    val requestBuilder: HttpRequestBuilder.() -> Unit = {
-                        url {
-                            this.protocol = if (isSecure) URLProtocol.WSS else URLProtocol.WS
-                            this.host = serverUrl
-                            this.port = port
-                            this.path("ws")
-                        }
-                    }
-                    
-                    client.webSocket(request = requestBuilder) {
+                    val wsUrl = if (isSecure) "wss://$serverUrl/ws" else "ws://$serverUrl:8080/ws"
+                    Log.d("SentinelaWS", "Connecting to $wsUrl...")
+
+                    client.webSocket(urlString = wsUrl) {
                         Log.d("SentinelaWS", "Connected successfully!")
-                        
+
                         // Send identification
                         send(Frame.Text(JSONObject().apply {
                             put("type", "auth")
@@ -64,7 +54,7 @@ class SentinelaWebSocket(private val serverUrl: String) {
                 } catch (e: Exception) {
                     Log.e("SentinelaWS", "Disconnected: ${e.message}. Reconnecting in 3s...")
                 }
-                delay(3000) // Exponential backoff in a real app, 3s fixed for now
+                delay(3000)
             }
         }
     }

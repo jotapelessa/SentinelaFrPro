@@ -6,12 +6,14 @@ import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
+import kotlinx.coroutines.*
 import org.webrtc.*
 
 class WebRtcManager(private val context: Context, private val go2rtcUrl: String) {
     private var peerConnectionFactory: PeerConnectionFactory? = null
     private var peerConnection: PeerConnection? = null
     private val client = HttpClient(OkHttp)
+    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
     
     private val eglBase = EglBase.create()
     val eglBaseContext: EglBase.Context get() = eglBase.eglBaseContext
@@ -75,7 +77,7 @@ class WebRtcManager(private val context: Context, private val go2rtcUrl: String)
     }
 
     private fun sendOfferToGo2Rtc(cameraName: String, offerSdp: String) {
-        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+        scope.launch {
             try {
                 val isSecure = go2rtcUrl.contains(".") && !go2rtcUrl.matches(Regex("\\d+\\.\\d+\\.\\d+\\.\\d+"))
                 val url = if (isSecure) {
@@ -103,6 +105,7 @@ class WebRtcManager(private val context: Context, private val go2rtcUrl: String)
     }
 
     fun release() {
+        scope.cancel()
         peerConnection?.close()
         peerConnection = null
     }
