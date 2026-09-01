@@ -869,17 +869,12 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         if "review" in cam_cfg and isinstance(cam_cfg["review"], dict):
             # Clean alerts required_zones
             if "alerts" in cam_cfg["review"] and isinstance(cam_cfg["review"]["alerts"], dict):
-                if "required_zones" in cam_cfg["review"]["alerts"]:
-                    if isinstance(cam_cfg["review"]["alerts"]["required_zones"], list):
-                        cam_cfg["review"]["alerts"]["required_zones"] = [
-                            z for z in cam_cfg["review"]["alerts"]["required_zones"] if z in valid_zone_keys
-                        ]
-                        if not cam_cfg["review"]["alerts"]["required_zones"] and valid_zone_keys:
-                            cam_cfg["review"]["alerts"]["required_zones"] = valid_zone_keys
-                    else:
-                        cam_cfg["review"]["alerts"]["required_zones"] = valid_zone_keys
-                elif valid_zone_keys:
-                    cam_cfg["review"]["alerts"]["required_zones"] = valid_zone_keys
+                if "required_zones" in cam_cfg["review"]["alerts"] and isinstance(cam_cfg["review"]["alerts"]["required_zones"], list):
+                    cam_cfg["review"]["alerts"]["required_zones"] = [
+                        z for z in cam_cfg["review"]["alerts"]["required_zones"] if z in valid_zone_keys
+                    ]
+                else:
+                    cam_cfg["review"]["alerts"]["required_zones"] = []
 
             # Clean detections required_zones
             if "detections" in cam_cfg["review"] and isinstance(cam_cfg["review"]["detections"], dict):
@@ -887,11 +882,13 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                     cam_cfg["review"]["detections"]["required_zones"] = [
                         z for z in cam_cfg["review"]["detections"]["required_zones"] if z in valid_zone_keys
                     ]
-        elif valid_zone_keys:
+                else:
+                    cam_cfg["review"]["detections"]["required_zones"] = []
+        else:
             cam_cfg["review"] = {
                 "alerts": {
                     "labels": ["person", "car", "motorcycle"],
-                    "required_zones": valid_zone_keys
+                    "required_zones": []
                 },
                 "detections": {
                     "labels": ["person", "car", "motorcycle"],

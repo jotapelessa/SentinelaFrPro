@@ -123,8 +123,7 @@ cameras:
           - person
           - car
           - motorcycle
-        required_zones:
-          - zona_monitoramento
+        required_zones: []
       detections:
         labels:
           - person
