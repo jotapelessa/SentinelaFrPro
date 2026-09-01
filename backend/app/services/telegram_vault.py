@@ -526,6 +526,8 @@ class TelegramVaultService:
         self.update_offset = 0
         logger.info("🤖 Iniciando loop de escuta de comandos do Telegram Bot...")
 
+        webhooks_cleared = False
+
         while True:
             try:
                 if not self.is_configured:
@@ -534,6 +536,15 @@ class TelegramVaultService:
                 if not self.is_configured:
                     await asyncio.sleep(5)
                     continue
+
+                if not webhooks_cleared:
+                    try:
+                        async with httpx.AsyncClient(timeout=10.0) as client:
+                            await client.post(f"https://api.telegram.org/bot{self.bot_token}/deleteWebhook", json={"drop_pending_updates": True})
+                            logger.info("🧹 Webhooks do Telegram limpos com sucesso antes do polling.")
+                        webhooks_cleared = True
+                    except Exception as e:
+                        logger.warning(f"Aviso ao tentar limpar webhook do Telegram: {e}")
 
                 url = f"https://api.telegram.org/bot{self.bot_token}/getUpdates"
                 params = {
@@ -566,7 +577,7 @@ class TelegramVaultService:
                         # 409 Conflict: another getUpdates is active or old session lingering
                         logger.warning("⚠️ Telegram getUpdates retornou 409 Conflict (outra instância ativa). Aguardando liberação...")
                         try:
-                            await client.post(f"https://api.telegram.org/bot{self.bot_token}/deleteWebhook", json={"drop_pending_updates": False})
+                            await client.post(f"https://api.telegram.org/bot{self.bot_token}/deleteWebhook", json={"drop_pending_updates": True})
                         except Exception:
                             pass
                         await asyncio.sleep(10)

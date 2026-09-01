@@ -12,10 +12,13 @@ logger = logging.getLogger(__name__)
 def _cast_sync(ip: str, media_url: str, content_type: str = "image/jpeg") -> bool:
     try:
         import pychromecast
-        if hasattr(pychromecast, "get_listed_chromecasts"):
-            chromecasts, browser = pychromecast.get_listed_chromecasts(ips=[ip])
-        else:
-            chromecasts, browser = pychromecast.get_chromecasts(known_hosts=[ip])
+        import warnings
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            if hasattr(pychromecast, "get_listed_chromecasts"):
+                chromecasts, browser = pychromecast.get_listed_chromecasts(ips=[ip])
+            else:
+                chromecasts, browser = pychromecast.get_chromecasts(known_hosts=[ip])
         if chromecasts:
             cast = chromecasts[0]
             cast.wait()
@@ -132,6 +135,12 @@ class PiPGatewayService:
                                 break
                         except Exception as e:
                             logger.debug(f"Failed to post to {url}: {e}")
+
+        return {
+            "status": "success",
+            "dispatched_count": len(results),
+            "results": results
+        }
 
     async def check_device_online(self, ip: str) -> bool:
         """Fast non-blocking port check to verify if Smart TV / device is reachable on the LAN."""
