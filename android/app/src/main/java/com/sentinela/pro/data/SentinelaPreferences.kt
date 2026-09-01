@@ -22,7 +22,7 @@ class SentinelaPreferences(context: Context) {
         get() {
             val existing = prefs.getString("device_id", null)
             if (existing != null) return existing
-            val defaultId = "device_" + android.os.Build.MODEL.toLowerCase().replace("[^a-z0-9]".toRegex(), "_") + "_" + (100..999).random()
+            val defaultId = "device_" + android.os.Build.MODEL.lowercase().replace("[^a-z0-9]".toRegex(), "_") + "_" + (100..999).random()
             prefs.edit().putString("device_id", defaultId).apply()
             return defaultId
         }
