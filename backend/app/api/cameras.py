@@ -655,7 +655,7 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
     if new_fallback_state:
         cfg["go2rtc"]["streams"][cam_name] = [test_pattern_url]
     else:
-        real_url = cam.rtsp_main if (cam and cam.rtsp_main) else "rtsp://192.168.1.6:554/stream"
+        real_url = cam.rtsp_main if (cam and cam.rtsp_main) else "rtsp://192.168.1.6:8554/stream"
         cfg["go2rtc"]["streams"][cam_name] = [real_url.strip()]
 
     cfg = sanitize_frigate_config(cfg)

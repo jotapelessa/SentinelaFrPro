@@ -77,10 +77,9 @@ snapshots:
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:554/stream
-      - rtsp://192.168.1.6:554/live
-      - rtsp://192.168.1.6:554/onvif1
-      - rtsp://192.168.1.6:554/ch0_0.264
+      - rtsp://192.168.1.6:8554/stream
+      - rtsp://192.168.1.6:8554/live
+      - ffmpeg:rtsp://192.168.1.6:8554/stream#video=copy
   webrtc:
     candidates:
       - 192.168.1.252:8555
