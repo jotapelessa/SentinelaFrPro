@@ -108,15 +108,27 @@ cameras:
       bounding_box: true
     zones:
       zona_monitoramento:
-        coordinates: 0,720,1280,720,1280,0,0,0
+        coordinates: 50,670,1230,670,1230,50,50,50
         objects:
           - person
           - car
           - motorcycle
+      zona_entrada:
+        coordinates: 320,720,960,720,960,360,320,360
+        objects:
+          - person
     review:
       alerts:
+        labels:
+          person:
+            min_score: 0.5
         required_zones:
           - zona_monitoramento
+      detections:
+        labels:
+          person:
+            min_score: 0.45
+        required_zones: []
 
 
 

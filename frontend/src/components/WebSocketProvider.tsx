@@ -42,6 +42,8 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const audioEnabledRef = useRef(audioAlertEnabled);
   audioEnabledRef.current = audioAlertEnabled;
 
+  const detectionTimeouts = useRef<Record<string, NodeJS.Timeout>>({});
+
   useEffect(() => {
     // 1. Fetch initial historical events detected by Frigate
     const loadInitialEvents = async () => {
@@ -96,6 +98,12 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 playAlertChime();
               }
             } else if (data.type === "CAMERA_DETECTION_ACTIVE") {
+              // Clear any existing timeout for this camera
+              if (detectionTimeouts.current[data.camera]) {
+                clearTimeout(detectionTimeouts.current[data.camera]);
+                delete detectionTimeouts.current[data.camera];
+              }
+
               if (data.active) {
                 setActiveDetection(data.camera, {
                   camera: data.camera,
@@ -105,6 +113,12 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                   box: data.box,
                   timestamp: Date.now()
                 });
+                
+                // Set auto-clear timeout for 30 seconds
+                detectionTimeouts.current[data.camera] = setTimeout(() => {
+                  setActiveDetection(data.camera, null);
+                  delete detectionTimeouts.current[data.camera];
+                }, 30000);
               } else {
                 setActiveDetection(data.camera, null);
               }

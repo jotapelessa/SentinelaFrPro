@@ -156,17 +156,7 @@ export const useSentinelaStore = create<SentinelaState>((set) => ({
     network: { rx_kbs: 450.2, tx_kbs: 128.4 },
     telegram: { configured: true, paused: false }
   },
-  cameras: [
-    {
-      id: 1,
-      name: "camera_principal",
-      friendly_name: "Câmera Principal (IP 192.168.1.6)",
-      rtsp_main: "rtsp://192.168.1.6:8554/stream",
-      ip_address: "192.168.1.6",
-      enabled: true,
-      zones: ["zona_monitoramento"]
-    }
-  ],
+  cameras: [],
   events: [],
   spotlightCamera: null,
   isScannerOpen: false,

@@ -28,22 +28,25 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   const [isLiveOnline, setIsLiveOnline] = useState(true);
 
   const cameraSrc = camera.name || "camera_principal";
+  // Build a set of all known aliases for this camera to match MQTT payloads
+  const cameraAliases = new Set<string>([
+    cameraSrc,
+    camera.name || "",
+    camera.friendly_name || "",
+    camera.ip_address || "",
+    "camera_principal"
+  ].filter(Boolean));
 
-  const activeDet = activeDetections[cameraSrc] ||
-                    (camera.name ? activeDetections[camera.name] : null) ||
-                    (camera.friendly_name ? activeDetections[camera.friendly_name] : null) ||
-                    activeDetections["camera_principal"] ||
-                    (Object.keys(activeDetections).length === 1 ? Object.values(activeDetections)[0] : null);
+  const activeDet = Array.from(cameraAliases)
+    .map((alias) => activeDetections[alias])
+    .find(Boolean) || null;
 
-  const isMotion = !!(motionStatus[cameraSrc] ||
-                      (camera.name ? motionStatus[camera.name] : false) ||
-                      (camera.friendly_name ? motionStatus[camera.friendly_name] : false) ||
-                      motionStatus["camera_principal"] ||
-                      (Object.keys(motionStatus).length === 1 ? Object.values(motionStatus)[0] : false));
+  const isMotion = Array.from(cameraAliases)
+    .some((alias) => !!motionStatus[alias]);
 
-  const camCounts = liveObjectCounts[cameraSrc] ||
-                    (camera.name ? liveObjectCounts[camera.name] : null) ||
-                    liveObjectCounts["camera_principal"] || {};
+  const camCounts = Array.from(cameraAliases)
+    .map((alias) => liveObjectCounts[alias])
+    .find(Boolean) || {};
 
   const reloadStream = () => {
     setKey((prev) => prev + 1);
