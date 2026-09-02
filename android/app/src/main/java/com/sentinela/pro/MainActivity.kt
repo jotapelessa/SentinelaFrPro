@@ -47,7 +47,7 @@ class MainActivity : ComponentActivity() {
         val deviceType = if (isTv()) "android_tv" else "smartphone"
 
         // Setup SSL bypass for Tailscale / LAN certificates & Global Coil ImageLoader
-        try {
+        val globalImageLoader = try {
             val trustAllCerts = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
                 override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
                 override fun checkServerTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
@@ -66,15 +66,17 @@ class MainActivity : ComponentActivity() {
                 .hostnameVerifier { _, _ -> true }
                 .build()
 
-            val globalImageLoader = coil.ImageLoader.Builder(this)
+            val loader = coil.ImageLoader.Builder(this)
                 .okHttpClient(okHttpClient)
                 .diskCachePolicy(coil.request.CachePolicy.DISABLED)
                 .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
                 .build()
 
-            coil.Coil.setImageLoader(globalImageLoader)
+            coil.Coil.setImageLoader(loader)
+            loader
         } catch (e: Exception) {
             Log.w("MainActivity", "SSL/Coil setup: ${e.message}")
+            coil.ImageLoader.Builder(this).build().also { coil.Coil.setImageLoader(it) }
         }
 
         setContent {

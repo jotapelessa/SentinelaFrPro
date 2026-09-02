@@ -145,6 +145,7 @@ fun TvCameraCard(
             .border(borderWidth, borderColor, RoundedCornerShape(14.dp))
             .focusable(interactionSource = interactionSource)
             .clickable { onClick() }
+    ) {
         SeamlessCameraImage(
             cameraName = camera.name,
             contentDescription = camera.friendlyName,
