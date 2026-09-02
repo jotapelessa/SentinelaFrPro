@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import { useSentinelaStore } from "@/store/useSentinelaStore";
 import {
   Tv, Tablet, Smartphone, Play, Plus, Trash2, Check, AlertCircle,
-  RefreshCw, X, Radio, Camera, ShieldCheck, Wifi, WifiOff, Cast, Info, Sliders
+  RefreshCw, X, Radio, Camera, ShieldCheck, ShieldAlert, Wifi, WifiOff, Cast, Info, Sliders
 } from "lucide-react";
 
 interface PairedDevice {
