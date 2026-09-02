@@ -25,12 +25,20 @@ jobs:
       with:
         gradle-version: '8.5'
         
-    - name: Build with Gradle
+    - name: Build Android TV and Smartphone APKs
       working-directory: android
-      run: gradle assembleRelease
-      
-    - name: Upload APK
+      run: |
+        chmod +x gradlew
+        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon
+
+    - name: Upload Android TV APK
       uses: actions/upload-artifact@v4
       with:
-        name: SentinelaClientPro-Release.apk
-        path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+        name: Sentinela-Android-TV.apk
+        path: android/app/build/outputs/apk/tv/debug/app-tv-debug.apk
+
+    - name: Upload Android Smartphone APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: Sentinela-Android-Smartphone.apk
+        path: android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk
