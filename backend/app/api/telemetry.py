@@ -2,7 +2,7 @@ from fastapi import APIRouter, Body
 from app.services.telemetry import telemetry_service
 from app.services.telegram_vault import telegram_vault_service
 from pydantic import BaseModel
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 router = APIRouter(prefix="/telemetry", tags=["Telemetry"])
 
