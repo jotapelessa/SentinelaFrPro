@@ -1,30 +1,99 @@
 # 🛡️ Sentinela Frigate Pro
 
-> Plataforma de videomonitoramento inteligente, NVR, detecção espacial de movimento (ROI), telemetria de hardware em tempo real e automação de alertas (Telegram Cloud Vault e PiP em Smart TVs via Tailscale).
+<div align="center">
+
+![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.005-06B6D4?style=for-the-badge&logo=android&logoColor=white)
+![Build](https://img.shields.io/badge/Compilador_Codespaces-Gradle_8.5_Java_17-emerald?style=for-the-badge)
+![Aceleração](https://img.shields.io/badge/Intel_VAAPI-Jasper_Lake_N5105-blue?style=for-the-badge)
+![IA](https://img.shields.io/badge/Inferência-OpenVINO_NPU/GPU-violet?style=for-the-badge)
+![Rede](https://img.shields.io/badge/Rede_Segura-Tailscale_VPN-darkblue?style=for-the-badge)
+
+</div>
+
+> **Plataforma de videomonitoramento inteligente, NVR, detecção espacial de movimento (ROI), telemetria de hardware em tempo real, automação de alertas (Telegram Cloud Vault) e aplicativos nativos Android (TV 55" estilo Netflix e Smartphone estilo YouTube).**
 
 Projetada com foco em **eficiência energética extrema e latência sub-50ms** para Mini PCs baseados no processador **Intel Celeron Jasper Lake N5105 (TDP 10W)** com **Ubuntu Server**.
 
 ---
 
-## ⚡ Principais Recursos & SLAs
+## 📱 Aplicativos Nativos Android (`v001.000.000.005`)
+
+O ecossistema conta com compilação interativa automatizada de APKs nativos em Jetpack Compose com Material Design 3 e suporte a D-Pad / Leanback:
+
+### 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix)
+* **Aba 1 • Câmeras**: Spotlight imersivo em 5 FPS com foco D-Pad, carrossel horizontal de câmeras permitidas e alternância instantânea para tela cheia.
+* **Aba 2 • Capturas**: Catálogo estilo streaming com vídeos e snapshots gravados no SSD NVMe, filtrados por permissão de tela.
+* **Aba 3 • Ferramentas**: Testes de velocidade de download (Mbps), medição de ping com o servidor Sentinela e alerta de presença em tempo real.
+* **Aba 4 • Logs & Telemetria**: 5 cards de status (Servidor, Tailscale, Uso de CPU, Temperatura e RAM) + Terminal de logs unificados com tags (`SERVIDOR`, `TAILSCALE`, `FRIGATE`, `SENTINELA`, `TELEGRAM`) e botão **"Copiar Todos os Logs"**.
+* **Aba 5 • Configurações**: 8 tamanhos de tela PiP, 8 posições de tela PiP, 8 tempos de exibição e seletor rápido de host (`Tailscale`, `Local mDNS` ou `IP Direto`).
+
+### 📱 2. Android Smartphone (Layout Vertical Estilo YouTube)
+* **Aba 1 • Câmeras**: Feed vertical contínuo com suporte a gestos de pinça para **Zoom até 5x**.
+* **Aba 2 • Capturas**: Linha do tempo de vídeos gravados com badges de detecção (Pessoa, Veículo, Animal) e reprodução rápida.
+* **Aba 3 • Ferramentas**: Ferramenta de Speedtest e verificação de rota de rede.
+* **Aba 4 • Logs**: Painel de auditoria completo com cópia em um clique para compartilhamento e suporte.
+* **Aba 5 • Configurações**: Seletor de servidor ativo e informações de pareamento da tela.
+
+---
+
+## ⚡ Principais Recursos do Servidor & NVR
 
 * 🚀 **Aceleração por Hardware Intel VAAPI**: Decodificação H.264/H.265 pela iGPU Intel UHD Gen11 (`/dev/dri/renderD128`, driver iHD).
-* 🧠 **Inferência Neural OpenVINO**: Tempo de inferência < 15ms por frame com baixo consumo de CPU (8% a 12% em standby para 4 câmeras).
+* 🧠 **Inferência Neural OpenVINO Calibrada**: Filtros calibrados (Pessoa > 0.72, Veículo > 0.80, Animais > 0.80) com área mínima para eliminar falsos positivos de vegetação e sombras.
 * 🎥 **Streaming WebRTC de Ultra-Baixa Latência**: Transmissão nativa com latência *glass-to-glass* inferior a 50ms através do **go2rtc**.
-* 🚨 **Zonas de Interesse (ROI)**: Alertas qualificados quando Pessoas, Carros, Motos ou Animais entram em perímetros específicos.
-* ✈️ **Telegram Cloud Vault**:
-  * Fotos em alta resolução com marca d'água HUD automática enviadas em menos de 1.2s.
-  * Despacho automático do clipe `.mp4` ao término de cada evento consolidado.
+* ⏰ **Linha do Tempo 24h Vertical (/events)**: Visualização responsiva por períodos do dia (*Madrugada, Manhã, Tarde, Noite*) com cartões horários detalhados e filtros imediatos.
+* ✈️ **Telegram Cloud Vault com Retry Worker**:
+  * Fotos em alta resolução com marca d'água HUD enviadas em menos de 1.2s.
+  * Despacho resiliente de vídeos `.mp4` com worker assíncrono de retentativas inteligentes (2s, 3s, 5s, 8s, 10s, 12s) aguardando a finalização da gravação no disco NVMe.
   * Comandos de chat: `/status`, `/snapshot [camera]`, `/pausar [minutos]`.
-* 📺 **Gateway Picture-in-Picture (PiP) & Tailscale**:
-  * Disparo de janelas flutuantes em Smart TVs Android/Fire TV (PiP-Up / Notifications for Android TV) e tablets.
-  * Comunicação direta via rede privada **Tailscale Mesh** sem necessidade de abrir portas no roteador.
+* 📺 **Gestão de Telas Pareadas (/screens)**:
+  * Registro automático de dispositivos com heartbeat a cada 25s.
+  * Botão **"Limpar Telas Inativas"** para expurgar dispositivos legados/fictícios com um clique.
+  * Auto-migração transparente de colunas no banco de dados SQLite.
 * 🔍 **Scanner Universal de Câmeras**:
   * Sondas ONVIF WS-Discovery (UDP 3702) + Varredura concorrente de portas CFTV (554, 8554, 37777, 34567, 4747, 8080/8081).
-  * Exportação de IPs e URLs RTSP em lote.
 * 💻 **Interface Glassmorphism Obsidian**:
-  * Dark theme imersivo (`#080D14`) construído em Next.js 14, Tailwind CSS e Zustand.
-  * Header persistente com telemetria viva de CPU, Temperatura, RAM, SSD NVMe e Rede.
+  * Identificador visual **`SentinelaPro.001.000.000.005`** no Header, Banner e Rodapé Global.
+
+---
+
+## 🚀 Como Compilar os APKs no GitHub Codespaces
+
+1. Acesse o seu Codespaces e abra o terminal:
+```bash
+cd /workspaces/SentinelaFrPro
+
+# Puxar as últimas atualizações
+git pull origin main
+
+# Iniciar o compilador interativo
+./compile_apk.sh
+```
+
+2. Selecione a opção no menu interativo:
+   - `[1]` Android TV (`sentinela.android.tv.001.000.000.005.apk`)
+   - `[2]` Android Smartphone (`sentinela.android.smartphone.001.000.000.005.apk`)
+   - `[3]` Compilar Ambos
+
+3. Faça o download direto clicando com o botão direito no arquivo gerado no painel de arquivos do Codespaces e selecionando **"Download..."**.
+
+---
+
+## 🖥️ Como Atualizar o Servidor Ubuntu
+
+No terminal do seu **Mini PC / Servidor Ubuntu**:
+
+```bash
+cd /caminho/para/SentinelaFrigate
+
+# 1. Puxar todas as atualizações do repositório
+git pull origin main
+
+# 2. Reiniciar e reconstruir os containers Docker
+docker compose down && docker compose up -d --build
+```
+
+Acesse a interface no seu navegador: `http://sentinela.local` ou `http://IP_DO_MINI_PC`.
 
 ---
 
@@ -40,58 +109,6 @@ Projetada com foco em **eficiência energética extrema e latência sub-50ms** p
 | **FastAPI Backend** | `8080` (TCP) | Orchestrator Core, Telegram Vault, PiP Gateway e Telemetria |
 | **Next.js Web UI** | `3000` (TCP) | Interface de usuário Glassmorphism |
 | **ONVIF Discovery** | `3702` (UDP) | Descoberta automática de câmeras na rede |
-
----
-
-## 🚀 Como Iniciar
-
-### 1. Preparação Rápida no Ubuntu Server (Mini PC)
-```bash
-# Executar script automatizado de preparação (drivers Intel, Docker, UFW)
-chmod +x scripts/setup_ubuntu.sh
-./scripts/setup_ubuntu.sh
-```
-
-### 2. Configurar Variáveis de Ambiente
-```bash
-cp .env.example .env
-# Edite o .env para adicionar seu TELEGRAM_BOT_TOKEN e TELEGRAM_CHAT_ID (se desejar)
-```
-
-### 3. Subir o Ecossistema
-```bash
-# Iniciar todos os serviços via Docker Compose
-docker compose up -d
-
-# Ou simplesmente:
-make start
-```
-
-Acesse a interface no seu navegador: `http://localhost` ou `http://IP_DO_MINI_PC`.
-
----
-
-## 🧪 Testes e Diagnósticos
-
-```bash
-# Executar testes unitários do backend
-make test
-
-# Disparar um evento simulado de intrusão para testar alertas na Web UI e Smart TV
-make simulate
-
-# Consultar telemetria de hardware via terminal
-make status
-```
-
----
-
-## 🔒 Segurança e Acesso Remoto com Tailscale
-
-1. No servidor Ubuntu, inicie o Tailscale: `sudo tailscale up`.
-2. No seu celular, tablet ou Smart TV Android, instale o app Tailscale e conecte-se à mesma conta.
-3. Acesse a interface do Sentinela diretamente pelo IP Tailscale do Mini PC (ex: `http://100.x.y.z`).
-4. Cadastre o IP Tailscale das suas Smart TVs na aba **Telas Pareadas** para que o gateway PiP envie notificações em qualquer lugar do mundo com criptografia de ponta a ponta.
 
 ---
 
