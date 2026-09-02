@@ -20,6 +20,8 @@ class Camera(Base):
     stream_mode = Column(String(32), default="mse") # eco, mse, webrtc
     eco_fps = Column(Integer, default=10) # 5, 10, 15
     record_fps = Column(Integer, default=24) # 24, 30
+    record_retain_days = Column(Integer, default=14)
+    record_audio = Column(Boolean, default=False)
     notify_telegram = Column(Boolean, default=True)
     notify_tv = Column(Boolean, default=True)
     notify_audio = Column(Boolean, default=True)
