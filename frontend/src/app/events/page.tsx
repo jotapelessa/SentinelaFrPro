@@ -471,501 +471,514 @@ export default function EventsPage() {
       {/* ========================================================================= */}
       {/* TAB 1: RECORDINGS & 24H VISUAL TIMELINE */}
       {/* ========================================================================= */}
+      {/* ========================================================================= */}
+      {/* TAB 1: RECORDINGS & 24H VISUAL TIMELINE SIDEBAR */}
+      {/* ========================================================================= */}
       {activeTab === "recordings" && (
-        <div className="space-y-4">
-          {/* 1. INTERACTIVE 24-HOUR VERTICAL TIMELINE CARD */}
-          <div className="p-4 rounded-2xl glass-panel border border-slate-800 space-y-4 shadow-xl">
-            {/* Timeline Controls Header */}
-            <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-800/80">
+        <div className="flex flex-col lg:flex-row gap-5 items-start">
+          {/* MAIN CONTENT (LEFT): TOOLBAR & EVENTS CARDS GRID */}
+          <div className="flex-1 min-w-0 space-y-4 w-full">
+            {/* 1. TOOLBAR & FILTER BAR */}
+            <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl glass-panel border border-slate-800">
+              {/* Quick Labels Badges */}
+              <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+                <button
+                  onClick={() => setFilterLabel("all")}
+                  className={`px-3 py-1 rounded-lg border text-xs font-semibold transition-all ${
+                    filterLabel === "all"
+                      ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40"
+                      : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
+                  }`}
+                >
+                  Todos ({events.length})
+                </button>
+                <button
+                  onClick={() => setFilterLabel("person")}
+                  className={`px-3 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-all ${
+                    filterLabel === "person"
+                      ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
+                      : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
+                  }`}
+                >
+                  <User className="w-3.5 h-3.5" />
+                  Pessoas
+                </button>
+                <button
+                  onClick={() => setFilterLabel("car")}
+                  className={`px-3 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-all ${
+                    filterLabel === "car"
+                      ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                      : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
+                  }`}
+                >
+                  <Car className="w-3.5 h-3.5" />
+                  Veículos
+                </button>
+                <button
+                  onClick={() => setFilterFavorites(!filterFavorites)}
+                  className={`px-3 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-all ${
+                    filterFavorites
+                      ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                      : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
+                  }`}
+                >
+                  <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
+                  Fixados / Retidos
+                </button>
+              </div>
+
+              {/* Selects, Multi-Selection Mode Toggle & Actions */}
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <Activity className="w-4 h-4 text-cyan-400" />
-                  Linha do Tempo Vertical (24 Horas):
-                </span>
+                {/* Multi-Selection Mode Toggle */}
+                <button
+                  onClick={() => {
+                    setIsSelectionMode(!isSelectionMode);
+                    if (isSelectionMode) setSelectedEventIds([]);
+                  }}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+                    isSelectionMode
+                      ? "bg-cyan-500 text-obsidian-950 border-cyan-400 shadow-md shadow-cyan-500/20"
+                      : "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
+                  }`}
+                >
+                  <Layers className="w-3.5 h-3.5" />
+                  <span>{isSelectionMode ? "Concluir Seleção" : "Selecionar Múltiplos"}</span>
+                </button>
 
-                {/* Quick Date Selectors */}
-                <div className="flex items-center gap-1 bg-obsidian-950 p-0.5 rounded-lg border border-slate-800 text-xs">
-                  <button
-                    onClick={setDateToday}
-                    className={`px-2.5 py-1 rounded font-semibold transition-all ${
-                      selectedDate === getLocalDateString(new Date())
-                        ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
-                        : "text-slate-400 hover:text-slate-200"
-                    }`}
-                  >
-                    Hoje
-                  </button>
-                  <button
-                    onClick={setDateYesterday}
-                    className="px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-slate-200 transition-all"
-                  >
-                    Ontem
-                  </button>
-                </div>
+                <button
+                  onClick={handleSyncFrigateEvents}
+                  disabled={syncingFrigate}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all disabled:opacity-50"
+                  title="Sincronizar eventos históricos diretamente do Frigate NVR"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${syncingFrigate ? "animate-spin text-cyan-400" : ""}`} />
+                  <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Frigate"}</span>
+                </button>
 
-                {/* Custom Date Picker */}
-                <div className="flex items-center gap-1.5 bg-obsidian-950 px-2 py-1 rounded-lg border border-slate-800 text-xs text-slate-300">
-                  <CalendarDays className="w-3.5 h-3.5 text-cyan-400" />
-                  <input
-                    type="date"
-                    value={selectedDate}
-                    onChange={(e) => {
-                      setSelectedDate(e.target.value);
-                      setSelectedHourFilter(null);
-                    }}
-                    className="bg-transparent text-xs font-mono text-slate-200 focus:outline-none cursor-pointer"
-                  />
-                </div>
+                <select
+                  value={filterCamera}
+                  onChange={(e) => setFilterCamera(e.target.value)}
+                  className="px-2.5 py-1.5 rounded-lg bg-obsidian-950 border border-slate-800 text-xs font-mono text-slate-300 focus:outline-none focus:border-cyan-500"
+                >
+                  <option value="all">Todas as Câmeras</option>
+                  {cameras.map((c) => (
+                    <option key={c.id} value={c.name}>{c.friendly_name || c.name}</option>
+                  ))}
+                </select>
 
-                {selectedHourFilter !== null && (
-                  <button
-                    onClick={() => setSelectedHourFilter(null)}
-                    className="px-2.5 py-1 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs flex items-center gap-1 font-semibold"
-                  >
-                    <span>Filtro Ativo: {String(selectedHourFilter).padStart(2, "0")}:00h</span>
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
+                <button
+                  onClick={fetchEvents}
+                  disabled={loadingEvents}
+                  className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all disabled:opacity-50"
+                  title="Recarregar eventos do Frigate"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loadingEvents ? "animate-spin text-cyan-400" : ""}`} />
+                </button>
 
-              {/* Timeline Legend */}
-              <div className="flex items-center gap-3 text-[11px] text-slate-400 font-mono">
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-rose-500" /> Pessoa
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-blue-500" /> Veículo
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-amber-500" /> Outro
-                </span>
-                <span className="flex items-center gap-1">
-                  <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /> ⭐ Fixado
-                </span>
+                <button
+                  onClick={exportCSV}
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all"
+                >
+                  <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
+                  <span>Exportar CSV</span>
+                </button>
               </div>
             </div>
 
-            {/* Period Tabs (Madrugada, Manhã, Tarde, Noite, Todos) */}
-            <div className="flex items-center gap-1.5 overflow-x-auto pb-1 text-xs">
-              {[
-                { id: "all", label: "⚡ Todos os Horários (24h)", range: "00:00 - 23:59" },
-                { id: "madrugada", label: "🌙 Madrugada", range: "00:00 - 05:59" },
-                { id: "manha", label: "🌅 Manhã", range: "06:00 - 11:59" },
-                { id: "tarde", label: "☀️ Tarde", range: "12:00 - 17:59" },
-                { id: "noite", label: "🌆 Noite", range: "18:00 - 23:59" },
-              ].map((p) => {
-                const isSelected = selectedPeriod === p.id;
-                return (
+            {/* 2. EVENTS GRID */}
+            {filteredEvents.length === 0 ? (
+              <div className="p-16 text-center glass-panel rounded-2xl border border-dashed border-slate-800 space-y-4">
+                <ShieldAlert className="w-12 h-12 text-slate-600 mx-auto" />
+                <div className="space-y-1">
+                  <h3 className="text-base font-bold text-slate-300">Nenhum evento no período selecionado</h3>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    {selectedHourFilter !== null
+                      ? `Nenhuma gravação registrada às ${String(selectedHourFilter).padStart(2, "0")}:00h.`
+                      : "Assim que pessoas ou veículos cruzarem os perímetros das câmeras, as evidências serão exibidas aqui."}
+                  </p>
+                </div>
+                <div className="flex items-center justify-center gap-3">
+                  {selectedHourFilter !== null && (
+                    <button
+                      onClick={() => setSelectedHourFilter(null)}
+                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700"
+                    >
+                      Ver todas as 24 horas
+                    </button>
+                  )}
                   <button
-                    key={p.id}
-                    onClick={() => setSelectedPeriod(p.id as any)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 border transition-all whitespace-nowrap ${
-                      isSelected
-                        ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm"
-                        : "bg-obsidian-950 text-slate-400 border-slate-800/80 hover:text-slate-200"
-                    }`}
+                    onClick={handleSyncFrigateEvents}
+                    disabled={syncingFrigate}
+                    className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 inline-flex items-center gap-2 transition-all disabled:opacity-50"
                   >
-                    <span>{p.label}</span>
-                    <span className="text-[10px] opacity-60 font-mono">({p.range})</span>
+                    <RefreshCw className={`w-4 h-4 ${syncingFrigate ? "animate-spin" : ""}`} />
+                    <span>Sincronizar Histórico</span>
                   </button>
-                );
-              })}
-            </div>
-
-            {/* Vertical Hours Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-2.5 max-h-[380px] overflow-y-auto pr-1">
-              {timelineHourlyBins
-                .filter((bin) => {
-                  if (selectedPeriod === "madrugada") return bin.hour >= 0 && bin.hour <= 5;
-                  if (selectedPeriod === "manha") return bin.hour >= 6 && bin.hour <= 11;
-                  if (selectedPeriod === "tarde") return bin.hour >= 12 && bin.hour <= 17;
-                  if (selectedPeriod === "noite") return bin.hour >= 18 && bin.hour <= 23;
-                  return true;
-                })
-                .map((bin) => {
-                  const isSelectedHour = selectedHourFilter === bin.hour;
-                  const hasActivity = bin.total > 0;
-                  
-                  const personPct = hasActivity ? (bin.persons / bin.total) * 100 : 0;
-                  const vehiclePct = hasActivity ? (bin.vehicles / bin.total) * 100 : 0;
-                  const otherPct = hasActivity ? (bin.others / bin.total) * 100 : 0;
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+                {filteredEvents.map((ev, idx) => {
+                  const isPerson = (ev.label || "").toLowerCase() === "person";
+                  const isVehicle = ["car", "motorcycle", "bus", "truck"].includes((ev.label || "").toLowerCase());
+                  const isSelected = ev.id ? selectedEventIds.includes(String(ev.id)) : false;
 
                   return (
                     <div
-                      key={bin.hour}
+                      key={ev.id || idx}
                       onClick={() => {
-                        if (bin.total > 0) {
-                          setSelectedHourFilter(selectedHourFilter === bin.hour ? null : bin.hour);
-                          if (bin.events.length > 0 && selectedHourFilter !== bin.hour) {
-                            setSelectedEvent(bin.events[0]);
-                          }
+                        if (isSelectionMode && ev.id) {
+                          toggleSelectEvent(String(ev.id));
                         }
                       }}
-                      className={`p-3 rounded-xl border flex flex-col justify-between transition-all select-none ${
-                        isSelectedHour
-                          ? "bg-cyan-950/40 border-cyan-400 ring-2 ring-cyan-400/50 shadow-md shadow-cyan-950/50 cursor-pointer"
-                          : hasActivity
-                          ? "bg-obsidian-950/90 border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/60 cursor-pointer"
-                          : "bg-obsidian-950/40 border-slate-900/60 opacity-40 cursor-default"
+                      className={`glass-panel rounded-2xl overflow-hidden border transition-all flex flex-col justify-between group relative ${
+                        isSelected
+                          ? "border-cyan-400 ring-2 ring-cyan-400/60 bg-cyan-950/20 shadow-lg shadow-cyan-500/10"
+                          : "border-slate-800 hover:border-cyan-500/40"
                       }`}
                     >
-                      {/* Top Row: Hour Title & Total Count Badge */}
-                      <div className="flex items-center justify-between gap-1 mb-2">
-                        <span className="text-xs font-bold font-mono text-white flex items-center gap-1.5">
-                          <Clock className="w-3.5 h-3.5 text-cyan-400" />
-                          {String(bin.hour).padStart(2, "0")}:00 - {String(bin.hour).padStart(2, "0")}:59
-                        </span>
-
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
-                            isSelectedHour
-                              ? "bg-cyan-500 text-obsidian-950 font-black"
-                              : hasActivity
-                              ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
-                              : "bg-slate-900 text-slate-500"
-                          }`}
+                      {/* Multi-selection Checkbox Overlay */}
+                      {isSelectionMode && (
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            if (ev.id) toggleSelectEvent(String(ev.id));
+                          }}
+                          className="absolute top-2 left-2 z-20 cursor-pointer p-1 rounded-lg bg-black/80 backdrop-blur-sm border border-slate-600 hover:border-cyan-400 transition-all"
                         >
-                          {bin.total} {bin.total === 1 ? "evento" : "eventos"}
-                        </span>
+                          {isSelected ? (
+                            <CheckSquare className="w-5 h-5 text-cyan-400 fill-cyan-400/20" />
+                          ) : (
+                            <Square className="w-5 h-5 text-slate-400" />
+                          )}
+                        </div>
+                      )}
+
+                      {/* Media Thumbnail */}
+                      <div
+                        onClick={(e) => {
+                          if (isSelectionMode && ev.id) {
+                            e.stopPropagation();
+                            toggleSelectEvent(String(ev.id));
+                          } else {
+                            setSelectedEvent(ev);
+                          }
+                        }}
+                        className="h-44 bg-obsidian-950 relative overflow-hidden flex items-center justify-center cursor-pointer"
+                      >
+                        <img
+                          src={ev.snapshot_url || "/placeholder-camera.jpg"}
+                          alt="Snapshot"
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          onError={(e) => {
+                            (e.target as HTMLElement).style.display = "none";
+                          }}
+                        />
+
+                        {/* Play Button Overlay */}
+                        <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center transition-all">
+                          <div className="p-3 rounded-full bg-cyan-500/90 text-obsidian-950 shadow-lg group-hover:scale-110 transition-transform">
+                            <Play className="w-5 h-5 fill-current ml-0.5" />
+                          </div>
+                        </div>
+
+                        {/* Camera Badge (offset if selection mode active) */}
+                        <div className={`absolute top-2 ${isSelectionMode ? "left-10" : "left-2"} px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-slate-700 text-[10px] font-mono text-cyan-300`}>
+                          {ev.camera}
+                        </div>
+
+                        {/* Retain / Pin Badge */}
+                        {ev.retained && (
+                          <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-amber-500/90 text-obsidian-950 text-[10px] font-bold flex items-center gap-1">
+                            <Star className="w-3 h-3 fill-current" />
+                            <span>Fixado NVMe</span>
+                          </div>
+                        )}
+
+                        {/* Zone Badge */}
+                        {ev.zone && (
+                          <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-emerald-950/80 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-mono text-emerald-300">
+                            ROI: {ev.zone}
+                          </div>
+                        )}
                       </div>
 
-                      {/* Middle: Breakdown Tags */}
-                      {hasActivity ? (
-                        <div className="flex items-center gap-2 text-[10px] font-mono text-slate-300 mb-2.5 flex-wrap">
-                          {bin.persons > 0 && (
-                            <span className="flex items-center gap-1 text-rose-400 font-semibold">
-                              <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> {bin.persons} pess.
-                            </span>
-                          )}
-                          {bin.vehicles > 0 && (
-                            <span className="flex items-center gap-1 text-blue-400 font-semibold">
-                              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> {bin.vehicles} veíc.
-                            </span>
-                          )}
-                          {bin.others > 0 && (
-                            <span className="flex items-center gap-1 text-amber-400 font-semibold">
-                              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> {bin.others} out.
-                            </span>
-                          )}
-                          {bin.retained > 0 && (
-                            <span className="flex items-center gap-1 text-yellow-300 font-semibold">
-                              ⭐ {bin.retained}
+                      {/* Content Details & Action Toolbar */}
+                      <div className="p-3.5 space-y-3">
+                        <div className="flex items-center justify-between">
+                          <span
+                            className={`font-black text-xs uppercase px-2 py-0.5 rounded ${
+                              isPerson
+                                ? "bg-rose-500/10 text-rose-400 border border-rose-500/30"
+                                : isVehicle
+                                ? "bg-blue-500/10 text-blue-400 border border-blue-500/30"
+                                : "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                            }`}
+                          >
+                            {ev.label}
+                          </span>
+
+                          {ev.score !== undefined && (
+                            <span className="text-[10px] font-mono text-slate-400">
+                              Precisão: <strong className="text-cyan-400">{ev.score}%</strong>
                             </span>
                           )}
                         </div>
-                      ) : (
-                        <p className="text-[10px] text-slate-500 italic mb-2.5 font-mono">Sem detecções</p>
-                      )}
 
-                      {/* Bottom: Proportional Color Bar */}
-                      <div className="w-full h-2 rounded-full bg-slate-900 overflow-hidden flex">
-                        {bin.persons > 0 && (
-                          <div style={{ width: `${personPct}%` }} className="h-full bg-rose-500" />
-                        )}
-                        {bin.vehicles > 0 && (
-                          <div style={{ width: `${vehiclePct}%` }} className="h-full bg-blue-500" />
-                        )}
-                        {bin.others > 0 && (
-                          <div style={{ width: `${otherPct}%` }} className="h-full bg-amber-500" />
-                        )}
+                        <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-2 border-t border-slate-800">
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3 text-slate-500" />
+                            {formatEventTime(ev.timestamp)}
+                          </span>
+
+                          <div className="flex items-center gap-1.5">
+                            {/* Retain Action */}
+                            <button
+                              onClick={(e) => handleToggleRetain(e, ev)}
+                              className={`p-1.5 rounded-lg border text-xs transition-all ${
+                                ev.retained
+                                  ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
+                                  : "bg-slate-800 hover:bg-slate-700 text-slate-400 border-slate-700"
+                              }`}
+                              title={ev.retained ? "Desafixar do SSD" : "Fixar permanentemente no SSD NVMe"}
+                            >
+                              <Star className="w-3.5 h-3.5 fill-current" />
+                            </button>
+
+                            {/* Delete Single Action */}
+                            <button
+                              onClick={(e) => handleDeleteSingleEvent(e, ev)}
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-700 transition-all"
+                              title="Excluir gravação individual"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+
+                            {/* Open Clip */}
+                            <button
+                              onClick={() => setSelectedEvent(ev)}
+                              className="px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all"
+                            >
+                              Ver Clipe
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   );
                 })}
-            </div>
+              </div>
+            )}
           </div>
 
-          {/* 2. TOOLBAR & FILTER BAR */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-xl glass-panel border border-slate-800">
-            {/* Quick Labels Badges */}
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-              <button
-                onClick={() => setFilterLabel("all")}
-                className={`px-3 py-1 rounded-lg border text-xs font-semibold transition-all ${
-                  filterLabel === "all"
-                    ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40"
-                    : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
-                }`}
-              >
-                Todos ({events.length})
-              </button>
-              <button
-                onClick={() => setFilterLabel("person")}
-                className={`px-3 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-all ${
-                  filterLabel === "person"
-                    ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
-                    : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
-                }`}
-              >
-                <User className="w-3.5 h-3.5" />
-                Pessoas
-              </button>
-              <button
-                onClick={() => setFilterLabel("car")}
-                className={`px-3 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-all ${
-                  filterLabel === "car"
-                    ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
-                    : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
-                }`}
-              >
-                <Car className="w-3.5 h-3.5" />
-                Veículos
-              </button>
-              <button
-                onClick={() => setFilterFavorites(!filterFavorites)}
-                className={`px-3 py-1 rounded-lg border text-xs font-semibold flex items-center gap-1 transition-all ${
-                  filterFavorites
-                    ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                    : "bg-obsidian-950 text-slate-400 border-slate-800 hover:text-slate-200"
-                }`}
-              >
-                <Star className="w-3.5 h-3.5 fill-current text-amber-400" />
-                Fixados / Retidos
-              </button>
-            </div>
+          {/* RIGHT SIDEBAR: 24-HOUR VERTICAL TIMELINE */}
+          <div className="w-full lg:w-80 xl:w-96 shrink-0 lg:sticky lg:top-20 space-y-4">
+            <div className="p-4 rounded-2xl glass-panel border border-slate-800 space-y-4 shadow-xl">
+              {/* Timeline Controls Header */}
+              <div className="space-y-3 pb-3 border-b border-slate-800/80">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                    <Activity className="w-4 h-4 text-cyan-400" />
+                    Linha do Tempo (24 Horas)
+                  </span>
 
-            {/* Selects, Multi-Selection Mode Toggle & Actions */}
-            <div className="flex items-center gap-2 flex-wrap">
-              {/* Multi-Selection Mode Toggle */}
-              <button
-                onClick={() => {
-                  setIsSelectionMode(!isSelectionMode);
-                  if (isSelectionMode) setSelectedEventIds([]);
-                }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
-                  isSelectionMode
-                    ? "bg-cyan-500 text-obsidian-950 border-cyan-400 shadow-md shadow-cyan-500/20"
-                    : "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
-                }`}
-              >
-                <Layers className="w-3.5 h-3.5" />
-                <span>{isSelectionMode ? "Concluir Seleção" : "Selecionar Múltiplos"}</span>
-              </button>
-
-              <button
-                onClick={handleSyncFrigateEvents}
-                disabled={syncingFrigate}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all disabled:opacity-50"
-                title="Sincronizar eventos históricos diretamente do Frigate NVR"
-              >
-                <RefreshCw className={`w-3.5 h-3.5 ${syncingFrigate ? "animate-spin text-cyan-400" : ""}`} />
-                <span>{syncingFrigate ? "Sincronizando..." : "Sincronizar Frigate"}</span>
-              </button>
-
-              <select
-                value={filterCamera}
-                onChange={(e) => setFilterCamera(e.target.value)}
-                className="px-2.5 py-1.5 rounded-lg bg-obsidian-950 border border-slate-800 text-xs font-mono text-slate-300 focus:outline-none focus:border-cyan-500"
-              >
-                <option value="all">Todas as Câmeras</option>
-                {cameras.map((c) => (
-                  <option key={c.id} value={c.name}>{c.friendly_name || c.name}</option>
-                ))}
-              </select>
-
-              <button
-                onClick={fetchEvents}
-                disabled={loadingEvents}
-                className="p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 transition-all disabled:opacity-50"
-                title="Recarregar eventos do Frigate"
-              >
-                <RefreshCw className={`w-4 h-4 ${loadingEvents ? "animate-spin text-cyan-400" : ""}`} />
-              </button>
-
-              <button
-                onClick={exportCSV}
-                className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-all"
-              >
-                <FileSpreadsheet className="w-4 h-4 text-emerald-400" />
-                <span>Exportar CSV</span>
-              </button>
-            </div>
-          </div>
-
-          {/* 3. EVENTS GRID */}
-          {filteredEvents.length === 0 ? (
-            <div className="p-16 text-center glass-panel rounded-2xl border border-dashed border-slate-800 space-y-4">
-              <ShieldAlert className="w-12 h-12 text-slate-600 mx-auto" />
-              <div className="space-y-1">
-                <h3 className="text-base font-bold text-slate-300">Nenhum evento no período selecionado</h3>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  {selectedHourFilter !== null
-                    ? `Nenhuma gravação registrada às ${String(selectedHourFilter).padStart(2, "0")}:00h.`
-                    : "Assim que pessoas ou veículos cruzarem os perímetros das câmeras, as evidências serão exibidas aqui."}
-                </p>
-              </div>
-              <div className="flex items-center justify-center gap-3">
-                {selectedHourFilter !== null && (
-                  <button
-                    onClick={() => setSelectedHourFilter(null)}
-                    className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold border border-slate-700"
-                  >
-                    Ver todas as 24 horas
-                  </button>
-                )}
-                <button
-                  onClick={handleSyncFrigateEvents}
-                  disabled={syncingFrigate}
-                  className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 inline-flex items-center gap-2 transition-all disabled:opacity-50"
-                >
-                  <RefreshCw className={`w-4 h-4 ${syncingFrigate ? "animate-spin" : ""}`} />
-                  <span>Sincronizar Histórico</span>
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {filteredEvents.map((ev, idx) => {
-                const isPerson = (ev.label || "").toLowerCase() === "person";
-                const isVehicle = ["car", "motorcycle", "bus", "truck"].includes((ev.label || "").toLowerCase());
-                const isSelected = ev.id ? selectedEventIds.includes(String(ev.id)) : false;
-
-                return (
-                  <div
-                    key={ev.id || idx}
-                    onClick={() => {
-                      if (isSelectionMode && ev.id) {
-                        toggleSelectEvent(String(ev.id));
-                      }
-                    }}
-                    className={`glass-panel rounded-2xl overflow-hidden border transition-all flex flex-col justify-between group relative ${
-                      isSelected
-                        ? "border-cyan-400 ring-2 ring-cyan-400/60 bg-cyan-950/20 shadow-lg shadow-cyan-500/10"
-                        : "border-slate-800 hover:border-cyan-500/40"
-                    }`}
-                  >
-                    {/* Multi-selection Checkbox Overlay */}
-                    {isSelectionMode && (
-                      <div
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          if (ev.id) toggleSelectEvent(String(ev.id));
-                        }}
-                        className="absolute top-2 left-2 z-20 cursor-pointer p-1 rounded-lg bg-black/80 backdrop-blur-sm border border-slate-600 hover:border-cyan-400 transition-all"
-                      >
-                        {isSelected ? (
-                          <CheckSquare className="w-5 h-5 text-cyan-400 fill-cyan-400/20" />
-                        ) : (
-                          <Square className="w-5 h-5 text-slate-400" />
-                        )}
-                      </div>
-                    )}
-
-                    {/* Media Thumbnail */}
-                    <div
-                      onClick={(e) => {
-                        if (isSelectionMode && ev.id) {
-                          e.stopPropagation();
-                          toggleSelectEvent(String(ev.id));
-                        } else {
-                          setSelectedEvent(ev);
-                        }
-                      }}
-                      className="h-44 bg-obsidian-950 relative overflow-hidden flex items-center justify-center cursor-pointer"
+                  {selectedHourFilter !== null && (
+                    <button
+                      onClick={() => setSelectedHourFilter(null)}
+                      className="px-2 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-[11px] flex items-center gap-1 font-semibold"
                     >
-                      <img
-                        src={ev.snapshot_url || "/placeholder-camera.jpg"}
-                        alt="Snapshot"
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = "none";
-                        }}
-                      />
+                      <span>{String(selectedHourFilter).padStart(2, "0")}:00h</span>
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
 
-                      {/* Play Button Overlay */}
-                      <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 flex items-center justify-center transition-all">
-                        <div className="p-3 rounded-full bg-cyan-500/90 text-obsidian-950 shadow-lg group-hover:scale-110 transition-transform">
-                          <Play className="w-5 h-5 fill-current ml-0.5" />
-                        </div>
-                      </div>
-
-                      {/* Camera Badge (offset if selection mode active) */}
-                      <div className={`absolute top-2 ${isSelectionMode ? "left-10" : "left-2"} px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-slate-700 text-[10px] font-mono text-cyan-300`}>
-                        {ev.camera}
-                      </div>
-
-                      {/* Retain / Pin Badge */}
-                      {ev.retained && (
-                        <div className="absolute top-2 right-2 px-2 py-0.5 rounded bg-amber-500/90 text-obsidian-950 text-[10px] font-bold flex items-center gap-1">
-                          <Star className="w-3 h-3 fill-current" />
-                          <span>Fixado NVMe</span>
-                        </div>
-                      )}
-
-                      {/* Zone Badge */}
-                      {ev.zone && (
-                        <div className="absolute bottom-2 left-2 px-2 py-0.5 rounded bg-emerald-950/80 backdrop-blur-sm border border-emerald-500/40 text-[9px] font-mono text-emerald-300">
-                          ROI: {ev.zone}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Content Details & Action Toolbar */}
-                    <div className="p-3.5 space-y-3">
-                      <div className="flex items-center justify-between">
-                        <span
-                          className={`font-black text-xs uppercase px-2 py-0.5 rounded ${
-                            isPerson
-                              ? "bg-rose-500/10 text-rose-400 border border-rose-500/30"
-                              : isVehicle
-                              ? "bg-blue-500/10 text-blue-400 border border-blue-500/30"
-                              : "bg-amber-500/10 text-amber-400 border border-amber-500/30"
-                          }`}
-                        >
-                          {ev.label}
-                        </span>
-
-                        {ev.score !== undefined && (
-                          <span className="text-[10px] font-mono text-slate-400">
-                            Precisão: <strong className="text-cyan-400">{ev.score}%</strong>
-                          </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono pt-2 border-t border-slate-800">
-                        <span className="flex items-center gap-1">
-                          <Clock className="w-3 h-3 text-slate-500" />
-                          {formatEventTime(ev.timestamp)}
-                        </span>
-
-                        <div className="flex items-center gap-1.5">
-                          {/* Retain Action */}
-                          <button
-                            onClick={(e) => handleToggleRetain(e, ev)}
-                            className={`p-1.5 rounded-lg border text-xs transition-all ${
-                              ev.retained
-                                ? "bg-amber-500/20 text-amber-300 border-amber-500/40"
-                                : "bg-slate-800 hover:bg-slate-700 text-slate-400 border-slate-700"
-                            }`}
-                            title={ev.retained ? "Desafixar do SSD" : "Fixar permanentemente no SSD NVMe"}
-                          >
-                            <Star className="w-3.5 h-3.5 fill-current" />
-                          </button>
-
-                          {/* Delete Single Action */}
-                          <button
-                            onClick={(e) => handleDeleteSingleEvent(e, ev)}
-                            className="p-1.5 rounded-lg bg-slate-800 hover:bg-rose-950/40 text-slate-400 hover:text-rose-400 border border-slate-700 transition-all"
-                            title="Excluir gravação individual"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-
-                          {/* Open Clip */}
-                          <button
-                            onClick={() => setSelectedEvent(ev)}
-                            className="px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all"
-                          >
-                            Ver Clipe
-                          </button>
-                        </div>
-                      </div>
-                    </div>
+                {/* Quick Date Selectors & Date Picker */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <div className="flex items-center gap-1 bg-obsidian-950 p-0.5 rounded-lg border border-slate-800 text-xs">
+                    <button
+                      onClick={setDateToday}
+                      className={`px-2.5 py-1 rounded font-semibold transition-all ${
+                        selectedDate === getLocalDateString(new Date())
+                          ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      Hoje
+                    </button>
+                    <button
+                      onClick={setDateYesterday}
+                      className="px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-slate-200 transition-all"
+                    >
+                      Ontem
+                    </button>
                   </div>
-                );
-              })}
+
+                  <div className="flex-1 min-w-[130px] flex items-center gap-1.5 bg-obsidian-950 px-2 py-1 rounded-lg border border-slate-800 text-xs text-slate-300">
+                    <CalendarDays className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
+                    <input
+                      type="date"
+                      value={selectedDate}
+                      onChange={(e) => {
+                        setSelectedDate(e.target.value);
+                        setSelectedHourFilter(null);
+                      }}
+                      className="w-full bg-transparent text-xs font-mono text-slate-200 focus:outline-none cursor-pointer"
+                    />
+                  </div>
+                </div>
+
+                {/* Timeline Legend */}
+                <div className="flex items-center justify-between text-[10px] text-slate-400 font-mono pt-1">
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-rose-500" /> Pessoa
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-blue-500" /> Veículo
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-amber-500" /> Outro
+                  </span>
+                  <span className="flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-yellow-400" /> ⭐ Fixado
+                  </span>
+                </div>
+              </div>
+
+              {/* Period Tabs (Todos, Madrugada, Manhã, Tarde, Noite) */}
+              <div className="grid grid-cols-2 gap-1.5 text-xs">
+                {[
+                  { id: "all", label: "⚡ 24 Horas", range: "00-23h" },
+                  { id: "madrugada", label: "🌙 Madrugada", range: "00-05h" },
+                  { id: "manha", label: "🌅 Manhã", range: "06-11h" },
+                  { id: "tarde", label: "☀️ Tarde", range: "12-17h" },
+                  { id: "noite", label: "🌆 Noite", range: "18-23h" },
+                ].map((p, idx) => {
+                  const isSelected = selectedPeriod === p.id;
+                  return (
+                    <button
+                      key={p.id}
+                      onClick={() => setSelectedPeriod(p.id as any)}
+                      className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-between border transition-all ${
+                        idx === 0 ? "col-span-2" : ""
+                      } ${
+                        isSelected
+                          ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/40 shadow-sm"
+                          : "bg-obsidian-950 text-slate-400 border-slate-800/80 hover:text-slate-200"
+                      }`}
+                    >
+                      <span>{p.label}</span>
+                      <span className="text-[10px] opacity-60 font-mono">{p.range}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Vertical Scrollable Hours Column */}
+              <div className="flex flex-col gap-2 max-h-[calc(100vh-280px)] overflow-y-auto pr-1">
+                {timelineHourlyBins
+                  .filter((bin) => {
+                    if (selectedPeriod === "madrugada") return bin.hour >= 0 && bin.hour <= 5;
+                    if (selectedPeriod === "manha") return bin.hour >= 6 && bin.hour <= 11;
+                    if (selectedPeriod === "tarde") return bin.hour >= 12 && bin.hour <= 17;
+                    if (selectedPeriod === "noite") return bin.hour >= 18 && bin.hour <= 23;
+                    return true;
+                  })
+                  .map((bin) => {
+                    const isSelectedHour = selectedHourFilter === bin.hour;
+                    const hasActivity = bin.total > 0;
+                    
+                    const personPct = hasActivity ? (bin.persons / bin.total) * 100 : 0;
+                    const vehiclePct = hasActivity ? (bin.vehicles / bin.total) * 100 : 0;
+                    const otherPct = hasActivity ? (bin.others / bin.total) * 100 : 0;
+
+                    return (
+                      <div
+                        key={bin.hour}
+                        onClick={() => {
+                          if (bin.total > 0) {
+                            setSelectedHourFilter(selectedHourFilter === bin.hour ? null : bin.hour);
+                            if (bin.events.length > 0 && selectedHourFilter !== bin.hour) {
+                              setSelectedEvent(bin.events[0]);
+                            }
+                          }
+                        }}
+                        className={`p-2.5 rounded-xl border flex flex-col justify-between transition-all select-none ${
+                          isSelectedHour
+                            ? "bg-cyan-950/40 border-cyan-400 ring-2 ring-cyan-400/50 shadow-md shadow-cyan-950/50 cursor-pointer"
+                            : hasActivity
+                            ? "bg-obsidian-950/90 border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/60 cursor-pointer"
+                            : "bg-obsidian-950/40 border-slate-900/60 opacity-40 cursor-default"
+                        }`}
+                      >
+                        {/* Top Row: Hour & Total Count */}
+                        <div className="flex items-center justify-between gap-1 mb-1.5">
+                          <span className="text-xs font-bold font-mono text-white flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-cyan-400" />
+                            {String(bin.hour).padStart(2, "0")}:00 - {String(bin.hour).padStart(2, "0")}:59
+                          </span>
+
+                          <span
+                            className={`text-[10px] font-bold px-2 py-0.5 rounded-full font-mono ${
+                              isSelectedHour
+                                ? "bg-cyan-500 text-obsidian-950 font-black"
+                                : hasActivity
+                                ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                                : "bg-slate-900 text-slate-500"
+                            }`}
+                          >
+                            {bin.total} {bin.total === 1 ? "ev." : "evs."}
+                          </span>
+                        </div>
+
+                        {/* Middle: Breakdown Tags */}
+                        {hasActivity ? (
+                          <div className="flex items-center gap-2 text-[10px] font-mono text-slate-300 mb-2 flex-wrap">
+                            {bin.persons > 0 && (
+                              <span className="flex items-center gap-1 text-rose-400 font-semibold">
+                                <span className="w-1.5 h-1.5 rounded-full bg-rose-500" /> {bin.persons} pess.
+                              </span>
+                            )}
+                            {bin.vehicles > 0 && (
+                              <span className="flex items-center gap-1 text-blue-400 font-semibold">
+                                <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> {bin.vehicles} veíc.
+                              </span>
+                            )}
+                            {bin.others > 0 && (
+                              <span className="flex items-center gap-1 text-amber-400 font-semibold">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> {bin.others} out.
+                              </span>
+                            )}
+                            {bin.retained > 0 && (
+                              <span className="flex items-center gap-1 text-yellow-300 font-semibold">
+                                ⭐ {bin.retained}
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="text-[10px] text-slate-500 italic mb-2 font-mono">Sem detecções</p>
+                        )}
+
+                        {/* Bottom: Proportional Color Bar */}
+                        <div className="w-full h-1.5 rounded-full bg-slate-900 overflow-hidden flex">
+                          {bin.persons > 0 && (
+                            <div style={{ width: `${personPct}%` }} className="h-full bg-rose-500" />
+                          )}
+                          {bin.vehicles > 0 && (
+                            <div style={{ width: `${vehiclePct}%` }} className="h-full bg-blue-500" />
+                          )}
+                          {bin.others > 0 && (
+                            <div style={{ width: `${otherPct}%` }} className="h-full bg-amber-500" />
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
             </div>
-          )}
+          </div>
+        </div>
+      )}
 
           {/* 4. FLOATING ACTION BAR (BOTTOM SHEET FOR BATCH ACTIONS) */}
           {(isSelectionMode || selectedEventIds.length > 0) && (
