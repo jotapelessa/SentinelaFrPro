@@ -3,7 +3,7 @@ import httpx
 import logging
 import datetime
 from PIL import Image, ImageDraw, ImageFont
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, List
 from app.core.config import settings
 from app.services.telemetry import telemetry_service
 
