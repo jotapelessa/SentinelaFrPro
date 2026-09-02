@@ -19,25 +19,11 @@ ffmpeg:
   hwaccel_args: preset-vaapi
 
 
-# Model Configuration for OpenVINO (Pre-baked in Frigate)
-model:
-  width: 300
-  height: 300
-  input_tensor: nhwc
-  input_pixel_format: bgr
-  path: /openvino-model/ssdlite_mobilenet_v2.xml
-
 # Detectors: Intel OpenVINO Hardware Acceleration (Auto GPU/CPU fallback)
 detectors:
   ov:
     type: openvino
     device: AUTO
-    model:
-      width: 300
-      height: 300
-      input_tensor: nhwc
-      input_pixel_format: bgr
-      path: /openvino-model/ssdlite_mobilenet_v2.xml
 
 
 # Motion Detection Fine-Tuning (High Sensitivity, Natural Lighting)
