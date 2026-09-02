@@ -55,6 +55,12 @@ class PairedDevice(Base):
     tailscale_ip = Column(String(64), nullable=True)
     permission_status = Column(String(16), default="allowed") # allowed, blocked, paused
     allowed_cameras = Column(Text, nullable=True) # JSON list e.g. ["camera_principal"] or null for all
+    allowed_events = Column(Text, nullable=True) # JSON list e.g. ["person", "car", "motorcycle", "dog"] or null for all
+    allow_recordings = Column(Boolean, default=True) # Permission to access SSD/NVMe recordings
+    allow_live_stream = Column(Boolean, default=True) # Permission for live streaming
+    allow_pip_alerts = Column(Boolean, default=True) # Permission to receive floating PiP alarm windows
+    pip_default_size = Column(String(32), default="medium") # mini, medium, large, split
+    pip_duration_seconds = Column(Integer, default=10) # 5, 10, 15, 30
     last_seen = Column(DateTime, default=datetime.datetime.utcnow)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

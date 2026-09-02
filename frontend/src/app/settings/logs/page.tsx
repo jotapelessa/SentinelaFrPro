@@ -430,11 +430,13 @@ export default function LogsSettingsPage() {
           <div className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-2xl bg-slate-950/80 border border-slate-800">
             <div className="flex flex-wrap items-center gap-1">
               {[
-                { id: "backend", label: "Sentinela API / Vault" },
+                { id: "backend", label: "Backend API (FastAPI)" },
                 { id: "frigate", label: "Frigate NVR & IA" },
+                { id: "frontend", label: "Dashboard (Next.js)" },
+                { id: "nginx", label: "Nginx Gateway :8088" },
+                { id: "mosquitto", label: "Mosquitto MQTT :1883" },
                 { id: "go2rtc", label: "go2rtc WebRTC" },
-                { id: "mosquitto", label: "Mosquitto MQTT" },
-                { id: "nginx", label: "Nginx Gateway" },
+                { id: "tailscale", label: "Tailscale Funnel (HTTPS)" },
               ].map((svc) => (
                 <button
                   key={svc.id}

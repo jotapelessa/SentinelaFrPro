@@ -51,3 +51,10 @@ frigate/storage/
 # OS
 .DS_Store
 Thumbs.db
+
+# Android
+.gradle/
+android/.gradle/
+android/app/build/
+*.apk
+

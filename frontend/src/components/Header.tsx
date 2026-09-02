@@ -57,7 +57,7 @@ export const Header: React.FC = () => {
                   PRO
                 </span>
                 <span className="text-[9px] font-mono font-bold text-cyan-300 bg-cyan-950/80 px-1.5 py-0.5 rounded border border-cyan-500/40 shadow-sm">
-                  001.000.000.005
+                  001.000.000.010
                 </span>
               </div>
               <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1 mt-0.5 leading-none">

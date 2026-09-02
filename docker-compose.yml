@@ -58,6 +58,7 @@ services:
       - ./backend/data:/app/data
       - ./frigate/storage:/media/frigate:ro
       - ./frigate/config:/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
       - TZ=America/Sao_Paulo
       - MQTT_BROKER=mosquitto

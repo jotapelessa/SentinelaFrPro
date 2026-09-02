@@ -1,13 +1,33 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { CameraMosaic } from "@/components/CameraMosaic";
-import { useSentinelaStore } from "@/store/useSentinelaStore";
-import { ShieldCheck, Bell, Clock, ArrowRight, ShieldAlert, Cpu } from "lucide-react";
+import { useSentinelaStore, SecurityEvent } from "@/store/useSentinelaStore";
+import { ShieldCheck, Bell, Clock, ArrowRight, ShieldAlert, Film, X, Play, Eye } from "lucide-react";
 import Link from "next/link";
 
 export default function DashboardPage() {
-  const { events, telemetry } = useSentinelaStore();
+  const { events, setEvents } = useSentinelaStore();
+  const [activeEventVideo, setActiveEventVideo] = useState<SecurityEvent | null>(null);
+
+  // Auto-fetch recent historical events on mount
+  useEffect(() => {
+    const fetchRecentEvents = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+        const res = await fetch(`${apiUrl}/events?limit=15`);
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length > 0) {
+            setEvents(data);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching historical events on Dashboard:", err);
+      }
+    };
+    fetchRecentEvents();
+  }, [setEvents]);
 
   return (
     <div className="space-y-6">
@@ -29,7 +49,7 @@ export default function DashboardPage() {
 
         <div className="flex items-center gap-2 font-mono text-xs text-slate-300 flex-wrap">
           <span className="px-2.5 py-1 rounded-lg bg-cyan-950/90 border border-cyan-500/40 text-cyan-300 font-bold font-mono text-xs flex items-center gap-1.5 shadow-sm">
-            🛡️ SentinelaPro.001.000.000.005
+            🛡️ SentinelaPro.001.000.000.010
           </span>
           <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -41,12 +61,12 @@ export default function DashboardPage() {
       {/* Main Grid: Live Mosaic (70%) + Quick Events Stream (30%) */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Live Mosaic */}
+        {/* Live Mosaic & SSD 24h Timeline */}
         <div className="lg:col-span-2 space-y-4">
           <CameraMosaic />
         </div>
 
-        {/* Real-time Events Feed */}
+        {/* Real-time ROI Events Feed */}
         <div className="space-y-4">
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
@@ -57,55 +77,131 @@ export default function DashboardPage() {
             </div>
             <Link
               href="/events"
-              className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-semibold"
+              className="text-xs text-cyan-400 hover:text-cyan-300 flex items-center gap-1 font-semibold transition-colors"
             >
               <span>Ver todos</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="glass-panel rounded-2xl p-3 border border-slate-800 space-y-2.5 max-h-[520px] overflow-y-auto">
+          <div className="glass-panel rounded-2xl p-3 border border-slate-800 space-y-2.5 max-h-[580px] overflow-y-auto">
             {events.length === 0 ? (
               <div className="py-12 text-center text-slate-500 space-y-2">
                 <Clock className="w-8 h-8 mx-auto opacity-50" />
-                <p className="text-xs">Nenhum evento registrado nesta sessão.</p>
-                <p className="text-[11px] text-slate-600">Eventos em zonas de interesse aparecerão aqui instantaneamente.</p>
+                <p className="text-xs">Nenhum evento registrado no momento.</p>
+                <p className="text-[11px] text-slate-600">Detecções de pessoas, veículos ou animais nas zonas ROI aparecerão aqui.</p>
               </div>
             ) : (
-              events.slice(0, 8).map((ev, idx) => (
-                <div
-                  key={idx}
-                  className="p-3 rounded-xl bg-obsidian-950/80 border border-slate-800 hover:border-cyan-500/30 transition-all flex items-center justify-between gap-3"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                      <ShieldAlert className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-bold text-xs text-white uppercase">{ev.label}</span>
-                        {ev.score && (
-                          <span className="text-[9px] font-mono px-1 rounded bg-slate-800 text-slate-300">
-                            {ev.score}%
-                          </span>
-                        )}
+              events.slice(0, 10).map((ev, idx) => {
+                const isPerson = ev.label.toLowerCase() === "person";
+                const snapshotUrl = ev.snapshot_url || `/frigate/api/events/${ev.id}/snapshot.jpg`;
+
+                return (
+                  <div
+                    key={ev.id || idx}
+                    onClick={() => setActiveEventVideo(ev)}
+                    className="p-3 rounded-2xl bg-obsidian-950/90 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/60 transition-all cursor-pointer flex items-center gap-3 group shadow-sm"
+                  >
+                    {/* Thumbnail Snapshot */}
+                    <div className="relative w-16 h-14 rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shrink-0">
+                      <img
+                        src={snapshotUrl}
+                        alt={ev.label}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        onError={(e) => {
+                          // Fallback icon if image fails
+                          (e.target as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors flex items-center justify-center">
+                        <Play className="w-4 h-4 text-white opacity-80 group-hover:scale-110 transition-transform" />
                       </div>
-                      <p className="text-[11px] text-slate-400 font-mono">
-                        {ev.camera} {ev.zone ? `• ${ev.zone}` : ""}
+                    </div>
+
+                    {/* Event Details */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-1 mb-1">
+                        <div className="flex items-center gap-1.5 truncate">
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
+                            isPerson 
+                              ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" 
+                              : "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
+                          }`}>
+                            {ev.label}
+                          </span>
+                          {ev.score && (
+                            <span className="text-[10px] font-mono font-bold text-slate-400">
+                              {ev.score}%
+                            </span>
+                          )}
+                        </div>
+
+                        <span className="text-[10px] font-mono text-slate-500 shrink-0">
+                          {new Date(ev.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        </span>
+                      </div>
+
+                      <p className="text-[11px] text-slate-300 font-mono truncate">
+                        {ev.camera} {ev.zone ? `• Zona: ${ev.zone}` : ""}
                       </p>
                     </div>
                   </div>
-
-                  <span className="text-[10px] font-mono text-slate-500">
-                    {new Date(ev.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-                  </span>
-                </div>
-              ))
+                );
+              })
             )}
           </div>
         </div>
 
       </div>
+
+      {/* Video Modal Player for Clicked Event */}
+      {activeEventVideo && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+          <div className="w-full max-w-3xl bg-slate-900 border border-cyan-500/40 rounded-3xl p-5 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+              <div className="flex items-center gap-2">
+                <Film className="w-5 h-5 text-cyan-400" />
+                <div>
+                  <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+                    Gravação do Evento: {activeEventVideo.label} ({activeEventVideo.camera})
+                  </h3>
+                  <p className="text-[11px] text-slate-400 font-mono">
+                    {new Date(activeEventVideo.timestamp).toLocaleString()} • Precisão: {activeEventVideo.score}%
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setActiveEventVideo(null)}
+                className="p-1.5 rounded-xl bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="aspect-video w-full bg-black rounded-2xl overflow-hidden border border-slate-800">
+              <video
+                src={activeEventVideo.clip_url || `/frigate/api/events/${activeEventVideo.id}/clip.mp4`}
+                controls
+                autoPlay
+                className="w-full h-full object-contain"
+              >
+                Seu navegador não suporta reprodução direta deste formato de vídeo MP4.
+              </video>
+            </div>
+
+            <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
+              <span>Zona ROI: {activeEventVideo.zone || "Geral"}</span>
+              <a
+                href={activeEventVideo.clip_url || `/frigate/api/events/${activeEventVideo.id}/clip.mp4`}
+                download
+                className="text-cyan-400 hover:underline font-bold"
+              >
+                Download do Vídeo MP4
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -100,16 +100,53 @@ async def get_system_diagnostics():
         }
     }
 
+async def fetch_docker_container_logs(container_name: str, lines: int = 150) -> Optional[List[str]]:
+    import os
+    if not os.path.exists("/var/run/docker.sock"):
+        return None
+    try:
+        import httpx
+        transport = httpx.AsyncHTTPTransport(uds="/var/run/docker.sock")
+        async with httpx.AsyncClient(transport=transport, timeout=3.0) as client:
+            url = f"http://localhost/v1.41/containers/{container_name}/logs?stdout=1&stderr=1&tail={lines}&timestamps=1"
+            res = await client.get(url)
+            if res.status_code == 200:
+                raw_bytes = res.content
+                clean_lines = []
+                for line in raw_bytes.decode('utf-8', errors='ignore').splitlines():
+                    if len(line) > 8 and ord(line[0]) in (1, 2) and line[1:4] == '\x00\x00\x00':
+                        clean_lines.append(line[8:])
+                    else:
+                        clean_lines.append(line)
+                return clean_lines[-lines:] if clean_lines else ["(Container sem logs recentes no momento)"]
+    except Exception:
+        pass
+    return None
+
 @router.get("/logs")
 async def get_service_logs(service: str = "backend", lines: int = 150):
-    """Fetches real-time log lines for the requested service."""
+    """Fetches real-time log lines for the requested service or container."""
     import httpx
     from app.core.config import settings
     from app.core.logging_handler import get_backend_logs
 
+    # Map friendly service names to docker container names
+    container_map = {
+        "backend": "sentinela_backend",
+        "frigate": "sentinela_frigate",
+        "frontend": "sentinela_frontend",
+        "nginx": "sentinela_nginx",
+        "mosquitto": "sentinela_mosquitto"
+    }
+
+    if service in container_map:
+        docker_logs = await fetch_docker_container_logs(container_map[service], lines)
+        if docker_logs is not None and len(docker_logs) > 0:
+            return {"service": service, "logs": docker_logs, "source": "docker_engine"}
+
     if service == "backend":
         raw_logs = get_backend_logs(lines)
-        return {"service": "backend", "logs": raw_logs}
+        return {"service": "backend", "logs": raw_logs, "source": "memory_buffer"}
 
     if service == "frigate":
         try:
@@ -117,7 +154,7 @@ async def get_service_logs(service: str = "backend", lines: int = 150):
                 res = await client.get(f"{settings.FRIGATE_API_URL}/api/logs/frigate")
                 if res.status_code == 200:
                     raw_lines = res.text.splitlines()[-lines:]
-                    return {"service": "frigate", "logs": raw_lines}
+                    return {"service": "frigate", "logs": raw_lines, "source": "frigate_api"}
         except Exception as e:
             return {"service": "frigate", "logs": [f"⚠️ Erro ao consultar logs do Frigate API: {e}"]}
 
@@ -127,21 +164,48 @@ async def get_service_logs(service: str = "backend", lines: int = 150):
                 res = await client.get(f"{settings.FRIGATE_API_URL}/api/logs/go2rtc")
                 if res.status_code == 200:
                     raw_lines = res.text.splitlines()[-lines:]
-                    return {"service": "go2rtc", "logs": raw_lines}
-                # Fallback to direct go2rtc port
+                    return {"service": "go2rtc", "logs": raw_lines, "source": "go2rtc_api"}
                 res2 = await client.get(f"{settings.GO2RTC_API_URL}/api/logs")
                 if res2.status_code == 200:
                     raw_lines = res2.text.splitlines()[-lines:]
-                    return {"service": "go2rtc", "logs": raw_lines}
+                    return {"service": "go2rtc", "logs": raw_lines, "source": "go2rtc_api"}
         except Exception as e:
             return {"service": "go2rtc", "logs": [f"⚠️ Erro ao consultar logs do go2rtc: {e}"]}
+
+    if service == "tailscale":
+        import asyncio
+        try:
+            proc = await asyncio.create_subprocess_shell(
+                "tailscale status",
+                stdout=asyncio.subprocess.PIPE,
+                stderr=asyncio.subprocess.PIPE
+            )
+            stdout, _ = await proc.communicate()
+            status_lines = stdout.decode('utf-8', errors='ignore').splitlines()
+            return {
+                "service": "tailscale",
+                "logs": [
+                    "🔒 [TAILSCALE FUNNEL] Status da Conexão:",
+                    *status_lines,
+                    "🌐 Domínio Público HTTPS: https://sentinela.tail47a54f.ts.net (Porta 8088)"
+                ]
+            }
+        except Exception as e:
+            return {
+                "service": "tailscale",
+                "logs": [
+                    f"🔒 [TAILSCALE] Domínio Funnel: https://sentinela.tail47a54f.ts.net",
+                    f"🔒 [TAILSCALE] IP do Servidor Ubuntu: 100.93.129.91",
+                    f"🔒 [TAILSCALE] Proxy Ativo: Porta 443 (SSL) -> 8088 (Nginx Local)"
+                ]
+            }
 
     if service == "mosquitto":
         return {
             "service": "mosquitto",
             "logs": [
                 f"📡 [MOSQUITTO] Broker ativo na porta 1883 (docker bridge: mosquitto:1883)",
-                f"📡 [MOSQUITTO] Tópicos inscritos: frigate/events, frigate/status",
+                f"📡 [MOSQUITTO] Tópicos inscritos: frigate/events, frigate/status, frigate/camera_principal/motion",
                 f"📡 [MOSQUITTO] Clientes conectados: frigate_nvr, sentinela_orchestrator"
             ]
         }
@@ -150,7 +214,7 @@ async def get_service_logs(service: str = "backend", lines: int = 150):
         return {
             "service": "nginx",
             "logs": [
-                f"🌐 [NGINX] Reverse Proxy ouvindo em 0.0.0.0:80",
+                f"🌐 [NGINX] Reverse Proxy ouvindo em 0.0.0.0:8088",
                 f"🌐 [NGINX] Upstream backend: http://backend:8080",
                 f"🌐 [NGINX] Upstream frontend: http://frontend:3000",
                 f"🌐 [NGINX] Upstream frigate: http://frigate:5000",

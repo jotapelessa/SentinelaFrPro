@@ -16,6 +16,12 @@ interface PairedDevice {
   tailscale_ip?: string;
   permission_status: "allowed" | "blocked" | "paused";
   allowed_cameras?: string[];
+  allowed_events?: string[];
+  allow_recordings?: boolean;
+  allow_live_stream?: boolean;
+  allow_pip_alerts?: boolean;
+  pip_default_size?: string;
+  pip_duration_seconds?: number;
   last_seen?: string;
 }
 
@@ -623,11 +629,8 @@ export default function ScreensPage() {
                 <div className="p-4 rounded-2xl bg-obsidian-950/50 border border-slate-800 space-y-3">
                   <h3 className="text-xs font-bold text-slate-300 flex items-center gap-2">
                     <Camera className="w-4 h-4 text-cyan-400" />
-                    Câmeras Permitidas nesta Tela
+                    Câmeras Permitidas
                   </h3>
-                  <p className="text-[11px] text-slate-400">
-                    Defina quais câmeras este dispositivo tem autorização para exibir:
-                  </p>
                   <div className="space-y-1.5 pt-1">
                     {cameras.map((c) => {
                       const isAllowed = !managingDevice.allowed_cameras || managingDevice.allowed_cameras.length === 0 || managingDevice.allowed_cameras.includes(c.name);
@@ -637,7 +640,7 @@ export default function ScreensPage() {
                           <input
                             type="checkbox"
                             checked={isAllowed}
-                            onChange={async (e) => {
+                            onChange={(e) => {
                               const currentList = managingDevice.allowed_cameras && managingDevice.allowed_cameras.length > 0
                                 ? [...managingDevice.allowed_cameras]
                                 : cameras.map(cam => cam.name);
@@ -647,23 +650,116 @@ export default function ScreensPage() {
                               } else {
                                 nextList = currentList.filter(name => name !== c.name);
                               }
-                              try {
-                                await fetch(`${apiUrl}/devices/${managingDevice.id}/cameras`, {
-                                  method: "PATCH",
-                                  headers: { "Content-Type": "application/json" },
-                                  body: JSON.stringify({ allowed_cameras: nextList })
-                                });
-                                setManagingDevice({ ...managingDevice, allowed_cameras: nextList });
-                                setDevices(prev => prev.map(d => d.id === managingDevice.id ? { ...d, allowed_cameras: nextList } : d));
-                              } catch (err) {
-                                console.error("Failed to update allowed cameras:", err);
-                              }
+                              setManagingDevice({ ...managingDevice, allowed_cameras: nextList });
                             }}
                             className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 bg-obsidian-950"
                           />
                         </label>
                       );
                     })}
+                  </div>
+                </div>
+
+                {/* Tipos de Eventos Permitidos */}
+                <div className="p-4 rounded-2xl bg-obsidian-950/50 border border-slate-800 space-y-3">
+                  <h3 className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4 text-amber-400" />
+                    Alertas & Objetos Rastreados
+                  </h3>
+                  <div className="grid grid-cols-2 gap-1.5 pt-1">
+                    {[
+                      { id: "person", label: "Pessoas" },
+                      { id: "car", label: "Carros" },
+                      { id: "motorcycle", label: "Motos" },
+                      { id: "dog", label: "Cachorros" },
+                      { id: "cat", label: "Gatos" },
+                      { id: "bus", label: "Ônibus" }
+                    ].map((obj) => {
+                      const isChecked = !managingDevice.allowed_events || managingDevice.allowed_events.length === 0 || managingDevice.allowed_events.includes(obj.id);
+                      return (
+                        <label key={obj.id} className="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 hover:border-cyan-500/40 cursor-pointer text-xs text-slate-200">
+                          <span>{obj.label}</span>
+                          <input
+                            type="checkbox"
+                            checked={isChecked}
+                            onChange={(e) => {
+                              const allObjs = ["person", "car", "motorcycle", "dog", "cat", "bus"];
+                              const currentList = managingDevice.allowed_events && managingDevice.allowed_events.length > 0
+                                ? [...managingDevice.allowed_events]
+                                : allObjs;
+                              let nextList: string[];
+                              if (e.target.checked) {
+                                nextList = Array.from(new Set([...currentList, obj.id]));
+                              } else {
+                                nextList = currentList.filter(name => name !== obj.id);
+                              }
+                              setManagingDevice({ ...managingDevice, allowed_events: nextList });
+                            }}
+                            className="rounded border-slate-700 text-cyan-500 focus:ring-cyan-500 bg-obsidian-950"
+                          />
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Permissões Gerais & PiP */}
+                <div className="p-4 rounded-2xl bg-obsidian-950/50 border border-slate-800 space-y-3">
+                  <h3 className="text-xs font-bold text-slate-300 flex items-center gap-2">
+                    <Sliders className="w-4 h-4 text-teal-400" />
+                    Recursos & PiP
+                  </h3>
+                  
+                  <div className="space-y-2 text-xs">
+                    <label className="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 cursor-pointer text-slate-200">
+                      <span>Transmissão ao Vivo</span>
+                      <input
+                        type="checkbox"
+                        checked={managingDevice.allow_live_stream !== false}
+                        onChange={(e) => setManagingDevice({ ...managingDevice, allow_live_stream: e.target.checked })}
+                        className="rounded text-cyan-500"
+                      />
+                    </label>
+
+                    <label className="flex items-center justify-between p-2 rounded-xl bg-slate-900/80 border border-slate-800 cursor-pointer text-slate-200">
+                      <span>Acesso a Gravações do SSD</span>
+                      <input
+                        type="checkbox"
+                        checked={managingDevice.allow_recordings !== false}
+                        onChange={(e) => setManagingDevice({ ...managingDevice, allow_recordings: e.target.checked })}
+                        className="rounded text-cyan-500"
+                      />
+                    </label>
+
+                    <div className="grid grid-cols-2 gap-2 pt-1 font-mono">
+                      <div>
+                        <span className="text-slate-500 block text-[10px] mb-1">Tamanho Padrão PiP:</span>
+                        <select
+                          value={managingDevice.pip_default_size || "medium"}
+                          onChange={(e) => setManagingDevice({ ...managingDevice, pip_default_size: e.target.value })}
+                          className="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs focus:outline-none focus:border-cyan-500"
+                        >
+                          <option value="mini">Mini (20%)</option>
+                          <option value="medium">Médio (35%)</option>
+                          <option value="large">Grande (50%)</option>
+                          <option value="split">Split Screen (50%)</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <span className="text-slate-500 block text-[10px] mb-1">Duração do PiP:</span>
+                        <select
+                          value={managingDevice.pip_duration_seconds || 10}
+                          onChange={(e) => setManagingDevice({ ...managingDevice, pip_duration_seconds: Number(e.target.value) })}
+                          className="w-full bg-slate-900 border border-slate-800 text-slate-200 rounded-lg p-1.5 text-xs focus:outline-none focus:border-cyan-500"
+                        >
+                          <option value={5}>5 Segundos</option>
+                          <option value={10}>10 Segundos</option>
+                          <option value={15}>15 Segundos</option>
+                          <option value={30}>30 Segundos</option>
+                        </select>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -739,12 +835,45 @@ export default function ScreensPage() {
                 Excluir Dispositivo
               </button>
               
-              <button
-                onClick={() => setManagingDevice(null)}
-                className="px-6 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs transition-all"
-              >
-                Fechar
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setManagingDevice(null)}
+                  className="px-4 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={async () => {
+                    try {
+                      await fetch(`${apiUrl}/devices/${managingDevice.id}/permissions`, {
+                        method: "PUT",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          friendly_name: managingDevice.friendly_name,
+                          permission_status: managingDevice.permission_status,
+                          allowed_cameras: managingDevice.allowed_cameras,
+                          allowed_events: managingDevice.allowed_events,
+                          allow_recordings: managingDevice.allow_recordings !== false,
+                          allow_live_stream: managingDevice.allow_live_stream !== false,
+                          allow_pip_alerts: managingDevice.allow_pip_alerts !== false,
+                          pip_default_size: managingDevice.pip_default_size || "medium",
+                          pip_duration_seconds: managingDevice.pip_duration_seconds || 10
+                        })
+                      });
+                      await fetchDevices();
+                      setManagingDevice(null);
+                      setTestResult(`✅ Permissões de ${managingDevice.friendly_name} salvas com sucesso!`);
+                      setTimeout(() => setTestResult(null), 4000);
+                    } catch (err) {
+                      console.error("Failed to save device permissions:", err);
+                    }
+                  }}
+                  className="px-6 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  <span>Salvar Permissões</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

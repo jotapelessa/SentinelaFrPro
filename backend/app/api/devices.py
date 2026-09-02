@@ -35,6 +35,12 @@ class DeviceCreate(BaseModel):
     tailscale_ip: Optional[str] = None
     permission_status: str = "allowed"
     allowed_cameras: Optional[List[str]] = None
+    allowed_events: Optional[List[str]] = None
+    allow_recordings: bool = True
+    allow_live_stream: bool = True
+    allow_pip_alerts: bool = True
+    pip_default_size: str = "medium"
+    pip_duration_seconds: int = 10
 
 class DeviceHeartbeat(BaseModel):
     device_identifier: str
@@ -48,6 +54,17 @@ class DeviceAllowedCamerasUpdate(BaseModel):
 
 class DeviceStatusUpdate(BaseModel):
     permission_status: str # allowed, blocked, paused
+
+class DevicePermissionsUpdate(BaseModel):
+    friendly_name: Optional[str] = None
+    permission_status: Optional[str] = "allowed"
+    allowed_cameras: Optional[List[str]] = None
+    allowed_events: Optional[List[str]] = None
+    allow_recordings: bool = True
+    allow_live_stream: bool = True
+    allow_pip_alerts: bool = True
+    pip_default_size: str = "medium"
+    pip_duration_seconds: int = 10
 
 class TestPiPRequest(BaseModel):
     camera_name: str = "camera_principal"
@@ -69,6 +86,12 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
                 cams = json.loads(d.allowed_cameras)
             except Exception:
                 cams = []
+        events = []
+        if d.allowed_events:
+            try:
+                events = json.loads(d.allowed_events)
+            except Exception:
+                events = []
         out.append({
             "id": d.id,
             "device_identifier": d.device_identifier,
@@ -78,6 +101,12 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
             "tailscale_ip": d.tailscale_ip,
             "permission_status": d.permission_status,
             "allowed_cameras": cams,
+            "allowed_events": events,
+            "allow_recordings": d.allow_recordings if d.allow_recordings is not None else True,
+            "allow_live_stream": d.allow_live_stream if d.allow_live_stream is not None else True,
+            "allow_pip_alerts": d.allow_pip_alerts if d.allow_pip_alerts is not None else True,
+            "pip_default_size": d.pip_default_size or "medium",
+            "pip_duration_seconds": d.pip_duration_seconds or 10,
             "last_seen": d.last_seen.isoformat() if d.last_seen else None,
             "created_at": d.created_at.isoformat() if d.created_at else None
         })
@@ -241,8 +270,59 @@ async def register_device(dev: DeviceCreate, request: Request, db: AsyncSession 
     )
     return new_dev
 
-@router.patch("/{device_id}/status")
-async def update_status(device_id: int, update: DeviceStatusUpdate, request: Request, db: AsyncSession = Depends(get_db)):
+@router.put("/{device_id}/permissions")
+async def update_device_permissions(
+    device_id: int,
+    perms: DevicePermissionsUpdate,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Updates complete granular permissions for a paired screen/device."""
+    stmt = select(PairedDevice).where(PairedDevice.id == device_id)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev:
+        raise HTTPException(status_code=404, detail="Dispositivo não encontrado")
+
+    if perms.friendly_name is not None:
+        dev.friendly_name = perms.friendly_name
+    if perms.permission_status is not None:
+        dev.permission_status = perms.permission_status
+    if perms.allowed_cameras is not None:
+        dev.allowed_cameras = json.dumps(perms.allowed_cameras)
+    if perms.allowed_events is not None:
+        dev.allowed_events = json.dumps(perms.allowed_events)
+    
+    dev.allow_recordings = perms.allow_recordings
+    dev.allow_live_stream = perms.allow_live_stream
+    dev.allow_pip_alerts = perms.allow_pip_alerts
+    dev.pip_default_size = perms.pip_default_size
+    dev.pip_duration_seconds = perms.pip_duration_seconds
+
+    await db.commit()
+    await audit_service.log(
+        action="DEVICE_PERMISSIONS_UPDATED",
+        module="PIP",
+        severity="SUCCESS",
+        details=f"Permissões granulares atualizadas para '{dev.friendly_name}' (Status: {dev.permission_status}, Câmeras: {dev.allowed_cameras}, Gravações: {dev.allow_recordings}, PiP: {dev.allow_pip_alerts})",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+    return {
+        "status": "updated",
+        "id": dev.id,
+        "friendly_name": dev.friendly_name,
+        "permission_status": dev.permission_status,
+        "allowed_cameras": perms.allowed_cameras,
+        "allowed_events": perms.allowed_events,
+        "allow_recordings": dev.allow_recordings,
+        "allow_live_stream": dev.allow_live_stream,
+        "allow_pip_alerts": dev.allow_pip_alerts,
+        "pip_default_size": dev.pip_default_size,
+        "pip_duration_seconds": dev.pip_duration_seconds
+    }
+
+@router.put("/{device_id}/status")
+async def update_device_status(device_id: int, update: DeviceStatusUpdate, request: Request, db: AsyncSession = Depends(get_db)):
     stmt = select(PairedDevice).where(PairedDevice.id == device_id)
     res = await db.execute(stmt)
     dev = res.scalar_one_or_none()
