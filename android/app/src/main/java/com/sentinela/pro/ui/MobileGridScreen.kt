@@ -29,6 +29,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.sentinela.pro.data.CameraItem
 import com.sentinela.pro.SentinelaConfig
+import com.sentinela.pro.ui.components.SeamlessCameraImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
@@ -147,17 +148,12 @@ fun CameraCardMobile(
             .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
             .clickable { onClick() }
     ) {
-        // High Speed Live Snapshot Stream via Coil
-        AsyncImage(
-            model = ImageRequest.Builder(context)
-                .data(snapshotUrl)
-                .crossfade(false)
-                .memoryCachePolicy(CachePolicy.DISABLED)
-                .diskCachePolicy(CachePolicy.DISABLED)
-                .build(),
+        SeamlessCameraImage(
+            cameraName = camera.name,
             contentDescription = camera.friendlyName,
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            refreshIntervalMs = 400L
         )
 
         // Top Status Header Overlay
@@ -250,15 +246,9 @@ fun FullScreenCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(snapshotUrl)
-                    .crossfade(false)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                    .build(),
+            SeamlessCameraImage(
+                cameraName = camera.name,
                 contentDescription = camera.friendlyName,
-                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer(

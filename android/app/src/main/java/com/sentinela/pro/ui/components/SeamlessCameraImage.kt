@@ -1,0 +1,137 @@
+package com.sentinela.pro.ui.components
+
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.VideocamOff
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import coil.compose.LocalImageLoader
+import coil.request.CachePolicy
+import coil.request.ImageRequest
+import coil.request.SuccessResult
+import com.sentinela.pro.SentinelaConfig
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.withContext
+
+/**
+ * High-performance Zero-Flicker Live Camera Stream component for Jetpack Compose.
+ * Keeps the last successfully decoded Bitmap on screen while the new frame is fetched and
+ * decoded in the background (IO thread), guaranteeing 0ms of black screen between frames.
+ */
+@Composable
+fun SeamlessCameraImage(
+    cameraName: String,
+    contentDescription: String?,
+    modifier: Modifier = Modifier,
+    contentScale: ContentScale = ContentScale.Crop,
+    refreshIntervalMs: Long = 400L,
+    isStreaming: Boolean = true
+) {
+    val context = LocalContext.current
+    val imageLoader = LocalImageLoader.current
+
+    var currentBitmap by remember(cameraName) { mutableStateOf<Bitmap?>(null) }
+    var isInitialLoading by remember(cameraName) { mutableStateOf(true) }
+    var hasError by remember(cameraName) { mutableStateOf(false) }
+
+    LaunchedEffect(cameraName, isStreaming) {
+        if (!isStreaming) return@LaunchedEffect
+        
+        while (isActive) {
+            val now = System.currentTimeMillis()
+            val url = SentinelaConfig.getSnapshotUrl(cameraName, now)
+
+            val request = ImageRequest.Builder(context)
+                .data(url)
+                .memoryCachePolicy(CachePolicy.DISABLED)
+                .diskCachePolicy(CachePolicy.DISABLED)
+                .allowHardware(false) // Safe for software bitmap extraction
+                .build()
+
+            try {
+                val result = withContext(Dispatchers.IO) {
+                    imageLoader.execute(request)
+                }
+
+                if (result is SuccessResult) {
+                    val drawable = result.drawable
+                    if (drawable is BitmapDrawable) {
+                        currentBitmap = drawable.bitmap
+                        hasError = false
+                        isInitialLoading = false
+                    }
+                } else {
+                    if (currentBitmap == null) {
+                        hasError = true
+                    }
+                }
+            } catch (e: Exception) {
+                if (currentBitmap == null) {
+                    hasError = true
+                }
+            }
+
+            delay(refreshIntervalMs)
+        }
+    }
+
+    Box(
+        modifier = modifier.background(Color.Black),
+        contentAlignment = Alignment.Center
+    ) {
+        val bitmap = currentBitmap
+        if (bitmap != null) {
+            Image(
+                bitmap = bitmap.asImageBitmap(),
+                contentDescription = contentDescription,
+                contentScale = contentScale,
+                modifier = Modifier.fillMaxSize()
+            )
+        } else if (hasError) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF0F172A)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.VideocamOff,
+                    contentDescription = "Câmera Offline",
+                    tint = Color(0xFF64748B),
+                    modifier = Modifier.size(36.dp)
+                )
+            }
+        } else if (isInitialLoading) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF0F172A)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = Color(0xFF06B6D4),
+                    modifier = Modifier.size(28.dp),
+                    strokeWidth = 2.5.dp
+                )
+            }
+        }
+    }
+}

@@ -38,6 +38,7 @@ import coil.request.ImageRequest
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.*
 import com.sentinela.pro.network.SentinelaRepository
+import com.sentinela.pro.ui.components.SeamlessCameraImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -101,6 +102,8 @@ fun SmartphoneYouTubeScreen(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
+                        unselectedIconColor = Color.White,
+                        unselectedTextColor = Color.White,
                         indicatorColor = Color(0xFF1E293B)
                     )
                 )
@@ -112,6 +115,8 @@ fun SmartphoneYouTubeScreen(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
+                        unselectedIconColor = Color.White,
+                        unselectedTextColor = Color.White,
                         indicatorColor = Color(0xFF1E293B)
                     )
                 )
@@ -123,6 +128,8 @@ fun SmartphoneYouTubeScreen(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
+                        unselectedIconColor = Color.White,
+                        unselectedTextColor = Color.White,
                         indicatorColor = Color(0xFF1E293B)
                     )
                 )
@@ -134,6 +141,8 @@ fun SmartphoneYouTubeScreen(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
+                        unselectedIconColor = Color.White,
+                        unselectedTextColor = Color.White,
                         indicatorColor = Color(0xFF1E293B)
                     )
                 )
@@ -145,6 +154,8 @@ fun SmartphoneYouTubeScreen(
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
+                        unselectedIconColor = Color.White,
+                        unselectedTextColor = Color.White,
                         indicatorColor = Color(0xFF1E293B)
                     )
                 )
@@ -229,16 +240,12 @@ fun PhoneCameraCard(
                 .height(220.dp)
                 .background(Color.Black)
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(snapshotUrl)
-                    .crossfade(false)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                    .build(),
+            SeamlessCameraImage(
+                cameraName = camera.name,
                 contentDescription = camera.friendlyName,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                refreshIntervalMs = 400L
             )
 
             // Live Badge
@@ -542,8 +549,8 @@ fun PhoneSettingsTab() {
                 ) {
                     val presets = listOf(
                         "sentinela.tail47a54f.ts.net" to "Tailscale",
-                        "sentinela.local" to "Local mDNS",
-                        "192.168.1.252:8000" to "IP Direto"
+                        "192.168.1.252:8088" to "IP Direto",
+                        "sentinela.local:8088" to "Local mDNS"
                     )
                     presets.forEach { (host, label) ->
                         Button(
@@ -613,15 +620,9 @@ fun PhoneZoomCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
                     }
                 }
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(SentinelaConfig.getSnapshotUrl(camera.name, timestamp))
-                    .crossfade(false)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                    .build(),
+            SeamlessCameraImage(
+                cameraName = camera.name,
                 contentDescription = camera.friendlyName,
-                contentScale = ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxSize()
                     .graphicsLayer(
@@ -629,7 +630,9 @@ fun PhoneZoomCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
                         scaleY = scale,
                         translationX = offsetX,
                         translationY = offsetY
-                    )
+                    ),
+                contentScale = ContentScale.Fit,
+                refreshIntervalMs = 250L
             )
 
             // Header Controls

@@ -42,6 +42,7 @@ import coil.request.ImageRequest
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.*
 import com.sentinela.pro.network.SentinelaRepository
+import com.sentinela.pro.ui.components.SeamlessCameraImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -228,16 +229,12 @@ fun TvCamerasTab(cameras: List<CameraItem>) {
                 .border(2.dp, Color(0xFF06B6D4).copy(alpha = 0.6f), RoundedCornerShape(16.dp))
                 .clickable { isFullscreenOpen = true }
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(SentinelaConfig.getSnapshotUrl(selectedCam.name, frameTicker))
-                    .crossfade(false)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                    .build(),
+            SeamlessCameraImage(
+                cameraName = selectedCam.name,
                 contentDescription = selectedCam.friendlyName,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                refreshIntervalMs = 350L
             )
 
             // Overlay Details
@@ -348,16 +345,12 @@ fun TvCameraListItem(
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color.Black)
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(SentinelaConfig.getSnapshotUrl(camera.name, frameTicker))
-                    .crossfade(false)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                    .build(),
+            SeamlessCameraImage(
+                cameraName = camera.name,
                 contentDescription = camera.friendlyName,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                refreshIntervalMs = 800L
             )
         }
         Spacer(modifier = Modifier.width(12.dp))
@@ -873,9 +866,9 @@ fun TvSettingsTab() {
                 )
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     val presets = listOf(
-                        "sentinela.tail47a54f.ts.net" to "Túnel Tailscale VPN",
-                        "sentinela.local" to "Rede Local (mDNS)",
-                        "192.168.1.252:8000" to "IP Direto (Porta 8000)"
+                        "sentinela.tail47a54f.ts.net" to "Túnel Tailscale HTTPS",
+                        "192.168.1.252:8088" to "IP Direto (Porta 8088)",
+                        "sentinela.local:8088" to "Rede Local mDNS"
                     )
                     items(presets) { (host, label) ->
                         TvOptionPill(
@@ -980,16 +973,12 @@ fun TvFullScreenLiveDialog(camera: CameraItem, onDismiss: () -> Unit) {
                 .background(Color.Black)
                 .clickable { onDismiss() }
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(SentinelaConfig.getSnapshotUrl(camera.name, timestamp))
-                    .crossfade(false)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                    .build(),
+            SeamlessCameraImage(
+                cameraName = camera.name,
                 contentDescription = camera.friendlyName,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
+                refreshIntervalMs = 250L
             )
             Box(
                 modifier = Modifier

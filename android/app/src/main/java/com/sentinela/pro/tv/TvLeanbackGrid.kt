@@ -32,6 +32,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 import com.sentinela.pro.data.CameraItem
 import com.sentinela.pro.SentinelaConfig
+import com.sentinela.pro.ui.components.SeamlessCameraImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 
@@ -144,17 +145,12 @@ fun TvCameraCard(
             .border(borderWidth, borderColor, RoundedCornerShape(14.dp))
             .focusable(interactionSource = interactionSource)
             .clickable { onClick() }
-    ) {
-        AsyncImage(
-            model = ImageRequest.Builder(context)
-                .data(snapshotUrl)
-                .crossfade(false)
-                .memoryCachePolicy(CachePolicy.DISABLED)
-                .diskCachePolicy(CachePolicy.DISABLED)
-                .build(),
+        SeamlessCameraImage(
+            cameraName = camera.name,
             contentDescription = camera.friendlyName,
+            modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
+            refreshIntervalMs = 400L
         )
 
         // Top Status Header
@@ -248,16 +244,12 @@ fun TvFullScreenCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
                 .background(Color.Black)
                 .clickable { onDismiss() }
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(context)
-                    .data(snapshotUrl)
-                    .crossfade(false)
-                    .memoryCachePolicy(CachePolicy.DISABLED)
-                    .diskCachePolicy(CachePolicy.DISABLED)
-                .build(),
+            SeamlessCameraImage(
+                cameraName = camera.name,
                 contentDescription = camera.friendlyName,
+                modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
+                refreshIntervalMs = 250L
             )
 
             Box(
