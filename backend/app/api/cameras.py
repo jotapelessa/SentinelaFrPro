@@ -839,7 +839,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
             cam_cfg["ffmpeg"]["inputs"] = [
                 {
                     "path": f"rtsp://127.0.0.1:8554/{cam_name}",
-                    "input_args": "preset-rtsp-generic",
+                    "input_args": "preset-rtsp-restream",
                     "roles": ["detect", "record"]
                 }
             ]
@@ -860,23 +860,47 @@ def sanitize_frigate_config(cfg: dict) -> dict:
             if "fps" not in cam_cfg["detect"]:
                 cam_cfg["detect"]["fps"] = 5
 
-        # 4. Guarantee record block syntax for Frigate 0.17
+        # 4. Guarantee record block syntax for Frigate 0.17 (no retain/events under record)
         if "record" not in cam_cfg or not isinstance(cam_cfg["record"], dict):
             cam_cfg["record"] = {
                 "enabled": True,
-                "retain": {"days": 3, "mode": "motion"},
-                "events": {"retain": {"default": 14, "mode": "active_objects"}}
+                "continuous": {"days": 0},
+                "motion": {"days": 3},
+                "alerts": {
+                    "pre_capture": 5,
+                    "post_capture": 5,
+                    "retain": {"days": 14, "mode": "active_objects"}
+                },
+                "detections": {
+                    "pre_capture": 5,
+                    "post_capture": 5,
+                    "retain": {"days": 14, "mode": "active_objects"}
+                }
             }
         else:
             cam_cfg["record"]["enabled"] = cam_cfg["record"].get("enabled", True)
+            if "retain" in cam_cfg["record"]:
+                del cam_cfg["record"]["retain"]
+            if "events" in cam_cfg["record"]:
+                del cam_cfg["record"]["events"]
             if "retain_days" in cam_cfg["record"]:
                 del cam_cfg["record"]["retain_days"]
-            if "retain" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["retain"], dict):
-                cam_cfg["record"]["retain"] = {"days": 3, "mode": "motion"}
-            if "events" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["events"], dict):
-                cam_cfg["record"]["events"] = {"retain": {"default": 14, "mode": "active_objects"}}
-            elif "retain" not in cam_cfg["record"]["events"] or not isinstance(cam_cfg["record"]["events"]["retain"], dict):
-                cam_cfg["record"]["events"]["retain"] = {"default": 14, "mode": "active_objects"}
+            if "continuous" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["continuous"], dict):
+                cam_cfg["record"]["continuous"] = {"days": 0}
+            if "motion" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["motion"], dict):
+                cam_cfg["record"]["motion"] = {"days": 3}
+            if "alerts" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["alerts"], dict):
+                cam_cfg["record"]["alerts"] = {
+                    "pre_capture": 5,
+                    "post_capture": 5,
+                    "retain": {"days": 14, "mode": "active_objects"}
+                }
+            if "detections" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["detections"], dict):
+                cam_cfg["record"]["detections"] = {
+                    "pre_capture": 5,
+                    "post_capture": 5,
+                    "retain": {"days": 14, "mode": "active_objects"}
+                }
 
         # 5. Guarantee snapshots block
         if "snapshots" not in cam_cfg or not isinstance(cam_cfg["snapshots"], dict):
