@@ -66,6 +66,12 @@ async def init_db():
         # SQLite automatic column migration for paired_devices
         paired_columns = [
             ("allowed_cameras", "TEXT"),
+            ("allowed_events", "TEXT"),
+            ("allow_recordings", "BOOLEAN DEFAULT 1"),
+            ("allow_live_stream", "BOOLEAN DEFAULT 1"),
+            ("allow_pip_alerts", "BOOLEAN DEFAULT 1"),
+            ("pip_default_size", "VARCHAR(32) DEFAULT 'medium'"),
+            ("pip_duration_seconds", "INTEGER DEFAULT 10"),
             ("tailscale_ip", "VARCHAR(64)"),
             ("last_seen", "DATETIME")
         ]
