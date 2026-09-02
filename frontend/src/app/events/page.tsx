@@ -977,8 +977,6 @@ export default function EventsPage() {
               </div>
             </div>
           </div>
-        </div>
-      )}
 
           {/* 4. FLOATING ACTION BAR (BOTTOM SHEET FOR BATCH ACTIONS) */}
           {(isSelectionMode || selectedEventIds.length > 0) && (
