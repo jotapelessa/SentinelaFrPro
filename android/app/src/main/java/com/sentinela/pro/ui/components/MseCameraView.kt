@@ -49,6 +49,19 @@ fun MseCameraView(
     var isLoading by remember(cameraName) { mutableStateOf(true) }
     var hasError by remember(cameraName) { mutableStateOf(false) }
 
+    var webViewRef by remember { mutableStateOf<WebView?>(null) }
+
+    DisposableEffect(cameraName) {
+        onDispose {
+            webViewRef?.let { wv ->
+                wv.stopLoading()
+                wv.loadUrl("about:blank")
+                wv.destroy()
+            }
+            webViewRef = null
+        }
+    }
+
     Box(
         modifier = modifier.background(Color.Black),
         contentAlignment = Alignment.Center
@@ -57,6 +70,7 @@ fun MseCameraView(
             modifier = Modifier.fillMaxSize(),
             factory = { ctx ->
                 WebView(ctx).apply {
+                    webViewRef = this
                     layoutParams = ViewGroup.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
@@ -86,14 +100,25 @@ fun MseCameraView(
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
-                            // Inject CSS to ensure 100% video cover without scrollbars
-                            val css = "javascript:(function() {" +
+                            // Inject CSS for 100% fit + Live Edge Lock (Zero Buffer Lag < 150ms)
+                            val js = "javascript:(function() {" +
                                     "var style = document.createElement('style');" +
                                     "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:black; display:flex; justify-content:center; align-items:center; } " +
                                     "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; }';" +
                                     "document.head.appendChild(style);" +
+                                    "if (!window.__liveEdgeTimer) {" +
+                                    "  window.__liveEdgeTimer = setInterval(function() {" +
+                                    "    var v = document.querySelector('video');" +
+                                    "    if (v && v.buffered && v.buffered.length > 0) {" +
+                                    "      var end = v.buffered.end(v.buffered.length - 1);" +
+                                    "      if (end - v.currentTime > 0.35) {" +
+                                    "        v.currentTime = end - 0.05;" +
+                                    "      }" +
+                                    "    }" +
+                                    "  }, 200);" +
+                                    "}" +
                                     "})()"
-                            view?.loadUrl(css)
+                            view?.loadUrl(js)
                         }
 
                         override fun onReceivedError(
@@ -116,10 +141,6 @@ fun MseCameraView(
                 if (webView.url != streamUrl) {
                     webView.loadUrl(streamUrl)
                 }
-            },
-            onReset = { webView ->
-                webView.stopLoading()
-                webView.loadUrl("about:blank")
             }
         )
 

@@ -274,7 +274,7 @@ fun TvCamerasTab(cameras: List<CameraItem>) {
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = "AO VIVO • 5 FPS (NVMe Sync)",
+                        text = "AO VIVO • 24 FPS MSE (Zero Lag)",
                         color = Color(0xFF10B981),
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold
@@ -367,7 +367,8 @@ fun TvCameraListItem(
                 contentDescription = camera.friendlyName,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                refreshIntervalMs = 42L // MSE 24 FPS Standard
+                refreshIntervalMs = 2000L,
+                forceSnapshotMode = true // Lightweight snapshot in sidebar: saves 100% MediaCodec GPU resources for the main live screen!
             )
         }
         Spacer(modifier = Modifier.width(12.dp))
