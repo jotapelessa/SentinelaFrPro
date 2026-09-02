@@ -179,10 +179,18 @@ async def get_device_permitted_cameras(device_identifier: str, db: AsyncSession 
     if dev and dev.permission_status == "blocked":
         return []
 
+    # If live stream is disabled for this device, return empty list
+    if dev and dev.allow_live_stream is False:
+        return []
+
     # Get all enabled cameras
     cam_stmt = select(Camera).where(Camera.enabled == True)
     cam_res = await db.execute(cam_stmt)
     all_cams = cam_res.scalars().all()
+
+    # If DB has no cameras, fallback to default camera_principal
+    if not all_cams:
+        return [{"name": "camera_principal", "friendly_name": "Câmera Principal", "enabled": True}]
 
     if not dev or not dev.allowed_cameras:
         # If no specific camera restriction, return all enabled cameras
@@ -192,12 +200,60 @@ async def get_device_permitted_cameras(device_identifier: str, db: AsyncSession 
         allowed_list = json.loads(dev.allowed_cameras)
         if not allowed_list:
             return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
-        return [
+        filtered = [
             {"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled}
             for c in all_cams if c.name in allowed_list
         ]
+        return filtered if filtered else [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
     except Exception:
         return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
+
+@router.get("/by-id/{device_identifier}/policy")
+async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(get_db)):
+    """Returns the full granular policy and permissions for a specific device."""
+    stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+
+    if not dev:
+        return {
+            "device_identifier": device_identifier,
+            "permission_status": "allowed",
+            "allow_live_stream": True,
+            "allow_recordings": True,
+            "allow_pip_alerts": True,
+            "allowed_cameras": [],
+            "allowed_events": ["person", "car", "motorcycle", "dog", "cat", "bus"],
+            "pip_default_size": "medium",
+            "pip_duration_seconds": 10
+        }
+
+    cams = []
+    if dev.allowed_cameras:
+        try:
+            cams = json.loads(dev.allowed_cameras)
+        except Exception:
+            cams = []
+
+    events = []
+    if dev.allowed_events:
+        try:
+            events = json.loads(dev.allowed_events)
+        except Exception:
+            events = ["person", "car", "motorcycle", "dog", "cat", "bus"]
+
+    return {
+        "device_identifier": dev.device_identifier,
+        "friendly_name": dev.friendly_name,
+        "permission_status": dev.permission_status,
+        "allow_live_stream": dev.allow_live_stream if dev.allow_live_stream is not None else True,
+        "allow_recordings": dev.allow_recordings if dev.allow_recordings is not None else True,
+        "allow_pip_alerts": dev.allow_pip_alerts if dev.allow_pip_alerts is not None else True,
+        "allowed_cameras": cams,
+        "allowed_events": events,
+        "pip_default_size": dev.pip_default_size or "medium",
+        "pip_duration_seconds": dev.pip_duration_seconds or 10
+    }
 
 @router.patch("/{device_id}/cameras")
 async def update_device_allowed_cameras(device_id: int, payload: DeviceAllowedCamerasUpdate, request: Request, db: AsyncSession = Depends(get_db)):

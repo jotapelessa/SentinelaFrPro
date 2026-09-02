@@ -9,13 +9,14 @@ import Link from "next/link";
 export default function DashboardPage() {
   const { events, setEvents } = useSentinelaStore();
   const [activeEventVideo, setActiveEventVideo] = useState<SecurityEvent | null>(null);
+  const [selectedFilter, setSelectedFilter] = useState<string>("ALL");
 
   // Auto-fetch recent historical events on mount
   useEffect(() => {
     const fetchRecentEvents = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
-        const res = await fetch(`${apiUrl}/events?limit=15`);
+        const res = await fetch(`${apiUrl}/events?limit=25`);
         if (res.ok) {
           const data = await res.json();
           if (Array.isArray(data) && data.length > 0) {
@@ -28,6 +29,16 @@ export default function DashboardPage() {
     };
     fetchRecentEvents();
   }, [setEvents]);
+
+  // Filter events based on selected category pill
+  const filteredEvents = events.filter((ev) => {
+    if (selectedFilter === "ALL") return true;
+    const l = ev.label.toLowerCase();
+    if (selectedFilter === "PERSON") return l === "person";
+    if (selectedFilter === "VEHICLE") return ["car", "motorcycle", "bus", "bicycle", "truck"].includes(l);
+    if (selectedFilter === "ANIMAL") return ["dog", "cat", "bird", "horse"].includes(l);
+    return true;
+  });
 
   return (
     <div className="space-y-6">
@@ -49,7 +60,7 @@ export default function DashboardPage() {
 
         <div className="flex items-center gap-2 font-mono text-xs text-slate-300 flex-wrap">
           <span className="px-2.5 py-1 rounded-lg bg-cyan-950/90 border border-cyan-500/40 text-cyan-300 font-bold font-mono text-xs flex items-center gap-1.5 shadow-sm">
-            🛡️ SentinelaPro.001.000.000.010
+            🛡️ SentinelaPro.001.000.000.011
           </span>
           <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -67,7 +78,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Real-time ROI Events Feed */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4 text-cyan-400" />
@@ -84,15 +95,37 @@ export default function DashboardPage() {
             </Link>
           </div>
 
-          <div className="glass-panel rounded-2xl p-3 border border-slate-800 space-y-2.5 max-h-[580px] overflow-y-auto">
-            {events.length === 0 ? (
+          {/* Quick Filter Category Pills */}
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-slate-950/80 border border-slate-800 text-[11px] font-mono">
+            {[
+              { id: "ALL", label: "Todos" },
+              { id: "PERSON", label: "👤 Pessoas" },
+              { id: "VEHICLE", label: "🚗 Veículos" },
+              { id: "ANIMAL", label: "🐾 Animais" }
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedFilter(tab.id)}
+                className={`flex-1 py-1 rounded-lg text-center font-bold transition-all ${
+                  selectedFilter === tab.id
+                    ? "bg-cyan-500 text-obsidian-950 shadow-sm shadow-cyan-500/20"
+                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="glass-panel rounded-2xl p-3 border border-slate-800 space-y-2.5 max-h-[540px] overflow-y-auto">
+            {filteredEvents.length === 0 ? (
               <div className="py-12 text-center text-slate-500 space-y-2">
                 <Clock className="w-8 h-8 mx-auto opacity-50" />
-                <p className="text-xs">Nenhum evento registrado no momento.</p>
-                <p className="text-[11px] text-slate-600">Detecções de pessoas, veículos ou animais nas zonas ROI aparecerão aqui.</p>
+                <p className="text-xs">Nenhum evento registrado nesta categoria.</p>
+                <p className="text-[11px] text-slate-600">Detecções nas zonas ROI aparecerão aqui instantaneamente.</p>
               </div>
             ) : (
-              events.slice(0, 10).map((ev, idx) => {
+              filteredEvents.slice(0, 10).map((ev, idx) => {
                 const isPerson = ev.label.toLowerCase() === "person";
                 const snapshotUrl = ev.snapshot_url || `/frigate/api/events/${ev.id}/snapshot.jpg`;
 
@@ -100,7 +133,7 @@ export default function DashboardPage() {
                   <div
                     key={ev.id || idx}
                     onClick={() => setActiveEventVideo(ev)}
-                    className="p-3 rounded-2xl bg-obsidian-950/90 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/60 transition-all cursor-pointer flex items-center gap-3 group shadow-sm"
+                    className="p-2.5 rounded-2xl bg-obsidian-950/90 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/60 transition-all cursor-pointer flex items-center gap-3 group shadow-sm"
                   >
                     {/* Thumbnail Snapshot */}
                     <div className="relative w-16 h-14 rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shrink-0">
@@ -109,7 +142,6 @@ export default function DashboardPage() {
                         alt={ev.label}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                         onError={(e) => {
-                          // Fallback icon if image fails
                           (e.target as HTMLElement).style.display = 'none';
                         }}
                       />

@@ -12,8 +12,68 @@ import java.io.InputStreamReader
 import java.net.HttpURLConnection
 import java.net.URL
 
+data class DevicePolicy(
+    val deviceIdentifier: String,
+    val permissionStatus: String = "allowed",
+    val allowLiveStream: Boolean = true,
+    val allowRecordings: Boolean = true,
+    val allowPipAlerts: Boolean = true,
+    val allowedCameras: List<String> = emptyList(),
+    val allowedEvents: List<String> = listOf("person", "car", "motorcycle", "dog", "cat", "bus"),
+    val pipDefaultSize: String = "medium",
+    val pipDurationSeconds: Int = 10
+)
+
 object SentinelaRepository {
     private const val TAG = "SentinelaRepo"
+
+    suspend fun getDevicePolicy(deviceIdentifier: String): DevicePolicy = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/by-id/$deviceIdentifier/policy")
+            val conn = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = 3000
+                readTimeout = 3000
+                requestMethod = "GET"
+                setRequestProperty("Accept", "application/json")
+            }
+            if (conn.responseCode == 200) {
+                val text = BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+                val obj = JSONObject(text)
+                val status = obj.optString("permission_status", "allowed")
+                val stream = obj.optBoolean("allow_live_stream", true)
+                val rec = obj.optBoolean("allow_recordings", true)
+                val pip = obj.optBoolean("allow_pip_alerts", true)
+                val size = obj.optString("pip_default_size", "medium")
+                val dur = obj.optInt("pip_duration_seconds", 10)
+                val camsArr = obj.optJSONArray("allowed_cameras")
+                val cams = mutableListOf<String>()
+                if (camsArr != null) {
+                    for (i in 0 until camsArr.length()) cams.add(camsArr.getString(i))
+                }
+                val evArr = obj.optJSONArray("allowed_events")
+                val evs = mutableListOf<String>()
+                if (evArr != null) {
+                    for (i in 0 until evArr.length()) evs.add(evArr.getString(i))
+                }
+                conn.disconnect()
+                return@withContext DevicePolicy(
+                    deviceIdentifier = deviceIdentifier,
+                    permissionStatus = status,
+                    allowLiveStream = stream,
+                    allowRecordings = rec,
+                    allowPipAlerts = pip,
+                    allowedCameras = cams,
+                    allowedEvents = evs,
+                    pipDefaultSize = size,
+                    pipDurationSeconds = dur
+                )
+            }
+            conn.disconnect()
+        } catch (e: Exception) {
+            Log.w(TAG, "Error fetching policy: ${e.message}")
+        }
+        DevicePolicy(deviceIdentifier)
+    }
 
     suspend fun registerOrHeartbeat(
         deviceIdentifier: String,

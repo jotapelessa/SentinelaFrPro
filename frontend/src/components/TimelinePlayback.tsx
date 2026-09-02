@@ -10,15 +10,19 @@ interface TimelinePlaybackProps {
 }
 
 export const TimelinePlayback: React.FC<TimelinePlaybackProps> = ({ camera, onOpenClip }) => {
-  const { events } = useSentinelaStore();
+  const { events, cameras } = useSentinelaStore();
+  const [activeCamName, setActiveCamName] = useState<string>(camera.name);
   const [selectedHour, setSelectedHour] = useState<number>(new Date().getHours());
   const [selectedMinute, setSelectedMinute] = useState<number>(new Date().getMinutes());
   const [isLiveMode, setIsLiveMode] = useState(true);
   const [activeModalVideo, setActiveModalVideo] = useState<{ url: string; title: string } | null>(null);
 
-  // Filter events for this specific camera
+  // Active camera object
+  const currentCamera = cameras.find((c) => c.name === activeCamName) || camera;
+
+  // Filter events for active camera
   const cameraEvents = events.filter(
-    (e) => e.camera === camera.name || e.camera === camera.friendly_name
+    (e) => e.camera === currentCamera.name || e.camera === currentCamera.friendly_name
   );
 
   // Calculate current timestamp slider percentage (0 to 1440 minutes in a day)
@@ -52,7 +56,7 @@ export const TimelinePlayback: React.FC<TimelinePlaybackProps> = ({ camera, onOp
 
   const handlePlaySelectedTime = () => {
     const timeFormatted = `${String(selectedHour).padStart(2, "0")}:${String(selectedMinute).padStart(2, "0")}`;
-    const title = `Gravação SSD - ${camera.friendly_name || camera.name} às ${timeFormatted}`;
+    const title = `Gravação SSD - ${currentCamera.friendly_name || currentCamera.name} às ${timeFormatted}`;
     
     // Find matching event close to this time
     const matchingEvent = cameraEvents.find((ev) => {
@@ -73,7 +77,7 @@ export const TimelinePlayback: React.FC<TimelinePlaybackProps> = ({ camera, onOp
   const handlePlayEvent = (ev: any) => {
     const evDate = new Date(ev.timestamp);
     const timeFormatted = evDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    const title = `Evento: ${ev.label.toUpperCase()} em ${camera.friendly_name || camera.name} (${timeFormatted})`;
+    const title = `Evento: ${ev.label.toUpperCase()} em ${currentCamera.friendly_name || currentCamera.name} (${timeFormatted})`;
     const videoUrl = ev.clip_url || `/frigate/api/events/${ev.id}/clip.mp4`;
 
     if (onOpenClip) {
@@ -87,11 +91,27 @@ export const TimelinePlayback: React.FC<TimelinePlaybackProps> = ({ camera, onOp
     <div className="w-full bg-slate-950/80 backdrop-blur border border-slate-800 rounded-2xl p-3.5 space-y-3 shadow-lg">
       {/* Top Header Controls */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <Clock className="w-4 h-4 text-cyan-400" />
           <span className="font-bold text-white uppercase tracking-wider text-[11px]">
-            Linha do Tempo 24h (Gravações no SSD)
+            Linha do Tempo 24h (Gravações SSD)
           </span>
+
+          {/* Camera Switcher Dropdown */}
+          {cameras.length > 1 && (
+            <select
+              value={activeCamName}
+              onChange={(e) => setActiveCamName(e.target.value)}
+              className="bg-slate-900 border border-slate-700 text-cyan-300 font-bold rounded-lg px-2 py-0.5 text-xs focus:outline-none focus:border-cyan-500"
+            >
+              {cameras.map((c) => (
+                <option key={c.name} value={c.name}>
+                  {c.friendly_name || c.name}
+                </option>
+              ))}
+            </select>
+          )}
+
           <span className="font-mono text-cyan-300 font-black px-2 py-0.5 rounded bg-cyan-950 border border-cyan-500/30 text-xs shadow-sm">
             {String(selectedHour).padStart(2, "0")}:{String(selectedMinute).padStart(2, "0")}
           </span>

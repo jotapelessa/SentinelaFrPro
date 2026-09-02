@@ -9,9 +9,14 @@ object SentinelaConfig {
         get() {
             val h = currentHost.trim()
             return when {
-                h.startsWith("http://") || h.startsWith("https://") -> h
+                h.startsWith("https://") -> h
+                h.startsWith("http://") -> {
+                    val withoutProto = h.removePrefix("http://")
+                    if (withoutProto.contains(":")) h else "$h:8088"
+                }
                 h.contains(".ts.net") -> "https://$h"
-                else -> "http://$h"
+                h.contains(":") -> "http://$h"
+                else -> "http://$h:8088"
             }
         }
 

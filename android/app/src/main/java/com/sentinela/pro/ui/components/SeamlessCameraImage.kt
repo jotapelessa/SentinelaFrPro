@@ -57,15 +57,16 @@ fun SeamlessCameraImage(
         
         while (isActive) {
             val now = System.currentTimeMillis()
-            val url = SentinelaConfig.getSnapshotUrl(cameraName, now)
+            val primaryUrl = SentinelaConfig.getSnapshotUrl(cameraName, now)
 
             val request = ImageRequest.Builder(context)
-                .data(url)
+                .data(primaryUrl)
                 .memoryCachePolicy(CachePolicy.DISABLED)
                 .diskCachePolicy(CachePolicy.DISABLED)
                 .allowHardware(false) // Safe for software bitmap extraction
                 .build()
 
+            var decoded = false
             try {
                 val result = withContext(Dispatchers.IO) {
                     imageLoader.execute(request)
@@ -77,16 +78,42 @@ fun SeamlessCameraImage(
                         currentBitmap = drawable.bitmap
                         hasError = false
                         isInitialLoading = false
-                    }
-                } else {
-                    if (currentBitmap == null) {
-                        hasError = true
+                        decoded = true
                     }
                 }
             } catch (e: Exception) {
-                if (currentBitmap == null) {
-                    hasError = true
+                // Ignore and try fallback
+            }
+
+            // Fallback to go2rtc frame if Frigate snapshot failed
+            if (!decoded) {
+                try {
+                    val fallbackUrl = SentinelaConfig.getGo2rtcFrameUrl(cameraName, now)
+                    val fallbackReq = ImageRequest.Builder(context)
+                        .data(fallbackUrl)
+                        .memoryCachePolicy(CachePolicy.DISABLED)
+                        .diskCachePolicy(CachePolicy.DISABLED)
+                        .allowHardware(false)
+                        .build()
+                    val result = withContext(Dispatchers.IO) {
+                        imageLoader.execute(fallbackReq)
+                    }
+                    if (result is SuccessResult) {
+                        val drawable = result.drawable
+                        if (drawable is BitmapDrawable) {
+                            currentBitmap = drawable.bitmap
+                            hasError = false
+                            isInitialLoading = false
+                            decoded = true
+                        }
+                    }
+                } catch (e: Exception) {
+                    // Fail silently, keep currentBitmap
                 }
+            }
+
+            if (!decoded && currentBitmap == null) {
+                hasError = true
             }
 
             delay(refreshIntervalMs)
