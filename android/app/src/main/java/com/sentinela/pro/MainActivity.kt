@@ -46,7 +46,7 @@ class MainActivity : ComponentActivity() {
         SentinelaConfig.currentHost = prefs.serverHost
         val deviceType = if (isTv()) "android_tv" else "smartphone"
 
-        // Setup SSL bypass for Tailscale / LAN certificates
+        // Setup SSL bypass for Tailscale / LAN certificates & Global Coil ImageLoader
         try {
             val trustAllCerts = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
                 override fun checkClientTrusted(chain: Array<java.security.cert.X509Certificate>, authType: String) {}
@@ -55,10 +55,26 @@ class MainActivity : ComponentActivity() {
             })
             val sslContext = javax.net.ssl.SSLContext.getInstance("SSL")
             sslContext.init(null, trustAllCerts, java.security.SecureRandom())
+            
+            // For HttpsURLConnection
             javax.net.ssl.HttpsURLConnection.setDefaultSSLSocketFactory(sslContext.socketFactory)
             javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier { _, _ -> true }
+
+            // For Coil AsyncImage (used in all screens)
+            val okHttpClient = okhttp3.OkHttpClient.Builder()
+                .sslSocketFactory(sslContext.socketFactory, trustAllCerts[0] as javax.net.ssl.X509TrustManager)
+                .hostnameVerifier { _, _ -> true }
+                .build()
+
+            val globalImageLoader = coil.ImageLoader.Builder(this)
+                .okHttpClient(okHttpClient)
+                .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                .build()
+
+            coil.Coil.setImageLoader(globalImageLoader)
         } catch (e: Exception) {
-            Log.w("MainActivity", "SSL setup: ${e.message}")
+            Log.w("MainActivity", "SSL/Coil setup: ${e.message}")
         }
 
         setContent {
