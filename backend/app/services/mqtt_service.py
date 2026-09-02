@@ -24,6 +24,20 @@ class MQTTService:
         self.ws_broadcast_callbacks: List[Callable[[Dict[str, Any]], Any]] = []
         self._processed_events: TTLCache = TTLCache(maxsize=10000, ttl=86400)
         self._cooldowns: Dict[str, float] = {}
+        self._mqtt_traffic: List[Dict[str, Any]] = []
+
+    def record_mqtt_traffic(self, topic: str, payload_summary: Dict[str, Any]):
+        entry = {
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "topic": topic,
+            "data": payload_summary
+        }
+        self._mqtt_traffic.insert(0, entry)
+        if len(self._mqtt_traffic) > 200:
+            self._mqtt_traffic.pop()
+
+    def get_mqtt_traffic(self, limit: int = 100) -> List[Dict[str, Any]]:
+        return self._mqtt_traffic[:limit]
 
     def register_ws_callback(self, cb: Callable[[Dict[str, Any]], Any]):
         self.ws_broadcast_callbacks.append(cb)
@@ -39,6 +53,42 @@ class MQTTService:
 
     def _mark_processed(self, event_id: str):
         self._processed_events[event_id] = True
+
+    async def _get_telegram_policy(self) -> Dict[str, Any]:
+        """Dynamically loads live Telegram settings configured in the Web Dashboard."""
+        policy = {
+            "send_mode": "both",
+            "clip_duration_seconds": 15,
+            "allowed_events": ["person", "car", "motorcycle", "bus", "truck", "dog", "cat"],
+            "cooldown_seconds": 5.0
+        }
+        try:
+            from app.db.models import SystemSetting
+            async with AsyncSessionLocal() as session:
+                stmt = select(SystemSetting).where(
+                    SystemSetting.key.in_([
+                        "telegram_send_mode",
+                        "telegram_clip_duration_seconds",
+                        "telegram_allowed_events",
+                        "telegram_cooldown_seconds"
+                    ])
+                )
+                res = await session.execute(stmt)
+                for s in res.scalars().all():
+                    if s.key == "telegram_send_mode" and s.value:
+                        policy["send_mode"] = s.value.lower()
+                    elif s.key == "telegram_clip_duration_seconds" and s.value:
+                        policy["clip_duration_seconds"] = max(10, int(s.value))
+                    elif s.key == "telegram_allowed_events" and s.value:
+                        try:
+                            policy["allowed_events"] = json.loads(s.value)
+                        except Exception:
+                            pass
+                    elif s.key == "telegram_cooldown_seconds" and s.value:
+                        policy["cooldown_seconds"] = max(1.0, float(s.value))
+        except Exception as e:
+            logger.debug(f"Could not load live telegram policy: {e}")
+        return policy
 
     async def handle_frigate_event(self, payload: Dict[str, Any]):
         if not isinstance(payload, dict):
@@ -57,27 +107,38 @@ class MQTTService:
         zones = list(set(current_zones + entered_zones))
         zone_name = zones[0] if zones else None
 
+        self.record_mqtt_traffic(f"frigate/events ({event_type})", {
+            "id": event_id,
+            "camera": camera,
+            "label": label,
+            "score": round(score * 100, 1),
+            "zone": zone_name
+        })
+
         if label not in CRITICAL_LABELS:
             return
 
-        # Filter out low-confidence false positives (shadows, noise, reflections)
+        # Filter out low-confidence false positives
         min_required_score = 0.65 if label in ["dog", "cat", "car", "motorcycle"] else 0.60
         if score > 0 and score < min_required_score:
             logger.debug(f"Descartando detecção de baixa confiança: {label} ({score:.2f} < {min_required_score})")
             return
 
+        tg_policy = await self._get_telegram_policy()
+
         if event_type in ["new", "update"]:
             cooldown_key = f"{camera}:{label}"
             now_ts = asyncio.get_event_loop().time()
             last_time = self._cooldowns.get(cooldown_key, 0)
+            cooldown_duration = tg_policy.get("cooldown_seconds", 5.0)
 
-            if event_id not in self._processed_events and (now_ts - last_time > 3.0):
+            if event_id not in self._processed_events and (now_ts - last_time > cooldown_duration):
                 self._mark_processed(event_id)
                 self._cooldowns[cooldown_key] = now_ts
-                logger.info(f"Security event: {label} on {camera} (zone: {zone_name}, score: {score:.2f})")
+                logger.info(f"🚨 Security event: {label} on {camera} (zone: {zone_name}, score: {score:.2f})")
 
                 snapshot_bytes = None
-                async with httpx.AsyncClient(timeout=3.0) as client:
+                async with httpx.AsyncClient(timeout=4.0) as client:
                     try:
                         resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg")
                         if resp.status_code == 200:
@@ -104,7 +165,11 @@ class MQTTService:
                 except Exception:
                     pass
 
-                if snapshot_bytes:
+                # Strict Enforcement of Telegram send_mode
+                send_mode = tg_policy.get("send_mode", "both")
+                allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
+
+                if snapshot_bytes and send_mode in ["both", "photo_only"] and label in allowed_tg_events:
                     telegram_ok = await telegram_vault_service.send_alert_photo(
                         image_bytes=snapshot_bytes,
                         camera_name=camera,
@@ -174,34 +239,39 @@ class MQTTService:
             if event_id:
                 start_t = after.get("start_time", 0)
                 end_t = after.get("end_time", 0)
-                dur = max(1.0, float(end_t - start_t)) if (end_t and start_t) else 15.0
+                configured_dur = tg_policy.get("clip_duration_seconds", 15)
+                dur = max(float(configured_dur), float(end_t - start_t) if (end_t and start_t) else 10.0)
 
-                friendly_name = None
-                try:
-                    from app.db.models import Camera
-                    async with AsyncSessionLocal() as session:
-                        cam_stmt = select(Camera).where(
-                            (Camera.name == camera) | (Camera.ip_address == camera)
+                send_mode = tg_policy.get("send_mode", "both")
+                allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
+
+                if send_mode in ["both", "video_only"] and label in allowed_tg_events:
+                    friendly_name = None
+                    try:
+                        from app.db.models import Camera
+                        async with AsyncSessionLocal() as session:
+                            cam_stmt = select(Camera).where(
+                                (Camera.name == camera) | (Camera.ip_address == camera)
+                            )
+                            cam_res = await session.execute(cam_stmt)
+                            cam_obj = cam_res.scalar_one_or_none()
+                            if cam_obj and cam_obj.friendly_name:
+                                friendly_name = cam_obj.friendly_name
+                    except Exception:
+                        pass
+
+                    # Launch resilient background retry task to deliver MP4 video to Telegram
+                    asyncio.create_task(
+                        self._dispatch_telegram_video_with_retry(
+                            event_id=event_id,
+                            camera=camera,
+                            label=label,
+                            zone_name=zone_name,
+                            duration_s=dur,
+                            score=score,
+                            friendly_name=friendly_name
                         )
-                        cam_res = await session.execute(cam_stmt)
-                        cam_obj = cam_res.scalar_one_or_none()
-                        if cam_obj and cam_obj.friendly_name:
-                            friendly_name = cam_obj.friendly_name
-                except Exception:
-                    pass
-
-                # Launch resilient background retry task to deliver MP4 video to Telegram
-                asyncio.create_task(
-                    self._dispatch_telegram_video_with_retry(
-                        event_id=event_id,
-                        camera=camera,
-                        label=label,
-                        zone_name=zone_name,
-                        duration_s=dur,
-                        score=score,
-                        friendly_name=friendly_name
                     )
-                )
 
     async def _dispatch_telegram_video_with_retry(
         self,
@@ -214,11 +284,11 @@ class MQTTService:
         friendly_name: Optional[str]
     ):
         """Asynchronously polls Frigate for the finalized MP4 clip and sends to Telegram."""
-        delays = [2.0, 3.0, 5.0, 8.0, 10.0, 12.0]
+        delays = [2.0, 3.0, 5.0, 8.0, 10.0, 12.0, 15.0]
         for attempt, delay in enumerate(delays, start=1):
             await asyncio.sleep(delay)
             try:
-                async with httpx.AsyncClient(timeout=35.0) as client:
+                async with httpx.AsyncClient(timeout=40.0) as client:
                     clip_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
                     clip_resp = await client.get(clip_url)
                     if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:

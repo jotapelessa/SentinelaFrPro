@@ -437,17 +437,20 @@ export default function LogsSettingsPage() {
                 { id: "mosquitto", label: "Mosquitto MQTT :1883" },
                 { id: "go2rtc", label: "go2rtc WebRTC" },
                 { id: "tailscale", label: "Tailscale Funnel (HTTPS)" },
+                { id: "system", label: "🖥️ Sistema Ubuntu" },
+                { id: "mqtt_traffic", label: "📡 Tráfego MQTT" },
+                { id: "telegram_audit", label: "📤 Auditoria Telegram" },
+                { id: "pip_audit", label: "📺 Auditoria PiP Smart TV" },
               ].map((svc) => (
                 <button
                   key={svc.id}
                   onClick={() => setService(svc.id)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                     service === svc.id
-                      ? "bg-slate-800 text-cyan-400 border border-cyan-500/30 shadow-sm"
+                      ? "bg-slate-800 text-cyan-400 border border-cyan-500/30 shadow-sm font-bold"
                       : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
                   }`}
                 >
-                  {svc.label}
                 </button>
               ))}
             </div>

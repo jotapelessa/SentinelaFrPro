@@ -200,27 +200,52 @@ async def get_service_logs(service: str = "backend", lines: int = 150):
                 ]
             }
 
-    if service == "mosquitto":
-        return {
-            "service": "mosquitto",
-            "logs": [
-                f"📡 [MOSQUITTO] Broker ativo na porta 1883 (docker bridge: mosquitto:1883)",
-                f"📡 [MOSQUITTO] Tópicos inscritos: frigate/events, frigate/status, frigate/camera_principal/motion",
-                f"📡 [MOSQUITTO] Clientes conectados: frigate_nvr, sentinela_orchestrator"
-            ]
-        }
+    if service == "system":
+        import os
+        import platform
+        import psutil
+        import datetime
+        lines_list = [
+            f"🖥️ [SISTEMA UBUNTU] Host: {platform.node()} ({platform.system()} {platform.release()})",
+            f"⏱️ [UPTIME] Boot: {datetime.datetime.fromtimestamp(psutil.boot_time()).strftime('%Y-%m-%d %H:%M:%S')}",
+            f"🧠 [CPU] {psutil.cpu_count(logical=True)} Cores | Uso Total: {psutil.cpu_percent()}%",
+            f"🌡️ [TEMPERATURA] {telemetry_service.get_telemetry_snapshot()['cpu']['temperature_celsius']}°C",
+            f"💾 [MEMÓRIA RAM] Usada: {psutil.virtual_memory().used // (1024*1024)} MB / Total: {psutil.virtual_memory().total // (1024*1024)} MB ({psutil.virtual_memory().percent}%)",
+            f"💿 [DISCO SSD NVMe] Usado: {psutil.disk_usage('/').used // (1024*1024*1024)} GB / Total: {psutil.disk_usage('/').total // (1024*1024*1024)} GB ({psutil.disk_usage('/').percent}%)",
+            f"⚡ [GPU VAAPI DRI] {'Ativo (/dev/dri/renderD128)' if os.path.exists('/dev/dri/renderD128') else 'Não detectado'}"
+        ]
+        return {"service": "system", "logs": lines_list, "source": "ubuntu_kernel"}
 
-    if service == "nginx":
-        return {
-            "service": "nginx",
-            "logs": [
-                f"🌐 [NGINX] Reverse Proxy ouvindo em 0.0.0.0:8088",
-                f"🌐 [NGINX] Upstream backend: http://backend:8080",
-                f"🌐 [NGINX] Upstream frontend: http://frontend:3000",
-                f"🌐 [NGINX] Upstream frigate: http://frigate:5000",
-                f"🌐 [NGINX] Upstream go2rtc: http://frigate:1984"
-            ]
-        }
+    if service == "mqtt_traffic":
+        from app.services.mqtt_service import mqtt_service
+        traffic = mqtt_service.get_mqtt_traffic(lines)
+        if not traffic:
+            return {"service": "mqtt_traffic", "logs": ["📡 Nenhum pacote MQTT registrado no buffer recente."], "source": "mqtt_bus"}
+        formatted = [
+            f"[{t['timestamp']}] {t['topic']} -> {t['data']}" for t in traffic
+        ]
+        return {"service": "mqtt_traffic", "logs": formatted, "source": "mqtt_bus"}
+
+    if service == "telegram_audit":
+        audit = telegram_vault_service.get_audit_logs(lines)
+        if not audit:
+            return {"service": "telegram_audit", "logs": ["📤 Nenhuma notificação do Telegram enviada recentemente."], "source": "telegram_vault"}
+        formatted = [
+            f"[{a['timestamp']}] {'✅' if a['success'] else '❌'} {a['action']} -> {a['details']}" + (f" (Erro: {a['error']})" if a.get("error") else "")
+            for a in audit
+        ]
+        return {"service": "telegram_audit", "logs": formatted, "source": "telegram_vault"}
+
+    if service == "pip_audit":
+        from app.services.pip_gateway import pip_gateway_service
+        pip_logs = pip_gateway_service.get_dispatch_history(lines)
+        if not pip_logs:
+            return {"service": "pip_audit", "logs": ["📺 Nenhum alerta PiP disparado recentemente."], "source": "pip_gateway"}
+        formatted = [
+            f"[{p.get('timestamp', '--')}] {p.get('camera')} ({p.get('label')}) -> {p.get('devices_count', 0)} dispositivo(s) notificado(s)"
+            for p in pip_logs
+        ]
+        return {"service": "pip_audit", "logs": formatted, "source": "pip_gateway"}
 
     return {"service": service, "logs": get_backend_logs(lines)}
 

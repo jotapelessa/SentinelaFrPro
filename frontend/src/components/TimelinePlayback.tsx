@@ -220,18 +220,60 @@ export const TimelinePlayback: React.FC<TimelinePlaybackProps> = ({ camera, onOp
           className="w-full h-4 accent-cyan-400 cursor-pointer absolute top-1 left-0 opacity-0 z-30"
         />
 
-        {/* Hour Markers */}
-        <div className="flex justify-between text-[9px] font-mono text-slate-500 px-0.5 pt-1.5 select-none">
-          <span>00:00</span>
-          <span>03:00</span>
-          <span>06:00</span>
-          <span>09:00</span>
-          <span>12:00</span>
-          <span>15:00</span>
-          <span>18:00</span>
-          <span>21:00</span>
-          <span>23:59</span>
+        {/* Interactive Clickable Hour Markers */}
+        <div className="flex justify-between text-[10px] font-mono text-slate-400 px-0.5 pt-1.5 select-none">
+          {[
+            { label: "00:00", h: 0 },
+            { label: "03:00", h: 3 },
+            { label: "06:00", h: 6 },
+            { label: "09:00", h: 9 },
+            { label: "12:00", h: 12 },
+            { label: "15:00", h: 15 },
+            { label: "18:00", h: 18 },
+            { label: "21:00", h: 21 },
+            { label: "23:59", h: 23, m: 59 }
+          ].map((mk, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => {
+                setSelectedHour(mk.h);
+                setSelectedMinute(mk.m || 0);
+                setIsLiveMode(false);
+              }}
+              className="hover:text-cyan-400 hover:font-bold transition-colors cursor-pointer px-1 py-0.5 rounded hover:bg-slate-900"
+            >
+              {mk.label}
+            </button>
+          ))}
         </div>
+
+        {/* Quick Events Stream for this camera */}
+        {cameraEvents.length > 0 && (
+          <div className="pt-2 border-t border-slate-900 flex items-center gap-1.5 overflow-x-auto text-[11px] font-mono scrollbar-thin">
+            <span className="text-slate-500 shrink-0 font-bold">Eventos Recentes:</span>
+            {cameraEvents.slice(0, 6).map((ev, i) => {
+              const d = new Date(ev.timestamp);
+              const isPerson = ev.label === "person";
+              return (
+                <button
+                  key={i}
+                  type="button"
+                  onClick={() => handlePlayEvent(ev)}
+                  className={`shrink-0 px-2 py-0.5 rounded-lg border text-[10px] font-bold flex items-center gap-1 transition-all hover:scale-105 ${
+                    isPerson
+                      ? "bg-rose-950/60 border-rose-500/40 text-rose-300 hover:bg-rose-900"
+                      : "bg-cyan-950/60 border-cyan-500/40 text-cyan-300 hover:bg-cyan-900"
+                  }`}
+                >
+                  <span>{isPerson ? "👤" : "🚗"}</span>
+                  <span>{d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className="text-slate-400 font-normal">({ev.score}%)</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* Built-in Video Player Modal */}

@@ -14,6 +14,23 @@ class TelegramVaultService:
         self.bot_token = settings.TELEGRAM_BOT_TOKEN
         self.chat_id = settings.TELEGRAM_CHAT_ID
         self.pause_until: Optional[datetime.datetime] = None
+        self._audit_logs: List[Dict[str, Any]] = []
+
+    def record_audit(self, action: str, details: Dict[str, Any], success: bool, error: Optional[str] = None):
+        """Appends an event to the in-memory Telegram audit trail."""
+        log_entry = {
+            "timestamp": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "action": action,
+            "details": details,
+            "success": success,
+            "error": error
+        }
+        self._audit_logs.insert(0, log_entry)
+        if len(self._audit_logs) > 300:
+            self._audit_logs.pop()
+
+    def get_audit_logs(self, limit: int = 100) -> List[Dict[str, Any]]:
+        return self._audit_logs[:limit]
 
     @property
     def is_configured(self) -> bool:
@@ -253,12 +270,17 @@ class TelegramVaultService:
                 resp = await client.post(url, data=data, files=files)
                 if resp.status_code == 200:
                     logger.info("✅ Foto de alerta entregue com sucesso ao Telegram!")
+                    self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone, "size_bytes": len(image_bytes)}, True)
                     return True
                 else:
-                    logger.error(f"❌ Telegram sendPhoto falhou (HTTP {resp.status_code}): {resp.text}")
+                    err = f"HTTP {resp.status_code}: {resp.text}"
+                    logger.error(f"❌ Telegram sendPhoto falhou ({err})")
+                    self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, err)
                     return False
         except Exception as e:
-            logger.error(f"❌ Erro de rede ao enviar foto para o Telegram: {e}")
+            err = str(e)
+            logger.error(f"❌ Erro de rede ao enviar foto para o Telegram: {err}")
+            self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, err)
             return False
 
     async def send_alert_video(
@@ -307,12 +329,17 @@ class TelegramVaultService:
                 resp = await client.post(url, data=data, files=files)
                 if resp.status_code == 200:
                     logger.info("✅ Vídeo MP4 entregue com sucesso ao Telegram!")
+                    self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "zone": zone, "duration_s": duration_s, "size_bytes": len(video_bytes)}, True)
                     return True
                 else:
-                    logger.error(f"❌ Telegram sendVideo falhou (HTTP {resp.status_code}): {resp.text}")
+                    err = f"HTTP {resp.status_code}: {resp.text}"
+                    logger.error(f"❌ Telegram sendVideo falhou ({err})")
+                    self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
                     return False
         except Exception as e:
-            logger.error(f"❌ Erro de rede ao enviar vídeo para o Telegram: {e}")
+            err = str(e)
+            logger.error(f"❌ Erro de rede ao enviar vídeo para o Telegram: {err}")
+            self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
             return False
 
 
