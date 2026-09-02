@@ -59,6 +59,8 @@ class PairedDevice(Base):
     allow_recordings = Column(Boolean, default=True) # Permission to access SSD/NVMe recordings
     allow_live_stream = Column(Boolean, default=True) # Permission for live streaming
     allow_pip_alerts = Column(Boolean, default=True) # Permission to receive floating PiP alarm windows
+    allow_restart_containers = Column(Boolean, default=False) # Remote container restart permission
+    allow_reboot_server = Column(Boolean, default=False) # Remote server reboot permission
     pip_default_size = Column(String(32), default="medium") # mini, medium, large, split
     pip_duration_seconds = Column(Integer, default=10) # 5, 10, 15, 30
     last_seen = Column(DateTime, default=datetime.datetime.utcnow)

@@ -167,39 +167,75 @@ class FrigateBridgeService:
 
         return None
 
+    async def transcode_to_30fps(self, video_bytes: bytes, target_fps: int = 30) -> bytes:
+        """Transcodes any raw MP4 clip into a crisp, smooth 30 FPS video with faststart headers for Telegram."""
+        if not video_bytes or len(video_bytes) < 1000:
+            return video_bytes
+        in_file = f"/tmp/in_{uuid.uuid4().hex[:8]}.mp4"
+        out_file = f"/tmp/out_{uuid.uuid4().hex[:8]}.mp4"
+        try:
+            with open(in_file, "wb") as f:
+                f.write(video_bytes)
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", in_file,
+                "-r", str(target_fps),
+                "-c:v", "libx264",
+                "-preset", "veryfast",
+                "-crf", "23",
+                "-pix_fmt", "yuv420p",
+                "-movflags", "+faststart",
+                out_file
+            ]
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+            if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 1000:
+                with open(out_file, "rb") as f:
+                    smooth_bytes = f.read()
+                return smooth_bytes
+        except Exception as e:
+            logger.warning(f"Error transcoding clip to 30 FPS: {e}")
+        finally:
+            if os.path.exists(in_file):
+                try: os.remove(in_file)
+                except Exception: pass
+            if os.path.exists(out_file):
+                try: os.remove(out_file)
+                except Exception: pass
+        return video_bytes
+
     async def record_live_video(
         self,
         camera_name: str = "camera_principal",
-        duration_s: int = 15,
+        duration_s: int = 30,
         resolution: str = "1080p",
         video_quality: str = "balanced",
         include_audio: bool = True
     ) -> Optional[bytes]:
         """
-        Captures a live video clip directly from the camera stream:
-        1. Direct FFmpeg RTSP recording with faststart MP4 to disk
+        Captures a live video clip directly from the camera stream with constant 30 FPS:
+        1. Direct FFmpeg RTSP recording with faststart MP4 at 30 FPS to disk
         2. go2rtc live MP4 stream generator
         3. Frigate recording clip fallback
         4. High-definition synthetic test pattern fallback
         """
-        duration_s = max(min(duration_s, 30), 3)
+        duration_s = max(min(duration_s, 60), 3)
 
         scale_w, scale_h = 1920, 1080
         if resolution == "720p":
             scale_w, scale_h = 1280, 720
 
-        crf = 24
+        crf = 23
         preset = "veryfast"
         if video_quality == "high":
             crf = 20
             preset = "fast"
         elif video_quality == "fast":
-            crf = 28
+            crf = 26
             preset = "ultrafast"
 
         temp_file = f"/tmp/frigate_live_{uuid.uuid4().hex[:8]}.mp4"
 
-        # Channel 1: FFmpeg direct RTSP capture from Frigate / Camera
+        # Channel 1: FFmpeg direct RTSP capture from Frigate / Camera at constant 30 FPS
         rtsp_urls = [
             f"rtsp://frigate:8554/{camera_name}",
             "rtsp://frigate:8554/camera_principal",
@@ -209,13 +245,14 @@ class FrigateBridgeService:
 
         for url in rtsp_urls:
             try:
-                logger.info(f"🎥 FrigateBridge: Capturando {duration_s}s de vídeo ao vivo via RTSP ({url})...")
+                logger.info(f"🎥 FrigateBridge: Capturando {duration_s}s de vídeo a 30 FPS via RTSP ({url})...")
                 cmd = [
                     "ffmpeg", "-y",
                     "-rtsp_transport", "tcp",
                     "-stimeout", "4000000",
                     "-i", url,
                     "-t", str(duration_s),
+                    "-r", "30",
                     "-vf", f"scale={scale_w}:{scale_h}:force_original_aspect_ratio=decrease,pad={scale_w}:{scale_h}:(ow-iw)/2:(oh-ih)/2,format=yuv420p",
                     "-c:v", "libx264",
                     "-preset", preset,
@@ -227,12 +264,12 @@ class FrigateBridgeService:
                 if not include_audio:
                     cmd.insert(-3, "-an")
 
-                proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=duration_s + 10)
+                proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=duration_s + 12)
                 if proc.returncode == 0 and os.path.exists(temp_file) and os.path.getsize(temp_file) > 5000:
                     with open(temp_file, "rb") as vf:
                         video_bytes = vf.read()
                     os.remove(temp_file)
-                    logger.info(f"✅ FrigateBridge: Vídeo ao vivo gravado com sucesso ({len(video_bytes)} bytes)")
+                    logger.info(f"✅ FrigateBridge: Vídeo 30 FPS ({duration_s}s) gravado com sucesso ({len(video_bytes)} bytes)")
                     return video_bytes
             except Exception as e:
                 logger.warning(f"FrigateBridge RTSP capture error on {url}: {e}")

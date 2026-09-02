@@ -70,6 +70,8 @@ async def init_db():
             ("allow_recordings", "BOOLEAN DEFAULT 1"),
             ("allow_live_stream", "BOOLEAN DEFAULT 1"),
             ("allow_pip_alerts", "BOOLEAN DEFAULT 1"),
+            ("allow_restart_containers", "BOOLEAN DEFAULT 0"),
+            ("allow_reboot_server", "BOOLEAN DEFAULT 0"),
             ("pip_default_size", "VARCHAR(32) DEFAULT 'medium'"),
             ("pip_duration_seconds", "INTEGER DEFAULT 10"),
             ("tailscale_ip", "VARCHAR(64)"),

@@ -52,8 +52,8 @@ export default function DashboardPage() {
             <h1 className="text-lg sm:text-xl font-black text-white tracking-wide">
               Central de Vigilância Sentinela
             </h1>
-            <p className="text-xs text-slate-400">
-              Frigate NVR ativo com aceleração Intel Jasper Lake VAAPI & detecção espacial ROI.
+            <p className="text-xs text-slate-500 font-mono">
+              SentinelaPro.001.000.000.013 • Protegido por IA OpenVINO & Tailscale Encrypted
             </p>
           </div>
         </div>

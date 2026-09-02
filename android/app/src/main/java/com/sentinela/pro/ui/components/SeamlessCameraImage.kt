@@ -56,14 +56,15 @@ fun SeamlessCameraImage(
         if (!isStreaming) return@LaunchedEffect
         
         while (isActive) {
-            val now = System.currentTimeMillis()
+            val loopStart = System.currentTimeMillis()
+            val now = loopStart
             val primaryUrl = SentinelaConfig.getSnapshotUrl(cameraName, now)
 
             val request = ImageRequest.Builder(context)
                 .data(primaryUrl)
                 .memoryCachePolicy(CachePolicy.DISABLED)
                 .diskCachePolicy(CachePolicy.DISABLED)
-                .allowHardware(false) // Safe for software bitmap extraction
+                .allowHardware(false)
                 .build()
 
             var decoded = false
@@ -116,7 +117,9 @@ fun SeamlessCameraImage(
                 hasError = true
             }
 
-            delay(refreshIntervalMs)
+            val elapsed = System.currentTimeMillis() - loopStart
+            val sleepTime = (refreshIntervalMs - elapsed).coerceIn(50L, refreshIntervalMs)
+            delay(sleepTime)
         }
     }
 

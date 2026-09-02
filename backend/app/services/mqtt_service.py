@@ -292,9 +292,11 @@ class MQTTService:
                     clip_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
                     clip_resp = await client.get(clip_url)
                     if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
-                        logger.info(f"✅ Clipe MP4 obtido do Frigate (tentativa {attempt}/{len(delays)}, {len(clip_resp.content)} bytes). Enviando ao Telegram...")
+                        logger.info(f"✅ Clipe MP4 obtido do Frigate (tentativa {attempt}/{len(delays)}, {len(clip_resp.content)} bytes). Transcodificando a 30 FPS...")
+                        from app.services.frigate_bridge import frigate_bridge
+                        smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=30)
                         sent_ok = await telegram_vault_service.send_alert_video(
-                            video_bytes=clip_resp.content,
+                            video_bytes=smooth_video,
                             camera_name=camera,
                             label=label,
                             zone=zone_name,

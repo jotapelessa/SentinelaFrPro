@@ -20,6 +20,8 @@ interface PairedDevice {
   allow_recordings?: boolean;
   allow_live_stream?: boolean;
   allow_pip_alerts?: boolean;
+  allow_restart_containers?: boolean;
+  allow_reboot_server?: boolean;
   pip_default_size?: string;
   pip_duration_seconds?: number;
   last_seen?: string;
@@ -731,6 +733,30 @@ export default function ScreensPage() {
                       />
                     </label>
 
+                    <label className="flex items-center justify-between p-2 rounded-xl bg-amber-950/30 border border-amber-800/50 cursor-pointer text-amber-200">
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <span>🔄 Reiniciar Docker (App)</span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={managingDevice.allow_restart_containers === true}
+                        onChange={(e) => setManagingDevice({ ...managingDevice, allow_restart_containers: e.target.checked })}
+                        className="rounded text-amber-500"
+                      />
+                    </label>
+
+                    <label className="flex items-center justify-between p-2 rounded-xl bg-rose-950/30 border border-rose-800/50 cursor-pointer text-rose-200">
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <span>⚡ Reboot Servidor (App)</span>
+                      </span>
+                      <input
+                        type="checkbox"
+                        checked={managingDevice.allow_reboot_server === true}
+                        onChange={(e) => setManagingDevice({ ...managingDevice, allow_reboot_server: e.target.checked })}
+                        className="rounded text-rose-500"
+                      />
+                    </label>
+
                     <div className="grid grid-cols-2 gap-2 pt-1 font-mono">
                       <div>
                         <span className="text-slate-500 block text-[10px] mb-1">Tamanho Padrão PiP:</span>
@@ -856,6 +882,8 @@ export default function ScreensPage() {
                           allow_recordings: managingDevice.allow_recordings !== false,
                           allow_live_stream: managingDevice.allow_live_stream !== false,
                           allow_pip_alerts: managingDevice.allow_pip_alerts !== false,
+                          allow_restart_containers: managingDevice.allow_restart_containers === true,
+                          allow_reboot_server: managingDevice.allow_reboot_server === true,
                           pip_default_size: managingDevice.pip_default_size || "medium",
                           pip_duration_seconds: managingDevice.pip_duration_seconds || 10
                         })

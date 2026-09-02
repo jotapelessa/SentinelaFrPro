@@ -18,6 +18,8 @@ data class DevicePolicy(
     val allowLiveStream: Boolean = true,
     val allowRecordings: Boolean = true,
     val allowPipAlerts: Boolean = true,
+    val allowRestartContainers: Boolean = false,
+    val allowRebootServer: Boolean = false,
     val allowedCameras: List<String> = emptyList(),
     val allowedEvents: List<String> = listOf("person", "car", "motorcycle", "dog", "cat", "bus"),
     val pipDefaultSize: String = "medium",
@@ -43,6 +45,8 @@ object SentinelaRepository {
                 val stream = obj.optBoolean("allow_live_stream", true)
                 val rec = obj.optBoolean("allow_recordings", true)
                 val pip = obj.optBoolean("allow_pip_alerts", true)
+                val restartDocker = obj.optBoolean("allow_restart_containers", false)
+                val rebootHost = obj.optBoolean("allow_reboot_server", false)
                 val size = obj.optString("pip_default_size", "medium")
                 val dur = obj.optInt("pip_duration_seconds", 10)
                 val camsArr = obj.optJSONArray("allowed_cameras")
@@ -62,6 +66,8 @@ object SentinelaRepository {
                     allowLiveStream = stream,
                     allowRecordings = rec,
                     allowPipAlerts = pip,
+                    allowRestartContainers = restartDocker,
+                    allowRebootServer = rebootHost,
                     allowedCameras = cams,
                     allowedEvents = evs,
                     pipDefaultSize = size,
@@ -368,6 +374,69 @@ object SentinelaRepository {
                 status = "Tailscale Conectado & Pareamento Ativo (24.5 Mbps)",
                 isRunning = false
             )
+        }
+    }
+
+    suspend fun restartContainers(deviceIdentifier: String, serviceName: String = "all"): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/by-id/$deviceIdentifier/restart-containers")
+            val conn = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = 8000
+                readTimeout = 8000
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val payload = JSONObject().apply {
+                put("service_name", serviceName)
+            }
+            conn.outputStream.use { os ->
+                os.write(payload.toString().toByteArray(Charsets.UTF_8))
+            }
+            val code = conn.responseCode
+            val text = if (code in 200..299) {
+                BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+            } else {
+                BufferedReader(InputStreamReader(conn.errorStream ?: conn.inputStream)).use { it.readText() }
+            }
+            conn.disconnect()
+            if (code in 200..299) {
+                return@withContext Pair(true, "Contêiner ($serviceName) reiniciado com sucesso!")
+            } else {
+                val detail = try { JSONObject(text).optString("detail", text) } catch(e: Exception) { text }
+                return@withContext Pair(false, detail)
+            }
+        } catch (e: Exception) {
+            return@withContext Pair(false, "Erro de rede: ${e.message}")
+        }
+    }
+
+    suspend fun rebootServer(deviceIdentifier: String): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/by-id/$deviceIdentifier/reboot-server")
+            val conn = (url.openConnection() as HttpURLConnection).apply {
+                connectTimeout = 6000
+                readTimeout = 6000
+                requestMethod = "POST"
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val code = conn.responseCode
+            val text = if (code in 200..299) {
+                BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+            } else {
+                BufferedReader(InputStreamReader(conn.errorStream ?: conn.inputStream)).use { it.readText() }
+            }
+            conn.disconnect()
+            if (code in 200..299) {
+                return@withContext Pair(true, "Comando de reinicialização enviado ao servidor!")
+            } else {
+                val detail = try { JSONObject(text).optString("detail", text) } catch(e: Exception) { text }
+                return@withContext Pair(false, detail)
+            }
+        } catch (e: Exception) {
+            return@withContext Pair(false, "Erro de rede: ${e.message}")
         }
     }
 }

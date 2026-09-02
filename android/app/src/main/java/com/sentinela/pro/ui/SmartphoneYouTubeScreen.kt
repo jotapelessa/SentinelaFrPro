@@ -490,6 +490,77 @@ fun PhoneLogsTab() {
             }
         }
 
+        // TELEMETRY METRICS CARDS
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFF0F172A))
+                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
+                    .padding(12.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("STATUS DO SERVIDOR UBUNTU", color = Color(0xFF94A3B8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    // CPU Card
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(Color(0xFF020617), RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("🧠 CPU", color = Color(0xFF94A3B8), fontSize = 10.sp)
+                        Text(
+                            "${telemetry?.cpuPercent ?: 0.0}%",
+                            color = Color(0xFF22D3EE),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                    }
+
+                    // RAM Card
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(Color(0xFF020617), RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("💾 MEMÓRIA", color = Color(0xFF94A3B8), fontSize = 10.sp)
+                        Text(
+                            "${telemetry?.ramPercent ?: 0.0}%",
+                            color = Color(0xFF38BDF8),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                    }
+
+                    // Temp Card
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(Color(0xFF020617), RoundedCornerShape(8.dp))
+                            .padding(8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text("🌡️ TEMP", color = Color(0xFF94A3B8), fontSize = 10.sp)
+                        Text(
+                            "${telemetry?.cpuTemp ?: 0.0}°C",
+                            color = if ((telemetry?.cpuTemp ?: 0.0) > 65.0) Color(0xFFF43F5E) else Color(0xFF34D399),
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Black
+                        )
+                    }
+                }
+            }
+        }
+
         items(logs) { entry ->
             Column(
                 modifier = Modifier
@@ -518,8 +589,41 @@ fun PhoneLogsTab() {
 @Composable
 fun PhoneSettingsTab() {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
     val prefs = remember { SentinelaPreferences(context) }
     var currentHost by remember { mutableStateOf(prefs.serverHost) }
+    var showRebootConfirm by remember { mutableStateOf(false) }
+    var isExecutingAction by remember { mutableStateOf(false) }
+
+    if (showRebootConfirm) {
+        AlertDialog(
+            onDismissRequest = { showRebootConfirm = false },
+            title = { Text("⚠️ Reiniciar Servidor Ubuntu?", color = Color.White, fontWeight = FontWeight.Bold) },
+            text = { Text("Esta ação enviará o comando de reboot completo ao sistema operacional host. Todos os contêineres e o túnel serão reiniciados.", color = Color(0xFFCBD5E1), fontSize = 13.sp) },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showRebootConfirm = false
+                        isExecutingAction = true
+                        coroutineScope.launch {
+                            val res = SentinelaRepository.rebootServer(prefs.deviceIdentifier)
+                            isExecutingAction = false
+                            Toast.makeText(context, res.second, Toast.LENGTH_LONG).show()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE11D48))
+                ) {
+                    Text("Sim, Reiniciar", fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showRebootConfirm = false }) {
+                    Text("Cancelar", color = Color(0xFF94A3B8))
+                }
+            },
+            containerColor = Color(0xFF0F172A)
+        )
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -569,6 +673,73 @@ fun PhoneSettingsTab() {
                             Text(label, fontSize = 11.sp, maxLines = 1)
                         }
                     }
+                }
+            }
+        }
+
+        // CONTROLE REMOTO DO SERVIDOR
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFF0F172A))
+                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text("CONTROLE REMOTO DO SERVIDOR", color = Color(0xFF94A3B8), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text("As permissões para executar estas ações são controladas em http://sentinela.local/screens", color = Color(0xFF64748B), fontSize = 11.sp)
+                
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Button(
+                        onClick = {
+                            isExecutingAction = true
+                            coroutineScope.launch {
+                                val res = SentinelaRepository.restartContainers(prefs.deviceIdentifier, "sentinela_frigate")
+                                isExecutingAction = false
+                                Toast.makeText(context, res.second, Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        enabled = !isExecutingAction,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706)),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("🔄 Frigate IA", fontSize = 11.sp, maxLines = 1)
+                    }
+
+                    Button(
+                        onClick = {
+                            isExecutingAction = true
+                            coroutineScope.launch {
+                                val res = SentinelaRepository.restartContainers(prefs.deviceIdentifier, "all")
+                                isExecutingAction = false
+                                Toast.makeText(context, res.second, Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        enabled = !isExecutingAction,
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF475569)),
+                        shape = RoundedCornerShape(8.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("🔄 Docker All", fontSize = 11.sp, maxLines = 1)
+                    }
+                }
+
+                Button(
+                    onClick = { showRebootConfirm = true },
+                    enabled = !isExecutingAction,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF991B1B)),
+                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.PowerSettingsNew, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("⚡ Reiniciar Servidor Ubuntu", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }

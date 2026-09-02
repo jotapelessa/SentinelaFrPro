@@ -39,6 +39,8 @@ class DeviceCreate(BaseModel):
     allow_recordings: bool = True
     allow_live_stream: bool = True
     allow_pip_alerts: bool = True
+    allow_restart_containers: bool = False
+    allow_reboot_server: bool = False
     pip_default_size: str = "medium"
     pip_duration_seconds: int = 10
 
@@ -63,8 +65,13 @@ class DevicePermissionsUpdate(BaseModel):
     allow_recordings: bool = True
     allow_live_stream: bool = True
     allow_pip_alerts: bool = True
+    allow_restart_containers: bool = False
+    allow_reboot_server: bool = False
     pip_default_size: str = "medium"
     pip_duration_seconds: int = 10
+
+class RestartContainerRequest(BaseModel):
+    service_name: str = "sentinela_frigate" # all, sentinela_frigate, sentinela_backend, sentinela_frontend, sentinela_nginx, sentinela_mosquitto
 
 class TestPiPRequest(BaseModel):
     camera_name: str = "camera_principal"
@@ -105,6 +112,8 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
             "allow_recordings": d.allow_recordings if d.allow_recordings is not None else True,
             "allow_live_stream": d.allow_live_stream if d.allow_live_stream is not None else True,
             "allow_pip_alerts": d.allow_pip_alerts if d.allow_pip_alerts is not None else True,
+            "allow_restart_containers": d.allow_restart_containers if d.allow_restart_containers is not None else False,
+            "allow_reboot_server": d.allow_reboot_server if d.allow_reboot_server is not None else False,
             "pip_default_size": d.pip_default_size or "medium",
             "pip_duration_seconds": d.pip_duration_seconds or 10,
             "last_seen": d.last_seen.isoformat() if d.last_seen else None,
@@ -249,6 +258,8 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
         "allow_live_stream": dev.allow_live_stream if dev.allow_live_stream is not None else True,
         "allow_recordings": dev.allow_recordings if dev.allow_recordings is not None else True,
         "allow_pip_alerts": dev.allow_pip_alerts if dev.allow_pip_alerts is not None else True,
+        "allow_restart_containers": dev.allow_restart_containers if dev.allow_restart_containers is not None else False,
+        "allow_reboot_server": dev.allow_reboot_server if dev.allow_reboot_server is not None else False,
         "allowed_cameras": cams,
         "allowed_events": events,
         "pip_default_size": dev.pip_default_size or "medium",
@@ -352,6 +363,8 @@ async def update_device_permissions(
     dev.allow_recordings = perms.allow_recordings
     dev.allow_live_stream = perms.allow_live_stream
     dev.allow_pip_alerts = perms.allow_pip_alerts
+    dev.allow_restart_containers = perms.allow_restart_containers
+    dev.allow_reboot_server = perms.allow_reboot_server
     dev.pip_default_size = perms.pip_default_size
     dev.pip_duration_seconds = perms.pip_duration_seconds
 
@@ -360,7 +373,7 @@ async def update_device_permissions(
         action="DEVICE_PERMISSIONS_UPDATED",
         module="PIP",
         severity="SUCCESS",
-        details=f"Permissões granulares atualizadas para '{dev.friendly_name}' (Status: {dev.permission_status}, Câmeras: {dev.allowed_cameras}, Gravações: {dev.allow_recordings}, PiP: {dev.allow_pip_alerts})",
+        details=f"Permissões granulares atualizadas para '{dev.friendly_name}' (Status: {dev.permission_status}, Câmeras: {dev.allowed_cameras}, Gravações: {dev.allow_recordings}, PiP: {dev.allow_pip_alerts}, Reiniciar Docker: {dev.allow_restart_containers}, Reboot Host: {dev.allow_reboot_server})",
         client_ip=request.client.host if request.client else "unknown"
     )
     return {
@@ -373,9 +386,77 @@ async def update_device_permissions(
         "allow_recordings": dev.allow_recordings,
         "allow_live_stream": dev.allow_live_stream,
         "allow_pip_alerts": dev.allow_pip_alerts,
+        "allow_restart_containers": dev.allow_restart_containers,
+        "allow_reboot_server": dev.allow_reboot_server,
         "pip_default_size": dev.pip_default_size,
         "pip_duration_seconds": dev.pip_duration_seconds
     }
+
+@router.post("/by-id/{device_identifier}/restart-containers")
+async def remote_restart_container(
+    device_identifier: str,
+    req: RestartContainerRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev or dev.permission_status == "blocked" or not dev.allow_restart_containers:
+        raise HTTPException(
+            status_code=403,
+            detail="Dispositivo não autorizado a reiniciar contêineres. Habilite a permissão em http://sentinela.local/screens."
+        )
+
+    allowed_services = ["all", "sentinela_frigate", "sentinela_backend", "sentinela_frontend", "sentinela_nginx", "sentinela_mosquitto"]
+    target = req.service_name if req.service_name in allowed_services else "sentinela_frigate"
+    
+    cmd = f"docker restart {target}" if target != "all" else "docker restart sentinela_frigate sentinela_frontend sentinela_backend"
+    proc = await asyncio.create_subprocess_shell(cmd, stdout=asyncio.subprocess.PIPE, stderr=asyncio.subprocess.PIPE)
+    stdout, stderr = await proc.communicate()
+    
+    await audit_service.log(
+        action="REMOTE_CONTAINER_RESTART",
+        module="SYSTEM",
+        severity="WARNING",
+        details=f"Dispositivo {dev.friendly_name} ({dev.device_identifier}) reiniciou contêiner {target}.",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+    return {"status": "success", "target": target, "returncode": proc.returncode}
+
+@router.post("/by-id/{device_identifier}/reboot-server")
+async def remote_reboot_server(
+    device_identifier: str,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev or dev.permission_status == "blocked" or not dev.allow_reboot_server:
+        raise HTTPException(
+            status_code=403,
+            detail="Dispositivo não autorizado a reiniciar o servidor Ubuntu. Habilite a permissão em http://sentinela.local/screens."
+        )
+
+    await audit_service.log(
+        action="REMOTE_SERVER_REBOOT",
+        module="SYSTEM",
+        severity="WARNING",
+        details=f"Dispositivo {dev.friendly_name} ({dev.device_identifier}) solicitou reinicialização do Servidor Ubuntu!",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+    
+    async def _do_reboot():
+        await asyncio.sleep(2)
+        try:
+            p = await asyncio.create_subprocess_shell("sudo /sbin/reboot || /sbin/reboot || sudo reboot || reboot")
+            await p.communicate()
+        except Exception:
+            pass
+
+    asyncio.create_task(_do_reboot())
+    return {"status": "success", "message": "Comando de reinicialização enviado ao servidor Ubuntu."}
 
 @router.put("/{device_id}/status")
 async def update_device_status(device_id: int, update: DeviceStatusUpdate, request: Request, db: AsyncSession = Depends(get_db)):
