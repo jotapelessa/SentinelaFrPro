@@ -19,6 +19,15 @@ ffmpeg:
   hwaccel_args: preset-vaapi
 
 
+# Global Model Config (ensures detector frame resizing matches OpenVINO 300x300 input)
+model:
+  path: /openvino-model/ssdlite_mobilenet_v2.xml
+  width: 300
+  height: 300
+  input_tensor: nhwc
+  input_pixel_format: bgr
+  labelmap_path: /openvino-model/coco_91cl_bkgr.txt
+
 # Detectors: Intel OpenVINO Hardware Acceleration (Auto GPU/CPU fallback)
 detectors:
   ov:
