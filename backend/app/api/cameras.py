@@ -924,7 +924,20 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 }
             }
 
-        return cfg
+        # 7. Guarantee camera objects.track includes all objects from its zones
+        if "zones" in cam_cfg and isinstance(cam_cfg["zones"], dict):
+            zone_objs = set()
+            for z_name, z_data in cam_cfg["zones"].items():
+                if isinstance(z_data, dict) and "objects" in z_data and isinstance(z_data["objects"], list):
+                    zone_objs.update(z_data["objects"])
+            if zone_objs:
+                if "objects" not in cam_cfg or not isinstance(cam_cfg["objects"], dict):
+                    cam_cfg["objects"] = {}
+                global_tracks = cfg.get("objects", {}).get("track", all_security_labels)
+                existing_track = set(cam_cfg["objects"].get("track", global_tracks))
+                cam_cfg["objects"]["track"] = list(existing_track.union(zone_objs))
+
+    return cfg
 
 async def sync_camera_to_frigate(cam: Camera):
     import os
