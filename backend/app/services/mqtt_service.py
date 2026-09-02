@@ -4,7 +4,7 @@ import logging
 import httpx
 import datetime
 from cachetools import TTLCache
-from typing import Dict, Any, Callable, List
+from typing import Dict, Any, Callable, List, Optional
 from aiomqtt import Client, MqttError
 from app.core.config import settings
 from app.db.session import AsyncSessionLocal

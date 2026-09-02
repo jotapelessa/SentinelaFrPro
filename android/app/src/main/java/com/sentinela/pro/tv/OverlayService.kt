@@ -6,29 +6,68 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.graphics.PixelFormat
+import android.graphics.Typeface
 import android.os.Build
 import android.os.IBinder
+import android.util.TypedValue
 import android.view.Gravity
-import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
 import android.widget.FrameLayout
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.core.app.NotificationCompat
+import coil.ImageLoader
+import coil.load
+import coil.request.CachePolicy
+import com.sentinela.pro.SentinelaConfig
+import com.sentinela.pro.data.SentinelaPreferences
 import com.sentinela.pro.network.SentinelaWebSocket
 import kotlinx.coroutines.*
+import okhttp3.OkHttpClient
 import org.json.JSONObject
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 class OverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
+    private var pipImageView: ImageView? = null
+    private var pipTitleView: TextView? = null
     
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
     
-    // Embedded native server domain (Tailscale Funnel)
-    private val webSocket = SentinelaWebSocket(com.sentinela.pro.SentinelaConfig.SERVER_HOST)
+    private var webSocket: SentinelaWebSocket? = null
     private var pipJob: Job? = null
+    private var frameTickerJob: Job? = null
+
+    private val imageLoader: ImageLoader by lazy {
+        val trustAll = arrayOf<TrustManager>(object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        })
+        val sslContext = SSLContext.getInstance("SSL").apply {
+            init(null, trustAll, SecureRandom())
+        }
+        val okHttpClient = OkHttpClient.Builder()
+            .sslSocketFactory(sslContext.socketFactory, trustAll[0] as X509TrustManager)
+            .hostnameVerifier { _, _ -> true }
+            .build()
+
+        ImageLoader.Builder(this)
+            .okHttpClient(okHttpClient)
+            .diskCachePolicy(CachePolicy.DISABLED)
+            .memoryCachePolicy(CachePolicy.DISABLED)
+            .build()
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -39,16 +78,22 @@ class OverlayService : Service() {
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Failed to start foreground notification: ${e.message}")
         }
+
+        val prefs = SentinelaPreferences(this)
+        val host = prefs.serverHost
+        SentinelaConfig.currentHost = host
+        webSocket = SentinelaWebSocket(host)
         
         serviceScope.launch {
-            webSocket.connectAndListen()
+            webSocket?.connectAndListen()
         }
         
         serviceScope.launch {
-            webSocket.events.collect { event ->
-                if (event.optString("type") == "pip_alert") {
-                    val camera = event.optString("camera")
-                    val label = event.optString("label")
+            webSocket?.events?.collect { event ->
+                val evType = event.optString("type")
+                if (evType == "pip_alert" || evType == "FRIGATE_EVENT") {
+                    val camera = event.optString("camera", "camera_principal")
+                    val label = event.optString("label", "MOVIMENTO")
                     showPiP(camera, label)
                 }
             }
@@ -57,7 +102,9 @@ class OverlayService : Service() {
 
     private fun showPiP(camera: String, label: String) {
         pipJob?.cancel()
-        val prefs = com.sentinela.pro.data.SentinelaPreferences(this)
+        frameTickerJob?.cancel()
+
+        val prefs = SentinelaPreferences(this)
         val pipSize = prefs.currentPipSize
         val pipPos = prefs.currentPipPosition
         val pipDur = prefs.currentPipDuration
@@ -79,16 +126,72 @@ class OverlayService : Service() {
                 y = 32
             }
             
-            overlayView = FrameLayout(this).apply {
+            val root = FrameLayout(this).apply {
                 setBackgroundColor(0xFF06B6D4.toInt()) // Cyan border
-                setPadding(4, 4, 4, 4) // Border width
-                
-                val inner = FrameLayout(this@OverlayService).apply {
-                    setBackgroundColor(0xFF000000.toInt())
-                }
-                addView(inner)
+                setPadding(4, 4, 4, 4)
             }
+
+            val inner = FrameLayout(this).apply {
+                setBackgroundColor(0xFF000000.toInt())
+            }
+
+            val iv = ImageView(this).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.MATCH_PARENT
+                )
+                scaleType = ImageView.ScaleType.CENTER_CROP
+            }
+            pipImageView = iv
+            inner.addView(iv)
+
+            // Top HUD Bar (Camera name & Label badge)
+            val hudBar = LinearLayout(this).apply {
+                orientation = LinearLayout.HORIZONTAL
+                setBackgroundColor(0xCC050E1A.toInt()) // Dark glassy background
+                setPadding(14, 8, 14, 8)
+                gravity = Gravity.CENTER_VERTICAL
+                layoutParams = FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    gravity = Gravity.TOP
+                }
+            }
+
+            val dot = View(this).apply {
+                layoutParams = LinearLayout.LayoutParams(14, 14).apply {
+                    marginEnd = 10
+                }
+                setBackgroundColor(0xFFEF4444.toInt()) // Red Live Dot
+            }
+            hudBar.addView(dot)
+
+            val tv = TextView(this).apply {
+                setTextColor(Color.WHITE)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+                typeface = Typeface.DEFAULT_BOLD
+                text = "${camera.uppercase()} • ${label.uppercase()}"
+            }
+            pipTitleView = tv
+            hudBar.addView(tv)
+            inner.addView(hudBar)
+
+            root.addView(inner)
+            overlayView = root
             windowManager.addView(overlayView, params)
+        } else {
+            pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()}"
+        }
+
+        // Start live snapshot refresh ticker (updating frame every 500ms)
+        frameTickerJob = serviceScope.launch {
+            while (isActive) {
+                val now = System.currentTimeMillis()
+                val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/$camera/latest.jpg?h=720&t=$now"
+                pipImageView?.load(snapshotUrl, imageLoader)
+                delay(500)
+            }
         }
 
         if (pipDur.seconds > 0) {
@@ -100,9 +203,13 @@ class OverlayService : Service() {
     }
 
     private fun removePiP() {
+        frameTickerJob?.cancel()
+        frameTickerJob = null
         overlayView?.let {
             windowManager.removeView(it)
             overlayView = null
+            pipImageView = null
+            pipTitleView = null
         }
     }
 

@@ -167,7 +167,7 @@ class PiPGatewayService:
         import socket
         from app.core.config import settings
         from app.services.audit_service import audit_service
-        from app.db.models import CameraConfig
+        from app.db.models import Camera
 
         async with AsyncSessionLocal() as session:
             stmt = select(PairedDevice).where(PairedDevice.id == device_id)
@@ -180,7 +180,7 @@ class PiPGatewayService:
             dev_name = dev.friendly_name
 
             # Dynamically select an existing active camera if specified one is missing
-            cam_stmt = select(CameraConfig).where(CameraConfig.enabled == True)
+            cam_stmt = select(Camera).where(Camera.enabled == True)
             cam_res = await session.execute(cam_stmt)
             active_cams = cam_res.scalars().all()
             
@@ -209,9 +209,29 @@ class PiPGatewayService:
         dispatched = False
         protocol_used = "none"
 
+        # 1. Native Sentinela WebSocket Broadcast (for Sentinela Android/Tablet/Smart TV app)
+        try:
+            from app.api.ws import ws_manager
+            if ws_manager.active_connections:
+                await ws_manager.broadcast_json({
+                    "type": "pip_alert",
+                    "camera": camera_name,
+                    "label": "TESTE DE PiP",
+                    "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
+                    "message": "Teste de Notificação Picture-in-Picture",
+                    "snapshot_url": snapshot_url,
+                    "stream_url": stream_url,
+                    "duration": 15,
+                    "device_id": device_id
+                })
+                dispatched = True
+                protocol_used = "sentinela_app_ws"
+        except Exception as e:
+            logger.debug(f"WS PiP broadcast error: {e}")
+
         async with httpx.AsyncClient(timeout=4.0) as client:
-            # 1. Native Cast
-            if dev.device_type in ["android_tv", "chromecast", "google_tv", "tcl"]:
+            # 2. Native Cast
+            if not dispatched and dev.device_type in ["android_tv", "chromecast", "google_tv", "tcl"]:
                 try:
                     cast_ok = await asyncio.to_thread(_cast_sync, target_ip, snapshot_url, "image/jpeg")
                     if cast_ok:
@@ -220,7 +240,7 @@ class PiPGatewayService:
                 except Exception as e:
                     logger.debug(f"Cast fail on {target_ip}: {e}")
 
-            # 2. PiP-Up / Notifications for Android TV REST HTTP
+            # 3. PiP-Up / Notifications for Android TV REST HTTP
             if not dispatched:
                 payload = {
                     "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
