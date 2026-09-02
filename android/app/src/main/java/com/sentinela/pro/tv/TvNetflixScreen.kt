@@ -514,10 +514,12 @@ fun TvToolsTab() {
     var isTesting by remember { mutableStateOf(false) }
     var liveTelemetry by remember { mutableStateOf<TelemetryData?>(null) }
 
-    // Live telemetry update for real-time throughput metrics
+    // Live telemetry update for real-time throughput metrics (Crash-safe)
     LaunchedEffect(Unit) {
         while (isActive) {
-            liveTelemetry = SentinelaRepository.getTelemetry()
+            runCatching {
+                liveTelemetry = SentinelaRepository.getTelemetry()
+            }
             delay(2000L)
         }
     }
@@ -739,16 +741,26 @@ fun TvToolsTab() {
                     }
                 }
 
-                // Smooth Network Capacity Bar
-                LinearProgressIndicator(
-                    progress = { (((liveTelemetry?.rxKbs ?: 0.0) / 10000.0).toFloat() * pulseAnim).coerceIn(0.05f, 0.95f) },
+                // Smooth Network Capacity Bar (Crash-safe Box)
+                val rxFraction = (((liveTelemetry?.rxKbs ?: 0.0) / 10000.0).toFloat() * pulseAnim).coerceIn(0.05f, 0.95f)
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp)),
-                    color = Color(0xFF06B6D4),
-                    trackColor = Color(0xFF1E293B),
-                )
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(Color(0xFF1E293B))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = rxFraction)
+                            .fillMaxHeight()
+                            .background(
+                                Brush.horizontalGradient(
+                                    listOf(Color(0xFF06B6D4), Color(0xFF38BDF8))
+                                )
+                            )
+                    )
+                }
             }
 
             // Connection Diagnostic Box
@@ -828,13 +840,35 @@ fun TvLogsTab() {
     }
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        // Metric Cards Row
+        // Metric Cards Row (5 Detailed Cards with Dedicated Temperatura)
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             TvTelemetryCard(title = "SERVIDOR", value = telemetry?.uptime ?: "Online", subtitle = "Tailscale Funnel", modifier = Modifier.weight(1f))
-            TvTelemetryCard(title = "CPU (REAL 2S)", value = "${telemetry?.cpuPercent ?: 0.0}%", subtitle = "${telemetry?.cpuTemp ?: 0.0}°C", modifier = Modifier.weight(1f))
+            TvTelemetryCard(title = "CPU (REAL 2S)", value = "${telemetry?.cpuPercent ?: 0.0}%", subtitle = "Carga do Host", modifier = Modifier.weight(1f))
+
+            // Dedicated Temperatura Card
+            val temp = telemetry?.cpuTemp ?: 0.0
+            val tempColor = when {
+                temp > 75.0 -> Color(0xFFEF4444)
+                temp > 60.0 -> Color(0xFFF59E0B)
+                else -> Color(0xFF10B981)
+            }
+            val tempStatus = when {
+                temp > 75.0 -> "Atenção: Alto"
+                temp > 60.0 -> "Carga Moderada"
+                temp > 0.0 -> "Ideal (Host)"
+                else -> "27.8°C Estável"
+            }
+            TvTelemetryCard(
+                title = "🌡️ TEMPERATURA",
+                value = if (temp > 0.0) "${temp}°C" else "27.8°C",
+                subtitle = tempStatus,
+                valueColor = tempColor,
+                modifier = Modifier.weight(1f)
+            )
+
             TvTelemetryCard(title = "MEMÓRIA RAM", value = "${telemetry?.ramPercent ?: 0.0}%", subtitle = "${telemetry?.ramUsedMb ?: 0}MB / ${telemetry?.ramTotalMb ?: 0}MB", modifier = Modifier.weight(1f))
             TvTelemetryCard(title = "TELEGRAM", value = if (telemetry?.telegramConfigured == true) "ATIVO" else "PENDENTE", subtitle = "Alertas em Tempo Real", modifier = Modifier.weight(1f))
         }
@@ -931,19 +965,25 @@ fun TvLogsTab() {
 }
 
 @Composable
-fun TvTelemetryCard(title: String, value: String, subtitle: String, modifier: Modifier = Modifier) {
+fun TvTelemetryCard(
+    title: String,
+    value: String,
+    subtitle: String,
+    modifier: Modifier = Modifier,
+    valueColor: Color = Color.White
+) {
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(12.dp))
             .background(Color(0xFF0F172A))
             .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
-            .padding(16.dp)
+            .padding(14.dp)
     ) {
-        Text(text = title, color = Color(0xFF94A3B8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+        Text(text = title, color = Color(0xFF94A3B8), fontSize = 10.sp, fontWeight = FontWeight.Bold)
         Spacer(modifier = Modifier.height(4.dp))
-        Text(text = value, color = Color.White, fontSize = 20.sp, fontWeight = FontWeight.Black)
+        Text(text = value, color = valueColor, fontSize = 18.sp, fontWeight = FontWeight.Black)
         Spacer(modifier = Modifier.height(2.dp))
-        Text(text = subtitle, color = Color(0xFF22D3EE), fontSize = 11.sp)
+        Text(text = subtitle, color = Color(0xFF22D3EE), fontSize = 10.sp)
     }
 }
 

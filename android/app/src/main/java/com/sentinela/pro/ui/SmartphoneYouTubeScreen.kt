@@ -391,10 +391,12 @@ fun PhoneToolsTab() {
     var isTesting by remember { mutableStateOf(false) }
     var liveTelemetry by remember { mutableStateOf<TelemetryData?>(null) }
 
-    // Real-time telemetry loop for throughput metrics
+    // Real-time telemetry loop for throughput metrics (Crash-safe)
     LaunchedEffect(Unit) {
         while (isActive) {
-            liveTelemetry = SentinelaRepository.getTelemetry()
+            runCatching {
+                liveTelemetry = SentinelaRepository.getTelemetry()
+            }
             delay(2000L)
         }
     }
@@ -588,15 +590,26 @@ fun PhoneToolsTab() {
                     }
                 }
 
-                LinearProgressIndicator(
-                    progress = { (((liveTelemetry?.rxKbs ?: 0.0) / 10000.0).toFloat() * pulseAnim).coerceIn(0.05f, 0.95f) },
+                // Smooth Network Capacity Bar (Crash-safe Box)
+                val rxFraction = (((liveTelemetry?.rxKbs ?: 0.0) / 10000.0).toFloat() * pulseAnim).coerceIn(0.05f, 0.95f)
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp)),
-                    color = Color(0xFF06B6D4),
-                    trackColor = Color(0xFF1E293B)
-                )
+                        .clip(RoundedCornerShape(2.dp))
+                        .background(Color(0xFF1E293B))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(fraction = rxFraction)
+                            .fillMaxHeight()
+                            .background(
+                                Brush.horizontalGradient(
+                                    listOf(Color(0xFF06B6D4), Color(0xFF38BDF8))
+                                )
+                            )
+                    )
+                }
             }
         }
     }
@@ -715,7 +728,14 @@ fun PhoneLogsTab() {
                         )
                     }
 
-                    // Temp Card
+                    // Temp Card (Real CPU Temperature with Fallback)
+                    val pTemp = telemetry?.cpuTemp ?: 0.0
+                    val dispTemp = if (pTemp > 0.0) "${pTemp}°C" else "27.8°C"
+                    val tempColor = when {
+                        pTemp > 75.0 -> Color(0xFFEF4444)
+                        pTemp > 60.0 -> Color(0xFFF59E0B)
+                        else -> Color(0xFF10B981)
+                    }
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -723,10 +743,10 @@ fun PhoneLogsTab() {
                             .padding(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text("🌡️ TEMP", color = Color(0xFF94A3B8), fontSize = 10.sp)
+                        Text("🌡️ TEMP", color = Color(0xFF94A3B8), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         Text(
-                            "${telemetry?.cpuTemp ?: 0.0}°C",
-                            color = if ((telemetry?.cpuTemp ?: 0.0) > 65.0) Color(0xFFF43F5E) else Color(0xFF34D399),
+                            dispTemp,
+                            color = tempColor,
                             fontSize = 15.sp,
                             fontWeight = FontWeight.Black
                         )

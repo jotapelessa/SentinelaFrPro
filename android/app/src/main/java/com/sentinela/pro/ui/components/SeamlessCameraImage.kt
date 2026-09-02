@@ -33,8 +33,8 @@ import kotlinx.coroutines.withContext
 
 /**
  * High-performance Zero-Flicker Live Camera Stream component for Jetpack Compose.
- * Keeps the last successfully decoded Bitmap on screen while the new frame is fetched and
- * decoded in the background (IO thread), guaranteeing 0ms of black screen between frames.
+ * By default, uses MseCameraView (hardware-accelerated 24 FPS MSE over persistent WebSocket via go2rtc),
+ * eliminating Tailscale connection drops and delivering native 24 FPS video.
  */
 @Composable
 fun SeamlessCameraImage(
@@ -43,8 +43,24 @@ fun SeamlessCameraImage(
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
     refreshIntervalMs: Long = 42L, // MSE 24 FPS Standard
-    isStreaming: Boolean = true
+    isStreaming: Boolean = true,
+    forceSnapshotMode: Boolean = false
 ) {
+    if (!isStreaming) {
+        Box(modifier = modifier.background(Color.Black))
+        return
+    }
+
+    if (!forceSnapshotMode) {
+        MseCameraView(
+            cameraName = cameraName,
+            modifier = modifier,
+            contentDescription = contentDescription,
+            isStreaming = isStreaming
+        )
+        return
+    }
+
     val context = LocalContext.current
     val imageLoader = LocalImageLoader.current
 
