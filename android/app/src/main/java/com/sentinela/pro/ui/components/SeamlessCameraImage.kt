@@ -42,7 +42,7 @@ fun SeamlessCameraImage(
     contentDescription: String?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
-    refreshIntervalMs: Long = 400L,
+    refreshIntervalMs: Long = 42L, // MSE 24 FPS Standard
     isStreaming: Boolean = true
 ) {
     val context = LocalContext.current
@@ -118,7 +118,7 @@ fun SeamlessCameraImage(
             }
 
             val elapsed = System.currentTimeMillis() - loopStart
-            val sleepTime = (refreshIntervalMs - elapsed).coerceIn(50L, refreshIntervalMs)
+            val sleepTime = (refreshIntervalMs - elapsed).coerceIn(10L, refreshIntervalMs)
             delay(sleepTime)
         }
     }

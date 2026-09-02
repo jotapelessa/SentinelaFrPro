@@ -253,7 +253,7 @@ class OverlayService : Service() {
                 }
 
                 val elapsed = System.currentTimeMillis() - loopStart
-                val sleepTime = (400L - elapsed).coerceIn(60L, 400L)
+                val sleepTime = (42L - elapsed).coerceIn(10L, 42L)
                 delay(sleepTime)
             }
         }

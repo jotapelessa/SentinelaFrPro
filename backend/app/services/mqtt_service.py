@@ -322,24 +322,29 @@ class MQTTService:
         score: float,
         friendly_name: Optional[str]
     ):
-        """Asynchronously polls Frigate for the finalized MP4 clip and sends to Telegram."""
-        delays = [2.0, 3.0, 5.0, 8.0, 10.0, 12.0, 15.0]
+        """Asynchronously acquires the exact duration 30 FPS MP4 video and sends to Telegram."""
+        from app.services.frigate_bridge import frigate_bridge
+
+        target_duration = max(int(duration_s), 15)
+        logger.info(f"🎬 Iniciando gravação/obtenção de clipe de {target_duration}s a 30 FPS para Telegram (Câmera: {camera}, Evento: {event_id})...")
+
+        # Strategy 1: Poll Frigate event clip and transcode to 30 FPS
+        delays = [2.0, 3.0, 5.0, 7.0, 10.0]
         for attempt, delay in enumerate(delays, start=1):
             await asyncio.sleep(delay)
             try:
-                async with httpx.AsyncClient(timeout=40.0) as client:
+                async with httpx.AsyncClient(timeout=45.0) as client:
                     clip_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
                     clip_resp = await client.get(clip_url)
                     if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
-                        logger.info(f"✅ Clipe MP4 obtido do Frigate (tentativa {attempt}/{len(delays)}, {len(clip_resp.content)} bytes). Transcodificando a 30 FPS...")
-                        from app.services.frigate_bridge import frigate_bridge
+                        logger.info(f"✅ Clipe MP4 obtido do Frigate ({len(clip_resp.content)} bytes). Transcodificando a 30 FPS fixos...")
                         smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=30)
                         sent_ok = await telegram_vault_service.send_alert_video(
                             video_bytes=smooth_video,
                             camera_name=camera,
                             label=label,
                             zone=zone_name,
-                            duration_s=duration_s,
+                            duration_s=target_duration,
                             score=score,
                             friendly_name=friendly_name
                         )
@@ -353,12 +358,35 @@ class MQTTService:
                                     ev.end_time = datetime.datetime.utcnow()
                                     await session.commit()
                             return
-                    else:
-                        logger.debug(f"Aguardando Frigate gravar MP4 ({attempt}/{len(delays)}: HTTP {clip_resp.status_code})...")
             except Exception as e:
-                logger.warning(f"Tentativa {attempt} de envio de vídeo ao Telegram falhou: {e}")
+                logger.warning(f"Tentativa {attempt} de envio de clipe do Frigate falhou: {e}")
 
-        logger.warning(f"⚠️ Clipe MP4 não finalizado a tempo pelo Frigate para o evento {event_id}.")
+        # Strategy 2: Direct RTSP live capture at 30 FPS for exact duration if Frigate clip was incomplete
+        try:
+            logger.info(f"🔄 Executando captura direta RTSP de {target_duration}s a 30 FPS para Telegram...")
+            live_clip = await frigate_bridge.record_live_video(
+                camera_name=camera,
+                duration_s=target_duration,
+                resolution="720p",
+                video_quality="balanced"
+            )
+            if live_clip and len(live_clip) > 1024:
+                sent_ok = await telegram_vault_service.send_alert_video(
+                    video_bytes=live_clip,
+                    camera_name=camera,
+                    label=label,
+                    zone=zone_name,
+                    duration_s=target_duration,
+                    score=score,
+                    friendly_name=friendly_name
+                )
+                if sent_ok:
+                    logger.info(f"✅ Vídeo de {target_duration}s a 30 FPS enviado ao Telegram com sucesso via RTSP direto!")
+                    return
+        except Exception as e:
+            logger.error(f"Erro na captura direta RTSP para Telegram: {e}")
+
+        logger.warning(f"⚠️ Não foi possível gerar o clipe de vídeo para o evento {event_id}.")
 
     async def start_listening(self):
         """Connects to MQTT and runs consumer loop with automatic reconnection."""
