@@ -6,7 +6,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
     PROJECT_NAME: str = "Sentinela Frigate Pro"
-    VERSION: str = "SentinelaPro.001.000.000.013"
+    VERSION: str = "SentinelaPro.001.000.000.014"
     ENVIRONMENT: str = "production"
     DEBUG: bool = False
     

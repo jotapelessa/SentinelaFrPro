@@ -848,12 +848,83 @@ fun TvSettingsTab() {
             }
         }
 
+        // 4. Interactive PiP Test & Live Preview Box
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFF0F172A))
+                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "4. TESTE DA JANELA PIP NA ANDROID TV",
+                    color = Color(0xFF22D3EE),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(124.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .border(2.dp, Color(0xFF06B6D4), RoundedCornerShape(8.dp))
+                    ) {
+                        SeamlessCameraImage(
+                            cameraName = "camera_principal",
+                            contentDescription = "Prévia PiP",
+                            modifier = Modifier.fillMaxSize()
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(Color(0xCC050E1A))
+                                .padding(horizontal = 6.dp, vertical = 3.dp)
+                                .align(Alignment.TopStart)
+                        ) {
+                            Text(
+                                text = "PRÉVIA: ${PipSize.values()[sizeIndex].label} • ${PipPosition.values()[posIndex].label}",
+                                color = Color.White,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Text(
+                            text = "Clique no botão abaixo para abrir a janela flutuante real sobre a TV:",
+                            color = Color(0xFF94A3B8),
+                            fontSize = 11.sp
+                        )
+
+                        TvOptionPill(
+                            label = "▶️ Abrir Janela PiP Agora",
+                            isSelected = false,
+                            onSelect = {
+                                OverlayService.triggerPiP(context, "camera_principal", "TESTE PIP")
+                                Toast.makeText(context, "🔔 Janela PiP disparada!", Toast.LENGTH_SHORT).show()
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
         // Server Host Selector
         item {
             var currentHost by remember { mutableStateOf(prefs.serverHost) }
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
-                    text = "SERVIDOR SENTINELA (CONEXÃO ATUAL)",
+                    text = "5. SERVIDOR SENTINELA (CONEXÃO ATUAL)",
                     color = Color(0xFF22D3EE),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold

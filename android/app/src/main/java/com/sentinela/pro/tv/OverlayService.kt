@@ -91,11 +91,40 @@ class OverlayService : Service() {
         serviceScope.launch {
             webSocket?.events?.collect { event ->
                 val evType = event.optString("type")
-                if (evType == "pip_alert" || evType == "FRIGATE_EVENT") {
+                if (evType == "pip_alert" || evType == "FRIGATE_EVENT" || evType == "NEW_DETECTION") {
                     val camera = event.optString("camera", "camera_principal")
                     val label = event.optString("label", "MOVIMENTO")
                     showPiP(camera, label)
                 }
+            }
+        }
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val action = intent?.action
+        if (action == "ACTION_SHOW_PIP") {
+            val cam = intent.getStringExtra("camera") ?: "camera_principal"
+            val label = intent.getStringExtra("label") ?: "TESTE PIP"
+            showPiP(cam, label)
+        }
+        return START_STICKY
+    }
+
+    companion object {
+        fun triggerPiP(context: Context, camera: String = "camera_principal", label: String = "TESTE PIP") {
+            try {
+                val intent = Intent(context, OverlayService::class.java).apply {
+                    action = "ACTION_SHOW_PIP"
+                    putExtra("camera", camera)
+                    putExtra("label", label)
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    context.startForegroundService(intent)
+                } else {
+                    context.startService(intent)
+                }
+            } catch (e: Exception) {
+                android.util.Log.e("OverlayService", "Failed to trigger PiP: ${e.message}")
             }
         }
     }
@@ -184,13 +213,48 @@ class OverlayService : Service() {
             pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()}"
         }
 
-        // Start live snapshot refresh ticker (updating frame every 500ms)
-        frameTickerJob = serviceScope.launch {
+        // Start live snapshot refresh ticker with zero-flicker background decoding & multi-channel fallback
+        frameTickerJob = serviceScope.launch(Dispatchers.IO) {
             while (isActive) {
-                val now = System.currentTimeMillis()
-                val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/$camera/latest.jpg?h=720&t=$now"
-                pipImageView?.load(snapshotUrl, imageLoader)
-                delay(500)
+                val loopStart = System.currentTimeMillis()
+                val now = loopStart
+                val urls = listOf(
+                    SentinelaConfig.getSnapshotUrl(camera, now),
+                    SentinelaConfig.getGo2rtcFrameUrl(camera, now),
+                    "${SentinelaConfig.BASE_URL}/api/cameras/$camera/snapshot?t=$now"
+                )
+
+                var decodedBitmap: android.graphics.Bitmap? = null
+                for (url in urls) {
+                    try {
+                        val req = coil.request.ImageRequest.Builder(this@OverlayService)
+                            .data(url)
+                            .memoryCachePolicy(CachePolicy.DISABLED)
+                            .diskCachePolicy(CachePolicy.DISABLED)
+                            .allowHardware(false)
+                            .build()
+                        val res = imageLoader.execute(req)
+                        if (res is coil.request.SuccessResult) {
+                            val d = res.drawable
+                            if (d is android.graphics.drawable.BitmapDrawable) {
+                                decodedBitmap = d.bitmap
+                                break
+                            }
+                        }
+                    } catch (e: Exception) {
+                        // try next fallback
+                    }
+                }
+
+                if (decodedBitmap != null) {
+                    withContext(Dispatchers.Main) {
+                        pipImageView?.setImageBitmap(decodedBitmap)
+                    }
+                }
+
+                val elapsed = System.currentTimeMillis() - loopStart
+                val sleepTime = (400L - elapsed).coerceIn(60L, 400L)
+                delay(sleepTime)
             }
         }
 
