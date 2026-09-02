@@ -94,7 +94,18 @@ class OverlayService : Service() {
                 if (evType == "pip_alert" || evType == "FRIGATE_EVENT" || evType == "NEW_DETECTION") {
                     val camera = event.optString("camera", "camera_principal")
                     val label = event.optString("label", "MOVIMENTO")
-                    showPiP(camera, label)
+                    runCatching {
+                        val policy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                        if (policy.permissionStatus == "allowed" && policy.allowPipAlerts) {
+                            val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
+                            val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { it.equals(label, ignoreCase = true) }
+                            if (camAllowed && eventAllowed) {
+                                showPiP(camera, label)
+                            }
+                        }
+                    }.getOrElse {
+                        showPiP(camera, label)
+                    }
                 }
             }
         }

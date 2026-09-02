@@ -45,23 +45,50 @@ class PiPGatewayService:
             return now_hour >= self._dnd_start_hour or now_hour < self._dnd_end_hour
         return self._dnd_start_hour <= now_hour < self._dnd_end_hour
 
-    async def get_active_tv_devices(self) -> List[Dict[str, Any]]:
-        """Fetches allowed Android TV / Tablet devices from DB."""
+    async def get_active_tv_devices(
+        self,
+        camera_name: Optional[str] = None,
+        label: Optional[str] = None
+    ) -> List[Dict[str, Any]]:
+        """Fetches allowed Android TV / Tablet devices from DB with granular camera & event filtering."""
         async with AsyncSessionLocal() as session:
-            stmt = select(PairedDevice).where(PairedDevice.permission_status == "allowed")
+            stmt = select(PairedDevice).where(
+                PairedDevice.permission_status == "allowed",
+                PairedDevice.allow_pip_alerts == True
+            )
             result = await session.execute(stmt)
             devices = result.scalars().all()
-            return [
-                {
+            filtered_devices = []
+            for d in devices:
+                # 1. Filter by allowed cameras if specified
+                if camera_name and d.allowed_cameras:
+                    try:
+                        cams = json.loads(d.allowed_cameras)
+                        if cams and len(cams) > 0 and camera_name not in cams:
+                            continue
+                    except Exception:
+                        pass
+
+                # 2. Filter by allowed events / labels if specified
+                if label and d.allowed_events:
+                    try:
+                        events = json.loads(d.allowed_events)
+                        if events and len(events) > 0 and label.lower() not in [e.lower() for e in events]:
+                            continue
+                    except Exception:
+                        pass
+
+                filtered_devices.append({
                     "id": d.id,
                     "name": d.friendly_name,
                     "type": d.device_type,
                     "target_ip": d.tailscale_ip if d.tailscale_ip else d.ip_address,
                     "local_ip": d.ip_address,
-                    "tailscale_ip": d.tailscale_ip
-                }
-                for d in devices
-            ]
+                    "tailscale_ip": d.tailscale_ip,
+                    "pip_default_size": d.pip_default_size or "medium",
+                    "pip_duration_seconds": d.pip_duration_seconds or 10
+                })
+            return filtered_devices
 
     async def dispatch_pip_alert(
         self,
@@ -80,9 +107,9 @@ class PiPGatewayService:
             logger.info("PiP alert skipped due to active Do-Not-Disturb (DND) schedule.")
             return {"status": "skipped", "reason": "dnd_active"}
 
-        devices = await self.get_active_tv_devices()
+        devices = await self.get_active_tv_devices(camera_name=camera_name, label=label)
         if not devices:
-            logger.info("No paired TV devices found for PiP dispatch.")
+            logger.info(f"No paired TV devices found for PiP dispatch (Camera: {camera_name}, Label: {label}).")
             return {"status": "no_devices", "dispatched": 0}
 
         results = []

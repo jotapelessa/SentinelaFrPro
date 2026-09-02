@@ -131,7 +131,9 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
     dev = res.scalar_one_or_none()
 
     if dev:
-        dev.friendly_name = hb.friendly_name
+        # Preserve custom friendly_name configured by the user in /screens
+        if not dev.friendly_name:
+            dev.friendly_name = hb.friendly_name
         dev.device_type = hb.device_type
         if hb.ip_address:
             dev.ip_address = hb.ip_address
@@ -207,13 +209,13 @@ async def get_device_permitted_cameras(device_identifier: str, db: AsyncSession 
 
     try:
         allowed_list = json.loads(dev.allowed_cameras)
-        if not allowed_list:
+        if allowed_list is None or len(allowed_list) == 0:
             return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
         filtered = [
             {"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled}
             for c in all_cams if c.name in allowed_list
         ]
-        return filtered if filtered else [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
+        return filtered
     except Exception:
         return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
 

@@ -35,10 +35,11 @@ interface DeviceHealth {
 }
 
 export default function ScreensPage() {
-  const { cameras } = useSentinelaStore();
+  const { cameras, setCameras } = useSentinelaStore();
   const [devices, setDevices] = useState<PairedDevice[]>([]);
   const [healthMap, setHealthMap] = useState<Record<number, boolean>>({});
   const [loading, setLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
   const [testingPiP, setTestingPiP] = useState(false);
   const [testingDeviceId, setTestingDeviceId] = useState<number | null>(null);
   const [testResult, setTestResult] = useState<string | null>(null);
@@ -60,6 +61,18 @@ export default function ScreensPage() {
   });
 
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+
+  const fetchCameras = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/cameras/`);
+      if (res.ok) {
+        const data = await res.json();
+        setCameras(data);
+      }
+    } catch (e) {
+      console.error("Failed to fetch cameras:", e);
+    }
+  };
 
   const fetchDevices = async () => {
     setLoading(true);
@@ -95,6 +108,7 @@ export default function ScreensPage() {
   useEffect(() => {
     fetchDevices();
     fetchHealth();
+    fetchCameras();
   }, []);
 
   const handleScanTVs = async () => {
@@ -264,7 +278,20 @@ export default function ScreensPage() {
   const [runningDiagnostics, setRunningDiagnostics] = useState(false);
 
   const handleManageDevice = (device: PairedDevice) => {
-    setManagingDevice(device);
+    const effectiveAllowedCameras = device.allowed_cameras && device.allowed_cameras.length > 0
+      ? device.allowed_cameras
+      : cameras.map(c => c.name);
+
+    const allEvents = ["person", "car", "motorcycle", "dog", "cat", "bus"];
+    const effectiveAllowedEvents = device.allowed_events && device.allowed_events.length > 0
+      ? device.allowed_events
+      : allEvents;
+
+    setManagingDevice({
+      ...device,
+      allowed_cameras: effectiveAllowedCameras,
+      allowed_events: effectiveAllowedEvents
+    });
     setDeviceDiagnostics(null);
   };
 
@@ -538,6 +565,23 @@ export default function ScreensPage() {
                     </div>
                   </div>
 
+                  <div className="grid grid-cols-2 gap-2 text-slate-400 pt-1 border-t border-slate-800/40">
+                    <div>
+                      <span className="text-slate-500 block text-[10px]">Câmeras:</span>
+                      <span className="text-emerald-400 font-bold text-[11px]">
+                        {device.allowed_cameras && device.allowed_cameras.length > 0
+                          ? `${device.allowed_cameras.length} selecionada(s)`
+                          : "Todas (Livre)"}
+                      </span>
+                    </div>
+                    <div>
+                      <span className="text-slate-500 block text-[10px]">Alertas PiP:</span>
+                      <span className={`font-bold text-[11px] ${device.allow_pip_alerts !== false ? "text-cyan-300" : "text-slate-500"}`}>
+                        {device.allow_pip_alerts !== false ? `Ativo (${device.pip_duration_seconds || 10}s)` : "Desativado"}
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Individual TV Test Button */}
                   <button
                     disabled={isTesting}
@@ -573,7 +617,7 @@ export default function ScreensPage() {
                 </div>
                 <div>
                   <h2 className="text-xl font-black text-white">{managingDevice.friendly_name}</h2>
-                  <p className="text-xs text-slate-400 font-mono uppercase">{managingDevice.device_type}</p>
+                  <p className="text-xs text-slate-400 font-mono uppercase">{managingDevice.device_type} • ID: {managingDevice.device_identifier}</p>
                 </div>
               </div>
               <button
@@ -592,7 +636,19 @@ export default function ScreensPage() {
                     <Info className="w-4 h-4 text-cyan-400" />
                     Identificação e Endereço
                   </h3>
-                  <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  <div>
+                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">
+                      Nome Amigável / Identificador da Tela:
+                    </label>
+                    <input
+                      type="text"
+                      value={managingDevice.friendly_name}
+                      onChange={(e) => setManagingDevice({ ...managingDevice, friendly_name: e.target.value })}
+                      className="w-full bg-slate-900 border border-slate-700 text-white rounded-xl px-3 py-2 text-xs focus:border-cyan-500 focus:outline-none transition-colors"
+                      placeholder="Ex: Smart TV Sala, Celular Portaria..."
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs font-mono pt-1">
                     <div>
                       <span className="text-slate-500 block text-[10px]">IP Local (LAN)</span>
                       <span className="text-slate-200">{managingDevice.ip_address}</span>
@@ -869,16 +925,18 @@ export default function ScreensPage() {
                   Cancelar
                 </button>
                 <button
+                  disabled={isSaving}
                   onClick={async () => {
+                    setIsSaving(true);
                     try {
-                      await fetch(`${apiUrl}/devices/${managingDevice.id}/permissions`, {
+                      const res = await fetch(`${apiUrl}/devices/${managingDevice.id}/permissions`, {
                         method: "PUT",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
                           friendly_name: managingDevice.friendly_name,
                           permission_status: managingDevice.permission_status,
-                          allowed_cameras: managingDevice.allowed_cameras,
-                          allowed_events: managingDevice.allowed_events,
+                          allowed_cameras: managingDevice.allowed_cameras || [],
+                          allowed_events: managingDevice.allowed_events || [],
                           allow_recordings: managingDevice.allow_recordings !== false,
                           allow_live_stream: managingDevice.allow_live_stream !== false,
                           allow_pip_alerts: managingDevice.allow_pip_alerts !== false,
@@ -888,18 +946,26 @@ export default function ScreensPage() {
                           pip_duration_seconds: managingDevice.pip_duration_seconds || 10
                         })
                       });
+                      if (!res.ok) {
+                        const errData = await res.json().catch(() => ({}));
+                        throw new Error(errData.detail || `HTTP ${res.status}`);
+                      }
                       await fetchDevices();
                       setManagingDevice(null);
-                      setTestResult(`✅ Permissões de ${managingDevice.friendly_name} salvas com sucesso!`);
-                      setTimeout(() => setTestResult(null), 4000);
-                    } catch (err) {
+                      setTestResult(`✅ Permissões e configurações de '${managingDevice.friendly_name}' salvas com sucesso!`);
+                      setTimeout(() => setTestResult(null), 5000);
+                    } catch (err: any) {
                       console.error("Failed to save device permissions:", err);
+                      setTestResult(`❌ Falha ao salvar: ${err.message || "Erro de conexão"}`);
+                      setTimeout(() => setTestResult(null), 5000);
+                    } finally {
+                      setIsSaving(false);
                     }
                   }}
-                  className="px-6 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2"
+                  className="px-6 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
                 >
                   <Check className="w-4 h-4" />
-                  <span>Salvar Permissões</span>
+                  <span>{isSaving ? "Salvando..." : "Salvar Alterações"}</span>
                 </button>
               </div>
             </div>
