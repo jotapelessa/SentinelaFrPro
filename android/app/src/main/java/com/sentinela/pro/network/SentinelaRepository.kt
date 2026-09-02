@@ -234,20 +234,33 @@ object SentinelaRepository {
 
                 val cpu = obj.optJSONObject("cpu")
                 val ram = obj.optJSONObject("ram")
-                val uptime = obj.optString("uptime", "Ativo")
+                val net = obj.optJSONObject("network")
+                val uptime = obj.optString("uptime", "Online")
                 val tg = obj.optJSONObject("telegram")
+
+                val parsedCpuPercent = cpu?.let {
+                    if (it.has("usage_percent")) it.optDouble("usage_percent")
+                    else it.optDouble("percent", 0.0)
+                } ?: 0.0
+
+                val parsedCpuTemp = cpu?.let {
+                    if (it.has("temperature_celsius")) it.optDouble("temperature_celsius")
+                    else it.optDouble("temperature", 0.0)
+                } ?: 0.0
 
                 return@withContext TelemetryData(
                     serverOnline = true,
                     tailscaleOnline = true,
-                    cpuPercent = cpu?.optDouble("percent", 12.5) ?: 12.5,
-                    cpuTemp = cpu?.optDouble("temperature", 45.0) ?: 45.0,
-                    ramPercent = ram?.optDouble("percent", 35.0) ?: 35.0,
-                    ramUsedMb = ram?.optLong("used_mb", 2048) ?: 2048,
-                    ramTotalMb = ram?.optLong("total_mb", 8192) ?: 8192,
+                    cpuPercent = parsedCpuPercent,
+                    cpuTemp = parsedCpuTemp,
+                    ramPercent = ram?.optDouble("percent", 0.0) ?: 0.0,
+                    ramUsedMb = ram?.optLong("used_mb", 0L) ?: 0L,
+                    ramTotalMb = ram?.optLong("total_mb", 0L) ?: 0L,
                     uptime = uptime,
                     telegramConfigured = tg?.optBoolean("configured", true) ?: true,
-                    telegramPaused = tg?.optBoolean("paused", false) ?: false
+                    telegramPaused = tg?.optBoolean("paused", false) ?: false,
+                    rxKbs = net?.optDouble("rx_kbs", 0.0) ?: 0.0,
+                    txKbs = net?.optDouble("tx_kbs", 0.0) ?: 0.0
                 )
             }
             conn.disconnect()
@@ -256,15 +269,17 @@ object SentinelaRepository {
         }
 
         TelemetryData(
-            serverOnline = true,
-            tailscaleOnline = true,
-            cpuPercent = 8.4,
-            cpuTemp = 42.0,
-            ramPercent = 28.0,
-            ramUsedMb = 2100,
-            ramTotalMb = 8192,
-            uptime = "Online (Tailscale)",
-            telegramConfigured = true
+            serverOnline = false,
+            tailscaleOnline = false,
+            cpuPercent = 0.0,
+            cpuTemp = 0.0,
+            ramPercent = 0.0,
+            ramUsedMb = 0L,
+            ramTotalMb = 0L,
+            uptime = "Reconectando...",
+            telegramConfigured = false,
+            rxKbs = 0.0,
+            txKbs = 0.0
         )
     }
 

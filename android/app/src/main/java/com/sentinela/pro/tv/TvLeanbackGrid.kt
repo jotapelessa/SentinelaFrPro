@@ -151,7 +151,7 @@ fun TvCameraCard(
             contentDescription = camera.friendlyName,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            refreshIntervalMs = 400L
+            refreshIntervalMs = 42L // MSE 24 FPS Standard
         )
 
         // Top Status Header
@@ -250,7 +250,7 @@ fun TvFullScreenCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
                 contentDescription = camera.friendlyName,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
-                refreshIntervalMs = 250L
+                refreshIntervalMs = 42L // MSE 24 FPS Standard
             )
 
             Box(

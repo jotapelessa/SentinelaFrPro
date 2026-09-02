@@ -47,6 +47,21 @@ class TelemetryService:
         # Fallback / Dev environment value (Intel Celeron Jasper Lake idle)
         return 37.5
 
+    def get_uptime_string(self) -> str:
+        try:
+            boot_time = psutil.boot_time()
+            uptime_seconds = int(time.time() - boot_time)
+            days = uptime_seconds // 86400
+            hours = (uptime_seconds % 86400) // 3600
+            minutes = (uptime_seconds % 3600) // 60
+            if days > 0:
+                return f"{days}d {hours}h {minutes}m"
+            if hours > 0:
+                return f"{hours}h {minutes}m"
+            return f"{minutes}m"
+        except Exception:
+            return "Online"
+
     def get_telemetry_snapshot(self) -> Dict[str, Any]:
         now = time.time()
         dt = max(now - self._last_time, 0.1)
@@ -69,11 +84,16 @@ class TelemetryService:
             disk_path = "/media/frigate"
         disk = psutil.disk_usage(disk_path)
 
+        cpu_temp = self.get_cpu_temperature()
+
         return {
             "timestamp": now,
+            "uptime": self.get_uptime_string(),
             "cpu": {
                 "usage_percent": round(cpu_pct, 1),
-                "temperature_celsius": self.get_cpu_temperature(),
+                "percent": round(cpu_pct, 1),
+                "temperature_celsius": cpu_temp,
+                "temperature": cpu_temp,
                 "cores": [round(c, 1) for c in cpu_cores_pct],
                 "count": psutil.cpu_count(logical=True)
             },

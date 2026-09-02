@@ -28,7 +28,9 @@ data class TelemetryData(
     val ramTotalMb: Long = 0,
     val uptime: String = "Online",
     val telegramConfigured: Boolean = true,
-    val telegramPaused: Boolean = false
+    val telegramPaused: Boolean = false,
+    val rxKbs: Double = 0.0,
+    val txKbs: Double = 0.0
 )
 
 data class AuditLogEntry(

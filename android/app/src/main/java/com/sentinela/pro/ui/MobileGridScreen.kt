@@ -82,6 +82,20 @@ fun MobileGridScreen(
                                     fontSize = 10.sp
                                 )
                             }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Box(
+                                modifier = Modifier
+                                    .background(Color(0xFF1E293B), RoundedCornerShape(4.dp))
+                                    .border(1.dp, Color(0xFF334155), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}",
+                                    color = Color(0xFFE2E8F0),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                         Text(
                             text = "${cameras.size} câmeras conectadas",
@@ -153,7 +167,7 @@ fun CameraCardMobile(
             contentDescription = camera.friendlyName,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            refreshIntervalMs = 400L
+            refreshIntervalMs = 42L // MSE 24 FPS Standard
         )
 
         // Top Status Header Overlay
