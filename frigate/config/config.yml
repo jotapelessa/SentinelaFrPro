@@ -24,6 +24,13 @@ detectors:
   ov:
     type: openvino
     device: AUTO
+    model:
+      path: /openvino-model/ssdlite_mobilenet_v2.xml
+      width: 300
+      height: 300
+      input_tensor: nhwc
+      input_pixel_format: bgr
+      labelmap_path: /openvino-model/coco_91cl_bkgr.txt
 
 
 # Motion Detection Fine-Tuning (High Sensitivity, Natural Lighting)
@@ -83,9 +90,8 @@ snapshots:
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:8554/stream#transport=tcp
-      - rtsp://192.168.1.6:8554/live#transport=tcp
-      - ffmpeg:rtsp://192.168.1.6:8554/stream#video=copy#audio=copy
+      - rtsp://192.168.1.6:8554/stream
+      - rtsp://192.168.1.6:8554/live
   webrtc:
     candidates:
       - 192.168.1.252:8555
