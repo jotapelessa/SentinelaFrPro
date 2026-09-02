@@ -80,6 +80,9 @@ export interface Camera {
   objects_to_track?: string;
   min_score?: number;
   record_mode?: string;
+  stream_mode?: "eco" | "mse" | "webrtc" | string;
+  eco_fps?: number;
+  record_fps?: number;
   record_retain_days?: number;
   record_audio?: boolean;
   notify_telegram?: boolean;

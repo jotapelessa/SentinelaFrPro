@@ -19,6 +19,9 @@ class CameraCreate(BaseModel):
     ip_address: Optional[str] = None
     onvif_port: Optional[int] = 80
     enabled: Optional[bool] = True
+    stream_mode: Optional[str] = "mse"
+    eco_fps: Optional[int] = 10
+    record_fps: Optional[int] = 24
 
 @router.get("/")
 async def list_cameras(db: AsyncSession = Depends(get_db)):
@@ -183,6 +186,9 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
             "objects_to_track": c.objects_to_track,
             "min_score": c.min_score,
             "record_mode": c.record_mode,
+            "stream_mode": getattr(c, "stream_mode", "mse") or "mse",
+            "eco_fps": getattr(c, "eco_fps", 10) or 10,
+            "record_fps": getattr(c, "record_fps", 24) or 24,
             "record_retain_days": c.record_retain_days,
             "record_audio": c.record_audio,
             "notify_telegram": c.notify_telegram,
@@ -353,6 +359,9 @@ class CameraUpdate(BaseModel):
     objects_to_track: Optional[str] = None
     min_score: Optional[float] = None
     record_mode: Optional[str] = None
+    stream_mode: Optional[str] = None
+    eco_fps: Optional[int] = None
+    record_fps: Optional[int] = None
     record_retain_days: Optional[int] = None
     record_audio: Optional[bool] = None
     notify_telegram: Optional[bool] = None
@@ -996,7 +1005,7 @@ async def sync_camera_to_frigate(cam: Camera):
                 "inputs": [
                     {
                         "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
-                        "input_args": "preset-rtsp-generic",
+                        "input_args": "preset-rtsp-restream",
                         "roles": ["detect", "record"]
                     }
                 ]

@@ -20,8 +20,10 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
 }) => {
   const { activeDetections, motionStatus, liveObjectCounts } = useSentinelaStore();
   
-  // Default to "monitor" (5 FPS 720p) for zero-lag, low-CPU, 100% synchrony with Frigate
-  const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">("monitor");
+  // Default to camera's configured mode or "mse" (24 FPS)
+  const initialMode = (camera.stream_mode === "eco" ? "monitor" : camera.stream_mode) as ("monitor" | "webrtc" | "mse") || "monitor";
+  const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">(initialMode);
+  const [ecoFps, setEcoFps] = useState<number>(camera.eco_fps || 10);
   const [key, setKey] = useState(0);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [frameUrl, setFrameUrl] = useState<string>(`/frigate/api/${camera.name || "camera_principal"}/latest.jpg?h=720`);
@@ -52,13 +54,14 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
     setKey((prev) => prev + 1);
   };
 
-  // Double-buffered 5 FPS frame ticker: Preloads next frame in memory before swapping
+  // Double-buffered Eco FPS frame ticker: Preloads next frame in memory before swapping
   // Guarantees zero buffering lag, zero memory accumulation, and perfect 1:1 synchrony with Frigate
   useEffect(() => {
     if (streamMode !== "monitor") return;
 
     let active = true;
     let timer: NodeJS.Timeout;
+    const intervalMs = Math.max(50, Math.round(1000 / (ecoFps || 10)));
 
     const fetchNextFrame = () => {
       const nextSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=720&t=${Date.now()}`;
@@ -67,8 +70,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
         if (active) {
           setFrameUrl(nextSrc);
           setIsLiveOnline(true);
-          // 5 FPS = 200ms per frame
-          timer = setTimeout(fetchNextFrame, 200);
+          timer = setTimeout(fetchNextFrame, intervalMs);
         }
       };
       img.onerror = () => {
@@ -80,7 +82,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
             if (active) {
               setFrameUrl(gSrc);
               setIsLiveOnline(true);
-              timer = setTimeout(fetchNextFrame, 200);
+              timer = setTimeout(fetchNextFrame, intervalMs);
             }
           };
           gImg.onerror = () => {
@@ -101,7 +103,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
       active = false;
       clearTimeout(timer);
     };
-  }, [streamMode, cameraSrc, key]);
+  }, [streamMode, cameraSrc, ecoFps, key]);
 
   const getStreamUrl = () => {
     switch (streamMode) {
@@ -217,7 +219,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
             {streamMode === "monitor" ? (
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
                 <Gauge className="w-2.5 h-2.5" />
-                5 FPS (Eco & Sync Total)
+                {ecoFps} FPS (Eco & Sync Total)
               </span>
             ) : streamMode === "webrtc" ? (
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold flex items-center gap-1">
@@ -227,7 +229,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
             ) : (
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold flex items-center gap-1">
                 <Zap className="w-2.5 h-2.5" />
-                MSE (60 FPS)
+                MSE (24 FPS)
               </span>
             )}
 
@@ -266,9 +268,9 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
               className={`px-2 py-1 rounded transition-all ${
                 streamMode === "monitor" ? "bg-emerald-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
               }`}
-              title="Modo Monitor (5 FPS @ 720p: Sem delay acumulado, Consumo CPU Mínimo)"
+              title={`Modo Eco (${ecoFps} FPS @ 720p: Zero atraso, CPU Mínima)`}
             >
-              5 FPS (Sync)
+              Eco ({ecoFps} FPS)
             </button>
             <button
               onClick={() => setStreamMode("webrtc")}
@@ -284,9 +286,9 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
               className={`px-2 py-1 rounded transition-all ${
                 streamMode === "mse" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
               }`}
-              title="MSE (Fluxo Contínuo 60 FPS)"
+              title="MSE (Fluxo Contínuo 24 FPS)"
             >
-              MSE
+              MSE (24 FPS)
             </button>
           </div>
 

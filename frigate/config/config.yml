@@ -113,7 +113,7 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-generic
+          input_args: preset-rtsp-restream
           roles:
             - detect
             - record

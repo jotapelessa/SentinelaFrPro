@@ -120,8 +120,11 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [trackedObjects, setTrackedObjects] = useState<string[]>(initialObjects);
   const [minScore, setMinScore] = useState(camera.min_score ? Math.round(camera.min_score * 100) : 70);
 
-  // Recording State
+  // Recording & Streaming State
   const [recordMode, setRecordMode] = useState(camera.record_mode || "motion");
+  const [streamMode, setStreamMode] = useState(camera.stream_mode || "mse");
+  const [ecoFps, setEcoFps] = useState(camera.eco_fps || 10);
+  const [recordFps, setRecordFps] = useState(camera.record_fps || 24);
   const [retainDays, setRetainDays] = useState(camera.record_retain_days || 14);
   const [recordAudio, setRecordAudio] = useState(camera.record_audio ?? false);
 
@@ -158,6 +161,9 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
           objects_to_track: JSON.stringify(trackedObjects),
           min_score: minScore / 100,
           record_mode: recordMode,
+          stream_mode: streamMode,
+          eco_fps: ecoFps,
+          record_fps: recordFps,
           record_retain_days: retainDays,
           record_audio: recordAudio,
           notify_telegram: notifyTelegram,
@@ -498,9 +504,92 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
             </div>
           )}
 
-          {/* TAB 3: GRAVAÇÃO & RETENÇÃO */}
+          {/* TAB 3: GRAVAÇÃO & TRANSMISSÃO */}
           {activeTab === "record" && (
             <div className="space-y-4">
+              {/* Modo de Transmissão ao Vivo */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                <label className="block text-slate-300 font-bold">Modo Padrão de Visualização Ao Vivo:</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setStreamMode("eco")}
+                    className={`p-2.5 rounded-xl border text-center transition-all ${
+                      streamMode === "eco" || streamMode === "monitor" ? "bg-emerald-500/10 border-emerald-500/50 text-emerald-300" : "bg-slate-800/80 border-slate-700 text-slate-400"
+                    }`}
+                  >
+                    <strong className="block text-white font-bold text-xs">Eco - Sync Total</strong>
+                    <span className="text-[9px] text-slate-400">Zero delay acumulado</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStreamMode("mse")}
+                    className={`p-2.5 rounded-xl border text-center transition-all ${
+                      streamMode === "mse" ? "bg-cyan-500/10 border-cyan-500/50 text-cyan-300" : "bg-slate-800/80 border-slate-700 text-slate-400"
+                    }`}
+                  >
+                    <strong className="block text-white font-bold text-xs">MSE (24 FPS)</strong>
+                    <span className="text-[9px] text-slate-400">Fluxo contínuo fluido</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStreamMode("webrtc")}
+                    className={`p-2.5 rounded-xl border text-center transition-all ${
+                      streamMode === "webrtc" ? "bg-cyan-500/10 border-cyan-500/50 text-cyan-300" : "bg-slate-800/80 border-slate-700 text-slate-400"
+                    }`}
+                  >
+                    <strong className="block text-white font-bold text-xs">WebRTC (&lt;50ms)</strong>
+                    <span className="text-[9px] text-slate-400">Ultra-baixa latência</span>
+                  </button>
+                </div>
+
+                {/* Eco FPS Selection */}
+                {(streamMode === "eco" || streamMode === "monitor") && (
+                  <div className="pt-2 border-t border-slate-800">
+                    <label className="text-slate-300 font-bold block mb-1.5 text-[11px]">Taxa de Quadros do Modo Eco:</label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {[5, 10, 15].map((fps) => (
+                        <button
+                          key={fps}
+                          type="button"
+                          onClick={() => setEcoFps(fps)}
+                          className={`py-1.5 px-2 rounded-lg border text-xs font-mono font-bold transition-all ${
+                            ecoFps === fps ? "bg-emerald-500 text-obsidian-950 border-emerald-400 shadow-md shadow-emerald-500/20" : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
+                          }`}
+                        >
+                          {fps} FPS {fps === 5 ? "(Econômico)" : fps === 10 ? "(Equilibrado)" : "(Fluido)"}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Taxa de Gravação de Vídeo */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-300 font-bold">Taxa de Quadros da Gravação (FPS):</label>
+                  <span className="text-xs font-mono font-bold text-cyan-400">{recordFps} FPS</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {[24, 30].map((fps) => (
+                    <button
+                      key={fps}
+                      type="button"
+                      onClick={() => setRecordFps(fps)}
+                      className={`py-2 px-3 rounded-lg border text-xs font-bold transition-all ${
+                        recordFps === fps ? "bg-cyan-500 text-obsidian-950 border-cyan-400 shadow-md shadow-cyan-500/20" : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      {fps} FPS {fps === 24 ? "(Recomendado / 24 FPS)" : "(Máximo / 30 FPS)"}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[10px] text-slate-500 block">Garante que as gravações de vídeo no Frigate e no SSD sejam suaves e sem travamentos.</span>
+              </div>
+
               <div>
                 <label className="block text-slate-300 font-bold mb-2">Modo de Gravação no SSD NVMe:</label>
                 <div className="grid grid-cols-2 gap-3">
