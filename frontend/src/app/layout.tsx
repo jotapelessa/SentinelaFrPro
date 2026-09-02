@@ -42,6 +42,22 @@ export default function RootLayout({
           <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
             {children}
           </main>
+          <footer className="w-full border-t border-slate-900 bg-obsidian-950/80 backdrop-blur-sm py-3 px-4 text-center">
+            <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500 font-mono">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                <span className="text-slate-300 font-bold">Sentinela Frigate Pro</span>
+                <span>• NVR Inteligente</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 font-bold text-[11px]">
+                  SentinelaPro.001.000.000.005
+                </span>
+                <span className="text-slate-600">|</span>
+                <span>Intel Jasper Lake N5105 QSV</span>
+              </div>
+            </div>
+          </footer>
           <ScannerModal />
           <AlertToast />
         </WebSocketProvider>
