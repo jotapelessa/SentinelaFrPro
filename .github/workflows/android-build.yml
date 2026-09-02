@@ -1,20 +1,24 @@
-name: Android CI Build
+name: Android CI & Automatic Release
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
     
-    - name: set up JDK 17
+    - name: Set up JDK 17
       uses: actions/setup-java@v5
       with:
         java-version: '17'
@@ -25,20 +29,80 @@ jobs:
       with:
         gradle-version: '8.5'
         
+    - name: Read & Format Version
+      id: get_version
+      run: |
+        VERSION_FILE="android/version.properties"
+        if [ -f "$VERSION_FILE" ]; then
+          source "$VERSION_FILE"
+        fi
+        MAJOR=${MAJOR:-001}
+        MINOR=${MINOR:-000}
+        PATCH=${PATCH:-000}
+        BUILD=${BUILD:-001}
+        FORMATTED_VERSION="$(printf "%03d.%03d.%03d.%03d" "$((10#$MAJOR))" "$((10#$MINOR))" "$((10#$PATCH))" "$((10#$BUILD))")"
+        TAG_NAME="v${FORMATTED_VERSION}"
+        echo "version=${FORMATTED_VERSION}" >> $GITHUB_OUTPUT
+        echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
+        echo "📦 Compilando Versão: ${FORMATTED_VERSION} (Tag: ${TAG_NAME})"
+
     - name: Build Android TV and Smartphone APKs
       working-directory: android
       run: |
         chmod +x gradlew
         ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon
 
-    - name: Upload Android TV APK
-      uses: actions/upload-artifact@v4
-      with:
-        name: Sentinela-Android-TV.apk
-        path: android/app/build/outputs/apk/tv/debug/app-tv-debug.apk
+    - name: Prepare Release Artifacts
+      run: |
+        mkdir -p release-apks
+        VER="${{ steps.get_version.outputs.version }}"
+        
+        # Copy and rename APKs
+        cp android/app/build/outputs/apk/tv/debug/app-tv-debug.apk release-apks/sentinela-android-tv-v${VER}.apk
+        cp android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk release-apks/sentinela-android-smartphone-v${VER}.apk
+        cp android/app/build/outputs/apk/tv/debug/app-tv-debug.apk release-apks/sentinela-android-tv-latest.apk
+        cp android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk release-apks/sentinela-android-smartphone-latest.apk
+        
+        ls -la release-apks/
 
-    - name: Upload Android Smartphone APK
+    - name: Upload Artifacts to Run Summary
       uses: actions/upload-artifact@v4
       with:
-        name: Sentinela-Android-Smartphone.apk
-        path: android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk
+        name: sentinela-apks-v${{ steps.get_version.outputs.version }}
+        path: release-apks/*
+
+    - name: Publish to GitHub Releases
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: ${{ steps.get_version.outputs.tag }}
+        name: "Sentinela Pro Client v${{ steps.get_version.outputs.version }}"
+        draft: false
+        prerelease: false
+        make_latest: true
+        files: |
+          release-apks/sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk
+          release-apks/sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk
+          release-apks/sentinela-android-tv-latest.apk
+          release-apks/sentinela-android-smartphone-latest.apk
+        body: |
+          # 🛡️ Sentinela Frigate Pro - APKs de Cliente (v${{ steps.get_version.outputs.version }})
+
+          Esta release foi gerada automaticamente pelo pipeline de CI/CD do Sentinela Frigate Pro.
+
+          ### 📦 Aplicativos Disponíveis para Download:
+          - 📺 **Android TV / TV Box**: [`sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/${{ steps.get_version.outputs.tag }}/sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk)
+            * Navegação otimizada para D-Pad / Controle Remoto
+            * Suporte a Notificações Flutuantes Picture-in-Picture (PiP 8 tamanhos)
+            * Live Feed contínuo das câmeras com SSL Tailscale bypass
+          - 📱 **Tablet & Smartphone**: [`sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/${{ steps.get_version.outputs.tag }}/sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk)
+            * Interface estilo YouTube com feed vertical e suporte a toque
+            * Zoom digital de até 5x e grade dinâmica de câmeras
+            * Transmissão em tempo real de snapshots e eventos via WebSocket
+
+          ### 🚀 Melhorias Desta Versão:
+          - ✅ **Live PiP Overlay**: Janela flutuante no Android exibindo vídeo e imagem ao vivo com indicador de status e nome da câmera.
+          - ✅ **Global SSL Bypass no Coil**: Correção completa para conexões Tailscale HTTPS (`.ts.net`) e IPs locais sem restrições de certificado.
+          - ✅ **WebSocket Native Dispatch**: Handshake em tempo real entre o backend e os dispositivos pareados na tela de `/screens`.
+          - ✅ **Frigate 0.17 Zone Sync**: Resolução total do Modo de Segurança (*Safe Mode*) do Frigate NVR.
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
