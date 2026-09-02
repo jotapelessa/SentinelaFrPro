@@ -22,6 +22,8 @@ class CameraCreate(BaseModel):
     stream_mode: Optional[str] = "mse"
     eco_fps: Optional[int] = 10
     record_fps: Optional[int] = 24
+    detect_fps: Optional[int] = 5
+    motion_threshold: Optional[int] = 25
 
 @router.get("/")
 async def list_cameras(db: AsyncSession = Depends(get_db)):
@@ -185,6 +187,8 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
             "zones": c.zones,
             "objects_to_track": c.objects_to_track,
             "min_score": c.min_score,
+            "detect_fps": getattr(c, "detect_fps", 5) or 5,
+            "motion_threshold": getattr(c, "motion_threshold", 25) or 25,
             "record_mode": c.record_mode,
             "stream_mode": getattr(c, "stream_mode", "mse") or "mse",
             "eco_fps": getattr(c, "eco_fps", 10) or 10,
@@ -358,6 +362,8 @@ class CameraUpdate(BaseModel):
     zones: Optional[str] = None
     objects_to_track: Optional[str] = None
     min_score: Optional[float] = None
+    detect_fps: Optional[int] = None
+    motion_threshold: Optional[int] = None
     record_mode: Optional[str] = None
     stream_mode: Optional[str] = None
     eco_fps: Optional[int] = None
@@ -1057,6 +1063,17 @@ async def sync_camera_to_frigate(cam: Camera):
                     cam_block["objects"]["track"] = objs
             except Exception:
                 pass
+
+        # Sync detect fps & motion sensitivity
+        if getattr(cam, "detect_fps", None) is not None:
+            if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
+                cam_block["detect"] = {"width": 1280, "height": 720, "fps": 5}
+            cam_block["detect"]["fps"] = int(cam.detect_fps)
+
+        if getattr(cam, "motion_threshold", None) is not None:
+            if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
+                cam_block["motion"] = {}
+            cam_block["motion"]["threshold"] = int(cam.motion_threshold)
 
         # Sync min_score
         if cam.min_score is not None:

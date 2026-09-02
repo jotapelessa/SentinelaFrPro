@@ -46,6 +46,8 @@ async def init_db():
             ("zones", "TEXT"),
             ("objects_to_track", 'VARCHAR(256) DEFAULT \'["person", "car", "motorcycle", "dog"]\''),
             ("min_score", "FLOAT DEFAULT 0.70"),
+            ("detect_fps", "INTEGER DEFAULT 5"),
+            ("motion_threshold", "INTEGER DEFAULT 25"),
             ("record_mode", "VARCHAR(32) DEFAULT 'motion'"),
             ("record_retain_days", "INTEGER DEFAULT 14"),
             ("record_audio", "BOOLEAN DEFAULT 0"),

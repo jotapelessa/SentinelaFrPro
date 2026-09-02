@@ -130,81 +130,36 @@ class MQTTService:
             cooldown_key = f"{camera}:{label}"
             now_ts = asyncio.get_event_loop().time()
             last_time = self._cooldowns.get(cooldown_key, 0)
-            cooldown_duration = tg_policy.get("cooldown_seconds", 5.0)
+            cooldown_duration = tg_policy.get("cooldown_seconds", 3.0)
+
+            # 1. Instant WebSocket Broadcast (<10ms) for UI & PiP
+            await self.broadcast_event({
+                "type": "CAMERA_DETECTION_ACTIVE",
+                "camera": camera,
+                "label": label,
+                "score": round(score * 100) if score <= 1 else round(score),
+                "zone": zone_name,
+                "box": after.get("box"),
+                "active": True
+            })
 
             if event_id not in self._processed_events and (now_ts - last_time > cooldown_duration):
                 self._mark_processed(event_id)
                 self._cooldowns[cooldown_key] = now_ts
                 logger.info(f"🚨 Security event: {label} on {camera} (zone: {zone_name}, score: {score:.2f})")
 
-                snapshot_bytes = None
-                async with httpx.AsyncClient(timeout=4.0) as client:
-                    try:
-                        resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg")
-                        if resp.status_code == 200:
-                            snapshot_bytes = resp.content
-                        else:
-                            resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg")
-                            if resp_latest.status_code == 200:
-                                snapshot_bytes = resp_latest.content
-                    except Exception as e:
-                        logger.warning(f"Could not retrieve snapshot: {e}")
-
-                telegram_ok = False
-                friendly_name = None
-                try:
-                    from app.db.models import Camera
-                    async with AsyncSessionLocal() as session:
-                        cam_stmt = select(Camera).where(
-                            (Camera.name == camera) | (Camera.ip_address == camera)
-                        )
-                        cam_res = await session.execute(cam_stmt)
-                        cam_obj = cam_res.scalar_one_or_none()
-                        if cam_obj and cam_obj.friendly_name:
-                            friendly_name = cam_obj.friendly_name
-                except Exception:
-                    pass
-
-                # Strict Enforcement of Telegram send_mode
-                send_mode = tg_policy.get("send_mode", "both")
-                allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
-
-                if snapshot_bytes and send_mode in ["both", "photo_only"] and label in allowed_tg_events:
-                    telegram_ok = await telegram_vault_service.send_alert_photo(
-                        image_bytes=snapshot_bytes,
-                        camera_name=camera,
-                        label=label,
-                        zone=zone_name,
-                        score=score,
-                        friendly_name=friendly_name
-                    )
-
                 snapshot_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg"
-                pip_res = await pip_gateway_service.dispatch_pip_alert(
-                    camera_name=camera,
-                    label=label,
-                    snapshot_url=snapshot_url,
-                    stream_url=f"rtsp://{camera}"
-                )
 
-                async with AsyncSessionLocal() as session:
-                    ev_record = EventRecord(
-                        frigate_event_id=event_id,
-                        camera_name=camera,
-                        label=label,
-                        top_score=float(score),
-                        zone=zone_name,
-                        has_snapshot=bool(snapshot_bytes),
-                        has_clip=False,
-                        telegram_notified=telegram_ok,
-                        pip_dispatched=pip_res.get("dispatched_count", 0) > 0
-                    )
-                    session.add(ev_record)
-                    try:
-                        await session.commit()
-                    except Exception as e:
-                        await session.rollback()
-                        logger.error(f"Error saving event to DB: {e}")
+                # Instant PiP Alert and New Detection messages to Android TV & Web
+                await self.broadcast_event({
+                    "type": "pip_alert",
+                    "camera": camera,
+                    "label": label,
+                    "score": round(score * 100),
+                    "zone": zone_name,
+                    "event_id": event_id,
+                    "snapshot_url": snapshot_url
+                })
 
                 await self.broadcast_event({
                     "type": "NEW_DETECTION",
@@ -218,15 +173,18 @@ class MQTTService:
                     "snapshot_url": snapshot_url
                 })
 
-            await self.broadcast_event({
-                "type": "CAMERA_DETECTION_ACTIVE",
-                "camera": camera,
-                "label": label,
-                "score": round(score * 100) if score <= 1 else round(score),
-                "zone": zone_name,
-                "box": after.get("box"),
-                "active": True
-            })
+                # 2. Asynchronous Background Task: Telegram Dispatch & DB Logging (Non-blocking)
+                asyncio.create_task(
+                    self._dispatch_background_alert_tasks(
+                        event_id=event_id,
+                        camera=camera,
+                        label=label,
+                        score=score,
+                        zone_name=zone_name,
+                        snapshot_url=snapshot_url,
+                        tg_policy=tg_policy
+                    )
+                )
 
         elif event_type == "end":
             await self.broadcast_event({
@@ -272,6 +230,87 @@ class MQTTService:
                             friendly_name=friendly_name
                         )
                     )
+
+    async def _dispatch_background_alert_tasks(
+        self,
+        event_id: str,
+        camera: str,
+        label: str,
+        score: float,
+        zone_name: Optional[str],
+        snapshot_url: str,
+        tg_policy: Dict[str, Any]
+    ):
+        """Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast without blocking PiP."""
+        try:
+            snapshot_bytes = None
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                try:
+                    resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg")
+                    if resp.status_code == 200:
+                        snapshot_bytes = resp.content
+                    else:
+                        resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg")
+                        if resp_latest.status_code == 200:
+                            snapshot_bytes = resp_latest.content
+                except Exception as e:
+                    logger.debug(f"Could not retrieve snapshot: {e}")
+
+            friendly_name = None
+            try:
+                from app.db.models import Camera
+                async with AsyncSessionLocal() as session:
+                    cam_stmt = select(Camera).where(
+                        (Camera.name == camera) | (Camera.ip_address == camera)
+                    )
+                    cam_res = await session.execute(cam_stmt)
+                    cam_obj = cam_res.scalar_one_or_none()
+                    if cam_obj and cam_obj.friendly_name:
+                        friendly_name = cam_obj.friendly_name
+            except Exception:
+                pass
+
+            send_mode = tg_policy.get("send_mode", "both")
+            allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
+            telegram_ok = False
+
+            if snapshot_bytes and send_mode in ["both", "photo_only"] and label in allowed_tg_events:
+                telegram_ok = await telegram_vault_service.send_alert_photo(
+                    image_bytes=snapshot_bytes,
+                    camera_name=camera,
+                    label=label,
+                    zone=zone_name,
+                    score=score,
+                    friendly_name=friendly_name
+                )
+
+            pip_res = await pip_gateway_service.dispatch_pip_alert(
+                camera_name=camera,
+                label=label,
+                snapshot_url=snapshot_url,
+                stream_url=f"rtsp://{camera}"
+            )
+
+            async with AsyncSessionLocal() as session:
+                ev_record = EventRecord(
+                    frigate_event_id=event_id,
+                    camera_name=camera,
+                    label=label,
+                    top_score=float(score),
+                    zone=zone_name,
+                    has_snapshot=bool(snapshot_bytes),
+                    has_clip=False,
+                    telegram_notified=telegram_ok,
+                    pip_dispatched=pip_res.get("dispatched_count", 0) > 0
+                )
+                session.add(ev_record)
+                try:
+                    await session.commit()
+                except Exception as e:
+                    await session.rollback()
+                    logger.error(f"Error saving event to DB: {e}")
+        except Exception as e:
+            logger.error(f"Error in background alert dispatch: {e}")
 
     async def _dispatch_telegram_video_with_retry(
         self,

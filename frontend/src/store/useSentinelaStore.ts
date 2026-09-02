@@ -79,6 +79,8 @@ export interface Camera {
   zones?: string[] | string | any;
   objects_to_track?: string;
   min_score?: number;
+  detect_fps?: number;
+  motion_threshold?: number;
   record_mode?: string;
   stream_mode?: "eco" | "mse" | "webrtc" | string;
   eco_fps?: number;

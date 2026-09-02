@@ -15,7 +15,8 @@ class Camera(Base):
     enabled = Column(Boolean, default=True)
     zones = Column(Text, nullable=True) # JSON array of zones
     objects_to_track = Column(String(256), default='["person", "car", "motorcycle", "dog"]')
-    min_score = Column(Float, default=0.70)
+    detect_fps = Column(Integer, default=5) # 5, 7, 10
+    motion_threshold = Column(Integer, default=25) # 15 to 50
     record_mode = Column(String(32), default="motion") # all, motion
     stream_mode = Column(String(32), default="mse") # eco, mse, webrtc
     eco_fps = Column(Integer, default=10) # 5, 10, 15

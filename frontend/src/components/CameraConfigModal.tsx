@@ -119,6 +119,8 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
     : ["person", "car", "motorcycle", "dog"];
   const [trackedObjects, setTrackedObjects] = useState<string[]>(initialObjects);
   const [minScore, setMinScore] = useState(camera.min_score ? Math.round(camera.min_score * 100) : 70);
+  const [detectFps, setDetectFps] = useState(camera.detect_fps || 5);
+  const [motionThreshold, setMotionThreshold] = useState(camera.motion_threshold || 25);
 
   // Recording & Streaming State
   const [recordMode, setRecordMode] = useState(camera.record_mode || "motion");
@@ -160,6 +162,8 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
           enabled: enabled,
           objects_to_track: JSON.stringify(trackedObjects),
           min_score: minScore / 100,
+          detect_fps: detectFps,
+          motion_threshold: motionThreshold,
           record_mode: recordMode,
           stream_mode: streamMode,
           eco_fps: ecoFps,
@@ -450,9 +454,54 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                 </div>
               </div>
 
+              {/* Taxa de Detecção IA (Detector FPS) */}
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
                 <div className="flex items-center justify-between">
-                  <label className="text-slate-300 font-bold">Sensibilidade Mínima (Threshold de Confiança):</label>
+                  <label className="text-slate-300 font-bold">Taxa de Detecção do Detector OpenVINO IA:</label>
+                  <span className="text-xs font-mono font-bold text-cyan-400">{detectFps} FPS</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {[5, 7, 10].map((fps) => (
+                    <button
+                      key={fps}
+                      type="button"
+                      onClick={() => setDetectFps(fps)}
+                      className={`py-2 px-2.5 rounded-lg border text-xs font-bold transition-all ${
+                        detectFps === fps ? "bg-cyan-500 text-obsidian-950 border-cyan-400 shadow-md shadow-cyan-500/20" : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      {fps} FPS {fps === 5 ? "(Padrão)" : fps === 7 ? "(Rápido)" : "(Ultra-Rápido)"}
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[10px] text-slate-500 block">
+                  Determina com que frequência a IA analisa novos quadros por segundo. 10 FPS proporciona resposta instantânea para detecção de veículos rápidos.
+                </span>
+              </div>
+
+              {/* Sensibilidade do Sensor de Movimento */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-300 font-bold">Sensibilidade do Sensor de Movimento (Motion Threshold):</label>
+                  <span className="font-mono font-black text-cyan-400 text-sm">{motionThreshold} {motionThreshold <= 20 ? "(Ultra-Sensível)" : motionThreshold <= 30 ? "(Equilibrado)" : "(Tolerante)"}</span>
+                </div>
+                <input
+                  type="range"
+                  min={15}
+                  max={50}
+                  step={5}
+                  value={motionThreshold}
+                  onChange={(e) => setMotionThreshold(Number(e.target.value))}
+                  className="w-full accent-cyan-500 cursor-pointer"
+                />
+                <span className="text-[10px] text-slate-500 block">
+                  Limiar de variação de pixels. Valores menores (15-20) disparam com o menor movimento; valores maiores (35-50) ignoram pequenas variações.
+                </span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-300 font-bold">Confiança Mínima de Classificação IA:</label>
                   <span className="font-mono font-black text-cyan-400 text-sm">{minScore}%</span>
                 </div>
                 <input
