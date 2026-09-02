@@ -124,9 +124,10 @@ cameras:
       fps: 5
     record:
       enabled: true
-      retain:
+      continuous:
+        days: 0
+      motion:
         days: 3
-        mode: motion
       alerts:
         pre_capture: 5
         post_capture: 5
