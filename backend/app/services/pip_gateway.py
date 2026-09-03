@@ -175,20 +175,26 @@ class PiPGatewayService:
         }
 
     async def check_device_online(self, ip: str) -> bool:
-        """Fast non-blocking port check to verify if Smart TV / device is reachable on the LAN."""
+        """Fast concurrent non-blocking port check to verify if Smart TV / device is reachable on the LAN."""
         if not ip:
             return False
-        common_ports = [8008, 8009, 7986, 5463, 80, 8080]
-        for port in common_ports:
+
+        async def probe_port(port: int) -> bool:
             try:
                 fut = asyncio.open_connection(ip, port)
-                reader, writer = await asyncio.wait_for(fut, timeout=0.6)
+                reader, writer = await asyncio.wait_for(fut, timeout=0.35)
                 writer.close()
-                await writer.wait_closed()
+                try:
+                    await writer.wait_closed()
+                except Exception:
+                    pass
                 return True
             except Exception:
-                pass
-        return False
+                return False
+
+        common_ports = [8008, 8009, 7986, 5463, 80, 8080]
+        results = await asyncio.gather(*[probe_port(p) for p in common_ports], return_exceptions=True)
+        return any(r is True for r in results)
 
     async def test_single_device(
         self,
