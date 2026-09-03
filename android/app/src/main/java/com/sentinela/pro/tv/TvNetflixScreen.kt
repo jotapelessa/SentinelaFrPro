@@ -1181,152 +1181,361 @@ fun TvLogsViewport() {
 }
 
 /**
- * 6. ABA 4: VIEWPORT DE CONFIGURAÇÕES DA TV & NVR (Seletores D-Pad)
+ * 6. ABA 4: VIEWPORT DE CONFIGURAÇÕES DA TV & NVR (Restaurado com 8 Tamanhos, 8 Posições, 8 Durações e Permissões)
  */
 @Composable
 fun TvSettingsViewport(tailscaleIp: String) {
     val context = LocalContext.current
-    var selectedResolution by remember { mutableStateOf("1080p") }
-    var isAudioEnabled by remember { mutableStateOf(true) }
-    var isH265Hardware by remember { mutableStateOf(true) }
-    var autoPipEnabled by remember { mutableStateOf(true) }
-    var pipTimeoutSeconds by remember { mutableIntStateOf(10) }
+    val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
+    var sizeIndex by remember { mutableIntStateOf(prefs.pipSizeIndex) }
+    var posIndex by remember { mutableIntStateOf(prefs.pipPositionIndex) }
+    var durIndex by remember { mutableIntStateOf(prefs.pipDurationIndex) }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column {
-            Text("Configurações da Smart TV & NVR", style = TvTypography.TabTitle.copy(fontSize = 18.sp))
-            Text("Parâmetros de exibição 10-Foot UI, decodificação H.265 e comportamento D-Pad", style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary))
-        }
-
-        Spacer(modifier = Modifier.height(TvDimens.sm))
-
-        // Grid 2x2 de Configurações
-        Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Row(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                // Config 1: Resolução
-                TvSettingCard(
-                    title = "Resolução de Exibição",
-                    subtitle = "Canvas 16:9 Otimizado para Smart TVs",
-                    icon = Icons.Default.Tv,
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        listOf("4K UHD", "1080p", "720p").forEach { res ->
-                            val isSelected = selectedResolution == res
-                            Button(
-                                onClick = { selectedResolution = res },
-                                colors = ButtonDefaults.buttonColors(containerColor = if (isSelected) TvColors.NetflixRed else TvColors.CardBackgroundElevated),
-                                shape = TvShapes.Badge,
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                            ) {
-                                Text(res, color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-
-                // Config 2: Áudio Leanback
-                TvSettingCard(
-                    title = "Feedback Sonoro D-Pad",
-                    subtitle = "Efeitos sonoros de navegação com controle remoto",
-                    icon = Icons.Default.VolumeUp,
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                ) {
-                    Button(
-                        onClick = { isAudioEnabled = !isAudioEnabled },
-                        colors = ButtonDefaults.buttonColors(containerColor = if (isAudioEnabled) TvColors.LiveGreen else TvColors.CardBackgroundElevated),
-                        shape = TvShapes.Badge
-                    ) {
-                        Text(if (isAudioEnabled) "ATIVADO" else "MUDO", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-            }
-
-            Row(
-                modifier = Modifier.weight(1f).fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                // Config 3: Decodificador H.265 Hardware
-                TvSettingCard(
-                    title = "Decodificador de Vídeo H.265",
-                    subtitle = "Aceleração por hardware GPU (MediaCodec)",
-                    icon = Icons.Default.Memory,
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                ) {
-                    Button(
-                        onClick = { isH265Hardware = !isH265Hardware },
-                        colors = ButtonDefaults.buttonColors(containerColor = if (isH265Hardware) TvColors.CyberCyan else TvColors.CardBackgroundElevated),
-                        shape = TvShapes.Badge
-                    ) {
-                        Text(if (isH265Hardware) "GPU ATIVADA" else "MODO ECO", color = if (isH265Hardware) Color.Black else Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-
-                // Config 4: Timeout PiP
-                TvSettingCard(
-                    title = "Duração dos Alertas PiP",
-                    subtitle = "Tempo de exibição antes do fechamento automático",
-                    icon = Icons.Default.Timer,
-                    modifier = Modifier.weight(1f).fillMaxHeight()
-                ) {
-                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        listOf(5, 10, 15, 30).forEach { sec ->
-                            val isSelected = pipTimeoutSeconds == sec
-                            Button(
-                                onClick = { pipTimeoutSeconds = sec },
-                                colors = ButtonDefaults.buttonColors(containerColor = if (isSelected) TvColors.CyberCyan else TvColors.CardBackgroundElevated),
-                                shape = TvShapes.Badge,
-                                contentPadding = PaddingValues(horizontal = 8.dp, vertical = 2.dp)
-                            ) {
-                                Text("${sec}s", color = if (isSelected) Color.Black else Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    var hasOverlayPerm by remember {
+        mutableStateOf(
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                android.provider.Settings.canDrawOverlays(context)
+            } else true
+        )
     }
-}
 
-@Composable
-fun TvSettingCard(
-    title: String,
-    subtitle: String,
-    icon: ImageVector,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
-) {
-    Column(
-        modifier = modifier
-            .background(TvColors.CardBackground, TvShapes.CameraCard)
-            .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
-            .padding(14.dp),
-        verticalArrangement = Arrangement.SpaceBetween
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
-                Icon(imageVector = icon, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(6.dp).size(20.dp))
-            }
+        // Header
+        item {
             Column {
-                Text(title, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                Text(subtitle, color = TvColors.TextSecondary, fontSize = 10.sp)
+                Text("Ajustes da Janela Suspensa & Configurações da Smart TV", style = TvTypography.TabTitle.copy(fontSize = 18.sp))
+                Text("Calibração de tamanho PiP, posições na tela, tempos e permissões de sistema", style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary))
             }
         }
 
-        Box(modifier = Modifier.padding(top = 8.dp)) {
-            content()
+        // 1. TAMANHO DA JANELA PIP (8 OPÇÕES)
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
+                        Icon(Icons.Default.AspectRatio, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(18.dp))
+                    }
+                    Text("1. TAMANHO DA TELA PIP (8 OPÇÕES)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
+
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(com.sentinela.pro.data.PipSize.values().toList()) { size ->
+                        val isSelected = size.ordinal == sizeIndex
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isFocused by interactionSource.collectIsFocusedAsState()
+
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = if (isSelected) TvColors.NetflixRed else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
+                            border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
+                            modifier = Modifier
+                                .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
+                                .clickable(interactionSource = interactionSource, indication = null) {
+                                    sizeIndex = size.ordinal
+                                    prefs.pipSizeIndex = size.ordinal
+                                    Toast.makeText(context, "Tamanho PiP: ${size.label}", Toast.LENGTH_SHORT).show()
+                                }
+                        ) {
+                            Text(
+                                text = size.label,
+                                color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // 2. POSIÇÃO DA TELA PIP (8 POSIÇÕES)
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
+                        Icon(Icons.Default.Place, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(18.dp))
+                    }
+                    Text("2. POSIÇÃO DA TELA PIP (8 POSIÇÕES)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
+
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(com.sentinela.pro.data.PipPosition.values().toList()) { pos ->
+                        val isSelected = pos.ordinal == posIndex
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isFocused by interactionSource.collectIsFocusedAsState()
+
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = if (isSelected) TvColors.NetflixRed else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
+                            border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
+                            modifier = Modifier
+                                .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
+                                .clickable(interactionSource = interactionSource, indication = null) {
+                                    posIndex = pos.ordinal
+                                    prefs.pipPositionIndex = pos.ordinal
+                                    Toast.makeText(context, "Posição PiP: ${pos.label}", Toast.LENGTH_SHORT).show()
+                                }
+                        ) {
+                            Text(
+                                text = pos.label,
+                                color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // 3. TEMPO DE EXIBIÇÃO AUTOMÁTICA (8 TEMPOS)
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
+                        Icon(Icons.Default.Timer, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(18.dp))
+                    }
+                    Text("3. TEMPO DE EXIBIÇÃO AUTOMÁTICA (8 TEMPOS)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
+
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(com.sentinela.pro.data.PipDuration.values().toList()) { dur ->
+                        val isSelected = dur.ordinal == durIndex
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isFocused by interactionSource.collectIsFocusedAsState()
+
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = if (isSelected) TvColors.NetflixRed else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
+                            border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
+                            modifier = Modifier
+                                .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
+                                .clickable(interactionSource = interactionSource, indication = null) {
+                                    durIndex = dur.ordinal
+                                    prefs.pipDurationIndex = dur.ordinal
+                                    Toast.makeText(context, "Duração PiP: ${dur.label}", Toast.LENGTH_SHORT).show()
+                                }
+                        ) {
+                            Text(
+                                text = dur.label,
+                                color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // 4. TESTE DA JANELA PIP NA ANDROID TV (Preview Real)
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text("4. TESTE DA JANELA PIP REAL NA SMART TV", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .width(220.dp)
+                            .height(124.dp)
+                            .clip(TvShapes.Badge)
+                            .border(2.dp, TvColors.BorderHighlight, TvShapes.Badge)
+                    ) {
+                        SeamlessCameraImage(
+                            cameraName = "camera_principal",
+                            contentDescription = "Prévia PiP",
+                            modifier = Modifier.fillMaxSize(),
+                            isStreaming = true
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(TvColors.OverlayHud)
+                                .padding(horizontal = 6.dp, vertical = 3.dp)
+                                .align(Alignment.TopStart)
+                        ) {
+                            Text(
+                                text = "PRÉVIA: ${com.sentinela.pro.data.PipSize.values()[sizeIndex].label} • ${com.sentinela.pro.data.PipPosition.values()[posIndex].label}",
+                                color = Color.White,
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(
+                            text = "Clique no botão abaixo para abrir a janela flutuante real sobre a TV:",
+                            color = TvColors.TextSecondary,
+                            fontSize = 11.sp
+                        )
+
+                        Button(
+                            onClick = {
+                                com.sentinela.pro.tv.OverlayService.triggerPiP(context, "camera_principal", "TESTE PIP PREVIEW")
+                                Toast.makeText(context, "🔔 Janela PiP disparada sobre a TV!", Toast.LENGTH_SHORT).show()
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = TvColors.NetflixRed),
+                            shape = TvShapes.Badge
+                        ) {
+                            Icon(Icons.Default.PictureInPicture, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Text("▶️ Abrir Janela PiP Agora", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+        }
+
+        // 5. PERMISSÃO DE JANELAS FLUTUANTES (SYSTEM_ALERT_WINDOW)
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("5. PERMISSÃO DE JANELAS FLUTUANTES (SYSTEM_ALERT_WINDOW)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    text = if (hasOverlayPerm)
+                        "✅ Permissão Ativa: Janelas flutuantes autorizadas para exibir alertas sobre qualquer app da TV."
+                    else
+                        "⚠️ Permissão Pendente: Necessário habilitar sobreposição nas configurações do Android TV.",
+                    color = if (hasOverlayPerm) TvColors.LiveGreen else TvColors.StandbyAmber,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                    Button(
+                        onClick = {
+                            val pkg = context.packageName
+                            val intents = listOf(
+                                android.content.Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:$pkg")),
+                                android.content.Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", android.net.Uri.parse("package:$pkg")),
+                                android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, android.net.Uri.parse("package:$pkg")),
+                                android.content.Intent(android.provider.Settings.ACTION_SETTINGS)
+                            )
+                            for (intent in intents) {
+                                try {
+                                    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(intent)
+                                    break
+                                } catch (e: Exception) {
+                                    // try fallback
+                                }
+                            }
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = TvColors.CardBackgroundElevated),
+                        shape = TvShapes.Badge
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("⚙️ Abrir Configurações do Android", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    Button(
+                        onClick = {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                hasOverlayPerm = android.provider.Settings.canDrawOverlays(context)
+                            }
+                            val msg = if (hasOverlayPerm) "✅ Permissão de sobreposição confirmada!" else "⚠️ Permissão ainda pendente nas configurações."
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = TvColors.CardBackgroundElevated),
+                        shape = TvShapes.Badge
+                    ) {
+                        Icon(Icons.Default.Refresh, contentDescription = null, tint = TvColors.LiveGreen, modifier = Modifier.size(16.dp))
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text("🔄 Revalidar Permissão", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+
+        // 6. SERVIDOR SENTINELA & CONEXÃO
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text("6. SERVIDOR SENTINELA & CONEXÃO ATUAL", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text("Host: ${prefs.serverHost} (Tailscale Encrypted)", color = Color.White, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
+                        Text("ID do Dispositivo: ${prefs.deviceIdentifier}", color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                    }
+                    Surface(shape = TvShapes.StatusPill, color = TvColors.LiveGreen.copy(alpha = 0.2f), border = BorderStroke(1.dp, TvColors.LiveGreen)) {
+                        Text("CONECTADO", color = TvColors.LiveGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
+                    }
+                }
+            }
         }
     }
 }
