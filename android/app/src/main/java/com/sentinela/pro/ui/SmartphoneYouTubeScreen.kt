@@ -175,7 +175,7 @@ fun PhoneTopBar(
                         )
                     }
                     Text(
-                        text = "v001.000.000.043 • NVR MOBILE",
+                        text = "v001.000.000.044 • NVR MOBILE",
                         style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.TextMuted)
                     )
                 }
@@ -717,21 +717,23 @@ fun PhoneCapturesTab() {
                                     modifier = Modifier.align(Alignment.TopStart).padding(6.dp)
                                 ) {
                                     Text(
-                                        text = ev.label.uppercase(),
-                                        color = SentinelaColors.PrimaryCyan,
+                                        text = if (ev.isPhoto) "FOTO" else "VÍDEO ${ev.displayDuration}",
+                                        color = if (ev.isPhoto) SentinelaColors.MasterGold else SentinelaColors.PrimaryCyan,
                                         fontSize = 8.sp,
                                         fontWeight = FontWeight.Black,
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                     )
                                 }
 
-                                Surface(
-                                    shape = CircleShape,
-                                    color = SentinelaColors.PrimaryCyan,
-                                    modifier = Modifier.align(Alignment.Center).size(30.dp)
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.Black, modifier = Modifier.size(16.dp))
+                                if (!ev.isPhoto) {
+                                    Surface(
+                                        shape = CircleShape,
+                                        color = SentinelaColors.PrimaryCyan,
+                                        modifier = Modifier.align(Alignment.Center).size(30.dp)
+                                    ) {
+                                        Box(contentAlignment = Alignment.Center) {
+                                            Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.Black, modifier = Modifier.size(16.dp))
+                                        }
                                     }
                                 }
                             }
@@ -745,8 +747,9 @@ fun PhoneCapturesTab() {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
+                                val subText = if (ev.isPhoto) "${ev.timestamp} • Foto HD" else "${ev.timestamp} • ${ev.displayDuration} • Score: ${ev.score}%"
                                 Text(
-                                    text = "${ev.timestamp} • Score: ${ev.score}%",
+                                    text = subText,
                                     style = SentinelaTypography.Subtext.copy(fontSize = 9.sp)
                                 )
                             }
@@ -1644,8 +1647,18 @@ fun PhoneClipPlayerDialog(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
-                    Text("GRAVAÇÃO: ${event.label.uppercase()}", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Black)
-                    Text("${event.camera} • ${event.timestamp} • Score: ${event.score}%", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
+                    Text(
+                        text = if (event.isPhoto) "FOTO: ${event.label.uppercase()}" else "GRAVAÇÃO: ${event.label.uppercase()}",
+                        color = Color.White,
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                    val dialogDetails = if (event.isPhoto) {
+                        "${event.camera} • ${event.timestamp} • Foto HD"
+                    } else {
+                        "${event.camera} • ${event.timestamp} • Duração: ${event.displayDuration} • Score: ${event.score}%"
+                    }
+                    Text(dialogDetails, style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
                 }
 
                 IconButton(

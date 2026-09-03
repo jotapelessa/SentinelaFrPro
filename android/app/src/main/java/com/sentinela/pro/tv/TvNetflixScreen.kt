@@ -718,14 +718,17 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
             val list = com.sentinela.pro.network.SentinelaRepository.getCaptures(prefs.deviceIdentifier)
             if (list.isNotEmpty()) {
                 realCaptures = list.mapIndexed { i, event ->
+                    val isVid = !event.isPhoto
+                    val durText = if (!isVid) "FOTO HD" else event.displayDuration
                     RecordingClipItem(
                         id = event.id,
                         cameraId = event.camera,
                         cameraName = event.camera.replace("_", " ").uppercase(),
-                        duration = "00:45",
+                        duration = durText,
                         timestamp = event.timestamp,
                         sizeMb = "${(event.score * 0.25).toInt() + 10} MB",
-                        thumbnailUrl = event.snapshotUrl
+                        thumbnailUrl = event.snapshotUrl,
+                        isVideo = isVid
                     )
                 }
             }
@@ -850,10 +853,16 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text("01:10 / ${selectedClip.duration} • H.265 Smart", style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary))
+                val playerStatusText = if (!selectedClip.isVideo) {
+                    "Foto Instantânea HD • Snapshot Frigate"
+                } else {
+                    "00:00 / ${selectedClip.duration} • H.265 Smart"
+                }
+                Text(playerStatusText, style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary))
                 Button(
                     onClick = {
-                        Toast.makeText(context, "Exportando gravação ${selectedClip.id}.mp4...", Toast.LENGTH_SHORT).show()
+                        val exportType = if (!selectedClip.isVideo) "foto" else "gravação"
+                        Toast.makeText(context, "Exportando $exportType ${selectedClip.id}...", Toast.LENGTH_SHORT).show()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = TvColors.CyberCyan),
                     shape = TvShapes.Badge,
@@ -861,7 +870,7 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
                 ) {
                     Icon(Icons.Default.FileDownload, contentDescription = null, tint = Color.Black, modifier = Modifier.size(14.dp))
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Exportar MP4", color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(if (!selectedClip.isVideo) "Salvar Foto" else "Exportar MP4", color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -925,7 +934,8 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(clip.cameraName, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
-                            Text("${clip.timestamp} • ${clip.duration}", color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                            val itemSub = if (!clip.isVideo) "${clip.timestamp} • Foto HD" else "${clip.timestamp} • ${clip.duration}"
+                            Text(itemSub, color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
                         }
                     }
                 }
@@ -2161,13 +2171,18 @@ fun TvClipPlayerDialog(
             ) {
                 Column {
                     Text(
-                        text = "GRAVAÇÃO: ${clip.cameraName}",
+                        text = if (!clip.isVideo) "FOTO: ${clip.cameraName}" else "GRAVAÇÃO: ${clip.cameraName}",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black
                     )
+                    val dialogSub = if (!clip.isVideo) {
+                        "Data: ${clip.timestamp} • Tipo: Foto HD • Tamanho: ${clip.sizeMb}"
+                    } else {
+                        "Data: ${clip.timestamp} • Duração: ${clip.duration} • Tamanho: ${clip.sizeMb}"
+                    }
                     Text(
-                        text = "Data: ${clip.timestamp} • Duração: ${clip.duration} • Tamanho: ${clip.sizeMb}",
+                        text = dialogSub,
                         color = TvColors.CyberCyan,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace

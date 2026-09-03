@@ -67,7 +67,10 @@ async def list_events(
                     cam_name = item.get("camera", "camera_principal")
                     lbl = item.get("label", "person")
 
-                    duration = round(end_ts - start_ts, 1) if (start_ts and end_ts) else None
+                    is_clip = item.get("has_clip", True)
+                    duration = round(end_ts - start_ts, 1) if (start_ts and end_ts and is_clip) else None
+                    media_type = "video" if (is_clip and duration and duration > 0) else "photo"
+                    dur_fmt = f"{int(duration)//60:02d}:{int(duration)%60:02d}" if (duration and media_type == "video") else None
 
                     frigate_events.append({
                         "id": event_id,
@@ -79,12 +82,14 @@ async def list_events(
                         "start_time": start_ts,
                         "end_time": end_ts,
                         "duration": duration,
+                        "duration_formatted": dur_fmt,
+                        "type": media_type,
                         "zone": zone_val,
                         "zones": zones,
                         "snapshot_url": f"/frigate/api/events/{event_id}/snapshot.jpg",
                         "snapshot_clean_url": f"/frigate/api/events/{event_id}/snapshot.jpg?clean=1",
                         "clip_url": f"/api/events/{event_id}/clip.mp4",
-                        "has_clip": item.get("has_clip", True),
+                        "has_clip": is_clip,
                         "has_snapshot": item.get("has_snapshot", True),
                         "retained": is_retained,
                         "box": item.get("data", {}).get("box") if isinstance(item.get("data"), dict) else None,
@@ -139,7 +144,9 @@ async def list_events(
             "timestamp": ev.start_time.isoformat() if ev.start_time else datetime.datetime.utcnow().isoformat(),
             "start_time": ev.start_time.timestamp() if ev.start_time else None,
             "end_time": ev.end_time.timestamp() if ev.end_time else None,
-            "duration": round((ev.end_time - ev.start_time).total_seconds(), 1) if (ev.start_time and ev.end_time) else None,
+            "duration": round((ev.end_time - ev.start_time).total_seconds(), 1) if (ev.start_time and ev.end_time and ev.has_clip) else None,
+            "duration_formatted": f"{int((ev.end_time - ev.start_time).total_seconds())//60:02d}:{int((ev.end_time - ev.start_time).total_seconds())%60:02d}" if (ev.start_time and ev.end_time and ev.has_clip) else None,
+            "type": "video" if ev.has_clip else "photo",
             "zone": ev.zone,
             "zones": [ev.zone] if ev.zone else [],
             "snapshot_url": f"/frigate/api/events/{ev.frigate_event_id}/snapshot.jpg" if ev.frigate_event_id else None,

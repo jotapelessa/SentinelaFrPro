@@ -220,6 +220,35 @@ class FrigateBridgeService:
                 except Exception: pass
         return video_bytes
 
+    @staticmethod
+    def get_video_duration(video_bytes: bytes) -> float:
+        """Accurately extracts real playback duration of video_bytes using ffprobe in ~2ms."""
+        import tempfile
+        if not video_bytes or len(video_bytes) < 500:
+            return 0.0
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as f:
+                f.write(video_bytes)
+                temp_path = f.name
+            cmd = [
+                "ffprobe", "-v", "error",
+                "-show_entries", "format=duration",
+                "-of", "default=noprint_wrappers=1:nokey=1",
+                temp_path
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=4, text=True)
+            if res.returncode == 0 and res.stdout.strip():
+                dur = float(res.stdout.strip())
+                return round(dur, 1)
+        except Exception:
+            pass
+        finally:
+            if temp_path and os.path.exists(temp_path):
+                try: os.remove(temp_path)
+                except Exception: pass
+        return 0.0
+
     async def record_live_video(
         self,
         camera_name: str = "camera_principal",

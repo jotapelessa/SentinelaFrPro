@@ -15,8 +15,18 @@ data class CaptureEvent(
     val snapshotUrl: String = "",
     val clipUrl: String = "",
     val hasClip: Boolean = true,
-    val retained: Boolean = false
-)
+    val retained: Boolean = false,
+    val duration: Double? = null,
+    val durationFormatted: String? = null,
+    val type: String = "video",
+    val hasSnapshot: Boolean = true
+) {
+    val isPhoto: Boolean
+        get() = !hasClip || type.equals("photo", ignoreCase = true) || label.contains("foto", ignoreCase = true)
+
+    val displayDuration: String
+        get() = if (isPhoto) "FOTO HD" else (durationFormatted ?: if (duration != null && duration > 0) String.format("%02d:%02d", (duration / 60).toInt(), (duration % 60).toInt()) else "00:15")
+}
 
 data class TelemetryData(
     val serverOnline: Boolean = true,

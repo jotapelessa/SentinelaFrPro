@@ -164,7 +164,12 @@ class TelegramVaultService:
         size_mb = size_bytes / (1024 * 1024) if size_bytes > 0 else 0.0
         size_str = f"{size_mb:.2f} MB" if size_mb > 0 else "0.85 MB"
         
-        dur_str = f"{duration_s:.1f}s" if duration_s > 0 else "15.0s"
+        if is_video:
+            dur_val = int(round(duration_s)) if duration_s >= 1.0 else round(duration_s, 1)
+            dur_line = f"⏳ 𝗗𝘂𝗿𝗮𝗰̧𝗮̃𝗼: {dur_val}s\n"
+        else:
+            dur_line = "📷 𝗧𝗶𝗽𝗼: Foto / Captura Instantânea HD\n"
+
         score_pct = round(score * 100, 1) if score > 0 else 85.0
         
         header_type = "🎥 𝗩𝗜́𝗗𝗘𝗢 𝗗𝗘 𝗘𝗩𝗘𝗡𝗧𝗢" if is_video else "🚨 𝗙𝗢𝗧𝗢 𝗗𝗘 𝗘𝗩𝗘𝗡𝗧𝗢"
@@ -220,7 +225,7 @@ class TelegramVaultService:
             f"{local_line}\n"
             f"⏱ 𝗗𝗮𝘁𝗮/𝗛𝗼𝗿𝗮: {date_str} às {time_str} ({weekday_str})\n"
             f"📊 𝗜𝗻𝘁𝗲𝗻𝘀𝗶𝗱𝗮𝗱𝗲: {score_pct}% de precisão ({label_pt})\n"
-            f"⏳ 𝗗𝘂𝗿𝗮𝗰̧𝗮̃𝗼: {dur_str}\n"
+            f"{dur_line}"
             f"📁 𝗧𝗮𝗺𝗮𝗻𝗵𝗼: {size_str}\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
             f"🏷️ 𝗕𝘂𝘀𝗰𝗮 𝗜𝗻𝘀𝘁𝗮𝗻𝘁𝗮̂𝗻𝗲𝗮 (𝗧𝗲𝗹𝗲𝗴𝗿𝗮𝗺 𝗗𝗿𝗶𝘃𝗲):\n"
@@ -307,6 +312,16 @@ class TelegramVaultService:
             return False
 
         url = f"https://api.telegram.org/bot{self.bot_token}/sendVideo"
+        
+        # Probe exact real playback duration of video_bytes using ffprobe
+        try:
+            from app.services.frigate_bridge import frigate_bridge
+            probed_dur = frigate_bridge.get_video_duration(video_bytes)
+            if probed_dur > 0:
+                duration_s = probed_dur
+        except Exception as e:
+            logger.debug(f"Could not probe video duration: {e}")
+
         caption = self.format_event_message(
             camera_name=camera_name,
             friendly_name=friendly_name,

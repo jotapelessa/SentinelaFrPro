@@ -189,7 +189,8 @@ data class RecordingClipItem(
     val duration: String,
     val timestamp: String,
     val sizeMb: String,
-    val thumbnailUrl: String
+    val thumbnailUrl: String,
+    val isVideo: Boolean = true
 )
 
 data class LogEntryItem(

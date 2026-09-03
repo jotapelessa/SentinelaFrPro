@@ -235,6 +235,10 @@ object SentinelaRepository {
                     val clipUrl = "${SentinelaConfig.BASE_URL}/api/events/$id/clip.mp4"
                     val hasClip = obj.optBoolean("has_clip", true)
                     val retained = obj.optBoolean("retained", false)
+                    val duration = if (obj.has("duration") && !obj.isNull("duration")) obj.optDouble("duration") else null
+                    val durationFormatted = obj.optString("duration_formatted", null)
+                    val type = obj.optString("type", if (hasClip && (duration == null || duration > 0)) "video" else "photo")
+                    val hasSnapshot = obj.optBoolean("has_snapshot", true)
 
                     list.add(
                         CaptureEvent(
@@ -246,7 +250,11 @@ object SentinelaRepository {
                             snapshotUrl = snapshotUrl,
                             clipUrl = clipUrl,
                             hasClip = hasClip,
-                            retained = retained
+                            retained = retained,
+                            duration = duration,
+                            durationFormatted = durationFormatted,
+                            type = type,
+                            hasSnapshot = hasSnapshot
                         )
                     )
                 }
