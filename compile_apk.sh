@@ -36,7 +36,13 @@ echo "  [3] Compilar Ambos (TV e Smartphone)"
 echo "  [4] Incrementar Versão de Build (12 Dígitos)"
 echo "  [0] Sair"
 echo "------------------------------------------------------------"
-read -p "Digite a opção desejada [1-4]: " OPTION
+if [ -n "$1" ]; then
+    OPTION="$1"
+else
+    read -p "Digite a opção desejada [1-4]: " OPTION
+fi
+
+OPTION="$(echo "$OPTION" | tr -d '\r\n ')"
 
 if [ "$OPTION" == "4" ]; then
     NEW_BUILD=$(( 10#$BUILD + 1 ))

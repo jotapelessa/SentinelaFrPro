@@ -138,21 +138,6 @@ fun CameraCardMobile(
     camera: CameraItem,
     onClick: () -> Unit
 ) {
-    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    val context = LocalContext.current
-
-    // Live frame refresh loop (every 350ms)
-    LaunchedEffect(camera.name) {
-        while (isActive) {
-            delay(350)
-            timestamp = System.currentTimeMillis()
-        }
-    }
-
-    val snapshotUrl = remember(timestamp) {
-        SentinelaConfig.getSnapshotUrl(camera.name, timestamp)
-    }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -234,22 +219,9 @@ fun CameraCardMobile(
 
 @Composable
 fun FullScreenCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
-    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
     var scale by remember { mutableFloatStateOf(1f) }
     var offsetX by remember { mutableFloatStateOf(0f) }
     var offsetY by remember { mutableFloatStateOf(0f) }
-    val context = LocalContext.current
-
-    LaunchedEffect(camera.name) {
-        while (isActive) {
-            delay(250) // Faster 4fps refresh in full screen
-            timestamp = System.currentTimeMillis()
-        }
-    }
-
-    val snapshotUrl = remember(timestamp) {
-        SentinelaConfig.getSnapshotUrl(camera.name, timestamp)
-    }
 
     Dialog(
         onDismissRequest = onDismiss,

@@ -112,20 +112,18 @@ class MainActivity : ComponentActivity() {
                 }
             }
 
-            CompositionLocalProvider(coil.compose.LocalImageLoader provides globalImageLoader) {
-                MaterialTheme {
-                    Surface(modifier = Modifier.fillMaxSize()) {
-                        if (isTv()) {
-                            TvNetflixScreen(
-                                cameras = cameras,
-                                onRefresh = { loadCameras() }
-                            )
-                        } else {
-                            SmartphoneYouTubeScreen(
-                                cameras = cameras,
-                                onRefresh = { loadCameras() }
-                            )
-                        }
+            MaterialTheme {
+                Surface(modifier = Modifier.fillMaxSize()) {
+                    if (isTv()) {
+                        TvNetflixScreen(
+                            cameras = cameras,
+                            onRefresh = { loadCameras() }
+                        )
+                    } else {
+                        SmartphoneYouTubeScreen(
+                            cameras = cameras,
+                            onRefresh = { loadCameras() }
+                        )
                     }
                 }
             }

@@ -117,19 +117,6 @@ fun TvCameraCard(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
-    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    val context = LocalContext.current
-
-    LaunchedEffect(camera.name) {
-        while (isActive) {
-            delay(350)
-            timestamp = System.currentTimeMillis()
-        }
-    }
-
-    val snapshotUrl = remember(timestamp) {
-        SentinelaConfig.getSnapshotUrl(camera.name, timestamp)
-    }
 
     val scale = if (isFocused) 1.03f else 1f
     val borderColor = if (isFocused) Color(0xFF06B6D4) else Color(0xFF1E293B)
@@ -221,20 +208,6 @@ fun TvCameraCard(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun TvFullScreenCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
-    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
-    val context = LocalContext.current
-
-    LaunchedEffect(camera.name) {
-        while (isActive) {
-            delay(250)
-            timestamp = System.currentTimeMillis()
-        }
-    }
-
-    val snapshotUrl = remember(timestamp) {
-        SentinelaConfig.getSnapshotUrl(camera.name, timestamp)
-    }
-
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)

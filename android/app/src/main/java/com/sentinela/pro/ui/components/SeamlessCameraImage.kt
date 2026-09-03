@@ -20,9 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
-import coil.compose.LocalImageLoader
-import coil.request.CachePolicy
+import coil.Coil
 import coil.request.ImageRequest
 import coil.request.SuccessResult
 import com.sentinela.pro.SentinelaConfig
@@ -62,7 +60,7 @@ fun SeamlessCameraImage(
     }
 
     val context = LocalContext.current
-    val imageLoader = LocalImageLoader.current
+    val imageLoader = remember { Coil.imageLoader(context) }
 
     var currentBitmap by remember(cameraName) { mutableStateOf<Bitmap?>(null) }
     var isInitialLoading by remember(cameraName) { mutableStateOf(true) }

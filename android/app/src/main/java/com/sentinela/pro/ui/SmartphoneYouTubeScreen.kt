@@ -237,11 +237,6 @@ fun PhoneCameraCard(
     frameTicker: Long,
     onExpand: () -> Unit
 ) {
-    val context = LocalContext.current
-    val snapshotUrl = remember(frameTicker) {
-        SentinelaConfig.getSnapshotUrl(camera.name, frameTicker)
-    }
-
     Column(
         modifier = Modifier
             .fillMaxWidth()

@@ -248,14 +248,6 @@ fun TvNavTabItem(
 fun TvCamerasTab(cameras: List<CameraItem>, isForeground: Boolean = true) {
     var selectedCam by remember { mutableStateOf(cameras.firstOrNull() ?: CameraItem("camera_principal", "Câmera Principal")) }
     var isFullscreenOpen by remember { mutableStateOf(false) }
-    var frameTicker by remember { mutableLongStateOf(System.currentTimeMillis()) }
-
-    LaunchedEffect(isForeground) {
-        while (isActive && isForeground) {
-            delay(200) // 5 FPS
-            frameTicker = System.currentTimeMillis()
-        }
-    }
 
     Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
         // Spotlight Big Preview (70% width)
@@ -272,49 +264,34 @@ fun TvCamerasTab(cameras: List<CameraItem>, isForeground: Boolean = true) {
                 cameraName = selectedCam.name,
                 contentDescription = selectedCam.friendlyName,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                refreshIntervalMs = 42L, // MSE 24 FPS Standard
                 isStreaming = isForeground
             )
 
-            // Overlay Details
-            Column(
+            // Live Badge
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .padding(16.dp)
+                    .background(Color.Red.copy(alpha = 0.85f), RoundedCornerShape(4.dp))
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Box(modifier = Modifier.size(6.dp).background(Color.White, CircleShape))
+                Text(text = "AO VIVO • HARDWARE MSE", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            }
+            // Camera Name Overlay
+            Text(
+                text = selectedCam.friendlyName,
+                color = Color.White,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
                 modifier = Modifier
                     .align(Alignment.BottomStart)
-                    .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f))
-                        )
-                    )
-                    .padding(20.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFF10B981), CircleShape)
-                            .size(10.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "AO VIVO • 24 FPS MSE (Zero Lag)",
-                        color = Color(0xFF10B981),
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                Text(
-                    text = selectedCam.friendlyName,
-                    color = Color.White,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Black
-                )
-                Text(
-                    text = "Pressione OK no controle para Tela Cheia Imersiva",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 12.sp
-                )
-            }
+                    .padding(16.dp)
+                    .background(Color.Black.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            )
         }
 
         // Camera Switcher List (30% width)
@@ -340,7 +317,6 @@ fun TvCamerasTab(cameras: List<CameraItem>, isForeground: Boolean = true) {
                     TvCameraListItem(
                         camera = cam,
                         isSelected = selectedCam.name == cam.name,
-                        frameTicker = frameTicker,
                         isForeground = isForeground,
                         onSelect = { selectedCam = cam }
                     )
@@ -358,7 +334,6 @@ fun TvCamerasTab(cameras: List<CameraItem>, isForeground: Boolean = true) {
 fun TvCameraListItem(
     camera: CameraItem,
     isSelected: Boolean,
-    frameTicker: Long,
     isForeground: Boolean = true,
     onSelect: () -> Unit
 ) {
@@ -682,7 +657,7 @@ fun TvToolsTab() {
                     verticalAlignment = Alignment.Bottom
                 ) {
                     val barHeights = listOf(0.92f, 0.96f, 0.98f, 0.94f, 0.97f, 1.0f, 0.95f, 0.99f, 0.96f, 0.98f, 0.94f, 1.0f, 0.97f, 0.95f)
-                    barHeights.forEachIndexed { i, factor ->
+                    barHeights.forEach { factor ->
                         val animatedHeight = (factor * pulseAnim).coerceIn(0.4f, 1.0f)
                         Box(
                             modifier = Modifier

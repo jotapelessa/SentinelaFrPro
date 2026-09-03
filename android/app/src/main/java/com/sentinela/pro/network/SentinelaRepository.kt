@@ -358,8 +358,6 @@ object SentinelaRepository {
         deviceType: String = "android_tv"
     ): SpeedTestResult = withContext(Dispatchers.IO) {
         val startTime = System.currentTimeMillis()
-        var ping = 0L
-        var downloadMbps = 0.0
 
         try {
             // 1. Send heartbeat so /screens alerts and shows connected status
@@ -374,7 +372,7 @@ object SentinelaRepository {
             }
             val pStart = System.currentTimeMillis()
             pingConn.responseCode
-            ping = System.currentTimeMillis() - pStart
+            val ping = System.currentTimeMillis() - pStart
             pingConn.disconnect()
 
             // Download throughput measurement (fetches latest camera snapshot)
@@ -391,7 +389,7 @@ object SentinelaRepository {
 
             val bits = bytes.size * 8.0
             val speedBps = (bits / (dDuration / 1000.0))
-            downloadMbps = Math.round((speedBps / 1_000_000.0) * 100.0) / 100.0
+            val downloadMbps = Math.round((speedBps / 1_000_000.0) * 100.0) / 100.0
 
             return@withContext SpeedTestResult(
                 downloadMbps = downloadMbps.coerceAtLeast(14.8),

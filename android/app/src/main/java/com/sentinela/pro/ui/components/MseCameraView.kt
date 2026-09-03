@@ -19,6 +19,8 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.sentinela.pro.SentinelaConfig
@@ -63,7 +65,9 @@ fun MseCameraView(
     }
 
     Box(
-        modifier = modifier.background(Color.Black),
+        modifier = modifier
+            .background(Color.Black)
+            .semantics { this.contentDescription = contentDescription ?: cameraName },
         contentAlignment = Alignment.Center
     ) {
         AndroidView(
