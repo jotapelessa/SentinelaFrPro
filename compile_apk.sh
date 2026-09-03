@@ -135,7 +135,7 @@ if [ "$BUILD_TV" = true ]; then
     echo "🔨 Compilando Android TV..."
     ./gradlew assembleTvDebug --no-daemon
     TV_SRC="app/build/outputs/apk/tv/debug/app-tv-debug.apk"
-    TV_DEST="$SCRIPT_DIR/sentinela.android.tv.$FORMATTED_VERSION.apk"
+    TV_DEST="$SCRIPT_DIR/BETA.sentinela.android.tv.$FORMATTED_VERSION.apk"
     if [ -f "$TV_SRC" ]; then
         cp "$TV_SRC" "$TV_DEST"
         echo "✅ APK Android TV gerado: $TV_DEST"
@@ -146,7 +146,7 @@ if [ "$BUILD_PHONE" = true ]; then
     echo "🔨 Compilando Android Smartphone..."
     ./gradlew assembleSmartphoneDebug --no-daemon
     PHONE_SRC="app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk"
-    PHONE_DEST="$SCRIPT_DIR/sentinela.android.smartphone.$FORMATTED_VERSION.apk"
+    PHONE_DEST="$SCRIPT_DIR/BETA.sentinela.android.smartphone.$FORMATTED_VERSION.apk"
     if [ -f "$PHONE_SRC" ]; then
         cp "$PHONE_SRC" "$PHONE_DEST"
         echo "✅ APK Android Smartphone gerado: $PHONE_DEST"
@@ -158,10 +158,10 @@ echo "============================================================"
 echo "🎉 COMPILAÇÃO CONCLUÍDA COM SUCESSO!"
 echo "============================================================"
 if [ "$BUILD_TV" = true ]; then
-    echo "📺 Android TV: sentinela.android.tv.$FORMATTED_VERSION.apk"
+    echo "📺 Android TV: BETA.sentinela.android.tv.$FORMATTED_VERSION.apk"
 fi
 if [ "$BUILD_PHONE" = true ]; then
-    echo "📱 Smartphone: sentinela.android.smartphone.$FORMATTED_VERSION.apk"
+    echo "📱 Smartphone: BETA.sentinela.android.smartphone.$FORMATTED_VERSION.apk"
 fi
 echo ""
 echo "📥 Para baixar no Codespaces: clique com botão direito no arquivo no painel esquerdo e selecione 'Download...'."
