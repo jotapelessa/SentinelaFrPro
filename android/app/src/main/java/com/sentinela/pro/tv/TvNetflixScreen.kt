@@ -718,17 +718,15 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
             val list = com.sentinela.pro.network.SentinelaRepository.getCaptures(prefs.deviceIdentifier)
             if (list.isNotEmpty()) {
                 realCaptures = list.mapIndexed { i, event ->
-                    val isVid = !event.isPhoto
-                    val durText = if (!isVid) "FOTO HD" else event.displayDuration
                     RecordingClipItem(
                         id = event.id,
                         cameraId = event.camera,
                         cameraName = event.camera.replace("_", " ").uppercase(),
-                        duration = durText,
+                        duration = "FOTO HD",
                         timestamp = event.timestamp,
                         sizeMb = "${(event.score * 0.25).toInt() + 10} MB",
                         thumbnailUrl = event.snapshotUrl,
-                        isVideo = isVid
+                        isVideo = false
                     )
                 }
             }
@@ -744,7 +742,7 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
             realCaptures
         } else if (cameras.isEmpty()) {
             listOf(
-                RecordingClipItem("rec_1", "camera_principal", "Câmera Principal", "02:15", "Hoje, 14:32", "42 MB", "")
+                RecordingClipItem("rec_1", "camera_principal", "Câmera Principal", "FOTO HD", "Hoje, 14:32", "12 MB", "", isVideo = false)
             )
         } else {
             cameras.mapIndexed { i, c ->
@@ -752,10 +750,11 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
                     id = "rec_${c.id}_$i",
                     cameraId = c.id,
                     cameraName = c.name,
-                    duration = "0${i + 1}:${25 + i * 10}",
+                    duration = "FOTO HD",
                     timestamp = "Hoje, ${14 - i}:30",
-                    sizeMb = "${35 + i * 12} MB",
-                    thumbnailUrl = c.thumbnailUrl
+                    sizeMb = "${10 + i * 2} MB",
+                    thumbnailUrl = c.thumbnailUrl,
+                    isVideo = false
                 )
             }
         }
@@ -851,16 +850,11 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                val playerStatusText = if (!selectedClip.isVideo) {
-                    "Foto Instantânea HD • Snapshot Frigate"
-                } else {
-                    "00:00 / ${selectedClip.duration} • H.265 Smart"
-                }
+                val playerStatusText = "Foto Instantânea HD • Snapshot Frigate"
                 Text(playerStatusText, style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary))
                 Button(
                     onClick = {
-                        val exportType = if (!selectedClip.isVideo) "foto" else "gravação"
-                        Toast.makeText(context, "Exportando $exportType ${selectedClip.id}...", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Exportando foto ${selectedClip.id}...", Toast.LENGTH_SHORT).show()
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = TvColors.CyberCyan),
                     shape = TvShapes.Badge,
@@ -932,7 +926,7 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
 
                         Column(modifier = Modifier.weight(1f)) {
                             Text(clip.cameraName, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold, maxLines = 1)
-                            val itemSub = if (!clip.isVideo) "${clip.timestamp} • Foto HD" else "${clip.timestamp} • ${clip.duration}"
+                            val itemSub = "${clip.timestamp} • Foto HD"
                             Text(itemSub, color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
                         }
                     }
@@ -2035,7 +2029,7 @@ fun TvSettingsViewport(tailscaleIp: String) {
                 Text("ID: ${prefs.deviceIdentifier}", color = TvColors.CyberCyan, fontSize = 12.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("Nome da TV: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text("VERSÃO DO APLICATIVO: v001.000.000.046 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("VERSÃO DO APLICATIVO: v001.000.000.047 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -2159,16 +2153,12 @@ fun TvClipPlayerDialog(
             ) {
                 Column {
                     Text(
-                        text = if (!clip.isVideo) "FOTO: ${clip.cameraName}" else "GRAVAÇÃO: ${clip.cameraName}",
+                        text = "FOTO HD: ${clip.cameraName}",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black
                     )
-                    val dialogSub = if (!clip.isVideo) {
-                        "Data: ${clip.timestamp} • Tipo: Foto HD • Tamanho: ${clip.sizeMb}"
-                    } else {
-                        "Data: ${clip.timestamp} • Duração: ${clip.duration} • Tamanho: ${clip.sizeMb}"
-                    }
+                    val dialogSub = "Data: ${clip.timestamp} • Tipo: Foto HD • Resolução: 1080p • Tamanho: ${clip.sizeMb}"
                     Text(
                         text = dialogSub,
                         color = TvColors.CyberCyan,

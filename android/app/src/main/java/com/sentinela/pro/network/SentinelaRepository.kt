@@ -634,7 +634,8 @@ object SentinelaRepository {
         pipSize: String = "medium",
         pipDuration: Int = 10,
         allowedCameras: List<String> = emptyList(),
-        allowPip: Boolean = true
+        allowPip: Boolean = true,
+        permissionStatus: String = "allowed"
     ): Pair<Boolean, String> = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/$deviceId/permissions")
@@ -650,7 +651,7 @@ object SentinelaRepository {
             allowedCameras.forEach { camsArr.put(it) }
             val payload = JSONObject().apply {
                 put("friendly_name", friendlyName)
-                put("permission_status", "allowed")
+                put("permission_status", permissionStatus)
                 put("pip_default_size", pipSize)
                 put("pip_duration_seconds", pipDuration)
                 put("allow_pip_alerts", allowPip)
@@ -690,7 +691,7 @@ object SentinelaRepository {
             else -> "lan"
         }
         val speed = caps?.linkDownstreamBandwidthKbps?.let { it / 1000.0 } ?: 100.0
-        val appVer = "v001.000.000.046"
+        val appVer = "v001.000.000.047"
         val devModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
 
         val ok = registerOrHeartbeat(

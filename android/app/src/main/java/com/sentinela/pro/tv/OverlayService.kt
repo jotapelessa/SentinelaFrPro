@@ -108,11 +108,12 @@ class OverlayService : Service() {
 
                     val camera = event.optString("camera", "camera_principal")
                     val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
+                    val isTestAlert = evType == "pip_alert" || label.contains("TEST", ignoreCase = true) || label.contains("ALERTA", ignoreCase = true)
                     runCatching {
                         val policy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
                         if (policy.permissionStatus == "allowed" && policy.allowPipAlerts) {
                             val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
-                            val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
+                            val eventAllowed = isTestAlert || policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
                             if (camAllowed && eventAllowed) {
                                 showPiP(camera, label, policy)
                             }
@@ -195,7 +196,8 @@ class OverlayService : Service() {
             10
         }
 
-        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=webrtc,mse&video=h264&width=100%"
+        val h264StreamSrc = if (camera == "camera_principal") "camera_principal_h264" else camera
+        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${h264StreamSrc}&mode=webrtc,mse&width=100%"
         val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
 
         try {

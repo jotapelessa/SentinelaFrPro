@@ -176,7 +176,7 @@ fun PhoneTopBar(
                         )
                     }
                     Text(
-                        text = "v001.000.000.046 • NVR MOBILE",
+                        text = "v001.000.000.047 • NVR MOBILE",
                         style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.TextMuted)
                     )
                 }
@@ -252,13 +252,13 @@ fun PhoneBottomNavigationBar(
         color = SentinelaColors.BottomBarBackground,
         modifier = Modifier
             .fillMaxWidth()
-            .height(SentinelaDimens.BottomBarHeight),
+            .height(66.dp),
         border = BorderStroke(1.dp, SentinelaColors.BorderStandard)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 4.dp, vertical = 2.dp),
+                .padding(horizontal = 2.dp, vertical = 2.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -288,7 +288,7 @@ fun PhoneBottomNavigationBar(
                         .weight(1f)
                         .fillMaxHeight()
                         .clickable { onSelectTab(index) }
-                        .padding(vertical = 4.dp),
+                        .padding(horizontal = 1.dp, vertical = 2.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
@@ -303,7 +303,7 @@ fun PhoneBottomNavigationBar(
                                     Color.Transparent
                                 }
                             )
-                            .padding(horizontal = 10.dp, vertical = 2.dp),
+                            .padding(horizontal = 6.dp, vertical = 2.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
@@ -316,9 +316,11 @@ fun PhoneBottomNavigationBar(
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = title,
-                        fontSize = 9.5.sp,
+                        fontSize = 8.5.sp,
+                        letterSpacing = (-0.4).sp,
                         maxLines = 1,
                         softWrap = false,
+                        overflow = TextOverflow.Clip,
                         color = if (isSelected) activeColor else inactiveColor,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                         textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -760,12 +762,13 @@ fun PhoneCapturesTab() {
 fun DeviceConfigEditDialog(
     device: com.sentinela.pro.network.RemoteDeviceItem,
     onDismiss: () -> Unit,
-    onSave: (name: String, pipSize: String, pipDuration: Int, allowPip: Boolean) -> Unit
+    onSave: (name: String, pipSize: String, pipDuration: Int, allowPip: Boolean, status: String) -> Unit
 ) {
     var name by remember { mutableStateOf(device.friendlyName) }
     var pipSize by remember { mutableStateOf(device.pipDefaultSize) }
     var pipDuration by remember { mutableStateOf(device.pipDurationSeconds) }
     var allowPip by remember { mutableStateOf(device.allowPipAlerts) }
+    var status by remember { mutableStateOf(device.permissionStatus) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -790,6 +793,17 @@ fun DeviceConfigEditDialog(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 )
+
+                Text("Status do Dispositivo:", color = SentinelaColors.TextSecondary, fontSize = 12.sp)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf("allowed" to "Ativo", "paused" to "Pausado", "blocked" to "Bloqueado").forEach { (key, label) ->
+                        FilterChip(
+                            selected = status == key,
+                            onClick = { status = key },
+                            label = { Text(label, fontSize = 10.sp) }
+                        )
+                    }
+                }
 
                 Text("Tamanho Janela PiP:", color = SentinelaColors.TextSecondary, fontSize = 12.sp)
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
@@ -832,7 +846,7 @@ fun DeviceConfigEditDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onSave(name, pipSize, pipDuration, allowPip) },
+                onClick = { onSave(name, pipSize, pipDuration, allowPip, status) },
                 colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan)
             ) {
                 Text("Salvar", color = Color.Black, fontWeight = FontWeight.Bold)
@@ -866,13 +880,27 @@ fun PhoneMasterCentralTab() {
 
     LaunchedEffect(Unit) {
         refreshDevices()
+        try {
+            val ws = com.sentinela.pro.network.SentinelaWebSocket(com.sentinela.pro.SentinelaConfig.currentHost)
+            launch { ws.connectAndListen() }
+            launch {
+                ws.events.collect { event ->
+                    val evType = event.optString("type")
+                    if (evType == "DEVICE_CONFIG_UPDATED" || evType == "DEVICE_MASTER_CHANGED" || evType == "DEVICE_PAIRED") {
+                        refreshDevices()
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            // fallback
+        }
     }
 
     if (editingDevice != null) {
         DeviceConfigEditDialog(
             device = editingDevice!!,
             onDismiss = { editingDevice = null },
-            onSave = { updatedName, pipSize, pipDur, allowPip ->
+            onSave = { updatedName, pipSize, pipDur, allowPip, status ->
                 val devId = editingDevice!!.id
                 editingDevice = null
                 coroutineScope.launch {
@@ -881,7 +909,8 @@ fun PhoneMasterCentralTab() {
                         friendlyName = updatedName,
                         pipSize = pipSize,
                         pipDuration = pipDur,
-                        allowPip = allowPip
+                        allowPip = allowPip,
+                        permissionStatus = status
                     )
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     refreshDevices()
@@ -1671,7 +1700,7 @@ fun PhoneSettingsTab() {
                     Text("IDENTIFICAÇÃO DO SMARTPHONE EM /SCREENS", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
                     Text("ID: ${prefs.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
                     Text("Nome: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
-                    Text("Versão: v001.000.000.046 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
+                    Text("Versão: v001.000.000.047 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
                 }
             }
         }

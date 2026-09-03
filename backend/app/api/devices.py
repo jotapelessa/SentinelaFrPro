@@ -449,6 +449,7 @@ async def update_device_permissions(
             "type": "DEVICE_CONFIG_UPDATED",
             "device_identifier": dev.device_identifier,
             "friendly_name": dev.friendly_name,
+            "permission_status": dev.permission_status,
             "pip_default_size": dev.pip_default_size,
             "pip_duration_seconds": dev.pip_duration_seconds,
             "allow_pip_alerts": dev.allow_pip_alerts
