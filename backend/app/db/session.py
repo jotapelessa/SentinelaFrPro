@@ -80,6 +80,8 @@ async def init_db():
             ("pip_default_size", "VARCHAR(32) DEFAULT 'medium'"),
             ("pip_duration_seconds", "INTEGER DEFAULT 10"),
             ("tailscale_ip", "VARCHAR(64)"),
+            ("is_master_admin", "BOOLEAN DEFAULT 0"),
+            ("admin_unlocked_at", "DATETIME"),
             ("last_seen", "DATETIME")
         ]
         for col_name, col_def in paired_columns:
