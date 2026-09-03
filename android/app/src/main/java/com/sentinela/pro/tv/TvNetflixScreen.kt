@@ -1190,27 +1190,46 @@ fun TvSettingsTab() {
                     fontSize = 12.sp
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    if (!hasOverlayPerm) {
-                        TvOptionPill(
-                            label = "⚙️ Habilitar Sobreposição de Tela",
-                            isSelected = true,
-                            onSelect = {
+                    TvOptionPill(
+                        label = "⚙️ Abrir Configurações de Sobreposição",
+                        isSelected = !hasOverlayPerm,
+                        onSelect = {
+                            val pkg = context.packageName
+                            val intents = listOf(
+                                android.content.Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:$pkg")),
+                                android.content.Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", android.net.Uri.parse("package:$pkg")),
+                                android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, android.net.Uri.parse("package:$pkg")),
+                                android.content.Intent(android.provider.Settings.ACTION_SETTINGS)
+                            )
+                            var opened = false
+                            for (intent in intents) {
                                 try {
-                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                                        val intent = android.content.Intent(
-                                            android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                            android.net.Uri.parse("package:${context.packageName}")
-                                        ).apply { flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK }
-                                        context.startActivity(intent)
-                                    }
+                                    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+                                    context.startActivity(intent)
+                                    opened = true
+                                    break
                                 } catch (e: Exception) {
-                                    Toast.makeText(context, "Abra Configurações do Android > Apps > Sentinela > Sobreposição", Toast.LENGTH_LONG).show()
+                                    // try fallback
                                 }
                             }
-                        )
-                    }
+                            if (!opened) {
+                                Toast.makeText(context, "Abra Configurações da TV > Apps > Acesso Especial > Sobreposição", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    )
                     TvOptionPill(
-                        label = "▶️ Testar Janela Flutuante (PiP Preview)",
+                        label = "🔄 Revalidar Permissão",
+                        isSelected = false,
+                        onSelect = {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                hasOverlayPerm = android.provider.Settings.canDrawOverlays(context)
+                            }
+                            val msg = if (hasOverlayPerm) "✅ Permissão de sobreposição confirmada!" else "⚠️ Permissão ainda pendente nas configurações."
+                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                    TvOptionPill(
+                        label = "▶️ Testar Janela Flutuante (PiP)",
                         isSelected = false,
                         onSelect = {
                             OverlayService.triggerPiP(context, "camera_principal", "TESTE PIP PREVIEW")

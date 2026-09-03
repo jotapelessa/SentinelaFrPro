@@ -92,9 +92,10 @@ class OverlayService : Service() {
         serviceScope.launch {
             webSocket?.events?.collect { event ->
                 val evType = event.optString("type")
-                if (evType == "pip_alert" || evType == "FRIGATE_EVENT" || evType == "NEW_DETECTION") {
+                val isMotionActive = evType == "CAMERA_DETECTION_ACTIVE" && event.optBoolean("active", false)
+                if (evType == "pip_alert" || evType == "FRIGATE_EVENT" || evType == "NEW_DETECTION" || isMotionActive) {
                     val camera = event.optString("camera", "camera_principal")
-                    val label = event.optString("label", "MOVIMENTO")
+                    val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
                     runCatching {
                         val policy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
                         if (policy.permissionStatus == "allowed" && policy.allowPipAlerts) {
@@ -145,12 +146,17 @@ class OverlayService : Service() {
         pipJob?.cancel()
         frameTickerJob?.cancel()
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
+            android.util.Log.w("OverlayService", "Cannot display PiP overlay: Permission SYSTEM_ALERT_WINDOW not granted")
+            return
+        }
+
         val prefs = SentinelaPreferences(this)
         val pipSize = prefs.currentPipSize
         val pipPos = prefs.currentPipPosition
         val pipDur = prefs.currentPipDuration
         
-        if (overlayView == null) {
+        try {
             val params = WindowManager.LayoutParams(
                 pipSize.width, pipSize.height,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
@@ -166,63 +172,73 @@ class OverlayService : Service() {
                 x = 32
                 y = 32
             }
-            
-            val root = FrameLayout(this).apply {
-                setBackgroundColor(0xFF06B6D4.toInt()) // Cyan border
-                setPadding(4, 4, 4, 4)
-            }
 
-            val inner = FrameLayout(this).apply {
-                setBackgroundColor(0xFF000000.toInt())
-            }
+            if (overlayView == null) {
+                val root = FrameLayout(this).apply {
+                    setBackgroundColor(0xFF06B6D4.toInt()) // Cyan border
+                    setPadding(4, 4, 4, 4)
+                }
 
-            val iv = ImageView(this).apply {
-                layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.MATCH_PARENT
-                )
-                scaleType = ImageView.ScaleType.CENTER_CROP
-            }
-            pipImageView = iv
-            inner.addView(iv)
+                val inner = FrameLayout(this).apply {
+                    setBackgroundColor(0xFF000000.toInt())
+                }
 
-            // Top HUD Bar (Camera name & Label badge)
-            val hudBar = LinearLayout(this).apply {
-                orientation = LinearLayout.HORIZONTAL
-                setBackgroundColor(0xCC050E1A.toInt()) // Dark glassy background
-                setPadding(14, 8, 14, 8)
-                gravity = Gravity.CENTER_VERTICAL
-                layoutParams = FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.MATCH_PARENT,
-                    FrameLayout.LayoutParams.WRAP_CONTENT
-                ).apply {
-                    gravity = Gravity.TOP
+                val iv = ImageView(this).apply {
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                    )
+                    scaleType = ImageView.ScaleType.CENTER_CROP
+                }
+                pipImageView = iv
+                inner.addView(iv)
+
+                // Top HUD Bar (Camera name & Label badge)
+                val hudBar = LinearLayout(this).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    setBackgroundColor(0xCC050E1A.toInt()) // Dark glassy background
+                    setPadding(14, 8, 14, 8)
+                    gravity = Gravity.CENTER_VERTICAL
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.WRAP_CONTENT
+                    ).apply {
+                        gravity = Gravity.TOP
+                    }
+                }
+
+                val dot = View(this).apply {
+                    layoutParams = LinearLayout.LayoutParams(14, 14).apply {
+                        marginEnd = 10
+                    }
+                    setBackgroundColor(0xFFEF4444.toInt()) // Red Live Dot
+                }
+                hudBar.addView(dot)
+
+                val tv = TextView(this).apply {
+                    setTextColor(Color.WHITE)
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
+                    typeface = Typeface.DEFAULT_BOLD
+                    text = "${camera.uppercase()} • ${label.uppercase()}"
+                }
+                pipTitleView = tv
+                hudBar.addView(tv)
+                inner.addView(hudBar)
+
+                root.addView(inner)
+                overlayView = root
+                windowManager.addView(overlayView, params)
+            } else {
+                pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()}"
+                if (overlayView?.parent == null) {
+                    windowManager.addView(overlayView, params)
+                } else {
+                    windowManager.updateViewLayout(overlayView, params)
                 }
             }
-
-            val dot = View(this).apply {
-                layoutParams = LinearLayout.LayoutParams(14, 14).apply {
-                    marginEnd = 10
-                }
-                setBackgroundColor(0xFFEF4444.toInt()) // Red Live Dot
-            }
-            hudBar.addView(dot)
-
-            val tv = TextView(this).apply {
-                setTextColor(Color.WHITE)
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-                typeface = Typeface.DEFAULT_BOLD
-                text = "${camera.uppercase()} • ${label.uppercase()}"
-            }
-            pipTitleView = tv
-            hudBar.addView(tv)
-            inner.addView(hudBar)
-
-            root.addView(inner)
-            overlayView = root
-            windowManager.addView(overlayView, params)
-        } else {
-            pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()}"
+        } catch (e: Exception) {
+            android.util.Log.e("OverlayService", "Failed to render PiP Window: ${e.message}")
+            return
         }
 
         // Start live snapshot refresh ticker with zero-flicker background decoding & multi-channel fallback
@@ -260,7 +276,11 @@ class OverlayService : Service() {
 
                 if (decodedBitmap != null) {
                     withContext(Dispatchers.Main) {
-                        pipImageView?.setImageBitmap(decodedBitmap)
+                        try {
+                            pipImageView?.setImageBitmap(decodedBitmap)
+                        } catch (e: Exception) {
+                            // View might have been detached
+                        }
                     }
                 }
 
@@ -270,19 +290,25 @@ class OverlayService : Service() {
             }
         }
 
-        if (pipDur.seconds > 0) {
-            pipJob = serviceScope.launch {
-                delay(pipDur.seconds * 1000L)
-                removePiP()
-            }
+        val duration = if (pipDur.seconds > 0) pipDur.seconds else 10
+        pipJob = serviceScope.launch {
+            delay(duration * 1000L)
+            removePiP()
         }
     }
 
     private fun removePiP() {
         frameTickerJob?.cancel()
         frameTickerJob = null
-        overlayView?.let {
-            windowManager.removeView(it)
+        try {
+            overlayView?.let { v ->
+                if (v.parent != null) {
+                    windowManager.removeViewImmediate(v)
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("OverlayService", "Error removing overlay view: ${e.message}")
+        } finally {
             overlayView = null
             pipImageView = null
             pipTitleView = null

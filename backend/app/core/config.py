@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "Sentinela Frigate Pro"
     APP_TITLE: str = "Sentinela NVR"
-    VERSION: str = "SentinelaPro.001.000.000.028"
+    VERSION: str = "SentinelaPro.001.000.000.029"
     ENVIRONMENT: str = "production"
     DEBUG: bool = False
     

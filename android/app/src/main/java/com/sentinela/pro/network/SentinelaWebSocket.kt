@@ -1,6 +1,7 @@
 package com.sentinela.pro.network
 
 import android.util.Log
+import com.sentinela.pro.SentinelaConfig
 import io.ktor.client.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.plugins.websocket.*
@@ -12,27 +13,48 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import java.security.SecureRandom
+import java.security.cert.X509Certificate
+import javax.net.ssl.SSLContext
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
-class SentinelaWebSocket(private val serverUrl: String) {
-    private val client = HttpClient(OkHttp) {
-        install(WebSockets) {
-            pingInterval = 20_000
+class SentinelaWebSocket(private val serverUrl: String = "") {
+    private val client: HttpClient by lazy {
+        val trustAll = arrayOf<TrustManager>(object : X509TrustManager {
+            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
+            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
+        })
+        val sslContext = SSLContext.getInstance("TLS").apply {
+            init(null, trustAll, SecureRandom())
+        }
+
+        HttpClient(OkHttp) {
+            engine {
+                config {
+                    sslSocketFactory(sslContext.socketFactory, trustAll[0] as X509TrustManager)
+                    hostnameVerifier { _, _ -> true }
+                }
+            }
+            install(WebSockets) {
+                pingInterval = 20_000
+            }
         }
     }
 
-    private val _events = MutableSharedFlow<JSONObject>(extraBufferCapacity = 10)
+    private val _events = MutableSharedFlow<JSONObject>(extraBufferCapacity = 30)
     val events = _events.asSharedFlow()
 
     suspend fun connectAndListen() {
         withContext(Dispatchers.IO) {
             while (isActive) {
                 try {
-                    val isSecure = serverUrl.contains(".") && !serverUrl.matches(Regex("\\d+\\.\\d+\\.\\d+\\.\\d+"))
-                    val wsUrl = if (isSecure) "wss://$serverUrl/ws" else "ws://$serverUrl:8080/ws"
-                    Log.d("SentinelaWS", "Connecting to $wsUrl...")
+                    val wsUrl = SentinelaConfig.WS_URL
+                    Log.d("SentinelaWS", "Connecting to WebSocket: $wsUrl...")
 
                     client.webSocket(urlString = wsUrl) {
-                        Log.d("SentinelaWS", "Connected successfully!")
+                        Log.i("SentinelaWS", "WebSocket connected successfully to $wsUrl!")
 
                         // Send identification
                         send(Frame.Text(JSONObject().apply {
@@ -52,7 +74,7 @@ class SentinelaWebSocket(private val serverUrl: String) {
                         }
                     }
                 } catch (e: Exception) {
-                    Log.e("SentinelaWS", "Disconnected: ${e.message}. Reconnecting in 3s...")
+                    Log.w("SentinelaWS", "WebSocket disconnected: ${e.message}. Reconnecting in 3s...")
                 }
                 delay(3000)
             }
