@@ -171,11 +171,27 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         except Exception:
             allowed = []
 
+    events = []
+    if dev.allowed_events:
+        try:
+            events = json.loads(dev.allowed_events)
+        except Exception:
+            events = ["person", "car", "motorcycle", "dog", "cat", "bus"]
+
     return {
         "status": "online",
         "device_identifier": dev.device_identifier,
+        "friendly_name": dev.friendly_name,
         "permission_status": dev.permission_status,
         "allowed_cameras": allowed,
+        "allowed_events": events,
+        "allow_live_stream": dev.allow_live_stream if dev.allow_live_stream is not None else True,
+        "allow_recordings": dev.allow_recordings if dev.allow_recordings is not None else True,
+        "allow_pip_alerts": dev.allow_pip_alerts if dev.allow_pip_alerts is not None else True,
+        "allow_restart_containers": dev.allow_restart_containers if dev.allow_restart_containers is not None else False,
+        "allow_reboot_server": dev.allow_reboot_server if dev.allow_reboot_server is not None else False,
+        "pip_default_size": dev.pip_default_size or "medium",
+        "pip_duration_seconds": dev.pip_duration_seconds or 10,
         "last_seen": dev.last_seen.isoformat() if dev.last_seen else None
     }
 
@@ -288,19 +304,35 @@ async def update_device_allowed_cameras(device_id: int, payload: DeviceAllowedCa
 
 @router.get("/health")
 async def check_devices_health(db: AsyncSession = Depends(get_db)):
-    """Checks real-time online/reachable status for all paired screens."""
+    """
+    Checks real-time online/reachable status for all paired screens.
+    Optimized O(1) in-memory evaluation for Android APKs via heartbeat (< 60s)
+    with non-blocking network socket fallback for standalone Cast devices.
+    """
     stmt = select(PairedDevice)
     result = await db.execute(stmt)
     devices = result.scalars().all()
+    now = datetime.datetime.utcnow()
 
     async def check_one(d: PairedDevice):
         ip = d.tailscale_ip if d.tailscale_ip else d.ip_address
-        is_online = await pip_gateway_service.check_device_online(ip)
+        is_recent_heartbeat = False
+        if d.last_seen:
+            diff_seconds = (now - d.last_seen).total_seconds()
+            if diff_seconds < 60:
+                is_recent_heartbeat = True
+
+        is_online = is_recent_heartbeat
+        # For Cast hardware or if heartbeat is older than 60s, verify network port
+        if not is_online and ip and d.device_type in ["chromecast", "google_tv", "tcl"]:
+            is_online = await pip_gateway_service.check_device_online(ip)
+
         return {
             "id": d.id,
             "name": d.friendly_name,
             "ip": ip,
-            "online": is_online
+            "online": is_online,
+            "last_seen": d.last_seen.isoformat() if d.last_seen else None
         }
 
     statuses = await asyncio.gather(*[check_one(d) for d in devices])

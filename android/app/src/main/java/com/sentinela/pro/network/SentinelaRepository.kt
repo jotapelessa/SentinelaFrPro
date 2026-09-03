@@ -29,12 +29,32 @@ data class DevicePolicy(
 object SentinelaRepository {
     private const val TAG = "SentinelaRepo"
 
+    private fun openConnection(url: URL): HttpURLConnection {
+        val conn = url.openConnection() as HttpURLConnection
+        if (conn is javax.net.ssl.HttpsURLConnection) {
+            try {
+                val trustAllCerts = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
+                    override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate>? = null
+                    override fun checkClientTrusted(certs: Array<java.security.cert.X509Certificate>?, authType: String?) {}
+                    override fun checkServerTrusted(certs: Array<java.security.cert.X509Certificate>?, authType: String?) {}
+                })
+                val sc = javax.net.ssl.SSLContext.getInstance("TLS")
+                sc.init(null, trustAllCerts, java.security.SecureRandom())
+                conn.sslSocketFactory = sc.socketFactory
+                conn.hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
+            } catch (e: Exception) {
+                Log.d(TAG, "SSL setup bypassed: ${e.message}")
+            }
+        }
+        return conn
+    }
+
     suspend fun getDevicePolicy(deviceIdentifier: String): DevicePolicy = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/by-id/$deviceIdentifier/policy")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
-                connectTimeout = 3000
-                readTimeout = 3000
+            val conn = openConnection(url).apply {
+                connectTimeout = 4000
+                readTimeout = 4000
                 requestMethod = "GET"
                 setRequestProperty("Accept", "application/json")
             }
@@ -88,7 +108,7 @@ object SentinelaRepository {
     ): Boolean = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/heartbeat")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            val conn = openConnection(url).apply {
                 connectTimeout = 4000
                 readTimeout = 4000
                 requestMethod = "POST"
@@ -126,7 +146,7 @@ object SentinelaRepository {
             }
 
             val url = URL(endpoint)
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            val conn = openConnection(url).apply {
                 connectTimeout = 4000
                 readTimeout = 4000
                 requestMethod = "GET"
@@ -166,7 +186,7 @@ object SentinelaRepository {
 
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/events?limit=50")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            val conn = openConnection(url).apply {
                 connectTimeout = 5000
                 readTimeout = 5000
                 requestMethod = "GET"
@@ -192,7 +212,7 @@ object SentinelaRepository {
                     val score = obj.optInt("score", 0)
                     val timestamp = obj.optString("timestamp", "")
                     val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/events/$id/snapshot.jpg"
-                    val clipUrl = "${SentinelaConfig.BASE_URL}/frigate/api/events/$id/clip.mp4"
+                    val clipUrl = "${SentinelaConfig.BASE_URL}/api/events/$id/clip.mp4"
                     val hasClip = obj.optBoolean("has_clip", true)
                     val retained = obj.optBoolean("retained", false)
 
@@ -221,7 +241,7 @@ object SentinelaRepository {
     suspend fun getTelemetry(): TelemetryData = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/telemetry/")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            val conn = openConnection(url).apply {
                 connectTimeout = 3000
                 readTimeout = 3000
                 requestMethod = "GET"
@@ -287,7 +307,7 @@ object SentinelaRepository {
         val list = mutableListOf<AuditLogEntry>()
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/events/audit/logs?limit=80")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            val conn = openConnection(url).apply {
                 connectTimeout = 4000
                 readTimeout = 4000
                 requestMethod = "GET"
@@ -348,7 +368,7 @@ object SentinelaRepository {
             }
 
             val pingUrl = URL("${SentinelaConfig.BASE_URL}/api/telemetry/")
-            val pingConn = (pingUrl.openConnection() as HttpURLConnection).apply {
+            val pingConn = openConnection(pingUrl).apply {
                 connectTimeout = 3000
                 readTimeout = 3000
             }
@@ -359,7 +379,7 @@ object SentinelaRepository {
 
             // Download throughput measurement (fetches latest camera snapshot)
             val snapUrl = URL("${SentinelaConfig.BASE_URL}/frigate/api/camera_principal/latest.jpg?h=720&t=$startTime")
-            val snapConn = (snapUrl.openConnection() as HttpURLConnection).apply {
+            val snapConn = openConnection(snapUrl).apply {
                 connectTimeout = 4000
                 readTimeout = 4000
             }
@@ -395,7 +415,7 @@ object SentinelaRepository {
     suspend fun restartContainers(deviceIdentifier: String, serviceName: String = "all"): Pair<Boolean, String> = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/by-id/$deviceIdentifier/restart-containers")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            val conn = openConnection(url).apply {
                 connectTimeout = 8000
                 readTimeout = 8000
                 requestMethod = "POST"
@@ -430,7 +450,7 @@ object SentinelaRepository {
     suspend fun rebootServer(deviceIdentifier: String): Pair<Boolean, String> = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/by-id/$deviceIdentifier/reboot-server")
-            val conn = (url.openConnection() as HttpURLConnection).apply {
+            val conn = openConnection(url).apply {
                 connectTimeout = 6000
                 readTimeout = 6000
                 requestMethod = "POST"

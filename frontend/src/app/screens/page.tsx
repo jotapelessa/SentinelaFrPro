@@ -109,6 +109,13 @@ export default function ScreensPage() {
     fetchDevices();
     fetchHealth();
     fetchCameras();
+
+    const interval = setInterval(() => {
+      fetchHealth();
+      fetchDevices();
+    }, 10000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const handleScanTVs = async () => {

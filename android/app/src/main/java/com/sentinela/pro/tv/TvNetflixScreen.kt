@@ -1158,12 +1158,75 @@ fun TvSettingsTab() {
             }
         }
 
+        // Floating Overlay Permission & PiP Preview Trigger
+        item {
+            var hasOverlayPerm by remember {
+                mutableStateOf(
+                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                        android.provider.Settings.canDrawOverlays(context)
+                    } else true
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(Color(0xFF0F172A))
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(
+                    text = "5. PERMISSÃO DE JANELAS FLUTUANTES (PIP PREVIEW)",
+                    color = Color(0xFF22D3EE),
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = if (hasOverlayPerm)
+                        "✅ Permissão Ativa: Janelas flutuantes autorizadas para exibir alertas sobre qualquer app."
+                    else
+                        "⚠️ Permissão Pendente: Necessário habilitar sobreposição de outros aplicativos para alertas flutuantes.",
+                    color = if (hasOverlayPerm) Color(0xFF34D399) else Color(0xFFFBBF24),
+                    fontSize = 12.sp
+                )
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    if (!hasOverlayPerm) {
+                        TvOptionPill(
+                            label = "⚙️ Habilitar Sobreposição de Tela",
+                            isSelected = true,
+                            onSelect = {
+                                try {
+                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+                                        val intent = android.content.Intent(
+                                            android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                            android.net.Uri.parse("package:${context.packageName}")
+                                        ).apply { flags = android.content.Intent.FLAG_ACTIVITY_NEW_TASK }
+                                        context.startActivity(intent)
+                                    }
+                                } catch (e: Exception) {
+                                    Toast.makeText(context, "Abra Configurações do Android > Apps > Sentinela > Sobreposição", Toast.LENGTH_LONG).show()
+                                }
+                            }
+                        )
+                    }
+                    TvOptionPill(
+                        label = "▶️ Testar Janela Flutuante (PiP Preview)",
+                        isSelected = false,
+                        onSelect = {
+                            OverlayService.triggerPiP(context, "camera_principal", "TESTE PIP PREVIEW")
+                            Toast.makeText(context, "🔔 Janela PiP disparada!", Toast.LENGTH_SHORT).show()
+                        }
+                    )
+                }
+            }
+        }
+
         // Server Host Selector
         item {
             var currentHost by remember { mutableStateOf(prefs.serverHost) }
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                 Text(
-                    text = "5. SERVIDOR SENTINELA (CONEXÃO ATUAL)",
+                    text = "6. SERVIDOR SENTINELA (CONEXÃO ATUAL)",
                     color = Color(0xFF22D3EE),
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Bold
@@ -1176,9 +1239,10 @@ fun TvSettingsTab() {
                 )
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     val presets = listOf(
-                        "sentinela.tail47a54f.ts.net" to "Túnel Tailscale HTTPS",
-                        "192.168.1.252:8088" to "IP Direto (Porta 8088)",
-                        "sentinela.local:8088" to "Rede Local mDNS"
+                        "frigate.tail47a54f.ts.net" to "Túnel Tailscale HTTPS",
+                        "100.93.129.91:8088" to "Tailscale IP Direto",
+                        "sentinela.local:8088" to "Rede Local mDNS",
+                        "192.168.1.247:8088" to "IP Local Direto"
                     )
                     items(presets) { (host, label) ->
                         TvOptionPill(

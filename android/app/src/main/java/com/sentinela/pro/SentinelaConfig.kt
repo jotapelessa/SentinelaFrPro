@@ -1,7 +1,7 @@
 package com.sentinela.pro
 
 object SentinelaConfig {
-    const val SERVER_HOST = "sentinela.tail47a54f.ts.net"
+    const val SERVER_HOST = "frigate.tail47a54f.ts.net"
     const val DEFAULT_HOST = SERVER_HOST
     var currentHost: String = DEFAULT_HOST
 

@@ -846,9 +846,10 @@ fun PhoneSettingsTab() {
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     val presets = listOf(
-                        "sentinela.tail47a54f.ts.net" to "Tailscale",
-                        "192.168.1.252:8088" to "IP Direto",
-                        "sentinela.local:8088" to "Local mDNS"
+                        "frigate.tail47a54f.ts.net" to "Tailscale HTTPS",
+                        "100.93.129.91:8088" to "Tailscale IP",
+                        "sentinela.local:8088" to "mDNS Local",
+                        "192.168.1.247:8088" to "IP Local"
                     )
                     presets.forEach { (host, label) ->
                         Button(

@@ -88,6 +88,7 @@ fun MseCameraView(
                         useWideViewPort = true
                         loadWithOverviewMode = true
                         allowContentAccess = true
+                        allowFileAccess = true
                         cacheMode = WebSettings.LOAD_NO_CACHE
                     }
 
@@ -97,6 +98,15 @@ fun MseCameraView(
                     webChromeClient = WebChromeClient()
 
                     webViewClient = object : WebViewClient() {
+                        override fun onReceivedSslError(
+                            view: WebView?,
+                            handler: SslErrorHandler?,
+                            error: android.net.http.SslError?
+                        ) {
+                            // Trust Tailscale HTTPS / MagicDNS TLS certificates
+                            handler?.proceed()
+                        }
+
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
