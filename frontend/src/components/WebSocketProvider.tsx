@@ -60,13 +60,31 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
     loadInitialEvents();
 
+    // Initial and periodic telemetry polling for guaranteed 2-second real-time stats
+    const fetchTelemetry = async () => {
+      try {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+        const res = await fetch(`${apiUrl}/telemetry`);
+        if (res.ok) {
+          const data = await res.json();
+          setTelemetry(data);
+        }
+      } catch {
+        // Ignored
+      }
+    };
+    fetchTelemetry();
+    const telemetryPoll = setInterval(fetchTelemetry, 2000);
+
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout;
     let isActive = true;
 
     function connect() {
       try {
-        const wsUrl = process.env.NEXT_PUBLIC_WS_URL || `ws://${window.location.host}/ws`;
+        const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
+        const defaultWsProto = isHttps ? "wss:" : "ws:";
+        const wsUrl = process.env.NEXT_PUBLIC_WS_URL || `${defaultWsProto}//${window.location.host}/ws`;
         ws = new WebSocket(wsUrl);
 
         ws.onopen = () => {
@@ -143,6 +161,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
     return () => {
       isActive = false;
+      clearInterval(telemetryPoll);
       clearTimeout(reconnectTimeout);
       if (ws) ws.close();
     };

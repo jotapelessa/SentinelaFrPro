@@ -16,31 +16,56 @@ class TelemetryService:
     def get_cpu_temperature(self) -> float:
         """
         Reads CPU temperature from Linux thermal zones (/sys/class/thermal/ or psutil).
-        Returns realistic healthy temp for Jasper Lake N5105 if on macOS/dev.
+        Prioritizes x86_pkg_temp, coretemp, cpu-thermal, or the maximum active zone.
         """
         try:
-            # Check psutil hardware sensors
+            # 1. Direct sysfs thermal zones scanning on Linux (checks x86_pkg_temp / coretemp)
+            pkg_temps = []
+            all_temps = []
+            for tz in sorted(glob.glob("/sys/class/thermal/thermal_zone*")):
+                try:
+                    type_file = os.path.join(tz, "type")
+                    temp_file = os.path.join(tz, "temp")
+                    if os.path.exists(temp_file):
+                        with open(temp_file, "r") as f:
+                            t_val = int(f.read().strip()) / 1000.0
+                        if 10.0 <= t_val <= 115.0:
+                            all_temps.append(t_val)
+                            z_type = ""
+                            if os.path.exists(type_file):
+                                with open(type_file, "r") as f:
+                                    z_type = f.read().strip().lower()
+                            if any(k in z_type for k in ["x86_pkg_temp", "coretemp", "cpu", "k10temp", "pkg"]):
+                                pkg_temps.append(t_val)
+                except Exception:
+                    pass
+
+            if pkg_temps:
+                return round(max(pkg_temps), 1)
+            if all_temps:
+                return round(max(all_temps), 1)
+
+            # 2. Check psutil hardware sensors
             if hasattr(psutil, "sensors_temperatures"):
                 temps = psutil.sensors_temperatures()
                 if temps:
+                    sensor_vals = []
                     for name, entries in temps.items():
                         for entry in entries:
                             if entry.current and entry.current > 0:
-                                return round(entry.current, 1)
+                                sensor_vals.append(entry.current)
+                    if sensor_vals:
+                        return round(max(sensor_vals), 1)
 
-            # Check direct sysfs thermal zone on Linux Ubuntu
-            thermal_zones = glob.glob("/sys/class/thermal/thermal_zone*/temp")
-            if thermal_zones:
-                with open(thermal_zones[0], "r") as f:
-                    val = int(f.read().strip())
-                    return round(val / 1000.0, 1)
-
-            # Check coretemp
-            hwmon_temps = glob.glob("/sys/class/hwmon/hwmon*/temp1_input")
-            if hwmon_temps:
-                with open(hwmon_temps[0], "r") as f:
-                    val = int(f.read().strip())
-                    return round(val / 1000.0, 1)
+            # 3. Check hwmon
+            for hwmon in glob.glob("/sys/class/hwmon/hwmon*/temp*_input"):
+                try:
+                    with open(hwmon, "r") as f:
+                        val = int(f.read().strip()) / 1000.0
+                        if 10.0 <= val <= 115.0:
+                            return round(val, 1)
+                except Exception:
+                    pass
         except Exception:
             pass
 
