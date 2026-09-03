@@ -99,11 +99,11 @@ snapshots:
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:8554/stream
-      - rtsp://192.168.1.6:8554/live
+      - rtsp://192.168.1.6:8554/stream#backchannel=0
+      - rtsp://192.168.1.6:8554/live#backchannel=0
   webrtc:
     candidates:
-      - 192.168.1.252:8555
+      - 192.168.1.247:8555
       - stun:stun.l.google.com:19302
 
 
@@ -113,7 +113,7 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream
+          input_args: preset-rtsp-restream -err_detect ignore_err -fflags +genpts+discardcorrupt -reorder_queue_size 16 -max_delay 500000
           roles:
             - detect
             - record
