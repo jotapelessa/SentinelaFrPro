@@ -1,0 +1,6 @@
+{
+  "name": "Sentinela Pro TV",
+  "description": "Sistema de Vigilância Inteligente de Câmeras CFTV para Android TV com Design System Obsidian, navegação D-Pad e código Jetpack Compose nativo.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

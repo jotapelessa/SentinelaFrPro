@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --tv-bg: #070B14;
+    --tv-sidebar-bg: #090D18;
+    --tv-card-bg: #0E1424;
+    --tv-card-elevated: #161F36;
+    --tv-overlay-hud: rgba(5, 14, 26, 0.80);
+    --tv-border-subtle: #1E293B;
+    --tv-border-highlight: #06B6D4;
+    --tv-border-focused: #FFFFFF;
+    --tv-netflix-red: #E50914;
+    --tv-cyber-cyan: #22D3EE;
+    --tv-live-green: #10B981;
+    --tv-standby-amber: #F59E0B;
+    --tv-alert-crimson: #EF4444;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: var(--tv-bg);
+    color: #FFFFFF;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .font-heading {
+    font-family: 'Outfit', sans-serif;
+  }
+}
+
+/* Custom TV Scanlines & Glow */
+.tv-scanlines {
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%, 
+    rgba(0, 0, 0, 0.25) 50%
+  ), linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.03),
+    rgba(0, 255, 0, 0.01),
+    rgba(0, 0, 255, 0.03)
+  );
+  background-size: 100% 3px, 3px 100%;
+  pointer-events: none;
+}
+
+.focus-ring-neon {
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 20px rgba(6, 182, 212, 0.45), 0 0 40px rgba(229, 9, 20, 0.2);
+}
+
+.focus-ring-red {
+  box-shadow: 0 0 0 2px #FFFFFF, 0 0 25px rgba(229, 9, 20, 0.6);
+}
+
+.pip-pulse {
+  animation: pip-pulse-anim 2s infinite ease-in-out;
+}
+
+@keyframes pip-pulse-anim {
+  0%, 100% {
+    box-shadow: 0 0 0 2px #06B6D4, 0 0 20px rgba(6, 182, 212, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 0 2px #EF4444, 0 0 30px rgba(239, 68, 68, 0.55);
+  }
+}
+
+/* Custom Scrollbar for TV lists */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #090D18;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #06B6D4;
+}
+

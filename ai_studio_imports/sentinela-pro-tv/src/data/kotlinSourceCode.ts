@@ -1,8 +1,222 @@
-package com.sentinela.pro.tv
+export const KOTLIN_THEME_TOKENS_CODE = `package com.sentinela.nvr.tv.theme
+
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+
+/**
+ * ============================================================================
+ * SENTINELA PRO — ANDROID TV (JETPACK COMPOSE DESIGN SYSTEM)
+ * Centralized Design Tokens (TvObsidianTheme)
+ * Ergonomia 10-Foot UI para Smart TV Widescreen 16:9 (1080p / 4K UHD)
+ * ============================================================================
+ */
+object TvColors {
+    // 1. Paleta de Cores (Cores HEX Exatas)
+    val Background = Color(0xFF070B14)              // Fundo principal Dark Obsidian cinematográfico
+    val SidebarBackground = Color(0xFF090D18)       // Fundo da Sidebar vertical esquerda
+    val CardBackground = Color(0xFF0E1424)          // Superfície dos cards de câmeras
+    val CardBackgroundElevated = Color(0xFF161F36)  // Superfície elevada de destaque
+    val OverlayHud = Color(0xCC050E1A)              // Fundo translúcido do HUD de alertas PiP
+    val BorderSubtle = Color(0xFF1E293B)            // Borda sutil padrão
+    val BorderHighlight = Color(0xFF06B6D4)         // Borda Ciano Neon
+    val BorderFocused = Color(0xFFFFFFFF)           // Borda Branca de foco D-Pad
+    val NetflixRed = Color(0xFFE50914)              // Vermelho Hero — Foco e Seleção D-Pad
+    val CyberCyan = Color(0xFF22D3EE)               // Ciano para status e streaming
+    val LiveGreen = Color(0xFF10B981)               // Verde esmeralda para status Online e 24 FPS
+    val StandbyAmber = Color(0xFFF59E0B)            // Modo Standby
+    val AlertCrimson = Color(0xFFEF4444)            // Gravação ativa e alertas críticos
+    
+    // Tipografia / Neutros
+    val TextPrimary = Color(0xFFFFFFFF)
+    val TextSecondary = Color(0xFF94A3B8)
+    val TextMuted = Color(0xFF475569)
+}
+
+object TvDimens {
+    // 2. Espaçamentos & Dimensões
+    val xs: Dp = 4.dp
+    val sm: Dp = 8.dp
+    val md: Dp = 16.dp
+    val lg: Dp = 24.dp
+    val xl: Dp = 32.dp
+
+    val SidebarWidth: Dp = 250.dp                   // Barra lateral fixa esquerda
+    val GridMinCardWidth: Dp = 320.dp               // Cards com aspectRatio(16f/9f)
+    val FocusBorderWidth: Dp = 2.dp
+    val PipWidth: Dp = 380.dp
+    val PipHeight: Dp = 220.dp
+}
+
+object TvShapes {
+    // 3. Formas (Shapes) & Bordas
+    val MenuItem = RoundedCornerShape(10.dp)
+    val CameraCard = RoundedCornerShape(14.dp)
+    val StatusPill = RoundedCornerShape(20.dp)
+    val PipWindow = RoundedCornerShape(16.dp)
+    val Badge = RoundedCornerShape(6.dp)
+}
+
+object TvTypography {
+    // 4. Tipografia & Hierarquia 10-Foot UI
+    val Logo = TextStyle(
+        fontSize = 22.sp,
+        fontWeight = FontWeight.Black,
+        letterSpacing = 2.sp,
+        color = TvColors.NetflixRed
+    )
+
+    val TabTitle = TextStyle(
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        color = TvColors.TextPrimary
+    )
+
+    val MenuItem = TextStyle(
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Medium,
+        color = TvColors.TextSecondary
+    )
+
+    val MenuItemFocused = TextStyle(
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Bold,
+        color = TvColors.TextPrimary
+    )
+
+    val Telemetry = TextStyle(
+        fontFamily = FontFamily.Monospace,
+        fontSize = 11.sp,
+        fontWeight = FontWeight.Normal,
+        color = TvColors.CyberCyan
+    )
+
+    val Clock = TextStyle(
+        fontFamily = FontFamily.Monospace,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Bold,
+        color = TvColors.TextPrimary
+    )
+}
+
+/**
+ * Modificador de Foco D-Pad com Elevação, Escala Suave (1.04x) e Borda de Alto Contraste
+ */
+@Composable
+fun Modifier.tvDpadFocusable(
+    isFocused: Boolean,
+    focusedBorderColor: Color = TvColors.BorderFocused,
+    unfocusedBorderColor: Color = TvColors.BorderSubtle,
+    shape: androidx.compose.ui.graphics.Shape = TvShapes.CameraCard,
+    scaleAmount: Float = 1.04f,
+    elevation: Dp = 12.dp
+): Modifier {
+    val animatedScale by animateFloatAsState(
+        targetValue = if (isFocused) scaleAmount else 1f,
+        animationSpec = tween(durationMillis = 180),
+        label = "DpadScaleAnimation"
+    )
+
+    return this
+        .scale(animatedScale)
+        .then(
+            if (isFocused) {
+                Modifier
+                    .shadow(elevation, shape, clip = false, spotColor = TvColors.NetflixRed, ambientColor = TvColors.CyberCyan)
+                    .border(BorderStroke(TvDimens.FocusBorderWidth, focusedBorderColor), shape)
+            } else {
+                Modifier.border(BorderStroke(1.dp, unfocusedBorderColor), shape)
+            }
+        )
+}
+`;
+
+export const KOTLIN_MODELS_CODE = `package com.sentinela.nvr.tv.model
+
+enum class CameraStatus {
+    ONLINE,
+    STANDBY,
+    ALERT,
+    RECORDING
+}
+
+enum class TvTab(val title: String, val iconResName: String) {
+    CAMERAS("Câmeras", "ic_tv_camera"),
+    RECORDINGS("Capturas", "ic_tv_video"),
+    TOOLS("Ferramentas", "ic_tv_tools"),
+    LOGS("Logs", "ic_tv_logs"),
+    SETTINGS("Configurações", "ic_tv_settings")
+}
+
+data class DetectedObject(
+    val id: String,
+    val label: String,
+    val confidence: Float,
+    val normX: Float,
+    val normY: Float,
+    val normWidth: Float,
+    val normHeight: Float,
+    val alertColorHex: Long
+)
+
+data class CameraTelemetry(
+    val ip: String,
+    val codec: String = "H.265 Main 10",
+    val resolution: String = "3840x2160 (4K UHD)",
+    val fps: Float = 24.0f,
+    val bitrateKbps: Int = 8420,
+    val latencyMs: Int = 32,
+    val cpuPercent: Int = 18,
+    val temperatureC: Float = 44.2f
+)
+
+data class CameraEntity(
+    val id: String,
+    val channel: Int,
+    val name: String,
+    val location: String,
+    val zone: String,
+    val status: CameraStatus,
+    val isRecording: Boolean,
+    val hasPtz: Boolean,
+    val hasAudio: Boolean,
+    val motionEventsCount: Int,
+    val streamUrl: String,
+    val thumbnailUrl: String,
+    val telemetry: CameraTelemetry,
+    val activeDetections: List<DetectedObject> = emptyList()
+)
+
+data class PipAlert(
+    val id: String,
+    val camera: CameraEntity,
+    val eventTitle: String,
+    val eventDescription: String,
+    val timestamp: String,
+    val snapshotUrl: String,
+    val countdownSeconds: Int = 10,
+    val isVisible: Boolean = true
+)
+`;
+
+export const KOTLIN_SCREEN_CODE = `package com.sentinela.nvr.tv.ui
 
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -16,6 +230,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -27,6 +242,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontFamily
@@ -34,18 +250,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
-import coil.request.CachePolicy
-import coil.request.ImageRequest
-import androidx.compose.ui.platform.LocalContext
-import com.sentinela.pro.SentinelaConfig
-import com.sentinela.pro.data.CameraItem
-import com.sentinela.pro.tv.theme.*
-import com.sentinela.pro.ui.components.SeamlessCameraImage
+import com.sentinela.nvr.tv.model.*
+import com.sentinela.nvr.tv.theme.*
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
@@ -58,29 +266,12 @@ import java.util.*
  */
 @Composable
 fun TvNetflixScreen(
-    cameras: List<CameraItem>,
-    onRefresh: () -> Unit = {}
-) {
-    val entities = remember(cameras, SentinelaConfig.currentHost) {
-        cameras.mapIndexed { idx, cam -> cam.toEntity(idx, SentinelaConfig.currentHost) }
-    }
-
-    TvNetflixScreenCore(
-        cameras = entities,
-        tailscaleIp = SentinelaConfig.currentHost,
-        onRefresh = onRefresh
-    )
-}
-
-@Composable
-fun TvNetflixScreenCore(
     cameras: List<CameraEntity>,
     activePipAlert: PipAlert? = null,
-    tailscaleIp: String = "100.93.129.91",
+    tailscaleIp: String = "100.84.21.9",
     onCameraSelected: (CameraEntity) -> Unit = {},
     onDismissPip: () -> Unit = {},
-    onExpandPipToHero: (CameraEntity) -> Unit = {},
-    onRefresh: () -> Unit = {}
+    onExpandPipToHero: (CameraEntity) -> Unit = {}
 ) {
     var selectedTab by remember { mutableStateOf(TvTab.CAMERAS) }
     var focusedCameraIndex by remember { mutableIntStateOf(0) }
@@ -160,7 +351,7 @@ fun TvNetflixScreenCore(
                         )
                     }
                     TvTab.RECORDINGS -> TvPlaceholderViewport(title = "Capturas & Linha do Tempo CFTV")
-                    TvTab.TOOLS -> TvToolsViewport(onRefresh = onRefresh)
+                    TvTab.TOOLS -> TvPlaceholderViewport(title = "Ferramentas & Calibração PTZ / NVR")
                     TvTab.LOGS -> TvPlaceholderViewport(title = "Auditoria & Logs de Segurança em Tempo Real")
                     TvTab.SETTINGS -> TvPlaceholderViewport(title = "Configurações da TV & Decodificador H.265")
                 }
@@ -199,7 +390,7 @@ fun TvSidebar(
 
     LaunchedEffect(Unit) {
         val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
-        while (isActive) {
+        while (true) {
             currentTimeString = sdf.format(Date())
             delay(1000)
         }
@@ -243,7 +434,7 @@ fun TvSidebar(
             }
 
             Text(
-                text = "v${com.sentinela.pro.BuildConfig.VERSION_NAME} • Leanback",
+                text = "v2.4.0-TV • Leanback",
                 style = TvTypography.Telemetry.copy(color = TvColors.TextMuted),
                 modifier = Modifier.padding(top = 2.dp, bottom = TvDimens.sm)
             )
@@ -298,7 +489,7 @@ fun TvSidebar(
                         .onKeyEvent { keyEvent ->
                             if (keyEvent.type == KeyEventType.KeyDown) {
                                 when (keyEvent.key) {
-                                    Key.DirectionRight, Key.Enter, Key.DirectionCenter -> {
+                                    Key.DirectionRight, Key.Enter, Key.DpadCenter -> {
                                         onTabSelected(tab)
                                         onNavigateToContent()
                                         true
@@ -426,12 +617,12 @@ fun TvCamerasViewport(
                 .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
         ) {
             selectedCamera?.let { camera ->
-                // Imagem Seamless ou Stream H.264/H.265
-                SeamlessCameraImage(
-                    cameraName = camera.id,
+                // Imagem de Stream RTSP simulado
+                AsyncImage(
+                    model = camera.thumbnailUrl,
                     contentDescription = camera.name,
-                    modifier = Modifier.fillMaxSize(),
-                    isStreaming = true
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
                 )
 
                 // Overlay Gradiente Cinematográfico
@@ -464,7 +655,7 @@ fun TvCamerasViewport(
                             color = TvColors.NetflixRed
                         ) {
                             Text(
-                                text = "CANAL 0${camera.channel}",
+                                text = "CANAL 0\${camera.channel}",
                                 color = Color.White,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
@@ -479,7 +670,7 @@ fun TvCamerasViewport(
                     }
 
                     Text(
-                        text = "${camera.location} • ${camera.zone}",
+                        text = "\${camera.location} • \${camera.zone}",
                         style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary),
                         modifier = Modifier.padding(top = 4.dp)
                     )
@@ -499,13 +690,41 @@ fun TvCamerasViewport(
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(
-                            text = "RTSP H.265 • ${camera.telemetry.resolution}",
+                            text = "RTSP H.265 • \${camera.telemetry.resolution}",
                             style = TvTypography.Telemetry
                         )
                         Text(
-                            text = "LATÊNCIA: ${camera.telemetry.latencyMs}ms | BITRATE: ${camera.telemetry.bitrateKbps} kbps",
+                            text = "LATÊNCIA: \${camera.telemetry.latencyMs}ms | BITRATE: \${camera.telemetry.bitrateKbps} kbps",
                             style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
                         )
+                    }
+                }
+
+                // CAIXAS DE DETECÇÃO DE IA (Bounding Boxes)
+                camera.activeDetections.forEach { detection ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(
+                                start = (detection.normX * 8).dp,
+                                top = (detection.normY * 4).dp
+                            )
+                    ) {
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = Color(detection.alertColorHex).copy(alpha = 0.2f),
+                            border = BorderStroke(2.dp, Color(detection.alertColorHex)),
+                            modifier = Modifier
+                                .size(width = 140.dp, height = 90.dp)
+                        ) {
+                            Text(
+                                text = "\${detection.label} (\${(detection.confidence * 100).toInt()}%)",
+                                color = Color(detection.alertColorHex),
+                                fontSize = 9.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(4.dp)
+                            )
+                        }
                     }
                 }
             }
@@ -515,7 +734,7 @@ fun TvCamerasViewport(
 
         // CARROSSEL HORIZONTAL INFERIOR DE CÂMERAS (TvLazyRow 16:9)
         Text(
-            text = "TODAS AS CÂMERAS (${cameras.size}) — NAVEGUE COM D-PAD ◄ ►",
+            text = "TODAS AS CÂMERAS (\${cameras.size}) — NAVEGUE COM D-PAD ◄ ►",
             style = TvTypography.MenuItemFocused.copy(fontSize = 12.sp, color = TvColors.TextSecondary),
             modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
         )
@@ -548,7 +767,7 @@ fun TvCamerasViewport(
                                         onNavigateLeftToSidebar()
                                         true
                                     }
-                                    keyEvent.key == Key.Enter || keyEvent.key == Key.DirectionCenter -> {
+                                    keyEvent.key == Key.Enter || keyEvent.key == Key.DpadCenter -> {
                                         onSelectCamera(camera)
                                         true
                                     }
@@ -572,11 +791,11 @@ fun TvCamerasViewport(
                             onSelectCamera(camera)
                         }
                 ) {
-                    SeamlessCameraImage(
-                        cameraName = camera.id,
+                    AsyncImage(
+                        model = camera.thumbnailUrl,
                         contentDescription = camera.name,
-                        modifier = Modifier.fillMaxSize(),
-                        isStreaming = true
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize()
                     )
 
                     // Overlay de Informações do Card
@@ -614,7 +833,7 @@ fun TvCamerasViewport(
                             modifier = Modifier.align(Alignment.BottomStart)
                         ) {
                             Text(
-                                text = "CH0${camera.channel} • ${camera.name}",
+                                text = "CH0\${camera.channel} • \${camera.name}",
                                 color = Color.White,
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold,
@@ -622,7 +841,7 @@ fun TvCamerasViewport(
                                 overflow = TextOverflow.Ellipsis
                             )
                             Text(
-                                text = "${camera.telemetry.resolution} • ${camera.telemetry.fps} FPS",
+                                text = "\${camera.telemetry.resolution} • \${camera.telemetry.fps} FPS",
                                 style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.CyberCyan)
                             )
                         }
@@ -699,7 +918,7 @@ fun TvPipFloatingWindow(
                             .background(TvColors.AlertCrimson, CircleShape)
                     )
                     Text(
-                        text = "ALERTA PiP • ${alert.camera.name}",
+                        text = "ALERTA PiP • \${alert.camera.name}",
                         color = Color.White,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
@@ -711,7 +930,7 @@ fun TvPipFloatingWindow(
                     color = TvColors.CardBackground
                 ) {
                     Text(
-                        text = "${remainingSeconds}s",
+                        text = "\${remainingSeconds}s",
                         style = TvTypography.Telemetry.copy(color = TvColors.CyberCyan),
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                     )
@@ -775,49 +994,7 @@ fun TvPipFloatingWindow(
 }
 
 /**
- * Viewport de Ferramentas / Testes na TV
- */
-@Composable
-fun TvToolsViewport(onRefresh: () -> Unit) {
-    val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
-    var isTestingPiP by remember { mutableStateOf(false) }
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .clip(TvShapes.CameraCard)
-            .background(TvColors.CardBackground)
-            .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
-            .padding(TvDimens.xl),
-        verticalArrangement = Arrangement.spacedBy(TvDimens.md),
-        horizontalAlignment = Alignment.Start
-    ) {
-        Text(
-            text = "Ferramentas & Diagnósticos NVR",
-            style = TvTypography.TabTitle.copy(fontSize = 20.sp)
-        )
-        Text(
-            text = "Execute rotinas de teste e recarga de câmeras conectadas ao servidor.",
-            style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary)
-        )
-
-        Spacer(modifier = Modifier.height(TvDimens.md))
-
-        Button(
-            onClick = { onRefresh() },
-            colors = ButtonDefaults.buttonColors(containerColor = TvColors.CyberCyan),
-            shape = TvShapes.MenuItem
-        ) {
-            Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.Black)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Recarregar Câmeras do Servidor", color = Color.Black, fontWeight = FontWeight.Bold)
-        }
-    }
-}
-
-/**
- * Viewport Genérico para Outras Abas (Capturas, Logs, Configurações)
+ * Viewport Genérico para Outras Abas (Capturas, Ferramentas, Logs, Configurações)
  */
 @Composable
 fun TvPlaceholderViewport(title: String) {
@@ -849,3 +1026,4 @@ fun TvPlaceholderViewport(title: String) {
         )
     }
 }
+`;
