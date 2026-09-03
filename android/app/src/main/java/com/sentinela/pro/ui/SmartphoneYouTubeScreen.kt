@@ -1074,6 +1074,7 @@ fun PhoneZoomCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
 @Composable
 fun PhoneMasterTab() {
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
     var devices by remember { mutableStateOf<List<com.sentinela.pro.network.RemoteDeviceItem>>(emptyList()) }
     var isLoading by remember { mutableStateOf(false) }
     var actionStatus by remember { mutableStateOf<String?>(null) }
@@ -1081,7 +1082,7 @@ fun PhoneMasterTab() {
 
     fun refreshDevices() {
         isLoading = true
-        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+        scope.launch {
             try {
                 devices = SentinelaRepository.getPairedDevicesList()
             } catch (e: Exception) {
@@ -1193,7 +1194,7 @@ fun PhoneMasterTab() {
                     Button(
                         onClick = {
                             isExecutingBatch = true
-                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                            scope.launch {
                                 val (ok, msg) = SentinelaRepository.executeBatchTest("pip_alert")
                                 actionStatus = msg
                                 isExecutingBatch = false
@@ -1213,7 +1214,7 @@ fun PhoneMasterTab() {
                     Button(
                         onClick = {
                             isExecutingBatch = true
-                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                            scope.launch {
                                 val (ok, msg) = SentinelaRepository.executeBatchTest("simulated_detection")
                                 actionStatus = msg
                                 isExecutingBatch = false
@@ -1233,7 +1234,7 @@ fun PhoneMasterTab() {
                     Button(
                         onClick = {
                             isExecutingBatch = true
-                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                            scope.launch {
                                 val (ok, msg) = SentinelaRepository.executeBatchTest("ping_speed")
                                 actionStatus = msg
                                 isExecutingBatch = false
@@ -1364,7 +1365,7 @@ fun PhoneMasterTab() {
                         if (dev.deviceType == "android_tv") {
                             Button(
                                 onClick = {
-                                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                    scope.launch {
                                         val (ok, msg) = SentinelaRepository.testSingleTv(dev.id)
                                         actionStatus = "Comando PiP enviado para ${dev.friendlyName}!"
                                     }
@@ -1383,7 +1384,7 @@ fun PhoneMasterTab() {
                         if (dev.deviceType == "smartphone") {
                             Button(
                                 onClick = {
-                                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                    scope.launch {
                                         val ok = SentinelaRepository.toggleRemoteMaster(dev.deviceIdentifier)
                                         if (ok) {
                                             actionStatus = "Privilégio Master alterado para ${dev.friendlyName}!"
