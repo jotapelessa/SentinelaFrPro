@@ -443,6 +443,19 @@ async def update_device_permissions(
     dev.pip_duration_seconds = perms.pip_duration_seconds
 
     await db.commit()
+    try:
+        from app.api.ws import ws_manager
+        await ws_manager.broadcast_json({
+            "type": "DEVICE_CONFIG_UPDATED",
+            "device_identifier": dev.device_identifier,
+            "friendly_name": dev.friendly_name,
+            "pip_default_size": dev.pip_default_size,
+            "pip_duration_seconds": dev.pip_duration_seconds,
+            "allow_pip_alerts": dev.allow_pip_alerts
+        })
+    except Exception as e:
+        logger.debug(f"Failed to broadcast device config update: {e}")
+
     await audit_service.log(
         action="DEVICE_PERMISSIONS_UPDATED",
         module="PIP",
@@ -741,12 +754,13 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
 
     results = []
     # 1. Global WebSocket broadcast for connected Android TV overlays and Smartphones
-    if req.test_type == "pip_alert":
+    if req.test_type in ("pip", "pip_alert"):
         await ws_manager.broadcast_json({
             "type": "pip_alert",
             "camera": req.camera_name,
             "label": req.label,
             "duration": req.duration_seconds,
+            "target_identifier": "",
             "timestamp": datetime.datetime.utcnow().isoformat()
         })
         # 2. Also dispatch to Google Cast / REST PiP for TV endpoints

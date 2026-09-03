@@ -90,7 +90,8 @@ class MainActivity : ComponentActivity() {
                     SentinelaRepository.registerOrHeartbeat(
                         deviceIdentifier = prefs.deviceIdentifier,
                         friendlyName = prefs.friendlyName,
-                        deviceType = deviceType
+                        deviceType = deviceType,
+                        prefs = prefs
                     )
                     val fetched = SentinelaRepository.getCameras(prefs.deviceIdentifier)
                     if (fetched.isNotEmpty()) {
@@ -107,7 +108,8 @@ class MainActivity : ComponentActivity() {
                     SentinelaRepository.registerOrHeartbeat(
                         deviceIdentifier = prefs.deviceIdentifier,
                         friendlyName = prefs.friendlyName,
-                        deviceType = deviceType
+                        deviceType = deviceType,
+                        prefs = prefs
                     )
                 }
             }

@@ -966,9 +966,6 @@ fun TvToolsViewport(
     var liveTelemetry by remember { mutableStateOf<com.sentinela.pro.data.TelemetryData?>(null) }
 
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
-    var isSirenActive by remember { mutableStateOf(false) }
-    var isGateOpen by remember { mutableStateOf(false) }
-    var isArmed by remember { mutableStateOf(true) }
 
     // Live telemetry update loop a cada 2s
     LaunchedEffect(Unit) {
@@ -2038,7 +2035,7 @@ fun TvSettingsViewport(tailscaleIp: String) {
                 Text("ID: ${prefs.deviceIdentifier}", color = TvColors.CyberCyan, fontSize = 12.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("Nome da TV: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text("VERSÃO DO APLICATIVO: v001.000.000.045 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("VERSÃO DO APLICATIVO: v001.000.000.046 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
         }
     }

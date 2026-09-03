@@ -51,7 +51,7 @@ export default function RootLayout({
               </div>
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 font-bold text-[11px]">
-                  SentinelaPro.001.000.000.045
+                  SentinelaPro.001.000.000.046
                 </span>
                 <span className="text-slate-600">|</span>
                 <span>Intel Jasper Lake N5105 QSV</span>

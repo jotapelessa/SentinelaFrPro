@@ -5,9 +5,9 @@ from typing import List
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
-    PROJECT_NAME: str = "SentinelaFrPro Backend"
+    PROJECT_NAME: str = "SentinelaFrigate PRO"
     APP_TITLE: str = "Sentinela NVR"
-    VERSION: str = "SentinelaPro.001.000.000.045"
+    VERSION: str = "SentinelaPro.001.000.000.046"
     API_V1_STR: str = "/api"
     ENVIRONMENT: str = "production"
     DEBUG: bool = False

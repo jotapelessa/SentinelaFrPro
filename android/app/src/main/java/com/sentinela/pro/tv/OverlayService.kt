@@ -67,7 +67,46 @@ class OverlayService : Service() {
             webSocket?.events?.collect { event ->
                 val evType = event.optString("type")
                 val isMotionActive = evType == "CAMERA_DETECTION_ACTIVE" && event.optBoolean("active", false)
+                if (evType == "DEVICE_CONFIG_UPDATED") {
+                    val targetIdent = event.optString("device_identifier", "")
+                    if (targetIdent == prefs.deviceIdentifier) {
+                        val fn = event.optString("friendly_name")
+                        if (fn.isNotBlank()) prefs.friendlyName = fn
+                        if (event.has("allow_pip_alerts")) prefs.allowPipAlerts = event.optBoolean("allow_pip_alerts", true)
+                        val serverPipSize = event.optString("pip_default_size", "")
+                        if (serverPipSize.isNotBlank()) {
+                            when (serverPipSize.lowercase()) {
+                                "mini", "extra_small" -> prefs.pipSizeIndex = PipSize.EXTRA_SMALL.ordinal
+                                "small" -> prefs.pipSizeIndex = PipSize.SMALL.ordinal
+                                "medium_small" -> prefs.pipSizeIndex = PipSize.MEDIUM_SMALL.ordinal
+                                "medium" -> prefs.pipSizeIndex = PipSize.MEDIUM.ordinal
+                                "medium_large" -> prefs.pipSizeIndex = PipSize.MEDIUM_LARGE.ordinal
+                                "large" -> prefs.pipSizeIndex = PipSize.LARGE.ordinal
+                                "extra_large" -> prefs.pipSizeIndex = PipSize.EXTRA_LARGE.ordinal
+                                "cinema" -> prefs.pipSizeIndex = PipSize.CINEMA.ordinal
+                            }
+                        }
+                        val serverPipDur = event.optInt("pip_duration_seconds", 0)
+                        if (serverPipDur > 0) {
+                            when (serverPipDur) {
+                                5 -> prefs.pipDurationIndex = PipDuration.D_5S.ordinal
+                                10 -> prefs.pipDurationIndex = PipDuration.D_10S.ordinal
+                                15 -> prefs.pipDurationIndex = PipDuration.D_15S.ordinal
+                                30 -> prefs.pipDurationIndex = PipDuration.D_30S.ordinal
+                                60 -> prefs.pipDurationIndex = PipDuration.D_60S.ordinal
+                            }
+                        }
+                        android.util.Log.i("OverlayService", "Device config updated via WebSocket: size=$serverPipSize, dur=$serverPipDur")
+                    }
+                    return@collect
+                }
+
                 if (evType == "pip_alert" || evType == "FRIGATE_EVENT" || evType == "NEW_DETECTION" || isMotionActive) {
+                    val targetIdent = event.optString("target_identifier", "")
+                    if (targetIdent.isNotBlank() && targetIdent != prefs.deviceIdentifier) {
+                        return@collect // Directed specifically to another device
+                    }
+
                     val camera = event.optString("camera", "camera_principal")
                     val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
                     runCatching {
@@ -76,7 +115,7 @@ class OverlayService : Service() {
                             val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
                             val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
                             if (camAllowed && eventAllowed) {
-                                showPiP(camera, label)
+                                showPiP(camera, label, policy)
                             }
                         }
                     }.getOrElse {
@@ -117,7 +156,7 @@ class OverlayService : Service() {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun showPiP(camera: String, label: String) {
+    private fun showPiP(camera: String, label: String, policy: DevicePolicy? = null) {
         pipJob?.cancel()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
@@ -126,15 +165,38 @@ class OverlayService : Service() {
         }
 
         val prefs = SentinelaPreferences(this)
-        if (!prefs.allowPipAlerts) {
+        if (!prefs.allowPipAlerts || (policy != null && !policy.allowPipAlerts)) {
             android.util.Log.i("OverlayService", "PiP alerts disabled by policy, skipping.")
             return
         }
 
-        val pipSize = prefs.currentPipSize
+        // Dynamically resolve PiP size based on policy or preferences
+        val pipSize = if (policy != null && policy.pipDefaultSize.isNotBlank()) {
+            when (policy.pipDefaultSize.lowercase()) {
+                "mini", "extra_small" -> PipSize.EXTRA_SMALL
+                "small" -> PipSize.SMALL
+                "medium_small" -> PipSize.MEDIUM_SMALL
+                "medium" -> PipSize.MEDIUM
+                "medium_large" -> PipSize.MEDIUM_LARGE
+                "large" -> PipSize.LARGE
+                "extra_large" -> PipSize.EXTRA_LARGE
+                "cinema" -> PipSize.CINEMA
+                else -> prefs.currentPipSize
+            }
+        } else {
+            prefs.currentPipSize
+        }
+
         val pipPos = prefs.currentPipPosition
-        val pipDur = prefs.currentPipDuration
-        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=webrtc,mse&width=100%"
+        val durationSeconds = if (policy != null && policy.pipDurationSeconds > 0) {
+            policy.pipDurationSeconds
+        } else if (prefs.currentPipDuration.seconds > 0) {
+            prefs.currentPipDuration.seconds
+        } else {
+            10
+        }
+
+        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=webrtc,mse&video=h264&width=100%"
         val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
 
         try {
@@ -287,7 +349,7 @@ class OverlayService : Service() {
             return
         }
 
-        val duration = if (pipDur.seconds > 0) pipDur.seconds else 10
+        val duration = durationSeconds
         pipJob = serviceScope.launch {
             delay(duration * 1000L)
             removePiP()

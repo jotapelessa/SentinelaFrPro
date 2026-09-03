@@ -260,7 +260,9 @@ class PiPGatewayService:
                     "snapshot_url": snapshot_url,
                     "stream_url": stream_url,
                     "duration": 15,
-                    "device_id": device_id
+                    "device_id": device_id,
+                    "target_device_id": device_id,
+                    "target_identifier": dev.device_identifier
                 })
                 dispatched = True
                 protocol_used = "sentinela_app_ws"

@@ -690,7 +690,7 @@ object SentinelaRepository {
             else -> "lan"
         }
         val speed = caps?.linkDownstreamBandwidthKbps?.let { it / 1000.0 } ?: 100.0
-        val appVer = "v001.000.000.045"
+        val appVer = "v001.000.000.046"
         val devModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
 
         val ok = registerOrHeartbeat(

@@ -73,7 +73,7 @@ fun SmartphoneYouTubeScreen(
 
     LaunchedEffect(Unit) {
         while (isActive) {
-            SentinelaRepository.registerOrHeartbeat(prefs.deviceIdentifier, prefs.friendlyName, "smartphone")
+            SentinelaRepository.registerOrHeartbeat(prefs.deviceIdentifier, prefs.friendlyName, "smartphone", prefs = prefs)
             isMaster = SentinelaRepository.isMasterAdmin
             delay(10000)
         }
@@ -175,7 +175,7 @@ fun PhoneTopBar(
                         )
                     }
                     Text(
-                        text = "v001.000.000.045 • NVR MOBILE",
+                        text = "v001.000.000.046 • NVR MOBILE",
                         style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.TextMuted)
                     )
                 }
@@ -247,98 +247,84 @@ fun PhoneBottomNavigationBar(
     isMaster: Boolean,
     onSelectTab: (Int) -> Unit
 ) {
-    NavigationBar(
-        containerColor = SentinelaColors.BottomBarBackground,
-        contentColor = SentinelaColors.PrimaryCyan,
-        modifier = Modifier.height(SentinelaDimens.BottomBarHeight)
+    Surface(
+        color = SentinelaColors.BottomBarBackground,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(SentinelaDimens.BottomBarHeight),
+        border = BorderStroke(1.dp, SentinelaColors.BorderStandard)
     ) {
-        NavigationBarItem(
-            selected = selectedTab == 0,
-            onClick = { onSelectTab(0) },
-            icon = { Icon(Icons.Default.Videocam, contentDescription = "Câmeras", modifier = Modifier.size(20.dp)) },
-            label = { Text("Câmeras", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = SentinelaColors.PrimaryCyan,
-                selectedTextColor = SentinelaColors.PrimaryCyan,
-                unselectedIconColor = SentinelaColors.TextSecondary,
-                unselectedTextColor = SentinelaColors.TextSecondary,
-                indicatorColor = SentinelaColors.CardBackgroundElevated
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 4.dp, vertical = 2.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            val tabs = mutableListOf(
+                Triple(0, "Câmeras", Icons.Default.Videocam),
+                Triple(1, "Capturas", Icons.Default.PhotoLibrary)
             )
-        )
-        NavigationBarItem(
-            selected = selectedTab == 1,
-            onClick = { onSelectTab(1) },
-            icon = { Icon(Icons.Default.PhotoLibrary, contentDescription = "Capturas", modifier = Modifier.size(20.dp)) },
-            label = { Text("Capturas", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = SentinelaColors.PrimaryCyan,
-                selectedTextColor = SentinelaColors.PrimaryCyan,
-                unselectedIconColor = SentinelaColors.TextSecondary,
-                unselectedTextColor = SentinelaColors.TextSecondary,
-                indicatorColor = SentinelaColors.CardBackgroundElevated
-            )
-        )
+            if (isMaster) {
+                tabs.add(Triple(2, "Master", Icons.Default.Star))
+            }
+            val toolsIdx = if (isMaster) 3 else 2
+            val logsIdx = if (isMaster) 4 else 3
+            val settingsIdx = if (isMaster) 5 else 4
+            tabs.add(Triple(toolsIdx, "Ferramentas", Icons.Default.Speed))
+            tabs.add(Triple(logsIdx, "Logs", Icons.Default.Dns))
+            tabs.add(Triple(settingsIdx, "Ajustes", Icons.Default.Settings))
 
-        if (isMaster) {
-            NavigationBarItem(
-                selected = selectedTab == 2,
-                onClick = { onSelectTab(2) },
-                icon = { Icon(Icons.Default.Star, contentDescription = "Master", tint = SentinelaColors.MasterGold, modifier = Modifier.size(20.dp)) },
-                label = { Text("Master", fontSize = 8.5.sp, maxLines = 1, softWrap = false, color = SentinelaColors.MasterGold, fontWeight = FontWeight.Black) },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = SentinelaColors.MasterGold,
-                    selectedTextColor = SentinelaColors.MasterGold,
-                    unselectedIconColor = SentinelaColors.MasterGoldLight,
-                    unselectedTextColor = SentinelaColors.MasterGoldLight,
-                    indicatorColor = Color(0xFF451A03)
-                )
-            )
+            tabs.forEach { (index, title, icon) ->
+                val isSelected = selectedTab == index
+                val isTabMaster = isMaster && index == 2
+
+                val activeColor = if (isTabMaster) SentinelaColors.MasterGold else SentinelaColors.PrimaryCyan
+                val inactiveColor = SentinelaColors.TextSecondary
+
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .clickable { onSelectTab(index) }
+                        .padding(vertical = 4.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .height(26.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                if (isSelected) {
+                                    if (isTabMaster) Color(0xFF451A03) else SentinelaColors.CardBackgroundElevated
+                                } else {
+                                    Color.Transparent
+                                }
+                            )
+                            .padding(horizontal = 10.dp, vertical = 2.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = icon,
+                            contentDescription = title,
+                            tint = if (isSelected) activeColor else inactiveColor,
+                            modifier = Modifier.size(19.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = title,
+                        fontSize = 9.5.sp,
+                        maxLines = 1,
+                        softWrap = false,
+                        color = if (isSelected) activeColor else inactiveColor,
+                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+                }
+            }
         }
-
-        val toolsIdx = if (isMaster) 3 else 2
-        NavigationBarItem(
-            selected = selectedTab == toolsIdx,
-            onClick = { onSelectTab(toolsIdx) },
-            icon = { Icon(Icons.Default.Speed, contentDescription = "Ferramentas", modifier = Modifier.size(20.dp)) },
-            label = { Text("Ferram.", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == toolsIdx) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = SentinelaColors.PrimaryCyan,
-                selectedTextColor = SentinelaColors.PrimaryCyan,
-                unselectedIconColor = SentinelaColors.TextSecondary,
-                unselectedTextColor = SentinelaColors.TextSecondary,
-                indicatorColor = SentinelaColors.CardBackgroundElevated
-            )
-        )
-
-        val logsIdx = if (isMaster) 4 else 3
-        NavigationBarItem(
-            selected = selectedTab == logsIdx,
-            onClick = { onSelectTab(logsIdx) },
-            icon = { Icon(Icons.Default.Dns, contentDescription = "Logs", modifier = Modifier.size(20.dp)) },
-            label = { Text("Logs", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == logsIdx) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = SentinelaColors.PrimaryCyan,
-                selectedTextColor = SentinelaColors.PrimaryCyan,
-                unselectedIconColor = SentinelaColors.TextSecondary,
-                unselectedTextColor = SentinelaColors.TextSecondary,
-                indicatorColor = SentinelaColors.CardBackgroundElevated
-            )
-        )
-
-        val settingsIdx = if (isMaster) 5 else 4
-        NavigationBarItem(
-            selected = selectedTab == settingsIdx,
-            onClick = { onSelectTab(settingsIdx) },
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes", modifier = Modifier.size(20.dp)) },
-            label = { Text("Ajustes", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == settingsIdx) FontWeight.Bold else FontWeight.Normal) },
-            colors = NavigationBarItemDefaults.colors(
-                selectedIconColor = SentinelaColors.PrimaryCyan,
-                selectedTextColor = SentinelaColors.PrimaryCyan,
-                unselectedIconColor = SentinelaColors.TextSecondary,
-                unselectedTextColor = SentinelaColors.TextSecondary,
-                indicatorColor = SentinelaColors.CardBackgroundElevated
-            )
-        )
     }
 }
 
@@ -1684,7 +1670,7 @@ fun PhoneSettingsTab() {
                     Text("IDENTIFICAÇÃO DO SMARTPHONE EM /SCREENS", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
                     Text("ID: ${prefs.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
                     Text("Nome: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
-                    Text("Versão: v001.000.000.045 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
+                    Text("Versão: v001.000.000.046 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
                 }
             }
         }
