@@ -182,6 +182,24 @@ data class PipAlert(
     val isVisible: Boolean = true
 )
 
+data class RecordingClipItem(
+    val id: String,
+    val cameraId: String,
+    val cameraName: String,
+    val duration: String,
+    val timestamp: String,
+    val sizeMb: String,
+    val thumbnailUrl: String
+)
+
+data class LogEntryItem(
+    val id: String,
+    val timestamp: String,
+    val level: String, // "CRITICAL", "SECURITY", "WARN", "INFO"
+    val source: String,
+    val message: String
+)
+
 // Helper para converter CameraItem do projeto em CameraEntity
 fun CameraItem.toEntity(index: Int, host: String): CameraEntity {
     val cleanHost = host.removePrefix("http://").removePrefix("https://").trimEnd('/')
