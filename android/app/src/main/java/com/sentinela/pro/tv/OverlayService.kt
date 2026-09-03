@@ -214,6 +214,18 @@ class OverlayService : Service() {
                         override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
                             handler?.proceed()
                         }
+
+                        override fun onPageFinished(view: WebView?, url: String?) {
+                            super.onPageFinished(view, url)
+                            val js = "javascript:(function() {" +
+                                    "var style = document.createElement('style');" +
+                                    "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent !important; display:flex; justify-content:center; align-items:center; } " +
+                                    "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; background:transparent !important; } " +
+                                    "* { outline:none !important; }';" +
+                                    "document.head.appendChild(style);" +
+                                    "})();"
+                            view?.evaluateJavascript(js, null)
+                        }
                     }
                 }
                 pipWebView = wv

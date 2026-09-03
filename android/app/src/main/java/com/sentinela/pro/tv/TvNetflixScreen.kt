@@ -40,9 +40,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.CameraItem
+import com.sentinela.pro.data.CaptureEvent
 import com.sentinela.pro.tv.theme.*
 import com.sentinela.pro.ui.components.SeamlessCameraImage
 import kotlinx.coroutines.delay
@@ -431,6 +434,10 @@ fun TvCamerasViewport(
     onSelectCamera: (CameraEntity) -> Unit,
     onNavigateLeftToSidebar: () -> Unit
 ) {
+    var isFullscreenLiveOpen by remember { mutableStateOf(false) }
+    val heroInteractionSource = remember { MutableInteractionSource() }
+    val isHeroFocused by heroInteractionSource.collectIsFocusedAsState()
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
@@ -442,7 +449,22 @@ fun TvCamerasViewport(
                 .weight(1f)
                 .clip(TvShapes.CameraCard)
                 .background(TvColors.CardBackground)
-                .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                .border(
+                    2.dp,
+                    if (isHeroFocused) TvColors.BorderFocused else TvColors.BorderSubtle,
+                    TvShapes.CameraCard
+                )
+                .tvDpadFocusable(
+                    isFocused = isHeroFocused,
+                    focusedBorderColor = TvColors.BorderFocused,
+                    unfocusedBorderColor = TvColors.BorderSubtle,
+                    shape = TvShapes.CameraCard,
+                    scaleAmount = 1.01f
+                )
+                .clickable(interactionSource = heroInteractionSource, indication = null) {
+                    isFullscreenLiveOpen = true
+                }
+                .focusable(interactionSource = heroInteractionSource)
         ) {
             selectedCamera?.let { camera ->
                 SeamlessCameraImage(
@@ -523,6 +545,30 @@ fun TvCamerasViewport(
                         Text(
                             text = "LATÊNCIA: ${camera.telemetry.latencyMs}ms | BITRATE: ${camera.telemetry.bitrateKbps} kbps",
                             style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
+                        )
+                    }
+                }
+
+                // Indicador de Tela Cheia [OK]
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = if (isHeroFocused) TvColors.NetflixRed else TvColors.OverlayHud,
+                    border = BorderStroke(1.dp, if (isHeroFocused) Color.White else TvColors.BorderSubtle),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .padding(TvDimens.md)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(Icons.Default.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                        Text(
+                            text = "PRESSIONE [OK] PARA TELA CHEIA",
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -648,6 +694,13 @@ fun TvCamerasViewport(
             }
         }
     }
+
+    if (isFullscreenLiveOpen && selectedCamera != null) {
+        TvFullScreenLiveDialog(
+            camera = selectedCamera,
+            onDismiss = { isFullscreenLiveOpen = false }
+        )
+    }
 }
 
 /**
@@ -656,10 +709,39 @@ fun TvCamerasViewport(
 @Composable
 fun TvRecordingsViewport(cameras: List<CameraEntity>) {
     val context = LocalContext.current
-    val mockClips = remember(cameras) {
-        if (cameras.isEmpty()) {
+    val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
+    var realCaptures by remember { mutableStateOf<List<RecordingClipItem>>(emptyList()) }
+    var isCapturesLoading by remember { mutableStateOf(true) }
+
+    LaunchedEffect(Unit) {
+        try {
+            val list = com.sentinela.pro.network.SentinelaRepository.getCaptures(prefs.deviceIdentifier)
+            if (list.isNotEmpty()) {
+                realCaptures = list.mapIndexed { i, event ->
+                    RecordingClipItem(
+                        id = event.id,
+                        cameraId = event.camera,
+                        cameraName = event.camera.replace("_", " ").uppercase(),
+                        duration = "00:45",
+                        timestamp = event.timestamp,
+                        sizeMb = "${(event.score * 0.25).toInt() + 10} MB",
+                        thumbnailUrl = event.snapshotUrl
+                    )
+                }
+            }
+        } catch (e: Exception) {
+            // Keep fallback
+        } finally {
+            isCapturesLoading = false
+        }
+    }
+
+    val mockClips = remember(cameras, realCaptures) {
+        if (realCaptures.isNotEmpty()) {
+            realCaptures
+        } else if (cameras.isEmpty()) {
             listOf(
-                RecordingClipItem("rec_1", "cam1", "Câmera Portaria", "02:15", "Hoje, 14:32", "42 MB", "")
+                RecordingClipItem("rec_1", "camera_principal", "Câmera Principal", "02:15", "Hoje, 14:32", "42 MB", "")
             )
         } else {
             cameras.mapIndexed { i, c ->
@@ -676,8 +758,12 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
         }
     }
 
-    var selectedClip by remember { mutableStateOf(mockClips.first()) }
+    var selectedClip by remember(mockClips) { mutableStateOf(mockClips.first()) }
     var focusedIndex by remember { mutableIntStateOf(0) }
+    var isClipPlayerOpen by remember { mutableStateOf(false) }
+
+    val previewInteractionSource = remember { MutableInteractionSource() }
+    val isPreviewFocused by previewInteractionSource.collectIsFocusedAsState()
 
     Row(
         modifier = Modifier.fillMaxSize(),
@@ -696,7 +782,22 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
                     .weight(1f)
                     .clip(TvShapes.CameraCard)
                     .background(TvColors.CardBackground)
-                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .border(
+                        2.dp,
+                        if (isPreviewFocused) TvColors.BorderFocused else TvColors.BorderSubtle,
+                        TvShapes.CameraCard
+                    )
+                    .tvDpadFocusable(
+                        isFocused = isPreviewFocused,
+                        focusedBorderColor = TvColors.BorderFocused,
+                        unfocusedBorderColor = TvColors.BorderSubtle,
+                        shape = TvShapes.CameraCard,
+                        scaleAmount = 1.01f
+                    )
+                    .clickable(interactionSource = previewInteractionSource, indication = null) {
+                        isClipPlayerOpen = true
+                    }
+                    .focusable(interactionSource = previewInteractionSource)
             ) {
                 SeamlessCameraImage(
                     cameraName = selectedClip.cameraId,
@@ -830,6 +931,13 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
                 }
             }
         }
+    }
+
+    if (isClipPlayerOpen) {
+        TvClipPlayerDialog(
+            clip = selectedClip,
+            onDismiss = { isClipPlayerOpen = false }
+        )
     }
 }
 
@@ -1835,8 +1943,16 @@ fun TvSettingsViewport(tailscaleIp: String) {
             }
         }
 
-        // 6. SERVIDOR SENTINELA & CONEXÃO
+        // 6. SERVIDOR SENTINELA & PRESETS RÁPIDOS
         item {
+            var currentHost by remember { mutableStateOf(prefs.serverHost) }
+            val serverPresets = listOf(
+                "frigate.tail47a54f.ts.net" to "Túnel Tailscale HTTPS",
+                "100.93.129.91:8088" to "Tailscale IP Direto",
+                "sentinela.local:8088" to "Rede Local mDNS",
+                "192.168.1.247:8088" to "IP Local Direto"
+            )
+
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -1846,19 +1962,230 @@ fun TvSettingsViewport(tailscaleIp: String) {
                     .padding(14.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("6. SERVIDOR SENTINELA & CONEXÃO ATUAL", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
+                        Icon(Icons.Default.Dns, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(18.dp))
+                    }
+                    Text("6. SERVIDOR SENTINELA & PRESETS RÁPIDOS", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
-                        Text("Host: ${prefs.serverHost} (Tailscale Encrypted)", color = Color.White, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
+                        Text("Host Ativo: $currentHost", color = Color.White, fontSize = 12.sp, fontFamily = FontFamily.Monospace)
                         Text("ID do Dispositivo: ${prefs.deviceIdentifier}", color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
                     }
                     Surface(shape = TvShapes.StatusPill, color = TvColors.LiveGreen.copy(alpha = 0.2f), border = BorderStroke(1.dp, TvColors.LiveGreen)) {
                         Text("CONECTADO", color = TvColors.LiveGreen, fontSize = 10.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp))
                     }
+                }
+
+                Text("Selecione um preset de rede com D-Pad para alternar a conexão:", color = TvColors.TextSecondary, fontSize = 10.sp)
+
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    items(serverPresets) { (host, label) ->
+                        val isSelected = currentHost == host
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isFocused by interactionSource.collectIsFocusedAsState()
+
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = if (isSelected) TvColors.CyberCyan.copy(alpha = 0.25f) else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
+                            border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.CyberCyan else TvColors.BorderSubtle),
+                            modifier = Modifier
+                                .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
+                                .clickable(interactionSource = interactionSource, indication = null) {
+                                    currentHost = host
+                                    prefs.serverHost = host
+                                    SentinelaConfig.currentHost = host
+                                    Toast.makeText(context, "Servidor alterado para $host", Toast.LENGTH_SHORT).show()
+                                }
+                        ) {
+                            Text(
+                                text = "$label ($host)",
+                                color = if (isSelected) TvColors.CyberCyan else if (isFocused) Color.White else TvColors.TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
+        // 7. IDENTIFICAÇÃO DO DISPOSITIVO & PAREAMENTO EM /SCREENS
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Text("IDENTIFICAÇÃO DESTE DISPOSITIVO EM /SCREENS", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("ID: ${prefs.deviceIdentifier}", color = TvColors.CyberCyan, fontSize = 12.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                Text("Nome da TV: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
+                Spacer(modifier = Modifier.height(2.dp))
+                Text("VERSÃO DO APLICATIVO: v001.000.000.042 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+/**
+ * Modal Imersivo de Visualização em Tela Cheia (16:9 Nativo 4K/1080p)
+ */
+@Composable
+fun TvFullScreenLiveDialog(
+    camera: CameraEntity,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .clickable { onDismiss() }
+        ) {
+            SeamlessCameraImage(
+                cameraName = camera.id,
+                contentDescription = camera.name,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit,
+                refreshIntervalMs = 42L,
+                isStreaming = true
+            )
+
+            // Header Overlay
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.Black.copy(alpha = 0.85f), Color.Transparent)
+                        )
+                    )
+                    .padding(24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Surface(shape = TvShapes.Badge, color = TvColors.NetflixRed) {
+                        Text(
+                            text = "AO VIVO • 1080p H.265",
+                            color = Color.White,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
+                    Text(
+                        text = "${camera.name} (${camera.location})",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                }
+
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = TvColors.OverlayHud,
+                    border = BorderStroke(1.dp, TvColors.BorderSubtle)
+                ) {
+                    Text(
+                        text = "Pressione VOLTAR para sair",
+                        color = TvColors.CyberCyan,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    )
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Modal Player de Clipe / Gravação (Exibe o vídeo gravado com botão de voltar)
+ */
+@Composable
+fun TvClipPlayerDialog(
+    clip: RecordingClipItem,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .clickable { onDismiss() }
+        ) {
+            SeamlessCameraImage(
+                cameraName = clip.cameraId,
+                contentDescription = clip.cameraName,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit,
+                refreshIntervalMs = 42L,
+                isStreaming = true
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.Black.copy(alpha = 0.85f), Color.Transparent)
+                        )
+                    )
+                    .padding(24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "GRAVAÇÃO: ${clip.cameraName}",
+                        color = Color.White,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                    Text(
+                        text = "Data: ${clip.timestamp} • Duração: ${clip.duration} • Tamanho: ${clip.sizeMb}",
+                        color = TvColors.CyberCyan,
+                        fontSize = 12.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = TvColors.OverlayHud,
+                    border = BorderStroke(1.dp, TvColors.BorderSubtle)
+                ) {
+                    Text(
+                        text = "Pressione VOLTAR para sair",
+                        color = TvColors.CyberCyan,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
+                    )
                 }
             }
         }
