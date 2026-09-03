@@ -145,7 +145,7 @@ enum class CameraStatus {
     STANDBY
 }
 
-data class TelemetryData(
+data class CameraStreamTelemetry(
     val resolution: String = "1080p",
     val fps: Int = 24,
     val latencyMs: Int = 120,
@@ -169,7 +169,7 @@ data class CameraEntity(
     val status: CameraStatus = CameraStatus.ONLINE,
     val thumbnailUrl: String = "",
     val streamUrl: String = "",
-    val telemetry: TelemetryData = TelemetryData(),
+    val telemetry: CameraStreamTelemetry = CameraStreamTelemetry(),
     val activeDetections: List<DetectionBox> = emptyList()
 )
 
@@ -214,6 +214,6 @@ fun CameraItem.toEntity(index: Int, host: String): CameraEntity {
         status = CameraStatus.ONLINE,
         thumbnailUrl = snapUrl,
         streamUrl = stream,
-        telemetry = TelemetryData(resolution = "1080p", fps = 24, latencyMs = 85, bitrateKbps = 1800)
+        telemetry = CameraStreamTelemetry(resolution = "1080p", fps = 24, latencyMs = 85, bitrateKbps = 1800)
     )
 }
