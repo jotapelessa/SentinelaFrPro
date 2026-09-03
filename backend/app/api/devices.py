@@ -149,6 +149,28 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
     res = await db.execute(stmt)
     dev = res.scalar_one_or_none()
 
+    # Hardware & IP Reconciliation: Prevent duplicates and preserve web-configured permissions
+    if not dev and hb.mac_address:
+        stmt_mac = select(PairedDevice).where(PairedDevice.mac_address == hb.mac_address)
+        res_mac = await db.execute(stmt_mac)
+        dev = res_mac.scalar_one_or_none()
+        if dev:
+            dev.device_identifier = hb.device_identifier
+
+    if not dev:
+        target_ip = hb.ip_address or client_ip
+        if target_ip not in ["127.0.0.1", "localhost"]:
+            stmt_ip = select(PairedDevice).where(
+                (PairedDevice.ip_address == target_ip) | (PairedDevice.tailscale_ip == target_ip)
+            )
+            res_ip = await db.execute(stmt_ip)
+            candidates = res_ip.scalars().all()
+            for cand in candidates:
+                if cand.device_identifier.startswith("tv_") or cand.device_identifier.startswith("scan_") or cand.device_identifier.startswith("manual_"):
+                    dev = cand
+                    dev.device_identifier = hb.device_identifier
+                    break
+
     logs_json = json.dumps(hb.diagnostic_logs) if hb.diagnostic_logs else None
 
     if dev:

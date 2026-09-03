@@ -53,7 +53,7 @@ export default function DashboardPage() {
               Central de Vigilância Sentinela
             </h1>
             <p className="text-xs text-slate-500 font-mono">
-              SentinelaPro.001.000.000.048 • Protegido por IA OpenVINO & Tailscale Encrypted
+              SentinelaPro.001.000.000.049 • Protegido por IA OpenVINO & Tailscale Encrypted
             </p>
           </div>
         </div>

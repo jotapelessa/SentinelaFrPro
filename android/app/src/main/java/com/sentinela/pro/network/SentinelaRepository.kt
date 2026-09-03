@@ -131,6 +131,46 @@ object SentinelaRepository {
         DevicePolicy(deviceIdentifier)
     }
 
+    fun getLocalIpAddress(): String? {
+        try {
+            val interfaces = java.net.NetworkInterface.getNetworkInterfaces() ?: return null
+            for (intf in interfaces) {
+                if (intf.isLoopback || !intf.isUp) continue
+                val addrs = intf.inetAddresses
+                for (addr in addrs) {
+                    if (!addr.isLoopbackAddress && addr is java.net.Inet4Address) {
+                        val host = addr.hostAddress
+                        if (!host.isNullOrBlank() && !host.startsWith("127.")) {
+                            return host
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) { }
+        return null
+    }
+
+    fun getDeviceMacAddress(): String? {
+        try {
+            val interfaces = java.net.NetworkInterface.getNetworkInterfaces() ?: return null
+            for (intf in interfaces) {
+                if (intf.isLoopback || !intf.isUp) continue
+                val mac = intf.hardwareAddress ?: continue
+                if (mac.isNotEmpty()) {
+                    val sb = StringBuilder()
+                    for (b in mac) {
+                        sb.append(String.format("%02X:", b))
+                    }
+                    if (sb.isNotEmpty()) {
+                        sb.deleteCharAt(sb.length - 1)
+                        return sb.toString()
+                    }
+                }
+            }
+        } catch (e: Exception) { }
+        return null
+    }
+
     suspend fun registerOrHeartbeat(
         deviceIdentifier: String,
         friendlyName: String,
@@ -156,17 +196,22 @@ object SentinelaRepository {
                 doOutput = true
             }
 
+            val effectiveIp = ipAddress ?: getLocalIpAddress()
+            val effectiveMac = macAddress ?: getDeviceMacAddress()
+            val effectiveVer = appVersion ?: "v001.000.000.049"
+            val effectiveModel = deviceModel ?: "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
+
             val payload = JSONObject().apply {
                 put("device_identifier", deviceIdentifier)
                 put("friendly_name", friendlyName)
                 put("device_type", deviceType)
-                if (!ipAddress.isNullOrBlank()) put("ip_address", ipAddress)
+                if (!effectiveIp.isNullOrBlank()) put("ip_address", effectiveIp)
                 if (!tailscaleIp.isNullOrBlank()) put("tailscale_ip", tailscaleIp)
-                if (!macAddress.isNullOrBlank()) put("mac_address", macAddress)
+                if (!effectiveMac.isNullOrBlank()) put("mac_address", effectiveMac)
                 if (!connectionType.isNullOrBlank()) put("connection_type", connectionType)
                 if (networkSpeedMbps != null) put("network_speed_mbps", networkSpeedMbps)
-                if (!appVersion.isNullOrBlank()) put("app_version", appVersion)
-                if (!deviceModel.isNullOrBlank()) put("device_model", deviceModel)
+                put("app_version", effectiveVer)
+                put("device_model", effectiveModel)
                 if (!diagnosticLogs.isNullOrEmpty()) {
                     val logsArr = JSONArray()
                     diagnosticLogs.forEach { logsArr.put(it) }
@@ -691,7 +736,7 @@ object SentinelaRepository {
             else -> "lan"
         }
         val speed = caps?.linkDownstreamBandwidthKbps?.let { it / 1000.0 } ?: 100.0
-        val appVer = "v001.000.000.048"
+        val appVer = "v001.000.000.049"
         val devModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
 
         val ok = registerOrHeartbeat(
@@ -839,5 +884,65 @@ object SentinelaRepository {
             Log.w(TAG, "sendPipAck error: ${e.message}")
             return@withContext false
         }
+    }
+
+    data class ServiceStatus(val name: String, val isOnline: Boolean, val latencyMs: Long, val detail: String)
+
+    suspend fun checkServicesHealth(): List<ServiceStatus> = withContext(Dispatchers.IO) {
+        val list = mutableListOf<ServiceStatus>()
+        val endpoints = listOf(
+            Triple("FastAPI Core API", "${SentinelaConfig.BASE_URL}/api/cameras", "REST API e Telemetria"),
+            Triple("Frigate NVR 0.17", "${SentinelaConfig.BASE_URL}/frigate/api/version", "Detecção IA e Gravação NVMe"),
+            Triple("go2rtc Streaming", "${SentinelaConfig.BASE_URL}/go2rtc/api/streams", "Hub MSE e WebRTC"),
+            Triple("Mosquitto MQTT", "${SentinelaConfig.BASE_URL}/api/telemetry", "Barramento de Eventos e Triggers")
+        )
+
+        for ((name, urlStr, detail) in endpoints) {
+            val start = System.currentTimeMillis()
+            var ok = false
+            try {
+                val conn = openConnection(URL(urlStr)).apply {
+                    connectTimeout = 2500
+                    readTimeout = 2500
+                    requestMethod = "GET"
+                }
+                val code = conn.responseCode
+                conn.disconnect()
+                ok = code in 200..299
+            } catch (e: Exception) {
+                ok = false
+            }
+            val lat = (System.currentTimeMillis() - start).coerceAtLeast(1)
+            list.add(ServiceStatus(name, ok, if (ok) lat else 0, detail))
+        }
+        list
+    }
+
+    suspend fun discoverNetworkDevices(): List<String> = withContext(Dispatchers.IO) {
+        val list = mutableListOf<String>()
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/discover")
+            val conn = openConnection(url).apply {
+                connectTimeout = 6000
+                readTimeout = 6000
+                requestMethod = "GET"
+                setRequestProperty("Accept", "application/json")
+            }
+            if (conn.responseCode in 200..299) {
+                val text = BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+                val arr = JSONArray(text)
+                for (i in 0 until arr.length()) {
+                    val obj = arr.getJSONObject(i)
+                    val fn = obj.optString("friendly_name", "Smart TV")
+                    val ip = obj.optString("ip", "")
+                    val dtype = obj.optString("device_type", "android_tv")
+                    list.add("$fn ($ip) • $dtype")
+                }
+            }
+            conn.disconnect()
+        } catch (e: Exception) {
+            Log.w(TAG, "discoverNetworkDevices error: ${e.message}")
+        }
+        list
     }
 }

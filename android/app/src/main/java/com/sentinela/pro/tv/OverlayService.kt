@@ -224,8 +224,7 @@ class OverlayService : Service() {
             10
         }
 
-        val h264StreamSrc = if (camera == "camera_principal") "camera_principal_h264" else camera
-        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${h264StreamSrc}&mode=webrtc,mse&width=100%"
+        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=mse&background=true&width=100%"
         val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
 
         try {
@@ -319,6 +318,11 @@ class OverlayService : Service() {
                                     "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; background:transparent !important; } " +
                                     "* { outline:none !important; }';" +
                                     "document.head.appendChild(style);" +
+                                    "document.querySelectorAll('video-stream').forEach(function(el) { " +
+                                    "  el.background = true; " +
+                                    "  el.visibilityCheck = false; " +
+                                    "  if (el.video) { el.video.play().catch(function(){}); } " +
+                                    "});" +
                                     "})();"
                             view?.evaluateJavascript(js, null)
                         }
