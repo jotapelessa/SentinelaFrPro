@@ -1,5 +1,6 @@
 package com.sentinela.pro.network
 
+import android.content.Context
 import android.util.Log
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.*
@@ -14,6 +15,7 @@ import java.net.URL
 
 data class DevicePolicy(
     val deviceIdentifier: String,
+    val friendlyName: String = "Android Device",
     val permissionStatus: String = "allowed",
     val allowLiveStream: Boolean = true,
     val allowRecordings: Boolean = true,
@@ -187,7 +189,7 @@ object SentinelaRepository {
                     val serverPipSize = obj.optString("pip_default_size", "")
                     if (serverPipSize.isNotBlank()) {
                         when (serverPipSize.lowercase()) {
-                            "mini" -> prefs.pipSizeIndex = PipSize.MINI.ordinal
+                            "mini", "extra_small" -> prefs.pipSizeIndex = PipSize.EXTRA_SMALL.ordinal
                             "small" -> prefs.pipSizeIndex = PipSize.SMALL.ordinal
                             "medium_small" -> prefs.pipSizeIndex = PipSize.MEDIUM_SMALL.ordinal
                             "medium" -> prefs.pipSizeIndex = PipSize.MEDIUM.ordinal

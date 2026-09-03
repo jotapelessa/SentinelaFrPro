@@ -820,7 +820,7 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Icon(Icons.Default.PhotoCamera, contentDescription = "Foto HD", tint = TvColors.MasterGold, modifier = Modifier.size(20.dp))
+                        Icon(Icons.Default.PhotoCamera, contentDescription = "Foto HD", tint = TvColors.StandbyAmber, modifier = Modifier.size(20.dp))
                         Text("FOTO HD (DETECÇÃO IA)", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Black)
                     }
                 }
