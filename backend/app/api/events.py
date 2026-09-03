@@ -431,6 +431,7 @@ async def clear_audit_trail(request: Request, db: AsyncSession = Depends(get_db)
 
 
 @router.get("/{event_id}/clip.mp4")
+@router.head("/{event_id}/clip.mp4")
 async def get_event_clip(event_id: str, download: bool = False):
     """
     Streams a universally compatible H.264 MP4 video clip with HTTP Range support.
