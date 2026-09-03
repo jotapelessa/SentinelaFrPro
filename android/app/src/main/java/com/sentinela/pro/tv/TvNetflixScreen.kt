@@ -85,106 +85,154 @@ fun TvNetflixScreen(
         Icons.Default.Settings
     )
 
+    var currentTimeStr by remember { mutableStateOf("") }
+    LaunchedEffect(Unit) {
+        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        while (isActive) {
+            currentTimeStr = sdf.format(java.util.Date())
+            delay(1000)
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(Color(0xFF070B14)) // Deep Netflix Dark Obsidian
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 40.dp, vertical = 20.dp)
+        Row(
+            modifier = Modifier.fillMaxSize()
         ) {
-            // Netflix-style Top Bar Navigation
-            Row(
+            // -------------------------------------------------------------
+            // LEFT SIDEBAR NAVIGATION (ERGINÔMICA • D-PAD FOCUSABLE)
+            // -------------------------------------------------------------
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(64.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Logo
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "SENTINELA",
-                        color = Color(0xFFE50914), // Netflix Red
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Black,
-                        letterSpacing = 2.sp
+                    .width(250.dp)
+                    .fillMaxHeight()
+                    .background(Color(0xFF090D18))
+                    .border(
+                        width = 1.dp,
+                        color = Color(0xFF1E293B).copy(alpha = 0.8f)
                     )
-                    Spacer(modifier = Modifier.width(10.dp))
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFF06B6D4).copy(alpha = 0.2f), RoundedCornerShape(6.dp))
-                            .border(1.dp, Color(0xFF06B6D4).copy(alpha = 0.6f), RoundedCornerShape(6.dp))
-                            .padding(horizontal = 8.dp, vertical = 3.dp)
-                    ) {
+                    .padding(vertical = 24.dp, horizontal = 16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Top Header Section
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    // Logo
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
-                            text = "TV PRO",
-                            color = Color(0xFF22D3EE),
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.ExtraBold
+                            text = "SENTINELA",
+                            color = Color(0xFFE50914), // Netflix Red
+                            fontSize = 22.sp,
+                            fontWeight = FontWeight.Black,
+                            letterSpacing = 2.sp
                         )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .background(Color(0xFF06B6D4).copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                                    .border(1.dp, Color(0xFF06B6D4).copy(alpha = 0.6f), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "TV PRO",
+                                    color = Color(0xFF22D3EE),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.ExtraBold
+                                )
+                            }
+                            Box(
+                                modifier = Modifier
+                                    .background(Color(0xFF1E293B), RoundedCornerShape(4.dp))
+                                    .border(1.dp, Color(0xFF334155), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}",
+                                    color = Color(0xFFE2E8F0),
+                                    fontSize = 10.sp,
+                                    fontFamily = FontFamily.Monospace,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
                     }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Box(
+
+                    // Online Status Pill
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .background(Color(0xFF1E293B), RoundedCornerShape(6.dp))
-                            .border(1.dp, Color(0xFF334155), RoundedCornerShape(6.dp))
-                            .padding(horizontal = 8.dp, vertical = 3.dp)
+                            .fillMaxWidth()
+                            .background(Color(0xFF0F172A), RoundedCornerShape(10.dp))
+                            .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(10.dp))
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
                     ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(if (isForeground) Color(0xFF10B981) else Color(0xFFF59E0B), CircleShape)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}",
-                            color = Color(0xFFE2E8F0),
-                            fontSize = 11.sp,
-                            fontFamily = FontFamily.Monospace,
+                            text = if (isForeground) "ONLINE • 24 FPS" else "STANDBY",
+                            color = if (isForeground) Color(0xFF10B981) else Color(0xFFF59E0B),
+                            fontSize = 10.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                }
 
-                // Navigation Tabs (D-Pad Focusable)
-                Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                    tabs.forEachIndexed { index, title ->
-                        TvNavTabItem(
-                            title = title,
-                            icon = icons[index],
-                            isSelected = activeTabIndex == index,
-                            onSelect = { activeTabIndex = index }
-                        )
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Vertical Menu Items
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        tabs.forEachIndexed { index, title ->
+                            TvNavTabItem(
+                                title = title,
+                                icon = icons[index],
+                                isSelected = activeTabIndex == index,
+                                onSelect = { activeTabIndex = index }
+                            )
+                        }
                     }
                 }
 
-                // Tailscale / Gateway Status Badge
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                // Bottom Footer Info
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
                     modifier = Modifier
-                        .background(Color(0xFF0F172A), RoundedCornerShape(20.dp))
-                        .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(20.dp))
-                        .padding(horizontal = 14.dp, vertical = 6.dp)
+                        .fillMaxWidth()
+                        .padding(top = 16.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(if (isForeground) Color(0xFF10B981) else Color(0xFFF59E0B), CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = if (isForeground) "ONLINE (24 FPS)" else "PAUSADO (STANDBY)",
-                        color = if (isForeground) Color(0xFF10B981) else Color(0xFFF59E0B),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
+                        text = if (currentTimeStr.isNotBlank()) "⏰ $currentTimeStr" else "",
+                        color = Color(0xFF94A3B8),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace
+                    )
+                    Text(
+                        text = "Tailscale / LAN Conectado",
+                        color = Color(0xFF475569),
+                        fontSize = 10.sp
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Active Tab Content Viewport
+            // -------------------------------------------------------------
+            // RIGHT CONTENT VIEWPORT (100% FLUIDO • PROPORÇÃO 16:9 PERFEITA)
+            // -------------------------------------------------------------
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
+                    .padding(horizontal = 24.dp, vertical = 20.dp)
             ) {
                 when (activeTabIndex) {
                     0 -> TvCamerasTab(cameras = cameras, isForeground = isForeground)
@@ -211,7 +259,7 @@ fun TvNavTabItem(
     val bg = when {
         isFocused -> Color(0xFFE50914) // Netflix Red Focus
         isSelected -> Color(0xFF1E293B)
-        else -> Color(0xFF0F172A)
+        else -> Color.Transparent
     }
     val fg = when {
         isFocused -> Color.White
@@ -221,22 +269,25 @@ fun TvNavTabItem(
 
     Box(
         modifier = Modifier
-            .scale(if (isFocused) 1.08f else 1f)
+            .fillMaxWidth()
+            .scale(if (isFocused) 1.04f else 1f)
             .clip(RoundedCornerShape(10.dp))
             .background(bg)
             .border(
                 1.5.dp,
-                if (isFocused) Color.White else if (isSelected) Color(0xFF06B6D4) else Color(0xFF1E293B),
+                if (isFocused) Color.White else if (isSelected) Color(0xFF06B6D4).copy(alpha = 0.6f) else Color.Transparent,
                 RoundedCornerShape(10.dp)
             )
             .clickable(interactionSource = interactionSource, indication = null) { onSelect() }
             .focusable(interactionSource = interactionSource)
-            .padding(horizontal = 16.dp, vertical = 10.dp)
+            .padding(horizontal = 14.dp, vertical = 12.dp)
     ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Icon(icon, contentDescription = title, tint = fg, modifier = Modifier.size(16.dp))
-            Spacer(modifier = Modifier.width(6.dp))
-            Text(text = title, color = fg, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(icon, contentDescription = title, tint = fg, modifier = Modifier.size(20.dp))
+            Text(text = title, color = fg, fontSize = 13.sp, fontWeight = if (isSelected || isFocused) FontWeight.Bold else FontWeight.Normal)
         }
     }
 }
