@@ -168,7 +168,7 @@ class FrigateBridgeService:
         return None
 
     async def transcode_to_30fps(self, video_bytes: bytes, target_fps: int = 30) -> bytes:
-        """Transcodes any raw MP4 clip into a crisp, smooth 30 FPS video with faststart headers for Telegram."""
+        """Optimized video preparation with instant zero-CPU stream copy and faststart headers for Telegram."""
         if not video_bytes or len(video_bytes) < 1000:
             return video_bytes
         in_file = f"/tmp/in_{uuid.uuid4().hex[:8]}.mp4"
@@ -176,24 +176,41 @@ class FrigateBridgeService:
         try:
             with open(in_file, "wb") as f:
                 f.write(video_bytes)
-            cmd = [
+            
+            # 1. Fast path: Zero-CPU Lossless Stream Copy with +faststart
+            cmd_copy = [
+                "ffmpeg", "-y",
+                "-i", in_file,
+                "-c", "copy",
+                "-movflags", "+faststart",
+                out_file
+            ]
+            proc = subprocess.run(cmd_copy, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+            if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 1000:
+                with open(out_file, "rb") as f:
+                    fast_bytes = f.read()
+                return fast_bytes
+
+            # 2. Fallback path: Ultrafast H.264 transcode if stream copy wasn't possible
+            cmd_transcode = [
                 "ffmpeg", "-y",
                 "-i", in_file,
                 "-r", str(target_fps),
                 "-c:v", "libx264",
-                "-preset", "veryfast",
-                "-crf", "23",
+                "-preset", "ultrafast",
+                "-crf", "24",
                 "-pix_fmt", "yuv420p",
                 "-movflags", "+faststart",
+                "-c:a", "aac",
                 out_file
             ]
-            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+            proc = subprocess.run(cmd_transcode, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
             if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 1000:
                 with open(out_file, "rb") as f:
                     smooth_bytes = f.read()
                 return smooth_bytes
         except Exception as e:
-            logger.warning(f"Error transcoding clip to 30 FPS: {e}")
+            logger.warning(f"Error preparing clip for Telegram: {e}")
         finally:
             if os.path.exists(in_file):
                 try: os.remove(in_file)

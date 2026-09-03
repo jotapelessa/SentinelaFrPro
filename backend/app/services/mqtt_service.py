@@ -335,12 +335,12 @@ class MQTTService:
         # 1. 7 full seconds of pre-capture before the object enters the detection zone
         clip_start_ts = int(event_start - 7.0)
         
-        # 2. At least 7 seconds of post-capture after the object finishes moving AND guarantee minimum 25 seconds total clip
+        # 2. At least 7 seconds of post-capture after the object finishes moving AND guarantee minimum 25 seconds (capped at 35s max for Telegram)
         event_end = end_time if end_time > 0 else (event_start + duration_s)
-        clip_end_ts = int(max(event_end + 7.0, clip_start_ts + 25.0))
+        clip_end_ts = int(min(max(event_end + 7.0, clip_start_ts + 25.0), clip_start_ts + 35.0))
         
         target_duration = int(clip_end_ts - clip_start_ts)
-        logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 7s pré + 7s pós, mínimo 25s) para Telegram (Câmera: {camera}, Evento: {event_id})...")
+        logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 7s pré + 7s pós, min 25s/max 35s) para Telegram (Câmera: {camera}, Evento: {event_id})...")
 
         # 3. Intelligent synchronization: wait until clip_end_ts timestamp has passed + 2s for Frigate to flush disk segments
         wait_seconds = max(0.0, (clip_end_ts - datetime.datetime.now(datetime.timezone.utc).timestamp()) + 2.0)

@@ -9,6 +9,7 @@ router = APIRouter(prefix="/telemetry", tags=["Telemetry"])
 class BenchmarkPayload(BaseModel):
     benchmark_type: str # '1080p', '2k', '4k', 'detection', 'image_hud'
 
+@router.get("")
 @router.get("/")
 async def get_telemetry():
     snapshot = telemetry_service.get_telemetry_snapshot()
