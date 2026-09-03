@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Query, HTTPException, Request, Body
+from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel, Field
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, desc, delete
@@ -7,6 +8,9 @@ import httpx
 import logging
 import datetime
 import asyncio
+import os
+import subprocess
+import uuid
 from app.db.session import get_db
 from app.db.models import EventRecord, AuditLog
 from app.core.config import settings
@@ -14,6 +18,9 @@ from app.services.audit_service import audit_service
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/events", tags=["Events"])
+
+CLIPS_CACHE_DIR = "/tmp/clips_cache"
+os.makedirs(CLIPS_CACHE_DIR, exist_ok=True)
 
 class EventBatchDeleteRequest(BaseModel):
     event_ids: List[str] = Field(..., max_length=100)
@@ -76,7 +83,7 @@ async def list_events(
                         "zones": zones,
                         "snapshot_url": f"/frigate/api/events/{event_id}/snapshot.jpg",
                         "snapshot_clean_url": f"/frigate/api/events/{event_id}/snapshot.jpg?clean=1",
-                        "clip_url": f"/frigate/api/events/{event_id}/clip.mp4",
+                        "clip_url": f"/api/events/{event_id}/clip.mp4",
                         "has_clip": item.get("has_clip", True),
                         "has_snapshot": item.get("has_snapshot", True),
                         "retained": is_retained,
@@ -137,7 +144,7 @@ async def list_events(
             "zones": [ev.zone] if ev.zone else [],
             "snapshot_url": f"/frigate/api/events/{ev.frigate_event_id}/snapshot.jpg" if ev.frigate_event_id else None,
             "snapshot_clean_url": f"/frigate/api/events/{ev.frigate_event_id}/snapshot.jpg?clean=1" if ev.frigate_event_id else None,
-            "clip_url": f"/frigate/api/events/{ev.frigate_event_id}/clip.mp4" if ev.frigate_event_id else None,
+            "clip_url": f"/api/events/{ev.frigate_event_id}/clip.mp4" if ev.frigate_event_id else None,
             "has_clip": ev.has_clip,
             "has_snapshot": ev.has_snapshot,
             "retained": False,
@@ -421,5 +428,95 @@ async def clear_audit_trail(request: Request, db: AsyncSession = Depends(get_db)
         client_ip=request.client.host if request.client else "unknown"
     )
     return {"status": "cleared", "message": "Logs de auditoria limpos com sucesso."}
+
+
+@router.get("/{event_id}/clip.mp4")
+async def get_event_clip(event_id: str, download: bool = False):
+    """
+    Streams a universally compatible H.264 MP4 video clip with HTTP Range support.
+    Transcodes raw HEVC clips from Frigate to H.264 with faststart so all web browsers (Firefox, Chrome, Safari)
+    can play the recordings smoothly without codec errors.
+    """
+    cached_file = os.path.join(CLIPS_CACHE_DIR, f"{event_id}_h264.mp4")
+    
+    # 1. Return from fast disk cache if already transcoded
+    if os.path.exists(cached_file) and os.path.getsize(cached_file) > 1024:
+        headers = {
+            "Accept-Ranges": "bytes",
+            "Cache-Control": "public, max-age=86400"
+        }
+        if download:
+            headers["Content-Disposition"] = f'attachment; filename="clip_{event_id}.mp4"'
+        return FileResponse(
+            cached_file,
+            media_type="video/mp4",
+            headers=headers
+        )
+
+    # 2. Fetch raw clip from Frigate NVR
+    raw_bytes = None
+    try:
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            frigate_clip_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
+            resp = await client.get(frigate_clip_url)
+            if resp.status_code == 200 and len(resp.content) > 1024:
+                raw_bytes = resp.content
+    except Exception as e:
+        logger.warning(f"Failed to fetch event clip from Frigate for {event_id}: {e}")
+
+    if not raw_bytes:
+        raise HTTPException(status_code=404, detail="Gravação de clipe não encontrada no NVR.")
+
+    # 3. Transcode to universal H.264 MP4 with faststart and store in cache
+    temp_in = os.path.join(CLIPS_CACHE_DIR, f"temp_in_{event_id}_{uuid.uuid4().hex[:6]}.mp4")
+    temp_out = os.path.join(CLIPS_CACHE_DIR, f"temp_out_{event_id}_{uuid.uuid4().hex[:6]}.mp4")
+    try:
+        with open(temp_in, "wb") as f:
+            f.write(raw_bytes)
+
+        cmd = [
+            "ffmpeg", "-y",
+            "-i", temp_in,
+            "-c:v", "libx264",
+            "-preset", "veryfast",
+            "-crf", "23",
+            "-pix_fmt", "yuv420p",
+            "-movflags", "+faststart",
+            "-c:a", "aac",
+            "-b:a", "128k",
+            temp_out
+        ]
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=45)
+        if proc.returncode == 0 and os.path.exists(temp_out) and os.path.getsize(temp_out) > 1024:
+            os.replace(temp_out, cached_file)
+        else:
+            # Fallback to raw bytes if ffmpeg failed
+            with open(cached_file, "wb") as f:
+                f.write(raw_bytes)
+    except Exception as e:
+        logger.error(f"Error transcoding clip {event_id}: {e}")
+        with open(cached_file, "wb") as f:
+            f.write(raw_bytes)
+    finally:
+        if os.path.exists(temp_in):
+            try: os.remove(temp_in)
+            except Exception: pass
+        if os.path.exists(temp_out):
+            try: os.remove(temp_out)
+            except Exception: pass
+
+    headers = {
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "public, max-age=86400"
+    }
+    if download:
+        headers["Content-Disposition"] = f'attachment; filename="clip_{event_id}.mp4"'
+
+    return FileResponse(
+        cached_file,
+        media_type="video/mp4",
+        headers=headers
+    )
+
 
 

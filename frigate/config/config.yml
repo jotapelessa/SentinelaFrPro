@@ -129,14 +129,14 @@ cameras:
       motion:
         days: 3
       alerts:
-        pre_capture: 5
-        post_capture: 5
+        pre_capture: 7
+        post_capture: 7
         retain:
           days: 14
           mode: active_objects
       detections:
-        pre_capture: 5
-        post_capture: 5
+        pre_capture: 7
+        post_capture: 7
         retain:
           days: 14
           mode: active_objects

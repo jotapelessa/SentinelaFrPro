@@ -1303,11 +1303,14 @@ export default function EventsPage() {
             <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-inner">
               <video
                 ref={videoRef}
-                src={selectedEvent.clip_url || `/frigate/api/events/${selectedEvent.id}/clip.mp4`}
+                src={selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`}
                 controls
                 autoPlay
+                playsInline
                 className="w-full h-full object-contain"
               >
+                <source src={selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`} type="video/mp4" />
+                <source src={`/frigate/api/events/${selectedEvent.id}/clip.mp4`} type="video/mp4" />
                 Seu navegador não suporta reprodução MP4.
               </video>
             </div>
@@ -1368,7 +1371,7 @@ export default function EventsPage() {
 
                 {/* Download Video Clip */}
                 <a
-                  href={selectedEvent.clip_url || `/frigate/api/events/${selectedEvent.id}/clip.mp4`}
+                  href={selectedEvent.clip_url ? `${selectedEvent.clip_url}?download=1` : `/api/events/${selectedEvent.id}/clip.mp4?download=1`}
                   download={`clip_${selectedEvent.camera}_${selectedEvent.id}.mp4`}
                   className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all"
                 >

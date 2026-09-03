@@ -53,7 +53,7 @@ export default function DashboardPage() {
               Central de Vigilância Sentinela
             </h1>
             <p className="text-xs text-slate-500 font-mono">
-              SentinelaPro.001.000.000.026 • Protegido por IA OpenVINO & Tailscale Encrypted
+              SentinelaPro.001.000.000.027 • Protegido por IA OpenVINO & Tailscale Encrypted
             </p>
           </div>
         </div>
@@ -212,11 +212,14 @@ export default function DashboardPage() {
 
             <div className="aspect-video w-full bg-black rounded-2xl overflow-hidden border border-slate-800">
               <video
-                src={activeEventVideo.clip_url || `/frigate/api/events/${activeEventVideo.id}/clip.mp4`}
+                src={activeEventVideo.clip_url || `/api/events/${activeEventVideo.id}/clip.mp4`}
                 controls
                 autoPlay
+                playsInline
                 className="w-full h-full object-contain"
               >
+                <source src={activeEventVideo.clip_url || `/api/events/${activeEventVideo.id}/clip.mp4`} type="video/mp4" />
+                <source src={`/frigate/api/events/${activeEventVideo.id}/clip.mp4`} type="video/mp4" />
                 Seu navegador não suporta reprodução direta deste formato de vídeo MP4.
               </video>
             </div>
@@ -224,7 +227,7 @@ export default function DashboardPage() {
             <div className="flex items-center justify-between text-xs text-slate-400 font-mono">
               <span>Zona ROI: {activeEventVideo.zone || "Geral"}</span>
               <a
-                href={activeEventVideo.clip_url || `/frigate/api/events/${activeEventVideo.id}/clip.mp4`}
+                href={activeEventVideo.clip_url ? `${activeEventVideo.clip_url}?download=1` : `/api/events/${activeEventVideo.id}/clip.mp4?download=1`}
                 download
                 className="text-cyan-400 hover:underline font-bold"
               >

@@ -227,7 +227,9 @@ class MQTTService:
                             zone_name=zone_name,
                             duration_s=dur,
                             score=score,
-                            friendly_name=friendly_name
+                            friendly_name=friendly_name,
+                            start_time=start_t,
+                            end_time=end_t
                         )
                     )
 
@@ -320,24 +322,42 @@ class MQTTService:
         zone_name: Optional[str],
         duration_s: float,
         score: float,
-        friendly_name: Optional[str]
+        friendly_name: Optional[str],
+        start_time: float = 0.0,
+        end_time: float = 0.0
     ):
-        """Asynchronously acquires the exact duration 30 FPS MP4 video and sends to Telegram."""
+        """Asynchronously acquires the exact duration 30 FPS MP4 video with >= 5s pre-capture and >= 5s post-capture."""
         from app.services.frigate_bridge import frigate_bridge
 
-        target_duration = max(int(duration_s), 15)
-        logger.info(f"🎬 Iniciando gravação/obtenção de clipe de {target_duration}s a 30 FPS para Telegram (Câmera: {camera}, Evento: {event_id})...")
+        now_ts = datetime.datetime.now(datetime.timezone.utc).timestamp()
+        event_start = start_time if start_time > 0 else (now_ts - 10.0)
+        
+        # 5 seconds of pre-capture before the object enters the zone
+        clip_start_ts = int(event_start - 5.0)
+        
+        # At least 5 seconds of post-capture after the object finishes moving or configured duration
+        event_end = end_time if end_time > 0 else (event_start + duration_s)
+        clip_end_ts = int(max(event_end, event_start + 10.0) + 5.0)
+        
+        target_duration = max(int(clip_end_ts - clip_start_ts), 15)
+        logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 5s pré + 5s pós) para Telegram (Câmera: {camera}, Evento: {event_id})...")
 
-        # Strategy 1: Poll Frigate event clip and transcode to 30 FPS
-        delays = [2.0, 3.0, 5.0, 7.0, 10.0]
+        # Strategy 1: Poll Frigate range clip and transcode to 30 FPS H.264
+        delays = [3.0, 4.0, 6.0, 8.0, 10.0]
         for attempt, delay in enumerate(delays, start=1):
             await asyncio.sleep(delay)
             try:
                 async with httpx.AsyncClient(timeout=45.0) as client:
-                    clip_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
-                    clip_resp = await client.get(clip_url)
+                    # Try continuous range clip first to guarantee pre-capture and post-capture
+                    range_url = f"{settings.FRIGATE_API_URL}/api/{camera}/start/{clip_start_ts}/end/{clip_end_ts}/clip.mp4"
+                    clip_resp = await client.get(range_url)
+                    
+                    if clip_resp.status_code != 200 or len(clip_resp.content) < 1024:
+                        event_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
+                        clip_resp = await client.get(event_url)
+
                     if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
-                        logger.info(f"✅ Clipe MP4 obtido do Frigate ({len(clip_resp.content)} bytes). Transcodificando a 30 FPS fixos...")
+                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Transcodificando a 30 FPS fixos H.264...")
                         smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=30)
                         sent_ok = await telegram_vault_service.send_alert_video(
                             video_bytes=smooth_video,
