@@ -50,7 +50,7 @@ import kotlinx.coroutines.launch
 
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.compose.ui.platform.LocalLifecycleOwner
 
 @Composable
 fun TvNetflixScreen(
