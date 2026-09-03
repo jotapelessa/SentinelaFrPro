@@ -27,9 +27,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import com.sentinela.pro.SentinelaConfig
-import com.sentinela.pro.data.SentinelaPreferences
-import com.sentinela.pro.network.SentinelaRepository
-import com.sentinela.pro.network.SentinelaWebSocket
+import com.sentinela.pro.data.*
+import com.sentinela.pro.network.*
 import kotlinx.coroutines.*
 
 class OverlayService : Service() {
