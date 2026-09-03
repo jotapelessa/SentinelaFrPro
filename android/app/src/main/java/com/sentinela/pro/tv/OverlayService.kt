@@ -1,5 +1,6 @@
 package com.sentinela.pro.tv
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -9,37 +10,32 @@ import android.content.Intent
 import android.graphics.Color
 import android.graphics.PixelFormat
 import android.graphics.Typeface
+import android.net.http.SslError
 import android.os.Build
 import android.os.IBinder
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.FrameLayout
-import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
-import coil.ImageLoader
-import coil.load
-import coil.request.CachePolicy
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.SentinelaPreferences
 import com.sentinela.pro.network.SentinelaRepository
 import com.sentinela.pro.network.SentinelaWebSocket
 import kotlinx.coroutines.*
-import okhttp3.OkHttpClient
-import org.json.JSONObject
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
 
 class OverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
-    private var pipImageView: ImageView? = null
+    private var pipWebView: WebView? = null
     private var pipTitleView: TextView? = null
     
     private val serviceJob = SupervisorJob()
@@ -47,28 +43,6 @@ class OverlayService : Service() {
     
     private var webSocket: SentinelaWebSocket? = null
     private var pipJob: Job? = null
-    private var frameTickerJob: Job? = null
-
-    private val imageLoader: ImageLoader by lazy {
-        val trustAll = arrayOf<TrustManager>(object : X509TrustManager {
-            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
-            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
-            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()
-        })
-        val sslContext = SSLContext.getInstance("SSL").apply {
-            init(null, trustAll, SecureRandom())
-        }
-        val okHttpClient = OkHttpClient.Builder()
-            .sslSocketFactory(sslContext.socketFactory, trustAll[0] as X509TrustManager)
-            .hostnameVerifier { _, _ -> true }
-            .build()
-
-        ImageLoader.Builder(this)
-            .okHttpClient(okHttpClient)
-            .diskCachePolicy(CachePolicy.DISABLED)
-            .memoryCachePolicy(CachePolicy.DISABLED)
-            .build()
-    }
 
     override fun onCreate() {
         super.onCreate()
@@ -142,9 +116,9 @@ class OverlayService : Service() {
         }
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     private fun showPiP(camera: String, label: String) {
         pipJob?.cancel()
-        frameTickerJob?.cancel()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
             android.util.Log.w("OverlayService", "Cannot display PiP overlay: Permission SYSTEM_ALERT_WINDOW not granted")
@@ -155,7 +129,8 @@ class OverlayService : Service() {
         val pipSize = prefs.currentPipSize
         val pipPos = prefs.currentPipPosition
         val pipDur = prefs.currentPipDuration
-        
+        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=mse&width=100%"
+
         try {
             val params = WindowManager.LayoutParams(
                 pipSize.width, pipSize.height,
@@ -183,15 +158,39 @@ class OverlayService : Service() {
                     setBackgroundColor(0xFF000000.toInt())
                 }
 
-                val iv = ImageView(this).apply {
+                val wv = WebView(this).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
-                    scaleType = ImageView.ScaleType.CENTER_CROP
+                    setBackgroundColor(Color.BLACK)
+                    setLayerType(View.LAYER_TYPE_HARDWARE, null)
+
+                    settings.apply {
+                        javaScriptEnabled = true
+                        domStorageEnabled = true
+                        databaseEnabled = true
+                        mediaPlaybackRequiresUserGesture = false
+                        loadsImagesAutomatically = true
+                        mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                        useWideViewPort = true
+                        loadWithOverviewMode = true
+                        allowContentAccess = true
+                        allowFileAccess = true
+                        cacheMode = WebSettings.LOAD_NO_CACHE
+                    }
+
+                    isVerticalScrollBarEnabled = false
+                    isHorizontalScrollBarEnabled = false
+                    webChromeClient = WebChromeClient()
+                    webViewClient = object : WebViewClient() {
+                        override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
+                            handler?.proceed()
+                        }
+                    }
                 }
-                pipImageView = iv
-                inner.addView(iv)
+                pipWebView = wv
+                inner.addView(wv)
 
                 // Top HUD Bar (Camera name & Label badge)
                 val hudBar = LinearLayout(this).apply {
@@ -219,7 +218,7 @@ class OverlayService : Service() {
                     setTextColor(Color.WHITE)
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
                     typeface = Typeface.DEFAULT_BOLD
-                    text = "${camera.uppercase()} • ${label.uppercase()}"
+                    text = "${camera.uppercase()} • ${label.uppercase()} • 24 FPS"
                 }
                 pipTitleView = tv
                 hudBar.addView(tv)
@@ -228,66 +227,19 @@ class OverlayService : Service() {
                 root.addView(inner)
                 overlayView = root
                 windowManager.addView(overlayView, params)
+                wv.loadUrl(streamUrl)
             } else {
-                pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()}"
+                pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • 24 FPS"
                 if (overlayView?.parent == null) {
                     windowManager.addView(overlayView, params)
                 } else {
                     windowManager.updateViewLayout(overlayView, params)
                 }
+                pipWebView?.loadUrl(streamUrl)
             }
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Failed to render PiP Window: ${e.message}")
             return
-        }
-
-        // Start live snapshot refresh ticker with zero-flicker background decoding & multi-channel fallback
-        frameTickerJob = serviceScope.launch(Dispatchers.IO) {
-            while (isActive) {
-                val loopStart = System.currentTimeMillis()
-                val now = loopStart
-                val urls = listOf(
-                    SentinelaConfig.getSnapshotUrl(camera, now),
-                    SentinelaConfig.getGo2rtcFrameUrl(camera, now),
-                    "${SentinelaConfig.BASE_URL}/api/cameras/$camera/snapshot?t=$now"
-                )
-
-                var decodedBitmap: android.graphics.Bitmap? = null
-                for (url in urls) {
-                    try {
-                        val req = coil.request.ImageRequest.Builder(this@OverlayService)
-                            .data(url)
-                            .memoryCachePolicy(CachePolicy.DISABLED)
-                            .diskCachePolicy(CachePolicy.DISABLED)
-                            .allowHardware(false)
-                            .build()
-                        val res = imageLoader.execute(req)
-                        if (res is coil.request.SuccessResult) {
-                            val d = res.drawable
-                            if (d is android.graphics.drawable.BitmapDrawable) {
-                                decodedBitmap = d.bitmap
-                                break
-                            }
-                        }
-                    } catch (e: Exception) {
-                        // try next fallback
-                    }
-                }
-
-                if (decodedBitmap != null) {
-                    withContext(Dispatchers.Main) {
-                        try {
-                            pipImageView?.setImageBitmap(decodedBitmap)
-                        } catch (e: Exception) {
-                            // View might have been detached
-                        }
-                    }
-                }
-
-                val elapsed = System.currentTimeMillis() - loopStart
-                val sleepTime = (42L - elapsed).coerceIn(10L, 42L)
-                delay(sleepTime)
-            }
         }
 
         val duration = if (pipDur.seconds > 0) pipDur.seconds else 10
@@ -298,9 +250,12 @@ class OverlayService : Service() {
     }
 
     private fun removePiP() {
-        frameTickerJob?.cancel()
-        frameTickerJob = null
         try {
+            pipWebView?.let { wv ->
+                wv.stopLoading()
+                wv.loadUrl("about:blank")
+                wv.destroy()
+            }
             overlayView?.let { v ->
                 if (v.parent != null) {
                     windowManager.removeViewImmediate(v)
@@ -310,7 +265,7 @@ class OverlayService : Service() {
             android.util.Log.e("OverlayService", "Error removing overlay view: ${e.message}")
         } finally {
             overlayView = null
-            pipImageView = null
+            pipWebView = null
             pipTitleView = null
         }
     }

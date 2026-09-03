@@ -48,11 +48,33 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+
 @Composable
 fun TvNetflixScreen(
     cameras: List<CameraItem>,
     onRefresh: () -> Unit = {}
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+    var isForeground by remember { mutableStateOf(true) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_RESUME -> isForeground = true
+                Lifecycle.Event.ON_PAUSE,
+                Lifecycle.Event.ON_STOP -> isForeground = false
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
     var activeTabIndex by remember { mutableIntStateOf(0) }
     val tabs = listOf("Câmeras", "Capturas", "Ferramentas", "Logs", "Configurações")
     val icons = listOf(
@@ -144,12 +166,12 @@ fun TvNetflixScreen(
                     Box(
                         modifier = Modifier
                             .size(8.dp)
-                            .background(Color(0xFF10B981), CircleShape)
+                            .background(if (isForeground) Color(0xFF10B981) else Color(0xFFF59E0B), CircleShape)
                     )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(
-                        text = "ONLINE (24 FPS)",
-                        color = Color(0xFF10B981),
+                        text = if (isForeground) "ONLINE (24 FPS)" else "PAUSADO (STANDBY)",
+                        color = if (isForeground) Color(0xFF10B981) else Color(0xFFF59E0B),
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -165,7 +187,7 @@ fun TvNetflixScreen(
                     .weight(1f)
             ) {
                 when (activeTabIndex) {
-                    0 -> TvCamerasTab(cameras = cameras)
+                    0 -> TvCamerasTab(cameras = cameras, isForeground = isForeground)
                     1 -> TvCapturesTab()
                     2 -> TvToolsTab()
                     3 -> TvLogsTab()
@@ -209,7 +231,7 @@ fun TvNavTabItem(
             )
             .clickable(interactionSource = interactionSource, indication = null) { onSelect() }
             .focusable(interactionSource = interactionSource)
-            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .padding(horizontal = 16.dp, vertical = 10.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(icon, contentDescription = title, tint = fg, modifier = Modifier.size(16.dp))
@@ -223,13 +245,13 @@ fun TvNavTabItem(
 // TAB 1: CÂMERAS (HERO SPOTLIGHT + HORIZONTAL CAROUSEL)
 // -------------------------------------------------------------
 @Composable
-fun TvCamerasTab(cameras: List<CameraItem>) {
+fun TvCamerasTab(cameras: List<CameraItem>, isForeground: Boolean = true) {
     var selectedCam by remember { mutableStateOf(cameras.firstOrNull() ?: CameraItem("camera_principal", "Câmera Principal")) }
     var isFullscreenOpen by remember { mutableStateOf(false) }
     var frameTicker by remember { mutableLongStateOf(System.currentTimeMillis()) }
 
-    LaunchedEffect(Unit) {
-        while (isActive) {
+    LaunchedEffect(isForeground) {
+        while (isActive && isForeground) {
             delay(200) // 5 FPS
             frameTicker = System.currentTimeMillis()
         }
@@ -251,7 +273,8 @@ fun TvCamerasTab(cameras: List<CameraItem>) {
                 contentDescription = selectedCam.friendlyName,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
-                refreshIntervalMs = 42L // MSE 24 FPS Standard
+                refreshIntervalMs = 42L, // MSE 24 FPS Standard
+                isStreaming = isForeground
             )
 
             // Overlay Details
@@ -318,6 +341,7 @@ fun TvCamerasTab(cameras: List<CameraItem>) {
                         camera = cam,
                         isSelected = selectedCam.name == cam.name,
                         frameTicker = frameTicker,
+                        isForeground = isForeground,
                         onSelect = { selectedCam = cam }
                     )
                 }
@@ -335,6 +359,7 @@ fun TvCameraListItem(
     camera: CameraItem,
     isSelected: Boolean,
     frameTicker: Long,
+    isForeground: Boolean = true,
     onSelect: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -368,6 +393,7 @@ fun TvCameraListItem(
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop,
                 refreshIntervalMs = 2000L,
+                isStreaming = isForeground,
                 forceSnapshotMode = true // Lightweight snapshot in sidebar: saves 100% MediaCodec GPU resources for the main live screen!
             )
         }
