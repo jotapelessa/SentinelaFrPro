@@ -25,6 +25,7 @@ import coil.load
 import coil.request.CachePolicy
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.SentinelaPreferences
+import com.sentinela.pro.network.SentinelaRepository
 import com.sentinela.pro.network.SentinelaWebSocket
 import kotlinx.coroutines.*
 import okhttp3.OkHttpClient
@@ -98,7 +99,7 @@ class OverlayService : Service() {
                         val policy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
                         if (policy.permissionStatus == "allowed" && policy.allowPipAlerts) {
                             val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
-                            val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { it.equals(label, ignoreCase = true) }
+                            val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
                             if (camAllowed && eventAllowed) {
                                 showPiP(camera, label)
                             }
