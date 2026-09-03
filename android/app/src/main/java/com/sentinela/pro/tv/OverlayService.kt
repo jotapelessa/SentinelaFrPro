@@ -129,7 +129,7 @@ class OverlayService : Service() {
         val pipSize = prefs.currentPipSize
         val pipPos = prefs.currentPipPosition
         val pipDur = prefs.currentPipDuration
-        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=webrtc,mse,mp4&width=100%"
+        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=mse&width=100%"
         val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
 
         try {

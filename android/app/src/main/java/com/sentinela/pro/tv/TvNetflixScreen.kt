@@ -1958,10 +1958,10 @@ fun TvPipFloatingWindow(
             ) {
                 SeamlessCameraImage(
                     cameraName = alert.camera.id,
-                    contentDescription = "Snapshot Alerta",
+                    contentDescription = "Alerta PiP",
                     modifier = Modifier.fillMaxSize(),
-                    isStreaming = false,
-                    forceSnapshotMode = true
+                    isStreaming = true,
+                    forceSnapshotMode = false
                 )
 
                 Box(

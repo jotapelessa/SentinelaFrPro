@@ -46,7 +46,7 @@ fun SeamlessCameraImage(
     isStreaming: Boolean = true,
     forceSnapshotMode: Boolean = false
 ) {
-    if (!isStreaming) {
+    if (!forceSnapshotMode && !isStreaming) {
         Box(modifier = modifier.background(Color.Black))
         return
     }
@@ -68,7 +68,7 @@ fun SeamlessCameraImage(
     var isInitialLoading by remember(cameraName) { mutableStateOf(true) }
     var hasError by remember(cameraName) { mutableStateOf(false) }
 
-    LaunchedEffect(cameraName, isStreaming) {
+    LaunchedEffect(cameraName) {
         if (!isStreaming) return@LaunchedEffect
         
         while (isActive) {
