@@ -12,7 +12,11 @@ logger = logging.getLogger(__name__)
 
 def _cast_sync(ip: str, media_url: str, content_type: str = "image/jpeg") -> bool:
     try:
-        import pychromecast  # type: ignore[import-untyped,import-not-found]
+        import importlib
+        try:
+            pychromecast = importlib.import_module("pychromecast")
+        except ImportError:
+            return False
         import warnings
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
@@ -222,7 +226,7 @@ class PiPGatewayService:
                 camera_name = "sentinela"
 
         # Resolve server LAN IP so the TV on the local network can fetch the snapshot image
-        server_ip = "192.168.1.252"
+        server_ip = "192.168.1.247"
         try:
             s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
             s.connect((target_ip, 80))
