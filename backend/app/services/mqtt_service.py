@@ -326,24 +326,30 @@ class MQTTService:
         start_time: float = 0.0,
         end_time: float = 0.0
     ):
-        """Asynchronously acquires the exact duration 30 FPS MP4 video with >= 5s pre-capture and >= 5s post-capture."""
+        """Asynchronously acquires the exact duration 30 FPS MP4 video with >= 7s pre-capture, >= 7s post-capture, and min 25s duration."""
         from app.services.frigate_bridge import frigate_bridge
 
         now_ts = datetime.datetime.now(datetime.timezone.utc).timestamp()
         event_start = start_time if start_time > 0 else (now_ts - 10.0)
         
-        # 5 seconds of pre-capture before the object enters the zone
-        clip_start_ts = int(event_start - 5.0)
+        # 1. 7 full seconds of pre-capture before the object enters the detection zone
+        clip_start_ts = int(event_start - 7.0)
         
-        # At least 5 seconds of post-capture after the object finishes moving or configured duration
+        # 2. At least 7 seconds of post-capture after the object finishes moving AND guarantee minimum 25 seconds total clip
         event_end = end_time if end_time > 0 else (event_start + duration_s)
-        clip_end_ts = int(max(event_end, event_start + 10.0) + 5.0)
+        clip_end_ts = int(max(event_end + 7.0, clip_start_ts + 25.0))
         
-        target_duration = max(int(clip_end_ts - clip_start_ts), 15)
-        logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 5s pré + 5s pós) para Telegram (Câmera: {camera}, Evento: {event_id})...")
+        target_duration = int(clip_end_ts - clip_start_ts)
+        logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 7s pré + 7s pós, mínimo 25s) para Telegram (Câmera: {camera}, Evento: {event_id})...")
+
+        # 3. Intelligent synchronization: wait until clip_end_ts timestamp has passed + 2s for Frigate to flush disk segments
+        wait_seconds = max(0.0, (clip_end_ts - datetime.datetime.now(datetime.timezone.utc).timestamp()) + 2.0)
+        if wait_seconds > 0:
+            logger.info(f"⏳ Aguardando gravação completa do clipe estendido ({wait_seconds:.1f}s)...")
+            await asyncio.sleep(min(wait_seconds, 30.0))
 
         # Strategy 1: Poll Frigate range clip and transcode to 30 FPS H.264
-        delays = [3.0, 4.0, 6.0, 8.0, 10.0]
+        delays = [2.0, 4.0, 6.0, 8.0, 10.0]
         for attempt, delay in enumerate(delays, start=1):
             await asyncio.sleep(delay)
             try:
@@ -357,7 +363,7 @@ class MQTTService:
                         clip_resp = await client.get(event_url)
 
                     if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
-                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Transcodificando a 30 FPS fixos H.264...")
+                        logger.info(f"✅ Clipe MP4 estendido ({target_duration}s) obtido do Frigate ({len(clip_resp.content)} bytes). Transcodificando a 30 FPS fixos H.264...")
                         smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=30)
                         sent_ok = await telegram_vault_service.send_alert_video(
                             video_bytes=smooth_video,
