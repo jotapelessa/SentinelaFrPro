@@ -1,3 +1,4 @@
+import json
 import httpx
 import logging
 import datetime
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 def _cast_sync(ip: str, media_url: str, content_type: str = "image/jpeg") -> bool:
     try:
-        import pychromecast
+        import pychromecast  # type: ignore[import-untyped,import-not-found]
         import warnings
         with warnings.catch_warnings():
             warnings.simplefilter("ignore")
