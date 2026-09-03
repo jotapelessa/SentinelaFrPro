@@ -106,6 +106,7 @@ class OverlayService : Service() {
                         return@collect // Directed specifically to another device
                     }
 
+                    val testId = if (event.has("test_id")) event.optString("test_id") else null
                     val camera = event.optString("camera", "camera_principal")
                     val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
                     val isTestAlert = evType == "pip_alert" || label.contains("TEST", ignoreCase = true) || label.contains("ALERTA", ignoreCase = true)
@@ -115,11 +116,25 @@ class OverlayService : Service() {
                             val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
                             val eventAllowed = isTestAlert || policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
                             if (camAllowed && eventAllowed) {
-                                showPiP(camera, label, policy)
+                                showPiP(camera, label, policy, testId)
+                            } else if (testId != null) {
+                                serviceScope.launch {
+                                    SentinelaRepository.sendPipAck(
+                                        prefs.deviceIdentifier, testId, success = false,
+                                        message = "Alerta bloqueado por política de eventos/câmeras"
+                                    )
+                                }
+                            }
+                        } else if (testId != null) {
+                            serviceScope.launch {
+                                SentinelaRepository.sendPipAck(
+                                    prefs.deviceIdentifier, testId, success = false,
+                                    message = "Alertas PiP desativados nas permissões da TV"
+                                )
                             }
                         }
                     }.getOrElse {
-                        showPiP(camera, label)
+                        showPiP(camera, label, null, testId)
                     }
                 }
             }
@@ -131,18 +146,20 @@ class OverlayService : Service() {
         if (action == "ACTION_SHOW_PIP") {
             val cam = intent.getStringExtra("camera") ?: "camera_principal"
             val label = intent.getStringExtra("label") ?: "TESTE PIP"
-            showPiP(cam, label)
+            val testId = intent.getStringExtra("test_id")
+            showPiP(cam, label, null, testId)
         }
         return START_STICKY
     }
 
     companion object {
-        fun triggerPiP(context: Context, camera: String = "camera_principal", label: String = "TESTE PIP") {
+        fun triggerPiP(context: Context, camera: String = "camera_principal", label: String = "TESTE PIP", testId: String? = null) {
             try {
                 val intent = Intent(context, OverlayService::class.java).apply {
                     action = "ACTION_SHOW_PIP"
                     putExtra("camera", camera)
                     putExtra("label", label)
+                    if (testId != null) putExtra("test_id", testId)
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     context.startForegroundService(intent)
@@ -156,17 +173,28 @@ class OverlayService : Service() {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun showPiP(camera: String, label: String, policy: DevicePolicy? = null) {
+    private fun showPiP(camera: String, label: String, policy: DevicePolicy? = null, testId: String? = null) {
         pipJob?.cancel()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
             android.util.Log.w("OverlayService", "Cannot display PiP overlay: Permission SYSTEM_ALERT_WINDOW not granted")
+            if (testId != null) {
+                val prefs = SentinelaPreferences(this)
+                serviceScope.launch {
+                    SentinelaRepository.sendPipAck(prefs.deviceIdentifier, testId, success = false, message = "Permissão SYSTEM_ALERT_WINDOW não concedida")
+                }
+            }
             return
         }
 
         val prefs = SentinelaPreferences(this)
         if (!prefs.allowPipAlerts || (policy != null && !policy.allowPipAlerts)) {
             android.util.Log.i("OverlayService", "PiP alerts disabled by policy, skipping.")
+            if (testId != null) {
+                serviceScope.launch {
+                    SentinelaRepository.sendPipAck(prefs.deviceIdentifier, testId, success = false, message = "Alertas PiP desativados por política")
+                }
+            }
             return
         }
 
@@ -345,8 +373,32 @@ class OverlayService : Service() {
                 }
                 pipWebView?.loadUrl(streamUrl)
             }
+
+            // Confirmação de execução física comprovada na tela
+            if (testId != null) {
+                serviceScope.launch {
+                    SentinelaRepository.sendPipAck(
+                        prefs.deviceIdentifier,
+                        testId,
+                        success = true,
+                        message = "PiP renderizado com sucesso na tela (${pipSize.width}x${pipSize.height}, ${durationSeconds}s)",
+                        dimensions = "${pipSize.width}x${pipSize.height}",
+                        durationSeconds = durationSeconds
+                    )
+                }
+            }
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Failed to render PiP Window: ${e.message}")
+            if (testId != null) {
+                serviceScope.launch {
+                    SentinelaRepository.sendPipAck(
+                        prefs.deviceIdentifier,
+                        testId,
+                        success = false,
+                        message = "Falha ao renderizar janela: ${e.message}"
+                    )
+                }
+            }
             return
         }
 

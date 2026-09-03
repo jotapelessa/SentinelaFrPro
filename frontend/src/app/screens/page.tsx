@@ -236,7 +236,9 @@ export default function ScreensPage() {
         body: JSON.stringify({ camera_name: selectedCam })
       });
       const data = await res.json();
-      if (data.status === "success") {
+      if (data.confirmed) {
+        setTestResult(`${data.message}`);
+      } else if (data.status === "success") {
         setTestResult(`🎉 ${data.message}`);
       } else {
         setTestResult(`⚠️ ${data.message}`);

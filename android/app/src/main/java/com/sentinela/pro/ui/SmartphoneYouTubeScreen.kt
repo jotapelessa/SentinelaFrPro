@@ -176,7 +176,7 @@ fun PhoneTopBar(
                         )
                     }
                     Text(
-                        text = "v001.000.000.047 • NVR MOBILE",
+                        text = "v001.000.000.048 • NVR MOBILE",
                         style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.TextMuted)
                     )
                 }
@@ -252,7 +252,7 @@ fun PhoneBottomNavigationBar(
         color = SentinelaColors.BottomBarBackground,
         modifier = Modifier
             .fillMaxWidth()
-            .height(66.dp),
+            .height(68.dp),
         border = BorderStroke(1.dp, SentinelaColors.BorderStandard)
     ) {
         Row(
@@ -288,14 +288,14 @@ fun PhoneBottomNavigationBar(
                         .weight(1f)
                         .fillMaxHeight()
                         .clickable { onSelectTab(index) }
-                        .padding(horizontal = 1.dp, vertical = 2.dp),
+                        .padding(horizontal = 0.5.dp, vertical = 2.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Box(
                         modifier = Modifier
-                            .height(26.dp)
-                            .clip(RoundedCornerShape(12.dp))
+                            .height(28.dp)
+                            .clip(RoundedCornerShape(14.dp))
                             .background(
                                 if (isSelected) {
                                     if (isTabMaster) Color(0xFF451A03) else SentinelaColors.CardBackgroundElevated
@@ -303,27 +303,28 @@ fun PhoneBottomNavigationBar(
                                     Color.Transparent
                                 }
                             )
-                            .padding(horizontal = 6.dp, vertical = 2.dp),
+                            .padding(horizontal = 8.dp, vertical = 3.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = icon,
                             contentDescription = title,
                             tint = if (isSelected) activeColor else inactiveColor,
-                            modifier = Modifier.size(19.dp)
+                            modifier = Modifier.size(20.dp)
                         )
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = title,
-                        fontSize = 8.5.sp,
-                        letterSpacing = (-0.4).sp,
+                        fontSize = if (title.length > 9) 9.5.sp else 10.5.sp,
+                        letterSpacing = if (title.length > 9) (-0.4).sp else (-0.1).sp,
                         maxLines = 1,
                         softWrap = false,
                         overflow = TextOverflow.Clip,
                         color = if (isSelected) activeColor else inactiveColor,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
@@ -888,6 +889,11 @@ fun PhoneMasterCentralTab() {
                     val evType = event.optString("type")
                     if (evType == "DEVICE_CONFIG_UPDATED" || evType == "DEVICE_MASTER_CHANGED" || evType == "DEVICE_PAIRED") {
                         refreshDevices()
+                    } else if (evType == "PIP_EXECUTION_CONFIRMED") {
+                        val msg = event.optString("message", "Exibição de PiP confirmada na tela!")
+                        val success = event.optBoolean("success", true)
+                        val icon = if (success) "✅" else "⚠️"
+                        Toast.makeText(context, "$icon $msg", Toast.LENGTH_LONG).show()
                     }
                 }
             }
@@ -1087,19 +1093,30 @@ fun PhoneMasterCentralTab() {
                             Icon(Icons.Default.Settings, contentDescription = "Configurar", tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(18.dp))
                         }
 
-                        // Botão Testar PiP
+                        // Botão Testar PiP com verificação física de tela
+                        var isTestingThisTv by remember { mutableStateOf(false) }
                         Button(
                             onClick = {
+                                isTestingThisTv = true
                                 coroutineScope.launch {
-                                    val (ok, msg) = SentinelaRepository.testSingleTv(tv.id, "camera_principal")
-                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                    val (confirmed, msg) = SentinelaRepository.testSingleTv(tv.id, "camera_principal")
+                                    isTestingThisTv = false
+                                    Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                                 }
                             },
-                            colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = if (isTestingThisTv) SentinelaColors.MasterGold else SentinelaColors.PrimaryCyan
+                            ),
                             shape = SentinelaShapes.SmallButton,
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp),
+                            enabled = !isTestingThisTv
                         ) {
-                            Text("Testar", color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            Text(
+                                if (isTestingThisTv) "Verificando..." else "Testar",
+                                color = Color.Black,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold
+                            )
                         }
                     }
                 }
@@ -1700,7 +1717,7 @@ fun PhoneSettingsTab() {
                     Text("IDENTIFICAÇÃO DO SMARTPHONE EM /SCREENS", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
                     Text("ID: ${prefs.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
                     Text("Nome: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
-                    Text("Versão: v001.000.000.047 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
+                    Text("Versão: v001.000.000.048 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
                 }
             }
         }

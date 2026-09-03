@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "SentinelaFrigate PRO"
     APP_TITLE: str = "Sentinela NVR"
-    VERSION: str = "SentinelaPro.001.000.000.047"
+    VERSION: str = "SentinelaPro.001.000.000.048"
     API_V1_STR: str = "/api"
     ENVIRONMENT: str = "production"
     DEBUG: bool = False

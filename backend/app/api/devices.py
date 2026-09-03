@@ -602,6 +602,36 @@ async def cleanup_all_devices(request: Request, db: AsyncSession = Depends(get_d
     )
     return {"status": "cleaned", "count": count}
 
+class PipAckRequest(BaseModel):
+    test_id: Optional[str] = None
+    success: bool = True
+    message: str = "PiP renderizado na tela com sucesso"
+    dimensions: Optional[str] = None
+    duration_seconds: Optional[int] = 10
+
+@router.post("/{device_identifier}/pip-ack")
+async def receive_pip_ack(device_identifier: str, req: PipAckRequest):
+    """Receives physical execution confirmation from the Android TV overlay service."""
+    from app.services.pip_gateway import pip_gateway_service
+    from app.api.ws import ws_manager
+
+    pip_gateway_service.record_ack(
+        device_identifier=device_identifier,
+        test_id=req.test_id,
+        success=req.success,
+        message=req.message
+    )
+
+    await ws_manager.broadcast_json({
+        "type": "PIP_EXECUTION_CONFIRMED",
+        "device_identifier": device_identifier,
+        "test_id": req.test_id,
+        "success": req.success,
+        "message": req.message
+    })
+
+    return {"status": "received", "test_id": req.test_id, "confirmed": req.success}
+
 @router.post("/{device_id}/test")
 async def test_single_device(device_id: int, req: Optional[TestSingleDeviceRequest] = None):
     """Triggers an interactive PiP test to this single TV with the selected camera."""
@@ -756,8 +786,11 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
     results = []
     # 1. Global WebSocket broadcast for connected Android TV overlays and Smartphones
     if req.test_type in ("pip", "pip_alert"):
+        import uuid
+        batch_test_id = f"batch_{uuid.uuid4().hex[:8]}"
         await ws_manager.broadcast_json({
             "type": "pip_alert",
+            "test_id": batch_test_id,
             "camera": req.camera_name,
             "label": req.label,
             "duration": req.duration_seconds,

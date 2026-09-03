@@ -39,10 +39,8 @@ fun MseCameraView(
     contentDescription: String? = null,
     isStreaming: Boolean = true
 ) {
-    if (!isStreaming) {
-        Box(modifier = modifier.background(Color.Black))
-        return
-    }
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    var isAppInForeground by remember { mutableStateOf(true) }
 
     val streamUrl = remember(cameraName) {
         "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&mode=mse&width=100%"
@@ -56,8 +54,40 @@ fun MseCameraView(
 
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
 
-    DisposableEffect(cameraName) {
+    DisposableEffect(lifecycleOwner, cameraName) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_PAUSE,
+                androidx.lifecycle.Lifecycle.Event.ON_STOP -> {
+                    isAppInForeground = false
+                    webViewRef?.let { wv ->
+                        wv.onPause()
+                        wv.pauseTimers()
+                        wv.loadUrl("about:blank")
+                    }
+                }
+                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> {
+                    isAppInForeground = true
+                    webViewRef?.let { wv ->
+                        wv.onResume()
+                        wv.resumeTimers()
+                        wv.loadUrl(streamUrl)
+                    }
+                }
+                androidx.lifecycle.Lifecycle.Event.ON_DESTROY -> {
+                    webViewRef?.let { wv ->
+                        wv.stopLoading()
+                        wv.loadUrl("about:blank")
+                        wv.destroy()
+                    }
+                    webViewRef = null
+                }
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
         onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
             webViewRef?.let { wv ->
                 wv.stopLoading()
                 wv.loadUrl("about:blank")
@@ -65,6 +95,11 @@ fun MseCameraView(
             }
             webViewRef = null
         }
+    }
+
+    if (!isStreaming || !isAppInForeground) {
+        Box(modifier = modifier.background(Color.Black))
+        return
     }
 
     Box(

@@ -691,7 +691,7 @@ object SentinelaRepository {
             else -> "lan"
         }
         val speed = caps?.linkDownstreamBandwidthKbps?.let { it / 1000.0 } ?: 100.0
-        val appVer = "v001.000.000.047"
+        val appVer = "v001.000.000.048"
         val devModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
 
         val ok = registerOrHeartbeat(
@@ -775,8 +775,8 @@ object SentinelaRepository {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/$deviceId/test")
             val conn = openConnection(url).apply {
-                connectTimeout = 5000
-                readTimeout = 5000
+                connectTimeout = 6000
+                readTimeout = 6000
                 requestMethod = "POST"
                 setRequestProperty("Content-Type", "application/json")
                 setRequestProperty("Accept", "application/json")
@@ -794,13 +794,50 @@ object SentinelaRepository {
             }
             conn.disconnect()
             if (code in 200..299) {
-                val msg = try { JSONObject(text).optString("message", "Comando enviado!") } catch(e: Exception) { "Comando enviado!" }
-                return@withContext Pair(true, msg)
+                val json = try { JSONObject(text) } catch(e: Exception) { null }
+                val msg = json?.optString("message", "Comando enviado!") ?: "Comando enviado!"
+                val isConfirmed = json?.optBoolean("confirmed", false) ?: false
+                return@withContext Pair(isConfirmed, msg)
             } else {
                 return@withContext Pair(false, "Erro ao testar TV ($code)")
             }
         } catch (e: Exception) {
             return@withContext Pair(false, "Erro: ${e.message}")
+        }
+    }
+
+    suspend fun sendPipAck(
+        deviceIdentifier: String,
+        testId: String?,
+        success: Boolean,
+        message: String,
+        dimensions: String = "",
+        durationSeconds: Int = 10
+    ): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/$deviceIdentifier/pip-ack")
+            val conn = openConnection(url).apply {
+                connectTimeout = 3000
+                readTimeout = 3000
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val payload = JSONObject().apply {
+                if (!testId.isNullOrBlank()) put("test_id", testId)
+                put("success", success)
+                put("message", message)
+                put("dimensions", dimensions)
+                put("duration_seconds", durationSeconds)
+            }
+            conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            val code = conn.responseCode
+            conn.disconnect()
+            return@withContext (code in 200..299)
+        } catch (e: Exception) {
+            Log.w(TAG, "sendPipAck error: ${e.message}")
+            return@withContext false
         }
     }
 }

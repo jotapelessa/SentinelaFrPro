@@ -40,6 +40,18 @@ class PiPGatewayService:
         self._dnd_enabled = False
         self._dnd_start_hour = 23 # 23:00
         self._dnd_end_hour = 6    # 06:00
+        self._ack_events: Dict[str, asyncio.Event] = {}
+        self._ack_results: Dict[str, dict] = {}
+
+    def record_ack(self, device_identifier: str, test_id: Optional[str], success: bool, message: str):
+        """Records an execution acknowledgement from a remote device overlay."""
+        if test_id and test_id in self._ack_events:
+            self._ack_results[test_id] = {
+                "device_identifier": device_identifier,
+                "success": success,
+                "message": message
+            }
+            self._ack_events[test_id].set()
 
     def is_in_dnd(self) -> bool:
         """Checks if current time falls in Do Not Disturb period."""
@@ -241,6 +253,11 @@ class PiPGatewayService:
         except Exception:
             pass
 
+        import uuid
+        test_id = f"pip_{uuid.uuid4().hex[:8]}"
+        ack_event = asyncio.Event()
+        self._ack_events[test_id] = ack_event
+
         snapshot_url = f"http://{server_ip}:5000/api/{camera_name}/latest.jpg" if active_cams else f"http://{server_ip}:8088/icon-192.png"
         stream_url = f"rtsp://{server_ip}:8554/{camera_name}" if active_cams else ""
 
@@ -253,6 +270,7 @@ class PiPGatewayService:
             if ws_manager.active_connections:
                 await ws_manager.broadcast_json({
                     "type": "pip_alert",
+                    "test_id": test_id,
                     "camera": camera_name,
                     "label": "TESTE DE PiP",
                     "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
@@ -301,17 +319,46 @@ class PiPGatewayService:
                     except Exception:
                         pass
 
-        if dispatched:
+        confirmed = False
+        ack_message = ""
+        if dispatched and protocol_used == "sentinela_app_ws":
+            try:
+                await asyncio.wait_for(ack_event.wait(), timeout=2.5)
+                ack_res = self._ack_results.get(test_id, {})
+                confirmed = ack_res.get("success", False)
+                ack_message = ack_res.get("message", "Renderização confirmada no display da TV")
+            except asyncio.TimeoutError:
+                confirmed = False
+                ack_message = "TV não confirmou a exibição do PiP (tempo limite esgotado)"
+            finally:
+                self._ack_events.pop(test_id, None)
+                self._ack_results.pop(test_id, None)
+        else:
+            self._ack_events.pop(test_id, None)
+            self._ack_results.pop(test_id, None)
+
+        if confirmed:
             await audit_service.log(
-                action="PIP_TEST_SUCCESS",
+                action="PIP_TEST_CONFIRMED",
                 module="PIP",
                 severity="SUCCESS",
-                details=f"Alerta PiP de teste entregue para {dev_name} ({target_ip}) via {protocol_used} usando {camera_name}."
+                details=f"Alerta PiP confirmado e renderizado na tela de {dev_name} ({target_ip}): {ack_message}"
             )
             return {
                 "status": "success",
-                "message": f"Alerta PiP enviado com sucesso para {dev_name}!",
+                "confirmed": True,
+                "message": f"✅ {dev_name}: {ack_message}",
                 "protocol": protocol_used,
+                "test_id": test_id,
+                "target_ip": target_ip
+            }
+        elif dispatched:
+            return {
+                "status": "warning",
+                "confirmed": False,
+                "message": f"⚠️ {dev_name}: {ack_message if ack_message else 'Alerta transmitido, mas sem confirmação física da tela'}",
+                "protocol": protocol_used,
+                "test_id": test_id,
                 "target_ip": target_ip
             }
         else:
@@ -319,11 +366,14 @@ class PiPGatewayService:
                 action="PIP_TEST_FAILED",
                 module="PIP",
                 severity="WARNING",
-                details=f"Tentativa de teste PiP falhou para {dev_name} ({target_ip}). Verifique se a TV está ligada e com o app PiP-Up/Notifications ativo ou Google Cast liberado."
+                details=f"Tentativa de teste PiP falhou para {dev_name} ({target_ip})."
             )
             return {
-                "status": "warning",
-                "message": f"Comando enviado para {dev_name} ({target_ip}), mas o dispositivo não confirmou recebimento. Dica: Na TV TCL/Android TV, instale o app 'PiP-Up' ou 'Notifications for Android TV' da Play Store para notificações flutuantes durante o uso de outros apps.",
+                "status": "error",
+                "confirmed": False,
+                "message": f"❌ Falha ao despachar alerta para {dev_name}.",
+                "protocol": "none",
+                "test_id": test_id,
                 "target_ip": target_ip
             }
 

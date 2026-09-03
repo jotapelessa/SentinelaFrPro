@@ -46,7 +46,25 @@ fun SeamlessCameraImage(
     isStreaming: Boolean = true,
     forceSnapshotMode: Boolean = false
 ) {
-    if (!forceSnapshotMode && !isStreaming) {
+    val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
+    var isAppInForeground by remember { mutableStateOf(true) }
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
+            when (event) {
+                androidx.lifecycle.Lifecycle.Event.ON_PAUSE,
+                androidx.lifecycle.Lifecycle.Event.ON_STOP -> isAppInForeground = false
+                androidx.lifecycle.Lifecycle.Event.ON_RESUME -> isAppInForeground = true
+                else -> {}
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    if (!forceSnapshotMode && (!isStreaming || !isAppInForeground)) {
         Box(modifier = modifier.background(Color.Black))
         return
     }
@@ -56,7 +74,7 @@ fun SeamlessCameraImage(
             cameraName = cameraName,
             modifier = modifier,
             contentDescription = contentDescription,
-            isStreaming = isStreaming
+            isStreaming = isStreaming && isAppInForeground
         )
         return
     }
@@ -68,8 +86,8 @@ fun SeamlessCameraImage(
     var isInitialLoading by remember(cameraName) { mutableStateOf(true) }
     var hasError by remember(cameraName) { mutableStateOf(false) }
 
-    LaunchedEffect(cameraName) {
-        if (!isStreaming) return@LaunchedEffect
+    LaunchedEffect(cameraName, isAppInForeground) {
+        if (!isStreaming || !isAppInForeground) return@LaunchedEffect
         
         while (isActive) {
             val loopStart = System.currentTimeMillis()
