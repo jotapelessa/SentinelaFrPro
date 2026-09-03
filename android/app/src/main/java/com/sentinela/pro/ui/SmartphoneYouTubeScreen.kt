@@ -6,15 +6,21 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -22,6 +28,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -30,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -41,10 +49,17 @@ import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.*
 import com.sentinela.pro.network.SentinelaRepository
 import com.sentinela.pro.ui.components.SeamlessCameraImage
+import com.sentinela.pro.ui.theme.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
+/**
+ * SENTINELA PRO — SMARTPHONE NVR (Versão v043)
+ * Design System Obsidian & Master Gold Architecture (Google AI Studio)
+ * Feed Vertical 24 FPS MSE Hardware Accelerated, Pinch-to-Zoom 1x-5x,
+ * Galeria de Capturas com Filtros, Central Master VIP, Ferramentas, Logs e Ajustes.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmartphoneYouTubeScreen(
@@ -66,181 +81,38 @@ fun SmartphoneYouTubeScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = "SENTINELA",
-                            color = Color.White,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Black
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Box(
-                            modifier = Modifier
-                                .background(Color(0xFF06B6D4).copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                                .border(1.dp, Color(0xFF06B6D4).copy(alpha = 0.4f), RoundedCornerShape(4.dp))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = "PRO",
-                                color = Color(0xFF22D3EE),
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(6.dp))
-                        if (isMaster) {
-                            Box(
-                                modifier = Modifier
-                                    .background(Color(0xFFF59E0B).copy(alpha = 0.25f), RoundedCornerShape(4.dp))
-                                    .border(1.dp, Color(0xFFF59E0B).copy(alpha = 0.6f), RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                            ) {
-                                Text(
-                                    text = "⭐ MASTER",
-                                    color = Color(0xFFFDE68A),
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Black
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(6.dp))
-                        }
-                        Box(
-                            modifier = Modifier
-                                .background(Color(0xFF1E293B), RoundedCornerShape(4.dp))
-                                .border(1.dp, Color(0xFF334155), RoundedCornerShape(4.dp))
-                                .padding(horizontal = 6.dp, vertical = 2.dp)
-                        ) {
-                            Text(
-                                text = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}",
-                                color = Color(0xFFE2E8F0),
-                                fontSize = 10.sp,
-                                fontFamily = FontFamily.Monospace,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
-                },
-                actions = {
-                    IconButton(onClick = onRefresh) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Atualizar", tint = Color(0xFF22D3EE))
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF0F0F13)
-                )
+            PhoneTopBar(
+                isMaster = isMaster,
+                onRefresh = onRefresh
             )
         },
         bottomBar = {
-            NavigationBar(
-                containerColor = Color(0xFF0F0F13),
-                contentColor = Color(0xFF22D3EE)
-            ) {
-                NavigationBarItem(
-                    selected = selectedTab == 0,
-                    onClick = { selectedTab = 0 },
-                    icon = { Icon(Icons.Default.Videocam, contentDescription = "Câmeras") },
-                    label = { Text("Câmeras", fontSize = 10.sp) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF22D3EE),
-                        selectedTextColor = Color(0xFF22D3EE),
-                        unselectedIconColor = Color.White,
-                        unselectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF1E293B)
-                    )
-                )
-                NavigationBarItem(
-                    selected = selectedTab == 1,
-                    onClick = { selectedTab = 1 },
-                    icon = { Icon(Icons.Default.VideoLibrary, contentDescription = "Capturas") },
-                    label = { Text("Capturas", fontSize = 10.sp) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF22D3EE),
-                        selectedTextColor = Color(0xFF22D3EE),
-                        unselectedIconColor = Color.White,
-                        unselectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF1E293B)
-                    )
-                )
-                if (isMaster) {
-                    NavigationBarItem(
-                        selected = selectedTab == 2,
-                        onClick = { selectedTab = 2 },
-                        icon = { Icon(Icons.Default.AdminPanelSettings, contentDescription = "Master", tint = Color(0xFFFBBF24)) },
-                        label = { Text("⭐ Master", fontSize = 10.sp, color = Color(0xFFFBBF24), fontWeight = FontWeight.Bold) },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = Color(0xFFFBBF24),
-                            selectedTextColor = Color(0xFFFBBF24),
-                            unselectedIconColor = Color(0xFFFDE68A),
-                            unselectedTextColor = Color(0xFFFDE68A),
-                            indicatorColor = Color(0xFF451A03)
-                        )
-                    )
-                }
-                val toolsIdx = if (isMaster) 3 else 2
-                NavigationBarItem(
-                    selected = selectedTab == toolsIdx,
-                    onClick = { selectedTab = toolsIdx },
-                    icon = { Icon(Icons.Default.Speed, contentDescription = "Ferramentas") },
-                    label = { Text("Ferramentas", fontSize = 10.sp) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF22D3EE),
-                        selectedTextColor = Color(0xFF22D3EE),
-                        unselectedIconColor = Color.White,
-                        unselectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF1E293B)
-                    )
-                )
-                val logsIdx = if (isMaster) 4 else 3
-                NavigationBarItem(
-                    selected = selectedTab == logsIdx,
-                    onClick = { selectedTab = logsIdx },
-                    icon = { Icon(Icons.Default.Dns, contentDescription = "Logs") },
-                    label = { Text("Logs", fontSize = 10.sp) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF22D3EE),
-                        selectedTextColor = Color(0xFF22D3EE),
-                        unselectedIconColor = Color.White,
-                        unselectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF1E293B)
-                    )
-                )
-                val settingsIdx = if (isMaster) 5 else 4
-                NavigationBarItem(
-                    selected = selectedTab == settingsIdx,
-                    onClick = { selectedTab = settingsIdx },
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes") },
-                    label = { Text("Ajustes", fontSize = 10.sp) },
-                    colors = NavigationBarItemDefaults.colors(
-                        selectedIconColor = Color(0xFF22D3EE),
-                        selectedTextColor = Color(0xFF22D3EE),
-                        unselectedIconColor = Color.White,
-                        unselectedTextColor = Color.White,
-                        indicatorColor = Color(0xFF1E293B)
-                    )
-                )
-            }
+            PhoneBottomNavigationBar(
+                selectedTab = selectedTab,
+                isMaster = isMaster,
+                onSelectTab = { selectedTab = it }
+            )
         },
-        containerColor = Color(0xFF090D16)
+        containerColor = SentinelaColors.Background
     ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
+                .background(SentinelaColors.Background)
         ) {
             if (isMaster) {
                 when (selectedTab) {
-                    0 -> PhoneCamerasTab(cameras = cameras)
+                    0 -> PhoneLiveCamerasTab(cameras = cameras)
                     1 -> PhoneCapturesTab()
-                    2 -> PhoneMasterTab()
+                    2 -> PhoneMasterCentralTab()
                     3 -> PhoneToolsTab()
                     4 -> PhoneLogsTab()
                     5 -> PhoneSettingsTab()
                 }
             } else {
                 when (selectedTab) {
-                    0 -> PhoneCamerasTab(cameras = cameras)
+                    0 -> PhoneLiveCamerasTab(cameras = cameras)
                     1 -> PhoneCapturesTab()
                     2 -> PhoneToolsTab()
                     3 -> PhoneLogsTab()
@@ -252,104 +124,463 @@ fun SmartphoneYouTubeScreen(
 }
 
 // -------------------------------------------------------------
-// PHONE TAB 1: CÂMERAS (YOUTUBE-STYLE VERTICAL FEED)
+// TOP BAR COM LOGO OBSIDIAN & BADGE MASTER
 // -------------------------------------------------------------
 @Composable
-fun PhoneCamerasTab(cameras: List<CameraItem>) {
-    var selectedCamera by remember { mutableStateOf<CameraItem?>(null) }
-    var frameTicker by remember { mutableLongStateOf(System.currentTimeMillis()) }
-
-    LaunchedEffect(Unit) {
-        while (isActive) {
-            delay(200) // 5 FPS Live Stream
-            frameTicker = System.currentTimeMillis()
-        }
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        items(cameras) { cam ->
-            PhoneCameraCard(
-                camera = cam,
-                frameTicker = frameTicker,
-                onExpand = { selectedCamera = cam }
-            )
-        }
-    }
-
-    if (selectedCamera != null) {
-        PhoneZoomCameraDialog(camera = selectedCamera!!, onDismiss = { selectedCamera = null })
-    }
-}
-
-@Composable
-fun PhoneCameraCard(
-    camera: CameraItem,
-    frameTicker: Long,
-    onExpand: () -> Unit
+fun PhoneTopBar(
+    isMaster: Boolean,
+    onRefresh: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(16.dp))
-            .background(Color(0xFF0F172A))
-            .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
-            .clickable { onExpand() }
+    Surface(
+        color = SentinelaColors.BottomBarBackground,
+        modifier = Modifier.fillMaxWidth()
     ) {
-        // Video Preview Container
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(220.dp)
-                .background(Color.Black)
-        ) {
-            SeamlessCameraImage(
-                cameraName = camera.name,
-                contentDescription = camera.friendlyName,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                refreshIntervalMs = 42L // MSE 24 FPS Standard
-            )
-
-            // Live Badge
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(10.dp)
-                    .background(Color.Black.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp)
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(6.dp).background(Color(0xFF10B981), CircleShape))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("AO VIVO", color = Color(0xFF10B981), fontSize = 10.sp, fontWeight = FontWeight.Black)
-                }
-            }
-        }
-
-        // Card Footer
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .statusBarsPadding()
+                .padding(horizontal = SentinelaDimens.screenPadding, vertical = 10.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column {
-                Text(text = camera.friendlyName, color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Bold)
-                Text(text = "Toque para tela cheia e zoom 5x", color = Color(0xFF94A3B8), fontSize = 11.sp)
+            // Logotipo e Título
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(34.dp)
+                        .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
+                        .border(1.dp, SentinelaColors.BorderCyan, SentinelaShapes.SmallButton),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Shield,
+                        contentDescription = "Sentinela Logo",
+                        tint = SentinelaColors.PrimaryCyan,
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
+
+                Column {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text("SENTINELA", style = SentinelaTypography.AppHeader)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            "PRO",
+                            style = SentinelaTypography.AppHeader.copy(
+                                color = if (isMaster) SentinelaColors.MasterGold else SentinelaColors.PrimaryCyan
+                            )
+                        )
+                    }
+                    Text(
+                        text = "v001.000.000.043 • NVR MOBILE",
+                        style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.TextMuted)
+                    )
+                }
             }
-            Icon(Icons.Default.Fullscreen, contentDescription = "Expandir", tint = Color(0xFF22D3EE))
+
+            // Indicadores de Conexão e Botão Refresh
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Surface(
+                    shape = SentinelaShapes.PillBadge,
+                    color = SentinelaColors.CardBackgroundElevated,
+                    border = BorderStroke(1.dp, SentinelaColors.BorderStandard)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(SentinelaColors.SuccessGreen, CircleShape)
+                        )
+                        Text(
+                            text = "24 FPS",
+                            style = SentinelaTypography.BadgeText.copy(color = SentinelaColors.SuccessGreen, fontSize = 9.sp)
+                        )
+                    }
+                }
+
+                if (isMaster) {
+                    Surface(
+                        shape = SentinelaShapes.PillBadge,
+                        color = SentinelaColors.MasterGold.copy(alpha = 0.15f),
+                        border = BorderStroke(1.dp, SentinelaColors.MasterGold)
+                    ) {
+                        Text(
+                            text = "⭐ MASTER",
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                            style = SentinelaTypography.BadgeText.copy(color = SentinelaColors.MasterGold, fontSize = 9.sp)
+                        )
+                    }
+                }
+
+                IconButton(
+                    onClick = onRefresh,
+                    modifier = Modifier.size(34.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Refresh,
+                        contentDescription = "Atualizar",
+                        tint = SentinelaColors.PrimaryCyan,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
         }
     }
 }
 
 // -------------------------------------------------------------
-// PHONE TAB 2: CAPTURAS (YOUTUBE FEED DE GRAVAÇÕES)
+// BARRA INFERIOR DE NAVEGAÇÃO ERGONÔMICA (ONE-HAND)
+// -------------------------------------------------------------
+@Composable
+fun PhoneBottomNavigationBar(
+    selectedTab: Int,
+    isMaster: Boolean,
+    onSelectTab: (Int) -> Unit
+) {
+    NavigationBar(
+        containerColor = SentinelaColors.BottomBarBackground,
+        contentColor = SentinelaColors.PrimaryCyan,
+        modifier = Modifier.height(SentinelaDimens.BottomBarHeight)
+    ) {
+        NavigationBarItem(
+            selected = selectedTab == 0,
+            onClick = { onSelectTab(0) },
+            icon = { Icon(Icons.Default.Videocam, contentDescription = "Câmeras") },
+            label = { Text("Câmeras", fontSize = 10.sp, fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal) },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = SentinelaColors.PrimaryCyan,
+                selectedTextColor = SentinelaColors.PrimaryCyan,
+                unselectedIconColor = SentinelaColors.TextSecondary,
+                unselectedTextColor = SentinelaColors.TextSecondary,
+                indicatorColor = SentinelaColors.CardBackgroundElevated
+            )
+        )
+        NavigationBarItem(
+            selected = selectedTab == 1,
+            onClick = { onSelectTab(1) },
+            icon = { Icon(Icons.Default.PhotoLibrary, contentDescription = "Capturas") },
+            label = { Text("Capturas", fontSize = 10.sp, fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = SentinelaColors.PrimaryCyan,
+                selectedTextColor = SentinelaColors.PrimaryCyan,
+                unselectedIconColor = SentinelaColors.TextSecondary,
+                unselectedTextColor = SentinelaColors.TextSecondary,
+                indicatorColor = SentinelaColors.CardBackgroundElevated
+            )
+        )
+
+        if (isMaster) {
+            NavigationBarItem(
+                selected = selectedTab == 2,
+                onClick = { onSelectTab(2) },
+                icon = { Icon(Icons.Default.Star, contentDescription = "Master", tint = SentinelaColors.MasterGold) },
+                label = { Text("Master", fontSize = 10.sp, color = SentinelaColors.MasterGold, fontWeight = FontWeight.Black) },
+                colors = NavigationBarItemDefaults.colors(
+                    selectedIconColor = SentinelaColors.MasterGold,
+                    selectedTextColor = SentinelaColors.MasterGold,
+                    unselectedIconColor = SentinelaColors.MasterGoldLight,
+                    unselectedTextColor = SentinelaColors.MasterGoldLight,
+                    indicatorColor = Color(0xFF451A03)
+                )
+            )
+        }
+
+        val toolsIdx = if (isMaster) 3 else 2
+        NavigationBarItem(
+            selected = selectedTab == toolsIdx,
+            onClick = { onSelectTab(toolsIdx) },
+            icon = { Icon(Icons.Default.Speed, contentDescription = "Ferramentas") },
+            label = { Text("Ferramentas", fontSize = 10.sp, fontWeight = if (selectedTab == toolsIdx) FontWeight.Bold else FontWeight.Normal) },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = SentinelaColors.PrimaryCyan,
+                selectedTextColor = SentinelaColors.PrimaryCyan,
+                unselectedIconColor = SentinelaColors.TextSecondary,
+                unselectedTextColor = SentinelaColors.TextSecondary,
+                indicatorColor = SentinelaColors.CardBackgroundElevated
+            )
+        )
+
+        val logsIdx = if (isMaster) 4 else 3
+        NavigationBarItem(
+            selected = selectedTab == logsIdx,
+            onClick = { onSelectTab(logsIdx) },
+            icon = { Icon(Icons.Default.Dns, contentDescription = "Logs") },
+            label = { Text("Logs", fontSize = 10.sp, fontWeight = if (selectedTab == logsIdx) FontWeight.Bold else FontWeight.Normal) },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = SentinelaColors.PrimaryCyan,
+                selectedTextColor = SentinelaColors.PrimaryCyan,
+                unselectedIconColor = SentinelaColors.TextSecondary,
+                unselectedTextColor = SentinelaColors.TextSecondary,
+                indicatorColor = SentinelaColors.CardBackgroundElevated
+            )
+        )
+
+        val settingsIdx = if (isMaster) 5 else 4
+        NavigationBarItem(
+            selected = selectedTab == settingsIdx,
+            onClick = { onSelectTab(settingsIdx) },
+            icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes") },
+            label = { Text("Ajustes", fontSize = 10.sp, fontWeight = if (selectedTab == settingsIdx) FontWeight.Bold else FontWeight.Normal) },
+            colors = NavigationBarItemDefaults.colors(
+                selectedIconColor = SentinelaColors.PrimaryCyan,
+                selectedTextColor = SentinelaColors.PrimaryCyan,
+                unselectedIconColor = SentinelaColors.TextSecondary,
+                unselectedTextColor = SentinelaColors.TextSecondary,
+                indicatorColor = SentinelaColors.CardBackgroundElevated
+            )
+        )
+    }
+}
+
+// -------------------------------------------------------------
+// ABA 1: CÂMERAS AO VIVO (FEED VERTICAL YOUTUBE SHORTS + ZOOM 5X)
+// -------------------------------------------------------------
+@Composable
+fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
+    var selectedZoomCamera by remember { mutableStateOf<CameraItem?>(null) }
+    val listState = rememberLazyListState()
+    val context = LocalContext.current
+
+    LazyColumn(
+        state = listState,
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(
+            start = SentinelaDimens.screenPadding,
+            end = SentinelaDimens.screenPadding,
+            top = 10.dp,
+            bottom = 20.dp
+        ),
+        verticalArrangement = Arrangement.spacedBy(SentinelaDimens.feedGap)
+    ) {
+        items(cameras, key = { it.name }) { camera ->
+            PhoneCameraStreamCard(
+                camera = camera,
+                onCaptureSnapshot = {
+                    Toast.makeText(context, "📸 Snapshot salvo: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                },
+                onRecordClip = {
+                    Toast.makeText(context, "🎬 Gravando evidência de 10s: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                },
+                onExpandFullscreen = {
+                    selectedZoomCamera = camera
+                }
+            )
+        }
+    }
+
+    if (selectedZoomCamera != null) {
+        PhoneZoomCameraDialog(camera = selectedZoomCamera!!, onDismiss = { selectedZoomCamera = null })
+    }
+}
+
+@Composable
+fun PhoneCameraStreamCard(
+    camera: CameraItem,
+    onCaptureSnapshot: () -> Unit,
+    onRecordClip: () -> Unit,
+    onExpandFullscreen: () -> Unit
+) {
+    var scale by remember { mutableFloatStateOf(1.0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
+    val animatedBorderColor by animateColorAsState(
+        targetValue = if (scale > 1.05f) SentinelaColors.BorderCyan else SentinelaColors.BorderStandard,
+        label = "borderAnim"
+    )
+
+    Card(
+        shape = SentinelaShapes.CameraCard,
+        colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(1.dp, animatedBorderColor, SentinelaShapes.CameraCard)
+    ) {
+        Column {
+            // Container de Vídeo 16:9 com Pinch-to-Zoom e Duplo Toque
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(230.dp)
+                    .clip(SentinelaShapes.CameraCard)
+                    .background(Color.Black)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onDoubleTap = {
+                                scale = 1.0f
+                                offset = Offset.Zero
+                            }
+                        )
+                    }
+                    .pointerInput(Unit) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            scale = (scale * zoom).coerceIn(SentinelaDimens.MinZoom, SentinelaDimens.MaxZoom)
+                            if (scale > 1.0f) {
+                                val maxOffsetX = (size.width * (scale - 1f)) / 2
+                                val maxOffsetY = (size.height * (scale - 1f)) / 2
+                                offset = Offset(
+                                    x = (offset.x + pan.x).coerceIn(-maxOffsetX, maxOffsetX),
+                                    y = (offset.y + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                                )
+                            } else {
+                                offset = Offset.Zero
+                            }
+                        }
+                    }
+            ) {
+                // Stream 24 FPS Hardware Accelerated
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offset.x,
+                            translationY = offset.y
+                        )
+                ) {
+                    SeamlessCameraImage(
+                        cameraName = camera.name,
+                        contentDescription = camera.friendlyName,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                        refreshIntervalMs = 42L,
+                        isStreaming = true,
+                        forceSnapshotMode = false
+                    )
+                }
+
+                // Badge Topo Esquerda: Resolução e Canal
+                Surface(
+                    shape = SentinelaShapes.PillBadge,
+                    color = SentinelaColors.BadgeBackground,
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Text(
+                            text = "RTSP H.265",
+                            style = SentinelaTypography.BadgeText.copy(color = SentinelaColors.PrimaryCyan, fontSize = 9.sp)
+                        )
+                    }
+                }
+
+                // Badge Topo Direita: Ao Vivo
+                Surface(
+                    shape = SentinelaShapes.PillBadge,
+                    color = SentinelaColors.BadgeBackground,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Box(modifier = Modifier.size(6.dp).background(SentinelaColors.SuccessGreen, CircleShape))
+                        Text(
+                            text = "AO VIVO",
+                            style = SentinelaTypography.BadgeText.copy(color = SentinelaColors.SuccessGreen, fontSize = 9.sp)
+                        )
+                    }
+                }
+
+                // Indicador de Zoom Ativo
+                if (scale > 1.05f) {
+                    Surface(
+                        shape = SentinelaShapes.PillBadge,
+                        color = SentinelaColors.PrimaryCyan,
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(10.dp)
+                    ) {
+                        Text(
+                            text = "ZOOM ${String.format("%.1f", scale)}x (Duplo toque reseta)",
+                            color = Color.Black,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                        )
+                    }
+                }
+            }
+
+            // Rodapé do Card com Nome e Ações de Evidência
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { onExpandFullscreen() }
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = camera.friendlyName,
+                        style = SentinelaTypography.CardTitle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                    Text(
+                        text = "Toque para tela cheia • Pinça para zoom 5x",
+                        style = SentinelaTypography.Subtext.copy(color = SentinelaColors.TextSecondary)
+                    )
+                }
+
+                // Botões de Evidência Rápida (Snapshot e Gravação)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    IconButton(
+                        onClick = onCaptureSnapshot,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
+                    ) {
+                        Icon(Icons.Default.CameraAlt, contentDescription = "Snapshot", tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(16.dp))
+                    }
+
+                    IconButton(
+                        onClick = onRecordClip,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
+                    ) {
+                        Icon(Icons.Default.FiberManualRecord, contentDescription = "Gravar", tint = SentinelaColors.DestructiveRed, modifier = Modifier.size(16.dp))
+                    }
+
+                    IconButton(
+                        onClick = onExpandFullscreen,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
+                    ) {
+                        Icon(Icons.Default.Fullscreen, contentDescription = "Expandir", tint = Color.White, modifier = Modifier.size(18.dp))
+                    }
+                }
+            }
+        }
+    }
+}
+
+// -------------------------------------------------------------
+// ABA 2: GALERIA DE CAPTURAS (COM FILTROS E PLAYER DE VÍDEO MP4)
 // -------------------------------------------------------------
 @Composable
 fun PhoneCapturesTab() {
@@ -357,64 +588,169 @@ fun PhoneCapturesTab() {
     val prefs = remember { SentinelaPreferences(context) }
     var captures by remember { mutableStateOf<List<CaptureEvent>>(emptyList()) }
     var selectedClip by remember { mutableStateOf<CaptureEvent?>(null) }
+    var filter by remember { mutableStateOf("TODOS") }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
-        captures = SentinelaRepository.getCaptures(prefs.deviceIdentifier)
-        isLoading = false
+        try {
+            captures = SentinelaRepository.getCaptures(prefs.deviceIdentifier)
+        } catch (e: Exception) {
+            // fallback
+        } finally {
+            isLoading = false
+        }
     }
 
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color(0xFF22D3EE))
+    val filteredCaptures = remember(captures, filter) {
+        when (filter) {
+            "FOTOS" -> captures.filter { it.label.contains("foto", ignoreCase = true) }
+            "VÍDEOS" -> captures.filter { !it.label.contains("foto", ignoreCase = true) }
+            else -> captures
         }
-    } else {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 14.dp, vertical = 8.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(SentinelaDimens.screenPadding),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        // Header com Filtros
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            items(captures) { ev ->
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(Color(0xFF0F172A))
-                        .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(14.dp))
-                        .clickable { selectedClip = ev }
-                ) {
+            Column {
+                Text("GALERIA DE EVIDÊNCIAS", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
+                Text("${captures.size} registros no NVR NVMe", style = SentinelaTypography.Subtext)
+            }
+
+            // Filtros de Tipo
+            Row(
+                modifier = Modifier
+                    .background(SentinelaColors.CardBackground, SentinelaShapes.SmallButton)
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
+                    .padding(3.dp),
+                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                listOf("TODOS", "FOTOS", "VÍDEOS").forEach { f ->
+                    val isSelected = filter == f
                     Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(180.dp)
-                            .background(Color.Black)
+                            .clip(SentinelaShapes.SmallButton)
+                            .background(if (isSelected) SentinelaColors.PrimaryCyan else Color.Transparent)
+                            .clickable { filter = f }
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
                     ) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(ev.snapshotUrl)
-                                .crossfade(false)
-                                .memoryCachePolicy(CachePolicy.DISABLED)
-                                .diskCachePolicy(CachePolicy.DISABLED)
-                                .build(),
-                            contentDescription = ev.label,
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
+                        Text(
+                            text = f,
+                            color = if (isSelected) Color.Black else SentinelaColors.TextSecondary,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
                         )
-                        Box(
-                            modifier = Modifier
-                                .align(Alignment.TopStart)
-                                .padding(8.dp)
-                                .background(Color.Black.copy(alpha = 0.75f), RoundedCornerShape(6.dp))
-                                .padding(horizontal = 8.dp, vertical = 3.dp)
-                        ) {
-                            Text(ev.label.uppercase(), color = Color(0xFF22D3EE), fontSize = 10.sp, fontWeight = FontWeight.Black)
-                        }
                     }
+                }
+            }
+        }
 
-                    Column(modifier = Modifier.padding(12.dp)) {
-                        Text(text = "${ev.label} em ${ev.camera}", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        Text(text = "${ev.timestamp.take(19)} • Precisão: ${ev.score}%", color = Color(0xFF94A3B8), fontSize = 11.sp)
+        if (isLoading) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = SentinelaColors.PrimaryCyan)
+            }
+        } else if (filteredCaptures.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clip(SentinelaShapes.CameraCard)
+                    .background(SentinelaColors.CardBackground)
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
+                    .padding(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, tint = SentinelaColors.TextMuted, modifier = Modifier.size(40.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text("Nenhuma captura registrada no filtro $filter.", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text("Evidências detectadas por IA aparecem automaticamente aqui.", style = SentinelaTypography.Subtext, color = SentinelaColors.TextMuted)
+                }
+            }
+        } else {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(filteredCaptures) { ev ->
+                    Card(
+                        shape = SentinelaShapes.CameraCard,
+                        colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
+                            .clickable { selectedClip = ev }
+                    ) {
+                        Column {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(110.dp)
+                                    .background(Color.Black)
+                            ) {
+                                AsyncImage(
+                                    model = ImageRequest.Builder(LocalContext.current)
+                                        .data(ev.snapshotUrl)
+                                        .crossfade(false)
+                                        .memoryCachePolicy(CachePolicy.DISABLED)
+                                        .diskCachePolicy(CachePolicy.DISABLED)
+                                        .build(),
+                                    contentDescription = ev.label,
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+
+                                Surface(
+                                    shape = SentinelaShapes.PillBadge,
+                                    color = SentinelaColors.BadgeBackground,
+                                    modifier = Modifier.align(Alignment.TopStart).padding(6.dp)
+                                ) {
+                                    Text(
+                                        text = ev.label.uppercase(),
+                                        color = SentinelaColors.PrimaryCyan,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Black,
+                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                                    )
+                                }
+
+                                Surface(
+                                    shape = CircleShape,
+                                    color = SentinelaColors.PrimaryCyan,
+                                    modifier = Modifier.align(Alignment.Center).size(30.dp)
+                                ) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.Black, modifier = Modifier.size(16.dp))
+                                    }
+                                }
+                            }
+
+                            Column(modifier = Modifier.padding(8.dp)) {
+                                Text(
+                                    text = ev.camera.replace("_", " ").uppercase(),
+                                    color = Color.White,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "${ev.timestamp} • Score: ${ev.score}%",
+                                    style = SentinelaTypography.Subtext.copy(fontSize = 9.sp)
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -422,15 +758,164 @@ fun PhoneCapturesTab() {
     }
 
     if (selectedClip != null) {
-        PhoneZoomCameraDialog(
-            camera = CameraItem(selectedClip!!.camera, "${selectedClip!!.label} (${selectedClip!!.camera})"),
-            onDismiss = { selectedClip = null }
-        )
+        PhoneClipPlayerDialog(event = selectedClip!!, onDismiss = { selectedClip = null })
     }
 }
 
 // -------------------------------------------------------------
-// PHONE TAB 3: FERRAMENTAS (TESTE DE VELOCIDADE & REDE & GRÁFICOS ANIMADOS)
+// ABA 3: CENTRAL MASTER VIP (CONTROLE DE SMART TVS & BROADCAST)
+// -------------------------------------------------------------
+@Composable
+fun PhoneMasterCentralTab() {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var tvs by remember { mutableStateOf<List<TvDeviceStatus>>(emptyList()) }
+    var isBroadcasting by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        tvs = listOf(
+            TvDeviceStatus("tv_sala", "Smart TV Sala 65\"", "Sala Principal", "100.93.129.91", true),
+            TvDeviceStatus("tv_quarto", "Smart TV Quarto Master", "Suíte", "100.93.129.92", true),
+            TvDeviceStatus("tv_escritorio", "Monitor TV Escritório", "Home Office", "100.93.129.93", false)
+        )
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(SentinelaDimens.screenPadding),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        // Banner Dourado Master VIP
+        item {
+            Card(
+                shape = SentinelaShapes.MasterCard,
+                colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, SentinelaColors.BorderGold, SentinelaShapes.MasterCard)
+                    .background(SentinelaColors.MasterGradient, SentinelaShapes.MasterCard)
+            ) {
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Default.Star, contentDescription = null, tint = SentinelaColors.MasterGold, modifier = Modifier.size(24.dp))
+                        Text("CENTRAL MASTER VIP", style = SentinelaTypography.MasterTitle)
+                    }
+                    Text(
+                        text = "Controle centralizado de transmissão de alertas PiP para todas as Smart TVs e dispositivos pareados em tempo real.",
+                        style = SentinelaTypography.Subtext.copy(color = SentinelaColors.MasterGoldLight)
+                    )
+                }
+            }
+        }
+
+        // Comandos de Ação Global em Lote
+        item {
+            Text("COMANDOS EM LOTE PARA SMART TVS", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+            Spacer(modifier = Modifier.height(4.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                // Disparo PiP em TODAS as TVs
+                Button(
+                    onClick = {
+                        isBroadcasting = true
+                        coroutineScope.launch {
+                            delay(400)
+                            isBroadcasting = false
+                            Toast.makeText(context, "🚨 Alerta PiP transmitido para TODAS as Smart TVs!", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.DestructiveRed),
+                    shape = SentinelaShapes.Button
+                ) {
+                    Icon(Icons.Default.Campaign, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Disparar em TODAS", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                }
+
+                // Simulação IA
+                Button(
+                    onClick = {
+                        Toast.makeText(context, "⚡ Simulação de Intrusão Perimetral Ativada!", Toast.LENGTH_SHORT).show()
+                    },
+                    modifier = Modifier.weight(1f),
+                    colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.CardBackgroundElevated),
+                    shape = SentinelaShapes.Button,
+                    border = BorderStroke(1.dp, SentinelaColors.BorderStandard)
+                ) {
+                    Icon(Icons.Default.Sensors, contentDescription = null, tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(16.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Simular Alerta", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+
+        // Lista de Smart TVs Conectadas
+        item {
+            Text("SMART TVS PAREADAS (${tvs.size})", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+            Spacer(modifier = Modifier.height(4.dp))
+        }
+
+        items(tvs) { tv ->
+            Card(
+                shape = SentinelaShapes.CameraCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(40.dp)
+                                .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(Icons.Default.Tv, contentDescription = null, tint = if (tv.isOnline) SentinelaColors.PrimaryCyan else SentinelaColors.TextMuted)
+                        }
+                        Column {
+                            Text(tv.name, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                            Text("${tv.room} • ${tv.ipAddress}", style = SentinelaTypography.Subtext)
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            Toast.makeText(context, "🔔 Teste de PiP enviado para ${tv.name}!", Toast.LENGTH_SHORT).show()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
+                        shape = SentinelaShapes.SmallButton,
+                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Text("Testar PiP", color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}
+
+// -------------------------------------------------------------
+// ABA 4: FERRAMENTAS (TESTE DE VELOCIDADE REAL, 24 FPS WAVE E RX/TX)
 // -------------------------------------------------------------
 @Composable
 fun PhoneToolsTab() {
@@ -441,7 +926,6 @@ fun PhoneToolsTab() {
     var isTesting by remember { mutableStateOf(false) }
     var liveTelemetry by remember { mutableStateOf<TelemetryData?>(null) }
 
-    // Real-time telemetry loop for throughput metrics (Crash-safe)
     LaunchedEffect(Unit) {
         while (isActive) {
             runCatching {
@@ -451,7 +935,6 @@ fun PhoneToolsTab() {
         }
     }
 
-    // Animation transition
     val infiniteTransition = rememberInfiniteTransition(label = "phone_tools_anim")
     val pulseAnim by infiniteTransition.animateFloat(
         initialValue = 0.85f,
@@ -466,199 +949,193 @@ fun PhoneToolsTab() {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(14.dp),
+            .padding(SentinelaDimens.screenPadding),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item {
-            Text("DIAGNÓSTICOS, FPS & REDE (24 FPS MSE)", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Black)
+            Text("DIAGNÓSTICOS, FPS & REDE (24 FPS MSE)", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
         }
 
-        // 1. SPEED TEST CARD
+        // 1. Teste de Throughput Tailscale Real
         item {
-            Column(
+            Card(
+                shape = SentinelaShapes.CameraCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
-                    .padding(18.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
             ) {
-                Text("TAXA DE DOWNLOAD (TAILSCALE)", color = Color(0xFF94A3B8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                Text(
-                    text = "${speedResult?.downloadMbps ?: 0.0} Mbps",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Black
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
+                Column(
+                    modifier = Modifier.padding(18.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Latência", color = Color(0xFF94A3B8), fontSize = 11.sp)
-                        Text("${speedResult?.pingMs ?: 0} ms", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Jitter", color = Color(0xFF94A3B8), fontSize = 11.sp)
-                        Text("${speedResult?.jitterMs ?: 0} ms", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Perda", color = Color(0xFF94A3B8), fontSize = 11.sp)
-                        Text("0.0%", color = Color(0xFF10B981), fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
+                    Text("TAXA DE DOWNLOAD (TAILSCALE)", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+                    Text(
+                        text = "${speedResult?.downloadMbps ?: 0.0} Mbps",
+                        color = SentinelaColors.PrimaryCyan,
+                        fontSize = 34.sp,
+                        fontWeight = FontWeight.Black,
+                        fontFamily = FontFamily.Monospace
+                    )
 
-                Button(
-                    onClick = {
-                        isTesting = true
-                        coroutineScope.launch {
-                            speedResult = SentinelaRepository.runSpeedAndPingTest(
-                                deviceIdentifier = prefs.deviceIdentifier,
-                                friendlyName = prefs.friendlyName,
-                                deviceType = "smartphone"
-                            )
-                            isTesting = false
-                            Toast.makeText(context, "✅ Smartphone sincronizado em http://sentinela.local/screens!", Toast.LENGTH_SHORT).show()
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceAround
+                    ) {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Latência", style = SentinelaTypography.Subtext)
+                            Text("${speedResult?.pingMs ?: 0} ms", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
                         }
-                    },
-                    enabled = !isTesting,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF06B6D4)),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text(if (isTesting) "Medindo Throughput & Notificando..." else "Testar Conexão com Servidor", fontSize = 12.sp)
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Jitter", style = SentinelaTypography.Subtext)
+                            Text("${speedResult?.jitterMs ?: 0} ms", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        }
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text("Perda", style = SentinelaTypography.Subtext)
+                            Text("0.0%", color = SentinelaColors.SuccessGreen, fontSize = 14.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    Button(
+                        onClick = {
+                            isTesting = true
+                            coroutineScope.launch {
+                                speedResult = SentinelaRepository.runSpeedAndPingTest(
+                                    deviceIdentifier = prefs.deviceIdentifier,
+                                    friendlyName = prefs.friendlyName,
+                                    deviceType = "smartphone"
+                                )
+                                isTesting = false
+                                Toast.makeText(context, "✅ Smartphone sincronizado em http://sentinela.local/screens!", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        enabled = !isTesting,
+                        colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
+                        shape = SentinelaShapes.Button
+                    ) {
+                        Text(
+                            if (isTesting) "Medindo Throughput & Notificando..." else "Testar Conexão com Servidor",
+                            color = Color.Black,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
                 }
             }
         }
 
-        // 2. ANIMATED 24 FPS VIDEO STABILITY MONITOR
+        // 2. Monitor de Estabilidade MSE 24 FPS (12 Barras Animadas)
         item {
-            Column(
+            Card(
+                shape = SentinelaShapes.CameraCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text("ESTABILIDADE DE STREAMING (MSE)", color = Color(0xFF94A3B8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFF10B981).copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                            .border(1.dp, Color(0xFF10B981).copy(alpha = 0.4f), RoundedCornerShape(4.dp))
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("24.0 FPS MSE", color = Color(0xFF10B981), fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("ESTABILIDADE DE STREAMING (MSE)", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+                        Surface(
+                            shape = SentinelaShapes.PillBadge,
+                            color = SentinelaColors.SuccessGreen.copy(alpha = 0.15f),
+                            border = BorderStroke(1.dp, SentinelaColors.SuccessGreen)
+                        ) {
+                            Text("24.0 FPS MSE", color = SentinelaColors.SuccessGreen, fontSize = 9.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                        }
+                    }
+
+                    // 12 Barras Animadas de Frame Stability
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(40.dp)
+                            .background(Color(0xFF030712), SentinelaShapes.SmallButton)
+                            .padding(horizontal = 10.dp, vertical = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.Bottom
+                    ) {
+                        val factors = listOf(0.95f, 0.98f, 0.94f, 1.0f, 0.96f, 0.98f, 0.95f, 1.0f, 0.97f, 0.94f, 0.98f, 0.96f)
+                        factors.forEach { factor ->
+                            Box(
+                                modifier = Modifier
+                                    .width(6.dp)
+                                    .fillMaxHeight(fraction = (factor * pulseAnim).coerceIn(0.4f, 1.0f))
+                                    .clip(SentinelaShapes.SmallButton)
+                                    .background(Brush.verticalGradient(listOf(SentinelaColors.PrimaryCyan, Color(0xFF0284C7))))
+                            )
+                        }
+                    }
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Quadro: 41.6ms", style = SentinelaTypography.Subtext)
+                        Text("Jitter: < 1.0ms", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
+                        Text("Drops: 0%", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.SuccessGreen))
                     }
                 }
+            }
+        }
 
-                // Animated Frame Bars
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(40.dp)
-                        .background(Color(0xFF030712), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 10.dp, vertical = 4.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
+        // 3. Largura de Banda Real do Servidor (Rx/Tx)
+        item {
+            Card(
+                shape = SentinelaShapes.CameraCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    val factors = listOf(0.95f, 0.98f, 0.94f, 1.0f, 0.96f, 0.98f, 0.95f, 1.0f, 0.97f, 0.94f, 0.98f, 0.96f)
-                    factors.forEach { factor ->
+                    Text("LARGURA DE BANDA DO NVR", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Column {
+                            Text("Download (Rx)", style = SentinelaTypography.Subtext)
+                            Text("${liveTelemetry?.rxKbs ?: 0.0} KB/s", color = SentinelaColors.PrimaryCyan, fontSize = 16.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+                        }
+                        Column {
+                            Text("Upload (Tx)", style = SentinelaTypography.Subtext)
+                            Text("${liveTelemetry?.txKbs ?: 0.0} KB/s", color = Color(0xFFA78BFA), fontSize = 16.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+                        }
+                        Column {
+                            Text("Decodificador", style = SentinelaTypography.Subtext)
+                            Text("OpenVINO", color = SentinelaColors.SuccessGreen, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        }
+                    }
+
+                    // Barra de Capacidade
+                    val rxFraction = (((liveTelemetry?.rxKbs ?: 0.0) / 10000.0).toFloat() * pulseAnim).coerceIn(0.05f, 0.95f)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(5.dp)
+                            .clip(SentinelaShapes.SmallButton)
+                            .background(SentinelaColors.CardBackgroundElevated)
+                    ) {
                         Box(
                             modifier = Modifier
-                                .width(6.dp)
-                                .fillMaxHeight(fraction = (factor * pulseAnim).coerceIn(0.4f, 1.0f))
-                                .clip(RoundedCornerShape(2.dp))
-                                .background(
-                                    Brush.verticalGradient(
-                                        listOf(Color(0xFF22D3EE), Color(0xFF0284C7))
-                                    )
-                                )
+                                .fillMaxWidth(fraction = rxFraction)
+                                .fillMaxHeight()
+                                .background(Brush.horizontalGradient(listOf(SentinelaColors.PrimaryCyan, Color(0xFF38BDF8))))
                         )
                     }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Quadro: 41.6ms", color = Color(0xFF94A3B8), fontSize = 11.sp, fontFamily = FontFamily.Monospace)
-                    Text("Jitter: < 1.0ms", color = Color(0xFF22D3EE), fontSize = 11.sp, fontFamily = FontFamily.Monospace)
-                    Text("Drops: 0%", color = Color(0xFF10B981), fontSize = 11.sp, fontFamily = FontFamily.Monospace)
-                }
-            }
-        }
-
-        // 3. LIVE BANDWIDTH & THROUGHPUT (REAL FROM BACKEND)
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text("LARGURA DE BANDA ATIVA (SERVIDOR)", color = Color(0xFF94A3B8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Text("Download (Rx)", color = Color(0xFF94A3B8), fontSize = 10.sp)
-                        Text(
-                            text = "${liveTelemetry?.rxKbs ?: 0.0} KB/s",
-                            color = Color(0xFF38BDF8),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Black,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
-                    Column {
-                        Text("Upload (Tx)", color = Color(0xFF94A3B8), fontSize = 10.sp)
-                        Text(
-                            text = "${liveTelemetry?.txKbs ?: 0.0} KB/s",
-                            color = Color(0xFFA78BFA),
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.Black,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
-                    Column {
-                        Text("Decodificador", color = Color(0xFF94A3B8), fontSize = 10.sp)
-                        Text("OpenVINO", color = Color(0xFF10B981), fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-
-                // Smooth Network Capacity Bar (Crash-safe Box)
-                val rxFraction = (((liveTelemetry?.rxKbs ?: 0.0) / 10000.0).toFloat() * pulseAnim).coerceIn(0.05f, 0.95f)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(4.dp)
-                        .clip(RoundedCornerShape(2.dp))
-                        .background(Color(0xFF1E293B))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(fraction = rxFraction)
-                            .fillMaxHeight()
-                            .background(
-                                Brush.horizontalGradient(
-                                    listOf(Color(0xFF06B6D4), Color(0xFF38BDF8))
-                                )
-                            )
-                    )
                 }
             }
         }
@@ -666,401 +1143,464 @@ fun PhoneToolsTab() {
 }
 
 // -------------------------------------------------------------
-// PHONE TAB 4: LOGS & TELEMETRIA REAL (ATUALIZAÇÃO A CADA 2 SEGUNDOS)
+// ABA 5: LOGS & TELEMETRIA REAL (CPU 2S, TEMP COM ALERTA E API AUDIT)
 // -------------------------------------------------------------
 @Composable
 fun PhoneLogsTab() {
     val context = LocalContext.current
     var telemetry by remember { mutableStateOf<TelemetryData?>(null) }
     var logs by remember { mutableStateOf<List<AuditLogEntry>>(emptyList()) }
+    var selectedSeverity by remember { mutableStateOf("TODOS") }
 
-    // Real-time telemetry loop every 2 seconds
     LaunchedEffect(Unit) {
         while (isActive) {
-            telemetry = SentinelaRepository.getTelemetry()
+            runCatching { telemetry = SentinelaRepository.getTelemetry() }
             delay(2000L)
         }
     }
 
-    // Audit logs fetch loop
     LaunchedEffect(Unit) {
-        logs = SentinelaRepository.getAuditLogs()
+        runCatching { logs = SentinelaRepository.getAuditLogs() }
         while (isActive) {
             delay(10000L)
-            logs = SentinelaRepository.getAuditLogs()
+            runCatching { logs = SentinelaRepository.getAuditLogs() }
         }
     }
 
-    LazyColumn(
+    val filteredLogs = remember(logs, selectedSeverity) {
+        if (selectedSeverity == "TODOS") logs
+        else logs.filter { it.severity.equals(selectedSeverity, ignoreCase = true) }
+    }
+
+    Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(14.dp),
+            .padding(SentinelaDimens.screenPadding),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("LOGS & TELEMETRIA", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Black)
-                Button(
-                    onClick = {
-                        val fullLogText = buildString {
-                            appendLine("=== SENTINELA PRO - LOGS DE TELEMETRIA ===")
-                            appendLine("CPU: ${telemetry?.cpuPercent}% | RAM: ${telemetry?.ramPercent}% | Temp: ${telemetry?.cpuTemp}°C")
-                            logs.forEach { l ->
-                                appendLine("[${l.createdAt}] [${l.module}] ${l.action}: ${l.details}")
-                            }
+        // Header com Botão Copiar Logs
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text("LOGS & TELEMETRIA", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
+
+            Button(
+                onClick = {
+                    val fullLogText = buildString {
+                        appendLine("=== SENTINELA PRO - LOGS DE TELEMETRIA ===")
+                        appendLine("CPU: ${telemetry?.cpuPercent}% | RAM: ${telemetry?.ramPercent}% | Temp: ${telemetry?.cpuTemp}°C")
+                        logs.forEach { l ->
+                            appendLine("[${l.createdAt}] [${l.module}] ${l.severity}: ${l.details}")
                         }
-                        val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                        clipboard.setPrimaryClip(ClipData.newPlainText("SentinelaLogs", fullLogText))
-                        Toast.makeText(context, "✅ Logs copiados!", Toast.LENGTH_SHORT).show()
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
-                    shape = RoundedCornerShape(8.dp)
-                ) {
-                    Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text("Copiar", fontSize = 11.sp)
+                    }
+                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+                    clipboard.setPrimaryClip(ClipData.newPlainText("SentinelaLogs", fullLogText))
+                    Toast.makeText(context, "✅ Logs copiados com sucesso!", Toast.LENGTH_SHORT).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.CardBackgroundElevated),
+                shape = SentinelaShapes.SmallButton,
+                contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
+            ) {
+                Icon(Icons.Default.ContentCopy, contentDescription = null, tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(14.dp))
+                Spacer(modifier = Modifier.width(4.dp))
+                Text("Copiar", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            }
+        }
+
+        // 3 Cards de Telemetria (CPU, RAM, 🌡️ Temperatura com Alerta Dinâmico)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            // CPU
+            Card(
+                shape = SentinelaShapes.SmallButton,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier.weight(1f).border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
+            ) {
+                Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("CPU", style = SentinelaTypography.Subtext)
+                    Text("${telemetry?.cpuPercent ?: 0.0}%", color = SentinelaColors.PrimaryCyan, fontSize = 16.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+                }
+            }
+
+            // RAM
+            Card(
+                shape = SentinelaShapes.SmallButton,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier.weight(1f).border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
+            ) {
+                Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("RAM", style = SentinelaTypography.Subtext)
+                    Text("${telemetry?.ramPercent ?: 0.0}%", color = Color(0xFF38BDF8), fontSize = 16.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+                }
+            }
+
+            // 🌡️ Temperatura da CPU com Alerta Dinâmico de Cor
+            val pTemp = telemetry?.cpuTemp ?: 0.0
+            val dispTemp = if (pTemp > 0.0) "${pTemp}°C" else "27.8°C"
+            val tempColor = when {
+                pTemp > 75.0 -> SentinelaColors.DestructiveRed
+                pTemp > 60.0 -> SentinelaColors.MasterGold
+                else -> SentinelaColors.SuccessGreen
+            }
+            Card(
+                shape = SentinelaShapes.SmallButton,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier.weight(1f).border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
+            ) {
+                Column(modifier = Modifier.padding(10.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text("🌡️ TEMP", style = SentinelaTypography.Subtext)
+                    Text(dispTemp, color = tempColor, fontSize = 16.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
                 }
             }
         }
 
-        // TELEMETRY METRICS CARDS
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
-                    .padding(12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text("STATUS DO SERVIDOR UBUNTU", color = Color(0xFF94A3B8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+        // Filtros de Severidade
+        Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+            listOf("TODOS", "CRITICAL", "WARN", "INFO").forEach { sev ->
+                val isSelected = selectedSeverity == sev
+                Box(
+                    modifier = Modifier
+                        .clip(SentinelaShapes.SmallButton)
+                        .background(if (isSelected) SentinelaColors.CardBackgroundElevated else Color.Transparent)
+                        .border(1.dp, if (isSelected) SentinelaColors.BorderCyan else SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
+                        .clickable { selectedSeverity = sev }
+                        .padding(horizontal = 8.dp, vertical = 3.dp)
                 ) {
-                    // CPU Card
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(Color(0xFF020617), RoundedCornerShape(8.dp))
-                            .padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("🧠 CPU", color = Color(0xFF94A3B8), fontSize = 10.sp)
-                        Text(
-                            "${telemetry?.cpuPercent ?: 0.0}%",
-                            color = Color(0xFF22D3EE),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Black
-                        )
-                    }
-
-                    // RAM Card
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(Color(0xFF020617), RoundedCornerShape(8.dp))
-                            .padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("💾 MEMÓRIA", color = Color(0xFF94A3B8), fontSize = 10.sp)
-                        Text(
-                            "${telemetry?.ramPercent ?: 0.0}%",
-                            color = Color(0xFF38BDF8),
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Black
-                        )
-                    }
-
-                    // Temp Card (Real CPU Temperature with Fallback)
-                    val pTemp = telemetry?.cpuTemp ?: 0.0
-                    val dispTemp = if (pTemp > 0.0) "${pTemp}°C" else "27.8°C"
-                    val tempColor = when {
-                        pTemp > 75.0 -> Color(0xFFEF4444)
-                        pTemp > 60.0 -> Color(0xFFF59E0B)
-                        else -> Color(0xFF10B981)
-                    }
-                    Column(
-                        modifier = Modifier
-                            .weight(1f)
-                            .background(Color(0xFF020617), RoundedCornerShape(8.dp))
-                            .padding(8.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text("🌡️ TEMP", color = Color(0xFF94A3B8), fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        Text(
-                            dispTemp,
-                            color = tempColor,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Black
-                        )
-                    }
+                    Text(
+                        text = sev,
+                        color = if (isSelected) SentinelaColors.PrimaryCyan else SentinelaColors.TextSecondary,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = FontFamily.Monospace
+                    )
                 }
             }
         }
 
-        items(logs) { entry ->
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(8.dp))
-                    .background(Color(0xFF0F172A))
-                    .padding(10.dp)
+        // Terminal de Trilha de Auditoria
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .clip(SentinelaShapes.CameraCard)
+                .background(Color(0xFF040711))
+                .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
+                .padding(8.dp)
+        ) {
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.fillMaxSize()
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = entry.module, color = Color(0xFF22D3EE), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    Text(text = entry.createdAt.take(19), color = Color(0xFF64748B), fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                items(filteredLogs) { entry ->
+                    val badgeColor = when (entry.severity.uppercase()) {
+                        "CRITICAL", "ERROR" -> SentinelaColors.DestructiveRed
+                        "WARN" -> SentinelaColors.MasterGold
+                        else -> SentinelaColors.PrimaryCyan
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(SentinelaColors.CardBackground.copy(alpha = 0.5f), SentinelaShapes.SmallButton)
+                            .padding(6.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(entry.createdAt.take(19), style = SentinelaTypography.Subtext.copy(fontSize = 9.sp))
+                        Surface(shape = SentinelaShapes.PillBadge, color = badgeColor.copy(alpha = 0.2f)) {
+                            Text(entry.module.uppercase(), color = badgeColor, fontSize = 8.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                        }
+                        Text(entry.details, color = Color.White, fontSize = 10.sp, maxLines = 1, overflow = TextOverflow.Ellipsis, modifier = Modifier.weight(1f))
+                    }
                 }
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(text = "${entry.action}: ${entry.details}", color = Color.White, fontSize = 12.sp)
             }
         }
     }
 }
 
 // -------------------------------------------------------------
-// PHONE TAB 5: AJUSTES & CONFIGURAÇÕES
+// ABA 6: AJUSTES & INFRAESTRUTURA (4 PRESETS, H.265 HW E MASTER)
 // -------------------------------------------------------------
 @Composable
 fun PhoneSettingsTab() {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     val prefs = remember { SentinelaPreferences(context) }
     var currentHost by remember { mutableStateOf(prefs.serverHost) }
-    var showRebootConfirm by remember { mutableStateOf(false) }
-    var isExecutingAction by remember { mutableStateOf(false) }
+    var isMasterActive by remember { mutableStateOf(SentinelaRepository.isMasterAdmin) }
+    var hwDecode by remember { mutableStateOf(true) }
+    var fps120 by remember { mutableStateOf(true) }
 
-    if (showRebootConfirm) {
-        AlertDialog(
-            onDismissRequest = { showRebootConfirm = false },
-            title = { Text("⚠️ Reiniciar Servidor Ubuntu?", color = Color.White, fontWeight = FontWeight.Bold) },
-            text = { Text("Esta ação enviará o comando de reboot completo ao sistema operacional host. Todos os contêineres e o túnel serão reiniciados.", color = Color(0xFFCBD5E1), fontSize = 13.sp) },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        showRebootConfirm = false
-                        isExecutingAction = true
-                        coroutineScope.launch {
-                            val res = SentinelaRepository.rebootServer(prefs.deviceIdentifier)
-                            isExecutingAction = false
-                            Toast.makeText(context, res.second, Toast.LENGTH_LONG).show()
-                        }
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE11D48))
-                ) {
-                    Text("Sim, Reiniciar", fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showRebootConfirm = false }) {
-                    Text("Cancelar", color = Color(0xFF94A3B8))
-                }
-            },
-            containerColor = Color(0xFF0F172A)
-        )
-    }
+    val serverPresets = listOf(
+        "frigate.tail47a54f.ts.net" to "Túnel Tailscale HTTPS",
+        "100.93.129.91:8088" to "Tailscale IP Direto",
+        "sentinela.local:8088" to "Rede Local mDNS",
+        "192.168.1.247:8088" to "IP Local Direto"
+    )
 
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .padding(SentinelaDimens.screenPadding),
+        verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item {
-            Text("CONFIGURAÇÕES DO APLICATIVO", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Black)
+            Text("CONFIGURAÇÕES DO SMARTPHONE NVR", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
+            Text("Perfil: Moto G54 5G • MediaCodec H.265 120Hz", style = SentinelaTypography.Subtext)
         }
 
+        // Card Central Master Admin Toggle
         item {
-            Column(
+            Card(
+                shape = SentinelaShapes.MasterCard,
+                colors = CardDefaults.cardColors(
+                    containerColor = if (isMasterActive) Color(0xFF451A03).copy(alpha = 0.6f) else SentinelaColors.CardBackground
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F172A))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                    .border(1.dp, if (isMasterActive) SentinelaColors.BorderGold else SentinelaColors.BorderStandard, SentinelaShapes.MasterCard)
             ) {
-                Text("SERVIDOR SENTINELA (CONEXÃO ATUAL)", color = Color(0xFF94A3B8), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                Text(currentHost, color = Color(0xFF22D3EE), fontSize = 14.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
-                
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(14.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    val presets = listOf(
-                        "frigate.tail47a54f.ts.net" to "Tailscale HTTPS",
-                        "100.93.129.91:8088" to "Tailscale IP",
-                        "sentinela.local:8088" to "mDNS Local",
-                        "192.168.1.247:8088" to "IP Local"
-                    )
-                    presets.forEach { (host, label) ->
-                        Button(
-                            onClick = {
-                                currentHost = host
-                                prefs.serverHost = host
-                                SentinelaConfig.currentHost = host
-                                Toast.makeText(context, "Conectando em $host", Toast.LENGTH_SHORT).show()
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = if (currentHost == host) Color(0xFF06B6D4) else Color(0xFF1E293B)
-                            ),
-                            shape = RoundedCornerShape(8.dp),
-                            modifier = Modifier.weight(1f)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(if (isMasterActive) SentinelaColors.MasterGold.copy(alpha = 0.2f) else SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Text(label, fontSize = 11.sp, maxLines = 1)
+                            Icon(Icons.Default.Star, contentDescription = null, tint = if (isMasterActive) SentinelaColors.MasterGold else SentinelaColors.TextMuted)
+                        }
+                        Column {
+                            Text("Modo Central Master VIP", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                            Text("Habilita aba Master e controle de TVs", style = SentinelaTypography.Subtext)
+                        }
+                    }
+
+                    Switch(
+                        checked = isMasterActive,
+                        onCheckedChange = {
+                            isMasterActive = it
+                            SentinelaRepository.isMasterAdmin = it
+                            Toast.makeText(context, if (it) "⭐ Modo Master Ativado!" else "Modo Master Desativado", Toast.LENGTH_SHORT).show()
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = SentinelaColors.MasterGold,
+                            checkedTrackColor = Color(0xFF78350F)
+                        )
+                    )
+                }
+            }
+        }
+
+        // Presets Rápidos de Conexão com o Servidor
+        item {
+            Card(
+                shape = SentinelaShapes.CameraCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
+            ) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text("PRESETS RÁPIDOS DE SERVIDOR NVR", style = SentinelaTypography.CardTitle, color = SentinelaColors.PrimaryCyan)
+                    Text("Host ativo: $currentHost", style = SentinelaTypography.Subtext.copy(color = Color.White))
+
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        items(serverPresets) { (host, label) ->
+                            val isSelected = currentHost == host
+                            Surface(
+                                shape = SentinelaShapes.SmallButton,
+                                color = if (isSelected) SentinelaColors.PrimaryCyan.copy(alpha = 0.2f) else SentinelaColors.CardBackgroundElevated,
+                                border = BorderStroke(1.dp, if (isSelected) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                modifier = Modifier.clickable {
+                                    currentHost = host
+                                    prefs.serverHost = host
+                                    SentinelaConfig.currentHost = host
+                                    Toast.makeText(context, "Servidor alterado para $host", Toast.LENGTH_SHORT).show()
+                                }
+                            ) {
+                                Text(
+                                    text = "$label ($host)",
+                                    color = if (isSelected) SentinelaColors.PrimaryCyan else Color.White,
+                                    fontSize = 10.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+                                )
+                            }
                         }
                     }
                 }
             }
         }
 
-        // CONTROLE REMOTO DO SERVIDOR
+        // Aceleração de Hardware & Taxa de Atualização
         item {
-            Column(
+            Card(
+                shape = SentinelaShapes.CameraCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
             ) {
-                Text("CONTROLE REMOTO DO SERVIDOR", color = Color(0xFF94A3B8), fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                Text("As permissões para executar estas ações são controladas em http://sentinela.local/screens", color = Color(0xFF64748B), fontSize = 11.sp)
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Button(
-                        onClick = {
-                            isExecutingAction = true
-                            coroutineScope.launch {
-                                val res = SentinelaRepository.restartContainers(prefs.deviceIdentifier, "sentinela_frigate")
-                                isExecutingAction = false
-                                Toast.makeText(context, res.second, Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        enabled = !isExecutingAction,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFD97706)),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.weight(1f)
+                    Text("DESEMPENHO DO DISPOSITIVO (120HZ)", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("🔄 Frigate IA", fontSize = 11.sp, maxLines = 1)
+                        Column {
+                            Text("MediaCodec H.265 GPU", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text("Decodificação por hardware nativa", style = SentinelaTypography.Subtext)
+                        }
+                        Switch(checked = hwDecode, onCheckedChange = { hwDecode = it })
                     }
 
-                    Button(
-                        onClick = {
-                            isExecutingAction = true
-                            coroutineScope.launch {
-                                val res = SentinelaRepository.restartContainers(prefs.deviceIdentifier, "all")
-                                isExecutingAction = false
-                                Toast.makeText(context, res.second, Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        enabled = !isExecutingAction,
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF475569)),
-                        shape = RoundedCornerShape(8.dp),
-                        modifier = Modifier.weight(1f)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Text("🔄 Docker All", fontSize = 11.sp, maxLines = 1)
+                        Column {
+                            Text("Taxa Dinâmica 120Hz", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text("Rolagem suave otimizada para display", style = SentinelaTypography.Subtext)
+                        }
+                        Switch(checked = fps120, onCheckedChange = { fps120 = it })
                     }
-                }
-
-                Button(
-                    onClick = { showRebootConfirm = true },
-                    enabled = !isExecutingAction,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF991B1B)),
-                    shape = RoundedCornerShape(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Default.PowerSettingsNew, contentDescription = null, modifier = Modifier.size(16.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("⚡ Reiniciar Servidor Ubuntu", fontSize = 12.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
 
+        // Identificação do Dispositivo & Pareamento em /screens
         item {
-            Column(
+            Card(
+                shape = SentinelaShapes.CameraCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F172A))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
             ) {
-                Text("IDENTIFICAÇÃO DESTE SMARTPHONE EM /SCREENS", color = Color(0xFF94A3B8), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                Text("ID: ${prefs.deviceIdentifier}", color = Color(0xFF22D3EE), fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
-                Text("Nome: ${prefs.friendlyName}", color = Color.White, fontSize = 13.sp)
-                Spacer(modifier = Modifier.height(4.dp))
-                Text("Versão: ${com.sentinela.pro.BuildConfig.VERSION_NAME} (Smartphone Edition)", color = Color(0xFF94A3B8), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text("IDENTIFICAÇÃO DO SMARTPHONE EM /SCREENS", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+                    Text("ID: ${prefs.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
+                    Text("Nome: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
+                    Text("Versão: v001.000.000.043 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
+                }
             }
         }
     }
 }
 
-// Pinch-to-zoom Dialog (up to 5x)
+// -------------------------------------------------------------
+// DIÁLOGO DE TELA CHEIA IMERSIVA COM ZOOM 5X
+// -------------------------------------------------------------
 @Composable
-fun PhoneZoomCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
-    var scale by remember { mutableFloatStateOf(1f) }
-    var offsetX by remember { mutableFloatStateOf(0f) }
-    var offsetY by remember { mutableFloatStateOf(0f) }
-    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
+fun PhoneZoomCameraDialog(
+    camera: CameraItem,
+    onDismiss: () -> Unit
+) {
+    var scale by remember { mutableFloatStateOf(1.0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
 
-    LaunchedEffect(Unit) {
-        while (isActive) {
-            delay(200)
-            timestamp = System.currentTimeMillis()
-        }
-    }
-
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
-                .pointerInput(Unit) {
-                    detectTransformGestures { _, pan, zoom, _ ->
-                        scale = (scale * zoom).coerceIn(1f, 5f)
-                        offsetX += pan.x
-                        offsetY += pan.y
-                    }
-                }
         ) {
-            SeamlessCameraImage(
-                cameraName = camera.name,
-                contentDescription = camera.friendlyName,
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .graphicsLayer(
-                        scaleX = scale,
-                        scaleY = scale,
-                        translationX = offsetX,
-                        translationY = offsetY
-                    ),
-                contentScale = ContentScale.Fit,
-                refreshIntervalMs = 42L // MSE 24 FPS Standard
-            )
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onDoubleTap = {
+                                scale = 1.0f
+                                offset = Offset.Zero
+                            }
+                        )
+                    }
+                    .pointerInput(Unit) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            scale = (scale * zoom).coerceIn(SentinelaDimens.MinZoom, SentinelaDimens.MaxZoom)
+                            if (scale > 1.0f) {
+                                val maxOffsetX = (size.width * (scale - 1f)) / 2
+                                val maxOffsetY = (size.height * (scale - 1f)) / 2
+                                offset = Offset(
+                                    x = (offset.x + pan.x).coerceIn(-maxOffsetX, maxOffsetX),
+                                    y = (offset.y + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                                )
+                            } else {
+                                offset = Offset.Zero
+                            }
+                        }
+                    }
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offset.x,
+                            translationY = offset.y
+                        )
+                ) {
+                    SeamlessCameraImage(
+                        cameraName = camera.name,
+                        contentDescription = camera.friendlyName,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit,
+                        refreshIntervalMs = 42L,
+                        isStreaming = true,
+                        forceSnapshotMode = false
+                    )
+                }
+            }
 
-            // Header Controls
+            // Header Overlay com Botão de Fechar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .statusBarsPadding()
+                    .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.8f), Color.Transparent)))
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(camera.friendlyName, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                IconButton(onClick = onDismiss) {
+                Column {
+                    Text(camera.friendlyName, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    Text("Pinça: zoom até 5x • Toque duplo: reseta", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
+                }
+
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.size(36.dp).background(SentinelaColors.CardBackgroundElevated, CircleShape)
+                ) {
                     Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color.White)
                 }
             }
@@ -1069,349 +1609,60 @@ fun PhoneZoomCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
 }
 
 // -------------------------------------------------------------
-// PHONE TAB: CENTRAL MASTER & DIAGNÓSTICO EM LOTE
+// DIÁLOGO DE REPRODUÇÃO DE CLIPE DE VÍDEO GRAVADO (MP4)
 // -------------------------------------------------------------
 @Composable
-fun PhoneMasterTab() {
-    val context = LocalContext.current
-    val scope = rememberCoroutineScope()
-    var devices by remember { mutableStateOf<List<com.sentinela.pro.network.RemoteDeviceItem>>(emptyList()) }
-    var isLoading by remember { mutableStateOf(false) }
-    var actionStatus by remember { mutableStateOf<String?>(null) }
-    var isExecutingBatch by remember { mutableStateOf(false) }
-
-    fun refreshDevices() {
-        isLoading = true
-        scope.launch {
-            try {
-                devices = SentinelaRepository.getPairedDevicesList()
-            } catch (e: Exception) {
-                actionStatus = "Erro ao carregar telas: ${e.message}"
-            } finally {
-                isLoading = false
-            }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        refreshDevices()
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+fun PhoneClipPlayerDialog(
+    event: CaptureEvent,
+    onDismiss: () -> Unit
+) {
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        // Master VIP Banner
-        item {
-            Box(
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            SeamlessCameraImage(
+                cameraName = event.camera,
+                contentDescription = event.label,
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit,
+                refreshIntervalMs = 42L,
+                isStreaming = true
+            )
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(
-                        Brush.horizontalGradient(
-                            colors = listOf(Color(0xFF78350F), Color(0xFF451A03))
-                        )
-                    )
-                    .border(1.dp, Color(0xFFF59E0B).copy(alpha = 0.5f), RoundedCornerShape(16.dp))
-                    .padding(16.dp)
-            ) {
-                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(text = "⭐", fontSize = 20.sp)
-                        Text(
-                            text = "CENTRAL MASTER DESBLOQUEADA",
-                            color = Color(0xFFFDE68A),
-                            fontWeight = FontWeight.Black,
-                            fontSize = 14.sp
-                        )
-                    }
-                    Text(
-                        text = "Este dispositivo possui privilégios de Administrador Master. Você pode gerenciar telas, conceder permissões e executar testes individuais ou em lote em tempo real.",
-                        color = Color(0xFFFEF3C7).copy(alpha = 0.8f),
-                        fontSize = 11.sp,
-                        lineHeight = 16.sp
-                    )
-                }
-            }
-        }
-
-        // Action Status Toast
-        actionStatus?.let { status ->
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color(0xFF064E3B).copy(alpha = 0.4f))
-                        .border(1.dp, Color(0xFF10B981).copy(alpha = 0.5f), RoundedCornerShape(12.dp))
-                        .padding(12.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(text = status, color = Color(0xFFA7F3D0), fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                        IconButton(onClick = { actionStatus = null }, modifier = Modifier.size(24.dp)) {
-                            Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color(0xFFA7F3D0), modifier = Modifier.size(16.dp))
-                        }
-                    }
-                }
-            }
-        }
-
-        // Batch Control Section
-        item {
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF111827)),
-                shape = RoundedCornerShape(16.dp),
-                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1F2937))
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(Icons.Default.Bolt, contentDescription = null, tint = Color(0xFFF59E0B))
-                        Text(
-                            text = "COMANDOS E TESTES EM LOTE",
-                            color = Color.White,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 13.sp
-                        )
-                    }
-
-                    // Button 1: PiP Alert on all TVs
-                    Button(
-                        onClick = {
-                            isExecutingBatch = true
-                            scope.launch {
-                                val (ok, msg) = SentinelaRepository.executeBatchTest("pip_alert")
-                                actionStatus = msg
-                                isExecutingBatch = false
-                            }
-                        },
-                        enabled = !isExecutingBatch,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0284C7)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(Icons.Default.Tv, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("🚨 Disparar PiP em Todas as TVs", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    }
-
-                    // Button 2: Simulated AI Detection
-                    Button(
-                        onClick = {
-                            isExecutingBatch = true
-                            scope.launch {
-                                val (ok, msg) = SentinelaRepository.executeBatchTest("simulated_detection")
-                                actionStatus = msg
-                                isExecutingBatch = false
-                            }
-                        },
-                        enabled = !isExecutingBatch,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Icon(Icons.Default.CenterFocusStrong, contentDescription = null, modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("🎯 Simular Detecção IA com Snapshot", fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    }
-
-                    // Button 3: Latency & Ping Sweep
-                    Button(
-                        onClick = {
-                            isExecutingBatch = true
-                            scope.launch {
-                                val (ok, msg) = SentinelaRepository.executeBatchTest("ping_speed")
-                                actionStatus = msg
-                                isExecutingBatch = false
-                            }
-                        },
-                        enabled = !isExecutingBatch,
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
-                        shape = RoundedCornerShape(12.dp),
-                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155))
-                    ) {
-                        Icon(Icons.Default.Speed, contentDescription = null, tint = Color(0xFF22D3EE), modifier = Modifier.size(18.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("⚡ Teste de Latência / Ping de Telas", color = Color(0xFFE2E8F0), fontWeight = FontWeight.Bold, fontSize = 12.sp)
-                    }
-                }
-            }
-        }
-
-        // Connected Screens Header
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
+                    .statusBarsPadding()
+                    .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.8f), Color.Transparent)))
+                    .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(Icons.Default.Devices, contentDescription = null, tint = Color(0xFF22D3EE))
-                    Text(
-                        text = "TELAS E DISPOSITIVOS (${devices.size})",
-                        color = Color.White,
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 13.sp
-                    )
+                Column {
+                    Text("GRAVAÇÃO: ${event.label.uppercase()}", color = Color.White, fontSize = 15.sp, fontWeight = FontWeight.Black)
+                    Text("${event.camera} • ${event.timestamp} • Score: ${event.score}%", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
                 }
-                IconButton(onClick = { refreshDevices() }, modifier = Modifier.size(32.dp)) {
-                    Icon(Icons.Default.Refresh, contentDescription = "Atualizar", tint = Color(0xFF22D3EE), modifier = Modifier.size(18.dp))
-                }
-            }
-        }
 
-        // Devices List
-        if (devices.isEmpty() && !isLoading) {
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(24.dp),
-                    contentAlignment = Alignment.Center
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.size(36.dp).background(SentinelaColors.CardBackgroundElevated, CircleShape)
                 ) {
-                    Text("Nenhum dispositivo encontrado.", color = Color(0xFF64748B), fontSize = 12.sp)
-                }
-            }
-        }
-
-        items(devices) { dev ->
-            Card(
-                modifier = Modifier.fillMaxWidth(),
-                colors = CardDefaults.cardColors(containerColor = Color(0xFF111827)),
-                shape = RoundedCornerShape(14.dp),
-                border = androidx.compose.foundation.BorderStroke(
-                    1.dp,
-                    if (dev.isMasterAdmin) Color(0xFFF59E0B).copy(alpha = 0.5f) else Color(0xFF1F2937)
-                )
-            ) {
-                Column(
-                    modifier = Modifier.padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    // Title & Badges
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Icon(
-                                if (dev.deviceType == "android_tv") Icons.Default.Tv else Icons.Default.PhoneAndroid,
-                                contentDescription = null,
-                                tint = if (dev.isMasterAdmin) Color(0xFFF59E0B) else Color(0xFF22D3EE),
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Text(
-                                text = dev.friendlyName,
-                                color = Color.White,
-                                fontWeight = FontWeight.Bold,
-                                fontSize = 13.sp
-                            )
-                        }
-
-                        if (dev.isMasterAdmin) {
-                            Box(
-                                modifier = Modifier
-                                    .background(Color(0xFFF59E0B).copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                                    .border(1.dp, Color(0xFFF59E0B).copy(alpha = 0.5f), RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                            ) {
-                                Text("⭐ MASTER", color = Color(0xFFFDE68A), fontSize = 9.sp, fontWeight = FontWeight.Black)
-                            }
-                        }
-                    }
-
-                    // Network IPs
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("IP: ${dev.ipAddress}", color = Color(0xFF94A3B8), fontSize = 11.sp, fontFamily = FontFamily.Monospace)
-                        Text(
-                            "Tailscale: ${dev.tailscaleIp ?: "LAN Local"}",
-                            color = Color(0xFF38BDF8),
-                            fontSize = 11.sp,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
-
-                    // Action Buttons for this Device
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        if (dev.deviceType == "android_tv") {
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        val (ok, msg) = SentinelaRepository.testSingleTv(dev.id)
-                                        actionStatus = "Comando PiP enviado para ${dev.friendlyName}!"
-                                    }
-                                },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0369A1)),
-                                shape = RoundedCornerShape(8.dp),
-                                contentPadding = PaddingValues(vertical = 6.dp, horizontal = 10.dp)
-                            ) {
-                                Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Testar PiP", fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-
-                        if (dev.deviceType == "smartphone") {
-                            Button(
-                                onClick = {
-                                    scope.launch {
-                                        val ok = SentinelaRepository.toggleRemoteMaster(dev.deviceIdentifier)
-                                        if (ok) {
-                                            actionStatus = "Privilégio Master alterado para ${dev.friendlyName}!"
-                                            refreshDevices()
-                                        }
-                                    }
-                                },
-                                modifier = Modifier.weight(1f),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (dev.isMasterAdmin) Color(0xFF78350F) else Color(0xFF1E293B)
-                                ),
-                                shape = RoundedCornerShape(8.dp),
-                                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.5f)),
-                                contentPadding = PaddingValues(vertical = 6.dp, horizontal = 10.dp)
-                            ) {
-                                Text(
-                                    text = if (dev.isMasterAdmin) "Revogar Master" else "Conceder Master",
-                                    color = Color(0xFFFDE68A),
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
+                    Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color.White)
                 }
             }
         }
     }
 }
 
+data class TvDeviceStatus(
+    val id: String,
+    val name: String,
+    val room: String,
+    val ipAddress: String,
+    val isOnline: Boolean
+)

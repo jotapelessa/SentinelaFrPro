@@ -1,0 +1,6 @@
+{
+  "name": "Sentinela Pro Mobile NVR",
+  "description": "Sentinela Pro — Android Jetpack Compose Design System & Mobile NVR Surveillance System",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
