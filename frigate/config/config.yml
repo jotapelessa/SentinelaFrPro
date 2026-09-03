@@ -113,7 +113,7 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream -err_detect ignore_err -fflags +genpts+discardcorrupt -reorder_queue_size 16 -max_delay 500000
+          input_args: -avoid_negative_ts make_zero -fflags +genpts+discardcorrupt -flags low_delay -strict experimental -analyzeduration 1000M -probesize 1000M -err_detect ignore_err -reorder_queue_size 16 -max_delay 500000 -rtsp_transport tcp
           roles:
             - detect
             - record
