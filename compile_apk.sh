@@ -127,13 +127,31 @@ case "$OPTION" in
         ;;
 esac
 
+# Detect or generate gradle wrapper
+GRADLE_BIN="./gradlew"
+if [ ! -f "$GRADLE_BIN" ]; then
+    if command -v gradle &>/dev/null; then
+        echo "⚡ Gerando wrapper do Gradle..."
+        gradle wrapper --gradle-version 8.5 2>/dev/null || true
+    fi
+fi
+
+if [ ! -f "$GRADLE_BIN" ]; then
+    if command -v gradle &>/dev/null; then
+        GRADLE_BIN="gradle"
+    else
+        echo "❌ Erro: nem 'gradlew' nem 'gradle' foram encontrados no sistema."
+        exit 1
+    fi
+fi
+
 echo ""
-echo "🚀 Iniciando compilação do Gradle com versão $FORMATTED_VERSION..."
+echo "🚀 Iniciando compilação do Gradle com versão $FORMATTED_VERSION usando $GRADLE_BIN..."
 echo ""
 
 if [ "$BUILD_TV" = true ]; then
     echo "🔨 Compilando Android TV..."
-    ./gradlew assembleTvDebug --no-daemon
+    $GRADLE_BIN assembleTvDebug --no-daemon
     TV_SRC="app/build/outputs/apk/tv/debug/app-tv-debug.apk"
     TV_DEST="$SCRIPT_DIR/BETA.sentinela.android.tv.$FORMATTED_VERSION.apk"
     if [ -f "$TV_SRC" ]; then
@@ -144,7 +162,7 @@ fi
 
 if [ "$BUILD_PHONE" = true ]; then
     echo "🔨 Compilando Android Smartphone..."
-    ./gradlew assembleSmartphoneDebug --no-daemon
+    $GRADLE_BIN assembleSmartphoneDebug --no-daemon
     PHONE_SRC="app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk"
     PHONE_DEST="$SCRIPT_DIR/BETA.sentinela.android.smartphone.$FORMATTED_VERSION.apk"
     if [ -f "$PHONE_SRC" ]; then
@@ -166,3 +184,22 @@ fi
 echo ""
 echo "📥 Para baixar no Codespaces: clique com botão direito no arquivo no painel esquerdo e selecione 'Download...'."
 echo "============================================================"
+
+# Publicar no GitHub Releases se gh estiver disponível no Codespaces
+if command -v gh &>/dev/null; then
+    echo ""
+    read -p "Deseja publicar automaticamente esta versão ($FORMATTED_VERSION) no GitHub Releases? [s/N]: " PUB_OPT
+    if [[ "$PUB_OPT" =~ ^[Ss]$ ]]; then
+        echo "🚀 Publicando APKs no GitHub Releases via gh CLI..."
+        TAG="v$FORMATTED_VERSION"
+        FILES_TO_UPLOAD=()
+        [ -f "$TV_DEST" ] && FILES_TO_UPLOAD+=("$TV_DEST")
+        [ -f "$PHONE_DEST" ] && FILES_TO_UPLOAD+=("$PHONE_DEST")
+        
+        gh release create "$TAG" "${FILES_TO_UPLOAD[@]}" \
+            --title "Sentinela Pro Client v$FORMATTED_VERSION" \
+            --notes "Compilação oficial dos APKs para a versão $FORMATTED_VERSION" \
+            --generate-notes 2>/dev/null || gh release upload "$TAG" "${FILES_TO_UPLOAD[@]}" --clobber
+        echo "✅ Publicado com sucesso no GitHub Releases: https://github.com/jotapelessa/SentinelaFrPro/releases"
+    fi
+fi

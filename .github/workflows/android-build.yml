@@ -49,8 +49,13 @@ jobs:
     - name: Build Android TV and Smartphone APKs
       working-directory: android
       run: |
-        chmod +x gradlew
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon
+        gradle wrapper --gradle-version 8.5 || true
+        if [ -f gradlew ]; then
+          chmod +x gradlew
+          ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon
+        else
+          gradle assembleTvDebug assembleSmartphoneDebug --no-daemon
+        fi
 
     - name: Prepare Release Artifacts
       run: |
