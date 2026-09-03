@@ -2,80 +2,93 @@
 
 <div align="center">
 
-![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.005-06B6D4?style=for-the-badge&logo=android&logoColor=white)
+![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.048-06B6D4?style=for-the-badge&logo=android&logoColor=white)
 ![Build](https://img.shields.io/badge/Compilador_Codespaces-Gradle_8.5_Java_17-emerald?style=for-the-badge)
-![Aceleração](https://img.shields.io/badge/Intel_VAAPI-Jasper_Lake_N5105-blue?style=for-the-badge)
+![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.048-success?style=for-the-badge&logo=github)
+![Aceleração](https://img.shields.io/badge/Intel_VAAPI/QSV-Jasper_Lake_N5105-blue?style=for-the-badge)
 ![IA](https://img.shields.io/badge/Inferência-OpenVINO_NPU/GPU-violet?style=for-the-badge)
 ![Rede](https://img.shields.io/badge/Rede_Segura-Tailscale_VPN-darkblue?style=for-the-badge)
 
 </div>
 
-> **Plataforma de videomonitoramento inteligente, NVR, detecção espacial de movimento (ROI), telemetria de hardware em tempo real, automação de alertas (Telegram Cloud Vault) e aplicativos nativos Android (TV 55" estilo Netflix e Smartphone estilo YouTube).**
+> **Plataforma de videomonitoramento inteligente, NVR local, detecção por IA com aceleração de hardware, telemetria em tempo real, automação de alertas e clientes nativos Android (TV 55" estilo Netflix e Smartphone estilo YouTube).**
 
-Projetada com foco em **eficiência energética extrema e latência sub-50ms** para Mini PCs baseados no processador **Intel Celeron Jasper Lake N5105 (TDP 10W)** com **Ubuntu Server**.
+Projetada com foco em **eficiência energética extrema e latência sub-200ms** para Mini PCs baseados no processador **Intel Celeron Jasper Lake N5105 (TDP 10W)** com **Ubuntu Server**.
 
 ---
 
-## 📱 Aplicativos Nativos Android (`v001.000.000.005`)
+## 📥 Download dos APKs Oficiais (`v001.000.000.048`)
 
-O ecossistema conta com compilação interativa automatizada de APKs nativos em Jetpack Compose com Material Design 3 e suporte a D-Pad / Leanback:
+Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.048):
+
+* 📺 **[Download Android TV APK (v001.000.000.048)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.048/sentinela-android-tv-v001.000.000.048.apk)**  
+  *(Ou baixe sempre a última versão: [sentinela-android-tv-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.048/sentinela-android-tv-latest.apk))*
+* 📱 **[Download Android Smartphone APK (v001.000.000.048)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.048/sentinela-android-smartphone-v001.000.000.048.apk)**  
+  *(Ou baixe sempre a última versão: [sentinela-android-smartphone-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.048/sentinela-android-smartphone-latest.apk))*
+
+---
+
+## 📱 Aplicativos Nativos Android (`v001.000.000.048`)
 
 ### 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix)
-* **Aba 1 • Câmeras**: Spotlight imersivo em 5 FPS com foco D-Pad, carrossel horizontal de câmeras permitidas e alternância instantânea para tela cheia.
-* **Aba 2 • Capturas**: Catálogo estilo streaming com vídeos e snapshots gravados no SSD NVMe, filtrados por permissão de tela.
-* **Aba 3 • Ferramentas**: Testes de velocidade de download (Mbps), medição de ping com o servidor Sentinela e alerta de presença em tempo real.
-* **Aba 4 • Logs & Telemetria**: 5 cards de status (Servidor, Tailscale, Uso de CPU, Temperatura e RAM) + Terminal de logs unificados com tags (`SERVIDOR`, `TAILSCALE`, `FRIGATE`, `SENTINELA`, `TELEGRAM`) e botão **"Copiar Todos os Logs"**.
-* **Aba 5 • Configurações**: 8 tamanhos de tela PiP, 8 posições de tela PiP, 8 tempos de exibição e seletor rápido de host (`Tailscale`, `Local mDNS` ou `IP Direto`).
+* **Aba 1 • Câmeras**: Spotlight imersivo com navegação D-Pad, carrossel dinâmico e alternância para tela cheia instantânea.
+* **Aba 2 • Capturas (Modo Foto HD de Baixa Memória)**: Visualização estática em Full HD via Coil (`RGB_565`), eliminando buffers de vídeo pesados e reduzindo o uso de RAM em 93% (< 12MB).
+* **Aba 3 • Ferramentas & Telemetria**: Medição de ping contra o servidor Sentinela, handshake com relatório de IP, tipo de rede (Ethernet/Wi-Fi/4G), velocidade em Mbps, versão do app e logs de diagnóstico transmitidos para a interface web `/screens`.
+* **Aba 4 • Logs**: Terminal com cópia rápida e diagnóstico de conectividade.
+* **Aba 5 • Configurações**: Resolução de host por Tailscale ou rede local, configurações de tamanho e duração de PiP.
+* **⚡ PiP Instantâneo em Hardware H.264**: Consumo do stream acelerado por GPU Intel (`camera_principal_h264`), abrindo o vídeo flutuante em menos de 180ms.
+* **✅ Confirmação Real de Exibição (ACK)**: O overlay só confirma a execução após a janela ser fisicamente renderizada no `WindowManager` da TV, reportando o status ao servidor.
+* **💤 Economia Total em Segundo Plano**: Observador de ciclo de vida (`LifecycleEventObserver`) que desliga decodificadores e WebSockets ao minimizar o app (0% CPU e 0% tráfego de rede em background).
 
 ### 📱 2. Android Smartphone (Layout Vertical Estilo YouTube)
-* **Aba 1 • Câmeras**: Feed vertical contínuo com suporte a gestos de pinça para **Zoom até 5x**.
-* **Aba 2 • Capturas**: Linha do tempo de vídeos gravados com badges de detecção (Pessoa, Veículo, Animal) e reprodução rápida.
-* **Aba 3 • Ferramentas**: Ferramenta de Speedtest e verificação de rota de rede.
-* **Aba 4 • Logs**: Painel de auditoria completo com cópia em um clique para compartilhamento e suporte.
-* **Aba 5 • Configurações**: Seletor de servidor ativo e informações de pareamento da tela.
+* **Aba 1 • Câmeras**: Feed vertical contínuo com suporte a toque e **Zoom digital de 5x**.
+* **Aba 2 • Capturas**: Galeria responsiva de detecções e eventos.
+* **Aba 3 • Master Central VIP**:
+  * Controle de disparos de alertas PiP individuais ou em massa para todas as Smart TVs.
+  * Verificação com feedback em tempo real (`✅ Confirmado pela TV` ou `⚠️ TV não respondeu`).
+  * Edição de permissões de cada dispositivo pareado (`Ativo`, `Pausado`, `Bloqueado`, tamanho e tempo do PiP) sincronizada bidirecionalmente com o painel web `/screens`.
+  * Atualização automática via WebSocket para eventos de configuração e pareamento.
+* **Aba 4 • Ferramentas**: Teste de velocidade de rede com gauge em tempo real.
+* **Aba 5 • Logs**: Painel unificado de auditoria com exportação em um clique.
+* **Aba 6 • Ajustes**: Identificação imutável de hardware (`ANDROID_ID`), nome e versão.
+* **📐 Barra de Navegação Ergonômica**: Altura de `68.dp`, tipografia balanceada e rótulo "Ferramentas" perfeitamente alinhado sem quebra ou cortes de texto.
+* **💤 Pausa de Streaming em Segundo Plano**: Corta tráfego de dados e poupa 100% da bateria quando a tela é bloqueada ou outro app é aberto.
 
 ---
 
 ## ⚡ Principais Recursos do Servidor & NVR
 
-* 🚀 **Aceleração por Hardware Intel VAAPI**: Decodificação H.264/H.265 pela iGPU Intel UHD Gen11 (`/dev/dri/renderD128`, driver iHD).
-* 🧠 **Inferência Neural OpenVINO Calibrada**: Filtros calibrados (Pessoa > 0.72, Veículo > 0.80, Animais > 0.80) com área mínima para eliminar falsos positivos de vegetação e sombras.
-* 🎥 **Streaming WebRTC de Ultra-Baixa Latência**: Transmissão nativa com latência *glass-to-glass* inferior a 50ms através do **go2rtc**.
-* ⏰ **Linha do Tempo 24h Vertical (/events)**: Visualização responsiva por períodos do dia (*Madrugada, Manhã, Tarde, Noite*) com cartões horários detalhados e filtros imediatos.
-* ✈️ **Telegram Cloud Vault com Retry Worker**:
-  * Fotos em alta resolução com marca d'água HUD enviadas em menos de 1.2s.
-  * Despacho resiliente de vídeos `.mp4` com worker assíncrono de retentativas inteligentes (2s, 3s, 5s, 8s, 10s, 12s) aguardando a finalização da gravação no disco NVMe.
-  * Comandos de chat: `/status`, `/snapshot [camera]`, `/pausar [minutos]`.
-* 📺 **Gestão de Telas Pareadas (/screens)**:
-  * Registro automático de dispositivos com heartbeat a cada 25s.
-  * Botão **"Limpar Telas Inativas"** para expurgar dispositivos legados/fictícios com um clique.
-  * Auto-migração transparente de colunas no banco de dados SQLite.
-* 🔍 **Scanner Universal de Câmeras**:
-  * Sondas ONVIF WS-Discovery (UDP 3702) + Varredura concorrente de portas CFTV (554, 8554, 37777, 34567, 4747, 8080/8081).
-* 💻 **Interface Glassmorphism Obsidian**:
-  * Identificador visual **`SentinelaPro.001.000.000.005`** no Header, Banner e Rodapé Global.
+* 🚀 **Aceleração por Hardware Intel Jasper Lake (QSV/VAAPI)**: Decodificação e transcodificação por GPU Intel UHD Gen11 (`/dev/dri/renderD128`).
+* 🧠 **Inferência Neural OpenVINO Calibrada**: Rastreamento de objetos (pessoas, veículos e animais) sem falsos positivos.
+* 🎥 **go2rtc Streaming Engine**: Distribuição de streams MSE, WebRTC e RTSP com latência ultra-baixa.
+* 📺 **Painel de Telas e Dispositivos (`/screens`)**:
+  * Sincronização por ID imutável de hardware, imune a mudanças de IP (DHCP ou alternância Wi-Fi / 4G).
+  * Teste individual com feedback ao vivo de renderização física de tela.
+  * Disparos em lote de PiP com broadcast WebSocket e suporte a Google Cast.
+* ✈️ **Telegram Cloud Vault**: Notificações instantâneas com snapshots HUD e despacho de clipes `.mp4`.
+* 🤖 **CI/CD Automatizado no GitHub Actions**: Compilação e publicação automática de releases e APKs para TV e Smartphone em cada push para a branch `main`.
 
 ---
 
 ## 🚀 Como Compilar os APKs no GitHub Codespaces
 
-1. Acesse o seu Codespaces e abra o terminal:
+1. Abra o terminal no seu GitHub Codespaces:
 ```bash
 cd /workspaces/SentinelaFrPro
 
-# Puxar as últimas atualizações
+# Atualizar o código
 git pull origin main
 
 # Iniciar o compilador interativo
 ./compile_apk.sh
 ```
 
-2. Selecione a opção no menu interativo:
-   - `[1]` Android TV (`sentinela.android.tv.001.000.000.005.apk`)
-   - `[2]` Android Smartphone (`sentinela.android.smartphone.001.000.000.005.apk`)
-   - `[3]` Compilar Ambos
+2. Escolha a opção desejada no menu:
+   - `[1]` Android TV (`BETA.sentinela.android.tv.001.000.000.048.apk`)
+   - `[2]` Android Smartphone (`BETA.sentinela.android.smartphone.001.000.000.048.apk`)
+   - `[3]` Compilar Ambos (TV e Smartphone)
 
-3. Faça o download direto clicando com o botão direito no arquivo gerado no painel de arquivos do Codespaces e selecionando **"Download..."**.
+3. Ao final da compilação, o script permite publicar a nova versão diretamente no GitHub Releases via `gh CLI` ou baixar o arquivo pelo menu lateral do Codespaces.
 
 ---
 
@@ -84,13 +97,14 @@ git pull origin main
 No terminal do seu **Mini PC / Servidor Ubuntu**:
 
 ```bash
-cd /caminho/para/SentinelaFrigate
+cd /caminho/para/SentinelaFrPro
 
 # 1. Puxar todas as atualizações do repositório
 git pull origin main
 
-# 2. Reiniciar e reconstruir os containers Docker
-docker compose down && docker compose up -d --build
+# 2. Reiniciar os serviços atualizados
+docker compose restart backend
+docker compose build frontend && docker compose up -d frontend
 ```
 
 Acesse a interface no seu navegador: `http://sentinela.local` ou `http://IP_DO_MINI_PC`.
@@ -106,9 +120,9 @@ Acesse a interface no seu navegador: `http://sentinela.local` ou `http://IP_DO_M
 | **go2rtc** | `1984` (TCP) / `8555` (TCP/UDP) | Hub WebRTC, MSE e negociação ICE/STUN |
 | **RTSP Relay** | `8554` (TCP) | Servidor RTSP local de retransmissão ultrarrápida |
 | **Mosquitto** | `1883` (TCP) | Barramento de mensagens MQTT |
-| **FastAPI Backend** | `8080` (TCP) | Orchestrator Core, Telegram Vault, PiP Gateway e Telemetria |
-| **Next.js Web UI** | `3000` (TCP) | Interface de usuário Glassmorphism |
-| **ONVIF Discovery** | `3702` (UDP) | Descoberta automática de câmeras na rede |
+| **FastAPI Backend** | `8080` (TCP) | Core REST, Telegram Vault, PiP Gateway com ACK e Telemetria |
+| **Next.js Web UI** | `3000` (TCP) | Interface Web Glassmorphism (`/screens`, `/events`, etc.) |
+| **ONVIF Discovery** | `3702` (UDP) | Descoberta automática de câmeras na rede local |
 
 ---
 
