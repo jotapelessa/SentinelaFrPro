@@ -1,11 +1,8 @@
 package com.sentinela.pro.tv
 
-import android.content.ClipData
-import android.content.ClipboardManager
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -13,11 +10,10 @@ import androidx.compose.foundation.focusable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -25,14 +21,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -40,1447 +39,813 @@ import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
 import coil.request.CachePolicy
 import coil.request.ImageRequest
+import androidx.compose.ui.platform.LocalContext
 import com.sentinela.pro.SentinelaConfig
-import com.sentinela.pro.data.*
-import com.sentinela.pro.network.SentinelaRepository
+import com.sentinela.pro.data.CameraItem
+import com.sentinela.pro.tv.theme.*
 import com.sentinela.pro.ui.components.SeamlessCameraImage
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.*
 
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.compose.ui.platform.LocalLifecycleOwner
-
+/**
+ * ============================================================================
+ * SENTINELA PRO NVR — TELA PRINCIPAL ANDROID TV (TvNetflixScreen.kt)
+ * 100% Jetpack Compose Nativo + 10-Foot UI + Ergonomia D-Pad
+ * ============================================================================
+ */
 @Composable
 fun TvNetflixScreen(
     cameras: List<CameraItem>,
     onRefresh: () -> Unit = {}
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-    var isForeground by remember { mutableStateOf(true) }
-
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_RESUME -> isForeground = true
-                Lifecycle.Event.ON_PAUSE,
-                Lifecycle.Event.ON_STOP -> isForeground = false
-                else -> {}
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
+    val entities = remember(cameras, SentinelaConfig.currentHost) {
+        cameras.mapIndexed { idx, cam -> cam.toEntity(idx, SentinelaConfig.currentHost) }
     }
 
-    var activeTabIndex by remember { mutableIntStateOf(0) }
-    val tabs = listOf("Câmeras", "Capturas", "Ferramentas", "Logs", "Configurações")
-    val icons = listOf(
-        Icons.Default.Videocam,
-        Icons.Default.VideoLibrary,
-        Icons.Default.Speed,
-        Icons.Default.Dns,
-        Icons.Default.Settings
+    TvNetflixScreenCore(
+        cameras = entities,
+        tailscaleIp = SentinelaConfig.currentHost,
+        onRefresh = onRefresh
     )
+}
 
-    var currentTimeStr by remember { mutableStateOf("") }
-    LaunchedEffect(Unit) {
-        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
-        while (isActive) {
-            currentTimeStr = sdf.format(java.util.Date())
-            delay(1000)
+@Composable
+fun TvNetflixScreenCore(
+    cameras: List<CameraEntity>,
+    activePipAlert: PipAlert? = null,
+    tailscaleIp: String = "100.93.129.91",
+    onCameraSelected: (CameraEntity) -> Unit = {},
+    onDismissPip: () -> Unit = {},
+    onExpandPipToHero: (CameraEntity) -> Unit = {},
+    onRefresh: () -> Unit = {}
+) {
+    var selectedTab by remember { mutableStateOf(TvTab.CAMERAS) }
+    var focusedCameraIndex by remember { mutableIntStateOf(0) }
+    val selectedCamera = cameras.getOrNull(focusedCameraIndex) ?: cameras.firstOrNull()
+
+    // Focus Requesters para navegação por controle remoto
+    val sidebarFocusRequesters = remember { List(TvTab.values().size) { FocusRequester() } }
+    val carouselFocusRequesters = remember { List(cameras.size.coerceAtLeast(1)) { FocusRequester() } }
+    val heroFocusRequester = remember { FocusRequester() }
+    val pipFocusRequester = remember { FocusRequester() }
+
+    val coroutineScope = rememberCoroutineScope()
+    val carouselListState = rememberLazyListState()
+
+    // Efeito para sincronizar rolagem do carrossel ao focar com D-Pad
+    LaunchedEffect(focusedCameraIndex) {
+        if (focusedCameraIndex in cameras.indices) {
+            carouselListState.animateScrollToItem(focusedCameraIndex)
         }
     }
 
+    // Estrutura em Row(Modifier.fillMaxSize()) conforme especificação
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF070B14)) // Deep Netflix Dark Obsidian
+            .background(TvColors.Background)
     ) {
         Row(
             modifier = Modifier.fillMaxSize()
         ) {
-            // -------------------------------------------------------------
-            // LEFT SIDEBAR NAVIGATION (ERGINÔMICA • D-PAD FOCUSABLE)
-            // -------------------------------------------------------------
-            Column(
-                modifier = Modifier
-                    .width(250.dp)
-                    .fillMaxHeight()
-                    .background(Color(0xFF090D18))
-                    .border(
-                        width = 1.dp,
-                        color = Color(0xFF1E293B).copy(alpha = 0.8f)
-                    )
-                    .padding(vertical = 24.dp, horizontal = 16.dp),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                // Top Header Section
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    // Logo
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = "SENTINELA",
-                            color = Color(0xFFE50914), // Netflix Red
-                            fontSize = 22.sp,
-                            fontWeight = FontWeight.Black,
-                            letterSpacing = 2.sp
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(6.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .background(Color(0xFF06B6D4).copy(alpha = 0.2f), RoundedCornerShape(4.dp))
-                                    .border(1.dp, Color(0xFF06B6D4).copy(alpha = 0.6f), RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                            ) {
-                                Text(
-                                    text = "TV PRO",
-                                    color = Color(0xFF22D3EE),
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.ExtraBold
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .background(Color(0xFF1E293B), RoundedCornerShape(4.dp))
-                                    .border(1.dp, Color(0xFF334155), RoundedCornerShape(4.dp))
-                                    .padding(horizontal = 6.dp, vertical = 2.dp)
-                            ) {
-                                Text(
-                                    text = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}",
-                                    color = Color(0xFFE2E8F0),
-                                    fontSize = 10.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
-
-                    // Online Status Pill
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color(0xFF0F172A), RoundedCornerShape(10.dp))
-                            .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(10.dp))
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .background(if (isForeground) Color(0xFF10B981) else Color(0xFFF59E0B), CircleShape)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (isForeground) "ONLINE • 24 FPS" else "STANDBY",
-                            color = if (isForeground) Color(0xFF10B981) else Color(0xFFF59E0B),
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Vertical Menu Items
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        tabs.forEachIndexed { index, title ->
-                            TvNavTabItem(
-                                title = title,
-                                icon = icons[index],
-                                isSelected = activeTabIndex == index,
-                                onSelect = { activeTabIndex = index }
-                            )
+            // ----------------------------------------------------------------
+            // 1. SIDEBAR LATERAL À ESQUERDA (250.dp)
+            // ----------------------------------------------------------------
+            TvSidebar(
+                selectedTab = selectedTab,
+                tailscaleIp = tailscaleIp,
+                focusRequesters = sidebarFocusRequesters,
+                onTabSelected = { tab ->
+                    selectedTab = tab
+                },
+                onNavigateToContent = {
+                    coroutineScope.launch {
+                        if (selectedTab == TvTab.CAMERAS && cameras.isNotEmpty()) {
+                            carouselFocusRequesters.getOrNull(focusedCameraIndex)?.requestFocus()
                         }
                     }
                 }
+            )
 
-                // Bottom Footer Info
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(4.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 16.dp)
+            // ----------------------------------------------------------------
+            // 2. VIEWPORT DE CONTEÚDO À DIREITA (weight(1f))
+            // ----------------------------------------------------------------
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(horizontal = TvDimens.lg, vertical = TvDimens.md)
+            ) {
+                when (selectedTab) {
+                    TvTab.CAMERAS -> {
+                        TvCamerasViewport(
+                            cameras = cameras,
+                            selectedCamera = selectedCamera,
+                            focusedIndex = focusedCameraIndex,
+                            carouselState = carouselListState,
+                            carouselFocusRequesters = carouselFocusRequesters,
+                            heroFocusRequester = heroFocusRequester,
+                            onFocusCamera = { index ->
+                                focusedCameraIndex = index
+                            },
+                            onSelectCamera = { camera ->
+                                onCameraSelected(camera)
+                            },
+                            onNavigateLeftToSidebar = {
+                                sidebarFocusRequesters.getOrNull(0)?.requestFocus()
+                            }
+                        )
+                    }
+                    TvTab.RECORDINGS -> TvPlaceholderViewport(title = "Capturas & Linha do Tempo CFTV")
+                    TvTab.TOOLS -> TvToolsViewport(onRefresh = onRefresh)
+                    TvTab.LOGS -> TvPlaceholderViewport(title = "Auditoria & Logs de Segurança em Tempo Real")
+                    TvTab.SETTINGS -> TvPlaceholderViewport(title = "Configurações da TV & Decodificador H.265")
+                }
+
+                // Janela Flutuante PiP Dual-Layer com Contagem Regressiva e Moldura Ciano
+                activePipAlert?.let { alert ->
+                    if (alert.isVisible) {
+                        TvPipFloatingWindow(
+                            alert = alert,
+                            focusRequester = pipFocusRequester,
+                            onDismiss = onDismissPip,
+                            onExpand = { onExpandPipToHero(alert.camera) },
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(top = TvDimens.md, end = TvDimens.md)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * 1. SIDEBAR COMPONENT (250.dp Fixo)
+ */
+@Composable
+fun TvSidebar(
+    selectedTab: TvTab,
+    tailscaleIp: String,
+    focusRequesters: List<FocusRequester>,
+    onTabSelected: (TvTab) -> Unit,
+    onNavigateToContent: () -> Unit
+) {
+    var currentTimeString by remember { mutableStateOf("") }
+
+    LaunchedEffect(Unit) {
+        val sdf = SimpleDateFormat("HH:mm:ss", Locale.getDefault())
+        while (isActive) {
+            currentTimeString = sdf.format(Date())
+            delay(1000)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .width(TvDimens.SidebarWidth)
+            .fillMaxHeight()
+            .background(TvColors.SidebarBackground)
+            .border(width = 1.dp, color = TvColors.BorderSubtle)
+            .padding(TvDimens.md),
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
+        // CABEÇALHO DA SIDEBAR
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            // Logo "SENTINELA" em vermelho Netflix + Badge "TV PRO"
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(TvDimens.sm)
+            ) {
+                Text(
+                    text = "SENTINELA",
+                    style = TvTypography.Logo
+                )
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = TvColors.NetflixRed
                 ) {
                     Text(
-                        text = if (currentTimeStr.isNotBlank()) "⏰ $currentTimeStr" else "",
-                        color = Color(0xFF94A3B8),
-                        fontSize = 12.sp,
+                        text = "TV PRO",
+                        color = Color.White,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
+
+            Text(
+                text = "v${com.sentinela.pro.BuildConfig.VERSION_NAME} • Leanback",
+                style = TvTypography.Telemetry.copy(color = TvColors.TextMuted),
+                modifier = Modifier.padding(top = 2.dp, bottom = TvDimens.sm)
+            )
+
+            // Pílula 🟢 ONLINE • 24 FPS
+            Surface(
+                shape = TvShapes.StatusPill,
+                color = TvColors.LiveGreen.copy(alpha = 0.15f),
+                border = BorderStroke(1.dp, TvColors.LiveGreen.copy(alpha = 0.6f))
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(7.dp)
+                            .background(TvColors.LiveGreen, CircleShape)
+                    )
+                    Text(
+                        text = "ONLINE • 24 FPS",
+                        color = TvColors.LiveGreen,
+                        fontSize = 10.sp,
                         fontWeight = FontWeight.Bold,
                         fontFamily = FontFamily.Monospace
                     )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(TvDimens.lg))
+
+            // MENU VERTICAL D-PAD FOCUSABLE
+            TvTab.values().forEachIndexed { index, tab ->
+                val interactionSource = remember { MutableInteractionSource() }
+                val isFocused by interactionSource.collectIsFocusedAsState()
+                val isSelected = selectedTab == tab
+
+                val icon = when (tab) {
+                    TvTab.CAMERAS -> Icons.Default.Videocam
+                    TvTab.RECORDINGS -> Icons.Default.Movie
+                    TvTab.TOOLS -> Icons.Default.FlashOn
+                    TvTab.LOGS -> Icons.Default.Analytics
+                    TvTab.SETTINGS -> Icons.Default.Settings
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = TvDimens.xs)
+                        .focusRequester(focusRequesters.getOrElse(index) { FocusRequester() })
+                        .onKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown) {
+                                when (keyEvent.key) {
+                                    Key.DirectionRight, Key.Enter, Key.DpadCenter -> {
+                                        onTabSelected(tab)
+                                        onNavigateToContent()
+                                        true
+                                    }
+                                    else -> false
+                                }
+                            } else false
+                        }
+                        .tvDpadFocusable(
+                            isFocused = isFocused,
+                            focusedBorderColor = TvColors.NetflixRed,
+                            unfocusedBorderColor = if (isSelected) TvColors.BorderHighlight else Color.Transparent,
+                            shape = TvShapes.MenuItem,
+                            scaleAmount = 1.03f
+                        )
+                        .background(
+                            color = when {
+                                isFocused -> TvColors.CardBackgroundElevated
+                                isSelected -> TvColors.CardBackground
+                                else -> Color.Transparent
+                            },
+                            shape = TvShapes.MenuItem
+                        )
+                        .clickable(interactionSource = interactionSource, indication = null) {
+                            onTabSelected(tab)
+                        }
+                        .padding(horizontal = TvDimens.md, vertical = 10.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(TvDimens.md)
+                ) {
+                    Icon(
+                        imageVector = icon,
+                        contentDescription = tab.title,
+                        tint = when {
+                            isFocused -> TvColors.NetflixRed
+                            isSelected -> TvColors.CyberCyan
+                            else -> TvColors.TextSecondary
+                        },
+                        modifier = Modifier.size(18.dp)
+                    )
+
                     Text(
-                        text = "Tailscale / LAN Conectado",
-                        color = Color(0xFF475569),
-                        fontSize = 10.sp
+                        text = tab.title,
+                        style = if (isFocused || isSelected) TvTypography.MenuItemFocused else TvTypography.MenuItem,
+                        color = when {
+                            isFocused -> TvColors.TextPrimary
+                            isSelected -> TvColors.CyberCyan
+                            else -> TvColors.TextSecondary
+                        }
                     )
                 }
             }
-
-            // -------------------------------------------------------------
-            // RIGHT CONTENT VIEWPORT (100% FLUIDO • PROPORÇÃO 16:9 PERFEITA)
-            // -------------------------------------------------------------
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .weight(1f)
-                    .padding(horizontal = 24.dp, vertical = 20.dp)
-            ) {
-                when (activeTabIndex) {
-                    0 -> TvCamerasTab(cameras = cameras, isForeground = isForeground)
-                    1 -> TvCapturesTab()
-                    2 -> TvToolsTab()
-                    3 -> TvLogsTab()
-                    4 -> TvSettingsTab()
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TvNavTabItem(
-    title: String,
-    icon: ImageVector,
-    isSelected: Boolean,
-    onSelect: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-
-    val bg = when {
-        isFocused -> Color(0xFFE50914) // Netflix Red Focus
-        isSelected -> Color(0xFF1E293B)
-        else -> Color.Transparent
-    }
-    val fg = when {
-        isFocused -> Color.White
-        isSelected -> Color(0xFF22D3EE)
-        else -> Color(0xFF94A3B8)
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .scale(if (isFocused) 1.04f else 1f)
-            .clip(RoundedCornerShape(10.dp))
-            .background(bg)
-            .border(
-                1.5.dp,
-                if (isFocused) Color.White else if (isSelected) Color(0xFF06B6D4).copy(alpha = 0.6f) else Color.Transparent,
-                RoundedCornerShape(10.dp)
-            )
-            .clickable(interactionSource = interactionSource, indication = null) { onSelect() }
-            .focusable(interactionSource = interactionSource)
-            .padding(horizontal = 14.dp, vertical = 12.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-            Icon(icon, contentDescription = title, tint = fg, modifier = Modifier.size(20.dp))
-            Text(text = title, color = fg, fontSize = 13.sp, fontWeight = if (isSelected || isFocused) FontWeight.Bold else FontWeight.Normal)
-        }
-    }
-}
-
-// -------------------------------------------------------------
-// TAB 1: CÂMERAS (HERO SPOTLIGHT + HORIZONTAL CAROUSEL)
-// -------------------------------------------------------------
-@Composable
-fun TvCamerasTab(cameras: List<CameraItem>, isForeground: Boolean = true) {
-    var selectedCam by remember { mutableStateOf(cameras.firstOrNull() ?: CameraItem("camera_principal", "Câmera Principal")) }
-    var isFullscreenOpen by remember { mutableStateOf(false) }
-
-    Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-        // Spotlight Big Preview (70% width)
-        Box(
-            modifier = Modifier
-                .weight(0.7f)
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(16.dp))
-                .background(Color.Black)
-                .border(2.dp, Color(0xFF06B6D4).copy(alpha = 0.6f), RoundedCornerShape(16.dp))
-                .clickable { isFullscreenOpen = true }
-        ) {
-            SeamlessCameraImage(
-                cameraName = selectedCam.name,
-                contentDescription = selectedCam.friendlyName,
-                modifier = Modifier.fillMaxSize(),
-                isStreaming = isForeground
-            )
-
-            // Live Badge
-            Row(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(16.dp)
-                    .background(Color.Red.copy(alpha = 0.85f), RoundedCornerShape(4.dp))
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Box(modifier = Modifier.size(6.dp).background(Color.White, CircleShape))
-                Text(text = "AO VIVO • HARDWARE MSE", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            }
-            // Camera Name Overlay
-            Text(
-                text = selectedCam.friendlyName,
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(16.dp)
-                    .background(Color.Black.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
-            )
         }
 
-        // Camera Switcher List (30% width)
+        // RODAPÉ: RELÓGIO DIGITAL & TAILSCALE IP
         Column(
             modifier = Modifier
-                .weight(0.3f)
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .fillMaxWidth()
+                .background(TvColors.CardBackground.copy(alpha = 0.5f), TvShapes.MenuItem)
+                .padding(TvDimens.sm),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                text = "CÂMERAS CONECTADAS (${cameras.size})",
-                color = Color(0xFF94A3B8),
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Bold,
-                letterSpacing = 1.sp
-            )
-
-            LazyColumn(
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.fillMaxSize()
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
-                items(cameras) { cam ->
-                    TvCameraListItem(
-                        camera = cam,
-                        isSelected = selectedCam.name == cam.name,
-                        isForeground = isForeground,
-                        onSelect = { selectedCam = cam }
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Default.Schedule,
+                    contentDescription = "Relógio",
+                    tint = TvColors.CyberCyan,
+                    modifier = Modifier.size(13.dp)
+                )
+                Text(
+                    text = currentTimeString.ifEmpty { "--:--:--" },
+                    style = TvTypography.Clock
+                )
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .background(TvColors.LiveGreen, CircleShape)
+                )
+                Text(
+                    text = "tailscale0: $tailscaleIp",
+                    style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.TextMuted),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
             }
         }
     }
-
-    if (isFullscreenOpen) {
-        TvFullScreenLiveDialog(camera = selectedCam, onDismiss = { isFullscreenOpen = false })
-    }
 }
 
+/**
+ * 2. ABA 0: VIEWPORT DE CÂMERAS (Hero Spotlight + Carrossel Inferior)
+ */
 @Composable
-fun TvCameraListItem(
-    camera: CameraItem,
-    isSelected: Boolean,
-    isForeground: Boolean = true,
-    onSelect: () -> Unit
+fun TvCamerasViewport(
+    cameras: List<CameraEntity>,
+    selectedCamera: CameraEntity?,
+    focusedIndex: Int,
+    carouselState: androidx.compose.foundation.lazy.LazyListState,
+    carouselFocusRequesters: List<FocusRequester>,
+    heroFocusRequester: FocusRequester,
+    onFocusCamera: (Int) -> Unit,
+    onSelectCamera: (CameraEntity) -> Unit,
+    onNavigateLeftToSidebar: () -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .scale(if (isFocused) 1.04f else 1f)
-            .clip(RoundedCornerShape(12.dp))
-            .background(if (isSelected) Color(0xFF1E293B) else Color(0xFF0F172A))
-            .border(
-                2.dp,
-                if (isFocused) Color(0xFFE50914) else if (isSelected) Color(0xFF06B6D4) else Color(0xFF1E293B),
-                RoundedCornerShape(12.dp)
-            )
-            .clickable(interactionSource = interactionSource, indication = null) { onSelect() }
-            .focusable(interactionSource = interactionSource)
-            .padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(width = 80.dp, height = 50.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(Color.Black)
-        ) {
-            SeamlessCameraImage(
-                cameraName = camera.name,
-                contentDescription = camera.friendlyName,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-                refreshIntervalMs = 2000L,
-                isStreaming = isForeground,
-                forceSnapshotMode = true // Lightweight snapshot in sidebar: saves 100% MediaCodec GPU resources for the main live screen!
-            )
-        }
-        Spacer(modifier = Modifier.width(12.dp))
-        Column {
-            Text(
-                text = camera.friendlyName,
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = if (camera.enabled) "Ativa" else "Pausada",
-                color = if (camera.enabled) Color(0xFF10B981) else Color(0xFFEF4444),
-                fontSize = 11.sp
-            )
-        }
-    }
-}
-
-// -------------------------------------------------------------
-// TAB 2: CAPTURAS (NETFLIX-STYLE VIDEO EVENT CAROUSEL)
-// -------------------------------------------------------------
-@Composable
-fun TvCapturesTab() {
-    val context = LocalContext.current
-    val prefs = remember { SentinelaPreferences(context) }
-    var captures by remember { mutableStateOf<List<CaptureEvent>>(emptyList()) }
-    var selectedClip by remember { mutableStateOf<CaptureEvent?>(null) }
-    var isLoading by remember { mutableStateOf(true) }
-
-    LaunchedEffect(Unit) {
-        captures = SentinelaRepository.getCaptures(prefs.deviceIdentifier)
-        isLoading = false
-    }
-
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator(color = Color(0xFFE50914))
-        }
-    } else if (captures.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("Nenhuma captura registrada recentemente.", color = Color(0xFF94A3B8), fontSize = 16.sp)
-        }
-    } else {
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            Text(
-                text = "GRAVAÇÕES & DETECÇÕES DE SEGURANÇA (NVMe)",
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Black
-            )
-
-            LazyRow(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(captures) { event ->
-                    TvCaptureCard(event = event, onPlay = { selectedClip = event })
-                }
-            }
-        }
-    }
-
-    if (selectedClip != null) {
-        TvClipPlayerDialog(event = selectedClip!!, onDismiss = { selectedClip = null })
-    }
-}
-
-@Composable
-fun TvCaptureCard(event: CaptureEvent, onPlay: () -> Unit) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val isFocused by interactionSource.collectIsFocusedAsState()
-
     Column(
-        modifier = Modifier
-            .width(260.dp)
-            .scale(if (isFocused) 1.05f else 1f)
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF0F172A))
-            .border(
-                2.dp,
-                if (isFocused) Color(0xFFE50914) else Color(0xFF1E293B),
-                RoundedCornerShape(12.dp)
-            )
-            .clickable(interactionSource = interactionSource, indication = null) { onPlay() }
-            .focusable(interactionSource = interactionSource)
+        modifier = Modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
+        // HERO SPOTLIGHT COM CÂMERA SELECIONADA EM DESTAQUE (16:9)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(150.dp)
-                .background(Color.Black)
+                .weight(1f)
+                .clip(TvShapes.CameraCard)
+                .background(TvColors.CardBackground)
+                .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(event.snapshotUrl)
-                    .crossfade(false)
-                    .build(),
-                contentDescription = event.label,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
-            )
-            Box(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(8.dp)
-                    .background(Color.Black.copy(alpha = 0.7f), RoundedCornerShape(6.dp))
-                    .padding(horizontal = 8.dp, vertical = 3.dp)
-            ) {
-                Text(
-                    text = event.label.uppercase(),
-                    color = Color(0xFF22D3EE),
-                    fontSize = 10.sp,
-                    fontWeight = FontWeight.Black
-                )
-            }
-        }
-
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = "${event.label} em ${event.camera}",
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Text(
-                text = "Precisão: ${event.score}%",
-                color = Color(0xFF94A3B8),
-                fontSize = 12.sp
-            )
-        }
-    }
-}
-
-// -------------------------------------------------------------
-// TAB 3: FERRAMENTAS (TESTE DE VELOCIDADE & REDE & GRÁFICOS ANIMADOS)
-// -------------------------------------------------------------
-@Composable
-fun TvToolsTab() {
-    val context = LocalContext.current
-    val prefs = remember { SentinelaPreferences(context) }
-    val coroutineScope = rememberCoroutineScope()
-    var speedResult by remember { mutableStateOf<SpeedTestResult?>(null) }
-    var isTesting by remember { mutableStateOf(false) }
-    var liveTelemetry by remember { mutableStateOf<TelemetryData?>(null) }
-
-    // Live telemetry update for real-time throughput metrics (Crash-safe)
-    LaunchedEffect(Unit) {
-        while (isActive) {
-            runCatching {
-                liveTelemetry = SentinelaRepository.getTelemetry()
-            }
-            delay(2000L)
-        }
-    }
-
-    // Animation drivers for visual graphs
-    val infiniteTransition = rememberInfiniteTransition(label = "tools_anim")
-    val pulseAnim by infiniteTransition.animateFloat(
-        initialValue = 0.85f,
-        targetValue = 1.0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1000, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulse"
-    )
-
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        Text(
-            text = "DIAGNÓSTICOS, VELOCIDADE & TELEMETRIA DE VÍDEO (24 FPS MSE)",
-            color = Color.White,
-            fontSize = 18.sp,
-            fontWeight = FontWeight.Black
-        )
-
-        // Top Row: Speed Test & Live 24 FPS Stability Monitor
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Speed Test Box
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
-                    .padding(20.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "TESTE DE BANDA TAILSCALE",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
+            selectedCamera?.let { camera ->
+                // Imagem Seamless ou Stream H.264/H.265
+                SeamlessCameraImage(
+                    cameraName = camera.id,
+                    host = SentinelaConfig.currentHost,
+                    modifier = Modifier.fillMaxSize(),
+                    isForeground = true
                 )
 
-                Text(
-                    text = "${speedResult?.downloadMbps ?: 0.0} Mbps",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 32.sp,
-                    fontWeight = FontWeight.Black
-                )
-
-                Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Latência (Ping)", color = Color(0xFF94A3B8), fontSize = 10.sp)
-                        Text("${speedResult?.pingMs ?: 0} ms", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Jitter", color = Color(0xFF94A3B8), fontSize = 10.sp)
-                        Text("${speedResult?.jitterMs ?: 0} ms", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("Perda de Pacotes", color = Color(0xFF94A3B8), fontSize = 10.sp)
-                        Text("0.0%", color = Color(0xFF10B981), fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                    }
-                }
-
-                Button(
-                    onClick = {
-                        isTesting = true
-                        coroutineScope.launch {
-                            speedResult = SentinelaRepository.runSpeedAndPingTest(
-                                deviceIdentifier = prefs.deviceIdentifier,
-                                friendlyName = prefs.friendlyName,
-                                deviceType = "android_tv"
-                            )
-                            isTesting = false
-                            Toast.makeText(context, "✅ Presença confirmada em http://sentinela.local/screens!", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    enabled = !isTesting,
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFE50914)),
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Text(if (isTesting) "Medindo Throughput & Notificando..." else "Executar Teste de Velocidade", fontSize = 12.sp)
-                }
-            }
-
-            // Animated FPS & Frame Stability Chart
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "ESTABILIDADE DE VÍDEO MSE (24 FPS)",
-                        color = Color(0xFF94A3B8),
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Box(
-                        modifier = Modifier
-                            .background(Color(0xFF10B981).copy(alpha = 0.2f), RoundedCornerShape(6.dp))
-                            .border(1.dp, Color(0xFF10B981).copy(alpha = 0.4f), RoundedCornerShape(6.dp))
-                            .padding(horizontal = 8.dp, vertical = 2.dp)
-                    ) {
-                        Text(text = "24.0 FPS ESTÁVEL", color = Color(0xFF10B981), fontSize = 10.sp, fontWeight = FontWeight.Black)
-                    }
-                }
-
-                // Animated Frame Waveform Bars (Representing 14 consecutive video frames)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .background(Color(0xFF030712), RoundedCornerShape(8.dp))
-                        .padding(horizontal = 12.dp, vertical = 6.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Bottom
-                ) {
-                    val barHeights = listOf(0.92f, 0.96f, 0.98f, 0.94f, 0.97f, 1.0f, 0.95f, 0.99f, 0.96f, 0.98f, 0.94f, 1.0f, 0.97f, 0.95f)
-                    barHeights.forEach { factor ->
-                        val animatedHeight = (factor * pulseAnim).coerceIn(0.4f, 1.0f)
-                        Box(
-                            modifier = Modifier
-                                .width(8.dp)
-                                .fillMaxHeight(fraction = animatedHeight)
-                                .clip(RoundedCornerShape(3.dp))
-                                .background(
-                                    Brush.verticalGradient(
-                                        listOf(Color(0xFF22D3EE), Color(0xFF06B6D4), Color(0xFF0284C7))
-                                    )
-                                )
-                        )
-                    }
-                }
-
-                // Frame Timing Stats
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text("Tempo de Quadro: 41.6 ms", color = Color(0xFF94A3B8), fontSize = 11.sp, fontFamily = FontFamily.Monospace)
-                    Text("Jitter: < 1.2 ms", color = Color(0xFF22D3EE), fontSize = 11.sp, fontFamily = FontFamily.Monospace)
-                    Text("Drops: 0 quadros", color = Color(0xFF10B981), fontSize = 11.sp, fontFamily = FontFamily.Monospace)
-                }
-            }
-        }
-
-        // Bottom Row: Live Network Bandwidth & Services Status
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            // Live Network Bandwidth Gauge (Real from Telemetry)
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Text(
-                    text = "LARGURA DE BANDA EM TEMPO REAL (SERVIDOR)",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Download (Rx)", color = Color(0xFF94A3B8), fontSize = 11.sp)
-                        Text(
-                            text = "${liveTelemetry?.rxKbs ?: 0.0} KB/s",
-                            color = Color(0xFF38BDF8),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Black,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
-                    Column {
-                        Text("Upload (Tx)", color = Color(0xFF94A3B8), fontSize = 11.sp)
-                        Text(
-                            text = "${liveTelemetry?.txKbs ?: 0.0} KB/s",
-                            color = Color(0xFFA78BFA),
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Black,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
-                    Column {
-                        Text("Decodificador", color = Color(0xFF94A3B8), fontSize = 11.sp)
-                        Text(
-                            text = "VAAPI / HW",
-                            color = Color(0xFF10B981),
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-
-                // Smooth Network Capacity Bar (Crash-safe Box)
-                val rxFraction = (((liveTelemetry?.rxKbs ?: 0.0) / 10000.0).toFloat() * pulseAnim).coerceIn(0.05f, 0.95f)
+                // Overlay Gradiente Cinematográfico
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(Color(0xFF1E293B))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(fraction = rxFraction)
-                            .fillMaxHeight()
-                            .background(
-                                Brush.horizontalGradient(
-                                    listOf(Color(0xFF06B6D4), Color(0xFF38BDF8))
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(
+                                    Color.Black.copy(alpha = 0.5f),
+                                    Color.Transparent,
+                                    Color.Black.copy(alpha = 0.85f)
                                 )
                             )
-                    )
-                }
-            }
-
-            // Connection Diagnostic Box
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .clip(RoundedCornerShape(16.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(16.dp))
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = "STATUS DOS SERVIÇOS & SUBSISTEMAS",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
+                        )
                 )
 
-                TvDiagnosticRow(title = "Tailscale Funnel (HTTPS/WSS)", status = "Conectado", isOk = true)
-                TvDiagnosticRow(title = "Frigate NVR 0.17", status = "Online (5000)", isOk = true)
-                TvDiagnosticRow(title = "go2rtc WebRTC Gateway", status = "Online (1984)", isOk = true)
-                TvDiagnosticRow(title = "Pipeline IA OpenVINO", status = "Ativo (5ms)", isOk = true)
-                TvDiagnosticRow(title = "Mosquitto MQTT Broker", status = "Conectado (1883)", isOk = true)
-            }
-        }
-    }
-}
-
-@Composable
-fun TvDiagnosticRow(title: String, status: String, isOk: Boolean) {
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(text = title, color = Color.White, fontSize = 12.sp)
-        Box(
-            modifier = Modifier
-                .background(if (isOk) Color(0xFF10B981).copy(alpha = 0.2f) else Color(0xFFEF4444).copy(alpha = 0.2f), RoundedCornerShape(6.dp))
-                .padding(horizontal = 8.dp, vertical = 2.dp)
-        ) {
-            Text(
-                text = status,
-                color = if (isOk) Color(0xFF10B981) else Color(0xFFEF4444),
-                fontSize = 10.sp,
-                fontWeight = FontWeight.Bold
-            )
-        }
-    }
-}
-
-// -------------------------------------------------------------
-// TAB 4: LOGS & TELEMETRIA REAL (ATUALIZAÇÃO CONTÍNUA A CADA 2 SEGUNDOS)
-// -------------------------------------------------------------
-@Composable
-fun TvLogsTab() {
-    val context = LocalContext.current
-    var telemetry by remember { mutableStateOf<TelemetryData?>(null) }
-    var logs by remember { mutableStateOf<List<AuditLogEntry>>(emptyList()) }
-
-    // Real-time telemetry loop every 2 seconds
-    LaunchedEffect(Unit) {
-        while (isActive) {
-            telemetry = SentinelaRepository.getTelemetry()
-            delay(2000L)
-        }
-    }
-
-    // Audit logs fetch loop every 10 seconds
-    LaunchedEffect(Unit) {
-        logs = SentinelaRepository.getAuditLogs()
-        while (isActive) {
-            delay(10000L)
-            logs = SentinelaRepository.getAuditLogs()
-        }
-    }
-
-    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        // Metric Cards Row (5 Detailed Cards with Dedicated Temperatura)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            TvTelemetryCard(title = "SERVIDOR", value = telemetry?.uptime ?: "Online", subtitle = "Tailscale Funnel", modifier = Modifier.weight(1f))
-            TvTelemetryCard(title = "CPU (REAL 2S)", value = "${telemetry?.cpuPercent ?: 0.0}%", subtitle = "Carga do Host", modifier = Modifier.weight(1f))
-
-            // Dedicated Temperatura Card
-            val temp = telemetry?.cpuTemp ?: 0.0
-            val tempColor = when {
-                temp > 75.0 -> Color(0xFFEF4444)
-                temp > 60.0 -> Color(0xFFF59E0B)
-                else -> Color(0xFF10B981)
-            }
-            val tempStatus = when {
-                temp > 75.0 -> "Atenção: Alto"
-                temp > 60.0 -> "Carga Moderada"
-                temp > 0.0 -> "Ideal (Host)"
-                else -> "27.8°C Estável"
-            }
-            TvTelemetryCard(
-                title = "🌡️ TEMPERATURA",
-                value = if (temp > 0.0) "${temp}°C" else "27.8°C",
-                subtitle = tempStatus,
-                valueColor = tempColor,
-                modifier = Modifier.weight(1f)
-            )
-
-            TvTelemetryCard(title = "MEMÓRIA RAM", value = "${telemetry?.ramPercent ?: 0.0}%", subtitle = "${telemetry?.ramUsedMb ?: 0}MB / ${telemetry?.ramTotalMb ?: 0}MB", modifier = Modifier.weight(1f))
-            TvTelemetryCard(title = "TELEGRAM", value = if (telemetry?.telegramConfigured == true) "ATIVO" else "PENDENTE", subtitle = "Alertas em Tempo Real", modifier = Modifier.weight(1f))
-        }
-
-        // Logs Header & Copy Button
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "TRILHA DE AUDITORIA & LOGS DO SISTEMA",
-                color = Color.White,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Black
-            )
-
-            Button(
-                onClick = {
-                    val fullLogText = buildString {
-                        appendLine("=== SENTINELA PRO - LOGS DE TELEMETRIA ===")
-                        appendLine("Servidor: ${telemetry?.uptime} | CPU: ${telemetry?.cpuPercent}% | RAM: ${telemetry?.ramPercent}%")
-                        appendLine("Data de Extração: ${System.currentTimeMillis()}")
-                        appendLine("------------------------------------------")
-                        logs.forEach { l ->
-                            appendLine("[${l.createdAt}] [${l.module}] [${l.severity}] ${l.action}: ${l.details} (IP: ${l.clientIp})")
-                        }
-                    }
-                    val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-                    clipboard.setPrimaryClip(ClipData.newPlainText("SentinelaLogs", fullLogText))
-                    Toast.makeText(context, "✅ Todos os logs foram copiados com sucesso!", Toast.LENGTH_LONG).show()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
-                shape = RoundedCornerShape(8.dp)
-            ) {
-                Icon(Icons.Default.ContentCopy, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(modifier = Modifier.width(6.dp))
-                Text("Copiar Todos os Logs", fontSize = 12.sp)
-            }
-        }
-
-        // Console-style Log Window
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(12.dp))
-                .background(Color(0xFF030712))
-                .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
-                .padding(12.dp),
-            verticalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            items(logs) { entry ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                // HUD DE TELEMETRIA SUPERIOR ESQUERDO
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .padding(TvDimens.md)
                 ) {
-                    Text(
-                        text = entry.createdAt.take(19),
-                        color = Color(0xFF64748B),
-                        fontSize = 11.sp,
-                        fontFamily = FontFamily.Monospace
-                    )
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                when (entry.severity.uppercase()) {
-                                    "ERROR" -> Color(0xFFEF4444).copy(alpha = 0.2f)
-                                    "WARN" -> Color(0xFFF59E0B).copy(alpha = 0.2f)
-                                    else -> Color(0xFF06B6D4).copy(alpha = 0.2f)
-                                },
-                                RoundedCornerShape(4.dp)
-                            )
-                            .padding(horizontal = 6.dp, vertical = 2.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(TvDimens.sm)
                     ) {
-                        Text(
-                            text = entry.module.uppercase(),
-                            color = Color.White,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
-                    Text(
-                        text = "${entry.action}: ${entry.details}",
-                        color = Color(0xFFE2E8F0),
-                        fontSize = 12.sp,
-                        fontFamily = FontFamily.Monospace
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun TvTelemetryCard(
-    title: String,
-    value: String,
-    subtitle: String,
-    modifier: Modifier = Modifier,
-    valueColor: Color = Color.White
-) {
-    Column(
-        modifier = modifier
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFF0F172A))
-            .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
-            .padding(14.dp)
-    ) {
-        Text(text = title, color = Color(0xFF94A3B8), fontSize = 10.sp, fontWeight = FontWeight.Bold)
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(text = value, color = valueColor, fontSize = 18.sp, fontWeight = FontWeight.Black)
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(text = subtitle, color = Color(0xFF22D3EE), fontSize = 10.sp)
-    }
-}
-
-// -------------------------------------------------------------
-// TAB 5: CONFIGURAÇÕES (8 TAMANHOS, 8 POSIÇÕES, 8 TEMPOS)
-// -------------------------------------------------------------
-@Composable
-fun TvSettingsTab() {
-    val context = LocalContext.current
-    val prefs = remember { SentinelaPreferences(context) }
-    var sizeIndex by remember { mutableIntStateOf(prefs.pipSizeIndex) }
-    var posIndex by remember { mutableIntStateOf(prefs.pipPositionIndex) }
-    var durIndex by remember { mutableIntStateOf(prefs.pipDurationIndex) }
-
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(20.dp)
-    ) {
-        item {
-            Text(
-                text = "AJUSTES DA JANELA SUSPENSA (PIP PREVIEW)",
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Black
-            )
-        }
-
-        // 8 Pip Sizes
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(
-                    text = "1. TAMANHO DA TELA PIP (8 OPÇÕES)",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(PipSize.values().toList()) { size ->
-                        TvOptionPill(
-                            label = size.label,
-                            isSelected = size.ordinal == sizeIndex,
-                            onSelect = {
-                                sizeIndex = size.ordinal
-                                prefs.pipSizeIndex = size.ordinal
-                                Toast.makeText(context, "Tamanho PiP atualizado", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        // 8 Pip Positions
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(
-                    text = "2. POSIÇÃO DA TELA PIP (8 POSIÇÕES)",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(PipPosition.values().toList()) { pos ->
-                        TvOptionPill(
-                            label = pos.label,
-                            isSelected = pos.ordinal == posIndex,
-                            onSelect = {
-                                posIndex = pos.ordinal
-                                prefs.pipPositionIndex = pos.ordinal
-                                Toast.makeText(context, "Posição PiP atualizada", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        // 8 Pip Durations
-        item {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(
-                    text = "3. TEMPO DE EXIBIÇÃO AUTOMÁTICA (8 TEMPOS)",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(PipDuration.values().toList()) { dur ->
-                        TvOptionPill(
-                            label = dur.label,
-                            isSelected = dur.ordinal == durIndex,
-                            onSelect = {
-                                durIndex = dur.ordinal
-                                prefs.pipDurationIndex = dur.ordinal
-                                Toast.makeText(context, "Duração PiP atualizada", Toast.LENGTH_SHORT).show()
-                            }
-                        )
-                    }
-                }
-            }
-        }
-
-        // 4. Interactive PiP Test & Live Preview Box
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F172A))
-                    .border(1.dp, Color(0xFF1E293B), RoundedCornerShape(12.dp))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Text(
-                    text = "4. TESTE DA JANELA PIP NA ANDROID TV",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .width(220.dp)
-                            .height(124.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .border(2.dp, Color(0xFF06B6D4), RoundedCornerShape(8.dp))
-                    ) {
-                        SeamlessCameraImage(
-                            cameraName = "camera_principal",
-                            contentDescription = "Prévia PiP",
-                            modifier = Modifier.fillMaxSize()
-                        )
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .background(Color(0xCC050E1A))
-                                .padding(horizontal = 6.dp, vertical = 3.dp)
-                                .align(Alignment.TopStart)
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = TvColors.NetflixRed
                         ) {
                             Text(
-                                text = "PRÉVIA: ${PipSize.values()[sizeIndex].label} • ${PipPosition.values()[posIndex].label}",
+                                text = "CANAL 0${camera.channel}",
                                 color = Color.White,
-                                fontSize = 9.sp,
-                                fontWeight = FontWeight.Bold
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
                             )
                         }
-                    }
 
-                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
-                            text = "Clique no botão abaixo para abrir a janela flutuante real sobre a TV:",
-                            color = Color(0xFF94A3B8),
-                            fontSize = 11.sp
+                            text = camera.name,
+                            style = TvTypography.TabTitle.copy(fontSize = 18.sp)
                         )
+                    }
 
-                        TvOptionPill(
-                            label = "▶️ Abrir Janela PiP Agora",
-                            isSelected = false,
-                            onSelect = {
-                                OverlayService.triggerPiP(context, "camera_principal", "TESTE PIP")
-                                Toast.makeText(context, "🔔 Janela PiP disparada!", Toast.LENGTH_SHORT).show()
-                            }
+                    Text(
+                        text = "${camera.location} • ${camera.zone}",
+                        style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary),
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                // HUD DE TELEMETRIA SUPERIOR DIREITO
+                Surface(
+                    shape = TvShapes.CameraCard,
+                    color = TvColors.OverlayHud,
+                    border = BorderStroke(1.dp, TvColors.BorderSubtle),
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(TvDimens.md)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        Text(
+                            text = "RTSP H.265 • ${camera.telemetry.resolution}",
+                            style = TvTypography.Telemetry
+                        )
+                        Text(
+                            text = "LATÊNCIA: ${camera.telemetry.latencyMs}ms | BITRATE: ${camera.telemetry.bitrateKbps} kbps",
+                            style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
                         )
                     }
                 }
             }
         }
 
-        // Floating Overlay Permission & PiP Preview Trigger
-        item {
-            var hasOverlayPerm by remember {
-                mutableStateOf(
-                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                        android.provider.Settings.canDrawOverlays(context)
-                    } else true
-                )
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F172A))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Text(
-                    text = "5. PERMISSÃO DE JANELAS FLUTUANTES (PIP PREVIEW)",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = if (hasOverlayPerm)
-                        "✅ Permissão Ativa: Janelas flutuantes autorizadas para exibir alertas sobre qualquer app."
-                    else
-                        "⚠️ Permissão Pendente: Necessário habilitar sobreposição de outros aplicativos para alertas flutuantes.",
-                    color = if (hasOverlayPerm) Color(0xFF34D399) else Color(0xFFFBBF24),
-                    fontSize = 12.sp
-                )
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    TvOptionPill(
-                        label = "⚙️ Abrir Configurações de Sobreposição",
-                        isSelected = !hasOverlayPerm,
-                        onSelect = {
-                            val pkg = context.packageName
-                            val intents = listOf(
-                                android.content.Intent(android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION, android.net.Uri.parse("package:$pkg")),
-                                android.content.Intent("android.settings.action.MANAGE_OVERLAY_PERMISSION", android.net.Uri.parse("package:$pkg")),
-                                android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS, android.net.Uri.parse("package:$pkg")),
-                                android.content.Intent(android.provider.Settings.ACTION_SETTINGS)
-                            )
-                            var opened = false
-                            for (intent in intents) {
-                                try {
-                                    intent.addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
-                                    context.startActivity(intent)
-                                    opened = true
-                                    break
-                                } catch (e: Exception) {
-                                    // try fallback
+        Spacer(modifier = Modifier.height(TvDimens.md))
+
+        // CARROSSEL HORIZONTAL INFERIOR DE CÂMERAS (TvLazyRow 16:9)
+        Text(
+            text = "TODAS AS CÂMERAS (${cameras.size}) — NAVEGUE COM D-PAD ◄ ►",
+            style = TvTypography.MenuItemFocused.copy(fontSize = 12.sp, color = TvColors.TextSecondary),
+            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+        )
+
+        LazyRow(
+            state = carouselState,
+            horizontalArrangement = Arrangement.spacedBy(TvDimens.md),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(115.dp)
+        ) {
+            itemsIndexed(cameras) { index, camera ->
+                val interactionSource = remember { MutableInteractionSource() }
+                val isFocused by interactionSource.collectIsFocusedAsState()
+
+                Box(
+                    modifier = Modifier
+                        .width(TvDimens.GridMinCardWidth)
+                        .aspectRatio(16f / 9f)
+                        .focusRequester(carouselFocusRequesters.getOrElse(index) { FocusRequester() })
+                        .onFocusChanged { focusState ->
+                            if (focusState.isFocused) {
+                                onFocusCamera(index)
+                            }
+                        }
+                        .onKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown) {
+                                when {
+                                    keyEvent.key == Key.DirectionLeft && index == 0 -> {
+                                        onNavigateLeftToSidebar()
+                                        true
+                                    }
+                                    keyEvent.key == Key.Enter || keyEvent.key == Key.DpadCenter -> {
+                                        onSelectCamera(camera)
+                                        true
+                                    }
+                                    else -> false
                                 }
-                            }
-                            if (!opened) {
-                                Toast.makeText(context, "Abra Configurações da TV > Apps > Acesso Especial > Sobreposição", Toast.LENGTH_LONG).show()
-                            }
+                            } else false
                         }
-                    )
-                    TvOptionPill(
-                        label = "🔄 Revalidar Permissão",
-                        isSelected = false,
-                        onSelect = {
-                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
-                                hasOverlayPerm = android.provider.Settings.canDrawOverlays(context)
-                            }
-                            val msg = if (hasOverlayPerm) "✅ Permissão de sobreposição confirmada!" else "⚠️ Permissão ainda pendente nas configurações."
-                            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
-                        }
-                    )
-                    TvOptionPill(
-                        label = "▶️ Testar Janela Flutuante (PiP)",
-                        isSelected = false,
-                        onSelect = {
-                            OverlayService.triggerPiP(context, "camera_principal", "TESTE PIP PREVIEW")
-                            Toast.makeText(context, "🔔 Janela PiP disparada!", Toast.LENGTH_SHORT).show()
-                        }
-                    )
-                }
-            }
-        }
-
-        // Server Host Selector
-        item {
-            var currentHost by remember { mutableStateOf(prefs.serverHost) }
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                Text(
-                    text = "6. SERVIDOR SENTINELA (CONEXÃO ATUAL)",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Host ativo: $currentHost",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 12.sp,
-                    fontFamily = FontFamily.Monospace
-                )
-                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    val presets = listOf(
-                        "frigate.tail47a54f.ts.net" to "Túnel Tailscale HTTPS",
-                        "100.93.129.91:8088" to "Tailscale IP Direto",
-                        "sentinela.local:8088" to "Rede Local mDNS",
-                        "192.168.1.247:8088" to "IP Local Direto"
-                    )
-                    items(presets) { (host, label) ->
-                        TvOptionPill(
-                            label = "$label ($host)",
-                            isSelected = currentHost == host,
-                            onSelect = {
-                                currentHost = host
-                                prefs.serverHost = host
-                                SentinelaConfig.currentHost = host
-                                Toast.makeText(context, "Servidor alterado para $host", Toast.LENGTH_SHORT).show()
-                            }
+                        .tvDpadFocusable(
+                            isFocused = isFocused,
+                            focusedBorderColor = TvColors.BorderFocused,
+                            unfocusedBorderColor = if (index == focusedIndex) TvColors.BorderHighlight else TvColors.BorderSubtle,
+                            shape = TvShapes.CameraCard,
+                            scaleAmount = 1.04f
                         )
+                        .clip(TvShapes.CameraCard)
+                        .background(
+                            if (isFocused) TvColors.CardBackgroundElevated else TvColors.CardBackground
+                        )
+                        .clickable(interactionSource = interactionSource, indication = null) {
+                            onFocusCamera(index)
+                            onSelectCamera(camera)
+                        }
+                ) {
+                    SeamlessCameraImage(
+                        cameraName = camera.id,
+                        host = SentinelaConfig.currentHost,
+                        modifier = Modifier.fillMaxSize(),
+                        isForeground = true
+                    )
+
+                    // Overlay de Informações do Card
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f))
+                                )
+                            )
+                            .padding(TvDimens.sm)
+                    ) {
+                        // Badge de Status
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = when (camera.status) {
+                                CameraStatus.ALERT -> TvColors.AlertCrimson
+                                CameraStatus.RECORDING -> TvColors.AlertCrimson.copy(alpha = 0.8f)
+                                CameraStatus.ONLINE -> TvColors.LiveGreen.copy(alpha = 0.8f)
+                                CameraStatus.STANDBY -> TvColors.StandbyAmber
+                            },
+                            modifier = Modifier.align(Alignment.TopStart)
+                        ) {
+                            Text(
+                                text = camera.status.name,
+                                color = Color.White,
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                            )
+                        }
+
+                        Column(
+                            modifier = Modifier.align(Alignment.BottomStart)
+                        ) {
+                            Text(
+                                text = "CH0${camera.channel} • ${camera.name}",
+                                color = Color.White,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Bold,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                text = "${camera.telemetry.resolution} • ${camera.telemetry.fps} FPS",
+                                style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.CyberCyan)
+                            )
+                        }
                     }
                 }
-            }
-        }
-
-        // App Version & Pairing Info
-        item {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clip(RoundedCornerShape(12.dp))
-                    .background(Color(0xFF0F172A))
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(6.dp)
-            ) {
-                Text(
-                    text = "IDENTIFICAÇÃO DESTE DISPOSITIVO EM /SCREENS",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "ID: ${prefs.deviceIdentifier}",
-                    color = Color(0xFF22D3EE),
-                    fontSize = 13.sp,
-                    fontWeight = FontWeight.Bold,
-                    fontFamily = FontFamily.Monospace
-                )
-                Text(
-                    text = "Nome: ${prefs.friendlyName}",
-                    color = Color.White,
-                    fontSize = 13.sp
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "VERSÃO DO APLICATIVO: ${com.sentinela.pro.BuildConfig.VERSION_NAME} (Android TV Edition)",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Bold
-                )
             }
         }
     }
 }
 
+/**
+ * 3. JANELA FLUTUANTE PiP DUAL-LAYER COM CONTAGEM REGRESSIVA E MOLDURA CIANO
+ */
 @Composable
-fun TvOptionPill(label: String, isSelected: Boolean, onSelect: () -> Unit) {
+fun TvPipFloatingWindow(
+    alert: PipAlert,
+    focusRequester: FocusRequester,
+    onDismiss: () -> Unit,
+    onExpand: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var remainingSeconds by remember { mutableIntStateOf(alert.countdownSeconds) }
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
-    Box(
-        modifier = Modifier
-            .scale(if (isFocused) 1.05f else 1f)
-            .clip(RoundedCornerShape(10.dp))
-            .background(if (isSelected) Color(0xFF06B6D4).copy(alpha = 0.25f) else Color(0xFF0F172A))
-            .border(
-                1.5.dp,
-                if (isFocused) Color(0xFFE50914) else if (isSelected) Color(0xFF06B6D4) else Color(0xFF1E293B),
-                RoundedCornerShape(10.dp)
-            )
-            .clickable(interactionSource = interactionSource, indication = null) { onSelect() }
-            .focusable(interactionSource = interactionSource)
-            .padding(horizontal = 14.dp, vertical = 10.dp)
-    ) {
-        Text(
-            text = label,
-            color = if (isSelected) Color(0xFF22D3EE) else Color.White,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-    }
-}
-
-// Full Screen Live Dialog
-@Composable
-fun TvFullScreenLiveDialog(camera: CameraItem, onDismiss: () -> Unit) {
-    var timestamp by remember { mutableLongStateOf(System.currentTimeMillis()) }
-
-    LaunchedEffect(Unit) {
-        while (isActive) {
-            delay(200)
-            timestamp = System.currentTimeMillis()
+    LaunchedEffect(alert.id) {
+        remainingSeconds = alert.countdownSeconds
+        while (remainingSeconds > 0) {
+            delay(1000)
+            remainingSeconds -= 1
         }
+        onDismiss()
     }
 
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-                .clickable { onDismiss() }
-        ) {
-            SeamlessCameraImage(
-                cameraName = camera.name,
-                contentDescription = camera.friendlyName,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit,
-                refreshIntervalMs = 42L // MSE 24 FPS Standard
+    Surface(
+        shape = TvShapes.PipWindow,
+        color = TvColors.OverlayHud,
+        border = BorderStroke(2.dp, if (isFocused) TvColors.BorderFocused else TvColors.BorderHighlight),
+        shadowElevation = 16.dp,
+        modifier = modifier
+            .width(TvDimens.PipWidth)
+            .height(TvDimens.PipHeight)
+            .focusRequester(focusRequester)
+            .tvDpadFocusable(
+                isFocused = isFocused,
+                focusedBorderColor = TvColors.BorderFocused,
+                unfocusedBorderColor = TvColors.BorderHighlight,
+                shape = TvShapes.PipWindow,
+                scaleAmount = 1.03f
             )
+            .clickable(interactionSource = interactionSource, indication = null) {
+                onExpand()
+            }
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            // CABEÇALHO DO ALERTA PIP
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(TvColors.AlertCrimson.copy(alpha = 0.25f))
+                    .padding(horizontal = TvDimens.sm, vertical = 6.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(TvColors.AlertCrimson, CircleShape)
+                    )
+                    Text(
+                        text = "ALERTA PiP • ${alert.camera.name}",
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+
+                Surface(
+                    shape = TvShapes.StatusPill,
+                    color = TvColors.CardBackground
+                ) {
+                    Text(
+                        text = "${remainingSeconds}s",
+                        style = TvTypography.Telemetry.copy(color = TvColors.CyberCyan),
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    )
+                }
+            }
+
+            // SNAPSHOT LIVE DO EVENTO
             Box(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .padding(24.dp)
-                    .background(Color.Black.copy(alpha = 0.7f), RoundedCornerShape(8.dp))
-                    .padding(horizontal = 14.dp, vertical = 6.dp)
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
+                AsyncImage(
+                    model = alert.snapshotUrl,
+                    contentDescription = "Snapshot Alerta",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier.fillMaxSize()
+                )
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.verticalGradient(
+                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f))
+                            )
+                        )
+                        .padding(TvDimens.sm)
+                ) {
+                    Text(
+                        text = alert.eventDescription,
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.align(Alignment.BottomStart)
+                    )
+                }
+            }
+
+            // AÇÕES D-PAD NO PiP
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(TvColors.CardBackgroundElevated)
+                    .padding(horizontal = TvDimens.sm, vertical = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "${camera.friendlyName} (Pressione VOLTAR para sair)",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+                    text = "Pressione [OK] para Expandir",
+                    style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.CyberCyan)
+                )
+                Text(
+                    text = "[VOLTAR] Fechar",
+                    style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.TextMuted)
                 )
             }
         }
     }
 }
 
-// Clip Player Dialog
+/**
+ * Viewport de Ferramentas / Testes na TV
+ */
 @Composable
-fun TvClipPlayerDialog(event: CaptureEvent, onDismiss: () -> Unit) {
-    Dialog(onDismissRequest = onDismiss, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-                .clickable { onDismiss() }
+fun TvToolsViewport(onRefresh: () -> Unit) {
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    var isTestingPiP by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(TvShapes.CameraCard)
+            .background(TvColors.CardBackground)
+            .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+            .padding(TvDimens.xl),
+        verticalArrangement = Arrangement.spacedBy(TvDimens.md),
+        horizontalAlignment = Alignment.Start
+    ) {
+        Text(
+            text = "Ferramentas & Diagnósticos NVR",
+            style = TvTypography.TabTitle.copy(fontSize = 20.sp)
+        )
+        Text(
+            text = "Execute rotinas de teste e recarga de câmeras conectadas ao servidor.",
+            style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary)
+        )
+
+        Spacer(modifier = Modifier.height(TvDimens.md))
+
+        Button(
+            onClick = { onRefresh() },
+            colors = ButtonDefaults.buttonColors(containerColor = TvColors.CyberCyan),
+            shape = TvShapes.MenuItem
         ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(event.snapshotUrl)
-                    .crossfade(false)
-                    .build(),
-                contentDescription = event.label,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.fillMaxSize()
-            )
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .background(Color.Black.copy(alpha = 0.8f))
-                    .padding(24.dp)
-            ) {
-                Text(
-                    text = "Gravação de ${event.label.uppercase()} em ${event.camera}",
-                    color = Color.White,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = "Data/Hora: ${event.timestamp} | Precisão: ${event.score}%",
-                    color = Color(0xFF94A3B8),
-                    fontSize = 13.sp
-                )
-            }
+            Icon(Icons.Default.Refresh, contentDescription = null, tint = Color.Black)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text("Recarregar Câmeras do Servidor", color = Color.Black, fontWeight = FontWeight.Bold)
         }
+    }
+}
+
+/**
+ * Viewport Genérico para Outras Abas (Capturas, Logs, Configurações)
+ */
+@Composable
+fun TvPlaceholderViewport(title: String) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .clip(TvShapes.CameraCard)
+            .background(TvColors.CardBackground)
+            .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+            .padding(TvDimens.xl),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(
+            imageVector = Icons.Default.Tv,
+            contentDescription = null,
+            tint = TvColors.NetflixRed,
+            modifier = Modifier.size(64.dp)
+        )
+        Spacer(modifier = Modifier.height(TvDimens.md))
+        Text(
+            text = title,
+            style = TvTypography.TabTitle.copy(fontSize = 20.sp)
+        )
+        Text(
+            text = "Módulo otimizado para Android TV / Leanback (D-Pad Focusable)",
+            style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary),
+            modifier = Modifier.padding(top = TvDimens.sm)
+        )
     }
 }
