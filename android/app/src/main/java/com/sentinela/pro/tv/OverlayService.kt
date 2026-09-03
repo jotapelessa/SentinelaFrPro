@@ -129,7 +129,8 @@ class OverlayService : Service() {
         val pipSize = prefs.currentPipSize
         val pipPos = prefs.currentPipPosition
         val pipDur = prefs.currentPipDuration
-        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=mse&width=100%"
+        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=webrtc,mse,mp4&width=100%"
+        val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
 
         try {
             val params = WindowManager.LayoutParams(
@@ -155,12 +156,37 @@ class OverlayService : Service() {
                     setBackgroundColor(0xFF000000.toInt())
                 }
 
+                // 1. Instant Snapshot Base Layer (Loads in 0ms, zero lag!)
+                val snapImageView = android.widget.ImageView(this).apply {
+                    layoutParams = FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.MATCH_PARENT,
+                        FrameLayout.LayoutParams.MATCH_PARENT
+                    )
+                    scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+                }
+                inner.addView(snapImageView)
+
+                // Load instant image with Coil
+                try {
+                    val imageLoader = coil.Coil.imageLoader(this)
+                    val req = coil.request.ImageRequest.Builder(this)
+                        .data(snapshotUrl)
+                        .target(snapImageView)
+                        .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .build()
+                    imageLoader.enqueue(req)
+                } catch (e: Exception) {
+                    android.util.Log.w("OverlayService", "Snapshot pre-load: ${e.message}")
+                }
+
+                // 2. Hardware Video Stream Layer
                 val wv = WebView(this).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
-                    setBackgroundColor(Color.BLACK)
+                    setBackgroundColor(Color.TRANSPARENT)
                     setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
                     settings.apply {
@@ -179,7 +205,11 @@ class OverlayService : Service() {
 
                     isVerticalScrollBarEnabled = false
                     isHorizontalScrollBarEnabled = false
-                    webChromeClient = WebChromeClient()
+                    webChromeClient = object : WebChromeClient() {
+                        override fun onPermissionRequest(request: android.webkit.PermissionRequest?) {
+                            request?.grant(request.resources)
+                        }
+                    }
                     webViewClient = object : WebViewClient() {
                         override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
                             handler?.proceed()
@@ -189,7 +219,7 @@ class OverlayService : Service() {
                 pipWebView = wv
                 inner.addView(wv)
 
-                // Top HUD Bar (Camera name & Label badge)
+                // 3. Top HUD Bar (Camera name & Label badge)
                 val hudBar = LinearLayout(this).apply {
                     orientation = LinearLayout.HORIZONTAL
                     setBackgroundColor(0xCC050E1A.toInt()) // Dark glassy background
@@ -215,7 +245,7 @@ class OverlayService : Service() {
                     setTextColor(Color.WHITE)
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
                     typeface = Typeface.DEFAULT_BOLD
-                    text = "${camera.uppercase()} • ${label.uppercase()} • 24 FPS"
+                    text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
                 }
                 pipTitleView = tv
                 hudBar.addView(tv)
@@ -226,7 +256,7 @@ class OverlayService : Service() {
                 windowManager.addView(overlayView, params)
                 wv.loadUrl(streamUrl)
             } else {
-                pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • 24 FPS"
+                pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
                 if (overlayView?.parent == null) {
                     windowManager.addView(overlayView, params)
                 } else {

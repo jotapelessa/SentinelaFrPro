@@ -52,7 +52,17 @@ fun SmartphoneYouTubeScreen(
     onRefresh: () -> Unit = {}
 ) {
     var selectedTab by remember { mutableIntStateOf(0) }
-    val tabTitles = listOf("Câmeras", "Capturas", "Ferramentas", "Logs", "Ajustes")
+    var isMaster by remember { mutableStateOf(SentinelaRepository.isMasterAdmin) }
+    val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
+
+    LaunchedEffect(Unit) {
+        while (isActive) {
+            SentinelaRepository.registerOrHeartbeat(prefs.deviceIdentifier, prefs.friendlyName, "smartphone")
+            isMaster = SentinelaRepository.isMasterAdmin
+            delay(10000)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -80,6 +90,22 @@ fun SmartphoneYouTubeScreen(
                             )
                         }
                         Spacer(modifier = Modifier.width(6.dp))
+                        if (isMaster) {
+                            Box(
+                                modifier = Modifier
+                                    .background(Color(0xFFF59E0B).copy(alpha = 0.25f), RoundedCornerShape(4.dp))
+                                    .border(1.dp, Color(0xFFF59E0B).copy(alpha = 0.6f), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "⭐ MASTER",
+                                    color = Color(0xFFFDE68A),
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.Black
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                        }
                         Box(
                             modifier = Modifier
                                 .background(Color(0xFF1E293B), RoundedCornerShape(4.dp))
@@ -115,7 +141,7 @@ fun SmartphoneYouTubeScreen(
                     selected = selectedTab == 0,
                     onClick = { selectedTab = 0 },
                     icon = { Icon(Icons.Default.Videocam, contentDescription = "Câmeras") },
-                    label = { Text(tabTitles[0], fontSize = 11.sp) },
+                    label = { Text("Câmeras", fontSize = 10.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
@@ -128,7 +154,7 @@ fun SmartphoneYouTubeScreen(
                     selected = selectedTab == 1,
                     onClick = { selectedTab = 1 },
                     icon = { Icon(Icons.Default.VideoLibrary, contentDescription = "Capturas") },
-                    label = { Text(tabTitles[1], fontSize = 11.sp) },
+                    label = { Text("Capturas", fontSize = 10.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
@@ -137,11 +163,27 @@ fun SmartphoneYouTubeScreen(
                         indicatorColor = Color(0xFF1E293B)
                     )
                 )
+                if (isMaster) {
+                    NavigationBarItem(
+                        selected = selectedTab == 2,
+                        onClick = { selectedTab = 2 },
+                        icon = { Icon(Icons.Default.AdminPanelSettings, contentDescription = "Master", tint = Color(0xFFFBBF24)) },
+                        label = { Text("⭐ Master", fontSize = 10.sp, color = Color(0xFFFBBF24), fontWeight = FontWeight.Bold) },
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color(0xFFFBBF24),
+                            selectedTextColor = Color(0xFFFBBF24),
+                            unselectedIconColor = Color(0xFFFDE68A),
+                            unselectedTextColor = Color(0xFFFDE68A),
+                            indicatorColor = Color(0xFF451A03)
+                        )
+                    )
+                }
+                val toolsIdx = if (isMaster) 3 else 2
                 NavigationBarItem(
-                    selected = selectedTab == 2,
-                    onClick = { selectedTab = 2 },
+                    selected = selectedTab == toolsIdx,
+                    onClick = { selectedTab = toolsIdx },
                     icon = { Icon(Icons.Default.Speed, contentDescription = "Ferramentas") },
-                    label = { Text(tabTitles[2], fontSize = 11.sp) },
+                    label = { Text("Ferramentas", fontSize = 10.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
@@ -150,11 +192,12 @@ fun SmartphoneYouTubeScreen(
                         indicatorColor = Color(0xFF1E293B)
                     )
                 )
+                val logsIdx = if (isMaster) 4 else 3
                 NavigationBarItem(
-                    selected = selectedTab == 3,
-                    onClick = { selectedTab = 3 },
+                    selected = selectedTab == logsIdx,
+                    onClick = { selectedTab = logsIdx },
                     icon = { Icon(Icons.Default.Dns, contentDescription = "Logs") },
-                    label = { Text(tabTitles[3], fontSize = 11.sp) },
+                    label = { Text("Logs", fontSize = 10.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
@@ -163,11 +206,12 @@ fun SmartphoneYouTubeScreen(
                         indicatorColor = Color(0xFF1E293B)
                     )
                 )
+                val settingsIdx = if (isMaster) 5 else 4
                 NavigationBarItem(
-                    selected = selectedTab == 4,
-                    onClick = { selectedTab = 4 },
+                    selected = selectedTab == settingsIdx,
+                    onClick = { selectedTab = settingsIdx },
                     icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes") },
-                    label = { Text(tabTitles[4], fontSize = 11.sp) },
+                    label = { Text("Ajustes", fontSize = 10.sp) },
                     colors = NavigationBarItemDefaults.colors(
                         selectedIconColor = Color(0xFF22D3EE),
                         selectedTextColor = Color(0xFF22D3EE),
@@ -185,12 +229,23 @@ fun SmartphoneYouTubeScreen(
                 .fillMaxSize()
                 .padding(padding)
         ) {
-            when (selectedTab) {
-                0 -> PhoneCamerasTab(cameras = cameras)
-                1 -> PhoneCapturesTab()
-                2 -> PhoneToolsTab()
-                3 -> PhoneLogsTab()
-                4 -> PhoneSettingsTab()
+            if (isMaster) {
+                when (selectedTab) {
+                    0 -> PhoneCamerasTab(cameras = cameras)
+                    1 -> PhoneCapturesTab()
+                    2 -> PhoneMasterTab()
+                    3 -> PhoneToolsTab()
+                    4 -> PhoneLogsTab()
+                    5 -> PhoneSettingsTab()
+                }
+            } else {
+                when (selectedTab) {
+                    0 -> PhoneCamerasTab(cameras = cameras)
+                    1 -> PhoneCapturesTab()
+                    2 -> PhoneToolsTab()
+                    3 -> PhoneLogsTab()
+                    4 -> PhoneSettingsTab()
+                }
             }
         }
     }
@@ -1012,3 +1067,350 @@ fun PhoneZoomCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
         }
     }
 }
+
+// -------------------------------------------------------------
+// PHONE TAB: CENTRAL MASTER & DIAGNÓSTICO EM LOTE
+// -------------------------------------------------------------
+@Composable
+fun PhoneMasterTab() {
+    val context = LocalContext.current
+    var devices by remember { mutableStateOf<List<com.sentinela.pro.network.RemoteDeviceItem>>(emptyList()) }
+    var isLoading by remember { mutableStateOf(false) }
+    var actionStatus by remember { mutableStateOf<String?>(null) }
+    var isExecutingBatch by remember { mutableStateOf(false) }
+
+    fun refreshDevices() {
+        isLoading = true
+        kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+            try {
+                devices = SentinelaRepository.getPairedDevicesList()
+            } catch (e: Exception) {
+                actionStatus = "Erro ao carregar telas: ${e.message}"
+            } finally {
+                isLoading = false
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        refreshDevices()
+    }
+
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Master VIP Banner
+        item {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(
+                        Brush.horizontalGradient(
+                            colors = listOf(Color(0xFF78350F), Color(0xFF451A03))
+                        )
+                    )
+                    .border(1.dp, Color(0xFFF59E0B).copy(alpha = 0.5f), RoundedCornerShape(16.dp))
+                    .padding(16.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Text(text = "⭐", fontSize = 20.sp)
+                        Text(
+                            text = "CENTRAL MASTER DESBLOQUEADA",
+                            color = Color(0xFFFDE68A),
+                            fontWeight = FontWeight.Black,
+                            fontSize = 14.sp
+                        )
+                    }
+                    Text(
+                        text = "Este dispositivo possui privilégios de Administrador Master. Você pode gerenciar telas, conceder permissões e executar testes individuais ou em lote em tempo real.",
+                        color = Color(0xFFFEF3C7).copy(alpha = 0.8f),
+                        fontSize = 11.sp,
+                        lineHeight = 16.sp
+                    )
+                }
+            }
+        }
+
+        // Action Status Toast
+        actionStatus?.let { status ->
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(Color(0xFF064E3B).copy(alpha = 0.4f))
+                        .border(1.dp, Color(0xFF10B981).copy(alpha = 0.5f), RoundedCornerShape(12.dp))
+                        .padding(12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(text = status, color = Color(0xFFA7F3D0), fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        IconButton(onClick = { actionStatus = null }, modifier = Modifier.size(24.dp)) {
+                            Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color(0xFFA7F3D0), modifier = Modifier.size(16.dp))
+                        }
+                    }
+                }
+            }
+        }
+
+        // Batch Control Section
+        item {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF111827)),
+                shape = RoundedCornerShape(16.dp),
+                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1F2937))
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(Icons.Default.Bolt, contentDescription = null, tint = Color(0xFFF59E0B))
+                        Text(
+                            text = "COMANDOS E TESTES EM LOTE",
+                            color = Color.White,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp
+                        )
+                    }
+
+                    // Button 1: PiP Alert on all TVs
+                    Button(
+                        onClick = {
+                            isExecutingBatch = true
+                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                val (ok, msg) = SentinelaRepository.executeBatchTest("pip_alert")
+                                actionStatus = msg
+                                isExecutingBatch = false
+                            }
+                        },
+                        enabled = !isExecutingBatch,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0284C7)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.Tv, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("🚨 Disparar PiP em Todas as TVs", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+
+                    // Button 2: Simulated AI Detection
+                    Button(
+                        onClick = {
+                            isExecutingBatch = true
+                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                val (ok, msg) = SentinelaRepository.executeBatchTest("simulated_detection")
+                                actionStatus = msg
+                                isExecutingBatch = false
+                            }
+                        },
+                        enabled = !isExecutingBatch,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Default.CenterFocusStrong, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("🎯 Simular Detecção IA com Snapshot", fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+
+                    // Button 3: Latency & Ping Sweep
+                    Button(
+                        onClick = {
+                            isExecutingBatch = true
+                            kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                val (ok, msg) = SentinelaRepository.executeBatchTest("ping_speed")
+                                actionStatus = msg
+                                isExecutingBatch = false
+                            }
+                        },
+                        enabled = !isExecutingBatch,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1E293B)),
+                        shape = RoundedCornerShape(12.dp),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF334155))
+                    ) {
+                        Icon(Icons.Default.Speed, contentDescription = null, tint = Color(0xFF22D3EE), modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("⚡ Teste de Latência / Ping de Telas", color = Color(0xFFE2E8F0), fontWeight = FontWeight.Bold, fontSize = 12.sp)
+                    }
+                }
+            }
+        }
+
+        // Connected Screens Header
+        item {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(Icons.Default.Devices, contentDescription = null, tint = Color(0xFF22D3EE))
+                    Text(
+                        text = "TELAS E DISPOSITIVOS (${devices.size})",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp
+                    )
+                }
+                IconButton(onClick = { refreshDevices() }, modifier = Modifier.size(32.dp)) {
+                    Icon(Icons.Default.Refresh, contentDescription = "Atualizar", tint = Color(0xFF22D3EE), modifier = Modifier.size(18.dp))
+                }
+            }
+        }
+
+        // Devices List
+        if (devices.isEmpty() && !isLoading) {
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("Nenhum dispositivo encontrado.", color = Color(0xFF64748B), fontSize = 12.sp)
+                }
+            }
+        }
+
+        items(devices) { dev ->
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color(0xFF111827)),
+                shape = RoundedCornerShape(14.dp),
+                border = androidx.compose.foundation.BorderStroke(
+                    1.dp,
+                    if (dev.isMasterAdmin) Color(0xFFF59E0B).copy(alpha = 0.5f) else Color(0xFF1F2937)
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    // Title & Badges
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                if (dev.deviceType == "android_tv") Icons.Default.Tv else Icons.Default.PhoneAndroid,
+                                contentDescription = null,
+                                tint = if (dev.isMasterAdmin) Color(0xFFF59E0B) else Color(0xFF22D3EE),
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Text(
+                                text = dev.friendlyName,
+                                color = Color.White,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 13.sp
+                            )
+                        }
+
+                        if (dev.isMasterAdmin) {
+                            Box(
+                                modifier = Modifier
+                                    .background(Color(0xFFF59E0B).copy(alpha = 0.2f), RoundedCornerShape(4.dp))
+                                    .border(1.dp, Color(0xFFF59E0B).copy(alpha = 0.5f), RoundedCornerShape(4.dp))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text("⭐ MASTER", color = Color(0xFFFDE68A), fontSize = 9.sp, fontWeight = FontWeight.Black)
+                            }
+                        }
+                    }
+
+                    // Network IPs
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("IP: ${dev.ipAddress}", color = Color(0xFF94A3B8), fontSize = 11.sp, fontFamily = FontFamily.Monospace)
+                        Text(
+                            "Tailscale: ${dev.tailscaleIp ?: "LAN Local"}",
+                            color = Color(0xFF38BDF8),
+                            fontSize = 11.sp,
+                            fontFamily = FontFamily.Monospace
+                        )
+                    }
+
+                    // Action Buttons for this Device
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        if (dev.deviceType == "android_tv") {
+                            Button(
+                                onClick = {
+                                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                        val (ok, msg) = SentinelaRepository.testSingleTv(dev.id)
+                                        actionStatus = "Comando PiP enviado para ${dev.friendlyName}!"
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0369A1)),
+                                shape = RoundedCornerShape(8.dp),
+                                contentPadding = PaddingValues(vertical = 6.dp, horizontal = 10.dp)
+                            ) {
+                                Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(14.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("Testar PiP", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+
+                        if (dev.deviceType == "smartphone") {
+                            Button(
+                                onClick = {
+                                    kotlinx.coroutines.GlobalScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                                        val ok = SentinelaRepository.toggleRemoteMaster(dev.deviceIdentifier)
+                                        if (ok) {
+                                            actionStatus = "Privilégio Master alterado para ${dev.friendlyName}!"
+                                            refreshDevices()
+                                        }
+                                    }
+                                },
+                                modifier = Modifier.weight(1f),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (dev.isMasterAdmin) Color(0xFF78350F) else Color(0xFF1E293B)
+                                ),
+                                shape = RoundedCornerShape(8.dp),
+                                border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFFF59E0B).copy(alpha = 0.5f)),
+                                contentPadding = PaddingValues(vertical = 6.dp, horizontal = 10.dp)
+                            ) {
+                                Text(
+                                    text = if (dev.isMasterAdmin) "Revogar Master" else "Conceder Master",
+                                    color = Color(0xFFFDE68A),
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+

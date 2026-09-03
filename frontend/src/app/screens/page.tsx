@@ -24,6 +24,7 @@ interface PairedDevice {
   allow_reboot_server?: boolean;
   pip_default_size?: string;
   pip_duration_seconds?: number;
+  is_master_admin?: boolean;
   last_seen?: string;
 }
 
@@ -266,6 +267,52 @@ export default function ScreensPage() {
     }
   };
 
+  const handleToggleMaster = async (device: PairedDevice) => {
+    try {
+      const res = await fetch(`${apiUrl}/devices/${device.device_identifier}/toggle-master`, {
+        method: "POST"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setTestResult(
+          data.is_master_admin
+            ? `⭐ Permissões MASTER concedidas para ${device.friendly_name}! Funções secretas desbloqueadas no app.`
+            : `🔒 Permissões MASTER revogadas de ${device.friendly_name}.`
+        );
+        fetchDevices();
+        setTimeout(() => setTestResult(null), 6000);
+      }
+    } catch (e) {
+      console.error("Failed to toggle master:", e);
+      setTestResult("⚠️ Erro ao alterar privilégios master do dispositivo.");
+      setTimeout(() => setTestResult(null), 4000);
+    }
+  };
+
+  const handleBatchTest = async (testType: string) => {
+    setTestingPiP(true);
+    setTestResult(null);
+    try {
+      const res = await fetch(`${apiUrl}/devices/batch-test`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          test_type: testType,
+          camera_name: selectedCam,
+          label: "TESTE EM LOTE SENTINELA"
+        })
+      });
+      const data = await res.json();
+      setTestResult(`🚀 Teste em lote (${testType}) executado em ${data.total} dispositivo(s)!`);
+    } catch (e) {
+      console.error("Batch test failed:", e);
+      setTestResult("⚠️ Falha ao executar teste em lote.");
+    } finally {
+      setTestingPiP(false);
+      setTimeout(() => setTestResult(null), 6000);
+    }
+  };
+
   const handleDeleteDevice = async (id: number) => {
     if (!confirm("Deseja realmente remover esta Smart TV/tela?")) return;
     try {
@@ -411,6 +458,15 @@ export default function ScreensPage() {
 
           <button
             disabled={testingPiP}
+            onClick={() => handleBatchTest("simulated_detection")}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 text-xs font-bold transition-all disabled:opacity-50"
+            title="Simula um evento de detecção de pessoa com bounding box em tempo real para todas as telas"
+          >
+            <span>🎯 Simular Detecção IA</span>
+          </button>
+
+          <button
+            disabled={testingPiP}
             onClick={handleTestPiPBroadcast}
             className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50"
           >
@@ -545,18 +601,40 @@ export default function ScreensPage() {
                           {isOnline ? <Wifi className="w-2.5 h-2.5" /> : <WifiOff className="w-2.5 h-2.5" />}
                           {isOnline ? "Online" : "Sem Resposta"}
                         </span>
+                        {device.is_master_admin && (
+                          <span className="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 text-[9px] font-bold tracking-wider animate-pulse flex items-center gap-1">
+                            ⭐ MASTER
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
 
-                  {/* Action: Gerenciar */}
-                  <button
-                    onClick={() => handleManageDevice(device)}
-                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all text-xs font-bold"
-                  >
-                    <Sliders className="w-3.5 h-3.5 text-cyan-400" />
-                    Gerenciar
-                  </button>
+                  <div className="flex items-center gap-2">
+                    {/* Master Unlock Button for Smartphones */}
+                    {device.device_type === "smartphone" && (
+                      <button
+                        onClick={() => handleToggleMaster(device)}
+                        className={`flex items-center gap-1 px-2.5 py-1.5 rounded-lg border transition-all text-xs font-bold ${
+                          device.is_master_admin
+                            ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
+                            : "bg-slate-800 text-slate-300 border-slate-700 hover:border-amber-500/50 hover:text-amber-300"
+                        }`}
+                        title={device.is_master_admin ? "Revogar direitos Master deste aparelho" : "Desbloquear direitos Master com funções avançadas"}
+                      >
+                        {device.is_master_admin ? "⭐ Master Ativo" : "🔓 Desbloquear Master"}
+                      </button>
+                    )}
+
+                    {/* Action: Gerenciar */}
+                    <button
+                      onClick={() => handleManageDevice(device)}
+                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition-all text-xs font-bold"
+                    >
+                      <Sliders className="w-3.5 h-3.5 text-cyan-400" />
+                      Gerenciar
+                    </button>
+                  </div>
                 </div>
 
                 {/* Device Info & Individual Test Action */}

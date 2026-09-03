@@ -116,6 +116,7 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
             "allow_reboot_server": d.allow_reboot_server if d.allow_reboot_server is not None else False,
             "pip_default_size": d.pip_default_size or "medium",
             "pip_duration_seconds": d.pip_duration_seconds or 10,
+            "is_master_admin": bool(d.is_master_admin),
             "last_seen": d.last_seen.isoformat() if d.last_seen else None,
             "created_at": d.created_at.isoformat() if d.created_at else None
         })
@@ -192,6 +193,7 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         "allow_reboot_server": dev.allow_reboot_server if dev.allow_reboot_server is not None else False,
         "pip_default_size": dev.pip_default_size or "medium",
         "pip_duration_seconds": dev.pip_duration_seconds or 10,
+        "is_master_admin": bool(dev.is_master_admin),
         "last_seen": dev.last_seen.isoformat() if dev.last_seen else None
     }
 
@@ -642,4 +644,108 @@ async def device_diagnostics(device_id: int, db: AsyncSession = Depends(get_db))
             "status": dev.permission_status
         }
     }
+
+
+class BatchTestRequest(BaseModel):
+    target_device_ids: Optional[List[str]] = None  # null for all
+    device_type: Optional[str] = None  # "android_tv", "smartphone" or null
+    test_type: str = "pip_alert"  # "pip_alert", "ping_speed", "simulated_detection"
+    camera_name: str = "camera_principal"
+    label: str = "TESTE MASTER EM LOTE"
+    duration_seconds: int = 10
+
+
+@router.post("/{device_identifier}/toggle-master")
+async def toggle_device_master(device_identifier: str, request: Request, db: AsyncSession = Depends(get_db)):
+    """Toggles Master Admin rights for a smartphone device."""
+    from app.api.ws import ws_manager
+    stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev:
+        raise HTTPException(status_code=404, detail="Dispositivo não encontrado")
+
+    new_state = not bool(dev.is_master_admin)
+    dev.is_master_admin = new_state
+    dev.admin_unlocked_at = datetime.datetime.utcnow() if new_state else None
+    await db.commit()
+
+    # Broadcast real-time permission update via WebSocket
+    await ws_manager.broadcast_json({
+        "type": "DEVICE_MASTER_CHANGED",
+        "device_identifier": device_identifier,
+        "is_master_admin": new_state
+    })
+
+    client_ip = request.client.host if request.client else "unknown"
+    await audit_service.log(
+        action="DEVICE_MASTER_TOGGLED",
+        module="SECURITY",
+        severity="WARNING" if new_state else "INFO",
+        details=f"Permissões Master {'CONCEDIDAS a' if new_state else 'REVOGADAS de'} {dev.friendly_name} ({dev.device_type})",
+        client_ip=client_ip
+    )
+    return {"status": "success", "is_master_admin": new_state, "device_identifier": device_identifier}
+
+
+@router.post("/batch-test")
+async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncSession = Depends(get_db)):
+    """Executes batch tests across multiple or all devices simultaneously."""
+    from app.api.ws import ws_manager
+    stmt = select(PairedDevice).where(PairedDevice.permission_status == "allowed")
+    if req.target_device_ids and len(req.target_device_ids) > 0:
+        stmt = stmt.where(PairedDevice.device_identifier.in_(req.target_device_ids))
+    elif req.device_type:
+        stmt = stmt.where(PairedDevice.device_type == req.device_type)
+
+    res = await db.execute(stmt)
+    devices = res.scalars().all()
+
+    results = []
+    # 1. Global WebSocket broadcast for connected Android TV overlays and Smartphones
+    if req.test_type == "pip_alert":
+        await ws_manager.broadcast_json({
+            "type": "pip_alert",
+            "camera": req.camera_name,
+            "label": req.label,
+            "duration": req.duration_seconds,
+            "timestamp": datetime.datetime.utcnow().isoformat()
+        })
+        # 2. Also dispatch to Google Cast / REST PiP for TV endpoints
+        snap_url = f"http://127.0.0.1:5000/api/{req.camera_name}/latest.jpg?h=720"
+        stream_url = f"http://127.0.0.1:8554/{req.camera_name}"
+        await pip_gateway_service.dispatch_pip_alert(
+            camera_name=req.camera_name,
+            label=req.label,
+            snapshot_url=snap_url,
+            stream_url=stream_url,
+            duration_seconds=req.duration_seconds
+        )
+        for dev in devices:
+            results.append({"device": dev.friendly_name, "id": dev.device_identifier, "status": "pip_dispatched"})
+    elif req.test_type == "simulated_detection":
+        await ws_manager.broadcast_json({
+            "type": "FRIGATE_EVENT",
+            "camera": req.camera_name,
+            "label": req.label,
+            "top_score": 0.96,
+            "active": True,
+            "timestamp": datetime.datetime.utcnow().isoformat()
+        })
+        for dev in devices:
+            results.append({"device": dev.friendly_name, "id": dev.device_identifier, "status": "detection_simulated"})
+    else:
+        for dev in devices:
+            results.append({"device": dev.friendly_name, "id": dev.device_identifier, "status": "ping_ready"})
+
+    client_ip = request.client.host if request.client else "unknown"
+    await audit_service.log(
+        action="BATCH_TEST_EXECUTED",
+        module="PIP",
+        severity="INFO",
+        details=f"Teste em lote '{req.test_type}' disparado para {len(results)} dispositivo(s).",
+        client_ip=client_ip
+    )
+    return {"status": "success", "test_type": req.test_type, "total": len(results), "results": results}
+
 

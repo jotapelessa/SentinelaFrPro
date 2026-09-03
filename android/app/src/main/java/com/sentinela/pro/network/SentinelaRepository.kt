@@ -23,11 +23,26 @@ data class DevicePolicy(
     val allowedCameras: List<String> = emptyList(),
     val allowedEvents: List<String> = listOf("person", "car", "motorcycle", "dog", "cat", "bus"),
     val pipDefaultSize: String = "medium",
-    val pipDurationSeconds: Int = 10
+    val pipDurationSeconds: Int = 10,
+    val isMasterAdmin: Boolean = false
+)
+
+data class RemoteDeviceItem(
+    val id: Int,
+    val deviceIdentifier: String,
+    val friendlyName: String,
+    val deviceType: String,
+    val ipAddress: String,
+    val tailscaleIp: String?,
+    val permissionStatus: String,
+    val isMasterAdmin: Boolean,
+    val allowPipAlerts: Boolean,
+    val lastSeen: String?
 )
 
 object SentinelaRepository {
     private const val TAG = "SentinelaRepo"
+    var isMasterAdmin: Boolean = false
 
     private fun openConnection(url: URL): HttpURLConnection {
         val conn = url.openConnection() as HttpURLConnection
@@ -128,6 +143,11 @@ object SentinelaRepository {
             }
 
             val code = conn.responseCode
+            if (code in 200..299) {
+                val text = BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+                val obj = JSONObject(text)
+                isMasterAdmin = obj.optBoolean("is_master_admin", false)
+            }
             conn.disconnect()
             return@withContext (code in 200..299)
         } catch (e: Exception) {
@@ -470,6 +490,137 @@ object SentinelaRepository {
             }
         } catch (e: Exception) {
             return@withContext Pair(false, "Erro de rede: ${e.message}")
+        }
+    }
+
+    suspend fun getPairedDevicesList(): List<RemoteDeviceItem> = withContext(Dispatchers.IO) {
+        val list = mutableListOf<RemoteDeviceItem>()
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/")
+            val conn = openConnection(url).apply {
+                connectTimeout = 4000
+                readTimeout = 4000
+                requestMethod = "GET"
+                setRequestProperty("Accept", "application/json")
+            }
+            if (conn.responseCode == 200) {
+                val reader = BufferedReader(InputStreamReader(conn.inputStream))
+                val arr = JSONArray(reader.readText())
+                reader.close()
+                for (i in 0 until arr.length()) {
+                    val obj = arr.getJSONObject(i)
+                    list.add(
+                        RemoteDeviceItem(
+                            id = obj.optInt("id"),
+                            deviceIdentifier = obj.optString("device_identifier"),
+                            friendlyName = obj.optString("friendly_name"),
+                            deviceType = obj.optString("device_type", "android_tv"),
+                            ipAddress = obj.optString("ip_address", "127.0.0.1"),
+                            tailscaleIp = obj.optString("tailscale_ip").takeIf { it.isNotBlank() },
+                            permissionStatus = obj.optString("permission_status", "allowed"),
+                            isMasterAdmin = obj.optBoolean("is_master_admin", false),
+                            allowPipAlerts = obj.optBoolean("allow_pip_alerts", true),
+                            lastSeen = obj.optString("last_seen").takeIf { it.isNotBlank() }
+                        )
+                    )
+                }
+            }
+            conn.disconnect()
+        } catch (e: Exception) {
+            Log.w(TAG, "Error fetching device list: ${e.message}")
+        }
+        list
+    }
+
+    suspend fun toggleRemoteMaster(deviceIdentifier: String): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/$deviceIdentifier/toggle-master")
+            val conn = openConnection(url).apply {
+                connectTimeout = 5000
+                readTimeout = 5000
+                requestMethod = "POST"
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val code = conn.responseCode
+            conn.disconnect()
+            return@withContext (code in 200..299)
+        } catch (e: Exception) {
+            Log.w(TAG, "toggleRemoteMaster error: ${e.message}")
+            return@withContext false
+        }
+    }
+
+    suspend fun executeBatchTest(
+        testType: String,
+        cameraName: String = "camera_principal",
+        label: String = "TESTE EM LOTE SENTINELA"
+    ): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/batch-test")
+            val conn = openConnection(url).apply {
+                connectTimeout = 6000
+                readTimeout = 6000
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val payload = JSONObject().apply {
+                put("test_type", testType)
+                put("camera_name", cameraName)
+                put("label", label)
+                put("duration_seconds", 10)
+            }
+            conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            val code = conn.responseCode
+            val text = if (code in 200..299) {
+                BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+            } else {
+                BufferedReader(InputStreamReader(conn.errorStream ?: conn.inputStream)).use { it.readText() }
+            }
+            conn.disconnect()
+            if (code in 200..299) {
+                val total = try { JSONObject(text).optInt("total", 1) } catch(e: Exception) { 1 }
+                return@withContext Pair(true, "Teste ($testType) disparado com sucesso para $total dispositivo(s)!")
+            } else {
+                return@withContext Pair(false, "Erro ao disparar teste em lote ($code)")
+            }
+        } catch (e: Exception) {
+            return@withContext Pair(false, "Erro de conexão: ${e.message}")
+        }
+    }
+
+    suspend fun testSingleTv(deviceId: Int, cameraName: String = "camera_principal"): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/$deviceId/test")
+            val conn = openConnection(url).apply {
+                connectTimeout = 5000
+                readTimeout = 5000
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val payload = JSONObject().apply {
+                put("camera_name", cameraName)
+            }
+            conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            val code = conn.responseCode
+            val text = if (code in 200..299) {
+                BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+            } else {
+                BufferedReader(InputStreamReader(conn.errorStream ?: conn.inputStream)).use { it.readText() }
+            }
+            conn.disconnect()
+            if (code in 200..299) {
+                val msg = try { JSONObject(text).optString("message", "Comando enviado!") } catch(e: Exception) { "Comando enviado!" }
+                return@withContext Pair(true, msg)
+            } else {
+                return@withContext Pair(false, "Erro ao testar TV ($code)")
+            }
+        } catch (e: Exception) {
+            return@withContext Pair(false, "Erro: ${e.message}")
         }
     }
 }

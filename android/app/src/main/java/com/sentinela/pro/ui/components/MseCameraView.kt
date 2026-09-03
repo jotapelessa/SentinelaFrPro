@@ -45,7 +45,7 @@ fun MseCameraView(
     }
 
     val streamUrl = remember(cameraName) {
-        "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&mode=mse&width=100%"
+        "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&mode=webrtc,mse,mp4&width=100%"
     }
 
     var isLoading by remember(cameraName) { mutableStateOf(true) }
@@ -99,7 +99,11 @@ fun MseCameraView(
                     isVerticalScrollBarEnabled = false
                     isHorizontalScrollBarEnabled = false
 
-                    webChromeClient = WebChromeClient()
+                    webChromeClient = object : WebChromeClient() {
+                        override fun onPermissionRequest(request: PermissionRequest?) {
+                            request?.grant(request.resources)
+                        }
+                    }
 
                     webViewClient = object : WebViewClient() {
                         override fun onReceivedSslError(
@@ -114,7 +118,7 @@ fun MseCameraView(
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
-                            // Inject CSS to completely suppress WebKit media controls and provide 100% smooth fit
+                            // Inject CSS and intelligent WebRTC/MSE stall recovery watchdog
                             val js = "javascript:(function() {" +
                                     "var style = document.createElement('style');" +
                                     "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:black; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
@@ -134,23 +138,32 @@ fun MseCameraView(
                                     "  }" +
                                     "};" +
                                     "initVideo();" +
+                                    "var lastTime = 0;" +
+                                    "var stallTicks = 0;" +
                                     "if (!window.__liveEdgeTimer) {" +
                                     "  window.__liveEdgeTimer = setInterval(function() {" +
                                     "    var v = document.querySelector('video');" +
-                                    "    if (v && v.buffered && v.buffered.length > 0) {" +
-                                    "      var end = v.buffered.end(v.buffered.length - 1);" +
-                                    "      var drift = end - v.currentTime;" +
-                                    "      if (drift > 3.0) {" +
-                                    "        v.currentTime = end - 0.1;" +
-                                    "        v.playbackRate = 1.0;" +
-                                    "      } else if (drift > 0.5) {" +
-                                    "        v.playbackRate = 1.08;" +
+                                    "    if (v) {" +
+                                    "      if (v.currentTime > 0 && v.currentTime === lastTime && !v.paused && !v.ended) {" +
+                                    "        stallTicks++;" +
+                                    "        if (stallTicks >= 3) {" +
+                                    "          stallTicks = 0;" +
+                                    "          location.reload();" +
+                                    "        }" +
                                     "      } else {" +
-                                    "        v.playbackRate = 1.0;" +
+                                    "        lastTime = v.currentTime;" +
+                                    "        stallTicks = 0;" +
+                                    "      }" +
+                                    "      if (v.buffered && v.buffered.length > 0) {" +
+                                    "        var end = v.buffered.end(v.buffered.length - 1);" +
+                                    "        var drift = end - v.currentTime;" +
+                                    "        if (drift > 2.5) {" +
+                                    "          v.currentTime = end - 0.1;" +
+                                    "        }" +
                                     "      }" +
                                     "      if (v.paused) { v.play().catch(function(){}); }" +
                                     "    }" +
-                                    "  }, 800);" +
+                                    "  }, 500);" +
                                     "}" +
                                     "})()"
                             view?.loadUrl(js)

@@ -15,7 +15,10 @@
     <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
 
     <application
+        android:name=".SentinelaApplication"
         android:allowBackup="true"
+        android:largeHeap="true"
+        android:hardwareAccelerated="true"
         android:usesCleartextTraffic="true"
         android:icon="@mipmap/ic_launcher"
         android:label="Sentinela Pro"
