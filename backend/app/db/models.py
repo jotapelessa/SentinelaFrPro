@@ -70,6 +70,12 @@ class PairedDevice(Base):
     pip_duration_seconds = Column(Integer, default=10) # 5, 10, 15, 30
     is_master_admin = Column(Boolean, default=False) # Master special permissions for smartphone
     admin_unlocked_at = Column(DateTime, nullable=True)
+    mac_address = Column(String(64), nullable=True)
+    connection_type = Column(String(32), nullable=True) # wifi, ethernet, 4g, 5g
+    network_speed_mbps = Column(Float, nullable=True)
+    app_version = Column(String(32), nullable=True)
+    device_model = Column(String(64), nullable=True)
+    recent_logs = Column(Text, nullable=True) # JSON array of recent logs
     last_seen = Column(DateTime, default=datetime.datetime.utcnow)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 

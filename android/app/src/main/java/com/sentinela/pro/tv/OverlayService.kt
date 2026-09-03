@@ -126,10 +126,15 @@ class OverlayService : Service() {
         }
 
         val prefs = SentinelaPreferences(this)
+        if (!prefs.allowPipAlerts) {
+            android.util.Log.i("OverlayService", "PiP alerts disabled by policy, skipping.")
+            return
+        }
+
         val pipSize = prefs.currentPipSize
         val pipPos = prefs.currentPipPosition
         val pipDur = prefs.currentPipDuration
-        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=mse&width=100%"
+        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=webrtc,mse&width=100%"
         val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
 
         try {
@@ -180,7 +185,7 @@ class OverlayService : Service() {
                     android.util.Log.w("OverlayService", "Snapshot pre-load: ${e.message}")
                 }
 
-                // 2. Hardware Video Stream Layer
+                // 2. Hardware Video Stream Layer (Warm Reusable Instance)
                 val wv = WebView(this).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
@@ -269,6 +274,7 @@ class OverlayService : Service() {
                 wv.loadUrl(streamUrl)
             } else {
                 pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
+                pipWebView?.onResume()
                 if (overlayView?.parent == null) {
                     windowManager.addView(overlayView, params)
                 } else {
@@ -290,11 +296,8 @@ class OverlayService : Service() {
 
     private fun removePiP() {
         try {
-            pipWebView?.let { wv ->
-                wv.stopLoading()
-                wv.loadUrl("about:blank")
-                wv.destroy()
-            }
+            pipWebView?.onPause()
+            pipWebView?.stopLoading()
             overlayView?.let { v ->
                 if (v.parent != null) {
                     windowManager.removeViewImmediate(v)
@@ -302,10 +305,6 @@ class OverlayService : Service() {
             }
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Error removing overlay view: ${e.message}")
-        } finally {
-            overlayView = null
-            pipWebView = null
-            pipTitleView = null
         }
     }
 
@@ -313,6 +312,11 @@ class OverlayService : Service() {
         super.onDestroy()
         serviceJob.cancel()
         removePiP()
+        try {
+            pipWebView?.destroy()
+        } catch (e: Exception) {}
+        pipWebView = null
+        overlayView = null
     }
 
     override fun onBind(intent: Intent?): IBinder? = null

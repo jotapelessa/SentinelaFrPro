@@ -101,3 +101,24 @@ enum class PipDuration(val label: String, val seconds: Int) {
     D_60S("60 Segundos", 60),
     INFINITE("Infinito (Manual)", 0)
 }
+
+data class PairedDeviceItem(
+    val id: Int,
+    val deviceIdentifier: String,
+    val friendlyName: String,
+    val deviceType: String = "android_tv",
+    val ipAddress: String = "",
+    val tailscaleIp: String? = null,
+    val macAddress: String? = null,
+    val connectionType: String = "wifi",
+    val networkSpeedMbps: Double? = null,
+    val appVersion: String? = null,
+    val deviceModel: String? = null,
+    val permissionStatus: String = "allowed",
+    val allowedCameras: List<String> = emptyList(),
+    val allowPipAlerts: Boolean = true,
+    val pipDefaultSize: String = "medium",
+    val pipDurationSeconds: Int = 10,
+    val isMasterAdmin: Boolean = false,
+    val lastSeen: String? = null
+)

@@ -3,7 +3,7 @@ package com.sentinela.pro.data
 import android.content.Context
 import android.content.SharedPreferences
 
-class SentinelaPreferences(context: Context) {
+class SentinelaPreferences(private val context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("sentinela_prefs", Context.MODE_PRIVATE)
 
     var pipSizeIndex: Int
@@ -15,14 +15,26 @@ class SentinelaPreferences(context: Context) {
         set(value) = prefs.edit().putInt("pip_position_index", value).apply()
 
     var pipDurationIndex: Int
-        get() = prefs.getInt("pip_duration_index", PipDuration.D_15S.ordinal)
+        get() = prefs.getInt("pip_duration_index", PipDuration.D_10S.ordinal)
         set(value) = prefs.edit().putInt("pip_duration_index", value).apply()
+
+    var allowPipAlerts: Boolean
+        get() = prefs.getBoolean("allow_pip_alerts", true)
+        set(value) = prefs.edit().putBoolean("allow_pip_alerts", value).apply()
 
     var deviceIdentifier: String
         get() {
             val existing = prefs.getString("device_id", null)
-            if (existing != null) return existing
-            val defaultId = "device_" + android.os.Build.MODEL.lowercase().replace("[^a-z0-9]".toRegex(), "_") + "_" + (100..999).random()
+            if (!existing.isNullOrBlank()) return existing
+            val androidId = try {
+                android.provider.Settings.Secure.getString(context.contentResolver, android.provider.Settings.Secure.ANDROID_ID)
+            } catch (e: Exception) { null }
+            val cleanModel = android.os.Build.MODEL.lowercase().replace("[^a-z0-9]".toRegex(), "_")
+            val defaultId = if (!androidId.isNullOrBlank() && androidId != "9774d56d682e549c") {
+                "dev_${cleanModel}_${androidId.takeLast(8)}"
+            } else {
+                "dev_${cleanModel}_" + (1000..9999).random()
+            }
             prefs.edit().putString("device_id", defaultId).apply()
             return defaultId
         }

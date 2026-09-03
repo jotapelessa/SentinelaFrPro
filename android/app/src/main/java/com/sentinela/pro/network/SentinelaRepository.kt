@@ -33,12 +33,23 @@ data class RemoteDeviceItem(
     val friendlyName: String,
     val deviceType: String,
     val ipAddress: String,
-    val tailscaleIp: String?,
-    val permissionStatus: String,
-    val isMasterAdmin: Boolean,
-    val allowPipAlerts: Boolean,
-    val lastSeen: String?
-)
+    val tailscaleIp: String? = null,
+    val macAddress: String? = null,
+    val connectionType: String = "wifi",
+    val networkSpeedMbps: Double? = null,
+    val appVersion: String? = null,
+    val deviceModel: String? = null,
+    val permissionStatus: String = "allowed",
+    val isMasterAdmin: Boolean = false,
+    val allowPipAlerts: Boolean = true,
+    val pipDefaultSize: String = "medium",
+    val pipDurationSeconds: Int = 10,
+    val allowedCameras: List<String> = emptyList(),
+    val lastSeen: String? = null
+) {
+    val isOnline: Boolean
+        get() = !lastSeen.isNullOrBlank()
+}
 
 object SentinelaRepository {
     private const val TAG = "SentinelaRepo"
@@ -49,16 +60,16 @@ object SentinelaRepository {
         if (conn is javax.net.ssl.HttpsURLConnection) {
             try {
                 val trustAllCerts = arrayOf<javax.net.ssl.TrustManager>(object : javax.net.ssl.X509TrustManager {
-                    override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate>? = null
-                    override fun checkClientTrusted(certs: Array<java.security.cert.X509Certificate>?, authType: String?) {}
-                    override fun checkServerTrusted(certs: Array<java.security.cert.X509Certificate>?, authType: String?) {}
+                    override fun getAcceptedIssuers(): Array<java.security.cert.X509Certificate> = arrayOf()
+                    override fun checkClientTrusted(certs: Array<java.security.cert.X509Certificate>, authType: String) {}
+                    override fun checkServerTrusted(certs: Array<java.security.cert.X509Certificate>, authType: String) {}
                 })
-                val sc = javax.net.ssl.SSLContext.getInstance("TLS")
+                val sc = javax.net.ssl.SSLContext.getInstance("SSL")
                 sc.init(null, trustAllCerts, java.security.SecureRandom())
                 conn.sslSocketFactory = sc.socketFactory
                 conn.hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
             } catch (e: Exception) {
-                Log.d(TAG, "SSL setup bypassed: ${e.message}")
+                // Ignore fallback
             }
         }
         return conn
@@ -73,40 +84,42 @@ object SentinelaRepository {
                 requestMethod = "GET"
                 setRequestProperty("Accept", "application/json")
             }
+
             if (conn.responseCode == 200) {
-                val text = BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
-                val obj = JSONObject(text)
-                val status = obj.optString("permission_status", "allowed")
-                val stream = obj.optBoolean("allow_live_stream", true)
-                val rec = obj.optBoolean("allow_recordings", true)
-                val pip = obj.optBoolean("allow_pip_alerts", true)
-                val restartDocker = obj.optBoolean("allow_restart_containers", false)
-                val rebootHost = obj.optBoolean("allow_reboot_server", false)
-                val size = obj.optString("pip_default_size", "medium")
-                val dur = obj.optInt("pip_duration_seconds", 10)
+                val reader = BufferedReader(InputStreamReader(conn.inputStream))
+                val obj = JSONObject(reader.readText())
+                reader.close()
+
+                val allowedCams = mutableListOf<String>()
                 val camsArr = obj.optJSONArray("allowed_cameras")
-                val cams = mutableListOf<String>()
                 if (camsArr != null) {
-                    for (i in 0 until camsArr.length()) cams.add(camsArr.getString(i))
+                    for (i in 0 until camsArr.length()) {
+                        allowedCams.add(camsArr.getString(i))
+                    }
                 }
-                val evArr = obj.optJSONArray("allowed_events")
-                val evs = mutableListOf<String>()
-                if (evArr != null) {
-                    for (i in 0 until evArr.length()) evs.add(evArr.getString(i))
+
+                val allowedEvts = mutableListOf<String>()
+                val evtsArr = obj.optJSONArray("allowed_events")
+                if (evtsArr != null) {
+                    for (i in 0 until evtsArr.length()) {
+                        allowedEvts.add(evtsArr.getString(i))
+                    }
                 }
-                conn.disconnect()
+
                 return@withContext DevicePolicy(
                     deviceIdentifier = deviceIdentifier,
-                    permissionStatus = status,
-                    allowLiveStream = stream,
-                    allowRecordings = rec,
-                    allowPipAlerts = pip,
-                    allowRestartContainers = restartDocker,
-                    allowRebootServer = rebootHost,
-                    allowedCameras = cams,
-                    allowedEvents = evs,
-                    pipDefaultSize = size,
-                    pipDurationSeconds = dur
+                    friendlyName = obj.optString("friendly_name", "Android Device"),
+                    permissionStatus = obj.optString("permission_status", "allowed"),
+                    allowedCameras = allowedCams,
+                    allowedEvents = allowedEvts,
+                    allowRecordings = obj.optBoolean("allow_recordings", true),
+                    allowLiveStream = obj.optBoolean("allow_live_stream", true),
+                    allowPipAlerts = obj.optBoolean("allow_pip_alerts", true),
+                    allowRestartContainers = obj.optBoolean("allow_restart_containers", false),
+                    allowRebootServer = obj.optBoolean("allow_reboot_server", false),
+                    pipDefaultSize = obj.optString("pip_default_size", "medium"),
+                    pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
+                    isMasterAdmin = obj.optBoolean("is_master_admin", false)
                 )
             }
             conn.disconnect()
@@ -119,7 +132,16 @@ object SentinelaRepository {
     suspend fun registerOrHeartbeat(
         deviceIdentifier: String,
         friendlyName: String,
-        deviceType: String = "android_tv"
+        deviceType: String = "android_tv",
+        ipAddress: String? = null,
+        tailscaleIp: String? = null,
+        macAddress: String? = null,
+        connectionType: String? = null,
+        networkSpeedMbps: Double? = null,
+        appVersion: String? = null,
+        deviceModel: String? = null,
+        diagnosticLogs: List<String>? = null,
+        prefs: SentinelaPreferences? = null
     ): Boolean = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/heartbeat")
@@ -136,6 +158,18 @@ object SentinelaRepository {
                 put("device_identifier", deviceIdentifier)
                 put("friendly_name", friendlyName)
                 put("device_type", deviceType)
+                if (!ipAddress.isNullOrBlank()) put("ip_address", ipAddress)
+                if (!tailscaleIp.isNullOrBlank()) put("tailscale_ip", tailscaleIp)
+                if (!macAddress.isNullOrBlank()) put("mac_address", macAddress)
+                if (!connectionType.isNullOrBlank()) put("connection_type", connectionType)
+                if (networkSpeedMbps != null) put("network_speed_mbps", networkSpeedMbps)
+                if (!appVersion.isNullOrBlank()) put("app_version", appVersion)
+                if (!deviceModel.isNullOrBlank()) put("device_model", deviceModel)
+                if (!diagnosticLogs.isNullOrEmpty()) {
+                    val logsArr = JSONArray()
+                    diagnosticLogs.forEach { logsArr.put(it) }
+                    put("diagnostic_logs", logsArr)
+                }
             }
 
             conn.outputStream.use { os ->
@@ -147,6 +181,45 @@ object SentinelaRepository {
                 val text = BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
                 val obj = JSONObject(text)
                 isMasterAdmin = obj.optBoolean("is_master_admin", false)
+
+                // Synchronize server configurations into local preferences
+                if (prefs != null) {
+                    val serverPipSize = obj.optString("pip_default_size", "")
+                    if (serverPipSize.isNotBlank()) {
+                        when (serverPipSize.lowercase()) {
+                            "mini" -> prefs.pipSizeIndex = PipSize.MINI.ordinal
+                            "small" -> prefs.pipSizeIndex = PipSize.SMALL.ordinal
+                            "medium_small" -> prefs.pipSizeIndex = PipSize.MEDIUM_SMALL.ordinal
+                            "medium" -> prefs.pipSizeIndex = PipSize.MEDIUM.ordinal
+                            "medium_large" -> prefs.pipSizeIndex = PipSize.MEDIUM_LARGE.ordinal
+                            "large" -> prefs.pipSizeIndex = PipSize.LARGE.ordinal
+                            "extra_large" -> prefs.pipSizeIndex = PipSize.EXTRA_LARGE.ordinal
+                            "cinema" -> prefs.pipSizeIndex = PipSize.CINEMA.ordinal
+                        }
+                    }
+
+                    val serverPipDur = obj.optInt("pip_duration_seconds", 0)
+                    if (serverPipDur > 0) {
+                        when (serverPipDur) {
+                            5 -> prefs.pipDurationIndex = PipDuration.D_5S.ordinal
+                            10 -> prefs.pipDurationIndex = PipDuration.D_10S.ordinal
+                            15 -> prefs.pipDurationIndex = PipDuration.D_15S.ordinal
+                            20 -> prefs.pipDurationIndex = PipDuration.D_20S.ordinal
+                            30 -> prefs.pipDurationIndex = PipDuration.D_30S.ordinal
+                            45 -> prefs.pipDurationIndex = PipDuration.D_45S.ordinal
+                            60 -> prefs.pipDurationIndex = PipDuration.D_60S.ordinal
+                        }
+                    }
+
+                    if (obj.has("allow_pip_alerts")) {
+                        prefs.allowPipAlerts = obj.optBoolean("allow_pip_alerts", true)
+                    }
+
+                    val srvName = obj.optString("friendly_name", "")
+                    if (srvName.isNotBlank() && srvName != prefs.friendlyName) {
+                        prefs.friendlyName = srvName
+                    }
+                }
             }
             conn.disconnect()
             return@withContext (code in 200..299)
@@ -517,17 +590,30 @@ object SentinelaRepository {
                 reader.close()
                 for (i in 0 until arr.length()) {
                     val obj = arr.getJSONObject(i)
+                    val camsList = mutableListOf<String>()
+                    val camsArr = obj.optJSONArray("allowed_cameras")
+                    if (camsArr != null) {
+                        for (k in 0 until camsArr.length()) camsList.add(camsArr.getString(k))
+                    }
                     list.add(
                         RemoteDeviceItem(
                             id = obj.optInt("id"),
                             deviceIdentifier = obj.optString("device_identifier"),
-                            friendlyName = obj.optString("friendly_name"),
+                            friendlyName = obj.optString("friendly_name", "Dispositivo Android"),
                             deviceType = obj.optString("device_type", "android_tv"),
                             ipAddress = obj.optString("ip_address", "127.0.0.1"),
                             tailscaleIp = obj.optString("tailscale_ip").takeIf { it.isNotBlank() },
+                            macAddress = obj.optString("mac_address").takeIf { it.isNotBlank() },
+                            connectionType = obj.optString("connection_type", "wifi"),
+                            networkSpeedMbps = if (obj.has("network_speed_mbps") && !obj.isNull("network_speed_mbps")) obj.optDouble("network_speed_mbps") else null,
+                            appVersion = obj.optString("app_version").takeIf { it.isNotBlank() },
+                            deviceModel = obj.optString("device_model").takeIf { it.isNotBlank() },
                             permissionStatus = obj.optString("permission_status", "allowed"),
                             isMasterAdmin = obj.optBoolean("is_master_admin", false),
                             allowPipAlerts = obj.optBoolean("allow_pip_alerts", true),
+                            pipDefaultSize = obj.optString("pip_default_size", "medium"),
+                            pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
+                            allowedCameras = camsList,
                             lastSeen = obj.optString("last_seen").takeIf { it.isNotBlank() }
                         )
                     )
@@ -538,6 +624,89 @@ object SentinelaRepository {
             Log.w(TAG, "Error fetching device list: ${e.message}")
         }
         list
+    }
+
+    suspend fun updateDevicePermissions(
+        deviceId: Int,
+        friendlyName: String,
+        pipSize: String = "medium",
+        pipDuration: Int = 10,
+        allowedCameras: List<String> = emptyList(),
+        allowPip: Boolean = true
+    ): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/$deviceId/permissions")
+            val conn = openConnection(url).apply {
+                connectTimeout = 5000
+                readTimeout = 5000
+                requestMethod = "PUT"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val camsArr = JSONArray()
+            allowedCameras.forEach { camsArr.put(it) }
+            val payload = JSONObject().apply {
+                put("friendly_name", friendlyName)
+                put("permission_status", "allowed")
+                put("pip_default_size", pipSize)
+                put("pip_duration_seconds", pipDuration)
+                put("allow_pip_alerts", allowPip)
+                put("allowed_cameras", camsArr)
+            }
+            conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            val code = conn.responseCode
+            val text = if (code in 200..299) {
+                BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+            } else {
+                BufferedReader(InputStreamReader(conn.errorStream ?: conn.inputStream)).use { it.readText() }
+            }
+            conn.disconnect()
+            if (code in 200..299) {
+                return@withContext Pair(true, "Configurações de $friendlyName atualizadas!")
+            } else {
+                return@withContext Pair(false, "Erro ao salvar configurações ($code)")
+            }
+        } catch (e: Exception) {
+            return@withContext Pair(false, "Erro de rede: ${e.message}")
+        }
+    }
+
+    suspend fun pingServer(
+        context: Context,
+        deviceType: String = "android_tv",
+        recentLogs: List<String> = emptyList()
+    ): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        val prefs = SentinelaPreferences(context)
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as? android.net.ConnectivityManager
+        val actNw = cm?.activeNetwork
+        val caps = cm?.getNetworkCapabilities(actNw)
+        val connType = when {
+            caps?.hasTransport(android.net.NetworkCapabilities.TRANSPORT_ETHERNET) == true -> "ethernet"
+            caps?.hasTransport(android.net.NetworkCapabilities.TRANSPORT_WIFI) == true -> "wifi"
+            caps?.hasTransport(android.net.NetworkCapabilities.TRANSPORT_CELLULAR) == true -> "4g/5g"
+            else -> "lan"
+        }
+        val speed = caps?.linkDownstreamBandwidthKbps?.let { it / 1000.0 } ?: 100.0
+        val appVer = "v001.000.000.045"
+        val devModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
+
+        val ok = registerOrHeartbeat(
+            deviceIdentifier = prefs.deviceIdentifier,
+            friendlyName = prefs.friendlyName,
+            deviceType = deviceType,
+            connectionType = connType,
+            networkSpeedMbps = speed,
+            appVersion = appVer,
+            deviceModel = devModel,
+            diagnosticLogs = recentLogs,
+            prefs = prefs
+        )
+        if (ok) {
+            Pair(true, "✅ Ping OK! Telemetria e logs sincronizados ($connType, ${speed.toInt()} Mbps)")
+        } else {
+            Pair(false, "❌ Falha ao comunicar com o servidor Sentinela")
+        }
     }
 
     suspend fun toggleRemoteMaster(deviceIdentifier: String): Boolean = withContext(Dispatchers.IO) {

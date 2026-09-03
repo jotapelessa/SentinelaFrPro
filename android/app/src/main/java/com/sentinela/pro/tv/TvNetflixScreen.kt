@@ -802,28 +802,26 @@ fun TvRecordingsViewport(cameras: List<CameraEntity>) {
                     }
                     .focusable(interactionSource = previewInteractionSource)
             ) {
-                SeamlessCameraImage(
-                    cameraName = selectedClip.cameraId,
+                coil.compose.AsyncImage(
+                    model = selectedClip.thumbnailUrl.ifBlank { "${SentinelaConfig.BASE_URL}/frigate/api/${selectedClip.cameraId}/latest.jpg?h=720" },
                     contentDescription = selectedClip.cameraName,
                     modifier = Modifier.fillMaxSize(),
-                    isStreaming = true
+                    contentScale = ContentScale.Crop
                 )
 
-                // Overlay de Play
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.35f)),
-                    contentAlignment = Alignment.Center
+                // Overlay de Foto HD
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = TvColors.OverlayHud,
+                    modifier = Modifier.align(Alignment.Center)
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = TvColors.NetflixRed,
-                        modifier = Modifier.size(56.dp)
+                    Row(
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(Icons.Default.PlayArrow, contentDescription = "Play", tint = Color.White, modifier = Modifier.size(32.dp))
-                        }
+                        Icon(Icons.Default.PhotoCamera, contentDescription = "Foto HD", tint = TvColors.MasterGold, modifier = Modifier.size(20.dp))
+                        Text("FOTO HD (DETECÇÃO IA)", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Black)
                     }
                 }
 
@@ -1249,33 +1247,28 @@ fun TvToolsViewport(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                // Sirene
+                // Ping do Servidor & Telemetria
+                var isPinging by remember { mutableStateOf(false) }
                 TvToolCard(
-                    title = "Sirene de Pânico",
-                    subtitle = if (isSirenActive) "EMITINDO 110dB" else "Dispara alarme sonoro",
-                    icon = Icons.Default.Campaign,
-                    actionText = if (isSirenActive) "DESATIVAR" else "DISPARAR",
-                    isActive = isSirenActive,
-                    activeColor = TvColors.AlertCrimson,
+                    title = "Ping do Servidor",
+                    subtitle = "Sincroniza IP, WiFi & Logs",
+                    icon = Icons.Default.CloudSync,
+                    actionText = if (isPinging) "ENVIANDO..." else "PING",
+                    isActive = false,
+                    activeColor = TvColors.CyberCyan,
                     modifier = Modifier.weight(1f),
                     onClick = {
-                        isSirenActive = !isSirenActive
-                        trigger(if (isSirenActive) "Sirene Disparada!" else "Sirene Desativada") {}
-                    }
-                )
-
-                // Relé
-                TvToolCard(
-                    title = "Relé do Portão",
-                    subtitle = if (isGateOpen) "12V Ativo" else "Pulso de abertura",
-                    icon = Icons.Default.Key,
-                    actionText = if (isGateOpen) "FECHAR" else "ABRIR",
-                    isActive = isGateOpen,
-                    activeColor = TvColors.LiveGreen,
-                    modifier = Modifier.weight(1f),
-                    onClick = {
-                        isGateOpen = !isGateOpen
-                        trigger(if (isGateOpen) "Pulso Portão Enviado!" else "Portão Fechado") {}
+                        isPinging = true
+                        coroutineScope.launch {
+                            val (ok, msg) = com.sentinela.pro.network.SentinelaRepository.pingServer(
+                                context = context,
+                                deviceType = "android_tv",
+                                recentLogs = listOf("Smart TV Sentinela Online", "Resolução 1080p", "Decoder HW Ativo")
+                            )
+                            isPinging = false
+                            trigger(msg) {}
+                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                        }
                     }
                 )
 
@@ -2045,7 +2038,7 @@ fun TvSettingsViewport(tailscaleIp: String) {
                 Text("ID: ${prefs.deviceIdentifier}", color = TvColors.CyberCyan, fontSize = 12.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("Nome da TV: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text("VERSÃO DO APLICATIVO: v001.000.000.042 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("VERSÃO DO APLICATIVO: v001.000.000.045 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -2148,13 +2141,11 @@ fun TvClipPlayerDialog(
                 .background(Color.Black)
                 .clickable { onDismiss() }
         ) {
-            SeamlessCameraImage(
-                cameraName = clip.cameraId,
+            coil.compose.AsyncImage(
+                model = clip.thumbnailUrl.ifBlank { "${SentinelaConfig.BASE_URL}/frigate/api/${clip.cameraId}/latest.jpg?h=1080" },
                 contentDescription = clip.cameraName,
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit,
-                refreshIntervalMs = 42L,
-                isStreaming = true
+                contentScale = ContentScale.Fit
             )
 
             Row(

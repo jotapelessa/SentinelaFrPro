@@ -82,6 +82,12 @@ async def init_db():
             ("tailscale_ip", "VARCHAR(64)"),
             ("is_master_admin", "BOOLEAN DEFAULT 0"),
             ("admin_unlocked_at", "DATETIME"),
+            ("mac_address", "VARCHAR(64)"),
+            ("connection_type", "VARCHAR(32) DEFAULT 'wifi'"),
+            ("network_speed_mbps", "FLOAT"),
+            ("app_version", "VARCHAR(32)"),
+            ("device_model", "VARCHAR(64)"),
+            ("recent_logs", "TEXT"),
             ("last_seen", "DATETIME")
         ]
         for col_name, col_def in paired_columns:

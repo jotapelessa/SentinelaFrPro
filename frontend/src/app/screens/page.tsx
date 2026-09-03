@@ -25,6 +25,12 @@ interface PairedDevice {
   pip_default_size?: string;
   pip_duration_seconds?: number;
   is_master_admin?: boolean;
+  mac_address?: string;
+  connection_type?: string;
+  network_speed_mbps?: number;
+  app_version?: string;
+  device_model?: string;
+  recent_logs?: string;
   last_seen?: string;
 }
 
@@ -650,6 +656,26 @@ export default function ScreensPage() {
                     </div>
                   </div>
 
+                  {(device.connection_type || device.app_version || device.device_model) && (
+                    <div className="flex items-center gap-1.5 flex-wrap pt-1 border-t border-slate-800/40">
+                      {device.connection_type && (
+                        <span className="px-2 py-0.5 rounded-md bg-slate-800 border border-slate-700 text-[10px] font-mono text-cyan-300 font-bold uppercase">
+                          📶 {device.connection_type} {device.network_speed_mbps ? `(${Math.round(device.network_speed_mbps)} Mbps)` : ""}
+                        </span>
+                      )}
+                      {device.app_version && (
+                        <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 border border-indigo-500/30 text-[10px] font-mono text-indigo-300 font-bold">
+                          {device.app_version}
+                        </span>
+                      )}
+                      {device.device_model && (
+                        <span className="px-2 py-0.5 rounded-md bg-slate-800/80 border border-slate-700/80 text-[10px] text-slate-400 font-medium">
+                          {device.device_model}
+                        </span>
+                      )}
+                    </div>
+                  )}
+
                   <div className="grid grid-cols-2 gap-2 text-slate-400 pt-1 border-t border-slate-800/40">
                     <div>
                       <span className="text-slate-500 block text-[10px]">Câmeras:</span>
@@ -984,6 +1010,12 @@ export default function ScreensPage() {
                     <div className="flex-1 flex flex-col items-center justify-center text-center p-4 border border-dashed border-slate-700 rounded-xl bg-slate-900/50">
                       <AlertCircle className="w-6 h-6 text-slate-600 mb-2" />
                       <p className="text-xs text-slate-500">Clique em "Rodar Teste" para analisar ping, latência e portas ativas nesta tela.</p>
+                    </div>
+                  )}
+                  {managingDevice.recent_logs && (
+                    <div className="mt-3 p-3 bg-black/60 rounded-xl border border-slate-800 font-mono text-[10px] text-cyan-300 space-y-1">
+                      <span className="text-slate-500 block text-[9px] uppercase tracking-wider font-bold">Logs Recentes do Dispositivo:</span>
+                      <pre className="whitespace-pre-wrap leading-relaxed text-slate-300 max-h-28 overflow-y-auto">{managingDevice.recent_logs}</pre>
                     </div>
                   )}
                 </div>

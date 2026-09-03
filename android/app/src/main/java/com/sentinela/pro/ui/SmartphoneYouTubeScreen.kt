@@ -175,7 +175,7 @@ fun PhoneTopBar(
                         )
                     }
                     Text(
-                        text = "v001.000.000.044 • NVR MOBILE",
+                        text = "v001.000.000.045 • NVR MOBILE",
                         style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.TextMuted)
                     )
                 }
@@ -255,8 +255,8 @@ fun PhoneBottomNavigationBar(
         NavigationBarItem(
             selected = selectedTab == 0,
             onClick = { onSelectTab(0) },
-            icon = { Icon(Icons.Default.Videocam, contentDescription = "Câmeras") },
-            label = { Text("Câmeras", fontSize = 10.sp, fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal) },
+            icon = { Icon(Icons.Default.Videocam, contentDescription = "Câmeras", modifier = Modifier.size(20.dp)) },
+            label = { Text("Câmeras", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == 0) FontWeight.Bold else FontWeight.Normal) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = SentinelaColors.PrimaryCyan,
                 selectedTextColor = SentinelaColors.PrimaryCyan,
@@ -268,8 +268,8 @@ fun PhoneBottomNavigationBar(
         NavigationBarItem(
             selected = selectedTab == 1,
             onClick = { onSelectTab(1) },
-            icon = { Icon(Icons.Default.PhotoLibrary, contentDescription = "Capturas") },
-            label = { Text("Capturas", fontSize = 10.sp, fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) },
+            icon = { Icon(Icons.Default.PhotoLibrary, contentDescription = "Capturas", modifier = Modifier.size(20.dp)) },
+            label = { Text("Capturas", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == 1) FontWeight.Bold else FontWeight.Normal) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = SentinelaColors.PrimaryCyan,
                 selectedTextColor = SentinelaColors.PrimaryCyan,
@@ -283,8 +283,8 @@ fun PhoneBottomNavigationBar(
             NavigationBarItem(
                 selected = selectedTab == 2,
                 onClick = { onSelectTab(2) },
-                icon = { Icon(Icons.Default.Star, contentDescription = "Master", tint = SentinelaColors.MasterGold) },
-                label = { Text("Master", fontSize = 10.sp, color = SentinelaColors.MasterGold, fontWeight = FontWeight.Black) },
+                icon = { Icon(Icons.Default.Star, contentDescription = "Master", tint = SentinelaColors.MasterGold, modifier = Modifier.size(20.dp)) },
+                label = { Text("Master", fontSize = 8.5.sp, maxLines = 1, softWrap = false, color = SentinelaColors.MasterGold, fontWeight = FontWeight.Black) },
                 colors = NavigationBarItemDefaults.colors(
                     selectedIconColor = SentinelaColors.MasterGold,
                     selectedTextColor = SentinelaColors.MasterGold,
@@ -299,8 +299,8 @@ fun PhoneBottomNavigationBar(
         NavigationBarItem(
             selected = selectedTab == toolsIdx,
             onClick = { onSelectTab(toolsIdx) },
-            icon = { Icon(Icons.Default.Speed, contentDescription = "Ferramentas") },
-            label = { Text("Ferramentas", fontSize = 10.sp, fontWeight = if (selectedTab == toolsIdx) FontWeight.Bold else FontWeight.Normal) },
+            icon = { Icon(Icons.Default.Speed, contentDescription = "Ferramentas", modifier = Modifier.size(20.dp)) },
+            label = { Text("Ferram.", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == toolsIdx) FontWeight.Bold else FontWeight.Normal) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = SentinelaColors.PrimaryCyan,
                 selectedTextColor = SentinelaColors.PrimaryCyan,
@@ -314,8 +314,8 @@ fun PhoneBottomNavigationBar(
         NavigationBarItem(
             selected = selectedTab == logsIdx,
             onClick = { onSelectTab(logsIdx) },
-            icon = { Icon(Icons.Default.Dns, contentDescription = "Logs") },
-            label = { Text("Logs", fontSize = 10.sp, fontWeight = if (selectedTab == logsIdx) FontWeight.Bold else FontWeight.Normal) },
+            icon = { Icon(Icons.Default.Dns, contentDescription = "Logs", modifier = Modifier.size(20.dp)) },
+            label = { Text("Logs", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == logsIdx) FontWeight.Bold else FontWeight.Normal) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = SentinelaColors.PrimaryCyan,
                 selectedTextColor = SentinelaColors.PrimaryCyan,
@@ -329,8 +329,8 @@ fun PhoneBottomNavigationBar(
         NavigationBarItem(
             selected = selectedTab == settingsIdx,
             onClick = { onSelectTab(settingsIdx) },
-            icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes") },
-            label = { Text("Ajustes", fontSize = 10.sp, fontWeight = if (selectedTab == settingsIdx) FontWeight.Bold else FontWeight.Normal) },
+            icon = { Icon(Icons.Default.Settings, contentDescription = "Ajustes", modifier = Modifier.size(20.dp)) },
+            label = { Text("Ajustes", fontSize = 8.5.sp, maxLines = 1, softWrap = false, fontWeight = if (selectedTab == settingsIdx) FontWeight.Bold else FontWeight.Normal) },
             colors = NavigationBarItemDefaults.colors(
                 selectedIconColor = SentinelaColors.PrimaryCyan,
                 selectedTextColor = SentinelaColors.PrimaryCyan,
@@ -768,18 +768,138 @@ fun PhoneCapturesTab() {
 // -------------------------------------------------------------
 // ABA 3: CENTRAL MASTER VIP (CONTROLE DE SMART TVS & BROADCAST)
 // -------------------------------------------------------------
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DeviceConfigEditDialog(
+    device: com.sentinela.pro.network.RemoteDeviceItem,
+    onDismiss: () -> Unit,
+    onSave: (name: String, pipSize: String, pipDuration: Int, allowPip: Boolean) -> Unit
+) {
+    var name by remember { mutableStateOf(device.friendlyName) }
+    var pipSize by remember { mutableStateOf(device.pipDefaultSize) }
+    var pipDuration by remember { mutableStateOf(device.pipDurationSeconds) }
+    var allowPip by remember { mutableStateOf(device.allowPipAlerts) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = SentinelaColors.CardBackground,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(Icons.Default.Settings, contentDescription = null, tint = SentinelaColors.PrimaryCyan)
+                Text("Configurar Tela / TV", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+        },
+        text = {
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Nome Amigável", color = SentinelaColors.TextSecondary) },
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedBorderColor = SentinelaColors.PrimaryCyan,
+                        unfocusedBorderColor = SentinelaColors.BorderStandard
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                Text("Tamanho Janela PiP:", color = SentinelaColors.TextSecondary, fontSize = 12.sp)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf("mini" to "Mini", "medium" to "Médio", "large" to "Grande", "cinema" to "Max").forEach { (key, label) ->
+                        FilterChip(
+                            selected = pipSize == key,
+                            onClick = { pipSize = key },
+                            label = { Text(label, fontSize = 10.sp) }
+                        )
+                    }
+                }
+
+                Text("Duração do Alerta PiP:", color = SentinelaColors.TextSecondary, fontSize = 12.sp)
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf(5, 10, 15, 30).forEach { s ->
+                        FilterChip(
+                            selected = pipDuration == s,
+                            onClick = { pipDuration = s },
+                            label = { Text("${s}s", fontSize = 10.sp) }
+                        )
+                    }
+                }
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("Exibir Alertas PiP nesta tela", color = Color.White, fontSize = 13.sp)
+                    Switch(
+                        checked = allowPip,
+                        onCheckedChange = { allowPip = it },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = SentinelaColors.PrimaryCyan,
+                            checkedTrackColor = SentinelaColors.PrimaryCyan.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(name, pipSize, pipDuration, allowPip) },
+                colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan)
+            ) {
+                Text("Salvar", color = Color.Black, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = SentinelaColors.TextSecondary)
+            }
+        }
+    )
+}
+
+// -------------------------------------------------------------
 @Composable
 fun PhoneMasterCentralTab() {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    var tvs by remember { mutableStateOf<List<TvDeviceStatus>>(emptyList()) }
+    var tvs by remember { mutableStateOf<List<com.sentinela.pro.network.RemoteDeviceItem>>(emptyList()) }
     var isBroadcasting by remember { mutableStateOf(false) }
+    var editingDevice by remember { mutableStateOf<com.sentinela.pro.network.RemoteDeviceItem?>(null) }
+    var isLoading by remember { mutableStateOf(true) }
+
+    fun refreshDevices() {
+        coroutineScope.launch {
+            isLoading = true
+            tvs = SentinelaRepository.getPairedDevicesList()
+            isLoading = false
+        }
+    }
 
     LaunchedEffect(Unit) {
-        tvs = listOf(
-            TvDeviceStatus("tv_sala", "Smart TV Sala 65\"", "Sala Principal", "100.93.129.91", true),
-            TvDeviceStatus("tv_quarto", "Smart TV Quarto Master", "Suíte", "100.93.129.92", true),
-            TvDeviceStatus("tv_escritorio", "Monitor TV Escritório", "Home Office", "100.93.129.93", false)
+        refreshDevices()
+    }
+
+    if (editingDevice != null) {
+        DeviceConfigEditDialog(
+            device = editingDevice!!,
+            onDismiss = { editingDevice = null },
+            onSave = { updatedName, pipSize, pipDur, allowPip ->
+                val devId = editingDevice!!.id
+                editingDevice = null
+                coroutineScope.launch {
+                    val (ok, msg) = SentinelaRepository.updateDevicePermissions(
+                        deviceId = devId,
+                        friendlyName = updatedName,
+                        pipSize = pipSize,
+                        pipDuration = pipDur,
+                        allowPip = allowPip
+                    )
+                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    refreshDevices()
+                }
+            }
         )
     }
 
@@ -811,7 +931,7 @@ fun PhoneMasterCentralTab() {
                         Text("CENTRAL MASTER VIP", style = SentinelaTypography.MasterTitle)
                     }
                     Text(
-                        text = "Controle centralizado de transmissão de alertas PiP para todas as Smart TVs e dispositivos pareados em tempo real.",
+                        text = "Controle centralizado de transmissão de alertas PiP para todas as Smart TVs e telas pareadas em tempo real com sincronia direta no servidor.",
                         style = SentinelaTypography.Subtext.copy(color = SentinelaColors.MasterGoldLight)
                     )
                 }
@@ -831,41 +951,67 @@ fun PhoneMasterCentralTab() {
                     onClick = {
                         isBroadcasting = true
                         coroutineScope.launch {
-                            delay(400)
+                            val (ok, msg) = SentinelaRepository.executeBatchTest(
+                                testType = "pip",
+                                cameraName = "camera_principal",
+                                label = "ALERTA MASTER DISPARADO"
+                            )
                             isBroadcasting = false
-                            Toast.makeText(context, "🚨 Alerta PiP transmitido para TODAS as Smart TVs!", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                         }
                     },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.DestructiveRed),
-                    shape = SentinelaShapes.Button
+                    shape = SentinelaShapes.Button,
+                    enabled = !isBroadcasting
                 ) {
                     Icon(Icons.Default.Campaign, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Disparar em TODAS", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text(if (isBroadcasting) "Disparando..." else "Disparar em TODAS", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
 
-                // Simulação IA
+                // Atualizar Lista
                 Button(
-                    onClick = {
-                        Toast.makeText(context, "⚡ Simulação de Intrusão Perimetral Ativada!", Toast.LENGTH_SHORT).show()
-                    },
+                    onClick = { refreshDevices() },
                     modifier = Modifier.weight(1f),
                     colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.CardBackgroundElevated),
                     shape = SentinelaShapes.Button,
                     border = BorderStroke(1.dp, SentinelaColors.BorderStandard)
                 ) {
-                    Icon(Icons.Default.Sensors, contentDescription = null, tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(16.dp))
+                    Icon(Icons.Default.Refresh, contentDescription = null, tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(16.dp))
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text("Simular Alerta", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Text("Atualizar Telas", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
 
         // Lista de Smart TVs Conectadas
         item {
-            Text("SMART TVS PAREADAS (${tvs.size})", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text("DISPOSITIVOS & TELAS PAREADAS (${tvs.size})", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+                if (isLoading) {
+                    CircularProgressIndicator(modifier = Modifier.size(16.dp), color = SentinelaColors.PrimaryCyan, strokeWidth = 2.dp)
+                }
+            }
             Spacer(modifier = Modifier.height(4.dp))
+        }
+
+        if (tvs.isEmpty() && !isLoading) {
+            item {
+                Card(
+                    shape = SentinelaShapes.CameraCard,
+                    colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp)
+                ) {
+                    Box(modifier = Modifier.fillMaxWidth().padding(24.dp), contentAlignment = Alignment.Center) {
+                        Text("Nenhuma Smart TV ou tela conectada no momento.", color = SentinelaColors.TextSecondary, fontSize = 13.sp)
+                    }
+                }
+            }
         }
 
         items(tvs) { tv ->
@@ -884,32 +1030,61 @@ fun PhoneMasterCentralTab() {
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Row(
+                        modifier = Modifier.weight(1f),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(42.dp)
                                 .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton),
                             contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Tv, contentDescription = null, tint = if (tv.isOnline) SentinelaColors.PrimaryCyan else SentinelaColors.TextMuted)
+                            Icon(
+                                if (tv.deviceType == "smartphone") Icons.Default.PhoneAndroid else Icons.Default.Tv,
+                                contentDescription = null,
+                                tint = if (tv.isOnline) SentinelaColors.PrimaryCyan else SentinelaColors.TextMuted
+                            )
                         }
                         Column {
-                            Text(tv.name, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                            Text("${tv.room} • ${tv.ipAddress}", style = SentinelaTypography.Subtext)
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                Text(tv.friendlyName, color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                Box(
+                                    modifier = Modifier
+                                        .size(7.dp)
+                                        .background(if (tv.isOnline) SentinelaColors.SuccessGreen else SentinelaColors.TextMuted, CircleShape)
+                                )
+                            }
+                            Text(
+                                "${tv.connectionType.uppercase()} • ${tv.ipAddress} • PiP: ${tv.pipDefaultSize.uppercase()} (${tv.pipDurationSeconds}s)",
+                                style = SentinelaTypography.Subtext
+                            )
                         }
                     }
 
-                    Button(
-                        onClick = {
-                            Toast.makeText(context, "🔔 Teste de PiP enviado para ${tv.name}!", Toast.LENGTH_SHORT).show()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
-                        shape = SentinelaShapes.SmallButton,
-                        contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
-                    ) {
-                        Text("Testar PiP", color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Row(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalAlignment = Alignment.CenterVertically) {
+                        // Botão Configurar
+                        IconButton(
+                            onClick = { editingDevice = tv },
+                            modifier = Modifier.size(34.dp)
+                        ) {
+                            Icon(Icons.Default.Settings, contentDescription = "Configurar", tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(18.dp))
+                        }
+
+                        // Botão Testar PiP
+                        Button(
+                            onClick = {
+                                coroutineScope.launch {
+                                    val (ok, msg) = SentinelaRepository.testSingleTv(tv.id, "camera_principal")
+                                    Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                                }
+                            },
+                            colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
+                            shape = SentinelaShapes.SmallButton,
+                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 6.dp)
+                        ) {
+                            Text("Testar", color = Color.Black, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        }
                     }
                 }
             }
@@ -1509,7 +1684,7 @@ fun PhoneSettingsTab() {
                     Text("IDENTIFICAÇÃO DO SMARTPHONE EM /SCREENS", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
                     Text("ID: ${prefs.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
                     Text("Nome: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
-                    Text("Versão: v001.000.000.043 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
+                    Text("Versão: v001.000.000.045 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
                 }
             }
         }

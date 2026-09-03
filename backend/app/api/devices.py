@@ -50,6 +50,12 @@ class DeviceHeartbeat(BaseModel):
     device_type: str = "android_tv"
     ip_address: Optional[str] = None
     tailscale_ip: Optional[str] = None
+    mac_address: Optional[str] = None
+    connection_type: Optional[str] = None # wifi, ethernet, 4g, 5g
+    network_speed_mbps: Optional[float] = None
+    app_version: Optional[str] = None
+    device_model: Optional[str] = None
+    diagnostic_logs: Optional[List[str]] = None
 
 class DeviceAllowedCamerasUpdate(BaseModel):
     allowed_cameras: List[str]
@@ -99,6 +105,12 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
                 events = json.loads(d.allowed_events)
             except Exception:
                 events = []
+        recent_logs = []
+        if d.recent_logs:
+            try:
+                recent_logs = json.loads(d.recent_logs)
+            except Exception:
+                recent_logs = []
         out.append({
             "id": d.id,
             "device_identifier": d.device_identifier,
@@ -106,6 +118,12 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
             "device_type": d.device_type,
             "ip_address": d.ip_address,
             "tailscale_ip": d.tailscale_ip,
+            "mac_address": d.mac_address,
+            "connection_type": d.connection_type or "wifi",
+            "network_speed_mbps": d.network_speed_mbps,
+            "app_version": d.app_version,
+            "device_model": d.device_model,
+            "recent_logs": recent_logs,
             "permission_status": d.permission_status,
             "allowed_cameras": cams,
             "allowed_events": events,
@@ -131,6 +149,8 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
     res = await db.execute(stmt)
     dev = res.scalar_one_or_none()
 
+    logs_json = json.dumps(hb.diagnostic_logs) if hb.diagnostic_logs else None
+
     if dev:
         # Preserve custom friendly_name configured by the user in /screens
         if not dev.friendly_name:
@@ -142,6 +162,18 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
             dev.ip_address = client_ip
         if hb.tailscale_ip:
             dev.tailscale_ip = hb.tailscale_ip
+        if hb.mac_address:
+            dev.mac_address = hb.mac_address
+        if hb.connection_type:
+            dev.connection_type = hb.connection_type
+        if hb.network_speed_mbps is not None:
+            dev.network_speed_mbps = hb.network_speed_mbps
+        if hb.app_version:
+            dev.app_version = hb.app_version
+        if hb.device_model:
+            dev.device_model = hb.device_model
+        if logs_json:
+            dev.recent_logs = logs_json
         dev.last_seen = datetime.datetime.utcnow()
         await db.commit()
     else:
@@ -151,6 +183,12 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
             device_type=hb.device_type,
             ip_address=hb.ip_address or client_ip,
             tailscale_ip=hb.tailscale_ip,
+            mac_address=hb.mac_address,
+            connection_type=hb.connection_type or "wifi",
+            network_speed_mbps=hb.network_speed_mbps,
+            app_version=hb.app_version,
+            device_model=hb.device_model,
+            recent_logs=logs_json,
             permission_status="allowed",
             last_seen=datetime.datetime.utcnow()
         )
