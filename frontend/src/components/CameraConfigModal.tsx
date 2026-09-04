@@ -124,7 +124,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
 
   // Recording & Streaming State
   const [recordMode, setRecordMode] = useState(camera.record_mode || "motion");
-  const [streamMode, setStreamMode] = useState(camera.stream_mode || "mse");
+  const [streamMode, setStreamMode] = useState(camera.stream_mode || "webrtc");
   const [ecoFps, setEcoFps] = useState(camera.eco_fps || 10);
   const [recordFps, setRecordFps] = useState(camera.record_fps || 24);
   const [retainDays, setRetainDays] = useState(camera.record_retain_days || 14);

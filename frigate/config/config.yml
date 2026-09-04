@@ -105,8 +105,11 @@ go2rtc:
       - "ffmpeg:camera_principal#video=h264#hardware"
   webrtc:
     candidates:
+      - 100.93.129.91:8555
       - 192.168.1.247:8555
+      - stun:8555
       - stun:stun.l.google.com:19302
+
 
 
 # Câmeras Ativas

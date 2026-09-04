@@ -20,9 +20,10 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
 }) => {
   const { activeDetections, motionStatus, liveObjectCounts } = useSentinelaStore();
   
-  // Default to camera's configured mode or "mse" (24 FPS)
-  const initialMode = (camera.stream_mode === "eco" ? "monitor" : camera.stream_mode) as ("monitor" | "webrtc" | "mse") || "monitor";
+  // Default to ultra-low latency WebRTC (<80ms) with seamless fallback
+  const initialMode = (camera.stream_mode === "eco" ? "monitor" : (camera.stream_mode || "webrtc")) as ("monitor" | "webrtc" | "mse");
   const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">(initialMode);
+
   const [ecoFps, setEcoFps] = useState<number>(camera.eco_fps || 10);
   const [key, setKey] = useState(0);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
@@ -137,7 +138,8 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   const getStreamUrl = () => {
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc`;
+        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc,mse`;
+
       case "mse":
         return `/go2rtc/stream.html?src=${cameraSrc}&mode=mse`;
       default:

@@ -39,7 +39,7 @@ class CameraCreate(BaseModel):
     ip_address: Optional[str] = None
     onvif_port: Optional[int] = 80
     enabled: Optional[bool] = True
-    stream_mode: Optional[str] = "mse"
+    stream_mode: Optional[str] = "webrtc"
     eco_fps: Optional[int] = 10
     record_fps: Optional[int] = 24
     detect_fps: Optional[int] = 5
@@ -220,7 +220,7 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
             "detect_fps": getattr(c, "detect_fps", 5) or 5,
             "motion_threshold": getattr(c, "motion_threshold", 25) or 25,
             "record_mode": c.record_mode,
-            "stream_mode": getattr(c, "stream_mode", "mse") or "mse",
+            "stream_mode": getattr(c, "stream_mode", "webrtc") or "webrtc",
             "eco_fps": getattr(c, "eco_fps", 10) or 10,
             "record_fps": getattr(c, "record_fps", 24) or 24,
             "record_retain_days": c.record_retain_days,
@@ -1153,12 +1153,21 @@ async def sync_camera_to_frigate(cam: Camera):
         cfg["go2rtc"] = {}
     if "streams" not in cfg["go2rtc"]:
         cfg["go2rtc"]["streams"] = {}
+    if "webrtc" not in cfg["go2rtc"] or not isinstance(cfg["go2rtc"]["webrtc"], dict):
+        cfg["go2rtc"]["webrtc"] = {}
+    cfg["go2rtc"]["webrtc"]["candidates"] = [
+        "100.93.129.91:8555",
+        "192.168.1.247:8555",
+        "stun:8555",
+        "stun:stun.l.google.com:19302"
+    ]
 
     rtsp_url = cam.rtsp_main
     if rtsp_url:
         cfg["go2rtc"]["streams"][target_cam_key] = [rtsp_url.strip()]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
+
 
     # Build optimized ffmpeg inputs: Sub-stream for detect (low CPU), Main-stream for record (high-res 5MP)
     ffmpeg_inputs = []

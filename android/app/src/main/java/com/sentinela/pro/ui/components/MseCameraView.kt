@@ -43,7 +43,7 @@ fun MseCameraView(
     var isAppInForeground by remember { mutableStateOf(true) }
 
     val streamUrl = remember(cameraName) {
-        "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&mode=mse&width=100%"
+        "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&mode=webrtc,mse&width=100%"
     }
     val snapshotUrl = remember(cameraName) {
         "${SentinelaConfig.BASE_URL}/frigate/api/${cameraName}/latest.jpg?h=720"
