@@ -79,6 +79,7 @@ async def init_db():
             ("allow_reboot_server", "BOOLEAN DEFAULT 0"),
             ("pip_default_size", "VARCHAR(32) DEFAULT 'medium'"),
             ("pip_duration_seconds", "INTEGER DEFAULT 10"),
+            ("pip_position", "VARCHAR(32) DEFAULT 'TOP_RIGHT'"),
             ("tailscale_ip", "VARCHAR(64)"),
             ("is_master_admin", "BOOLEAN DEFAULT 0"),
             ("admin_unlocked_at", "DATETIME"),

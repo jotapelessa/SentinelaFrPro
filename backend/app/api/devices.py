@@ -79,6 +79,7 @@ class DevicePermissionsUpdate(BaseModel):
     allow_reboot_server: bool = False
     pip_default_size: str = "medium"
     pip_duration_seconds: int = 10
+    pip_position: Optional[str] = "TOP_RIGHT"
 
 class RestartContainerRequest(BaseModel):
     service_name: str = "sentinela_frigate" # all, sentinela_frigate, sentinela_backend, sentinela_frontend, sentinela_nginx, sentinela_mosquitto
@@ -139,6 +140,7 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
             "allow_reboot_server": d.allow_reboot_server if d.allow_reboot_server is not None else False,
             "pip_default_size": d.pip_default_size or "medium",
             "pip_duration_seconds": d.pip_duration_seconds or 10,
+            "pip_position": d.pip_position or "TOP_RIGHT",
             "is_master_admin": bool(d.is_master_admin),
             "last_seen": d.last_seen.isoformat() if d.last_seen else None,
             "created_at": d.created_at.isoformat() if d.created_at else None
@@ -166,26 +168,29 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
     if not dev:
         target_ip = hb.ip_address or client_ip
         if target_ip not in ["127.0.0.1", "localhost"] and hb.device_model:
+            clean_model = hb.device_model.lower().replace(" ", "").replace("_", "").replace("-", "")
             stmt_model = select(PairedDevice).where(
-                ((PairedDevice.ip_address == target_ip) | (PairedDevice.tailscale_ip == target_ip)) &
-                (PairedDevice.device_model == hb.device_model)
+                ((PairedDevice.ip_address == target_ip) | (PairedDevice.tailscale_ip == target_ip))
             ).order_by(desc(PairedDevice.last_seen))
             res_model = await db.execute(stmt_model)
             candidates = res_model.scalars().all()
-            if candidates:
-                dev = candidates[0]
-                dev.device_identifier = hb.device_identifier
+            for cand in candidates:
+                cand_clean = (cand.device_model or "").lower().replace(" ", "").replace("_", "").replace("-", "")
+                if cand_clean == clean_model or clean_model in cand_clean or cand_clean in clean_model:
+                    dev = cand
+                    dev.device_identifier = hb.device_identifier
+                    break
 
     if not dev:
         target_ip = hb.ip_address or client_ip
         if target_ip not in ["127.0.0.1", "localhost"]:
             stmt_ip = select(PairedDevice).where(
                 (PairedDevice.ip_address == target_ip) | (PairedDevice.tailscale_ip == target_ip)
-            )
+            ).order_by(desc(PairedDevice.last_seen))
             res_ip = await db.execute(stmt_ip)
             candidates = res_ip.scalars().all()
             for cand in candidates:
-                if cand.device_identifier.startswith("tv_") or cand.device_identifier.startswith("scan_") or cand.device_identifier.startswith("manual_") or cand.device_model == hb.device_model:
+                if cand.device_identifier.startswith("tv_") or cand.device_identifier.startswith("scan_") or cand.device_identifier.startswith("manual_") or cand.device_type == hb.device_type:
                     dev = cand
                     dev.device_identifier = hb.device_identifier
                     break
@@ -272,6 +277,7 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         "allow_reboot_server": dev.allow_reboot_server if dev.allow_reboot_server is not None else False,
         "pip_default_size": dev.pip_default_size or "medium",
         "pip_duration_seconds": dev.pip_duration_seconds or 10,
+        "pip_position": dev.pip_position or "TOP_RIGHT",
         "is_master_admin": bool(dev.is_master_admin),
         "last_seen": dev.last_seen.isoformat() if dev.last_seen else None
     }
@@ -333,7 +339,8 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
             "allowed_cameras": [],
             "allowed_events": ["person", "car", "motorcycle", "dog", "cat", "bus"],
             "pip_default_size": "medium",
-            "pip_duration_seconds": 10
+            "pip_duration_seconds": 10,
+            "pip_position": "TOP_RIGHT"
         }
 
     cams = []
@@ -362,7 +369,8 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
         "allowed_cameras": cams,
         "allowed_events": events,
         "pip_default_size": dev.pip_default_size or "medium",
-        "pip_duration_seconds": dev.pip_duration_seconds or 10
+        "pip_duration_seconds": dev.pip_duration_seconds or 10,
+        "pip_position": dev.pip_position or "TOP_RIGHT"
     }
 
 @router.patch("/{device_id}/cameras")
@@ -482,6 +490,8 @@ async def update_device_permissions(
     dev.allow_reboot_server = perms.allow_reboot_server
     dev.pip_default_size = perms.pip_default_size
     dev.pip_duration_seconds = perms.pip_duration_seconds
+    if perms.pip_position:
+        dev.pip_position = perms.pip_position
 
     await db.commit()
     try:
@@ -493,6 +503,7 @@ async def update_device_permissions(
             "permission_status": dev.permission_status,
             "pip_default_size": dev.pip_default_size,
             "pip_duration_seconds": dev.pip_duration_seconds,
+            "pip_position": dev.pip_position or "TOP_RIGHT",
             "allow_pip_alerts": dev.allow_pip_alerts
         })
     except Exception as e:
@@ -502,7 +513,7 @@ async def update_device_permissions(
         action="DEVICE_PERMISSIONS_UPDATED",
         module="PIP",
         severity="SUCCESS",
-        details=f"Permissões granulares atualizadas para '{dev.friendly_name}' (Status: {dev.permission_status}, Câmeras: {dev.allowed_cameras}, Gravações: {dev.allow_recordings}, PiP: {dev.allow_pip_alerts}, Reiniciar Docker: {dev.allow_restart_containers}, Reboot Host: {dev.allow_reboot_server})",
+        details=f"Permissões granulares atualizadas para '{dev.friendly_name}' (Status: {dev.permission_status}, Câmeras: {dev.allowed_cameras}, Gravações: {dev.allow_recordings}, PiP: {dev.allow_pip_alerts}, Posição: {dev.pip_position}, Reiniciar Docker: {dev.allow_restart_containers}, Reboot Host: {dev.allow_reboot_server})",
         client_ip=request.client.host if request.client else "unknown"
     )
     return {
@@ -518,7 +529,8 @@ async def update_device_permissions(
         "allow_restart_containers": dev.allow_restart_containers,
         "allow_reboot_server": dev.allow_reboot_server,
         "pip_default_size": dev.pip_default_size,
-        "pip_duration_seconds": dev.pip_duration_seconds
+        "pip_duration_seconds": dev.pip_duration_seconds,
+        "pip_position": dev.pip_position or "TOP_RIGHT"
     }
 
 @router.post("/by-id/{device_identifier}/restart-containers")

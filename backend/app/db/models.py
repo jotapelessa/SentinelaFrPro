@@ -68,6 +68,7 @@ class PairedDevice(Base):
     allow_reboot_server = Column(Boolean, default=False) # Remote server reboot permission
     pip_default_size = Column(String(32), default="medium") # mini, medium, large, split
     pip_duration_seconds = Column(Integer, default=10) # 5, 10, 15, 30
+    pip_position = Column(String(32), default="TOP_RIGHT") # TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT, etc.
     is_master_admin = Column(Boolean, default=False) # Master special permissions for smartphone
     admin_unlocked_at = Column(DateTime, nullable=True)
     mac_address = Column(String(64), nullable=True)

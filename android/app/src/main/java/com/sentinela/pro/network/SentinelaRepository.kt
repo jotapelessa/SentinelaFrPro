@@ -26,6 +26,7 @@ data class DevicePolicy(
     val allowedEvents: List<String> = listOf("person", "car", "motorcycle", "dog", "cat", "bus"),
     val pipDefaultSize: String = "medium",
     val pipDurationSeconds: Int = 10,
+    val pipPosition: String = "TOP_RIGHT",
     val isMasterAdmin: Boolean = false
 )
 
@@ -46,6 +47,7 @@ data class RemoteDeviceItem(
     val allowPipAlerts: Boolean = true,
     val pipDefaultSize: String = "medium",
     val pipDurationSeconds: Int = 10,
+    val pipPosition: String = "TOP_RIGHT",
     val allowedCameras: List<String> = emptyList(),
     val lastSeen: String? = null
 ) {
@@ -121,6 +123,7 @@ object SentinelaRepository {
                     allowRebootServer = obj.optBoolean("allow_reboot_server", false),
                     pipDefaultSize = obj.optString("pip_default_size", "medium"),
                     pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
+                    pipPosition = obj.optString("pip_position", "TOP_RIGHT"),
                     isMasterAdmin = obj.optBoolean("is_master_admin", false)
                 )
             }
@@ -660,6 +663,7 @@ object SentinelaRepository {
                             allowPipAlerts = obj.optBoolean("allow_pip_alerts", true),
                             pipDefaultSize = obj.optString("pip_default_size", "medium"),
                             pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
+                            pipPosition = obj.optString("pip_position", "TOP_RIGHT"),
                             allowedCameras = camsList,
                             lastSeen = obj.optString("last_seen").takeIf { it.isNotBlank() }
                         )
@@ -678,6 +682,7 @@ object SentinelaRepository {
         friendlyName: String,
         pipSize: String = "medium",
         pipDuration: Int = 10,
+        pipPosition: String = "TOP_RIGHT",
         allowedCameras: List<String> = emptyList(),
         allowPip: Boolean = true,
         permissionStatus: String = "allowed"
@@ -699,6 +704,7 @@ object SentinelaRepository {
                 put("permission_status", permissionStatus)
                 put("pip_default_size", pipSize)
                 put("pip_duration_seconds", pipDuration)
+                put("pip_position", pipPosition)
                 put("allow_pip_alerts", allowPip)
                 put("allowed_cameras", camsArr)
             }

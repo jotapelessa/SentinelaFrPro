@@ -37,13 +37,20 @@ fun MseCameraView(
     cameraName: String,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
-    isStreaming: Boolean = true
+    isStreaming: Boolean = true,
+    streamMode: String = "webrtc,mse"
 ) {
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
     var isAppInForeground by remember { mutableStateOf(true) }
 
-    val streamUrl = remember(cameraName) {
-        "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&mode=webrtc&width=100%"
+    val streamUrl = remember(cameraName, streamMode) {
+        val modeParam = when (streamMode.lowercase()) {
+            "eco" -> "mjpeg"
+            "mse" -> "mse,webrtc"
+            "webrtc" -> "webrtc,mse"
+            else -> streamMode
+        }
+        "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&mode=${modeParam}&width=100%"
     }
     val snapshotUrl = remember(cameraName) {
         "${SentinelaConfig.BASE_URL}/frigate/api/${cameraName}/latest.jpg?h=720"

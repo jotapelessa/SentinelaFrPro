@@ -508,29 +508,41 @@ async def get_event_clip(event_id: str, download: bool = False):
         with open(temp_in, "wb") as f:
             f.write(raw_bytes)
 
-        cmd = [
+        # Fast Remux: If Frigate stream is already H.264/AAC, avoid CPU re-encoding completely (<80ms vs 9s)
+        cmd_fast = [
             "ffmpeg", "-y",
             "-i", temp_in,
-            "-r", "25",
-            "-vsync", "cfr",
-            "-c:v", "libx264",
-            "-preset", "ultrafast",
-            "-crf", "23",
-            "-maxrate", "3000k",
-            "-bufsize", "6000k",
-            "-pix_fmt", "yuv420p",
+            "-c", "copy",
             "-movflags", "+faststart",
-            "-c:a", "aac",
-            "-b:a", "128k",
             temp_out
         ]
-        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=45)
-        if proc.returncode == 0 and os.path.exists(temp_out) and os.path.getsize(temp_out) > 1024:
+        proc_fast = subprocess.run(cmd_fast, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+        if proc_fast.returncode == 0 and os.path.exists(temp_out) and os.path.getsize(temp_out) > 1024:
             os.replace(temp_out, cached_file)
         else:
-            # Fallback to raw bytes if ffmpeg failed
-            with open(cached_file, "wb") as f:
-                f.write(raw_bytes)
+            # Fallback to ultrafast transcoding if codecs differ (e.g. HEVC)
+            cmd = [
+                "ffmpeg", "-y",
+                "-i", temp_in,
+                "-r", "25",
+                "-vsync", "cfr",
+                "-c:v", "libx264",
+                "-preset", "ultrafast",
+                "-crf", "23",
+                "-maxrate", "3000k",
+                "-bufsize", "6000k",
+                "-pix_fmt", "yuv420p",
+                "-movflags", "+faststart",
+                "-c:a", "aac",
+                "-b:a", "128k",
+                temp_out
+            ]
+            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+            if proc.returncode == 0 and os.path.exists(temp_out) and os.path.getsize(temp_out) > 1024:
+                os.replace(temp_out, cached_file)
+            else:
+                with open(cached_file, "wb") as f:
+                    f.write(raw_bytes)
     except Exception as e:
         logger.error(f"Error transcoding clip {event_id}: {e}")
         with open(cached_file, "wb") as f:

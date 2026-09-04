@@ -44,7 +44,8 @@ fun SeamlessCameraImage(
     contentScale: ContentScale = ContentScale.Crop,
     refreshIntervalMs: Long = 42L, // MSE 24 FPS Standard
     isStreaming: Boolean = true,
-    forceSnapshotMode: Boolean = false
+    forceSnapshotMode: Boolean = false,
+    streamMode: String = "webrtc,mse"
 ) {
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
     var isAppInForeground by remember { mutableStateOf(true) }
@@ -69,12 +70,14 @@ fun SeamlessCameraImage(
         return
     }
 
-    if (!forceSnapshotMode) {
+    val isEcoOnly = streamMode.equals("eco", ignoreCase = true)
+    if (!forceSnapshotMode && !isEcoOnly) {
         MseCameraView(
             cameraName = cameraName,
             modifier = modifier,
             contentDescription = contentDescription,
-            isStreaming = isStreaming && isAppInForeground
+            isStreaming = isStreaming && isAppInForeground,
+            streamMode = streamMode
         )
         return
     }

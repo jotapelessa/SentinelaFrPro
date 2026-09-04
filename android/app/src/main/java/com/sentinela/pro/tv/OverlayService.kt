@@ -93,11 +93,22 @@ class OverlayService : Service() {
                                 5 -> prefs.pipDurationIndex = PipDuration.D_5S.ordinal
                                 10 -> prefs.pipDurationIndex = PipDuration.D_10S.ordinal
                                 15 -> prefs.pipDurationIndex = PipDuration.D_15S.ordinal
+                                20 -> prefs.pipDurationIndex = PipDuration.D_20S.ordinal
                                 30 -> prefs.pipDurationIndex = PipDuration.D_30S.ordinal
+                                45 -> prefs.pipDurationIndex = PipDuration.D_45S.ordinal
                                 60 -> prefs.pipDurationIndex = PipDuration.D_60S.ordinal
                             }
                         }
-                        android.util.Log.i("OverlayService", "Device config updated via WebSocket: size=$serverPipSize, dur=$serverPipDur")
+                        val serverPipPos = event.optString("pip_position", "")
+                        if (serverPipPos.isNotBlank()) {
+                            try {
+                                val posEnum = PipPosition.valueOf(serverPipPos.uppercase())
+                                prefs.pipPositionIndex = posEnum.ordinal
+                            } catch (e: Exception) {
+                                android.util.Log.w("OverlayService", "Unknown pip_position: $serverPipPos")
+                            }
+                        }
+                        android.util.Log.i("OverlayService", "Device config updated via WebSocket: size=$serverPipSize, dur=$serverPipDur, pos=$serverPipPos")
                     }
                     return@collect
                 }
@@ -230,7 +241,16 @@ class OverlayService : Service() {
             prefs.currentPipSize
         }
 
-        val pipPos = prefs.currentPipPosition
+        val pipPos = if (policy != null && policy.pipPosition.isNotBlank()) {
+            try {
+                PipPosition.valueOf(policy.pipPosition.uppercase())
+            } catch (e: Exception) {
+                prefs.currentPipPosition
+            }
+        } else {
+            prefs.currentPipPosition
+        }
+
         val durationSeconds = if (policy != null && policy.pipDurationSeconds > 0) {
             policy.pipDurationSeconds
         } else if (prefs.currentPipDuration.seconds > 0) {

@@ -383,6 +383,8 @@ fun PhoneCameraStreamCard(
     var scale by remember { mutableFloatStateOf(1.0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
+    var streamMode by remember { mutableStateOf("webrtc") }
+
     val animatedBorderColor by animateColorAsState(
         targetValue = if (scale > 1.05f) SentinelaColors.BorderCyan else SentinelaColors.BorderStandard,
         label = "borderAnim"
@@ -427,7 +429,7 @@ fun PhoneCameraStreamCard(
                         }
                     }
             ) {
-                // Stream 24 FPS Hardware Accelerated
+                // Stream Hardware Accelerated com modo selecionável
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -445,27 +447,33 @@ fun PhoneCameraStreamCard(
                         contentScale = ContentScale.Crop,
                         refreshIntervalMs = 42L,
                         isStreaming = true,
-                        forceSnapshotMode = false
+                        forceSnapshotMode = streamMode == "eco",
+                        streamMode = streamMode
                     )
                 }
 
-                // Badge Topo Esquerda: Resolução e Canal
-                Surface(
-                    shape = SentinelaShapes.PillBadge,
-                    color = SentinelaColors.BadgeBackground,
+                // Badge Topo Esquerda: Seletor de Modo de Conexão (Eco, MSE, WebRTC)
+                Row(
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .padding(10.dp)
+                        .padding(8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            text = "RTSP H.265",
-                            style = SentinelaTypography.BadgeText.copy(color = SentinelaColors.PrimaryCyan, fontSize = 9.sp)
-                        )
+                    listOf("eco" to "Eco 10fps", "mse" to "MSE 24fps", "webrtc" to "WebRTC").forEach { (mKey, mLabel) ->
+                        val isSel = streamMode == mKey
+                        Surface(
+                            shape = SentinelaShapes.PillBadge,
+                            color = if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BadgeBackground,
+                            modifier = Modifier.clickable { streamMode = mKey }
+                        ) {
+                            Text(
+                                text = mLabel,
+                                color = if (isSel) Color.Black else Color.White,
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                            )
+                        }
                     }
                 }
 
@@ -475,7 +483,7 @@ fun PhoneCameraStreamCard(
                     color = SentinelaColors.BadgeBackground,
                     modifier = Modifier
                         .align(Alignment.TopEnd)
-                        .padding(10.dp)
+                        .padding(8.dp)
                 ) {
                     Row(
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
@@ -763,13 +771,47 @@ fun PhoneCapturesTab() {
 fun DeviceConfigEditDialog(
     device: com.sentinela.pro.network.RemoteDeviceItem,
     onDismiss: () -> Unit,
-    onSave: (name: String, pipSize: String, pipDuration: Int, allowPip: Boolean, status: String) -> Unit
+    onSave: (name: String, pipSize: String, pipDuration: Int, pipPosition: String, allowPip: Boolean, status: String) -> Unit
 ) {
     var name by remember { mutableStateOf(device.friendlyName) }
     var pipSize by remember { mutableStateOf(device.pipDefaultSize) }
     var pipDuration by remember { mutableStateOf(device.pipDurationSeconds) }
+    var pipPosition by remember { mutableStateOf(device.pipPosition) }
     var allowPip by remember { mutableStateOf(device.allowPipAlerts) }
     var status by remember { mutableStateOf(device.permissionStatus) }
+
+    val allSizes = listOf(
+        "extra_small" to "15% (Mini)",
+        "small" to "20% (Peq)",
+        "medium_small" to "25% (M-Peq)",
+        "medium" to "30% (Méd)",
+        "medium_large" to "35% (M-Grd)",
+        "large" to "40% (Grande)",
+        "extra_large" to "50% (X-Grd)",
+        "cinema" to "70% (Cinema)"
+    )
+
+    val allPositions = listOf(
+        "TOP_RIGHT" to "Sup. Dir",
+        "TOP_LEFT" to "Sup. Esq",
+        "BOTTOM_RIGHT" to "Inf. Dir",
+        "BOTTOM_LEFT" to "Inf. Esq",
+        "TOP_CENTER" to "Sup. Centro",
+        "BOTTOM_CENTER" to "Inf. Centro",
+        "CENTER_LEFT" to "Centro Esq",
+        "CENTER_RIGHT" to "Centro Dir"
+    )
+
+    val allDurations = listOf(
+        5 to "5s",
+        10 to "10s",
+        15 to "15s",
+        20 to "20s",
+        30 to "30s",
+        45 to "45s",
+        60 to "60s",
+        0 to "Infinito"
+    )
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -781,115 +823,161 @@ fun DeviceConfigEditDialog(
             }
         },
         text = {
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                // Ficha Técnica do Hardware
-                Card(
-                    shape = SentinelaShapes.SmallButton,
-                    colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackgroundElevated),
-                    modifier = Modifier.fillMaxWidth().border(0.5.dp, SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
-                ) {
-                    Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text("ID: ${device.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                        Text("IP: ${device.ipAddress} • MAC: ${device.macAddress ?: "Automático"}", color = SentinelaColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                        Text("App: ${device.appVersion ?: "v001.000.000.056"} • Modelo: ${device.deviceModel ?: device.deviceType}", color = SentinelaColors.TextSecondary, fontSize = 9.sp)
-                    }
-                }
-
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Nome Amigável", color = SentinelaColors.TextSecondary) },
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        focusedBorderColor = SentinelaColors.PrimaryCyan,
-                        unfocusedBorderColor = SentinelaColors.BorderStandard
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Text("Status da Tela no NVR:", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                    listOf("allowed" to "Ativo", "paused" to "Pausado", "blocked" to "Bloqueado").forEach { (key, label) ->
-                        val isSel = status == key
-                        val chipColor = when (key) {
-                            "allowed" -> SentinelaColors.SuccessGreen
-                            "paused" -> SentinelaColors.MasterGold
-                            else -> SentinelaColors.DestructiveRed
-                        }
-                        Surface(
-                            shape = SentinelaShapes.SmallButton,
-                            color = if (isSel) chipColor.copy(alpha = 0.2f) else SentinelaColors.CardBackgroundElevated,
-                            border = BorderStroke(1.dp, if (isSel) chipColor else SentinelaColors.BorderStandard),
-                            modifier = Modifier.weight(1f).clickable { status = key }
-                        ) {
-                            Box(modifier = Modifier.padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
-                                Text(label, color = if (isSel) chipColor else Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                            }
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                item {
+                    // Ficha Técnica do Hardware
+                    Card(
+                        shape = SentinelaShapes.SmallButton,
+                        colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackgroundElevated),
+                        modifier = Modifier.fillMaxWidth().border(0.5.dp, SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
+                    ) {
+                        Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Text("ID: ${device.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                            Text("IP: ${device.ipAddress} • MAC: ${device.macAddress ?: "Automático"}", color = SentinelaColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+                            Text("App: ${device.appVersion ?: "v001.000.000.067"} • Modelo: ${device.deviceModel ?: device.deviceType}", color = SentinelaColors.TextSecondary, fontSize = 9.sp)
                         }
                     }
                 }
 
-                Text("Tamanho Janela PiP:", color = SentinelaColors.TextSecondary, fontSize = 11.sp)
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    listOf("mini" to "Mini", "medium" to "Médio", "large" to "Grande", "cinema" to "Cinema").forEach { (key, label) ->
-                        val isSel = pipSize.lowercase() == key
-                        Surface(
-                            shape = SentinelaShapes.SmallButton,
-                            color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.2f) else SentinelaColors.CardBackgroundElevated,
-                            border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
-                            modifier = Modifier.weight(1f).clickable { pipSize = key }
-                        ) {
-                            Box(modifier = Modifier.padding(vertical = 5.dp), contentAlignment = Alignment.Center) {
-                                Text(label, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-
-                Text("Duração do Alerta PiP:", color = SentinelaColors.TextSecondary, fontSize = 11.sp)
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                    listOf(5, 10, 15, 30).forEach { s ->
-                        val isSel = pipDuration == s
-                        Surface(
-                            shape = SentinelaShapes.SmallButton,
-                            color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.2f) else SentinelaColors.CardBackgroundElevated,
-                            border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
-                            modifier = Modifier.weight(1f).clickable { pipDuration = s }
-                        ) {
-                            Box(modifier = Modifier.padding(vertical = 5.dp), contentAlignment = Alignment.Center) {
-                                Text("${s}s", color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                            }
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Column {
-                        Text("Exibir Alertas PiP", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        Text("Permitir overlay nesta Smart TV", style = SentinelaTypography.Subtext)
-                    }
-                    Switch(
-                        checked = allowPip,
-                        onCheckedChange = { allowPip = it },
-                        colors = SwitchDefaults.colors(
-                            checkedThumbColor = SentinelaColors.PrimaryCyan,
-                            checkedTrackColor = SentinelaColors.PrimaryCyan.copy(alpha = 0.5f)
-                        )
+                item {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Nome Amigável", color = SentinelaColors.TextSecondary) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedBorderColor = SentinelaColors.PrimaryCyan,
+                            unfocusedBorderColor = SentinelaColors.BorderStandard
+                        ),
+                        modifier = Modifier.fillMaxWidth()
                     )
+                }
+
+                item {
+                    Text("Status da Tela no NVR:", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf("allowed" to "Ativo", "paused" to "Pausado", "blocked" to "Bloqueado").forEach { (key, label) ->
+                            val isSel = status == key
+                            val chipColor = when (key) {
+                                "allowed" -> SentinelaColors.SuccessGreen
+                                "paused" -> SentinelaColors.MasterGold
+                                else -> SentinelaColors.DestructiveRed
+                            }
+                            Surface(
+                                shape = SentinelaShapes.SmallButton,
+                                color = if (isSel) chipColor.copy(alpha = 0.2f) else SentinelaColors.CardBackgroundElevated,
+                                border = BorderStroke(1.dp, if (isSel) chipColor else SentinelaColors.BorderStandard),
+                                modifier = Modifier.weight(1f).clickable { status = key }
+                            ) {
+                                Box(modifier = Modifier.padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
+                                    Text(label, color = if (isSel) chipColor else Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Text("Tamanho da Janela PiP (8 Opções):", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        allSizes.chunked(4).forEach { rowList ->
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                rowList.forEach { (key, label) ->
+                                    val isSel = pipSize.lowercase() == key
+                                    Surface(
+                                        shape = SentinelaShapes.SmallButton,
+                                        color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.25f) else SentinelaColors.CardBackgroundElevated,
+                                        border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                        modifier = Modifier.weight(1f).clickable { pipSize = key }
+                                    ) {
+                                        Box(modifier = Modifier.padding(vertical = 5.dp), contentAlignment = Alignment.Center) {
+                                            Text(label, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Text("Posição da Janela PiP (8 Posições):", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        allPositions.chunked(4).forEach { rowList ->
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                rowList.forEach { (key, label) ->
+                                    val isSel = pipPosition.equals(key, ignoreCase = true)
+                                    Surface(
+                                        shape = SentinelaShapes.SmallButton,
+                                        color = if (isSel) SentinelaColors.MasterGold.copy(alpha = 0.25f) else SentinelaColors.CardBackgroundElevated,
+                                        border = BorderStroke(1.dp, if (isSel) SentinelaColors.MasterGold else SentinelaColors.BorderStandard),
+                                        modifier = Modifier.weight(1f).clickable { pipPosition = key }
+                                    ) {
+                                        Box(modifier = Modifier.padding(vertical = 5.dp), contentAlignment = Alignment.Center) {
+                                            Text(label, color = if (isSel) SentinelaColors.MasterGold else Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Text("Duração do Alerta PiP (8 Tempos):", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        allDurations.chunked(4).forEach { rowList ->
+                            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                rowList.forEach { (s, label) ->
+                                    val isSel = pipDuration == s
+                                    Surface(
+                                        shape = SentinelaShapes.SmallButton,
+                                        color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.25f) else SentinelaColors.CardBackgroundElevated,
+                                        border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                        modifier = Modifier.weight(1f).clickable { pipDuration = s }
+                                    ) {
+                                        Box(modifier = Modifier.padding(vertical = 5.dp), contentAlignment = Alignment.Center) {
+                                            Text(label, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Column {
+                            Text("Exibir Alertas PiP", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                            Text("Permitir overlay flutuante nesta Smart TV", style = SentinelaTypography.Subtext)
+                        }
+                        Switch(
+                            checked = allowPip,
+                            onCheckedChange = { allowPip = it },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = SentinelaColors.PrimaryCyan,
+                                checkedTrackColor = SentinelaColors.PrimaryCyan.copy(alpha = 0.5f)
+                            )
+                        )
+                    }
                 }
             }
         },
         confirmButton = {
             Button(
-                onClick = { onSave(name, pipSize, pipDuration, allowPip, status) },
+                onClick = { onSave(name, pipSize, pipDuration, pipPosition, allowPip, status) },
                 colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan)
             ) {
-                Text("Salvar", color = Color.Black, fontWeight = FontWeight.Bold)
+                Text("Salvar & Sincronizar", color = Color.Black, fontWeight = FontWeight.Bold)
             }
         },
         dismissButton = {
@@ -945,7 +1033,7 @@ fun PhoneMasterCentralTab() {
         DeviceConfigEditDialog(
             device = editingDevice!!,
             onDismiss = { editingDevice = null },
-            onSave = { updatedName, pipSize, pipDur, allowPip, status ->
+            onSave = { updatedName, pipSize, pipDur, pipPos, allowPip, status ->
                 val devId = editingDevice!!.id
                 editingDevice = null
                 coroutineScope.launch {
@@ -954,6 +1042,7 @@ fun PhoneMasterCentralTab() {
                         friendlyName = updatedName,
                         pipSize = pipSize,
                         pipDuration = pipDur,
+                        pipPosition = pipPos,
                         allowPip = allowPip,
                         permissionStatus = status
                     )
@@ -2138,6 +2227,9 @@ fun PhoneClipPlayerDialog(
     event: CaptureEvent,
     onDismiss: () -> Unit
 ) {
+    var scale by remember { mutableFloatStateOf(1.0f) }
+    var offset by remember { mutableStateOf(Offset.Zero) }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -2147,14 +2239,65 @@ fun PhoneClipPlayerDialog(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            SeamlessCameraImage(
-                cameraName = event.camera,
-                contentDescription = event.label,
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit,
-                refreshIntervalMs = 42L,
-                isStreaming = true
-            )
+            if (event.isPhoto) {
+                // High-Resolution Photo Viewer with Pinch-to-Zoom
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onDoubleTap = {
+                                    scale = 1.0f
+                                    offset = Offset.Zero
+                                }
+                            )
+                        }
+                        .pointerInput(Unit) {
+                            detectTransformGestures { _, pan, zoom, _ ->
+                                scale = (scale * zoom).coerceIn(1.0f, 5.0f)
+                                if (scale > 1.0f) {
+                                    val maxOffsetX = (size.width * (scale - 1f)) / 2
+                                    val maxOffsetY = (size.height * (scale - 1f)) / 2
+                                    offset = Offset(
+                                        x = (offset.x + pan.x).coerceIn(-maxOffsetX, maxOffsetX),
+                                        y = (offset.y + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                                    )
+                                } else {
+                                    offset = Offset.Zero
+                                }
+                            }
+                        }
+                ) {
+                    val highResUrl = event.snapshotUrl.ifBlank {
+                        "${SentinelaConfig.BASE_URL}/frigate/api/${event.camera}/latest.jpg?h=1080"
+                    }
+                    AsyncImage(
+                        model = ImageRequest.Builder(LocalContext.current)
+                            .data(highResUrl)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = event.label,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .graphicsLayer(
+                                scaleX = scale,
+                                scaleY = scale,
+                                translationX = offset.x,
+                                translationY = offset.y
+                            ),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+            } else {
+                SeamlessCameraImage(
+                    cameraName = event.camera,
+                    contentDescription = event.label,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit,
+                    refreshIntervalMs = 42L,
+                    isStreaming = true
+                )
+            }
 
             Row(
                 modifier = Modifier

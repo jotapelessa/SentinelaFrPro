@@ -139,10 +139,9 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   const getStreamUrl = () => {
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc`;
-
+        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=webrtc,mse`;
       case "mse":
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=mse`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=mse,webrtc`;
       default:
         return frameUrl;
     }
@@ -188,15 +187,20 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
       const script = doc.createElement("script");
       script.textContent = `
         (function() {
-          var initAutoplay = function() {
+          var attemptPlay = function() {
             var v = document.querySelector('video');
             if (v) {
               v.muted = true;
-              v.play().catch(function(){});
+              v.playsInline = true;
+              v.autoplay = true;
+              if (v.paused) {
+                v.play().catch(function(){});
+              }
             }
           };
-          initAutoplay();
-          setTimeout(initAutoplay, 1000);
+          attemptPlay();
+          setTimeout(attemptPlay, 800);
+          setTimeout(attemptPlay, 2000);
         })();
       `;
       doc.body.appendChild(script);
