@@ -2,9 +2,9 @@
 
 <div align="center">
 
-![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.049-06B6D4?style=for-the-badge&logo=android&logoColor=white)
+![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.050-06B6D4?style=for-the-badge&logo=android&logoColor=white)
 ![Build](https://img.shields.io/badge/Compilador_Codespaces-Gradle_8.5_Java_17-emerald?style=for-the-badge)
-![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.049-success?style=for-the-badge&logo=github)
+![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.050-success?style=for-the-badge&logo=github)
 ![Aceleração](https://img.shields.io/badge/Intel_VAAPI/QSV-Jasper_Lake_N5105-blue?style=for-the-badge)
 ![IA](https://img.shields.io/badge/Inferência-OpenVINO_NPU/GPU-violet?style=for-the-badge)
 ![Rede](https://img.shields.io/badge/Rede_Segura-Tailscale_VPN-darkblue?style=for-the-badge)
@@ -17,18 +17,18 @@ Projetada com foco em **eficiência energética extrema e latência sub-200ms** 
 
 ---
 
-## 📥 Download dos APKs Oficiais (`v001.000.000.049`)
+## 📥 Download dos APKs Oficiais (`v001.000.000.050`)
 
-Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.049):
+Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.050):
 
-* 📺 **[Download Android TV APK (v001.000.000.049)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.049/sentinela-android-tv-v001.000.000.049.apk)**  
-  *(Ou baixe sempre a última versão: [sentinela-android-tv-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.049/sentinela-android-tv-latest.apk))*
-* 📱 **[Download Android Smartphone APK (v001.000.000.049)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.049/sentinela-android-smartphone-v001.000.000.049.apk)**  
-  *(Ou baixe sempre a última versão: [sentinela-android-smartphone-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.049/sentinela-android-smartphone-latest.apk))*
+* 📺 **[Download Android TV APK (v001.000.000.050)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.050/sentinela-android-tv-v001.000.000.050.apk)**  
+  *(Ou baixe sempre a última versão: [sentinela-android-tv-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.050/sentinela-android-tv-latest.apk))*
+* 📱 **[Download Android Smartphone APK (v001.000.000.050)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.050/sentinela-android-smartphone-v001.000.000.050.apk)**  
+  *(Ou baixe sempre a última versão: [sentinela-android-smartphone-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.050/sentinela-android-smartphone-latest.apk))*
 
 ---
 
-## 📱 Aplicativos Nativos Android (`v001.000.000.049`)
+## 📱 Aplicativos Nativos Android (`v001.000.000.050`)
 
 ### 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix)
 * **Aba 1 • Câmeras**: Spotlight imersivo com navegação D-Pad, carrossel dinâmico e alternância para tela cheia instantânea.

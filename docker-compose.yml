@@ -57,6 +57,7 @@ services:
       - "8080:8080"
     volumes:
       - /etc/localtime:/etc/localtime:ro
+      - /sys:/sys:ro
       - ./backend/data:/app/data
       - ./frigate/storage:/media/frigate:ro
       - ./frigate/config:/config

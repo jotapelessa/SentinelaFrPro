@@ -6,6 +6,10 @@ from typing import Optional, List, Dict, Any
 import asyncio
 import json
 import datetime
+import logging
+
+logger = logging.getLogger(__name__)
+
 from app.db.session import get_db
 from app.db.models import PairedDevice, Camera, AuditLog
 from app.services.pip_gateway import pip_gateway_service
@@ -570,6 +574,7 @@ async def remote_reboot_server(
     return {"status": "success", "message": "Comando de reinicialização enviado ao servidor Ubuntu."}
 
 @router.put("/{device_id}/status")
+@router.patch("/{device_id}/status")
 async def update_device_status(device_id: int, update: DeviceStatusUpdate, request: Request, db: AsyncSession = Depends(get_db)):
     stmt = select(PairedDevice).where(PairedDevice.id == device_id)
     res = await db.execute(stmt)
@@ -586,6 +591,36 @@ async def update_device_status(device_id: int, update: DeviceStatusUpdate, reque
         client_ip=request.client.host if request.client else "unknown"
     )
     return dev
+
+@router.post("/{device_id}/toggle-pip")
+async def toggle_device_pip(device_id: int, request: Request, db: AsyncSession = Depends(get_db)):
+    """Quickly toggle PiP alerts state for a single device with 1-click."""
+    stmt = select(PairedDevice).where(PairedDevice.id == device_id)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev:
+        raise HTTPException(status_code=404, detail="Device not found")
+    current_state = dev.allow_pip_alerts if dev.allow_pip_alerts is not None else True
+    dev.allow_pip_alerts = not current_state
+    await db.commit()
+    try:
+        from app.api.ws import ws_manager
+        await ws_manager.broadcast_json({
+            "type": "DEVICE_CONFIG_UPDATED",
+            "device_identifier": dev.device_identifier,
+            "allow_pip_alerts": dev.allow_pip_alerts
+        })
+    except Exception as e:
+        logger.debug(f"Failed to broadcast PiP toggle: {e}")
+
+    await audit_service.log(
+        action="DEVICE_PIP_TOGGLED",
+        module="PIP",
+        severity="INFO",
+        details=f"Alertas PiP para {dev.friendly_name} alterado para: {dev.allow_pip_alerts}.",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+    return {"id": dev.id, "allow_pip_alerts": dev.allow_pip_alerts}
 
 @router.delete("/{device_id}")
 async def delete_device(device_id: int, request: Request, db: AsyncSession = Depends(get_db)):
