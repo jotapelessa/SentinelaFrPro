@@ -192,14 +192,16 @@ class FrigateBridgeService:
             pass
         finally:
             if temp_path and os.path.exists(temp_path):
-                try: os.remove(temp_path)
-                except Exception: pass
+                try:
+                    os.remove(temp_path)
+                except Exception:
+                    pass
         return False
 
-    async def transcode_to_30fps(self, video_bytes: bytes, target_fps: int = 20) -> Optional[bytes]:
+    async def transcode_to_30fps(self, video_bytes: bytes, target_fps: int = 25) -> Optional[bytes]:
         """Optimized high-efficiency video preparation for Telegram & mobile playback:
-        1. Ultrafast CFR 20 FPS transcode with bitrate control (2.5 Mbps cap, CRF 23, YUV420p, +faststart).
-           Reduces file size from ~46MB to ~3MB (-93% network) and fixes 90000 FPS stuttering.
+        1. Ultrafast CFR 25 FPS transcode with bitrate control (2.5 Mbps cap, CRF 23, YUV420p, +faststart).
+           Reduces file size from ~46MB to ~5-9MB and fixes 90000 FPS stuttering with fluid 25 FPS CFR.
         2. Fallback to lossless stream copy if transcode fails.
         """
         if not video_bytes or len(video_bytes) < 2000:
@@ -210,11 +212,12 @@ class FrigateBridgeService:
             with open(in_file, "wb") as f:
                 f.write(video_bytes)
             
-            # 1. Primary: High-speed CFR transcode (cures camera timestamp jitter & drastically reduces size)
+            # 1. Primary: High-speed CFR transcode (cures camera timestamp jitter & guarantees smooth 25 FPS)
             cmd_transcode = [
                 "ffmpeg", "-y",
                 "-i", in_file,
                 "-r", str(target_fps),
+                "-vsync", "cfr",
                 "-c:v", "libx264",
                 "-preset", "ultrafast",
                 "-crf", "23",
@@ -226,7 +229,7 @@ class FrigateBridgeService:
                 "-b:a", "128k",
                 out_file
             ]
-            proc = subprocess.run(cmd_transcode, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
+            proc = subprocess.run(cmd_transcode, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
             if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
                 with open(out_file, "rb") as f:
                     smooth_bytes = f.read()

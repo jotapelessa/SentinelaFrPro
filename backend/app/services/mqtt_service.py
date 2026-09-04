@@ -385,8 +385,8 @@ class MQTTService:
                             logger.warning(f"⚠️ Clipe retornado pelo Frigate para evento {event_id} ainda não possui stream de vídeo finalizado (tentativa {attempt}/{len(delays)}). Aguardando flush...")
                             continue
 
-                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264 CFR 20 FPS...")
-                        smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=20)
+                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264 CFR 25 FPS fluidos...")
+                        smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=25)
                         if smooth_video and frigate_bridge.has_video_stream(smooth_video):
                             real_clip_dur = frigate_bridge.get_video_duration(smooth_video)
                             final_dur = real_clip_dur if real_clip_dur > 0 else target_duration
