@@ -18,7 +18,7 @@ logger:
 ffmpeg:
   hwaccel_args: preset-intel-qsv-h264
   output_args:
-    record: preset-record-generic-audio
+    record: preset-record-generic
 
 
 # Global Model Config (ensures detector frame resizing matches OpenVINO 300x300 input)
@@ -119,11 +119,11 @@ cameras:
     enabled: true
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/camera_principal
+        - path: rtsp://127.0.0.1:8554/camera_principal_h264
           input_args: preset-rtsp-restream
           roles:
             - record
-        - path: rtsp://127.0.0.1:8554/camera_principal
+        - path: rtsp://127.0.0.1:8554/camera_principal_h264
           input_args: preset-rtsp-restream
           roles:
             - detect
