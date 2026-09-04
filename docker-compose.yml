@@ -4,7 +4,7 @@ services:
     privileged: true
     restart: unless-stopped
     image: ghcr.io/blakeblackshear/frigate:stable
-    shm_size: "1gb"
+    shm_size: "512mb"
     cpu_shares: 1024
     devices:
       - /dev/dri:/dev/dri

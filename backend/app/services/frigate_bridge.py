@@ -146,7 +146,7 @@ class FrigateBridgeService:
                 cmd = [
                     "ffmpeg", "-y",
                     "-rtsp_transport", "tcp",
-                    "-stimeout", "3000000",
+                    "-timeout", "3000000",
                     "-i", url,
                     "-vframes", "1",
                     "-q:v", "2",

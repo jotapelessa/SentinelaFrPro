@@ -55,7 +55,13 @@ class MQTTService:
         self._processed_events[event_id] = True
 
     async def _get_telegram_policy(self) -> Dict[str, Any]:
-        """Dynamically loads live Telegram settings configured in the Web Dashboard."""
+        """Dynamically loads live Telegram settings with 30s in-memory cache."""
+        # Return cached policy if still fresh
+        if hasattr(self, '_tg_policy_cache') and self._tg_policy_cache:
+            import time
+            if (time.time() - self._tg_policy_cache_time) < 30.0:
+                return self._tg_policy_cache
+
         policy = {
             "send_mode": "both",
             "clip_duration_seconds": 15,
@@ -88,6 +94,11 @@ class MQTTService:
                         policy["cooldown_seconds"] = max(1.0, float(s.value))
         except Exception as e:
             logger.debug(f"Could not load live telegram policy: {e}")
+
+        # Cache the result
+        import time
+        self._tg_policy_cache = policy
+        self._tg_policy_cache_time = time.time()
         return policy
 
     async def handle_frigate_event(self, payload: Dict[str, Any]):
@@ -348,27 +359,27 @@ class MQTTService:
             logger.info(f"⏳ Aguardando gravação completa do clipe estendido ({wait_seconds:.1f}s)...")
             await asyncio.sleep(min(wait_seconds, 30.0))
 
-        # Strategy 1: Poll Frigate range clip and transcode to 30 FPS H.264
-        delays = [2.0, 4.0, 6.0, 8.0, 10.0]
+        # Strategy 1: Fetch official Frigate event clip (/api/events/{event_id}/clip.mp4) with robust polling
+        delays = [2.0, 3.0, 5.0, 7.0, 10.0, 12.0]
         for attempt, delay in enumerate(delays, start=1):
             await asyncio.sleep(delay)
             try:
                 async with httpx.AsyncClient(timeout=45.0) as client:
-                    # Try continuous range clip first to guarantee pre-capture and post-capture
-                    range_url = f"{settings.FRIGATE_API_URL}/api/{camera}/start/{clip_start_ts}/end/{clip_end_ts}/clip.mp4"
-                    clip_resp = await client.get(range_url)
-                    
+                    # 1. Primary: Official Frigate detection event clip (contains actual detected object with pre/post-capture)
+                    event_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
+                    clip_resp = await client.get(event_url)
+
+                    # 2. Fallback: Range clip if event clip is not ready or empty
                     if clip_resp.status_code != 200 or len(clip_resp.content) < 1024:
-                        event_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
-                        clip_resp = await client.get(event_url)
+                        range_url = f"{settings.FRIGATE_API_URL}/api/{camera}/start/{clip_start_ts}/end/{clip_end_ts}/clip.mp4"
+                        clip_resp = await client.get(range_url)
 
                     if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
-                        # CRITICAL: Validate that Frigate clip actually contains a real video stream and is not audio-only!
                         if not frigate_bridge.has_video_stream(clip_resp.content):
-                            logger.warning(f"⚠️ Clipe retornado pelo Frigate para evento {event_id} não contém vídeo válido (áudio puro ou erro NAL). Acionando captura direta go2rtc/RTSP imediata...")
-                            break
+                            logger.warning(f"⚠️ Clipe retornado pelo Frigate para evento {event_id} ainda não possui stream de vídeo finalizado (tentativa {attempt}/{len(delays)}). Aguardando flush...")
+                            continue
 
-                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264...")
+                        logger.info(f"✅ Clipe MP4 do evento obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264...")
                         smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=30)
                         if smooth_video and frigate_bridge.has_video_stream(smooth_video):
                             real_clip_dur = frigate_bridge.get_video_duration(smooth_video)
@@ -395,36 +406,7 @@ class MQTTService:
             except Exception as e:
                 logger.warning(f"Tentativa {attempt} de envio de clipe do Frigate falhou: {e}")
 
-        # Strategy 2: Direct go2rtc / RTSP live capture at 30 FPS for exact duration if Frigate clip was incomplete or lacked video
-        try:
-            logger.info(f"🔄 Executando captura direta go2rtc/RTSP de {target_duration}s com garantia de vídeo para Telegram...")
-            live_clip = await frigate_bridge.record_live_video(
-                camera_name=camera,
-                duration_s=target_duration,
-                resolution="720p",
-                video_quality="balanced"
-            )
-            if live_clip and len(live_clip) > 5000 and frigate_bridge.has_video_stream(live_clip):
-                real_live_dur = frigate_bridge.get_video_duration(live_clip)
-                final_dur = real_live_dur if real_live_dur > 0 else target_duration
-                sent_ok = await telegram_vault_service.send_alert_video(
-                    video_bytes=live_clip,
-                    camera_name=camera,
-                    label=label,
-                    zone=zone_name,
-                    duration_s=final_dur,
-                    score=score,
-                    friendly_name=friendly_name
-                )
-                if sent_ok:
-                    logger.info(f"✅ Vídeo de {final_dur}s enviado ao Telegram com sucesso com vídeo nítido garantido!")
-                    return
-            else:
-                logger.error("❌ Falha na geração do clipe ao vivo: clipe sem vídeo ou nulo.")
-        except Exception as e:
-            logger.error(f"Erro na captura direta para Telegram: {e}")
-
-        logger.warning(f"⚠️ Não foi possível gerar o clipe de vídeo para o evento {event_id}.")
+        logger.warning(f"⚠️ Não foi possível obter o clipe oficial do Frigate para o evento {event_id} após {len(delays)} tentativas.")
 
     async def start_listening(self):
         """Connects to MQTT and runs consumer loop with automatic reconnection."""

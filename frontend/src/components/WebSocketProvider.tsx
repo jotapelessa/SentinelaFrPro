@@ -36,11 +36,15 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setActiveDetection,
     setMotionStatus,
     setObjectCount,
-    audioAlertEnabled
+    audioAlertEnabled,
+    wsConnected
   } = useSentinelaStore();
 
   const audioEnabledRef = useRef(audioAlertEnabled);
   audioEnabledRef.current = audioAlertEnabled;
+
+  const wsConnectedRef = useRef(wsConnected);
+  wsConnectedRef.current = wsConnected;
 
   useEffect(() => {
     // 1. Fetch initial historical events detected by Frigate
@@ -60,7 +64,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
     loadInitialEvents();
 
-    // Initial and periodic telemetry polling for guaranteed 2-second real-time stats
+    // Telemetry HTTP fallback: only poll when WebSocket is disconnected
     const fetchTelemetry = async () => {
       try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
@@ -73,8 +77,12 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         // Ignored
       }
     };
+    // Initial fetch for immediate data before WS connects
     fetchTelemetry();
-    const telemetryPoll = setInterval(fetchTelemetry, 2000);
+    // Fallback polling only when WS is down (10s interval to reduce CPU)
+    const telemetryPoll = setInterval(() => {
+      if (!wsConnectedRef.current) fetchTelemetry();
+    }, 10000);
 
     let ws: WebSocket | null = null;
     let reconnectTimeout: NodeJS.Timeout;
@@ -165,7 +173,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       clearTimeout(reconnectTimeout);
       if (ws) ws.close();
     };
-  }, [setTelemetry, addEvent, setEvents, setWsConnected, setActiveDetection, setMotionStatus, setObjectCount]);
+  }, [setTelemetry, addEvent, setEvents, setWsConnected, setActiveDetection, setMotionStatus, setObjectCount, wsConnected]);
 
   return <>{children}</>;
 };

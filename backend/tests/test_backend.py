@@ -36,9 +36,9 @@ async def test_watermark_generation():
 
 @pytest.mark.asyncio
 async def test_scanner_subnets():
-    info = scanner_service.get_local_ip_and_subnets()
-    assert len(info) == 2
-    assert len(info[1].split(".")) == 3
+    subnets = scanner_service.get_local_subnets()
+    assert len(subnets) >= 1
+    assert "192.168.1" in subnets
 
 @pytest.mark.asyncio
 async def test_pip_dnd_check():

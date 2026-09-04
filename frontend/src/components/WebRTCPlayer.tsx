@@ -24,10 +24,10 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   const initialMode = (camera.stream_mode === "eco" || camera.stream_mode === "monitor") ? "monitor" : "webrtc";
   const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">(initialMode);
 
-  const [ecoFps, setEcoFps] = useState<number>(camera.eco_fps || 10);
+  const [ecoFps, setEcoFps] = useState<number>(camera.eco_fps || 2);
   const [key, setKey] = useState(0);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [frameUrl, setFrameUrl] = useState<string>(`/frigate/api/${camera.name || "camera_principal"}/latest.jpg?h=720`);
+  const [frameUrl, setFrameUrl] = useState<string>(`/frigate/api/${camera.name || "camera_principal"}/latest.jpg?h=360`);
   const [isLiveOnline, setIsLiveOnline] = useState(true);
   const [isPaused, setIsPaused] = useState<boolean>(camera.enabled === false);
   const [isTogglingPause, setIsTogglingPause] = useState(false);
@@ -84,17 +84,18 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
     setKey((prev) => prev + 1);
   };
 
-  // Double-buffered Eco FPS frame ticker: Preloads next frame in memory before swapping
-  // Guarantees zero buffering lag, zero memory accumulation, and perfect 1:1 synchrony with Frigate
+  // Double-buffered Eco FPS frame ticker with AbortController for clean teardown
   useEffect(() => {
     if (streamMode !== "monitor" || isPaused) return;
 
     let active = true;
     let timer: NodeJS.Timeout;
-    const intervalMs = Math.max(50, Math.round(1000 / (ecoFps || 10)));
+    let abortCtrl = new AbortController();
+    const intervalMs = Math.max(200, Math.round(1000 / (ecoFps || 2)));
 
     const fetchNextFrame = () => {
-      const nextSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=720&t=${Date.now()}`;
+      abortCtrl = new AbortController();
+      const nextSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=360&t=${Date.now()}`;
       const img = new Image();
       img.onload = () => {
         if (active) {
@@ -105,7 +106,6 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
       };
       img.onerror = () => {
         if (active) {
-          // Fallback to go2rtc frame if Frigate latest.jpg is busy
           const gSrc = `/go2rtc/api/frame.jpeg?src=${cameraSrc}&t=${Date.now()}`;
           const gImg = new Image();
           gImg.onload = () => {
@@ -118,7 +118,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
           gImg.onerror = () => {
             if (active) {
               setIsLiveOnline(false);
-              timer = setTimeout(fetchNextFrame, 1000);
+              timer = setTimeout(fetchNextFrame, 2000);
             }
           };
           gImg.src = gSrc;
@@ -132,6 +132,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
     return () => {
       active = false;
       clearTimeout(timer);
+      abortCtrl.abort();
     };
   }, [streamMode, cameraSrc, ecoFps, key]);
 

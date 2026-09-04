@@ -13,6 +13,8 @@ router = APIRouter(prefix="/cameras", tags=["Cameras"])
 
 _FRIGATE_STATS_CACHE: Dict[str, Any] = {}
 _FRIGATE_STATS_TIME: float = 0.0
+_YAML_CONFIG_CACHE: Dict[str, Any] = {}
+_YAML_CONFIG_TIME: float = 0.0
 
 def infer_substream_url(main_url: str) -> Optional[str]:
     """Infers the low-bandwidth / IA detection sub-stream from the main RTSP URL to save CPU and reduce heat."""
@@ -80,25 +82,33 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
         except Exception:
             frigate_stats = _FRIGATE_STATS_CACHE
 
-    # 2. Fetch authoritative local config from disk first
+    # 2. Fetch authoritative local config from disk first (with 10s TTL cache)
+    global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
 
-    config_path = get_frigate_config_path()
-    if os.path.exists(config_path):
-        try:
-            with open(config_path, "r", encoding="utf-8") as f:
-                cfg_data = yaml.safe_load(f) or {}
-        except Exception:
-            pass
+    if (now - _YAML_CONFIG_TIME) < 10.0 and _YAML_CONFIG_CACHE:
+        cfg_data = _YAML_CONFIG_CACHE
+    else:
+        config_path = get_frigate_config_path()
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, "r", encoding="utf-8") as f:
+                    cfg_data = yaml.safe_load(f) or {}
+                _YAML_CONFIG_CACHE = cfg_data
+                _YAML_CONFIG_TIME = now
+            except Exception:
+                cfg_data = _YAML_CONFIG_CACHE
 
-    # Fallback to Frigate API if local file was not found
-    if not cfg_data:
-        try:
-            async with httpx.AsyncClient(timeout=2.0) as client:
-                cfg_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config")
-                if cfg_resp.status_code == 200:
-                    cfg_data = cfg_resp.json()
-        except Exception:
-            pass
+        # Fallback to Frigate API if local file was not found
+        if not cfg_data:
+            try:
+                async with httpx.AsyncClient(timeout=2.0) as client:
+                    cfg_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config")
+                    if cfg_resp.status_code == 200:
+                        cfg_data = cfg_resp.json()
+                        _YAML_CONFIG_CACHE = cfg_data
+                        _YAML_CONFIG_TIME = now
+            except Exception:
+                cfg_data = _YAML_CONFIG_CACHE
 
     if isinstance(cfg_data, dict):
         frigate_cams = cfg_data.get("cameras", {})
@@ -861,6 +871,18 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         if "enabled" not in cfg["mqtt"]:
             cfg["mqtt"]["enabled"] = True
 
+    # 1b. Guarantee global ffmpeg with VAAPI and clean record output_args
+    if "ffmpeg" not in cfg or not isinstance(cfg["ffmpeg"], dict):
+        cfg["ffmpeg"] = {
+            "hwaccel_args": "preset-vaapi",
+            "output_args": {"record": "preset-record-generic"}
+        }
+    else:
+        if "output_args" not in cfg["ffmpeg"] or not isinstance(cfg["ffmpeg"]["output_args"], dict):
+            cfg["ffmpeg"]["output_args"] = {"record": "preset-record-generic"}
+        elif "record" not in cfg["ffmpeg"]["output_args"]:
+            cfg["ffmpeg"]["output_args"]["record"] = "preset-record-generic"
+
     # 2. Guarantee Model & Detectors section with OpenVINO GPU Acceleration (300x300 for ssdlite)
     ov_model_defaults = {
         "width": 300,
@@ -969,7 +991,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         if "live" in cam_cfg:
             del cam_cfg["live"]
 
-        # 2. Guarantee ffmpeg.inputs block
+        # 2. Guarantee ffmpeg.inputs block (split roles for zero-CPU record stream copy & independent detect)
         if "ffmpeg" not in cam_cfg or not isinstance(cam_cfg["ffmpeg"], dict):
             cam_cfg["ffmpeg"] = {}
         if "inputs" not in cam_cfg["ffmpeg"] or not isinstance(cam_cfg["ffmpeg"]["inputs"], list) or len(cam_cfg["ffmpeg"]["inputs"]) == 0:
@@ -977,25 +999,30 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 {
                     "path": f"rtsp://127.0.0.1:8554/{cam_name}",
                     "input_args": "preset-rtsp-restream",
-                    "roles": ["detect", "record"]
+                    "roles": ["record"]
+                },
+                {
+                    "path": f"rtsp://127.0.0.1:8554/{cam_name}",
+                    "input_args": "preset-rtsp-restream",
+                    "roles": ["detect"]
                 }
             ]
 
-        # 3. Guarantee detect block
+        # 3. Guarantee detect block (tuned for Intel N5105 low-power)
         if "detect" not in cam_cfg or not isinstance(cam_cfg["detect"], dict):
             cam_cfg["detect"] = {
                 "enabled": True,
-                "width": 1280,
-                "height": 720,
-                "fps": 5
+                "width": 640,
+                "height": 360,
+                "fps": 3
             }
         else:
             if "width" not in cam_cfg["detect"]:
-                cam_cfg["detect"]["width"] = 1280
+                cam_cfg["detect"]["width"] = 640
             if "height" not in cam_cfg["detect"]:
-                cam_cfg["detect"]["height"] = 720
+                cam_cfg["detect"]["height"] = 360
             if "fps" not in cam_cfg["detect"]:
-                cam_cfg["detect"]["fps"] = 5
+                cam_cfg["detect"]["fps"] = 3
 
         # 4. Guarantee record block syntax for Frigate 0.17 (no retain/events under record)
         if "record" not in cam_cfg or not isinstance(cam_cfg["record"], dict):
@@ -1186,7 +1213,12 @@ async def sync_camera_to_frigate(cam: Camera):
         ffmpeg_inputs.append({
             "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
             "input_args": "preset-rtsp-restream",
-            "roles": ["detect", "record"]
+            "roles": ["record"]
+        })
+        ffmpeg_inputs.append({
+            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
+            "input_args": "preset-rtsp-restream",
+            "roles": ["detect"]
         })
 
     if target_cam_key not in cfg["cameras"] or not isinstance(cfg["cameras"][target_cam_key], dict):

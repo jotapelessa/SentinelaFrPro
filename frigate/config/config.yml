@@ -17,6 +17,8 @@ logger:
 # Intel Jasper Lake N5105 Hardware Acceleration (VAAPI)
 ffmpeg:
   hwaccel_args: preset-vaapi
+  output_args:
+    record: preset-record-generic
 
 
 # Global Model Config (ensures detector frame resizing matches OpenVINO 300x300 input)
@@ -45,7 +47,7 @@ detectors:
 # Motion Detection Fine-Tuning (High Sensitivity, Natural Lighting)
 motion:
   threshold: 25
-  contour_area: 15
+  contour_area: 30
   improve_contrast: false
 
 # Global Object Tracking Defaults & Detection Sensitivity
@@ -100,7 +102,6 @@ go2rtc:
   streams:
     camera_principal:
       - rtsp://192.168.1.6:8554/stream#backchannel=0
-      - rtsp://192.168.1.6:8554/live#backchannel=0
     camera_principal_h264:
       - "ffmpeg:camera_principal#video=h264#hardware"
   webrtc:
@@ -121,13 +122,16 @@ cameras:
         - path: rtsp://127.0.0.1:8554/camera_principal
           input_args: preset-rtsp-restream
           roles:
-            - detect
             - record
+        - path: rtsp://127.0.0.1:8554/camera_principal
+          input_args: preset-rtsp-restream
+          roles:
+            - detect
     detect:
       enabled: true
-      width: 1280
-      height: 720
-      fps: 5
+      width: 640
+      height: 360
+      fps: 3
     record:
       enabled: true
       continuous:

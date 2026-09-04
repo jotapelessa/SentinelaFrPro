@@ -71,7 +71,7 @@ async def websocket_endpoint(websocket: WebSocket):
         ws_manager.disconnect(websocket)
 
 async def telemetry_broadcast_loop():
-    """Background loop sending hardware telemetry every 2.0 seconds to connected UI clients."""
+    """Background loop sending hardware telemetry every 5.0 seconds to connected UI clients."""
     while True:
         try:
             if ws_manager.active_connections:
@@ -84,4 +84,4 @@ async def telemetry_broadcast_loop():
                 await ws_manager.broadcast_json(snapshot)
         except Exception as e:
             logger.debug(f"Telemetry broadcast error: {e}")
-        await asyncio.sleep(2.0)
+        await asyncio.sleep(5.0)
