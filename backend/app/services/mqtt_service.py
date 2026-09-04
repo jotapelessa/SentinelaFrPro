@@ -363,56 +363,66 @@ class MQTTService:
                         clip_resp = await client.get(event_url)
 
                     if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
-                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Transcodificando a 30 FPS fixos H.264...")
+                        # CRITICAL: Validate that Frigate clip actually contains a real video stream and is not audio-only!
+                        if not frigate_bridge.has_video_stream(clip_resp.content):
+                            logger.warning(f"⚠️ Clipe retornado pelo Frigate para evento {event_id} não contém vídeo válido (áudio puro ou erro NAL). Acionando captura direta go2rtc/RTSP imediata...")
+                            break
+
+                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264...")
                         smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=30)
-                        real_clip_dur = frigate_bridge.get_video_duration(smooth_video)
-                        final_dur = real_clip_dur if real_clip_dur > 0 else target_duration
-                        sent_ok = await telegram_vault_service.send_alert_video(
-                            video_bytes=smooth_video,
-                            camera_name=camera,
-                            label=label,
-                            zone=zone_name,
-                            duration_s=final_dur,
-                            score=score,
-                            friendly_name=friendly_name
-                        )
-                        if sent_ok:
-                            async with AsyncSessionLocal() as session:
-                                stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
-                                res = await session.execute(stmt)
-                                ev = res.scalar_one_or_none()
-                                if ev:
-                                    ev.has_clip = True
-                                    ev.end_time = datetime.datetime.utcnow()
-                                    await session.commit()
-                            return
+                        if smooth_video and frigate_bridge.has_video_stream(smooth_video):
+                            real_clip_dur = frigate_bridge.get_video_duration(smooth_video)
+                            final_dur = real_clip_dur if real_clip_dur > 0 else target_duration
+                            sent_ok = await telegram_vault_service.send_alert_video(
+                                video_bytes=smooth_video,
+                                camera_name=camera,
+                                label=label,
+                                zone=zone_name,
+                                duration_s=final_dur,
+                                score=score,
+                                friendly_name=friendly_name
+                            )
+                            if sent_ok:
+                                async with AsyncSessionLocal() as session:
+                                    stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
+                                    res = await session.execute(stmt)
+                                    ev = res.scalar_one_or_none()
+                                    if ev:
+                                        ev.has_clip = True
+                                        ev.end_time = datetime.datetime.utcnow()
+                                        await session.commit()
+                                return
             except Exception as e:
                 logger.warning(f"Tentativa {attempt} de envio de clipe do Frigate falhou: {e}")
 
-        # Strategy 2: Direct RTSP live capture at 30 FPS for exact duration if Frigate clip was incomplete
+        # Strategy 2: Direct go2rtc / RTSP live capture at 30 FPS for exact duration if Frigate clip was incomplete or lacked video
         try:
-            logger.info(f"🔄 Executando captura direta RTSP de {target_duration}s a 30 FPS para Telegram...")
+            logger.info(f"🔄 Executando captura direta go2rtc/RTSP de {target_duration}s com garantia de vídeo para Telegram...")
             live_clip = await frigate_bridge.record_live_video(
                 camera_name=camera,
                 duration_s=target_duration,
                 resolution="720p",
                 video_quality="balanced"
             )
-            if live_clip and len(live_clip) > 1024:
+            if live_clip and len(live_clip) > 5000 and frigate_bridge.has_video_stream(live_clip):
+                real_live_dur = frigate_bridge.get_video_duration(live_clip)
+                final_dur = real_live_dur if real_live_dur > 0 else target_duration
                 sent_ok = await telegram_vault_service.send_alert_video(
                     video_bytes=live_clip,
                     camera_name=camera,
                     label=label,
                     zone=zone_name,
-                    duration_s=target_duration,
+                    duration_s=final_dur,
                     score=score,
                     friendly_name=friendly_name
                 )
                 if sent_ok:
-                    logger.info(f"✅ Vídeo de {target_duration}s a 30 FPS enviado ao Telegram com sucesso via RTSP direto!")
+                    logger.info(f"✅ Vídeo de {final_dur}s enviado ao Telegram com sucesso com vídeo nítido garantido!")
                     return
+            else:
+                logger.error("❌ Falha na geração do clipe ao vivo: clipe sem vídeo ou nulo.")
         except Exception as e:
-            logger.error(f"Erro na captura direta RTSP para Telegram: {e}")
+            logger.error(f"Erro na captura direta para Telegram: {e}")
 
         logger.warning(f"⚠️ Não foi possível gerar o clipe de vídeo para o evento {event_id}.")
 

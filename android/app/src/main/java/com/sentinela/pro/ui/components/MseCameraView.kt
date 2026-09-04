@@ -203,13 +203,18 @@ fun MseCameraView(
                                     "      if (v.buffered && v.buffered.length > 0) {" +
                                     "        var end = v.buffered.end(v.buffered.length - 1);" +
                                     "        var drift = end - v.currentTime;" +
-                                    "        if (drift > 2.5) {" +
-                                    "          v.currentTime = end - 0.1;" +
+                                    "        if (drift > 1.2) {" +
+                                    "          v.currentTime = end - 0.05;" +
+                                    "          v.playbackRate = 1.0;" +
+                                    "        } else if (drift > 0.35) {" +
+                                    "          v.playbackRate = 1.15;" +
+                                    "        } else if (drift < 0.15) {" +
+                                    "          v.playbackRate = 1.0;" +
                                     "        }" +
                                     "      }" +
                                     "      if (v.paused) { v.play().catch(function(){}); }" +
                                     "    }" +
-                                    "  }, 500);" +
+                                    "  }, 400);" +
                                     "}" +
                                     "})()"
                             view?.loadUrl(js)

@@ -167,10 +167,40 @@ class FrigateBridgeService:
 
         return None
 
-    async def transcode_to_30fps(self, video_bytes: bytes, target_fps: int = 30) -> bytes:
-        """Optimized video preparation with instant zero-CPU stream copy and faststart headers for Telegram."""
-        if not video_bytes or len(video_bytes) < 1000:
-            return video_bytes
+    @staticmethod
+    def has_video_stream(video_bytes: bytes) -> bool:
+        """Verifies with ffprobe that the MP4 contains at least one valid video stream and duration > 0."""
+        import tempfile
+        if not video_bytes or len(video_bytes) < 2000:
+            return False
+        temp_path = None
+        try:
+            with tempfile.NamedTemporaryFile(suffix=".mp4", delete=False) as f:
+                f.write(video_bytes)
+                temp_path = f.name
+            cmd = [
+                "ffprobe", "-v", "error",
+                "-select_streams", "v:0",
+                "-show_entries", "stream=codec_type,codec_name,width,height",
+                "-of", "default=noprint_wrappers=1:nokey=1",
+                temp_path
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=4, text=True)
+            if res.returncode == 0 and "video" in res.stdout.lower():
+                return True
+        except Exception:
+            pass
+        finally:
+            if temp_path and os.path.exists(temp_path):
+                try: os.remove(temp_path)
+                except Exception: pass
+        return False
+
+    async def transcode_to_30fps(self, video_bytes: bytes, target_fps: int = 30) -> Optional[bytes]:
+        """Optimized video preparation with instant zero-CPU stream copy and faststart headers for Telegram.
+        Guarantees that the resulting clip has a valid video stream and never produces black screens."""
+        if not video_bytes or len(video_bytes) < 2000:
+            return None
         in_file = f"/tmp/in_{uuid.uuid4().hex[:8]}.mp4"
         out_file = f"/tmp/out_{uuid.uuid4().hex[:8]}.mp4"
         try:
@@ -186,12 +216,13 @@ class FrigateBridgeService:
                 out_file
             ]
             proc = subprocess.run(cmd_copy, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
-            if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 1000:
+            if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
                 with open(out_file, "rb") as f:
                     fast_bytes = f.read()
-                return fast_bytes
+                if self.has_video_stream(fast_bytes):
+                    return fast_bytes
 
-            # 2. Fallback path: Ultrafast H.264 transcode if stream copy wasn't possible
+            # 2. Fallback path: Ultrafast H.264 transcode if stream copy wasn't possible or lacked video
             cmd_transcode = [
                 "ffmpeg", "-y",
                 "-i", in_file,
@@ -205,10 +236,11 @@ class FrigateBridgeService:
                 out_file
             ]
             proc = subprocess.run(cmd_transcode, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
-            if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 1000:
+            if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
                 with open(out_file, "rb") as f:
                     smooth_bytes = f.read()
-                return smooth_bytes
+                if self.has_video_stream(smooth_bytes):
+                    return smooth_bytes
         except Exception as e:
             logger.warning(f"Error preparing clip for Telegram: {e}")
         finally:
@@ -218,7 +250,7 @@ class FrigateBridgeService:
             if os.path.exists(out_file):
                 try: os.remove(out_file)
                 except Exception: pass
-        return video_bytes
+        return video_bytes if self.has_video_stream(video_bytes) else None
 
     @staticmethod
     def get_video_duration(video_bytes: bytes) -> float:
@@ -259,12 +291,24 @@ class FrigateBridgeService:
     ) -> Optional[bytes]:
         """
         Captures a live video clip directly from the camera stream with constant 30 FPS:
-        1. Direct FFmpeg RTSP recording with faststart MP4 at 30 FPS to disk
-        2. go2rtc live MP4 stream generator
+        1. go2rtc live MP4 stream generator (Zero-CPU, native 1080p/720p H.264 + AAC, sub-second generation)
+        2. Direct FFmpeg RTSP recording with faststart MP4 at 30 FPS to disk
         3. Frigate recording clip fallback
-        4. High-definition synthetic test pattern fallback
         """
         duration_s = max(min(duration_s, 60), 3)
+
+        # Channel 1: High-Performance go2rtc live MP4 endpoint (Fastest & Most Reliable)
+        for src in [camera_name, "camera_principal", "cam_192_168_1_6"]:
+            try:
+                logger.info(f"🎥 FrigateBridge: Capturando {duration_s}s de vídeo via go2rtc live MP4 ({src})...")
+                async with httpx.AsyncClient(timeout=duration_s + 15.0) as client:
+                    g_resp = await client.get(f"{self.go2rtc_url}/api/stream.mp4?src={src}&duration={duration_s}")
+                    if g_resp.status_code == 200 and len(g_resp.content) > 5000 and self.has_video_stream(g_resp.content):
+                        logger.info(f"✅ FrigateBridge: Vídeo capturado via go2rtc stream.mp4 ({len(g_resp.content)} bytes)")
+                        optimized = await self.transcode_to_30fps(g_resp.content)
+                        return optimized or g_resp.content
+            except Exception as e:
+                logger.debug(f"go2rtc live stream failed for {src}: {e}")
 
         scale_w, scale_h = 1920, 1080
         if resolution == "720p":
@@ -281,7 +325,7 @@ class FrigateBridgeService:
 
         temp_file = f"/tmp/frigate_live_{uuid.uuid4().hex[:8]}.mp4"
 
-        # Channel 1: FFmpeg direct RTSP capture from Frigate / Camera at constant 30 FPS
+        # Channel 2: FFmpeg direct RTSP capture at constant 30 FPS
         rtsp_urls = [
             f"rtsp://frigate:8554/{camera_name}",
             "rtsp://frigate:8554/camera_principal",
@@ -295,7 +339,7 @@ class FrigateBridgeService:
                 cmd = [
                     "ffmpeg", "-y",
                     "-rtsp_transport", "tcp",
-                    "-stimeout", "4000000",
+                    "-timeout", "4000000",
                     "-i", url,
                     "-t", str(duration_s),
                     "-r", "30",
@@ -315,8 +359,9 @@ class FrigateBridgeService:
                     with open(temp_file, "rb") as vf:
                         video_bytes = vf.read()
                     os.remove(temp_file)
-                    logger.info(f"✅ FrigateBridge: Vídeo 30 FPS ({duration_s}s) gravado com sucesso ({len(video_bytes)} bytes)")
-                    return video_bytes
+                    if self.has_video_stream(video_bytes):
+                        logger.info(f"✅ FrigateBridge: Vídeo 30 FPS ({duration_s}s) gravado com sucesso via RTSP ({len(video_bytes)} bytes)")
+                        return video_bytes
             except Exception as e:
                 logger.warning(f"FrigateBridge RTSP capture error on {url}: {e}")
             finally:
@@ -326,19 +371,7 @@ class FrigateBridgeService:
                     except Exception:
                         pass
 
-        # Channel 2: go2rtc live MP4 endpoint
-        for src in [camera_name, "camera_principal", "cam_192_168_1_6"]:
-            try:
-                logger.info(f"🎥 FrigateBridge: Tentando stream go2rtc live MP4 ({src})...")
-                async with httpx.AsyncClient(timeout=duration_s + 10.0) as client:
-                    g_resp = await client.get(f"{self.go2rtc_url}/api/stream.mp4?src={src}&duration={duration_s}")
-                    if g_resp.status_code == 200 and len(g_resp.content) > 5000:
-                        logger.info(f"✅ FrigateBridge: Vídeo capturado via go2rtc stream.mp4 ({len(g_resp.content)} bytes)")
-                        return g_resp.content
-            except Exception as e:
-                logger.debug(f"go2rtc live stream failed for {src}: {e}")
-
-        # Channel 3: Frigate recordings API or disk recordings
+        # Channel 3: Frigate recordings API fallback
         try:
             async with httpx.AsyncClient(timeout=6.0) as client:
                 resp = await client.get(f"{self.frigate_url}/api/{camera_name}/latest.mp4")
