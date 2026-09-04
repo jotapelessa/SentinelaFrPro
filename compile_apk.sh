@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-echo "Iniciando compilação de APKs v065..."
+echo "Iniciando compilação de APKs v066..."
 cd android
 chmod +x gradlew
 ./gradlew assembleRelease --no-daemon
@@ -18,4 +18,4 @@ if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
     cp app/build/outputs/apk/release/app-release.apk ../sentinela-android-latest.apk
 fi
 
-echo "APKs v065 gerados na raiz do projeto."
+echo "APKs v066 gerados na raiz do projeto."

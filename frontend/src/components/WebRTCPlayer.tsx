@@ -188,29 +188,15 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
       const script = doc.createElement("script");
       script.textContent = `
         (function() {
-          var initWatchdog = function() {
+          var initAutoplay = function() {
             var v = document.querySelector('video');
-            if (v && !v.__sentinelaWatchdog) {
-              v.__sentinelaWatchdog = true;
-              setInterval(function() {
-                if (v.buffered && v.buffered.length > 0) {
-                  var end = v.buffered.end(v.buffered.length - 1);
-                  var drift = end - v.currentTime;
-                  if (drift > 1.2) {
-                    v.currentTime = end - 0.05;
-                    v.playbackRate = 1.0;
-                  } else if (drift > 0.35) {
-                    v.playbackRate = 1.15;
-                  } else if (drift < 0.15) {
-                    v.playbackRate = 1.0;
-                  }
-                }
-              }, 400);
+            if (v) {
+              v.muted = true;
+              v.play().catch(function(){});
             }
           };
-          initWatchdog();
-          setTimeout(initWatchdog, 1500);
-          setTimeout(initWatchdog, 3000);
+          initAutoplay();
+          setTimeout(initAutoplay, 1000);
         })();
       `;
       doc.body.appendChild(script);

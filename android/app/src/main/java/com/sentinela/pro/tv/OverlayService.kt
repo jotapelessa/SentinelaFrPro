@@ -36,6 +36,8 @@ class OverlayService : Service() {
     private var overlayView: View? = null
     private var pipWebView: WebView? = null
     private var pipTitleView: TextView? = null
+    private var pipImageView: android.widget.ImageView? = null
+    private var snapshotRefreshJob: Job? = null
     
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
@@ -109,6 +111,8 @@ class OverlayService : Service() {
                     val testId = if (event.has("test_id")) event.optString("test_id") else null
                     val camera = event.optString("camera", "camera_principal")
                     val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
+                    val customSnap = if (event.has("snapshot_url")) event.optString("snapshot_url") else null
+                    val customStream = if (event.has("stream_url")) event.optString("stream_url") else null
                     val isTestAlert = evType == "pip_alert" || label.contains("TEST", ignoreCase = true) || label.contains("ALERTA", ignoreCase = true)
                     runCatching {
                         val policy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
@@ -116,7 +120,7 @@ class OverlayService : Service() {
                             val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
                             val eventAllowed = isTestAlert || policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
                             if (camAllowed && eventAllowed) {
-                                showPiP(camera, label, policy, testId)
+                                showPiP(camera, label, policy, testId, customSnap, customStream)
                             } else if (testId != null) {
                                 serviceScope.launch {
                                     SentinelaRepository.sendPipAck(
@@ -134,7 +138,7 @@ class OverlayService : Service() {
                             }
                         }
                     }.getOrElse {
-                        showPiP(camera, label, null, testId)
+                        showPiP(camera, label, null, testId, customSnap, customStream)
                     }
                 }
             }
@@ -147,19 +151,23 @@ class OverlayService : Service() {
             val cam = intent.getStringExtra("camera") ?: "camera_principal"
             val label = intent.getStringExtra("label") ?: "TESTE PIP"
             val testId = intent.getStringExtra("test_id")
-            showPiP(cam, label, null, testId)
+            val customSnap = intent.getStringExtra("snapshot_url")
+            val customStream = intent.getStringExtra("stream_url")
+            showPiP(cam, label, null, testId, customSnap, customStream)
         }
         return START_STICKY
     }
 
     companion object {
-        fun triggerPiP(context: Context, camera: String = "camera_principal", label: String = "TESTE PIP", testId: String? = null) {
+        fun triggerPiP(context: Context, camera: String = "camera_principal", label: String = "TESTE PIP", testId: String? = null, snapshotUrl: String? = null, streamUrl: String? = null) {
             try {
                 val intent = Intent(context, OverlayService::class.java).apply {
                     action = "ACTION_SHOW_PIP"
                     putExtra("camera", camera)
                     putExtra("label", label)
                     if (testId != null) putExtra("test_id", testId)
+                    if (snapshotUrl != null) putExtra("snapshot_url", snapshotUrl)
+                    if (streamUrl != null) putExtra("stream_url", streamUrl)
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     context.startForegroundService(intent)
@@ -173,7 +181,14 @@ class OverlayService : Service() {
     }
 
     @SuppressLint("SetJavaScriptEnabled")
-    private fun showPiP(camera: String, label: String, policy: DevicePolicy? = null, testId: String? = null) {
+    private fun showPiP(
+        camera: String,
+        label: String,
+        policy: DevicePolicy? = null,
+        testId: String? = null,
+        customSnapshotUrl: String? = null,
+        customStreamUrl: String? = null
+    ) {
         pipJob?.cancel()
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
@@ -224,8 +239,10 @@ class OverlayService : Service() {
             10
         }
 
-        val streamUrl = "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${camera}&mode=webrtc&background=true&width=100%"
-        val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
+        val currentHost = SentinelaConfig.currentHost
+        val resolvedBase = if (currentHost.startsWith("http://") || currentHost.startsWith("https://")) currentHost else "http://${currentHost}:8088"
+        val streamUrl = customStreamUrl ?: "${resolvedBase}/go2rtc/stream.html?src=${camera}&mode=mse"
+        val snapshotUrl = customSnapshotUrl ?: "${resolvedBase}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
 
         try {
             val params = WindowManager.LayoutParams(
@@ -259,6 +276,7 @@ class OverlayService : Service() {
                     )
                     scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
                 }
+                pipImageView = snapImageView
                 inner.addView(snapImageView)
 
                 // Load instant image with Coil
@@ -406,6 +424,29 @@ class OverlayService : Service() {
             return
         }
 
+        // Continuous Snapshot Refresh Loop (Updates image every 1s so it NEVER goes black)
+        snapshotRefreshJob?.cancel()
+        snapshotRefreshJob = serviceScope.launch {
+            while (isActive) {
+                try {
+                    pipImageView?.let { iv ->
+                        val refreshSnapUrl = customSnapshotUrl ?: "${resolvedBase}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
+                        val imageLoader = coil.Coil.imageLoader(this@OverlayService)
+                        val req = coil.request.ImageRequest.Builder(this@OverlayService)
+                            .data(refreshSnapUrl)
+                            .target(iv)
+                            .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                            .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                            .build()
+                        imageLoader.enqueue(req)
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.d("OverlayService", "Continuous snapshot tick: ${e.message}")
+                }
+                delay(1000L)
+            }
+        }
+
         val duration = durationSeconds
         pipJob = serviceScope.launch {
             delay(duration * 1000L)
@@ -415,6 +456,8 @@ class OverlayService : Service() {
 
     private fun removePiP() {
         try {
+            snapshotRefreshJob?.cancel()
+            snapshotRefreshJob = null
             pipWebView?.onPause()
             pipWebView?.stopLoading()
             overlayView?.let { v ->

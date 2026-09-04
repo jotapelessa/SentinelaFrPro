@@ -1302,15 +1302,15 @@ export default function EventsPage() {
             {/* Video Player */}
             <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-inner">
               <video
+                key={selectedEvent.id}
                 ref={videoRef}
                 src={selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`}
                 controls
                 autoPlay
                 playsInline
+                preload="metadata"
                 className="w-full h-full object-contain"
               >
-                <source src={selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`} type="video/mp4" />
-                <source src={`/frigate/api/events/${selectedEvent.id}/clip.mp4`} type="video/mp4" />
                 Seu navegador não suporta reprodução MP4.
               </video>
             </div>

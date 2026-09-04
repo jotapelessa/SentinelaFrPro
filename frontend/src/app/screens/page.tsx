@@ -607,6 +607,27 @@ export default function ScreensPage() {
           </button>
 
           <button
+            disabled={scanningTVs}
+            onClick={async () => {
+              try {
+                const res = await fetch(`${apiUrl}/devices/deduplicate`, { method: "POST" });
+                if (res.ok) {
+                  const data = await res.json();
+                  showToast(`🧹 Consolidação concluída: ${data.removed_count} duplicata(s) removida(s).`, "success", 4000);
+                  fetchDevices(false);
+                }
+              } catch {
+                showToast("Erro ao deduplicar telas.", "error");
+              }
+            }}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold transition-all shadow-sm"
+            title="Remove telas duplicadas e consolida dispositivos repetidos de reinstalações"
+          >
+            <Sparkles className="w-4 h-4 text-amber-400" />
+            <span>Consolidar</span>
+          </button>
+
+          <button
             onClick={() => setIsModalOpen(true)}
             className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-all"
           >

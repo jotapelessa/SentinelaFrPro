@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, desc
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 import asyncio
@@ -162,6 +162,20 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         if dev:
             dev.device_identifier = hb.device_identifier
 
+    # Reconcile by IP and Model if reinstalled (e.g. moto g54, TCL TV)
+    if not dev:
+        target_ip = hb.ip_address or client_ip
+        if target_ip not in ["127.0.0.1", "localhost"] and hb.device_model:
+            stmt_model = select(PairedDevice).where(
+                ((PairedDevice.ip_address == target_ip) | (PairedDevice.tailscale_ip == target_ip)) &
+                (PairedDevice.device_model == hb.device_model)
+            ).order_by(desc(PairedDevice.last_seen))
+            res_model = await db.execute(stmt_model)
+            candidates = res_model.scalars().all()
+            if candidates:
+                dev = candidates[0]
+                dev.device_identifier = hb.device_identifier
+
     if not dev:
         target_ip = hb.ip_address or client_ip
         if target_ip not in ["127.0.0.1", "localhost"]:
@@ -171,7 +185,7 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
             res_ip = await db.execute(stmt_ip)
             candidates = res_ip.scalars().all()
             for cand in candidates:
-                if cand.device_identifier.startswith("tv_") or cand.device_identifier.startswith("scan_") or cand.device_identifier.startswith("manual_"):
+                if cand.device_identifier.startswith("tv_") or cand.device_identifier.startswith("scan_") or cand.device_identifier.startswith("manual_") or cand.device_model == hb.device_model:
                     dev = cand
                     dev.device_identifier = hb.device_identifier
                     break
@@ -640,6 +654,49 @@ async def delete_device(device_id: int, request: Request, db: AsyncSession = Dep
         client_ip=request.client.host if request.client else "unknown"
     )
     return {"status": "deleted", "id": device_id}
+
+@router.post("/deduplicate")
+async def deduplicate_devices(request: Request, db: AsyncSession = Depends(get_db)):
+    """Consolidates duplicate devices with identical IP or Model, retaining the most recent active device."""
+    stmt = select(PairedDevice).order_by(desc(PairedDevice.last_seen))
+    res = await db.execute(stmt)
+    all_devs = res.scalars().all()
+    
+    seen_keys = {}
+    removed_count = 0
+    
+    for dev in all_devs:
+        # Key by IP (if valid LAN) or by Model
+        key = None
+        if dev.ip_address and dev.ip_address not in ["127.0.0.1", "localhost"] and not dev.ip_address.startswith("172."):
+            key = f"ip_{dev.ip_address}"
+        elif dev.device_model:
+            key = f"model_{dev.device_model}_{dev.device_type}"
+            
+        if key:
+            if key in seen_keys:
+                # Duplicate found! Merge permissions to the primary if master was set
+                primary = seen_keys[key]
+                if dev.is_master_admin and not primary.is_master_admin:
+                    primary.is_master_admin = True
+                if dev.allowed_cameras and not primary.allowed_cameras:
+                    primary.allowed_cameras = dev.allowed_cameras
+                if dev.allowed_events and not primary.allowed_events:
+                    primary.allowed_events = dev.allowed_events
+                await db.delete(dev)
+                removed_count += 1
+            else:
+                seen_keys[key] = dev
+
+    await db.commit()
+    await audit_service.log(
+        action="DEVICES_DEDUPLICATED",
+        module="PIP",
+        severity="INFO",
+        details=f"Deduplicação executada: {removed_count} registro(s) duplicado(s) removido(s).",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+    return {"status": "success", "removed_count": removed_count}
 
 @router.delete("/all/cleanup")
 async def cleanup_all_devices(request: Request, db: AsyncSession = Depends(get_db)):
