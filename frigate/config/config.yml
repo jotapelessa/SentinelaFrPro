@@ -101,7 +101,6 @@ go2rtc:
     camera_principal:
       - rtsp://192.168.1.6:8554/stream#backchannel=0
       - rtsp://192.168.1.6:8554/live#backchannel=0
-      - "ffmpeg:camera_principal#video=h264#hardware"
     camera_principal_h264:
       - "ffmpeg:camera_principal#video=h264#hardware"
   webrtc:
@@ -113,10 +112,11 @@ go2rtc:
 # Câmeras Ativas
 cameras:
   camera_principal:
+    enabled: true
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: -avoid_negative_ts make_zero -fflags +genpts+discardcorrupt -flags low_delay -strict experimental -analyzeduration 1000M -probesize 1000M -err_detect ignore_err -reorder_queue_size 16 -max_delay 500000 -rtsp_transport tcp
+          input_args: -avoid_negative_ts make_zero -fflags +genpts+discardcorrupt -flags low_delay -strict experimental -analyzeduration 1000M -probesize 1000M -err_detect ignore_err -reorder_queue_size 16 -max_delay 500000 -rtsp_transport tcp -reconnect 1 -reconnect_at_eof 1 -reconnect_streamed 1 -reconnect_delay_max 5
           roles:
             - detect
             - record

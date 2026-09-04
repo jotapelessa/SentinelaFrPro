@@ -198,7 +198,7 @@ object SentinelaRepository {
 
             val effectiveIp = ipAddress ?: getLocalIpAddress()
             val effectiveMac = macAddress ?: getDeviceMacAddress()
-            val effectiveVer = appVersion ?: "v001.000.000.051"
+            val effectiveVer = appVersion ?: "v001.000.000.052"
             val effectiveModel = deviceModel ?: "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
 
             val payload = JSONObject().apply {
@@ -736,7 +736,7 @@ object SentinelaRepository {
             else -> "lan"
         }
         val speed = caps?.linkDownstreamBandwidthKbps?.let { it / 1000.0 } ?: 100.0
-        val appVer = "v001.000.000.051"
+        val appVer = "v001.000.000.052"
         val devModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
 
         val ok = registerOrHeartbeat(

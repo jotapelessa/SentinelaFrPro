@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Maximize2, Minimize2, Radio, RefreshCw, Zap, Settings, Gauge, ShieldAlert, Activity } from "lucide-react";
+import { Maximize2, Minimize2, Radio, RefreshCw, Zap, Settings, Gauge, ShieldAlert, Activity, Pause, Play, PauseCircle, Loader2 } from "lucide-react";
 import { Camera, useSentinelaStore } from "@/store/useSentinelaStore";
 import { CameraConfigModal } from "./CameraConfigModal";
 
@@ -28,6 +28,35 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   const [isConfigOpen, setIsConfigOpen] = useState(false);
   const [frameUrl, setFrameUrl] = useState<string>(`/frigate/api/${camera.name || "camera_principal"}/latest.jpg?h=720`);
   const [isLiveOnline, setIsLiveOnline] = useState(true);
+  const [isPaused, setIsPaused] = useState<boolean>(camera.enabled === false);
+  const [isTogglingPause, setIsTogglingPause] = useState(false);
+
+  useEffect(() => {
+    setIsPaused(camera.enabled === false);
+  }, [camera.enabled]);
+
+  const handleTogglePause = async () => {
+    setIsTogglingPause(true);
+    const targetState = !isPaused;
+    setIsPaused(targetState);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const camId = camera.id || camera.name || "camera_principal";
+      const res = await fetch(`${apiUrl}/cameras/${camId}/toggle-pause`, {
+        method: "POST"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setIsPaused(data.is_paused);
+        if (onCameraUpdated) onCameraUpdated();
+      }
+    } catch (e) {
+      console.error("Erro ao alternar pausa da câmera:", e);
+      setIsPaused(!targetState);
+    } finally {
+      setIsTogglingPause(false);
+    }
+  };
 
   const cameraSrc = camera.name || "camera_principal";
   // Build a set of all known aliases for this camera to match MQTT payloads
@@ -57,7 +86,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   // Double-buffered Eco FPS frame ticker: Preloads next frame in memory before swapping
   // Guarantees zero buffering lag, zero memory accumulation, and perfect 1:1 synchrony with Frigate
   useEffect(() => {
-    if (streamMode !== "monitor") return;
+    if (streamMode !== "monitor" || isPaused) return;
 
     let active = true;
     let timer: NodeJS.Timeout;
@@ -161,7 +190,31 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
         } ${isSpotlight ? "h-[65vh] min-h-[420px]" : "h-72 sm:h-80"}`}
       >
         {/* Stream Viewer */}
-        {streamMode === "monitor" ? (
+        {isPaused ? (
+          <div className="w-full h-full relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-6 text-center select-none z-10">
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 shadow-xl shadow-amber-500/10 mb-3 animate-pulse">
+              <PauseCircle className="w-10 h-10" />
+            </div>
+            <span className="px-3 py-1 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 font-mono font-black text-xs uppercase tracking-widest mb-1.5">
+              Câmera em Standby (Pausada)
+            </span>
+            <p className="text-xs text-slate-400 max-w-sm mb-4">
+              Transmissão de vídeo, gravação e inferência de IA suspensas temporariamente para máxima economia de CPU e privacidade.
+            </p>
+            <button
+              onClick={handleTogglePause}
+              disabled={isTogglingPause}
+              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-cyan-500 hover:from-amber-400 hover:to-cyan-400 text-obsidian-950 font-black text-xs shadow-lg shadow-cyan-500/25 flex items-center gap-2 transition-all transform hover:scale-105 active:scale-95 cursor-pointer disabled:opacity-50"
+            >
+              {isTogglingPause ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Play className="w-4 h-4 fill-obsidian-950" />
+              )}
+              <span>Retomar Transmissão Ao Vivo</span>
+            </button>
+          </div>
+        ) : streamMode === "monitor" ? (
           <div className="w-full h-full relative bg-black flex items-center justify-center overflow-hidden">
             <img
               key={`${cameraSrc}-frame-${key}`}
@@ -187,7 +240,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
         )}
 
         {/* Real-time Security Intrusion / Detection Floating Banner */}
-        {activeDet && (
+        {activeDet && !isPaused && (
           <div className="absolute top-12 left-3 z-20 flex items-center gap-2 px-3 py-1.5 rounded-xl bg-rose-950/90 border border-rose-500 shadow-xl shadow-rose-950/80 text-rose-200 text-xs font-black animate-pulse">
             <span className="w-2.5 h-2.5 rounded-full bg-rose-500 animate-ping" />
             <ShieldAlert className="w-4 h-4 text-rose-400" />
@@ -201,7 +254,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
         )}
 
         {/* Real-time Motion Alert (when no object classified yet) */}
-        {!activeDet && isMotion && (
+        {!activeDet && isMotion && !isPaused && (
           <div className="absolute top-12 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-950/90 border border-amber-500/60 shadow-lg text-amber-300 text-[11px] font-bold">
             <Activity className="w-3.5 h-3.5 text-amber-400 animate-pulse" />
             <span>MOVIMENTO DETECTADO</span>
@@ -211,12 +264,21 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
         {/* Camera HUD Header Overlay */}
         <div className="absolute top-0 left-0 right-0 p-3 bg-gradient-to-b from-black/90 via-black/50 to-transparent flex items-center justify-between z-10">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className={`w-2.5 h-2.5 rounded-full ${activeDet ? "bg-rose-500 animate-ping" : isMotion ? "bg-amber-400 animate-pulse" : "bg-emerald-500 animate-ping"}`} />
+            <span className={`w-2.5 h-2.5 rounded-full ${isPaused ? "bg-amber-400" : activeDet ? "bg-rose-500 animate-ping" : isMotion ? "bg-amber-400 animate-pulse" : "bg-emerald-500 animate-ping"}`} />
             <span className="font-bold text-xs tracking-wide text-white uppercase drop-shadow-md">
               {camera.friendly_name || camera.name}
             </span>
+            <span className="text-[10px] text-slate-300 font-mono drop-shadow">
+              ({camera.ip_address || "127.0.0.1"})
+            </span>
             
-            {streamMode === "monitor" ? (
+            {/* Stream Mode & FPS Badge */}
+            {isPaused ? (
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold flex items-center gap-1">
+                <PauseCircle className="w-2.5 h-2.5" />
+                STANDBY
+              </span>
+            ) : streamMode === "monitor" ? (
               <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
                 <Gauge className="w-2.5 h-2.5" />
                 {ecoFps} FPS (Eco & Sync Total)
@@ -234,7 +296,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
             )}
 
             {/* Live Object Badges if detected in camera */}
-            {Object.entries(camCounts).map(([lbl, cnt]) => cnt > 0 && (
+            {!isPaused && Object.entries(camCounts).map(([lbl, cnt]) => cnt > 0 && (
               <span key={lbl} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-rose-500/20 text-rose-300 border border-rose-500/40 font-extrabold flex items-center gap-1">
                 {lbl.toUpperCase()}: {cnt}
               </span>
@@ -242,10 +304,44 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
           </div>
 
           <div className="flex items-center gap-2 font-mono text-[10px] text-slate-300">
-            <span className={`px-2 py-0.5 rounded border font-bold flex items-center gap-1 ${activeDet ? "bg-rose-950/80 border-rose-500 text-rose-400" : "bg-emerald-950/80 border-emerald-500/40 text-emerald-400"}`}>
-              <Radio className="w-3 h-3 animate-pulse" />
-              {activeDet ? "ALERTA IA" : "AO VIVO"}
-            </span>
+            {isPaused ? (
+              <span className="px-2 py-0.5 rounded border font-bold flex items-center gap-1 bg-amber-950/80 border-amber-500/40 text-amber-400">
+                <PauseCircle className="w-3 h-3" />
+                PAUSADA
+              </span>
+            ) : (
+              <span className={`px-2 py-0.5 rounded border font-bold flex items-center gap-1 ${activeDet ? "bg-rose-950/80 border-rose-500 text-rose-400" : "bg-emerald-950/80 border-emerald-500/40 text-emerald-400"}`}>
+                <Radio className="w-3 h-3 animate-pulse" />
+                {activeDet ? "ALERTA IA" : "AO VIVO"}
+              </span>
+            )}
+
+            {/* Quick Pause / Play Button */}
+            <button
+              type="button"
+              onClick={handleTogglePause}
+              disabled={isTogglingPause}
+              className={`p-1.5 px-2 rounded-lg border transition-all cursor-pointer pointer-events-auto flex items-center gap-1 font-bold ${
+                isPaused
+                  ? "bg-amber-500 hover:bg-amber-400 text-obsidian-950 border-amber-400 shadow-md shadow-amber-500/20"
+                  : "bg-black/80 hover:bg-amber-500/20 text-slate-300 hover:text-amber-300 border-slate-700"
+              }`}
+              title={isPaused ? "Retomar Câmera (Play)" : "Pausar Câmera (Economia de CPU/Privacidade)"}
+            >
+              {isTogglingPause ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : isPaused ? (
+                <>
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span className="text-[10px]">Play</span>
+                </>
+              ) : (
+                <>
+                  <Pause className="w-3.5 h-3.5" />
+                  <span className="text-[10px]">Pausar</span>
+                </>
+              )}
+            </button>
 
             {/* Individual Camera Settings Button */}
             <button

@@ -176,7 +176,7 @@ fun PhoneTopBar(
                         )
                     }
                     Text(
-                        text = "v001.000.000.051 • NVR MOBILE",
+                        text = "v001.000.000.052 • NVR MOBILE",
                         style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.TextMuted)
                     )
                 }
@@ -791,7 +791,7 @@ fun DeviceConfigEditDialog(
                     Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text("ID: ${device.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
                         Text("IP: ${device.ipAddress} • MAC: ${device.macAddress ?: "Automático"}", color = SentinelaColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                        Text("App: ${device.appVersion ?: "v001.000.000.051"} • Modelo: ${device.deviceModel ?: device.deviceType}", color = SentinelaColors.TextSecondary, fontSize = 9.sp)
+                        Text("App: ${device.appVersion ?: "v001.000.000.052"} • Modelo: ${device.deviceModel ?: device.deviceType}", color = SentinelaColors.TextSecondary, fontSize = 9.sp)
                     }
                 }
 
@@ -2028,7 +2028,7 @@ fun PhoneSettingsTab() {
                     Text("IDENTIFICAÇÃO DO SMARTPHONE EM /SCREENS", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
                     Text("ID: ${prefs.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontFamily = FontFamily.Monospace)
                     Text("Nome: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
-                    Text("Versão: v001.000.000.051 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
+                    Text("Versão: v001.000.000.052 (Android Smartphone Edition)", style = SentinelaTypography.Subtext)
                 }
             }
         }

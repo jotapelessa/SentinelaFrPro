@@ -705,6 +705,102 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
         "message": f"Modo alterado com sucesso: {action_desc}."
     }
 
+@router.post("/{camera_id}/toggle-pause")
+async def toggle_camera_pause(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):
+    """
+    Toggles camera activity state (Pause / Resume / Standby).
+    When paused (enabled=False):
+    - Completely stops Frigate ffmpeg capture, AI detect and record processes.
+    - Shuts down CPU consumption and eliminates crash loops / 404 errors.
+    - Frees browser WebRTC and Eco FPS streaming loops.
+    """
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt_first = select(Camera)
+        res_first = await db.execute(stmt_first)
+        cam = res_first.scalars().first()
+
+    if not cam:
+        raise HTTPException(status_code=404, detail="Camera not found")
+
+    new_enabled_state = not bool(cam.enabled)
+    cam.enabled = new_enabled_state
+    await db.commit()
+    await db.refresh(cam)
+
+    # Sync state directly to Frigate config and restart if needed
+    try:
+        await sync_camera_to_frigate(cam)
+    except Exception as e:
+        logger.warning(f"Error syncing pause state to Frigate: {e}")
+
+    state_desc = "Ativada / Retomada" if new_enabled_state else "Pausada / Em Standby"
+    await audit_service.log(
+        action="CAMERA_PAUSE_TOGGLED",
+        module="CAMERA",
+        severity="INFO",
+        details=f"Câmera {cam.name} foi {state_desc}",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+
+    return {
+        "status": "success",
+        "camera": cam.name,
+        "enabled": cam.enabled,
+        "is_paused": not cam.enabled,
+        "message": f"Câmera {state_desc} com sucesso."
+    }
+
+@router.post("/{camera_id}/pause")
+async def pause_camera(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):
+    """Explicitly pauses camera and disables ffmpeg in Frigate."""
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        raise HTTPException(status_code=404, detail="Camera not found")
+
+    cam.enabled = False
+    await db.commit()
+    await db.refresh(cam)
+    await sync_camera_to_frigate(cam)
+    return {"status": "success", "camera": cam.name, "enabled": False, "is_paused": True}
+
+@router.post("/{camera_id}/resume")
+async def resume_camera(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):
+    """Explicitly resumes camera and starts ffmpeg in Frigate."""
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        raise HTTPException(status_code=404, detail="Camera not found")
+
+    cam.enabled = True
+    await db.commit()
+    await db.refresh(cam)
+    await sync_camera_to_frigate(cam)
+    return {"status": "success", "camera": cam.name, "enabled": True, "is_paused": False}
+
 def sanitize_frigate_config(cfg: dict) -> dict:
     """
     Sanitizes Frigate 0.17 configuration to strictly satisfy Pydantic models.
@@ -1052,6 +1148,7 @@ async def sync_camera_to_frigate(cam: Camera):
 
     if target_cam_key not in cfg["cameras"] or not isinstance(cfg["cameras"][target_cam_key], dict):
         cfg["cameras"][target_cam_key] = {
+            "enabled": bool(cam.enabled),
             "ffmpeg": {
                 "inputs": ffmpeg_inputs
             },
@@ -1064,6 +1161,7 @@ async def sync_camera_to_frigate(cam: Camera):
         }
     else:
         cam_block = cfg["cameras"][target_cam_key]
+        cam_block["enabled"] = bool(cam.enabled)
         if "ffmpeg" not in cam_block or not isinstance(cam_block["ffmpeg"], dict):
             cam_block["ffmpeg"] = {}
         cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
@@ -1105,10 +1203,12 @@ async def sync_camera_to_frigate(cam: Camera):
             cam_block["objects"]["filters"]["person"]["threshold"] = float(cam.min_score)
 
         # Sync record mode and retention
+        if "record" not in cam_block or not isinstance(cam_block["record"], dict):
+            cam_block["record"] = {}
         if cam.record_mode is not None:
-            if "record" not in cam_block or not isinstance(cam_block["record"], dict):
-                cam_block["record"] = {}
-            cam_block["record"]["enabled"] = (cam.record_mode != "off")
+            cam_block["record"]["enabled"] = bool(cam.enabled) and (cam.record_mode != "off")
+        else:
+            cam_block["record"]["enabled"] = bool(cam.enabled)
             
             # Limpar a chave antiga 'retain' que causa erro no Frigate 0.17
             if "retain" in cam_block["record"]:
