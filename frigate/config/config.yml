@@ -18,7 +18,7 @@ logger:
 ffmpeg:
   hwaccel_args: preset-intel-qsv-h264
   output_args:
-    record: preset-record-generic
+    record: preset-record-generic-audio
 
 
 # Global Model Config (ensures detector frame resizing matches OpenVINO 300x300 input)
@@ -155,7 +155,7 @@ cameras:
       bounding_box: true
     zones:
       zona_monitoramento:
-        coordinates: 10,720,1270,720,1270,10,10,10
+        coordinates: 5,360,635,360,635,5,5,5
         objects:
           - person
           - car
@@ -165,7 +165,7 @@ cameras:
           - cat
           - bicycle
       zona_entrada:
-        coordinates: 200,720,1080,720,1080,250,200,250
+        coordinates: 100,360,540,360,540,125,100,125
         objects:
           - person
           - car
