@@ -119,11 +119,11 @@ cameras:
     enabled: true
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/camera_principal_h264
+        - path: rtsp://127.0.0.1:8554/camera_principal
           input_args: preset-rtsp-restream
           roles:
             - record
-        - path: rtsp://127.0.0.1:8554/camera_principal_h264
+        - path: rtsp://127.0.0.1:8554/camera_principal
           input_args: preset-rtsp-restream
           roles:
             - detect
