@@ -120,11 +120,11 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream
+          input_args: preset-rtsp-restream -fflags +genpts+discardcorrupt -err_detect ignore_err
           roles:
             - record
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream
+          input_args: preset-rtsp-restream -fflags +genpts+discardcorrupt -err_detect ignore_err
           roles:
             - detect
     detect:
