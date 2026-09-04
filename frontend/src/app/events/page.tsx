@@ -1304,7 +1304,15 @@ export default function EventsPage() {
               <video
                 key={selectedEvent.id}
                 ref={videoRef}
-                src={selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`}
+                src={`/frigate/api/events/${selectedEvent.id}/clip.mp4`}
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  const fallback = selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`;
+                  if (target.src !== fallback && !target.src.endsWith(fallback)) {
+                    target.src = fallback;
+                    target.play().catch(() => {});
+                  }
+                }}
                 controls
                 autoPlay
                 playsInline

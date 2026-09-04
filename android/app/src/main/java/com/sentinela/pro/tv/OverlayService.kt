@@ -261,7 +261,7 @@ class OverlayService : Service() {
 
         val currentHost = SentinelaConfig.currentHost
         val resolvedBase = if (currentHost.startsWith("http://") || currentHost.startsWith("https://")) currentHost else "http://${currentHost}:8088"
-        val streamUrl = customStreamUrl ?: "${resolvedBase}/go2rtc/stream.html?src=${camera}&mode=mse"
+        val streamUrl = customStreamUrl ?: "${resolvedBase}/go2rtc/stream.html?src=${camera}&mode=mse&mode=webrtc"
         val snapshotUrl = customSnapshotUrl ?: "${resolvedBase}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
 
         try {
@@ -270,7 +270,8 @@ class OverlayService : Service() {
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
-                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
                 PixelFormat.TRANSLUCENT
             ).apply {
                 gravity = pipPos.gravity

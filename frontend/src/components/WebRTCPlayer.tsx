@@ -139,9 +139,9 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   const getStreamUrl = () => {
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=webrtc,mse`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=webrtc&mode=mse`;
       case "mse":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=mse,webrtc`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=mse&mode=webrtc`;
       default:
         return frameUrl;
     }
@@ -180,33 +180,8 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
     );
   };
 
-  const handleIframeLoad = (e: React.SyntheticEvent<HTMLIFrameElement>) => {
-    try {
-      const doc = e.currentTarget.contentDocument;
-      if (!doc) return;
-      const script = doc.createElement("script");
-      script.textContent = `
-        (function() {
-          var attemptPlay = function() {
-            var v = document.querySelector('video');
-            if (v) {
-              v.muted = true;
-              v.playsInline = true;
-              v.autoplay = true;
-              if (v.paused) {
-                v.play().catch(function(){});
-              }
-            }
-          };
-          attemptPlay();
-          setTimeout(attemptPlay, 800);
-          setTimeout(attemptPlay, 2000);
-        })();
-      `;
-      doc.body.appendChild(script);
-    } catch {
-      // Ignored for cross-origin or sandboxed scenarios
-    }
+  const handleIframeLoad = () => {
+    // Native iframe loaded, go2rtc handles autoplay via query string
   };
 
   return (

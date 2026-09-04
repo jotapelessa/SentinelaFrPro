@@ -31,6 +31,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.layout.ContentScale
@@ -435,6 +436,7 @@ fun TvCamerasViewport(
     onNavigateLeftToSidebar: () -> Unit
 ) {
     var isFullscreenLiveOpen by remember { mutableStateOf(false) }
+    var streamMode by remember { mutableStateOf("mse") } // "mse" (24fps), "webrtc", "eco" (10fps)
     val heroInteractionSource = remember { MutableInteractionSource() }
     val isHeroFocused by heroInteractionSource.collectIsFocusedAsState()
 
@@ -471,7 +473,8 @@ fun TvCamerasViewport(
                     cameraName = camera.id,
                     contentDescription = camera.name,
                     modifier = Modifier.fillMaxSize(),
-                    isStreaming = true
+                    isStreaming = true,
+                    streamMode = streamMode
                 )
 
                 // Overlay Gradiente Cinematográfico
@@ -698,6 +701,8 @@ fun TvCamerasViewport(
     if (isFullscreenLiveOpen && selectedCamera != null) {
         TvFullScreenLiveDialog(
             camera = selectedCamera,
+            initialStreamMode = streamMode,
+            onStreamModeChanged = { newMode -> streamMode = newMode },
             onDismiss = { isFullscreenLiveOpen = false }
         )
     }
@@ -2029,7 +2034,7 @@ fun TvSettingsViewport(tailscaleIp: String) {
                 Text("ID: ${prefs.deviceIdentifier}", color = TvColors.CyberCyan, fontSize = 12.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("Nome da TV: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text("VERSÃO DO APLICATIVO: v001.000.000.067 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("VERSÃO DO APLICATIVO: v001.000.000.068 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -2041,8 +2046,14 @@ fun TvSettingsViewport(tailscaleIp: String) {
 @Composable
 fun TvFullScreenLiveDialog(
     camera: CameraEntity,
+    initialStreamMode: String = "mse",
+    onStreamModeChanged: (String) -> Unit = {},
     onDismiss: () -> Unit
 ) {
+    var currentMode by remember { mutableStateOf(initialStreamMode) }
+    val modes = listOf("mse", "webrtc", "eco")
+    val modeLabels = mapOf("mse" to "MSE 24 FPS", "webrtc" to "WebRTC LIVE", "eco" to "ECO 10 FPS")
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -2059,7 +2070,8 @@ fun TvFullScreenLiveDialog(
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
                 refreshIntervalMs = 42L,
-                isStreaming = true
+                isStreaming = true,
+                streamMode = currentMode
             )
 
             // Header Overlay
@@ -2094,6 +2106,29 @@ fun TvFullScreenLiveDialog(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black
                     )
+
+                    // Stream Mode Toggle Badge (Click / OK to cycle)
+                    Surface(
+                        shape = TvShapes.Badge,
+                        color = TvColors.OverlayHud,
+                        border = BorderStroke(1.dp, TvColors.CyberCyan),
+                        modifier = Modifier
+                            .padding(start = 8.dp)
+                            .clickable {
+                                val nextIdx = (modes.indexOf(currentMode) + 1) % modes.size
+                                val nextMode = modes[nextIdx]
+                                currentMode = nextMode
+                                onStreamModeChanged(nextMode)
+                            }
+                    ) {
+                        Text(
+                            text = "MODO: ${modeLabels[currentMode]} [OK ALTERNAR]",
+                            color = TvColors.CyberCyan,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
+                    }
                 }
 
                 Surface(
@@ -2115,13 +2150,16 @@ fun TvFullScreenLiveDialog(
 }
 
 /**
- * Modal Player de Clipe / Gravação (Exibe o vídeo gravado com botão de voltar)
+ * Modal Player de Clipe / Gravação (Exibe a foto HD com zoom D-Pad e botão de voltar)
  */
 @Composable
 fun TvClipPlayerDialog(
     clip: RecordingClipItem,
     onDismiss: () -> Unit
 ) {
+    var zoomLevel by remember { mutableFloatStateOf(1f) } // 1x, 1.5x, 2x, 3x
+    val zoomOptions = listOf(1f, 1.5f, 2f, 3f)
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -2130,12 +2168,20 @@ fun TvClipPlayerDialog(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
-                .clickable { onDismiss() }
+                .clickable {
+                    val nextIdx = (zoomOptions.indexOf(zoomLevel) + 1) % zoomOptions.size
+                    zoomLevel = zoomOptions[nextIdx]
+                }
         ) {
             coil.compose.AsyncImage(
                 model = clip.thumbnailUrl.ifBlank { "${SentinelaConfig.BASE_URL}/frigate/api/${clip.cameraId}/latest.jpg?h=1080" },
                 contentDescription = clip.cameraName,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer(
+                        scaleX = zoomLevel,
+                        scaleY = zoomLevel
+                    ),
                 contentScale = ContentScale.Fit
             )
 
@@ -2158,7 +2204,7 @@ fun TvClipPlayerDialog(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black
                     )
-                    val dialogSub = "Data: ${clip.timestamp} • Tipo: Foto HD • Resolução: 1080p • Tamanho: ${clip.sizeMb}"
+                    val dialogSub = "Data: ${clip.timestamp} • Tipo: Foto HD • Zoom: ${zoomLevel}x [OK para Zoom] • Tamanho: ${clip.sizeMb}"
                     Text(
                         text = dialogSub,
                         color = TvColors.CyberCyan,

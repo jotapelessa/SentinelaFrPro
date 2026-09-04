@@ -33,7 +33,9 @@ class SentinelaPreferences(private val context: Context) {
             val defaultId = if (!androidId.isNullOrBlank() && androidId != "9774d56d682e549c") {
                 "dev_${cleanModel}_${androidId.takeLast(8)}"
             } else {
-                "dev_${cleanModel}_" + (1000..9999).random()
+                val hwSeed = "${android.os.Build.MANUFACTURER}_${android.os.Build.HARDWARE}_${android.os.Build.BOARD}_${android.os.Build.BRAND}".hashCode()
+                val hexHash = Integer.toHexString(Math.abs(hwSeed)).padStart(6, '0').takeLast(6)
+                "dev_${cleanModel}_${hexHash}"
             }
             prefs.edit().putString("device_id", defaultId).apply()
             return defaultId
