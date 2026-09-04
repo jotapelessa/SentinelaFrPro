@@ -872,7 +872,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
             cfg["mqtt"]["enabled"] = True
 
     # 1b. Guarantee global ffmpeg with Intel QSV and clean record output_args with redundant PPS filter
-    record_clean_args = "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -an"
+    record_clean_args = "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a copy"
     if "ffmpeg" not in cfg or not isinstance(cfg["ffmpeg"], dict):
         cfg["ffmpeg"] = {
             "hwaccel_args": "preset-intel-qsv-h264",

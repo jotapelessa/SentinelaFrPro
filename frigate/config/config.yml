@@ -18,7 +18,7 @@ logger:
 ffmpeg:
   hwaccel_args: preset-intel-qsv-h264
   output_args:
-    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -an
+    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a copy
 
 
 # Global Model Config (ensures detector frame resizing matches OpenVINO 300x300 input)
@@ -101,7 +101,7 @@ snapshots:
 go2rtc:
   streams:
     camera_principal:
-      - rtsp://192.168.1.6:8554/stream#backchannel=0
+      - ffmpeg:rtsp://192.168.1.6:8554/stream#video=copy#audio=copy
   webrtc:
     candidates:
       - 100.93.129.91:8555

@@ -353,14 +353,14 @@ class MQTTService:
         target_duration = int(clip_end_ts - clip_start_ts)
         logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 7s pré + 7s pós, min 30s/max 45s) para Telegram (Câmera: {camera}, Evento: {event_id})...")
 
-        # 3. Intelligent synchronization: wait until clip_end_ts timestamp has passed + 2s for Frigate to flush disk segments
-        wait_seconds = max(0.0, (clip_end_ts - datetime.datetime.now(datetime.timezone.utc).timestamp()) + 2.0)
+        # 3. Intelligent synchronization: wait until clip_end_ts timestamp has passed + 1s for Frigate to flush disk segments
+        wait_seconds = max(0.0, (clip_end_ts - datetime.datetime.now(datetime.timezone.utc).timestamp()) + 1.0)
         if wait_seconds > 0:
             logger.info(f"⏳ Aguardando gravação completa do clipe estendido ({wait_seconds:.1f}s)...")
-            await asyncio.sleep(min(wait_seconds, 30.0))
+            await asyncio.sleep(min(wait_seconds, 15.0))
 
-        # Strategy 1: Fetch official Frigate event clip (/api/events/{event_id}/clip.mp4) with robust polling
-        delays = [2.0, 3.0, 5.0, 7.0, 10.0, 12.0]
+        # Strategy 1: Fetch official Frigate event clip (/api/events/{event_id}/clip.mp4) with fast polling
+        delays = [1.0, 2.0, 3.0, 5.0]
         for attempt, delay in enumerate(delays, start=1):
             await asyncio.sleep(delay)
             try:
@@ -379,8 +379,8 @@ class MQTTService:
                             logger.warning(f"⚠️ Clipe retornado pelo Frigate para evento {event_id} ainda não possui stream de vídeo finalizado (tentativa {attempt}/{len(delays)}). Aguardando flush...")
                             continue
 
-                        logger.info(f"✅ Clipe MP4 do evento obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264...")
-                        smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=30)
+                        logger.info(f"✅ Clipe MP4 do evento obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264 CFR 20 FPS...")
+                        smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=20)
                         if smooth_video and frigate_bridge.has_video_stream(smooth_video):
                             real_clip_dur = frigate_bridge.get_video_duration(smooth_video)
                             final_dur = real_clip_dur if real_clip_dur > 0 else target_duration
@@ -410,16 +410,17 @@ class MQTTService:
         try:
             live_clip = await frigate_bridge.record_live_video(
                 camera_name=camera,
-                duration_s=int(target_duration)
+                duration_s=min(int(target_duration), 20)
             )
             if live_clip and frigate_bridge.has_video_stream(live_clip):
-                logger.info(f"✅ Vídeo de emergência capturado com sucesso via FrigateBridge ({len(live_clip)} bytes). Enviando para o Telegram...")
+                smooth_live = await frigate_bridge.transcode_to_30fps(live_clip, target_fps=20) or live_clip
+                logger.info(f"✅ Vídeo de emergência capturado com sucesso via FrigateBridge ({len(smooth_live)} bytes). Enviando para o Telegram...")
                 await telegram_vault_service.send_alert_video(
-                    video_bytes=live_clip,
+                    video_bytes=smooth_live,
                     camera_name=camera,
                     label=label,
                     zone=zone_name,
-                    duration_s=target_duration,
+                    duration_s=min(target_duration, 20.0),
                     score=score,
                     friendly_name=friendly_name
                 )
