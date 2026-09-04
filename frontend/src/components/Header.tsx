@@ -56,7 +56,7 @@ export const Header: React.FC = () => {
                 <span className="text-[9px] uppercase tracking-widest px-1 py-0.2 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-extrabold">
                   PRO
                 </span>
-                <span className="text-[10px] text-cyan-400 font-mono tracking-widest uppercase font-semibold">001.000.000.059</span>
+                <span className="text-[10px] text-cyan-400 font-mono tracking-widest uppercase font-semibold">001.000.000.060</span>
               </div>
               <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1 mt-0.5 leading-none">
                 <span className={`w-1.5 h-1.5 rounded-full ${wsConnected ? "bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400" : "bg-rose-400"}`} />

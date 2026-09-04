@@ -14,9 +14,9 @@ logger:
     frigate.events: info
     frigate.video: info
 
-# Intel Jasper Lake N5105 Hardware Acceleration (VAAPI)
+# Intel Jasper Lake N5105 Hardware Acceleration (QSV)
 ffmpeg:
-  hwaccel_args: preset-vaapi
+  hwaccel_args: preset-intel-qsv-h264
   output_args:
     record: preset-record-generic
 
