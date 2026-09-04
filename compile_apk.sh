@@ -18,4 +18,4 @@ if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
     cp app/build/outputs/apk/release/app-release.apk ../sentinela-android-latest.apk
 fi
 
-echo "APKs v061 gerados na raiz do projeto."
+echo "APKs v062 gerados na raiz do projeto."
