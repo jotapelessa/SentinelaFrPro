@@ -8,6 +8,8 @@ import { CameraConfigModal } from "./CameraConfigModal";
 interface WebRTCPlayerProps {
   camera: Camera;
   isSpotlight?: boolean;
+  isActivePlayer?: boolean;
+  onActivate?: () => void;
   onToggleSpotlight?: () => void;
   onCameraUpdated?: () => void;
 }
@@ -15,12 +17,14 @@ interface WebRTCPlayerProps {
 export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   camera,
   isSpotlight = false,
+  isActivePlayer = true,
+  onActivate,
   onToggleSpotlight,
   onCameraUpdated
 }) => {
   const { activeDetections, motionStatus, liveObjectCounts } = useSentinelaStore();
   
-  // Default to ultra-low latency WebRTC (<80ms) with seamless fallback
+  // Single active player mode: if not active, fallback to static HD monitor snapshot
   const initialMode = (camera.stream_mode === "eco" || camera.stream_mode === "monitor") ? "monitor" : "webrtc";
   const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">(initialMode);
 
@@ -195,7 +199,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
             : "border border-slate-800 hover:border-cyan-500/50"
         } ${isSpotlight ? "h-[65vh] min-h-[420px]" : "h-72 sm:h-80"}`}
       >
-        {/* Stream Viewer */}
+        {/* Stream Viewer - Enforce STRICT SINGLE PLAYER POLICY */}
         {isPaused ? (
           <div className="w-full h-full relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-6 text-center select-none z-10">
             <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 shadow-xl shadow-amber-500/10 mb-3 animate-pulse">
@@ -219,6 +223,30 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
               )}
               <span>Retomar Transmissão Ao Vivo</span>
             </button>
+          </div>
+        ) : !isActivePlayer ? (
+          /* Inactive Camera in Grid: Lightweight snapshot with 1-click player activation */
+          <div 
+            onClick={onActivate}
+            className="w-full h-full relative bg-black flex items-center justify-center overflow-hidden cursor-pointer group/thumb"
+            title="Clique para ativar este player de vídeo ao vivo"
+          >
+            <img
+              src={`/frigate/api/${cameraSrc}/latest.jpg?h=360`}
+              alt={camera.friendly_name || camera.name}
+              className="w-full h-full object-cover opacity-80 group-hover/thumb:opacity-100 transition-all duration-300 transform group-hover/thumb:scale-105"
+            />
+            {renderBoundingBox()}
+            
+            {/* Overlay button to activate live stream */}
+            <div className="absolute inset-0 bg-black/40 group-hover/thumb:bg-black/20 flex flex-col items-center justify-center gap-2.5 transition-all">
+              <div className="p-3 rounded-full bg-cyan-500/90 text-obsidian-950 shadow-xl shadow-cyan-500/40 transform group-hover/thumb:scale-110 transition-transform flex items-center justify-center">
+                <Play className="w-6 h-6 fill-current ml-0.5" />
+              </div>
+              <span className="px-2.5 py-1 rounded-md bg-black/70 backdrop-blur text-cyan-300 text-xs font-mono font-bold border border-cyan-500/30">
+                Assistir Ao Vivo (Ativar Player)
+              </span>
+            </div>
           </div>
         ) : streamMode === "monitor" ? (
           <div className="w-full h-full relative bg-black flex items-center justify-center overflow-hidden">

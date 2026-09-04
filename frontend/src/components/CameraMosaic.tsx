@@ -113,6 +113,15 @@ export const CameraMosaic: React.FC = () => {
   const totalPersons = events.filter(e => e.label === "person").length;
   const totalVehicles = events.filter(e => e.label === "car" || e.label === "motorcycle").length;
 
+  // STRICT SINGLE PLAYER POLICY: Only one camera streams live video at any time
+  const [activeStreamingCameraId, setActiveStreamingCameraId] = useState<string | number | null>(null);
+
+  useEffect(() => {
+    if (cameras.length > 0 && !activeStreamingCameraId) {
+      setActiveStreamingCameraId(cameras[0].id || cameras[0].name);
+    }
+  }, [cameras, activeStreamingCameraId]);
+
   return (
     <section className="w-full space-y-4">
       {/* Mosaic Header Bar & Live Counters HUD */}
@@ -224,13 +233,14 @@ export const CameraMosaic: React.FC = () => {
         </div>
       )}
 
-      {/* Cameras View (Spotlight vs Grid) */}
+      {/* Cameras View (Spotlight vs Grid) - SINGLE PLAYER POLICY ENFORCED */}
       {cameras.length > 0 && (
         spotlightCamera ? (
           <div className="w-full space-y-3">
             <WebRTCPlayer
               camera={spotlightCamera}
               isSpotlight={true}
+              isActivePlayer={true}
               onToggleSpotlight={() => setSpotlightCamera(null)}
               onCameraUpdated={fetchCameras}
             />
@@ -245,15 +255,24 @@ export const CameraMosaic: React.FC = () => {
         ) : (
           <div className="space-y-4">
             <div className={`grid gap-4 ${cameras.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
-              {cameras.map((camera) => (
-                <WebRTCPlayer
-                  key={camera.id || camera.name}
-                  camera={camera}
-                  isSpotlight={cameras.length === 1}
-                  onToggleSpotlight={() => setSpotlightCamera(camera)}
-                  onCameraUpdated={fetchCameras}
-                />
-              ))}
+              {cameras.map((camera) => {
+                const camId = camera.id || camera.name;
+                const isCurrentActive = activeStreamingCameraId === camId || cameras.length === 1;
+                return (
+                  <WebRTCPlayer
+                    key={camId}
+                    camera={camera}
+                    isSpotlight={cameras.length === 1}
+                    isActivePlayer={isCurrentActive}
+                    onActivate={() => setActiveStreamingCameraId(camId)}
+                    onToggleSpotlight={() => {
+                      setActiveStreamingCameraId(camId);
+                      setSpotlightCamera(camera);
+                    }}
+                    onCameraUpdated={fetchCameras}
+                  />
+                );
+              })}
             </div>
 
             <TimelinePlayback
