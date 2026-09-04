@@ -1027,13 +1027,13 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 "continuous": {"days": 0},
                 "motion": {"days": 3},
                 "alerts": {
-                    "pre_capture": 5,
-                    "post_capture": 5,
+                    "pre_capture": 10,
+                    "post_capture": 10,
                     "retain": {"days": 14, "mode": "active_objects"}
                 },
                 "detections": {
-                    "pre_capture": 5,
-                    "post_capture": 5,
+                    "pre_capture": 10,
+                    "post_capture": 10,
                     "retain": {"days": 14, "mode": "active_objects"}
                 }
             }
@@ -1051,14 +1051,14 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 cam_cfg["record"]["motion"] = {"days": 3}
             if "alerts" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["alerts"], dict):
                 cam_cfg["record"]["alerts"] = {
-                    "pre_capture": 5,
-                    "post_capture": 5,
+                    "pre_capture": 10,
+                    "post_capture": 10,
                     "retain": {"days": 14, "mode": "active_objects"}
                 }
             if "detections" not in cam_cfg["record"] or not isinstance(cam_cfg["record"]["detections"], dict):
                 cam_cfg["record"]["detections"] = {
-                    "pre_capture": 5,
-                    "post_capture": 5,
+                    "pre_capture": 10,
+                    "post_capture": 10,
                     "retain": {"days": 14, "mode": "active_objects"}
                 }
 

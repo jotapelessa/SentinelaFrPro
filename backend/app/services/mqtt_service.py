@@ -359,27 +359,33 @@ class MQTTService:
             logger.info(f"⏳ Aguardando gravação completa do clipe estendido ({wait_seconds:.1f}s)...")
             await asyncio.sleep(min(wait_seconds, 15.0))
 
-        # Strategy 1: Fetch official Frigate event clip (/api/events/{event_id}/clip.mp4) with fast polling
+        # Strategy 1: Fetch extended range clip from Frigate NVR (/api/{camera}/start/{start}/end/{end}/clip.mp4)
+        # This guarantees at least 7s pre-capture, object duration, at least 7s post-capture, and min 25s total duration.
         delays = [1.0, 2.0, 3.0, 5.0]
         for attempt, delay in enumerate(delays, start=1):
             await asyncio.sleep(delay)
             try:
                 async with httpx.AsyncClient(timeout=45.0) as client:
-                    # 1. Primary: Official Frigate detection event clip (contains actual detected object with pre/post-capture)
-                    event_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
-                    clip_resp = await client.get(event_url)
+                    # 1. Primary: Extended range clip guaranteeing full pre and post capture
+                    range_url = f"{settings.FRIGATE_API_URL}/api/{camera}/start/{clip_start_ts}/end/{clip_end_ts}/clip.mp4"
+                    clip_resp = await client.get(range_url)
 
-                    # 2. Fallback: Range clip if event clip is not ready or empty
+                    # 2. Secondary fallback: Official Frigate detection event clip with 10s padding
                     if clip_resp.status_code != 200 or len(clip_resp.content) < 1024:
-                        range_url = f"{settings.FRIGATE_API_URL}/api/{camera}/start/{clip_start_ts}/end/{clip_end_ts}/clip.mp4"
-                        clip_resp = await client.get(range_url)
+                        event_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4?padding=10"
+                        clip_resp = await client.get(event_url)
+
+                    # 3. Tertiary fallback: Raw Frigate detection event clip without query
+                    if clip_resp.status_code != 200 or len(clip_resp.content) < 1024:
+                        event_raw_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
+                        clip_resp = await client.get(event_raw_url)
 
                     if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
                         if not frigate_bridge.has_video_stream(clip_resp.content):
                             logger.warning(f"⚠️ Clipe retornado pelo Frigate para evento {event_id} ainda não possui stream de vídeo finalizado (tentativa {attempt}/{len(delays)}). Aguardando flush...")
                             continue
 
-                        logger.info(f"✅ Clipe MP4 do evento obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264 CFR 20 FPS...")
+                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264 CFR 20 FPS...")
                         smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=20)
                         if smooth_video and frigate_bridge.has_video_stream(smooth_video):
                             real_clip_dur = frigate_bridge.get_video_duration(smooth_video)

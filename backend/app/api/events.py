@@ -462,14 +462,39 @@ async def get_event_clip(event_id: str, download: bool = False):
             headers=headers
         )
 
-    # 2. Fetch raw clip from Frigate NVR
+    # 2. Fetch extended clip from Frigate NVR (guaranteeing >= 7s pre, >= 7s post, and min 25s duration)
     raw_bytes = None
     try:
-        async with httpx.AsyncClient(timeout=30.0) as client:
-            frigate_clip_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
-            resp = await client.get(frigate_clip_url)
-            if resp.status_code == 200 and len(resp.content) > 1024:
-                raw_bytes = resp.content
+        async with httpx.AsyncClient(timeout=35.0) as client:
+            # First, fetch event metadata to know camera, start_time, and end_time
+            ev_meta_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}")
+            if ev_meta_resp.status_code == 200:
+                ev_meta = ev_meta_resp.json()
+                camera = ev_meta.get("camera")
+                start_ts = ev_meta.get("start_time")
+                end_ts = ev_meta.get("end_time") or (start_ts + 10.0 if start_ts else None)
+                
+                if camera and start_ts:
+                    clip_start_ts = int(start_ts - 7.0)
+                    clip_end_ts = int(max(end_ts + 7.0, clip_start_ts + 25.0))
+                    range_url = f"{settings.FRIGATE_API_URL}/api/{camera}/start/{clip_start_ts}/end/{clip_end_ts}/clip.mp4"
+                    range_resp = await client.get(range_url)
+                    if range_resp.status_code == 200 and len(range_resp.content) > 1024:
+                        raw_bytes = range_resp.content
+
+            # Fallback 1: Query official event clip with 10s padding
+            if not raw_bytes:
+                padded_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4?padding=10"
+                resp = await client.get(padded_url)
+                if resp.status_code == 200 and len(resp.content) > 1024:
+                    raw_bytes = resp.content
+
+            # Fallback 2: Raw Frigate clip without padding
+            if not raw_bytes:
+                frigate_clip_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
+                resp = await client.get(frigate_clip_url)
+                if resp.status_code == 200 and len(resp.content) > 1024:
+                    raw_bytes = resp.content
     except Exception as e:
         logger.warning(f"Failed to fetch event clip from Frigate for {event_id}: {e}")
 
