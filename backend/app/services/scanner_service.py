@@ -67,7 +67,7 @@ SECONDARY_WEB_PORTS = {
 class ScannerService:
     def get_self_ips(self) -> set:
         """Collects all IP addresses belonging to the host itself so they are not detected as cameras."""
-        ips = {"127.0.0.1", "localhost", "0.0.0.0"}
+        ips = {"127.0.0.1", "localhost", "0.0.0.0", "192.168.1.247"}
         try:
             for iface, addrs in psutil.net_if_addrs().items():
                 for addr in addrs:
@@ -80,7 +80,17 @@ class ScannerService:
             ips.add(host_ip)
         except Exception:
             pass
+        try:
+            # Check FQDN or local domain
+            for h in ["sentinela.local", "sentinela"]:
+                try:
+                    ips.add(socket.gethostbyname(h))
+                except Exception:
+                    pass
+        except Exception:
+            pass
         return ips
+
 
     def get_local_subnets(self) -> List[str]:
         """Discovers all local subnets, prioritizing physical LAN interfaces."""
@@ -383,14 +393,24 @@ class ScannerService:
         other_hosts = [h for h in range(start_host, min(end_host + 1, 255)) if h not in priority_hosts]
         target_hosts = [h for h in priority_hosts if start_host <= h <= end_host] + other_hosts
 
+        self_ips = self.get_self_ips()
+
         async def check_host(host_num: int):
             ip = f"{base_subnet}.{host_num}"
+            if ip in self_ips:
+                return
+
             async with sem:
-                open_primary = []
-                for port, desc in PRIMARY_CCTV_PORTS.items():
-                    is_open = await self.scan_port(ip, port, timeout=0.35)
-                    if is_open:
-                        open_primary.append((port, desc))
+                ports_to_test = list(PRIMARY_CCTV_PORTS.keys())
+                # High-efficiency concurrent port scan for this host: 0.25s per host maximum
+                scan_coros = [self.scan_port(ip, port, timeout=0.25) for port in ports_to_test]
+                results = await asyncio.gather(*scan_coros)
+                open_primary = [
+                    (p, PRIMARY_CCTV_PORTS[p])
+                    for p, is_open in zip(ports_to_test, results)
+                    if is_open
+                ]
+
 
                 # Check if camera ports (554, 8899, 34567, 37777, 8000) or web port (80) with RTSP
                 if open_primary:

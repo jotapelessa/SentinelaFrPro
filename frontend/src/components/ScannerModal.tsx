@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useSentinelaStore, DiscoveredDevice } from "@/store/useSentinelaStore";
-import { Search, X, Check, Copy, Wifi, ShieldCheck, Loader2, Camera as CameraIcon, Plus, CheckCircle2 } from "lucide-react";
+import { Search, X, Check, Copy, Wifi, ShieldCheck, Loader2, Camera as CameraIcon, Plus, CheckCircle2, Play, AlertCircle } from "lucide-react";
 
 export const ScannerModal: React.FC = () => {
   const { isScannerOpen, setIsScannerOpen, isScanning, setIsScanning, scanResults, setScanResults, setCameras } = useSentinelaStore();
@@ -11,9 +11,47 @@ export const ScannerModal: React.FC = () => {
   const [subnetInput, setSubnetInput] = useState("192.168.1");
   const [addingIp, setAddingIp] = useState<string | null>(null);
   const [addedSuccess, setAddedSuccess] = useState<string | null>(null);
+  const [testingIp, setTestingIp] = useState<string | null>(null);
+  const [testResult, setTestResult] = useState<{ [ip: string]: { ok: boolean; msg: string } }>({});
   const [scanInfo, setScanInfo] = useState<{ duration?: number; scanned_ips?: number } | null>(null);
 
   if (!isScannerOpen) return null;
+
+  const handleTestRtsp = async (dev: DiscoveredDevice) => {
+    setTestingIp(dev.ip);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const rtspUrl = dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:554/live/ch0`;
+      const res = await fetch(`${apiUrl}/cameras/test-rtsp`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rtsp_url: rtspUrl })
+      });
+      const data = await res.json();
+      setTestResult(prev => ({
+        ...prev,
+        [dev.ip]: {
+          ok: !!data.success,
+          msg: data.success ? "RTSP Ativo!" : "Sem Resposta RTSP"
+        }
+      }));
+      setTimeout(() => {
+        setTestResult(prev => {
+          const next = { ...prev };
+          delete next[dev.ip];
+          return next;
+        });
+      }, 4000);
+    } catch {
+      setTestResult(prev => ({
+        ...prev,
+        [dev.ip]: { ok: false, msg: "Falha de Rede" }
+      }));
+    } finally {
+      setTestingIp(null);
+    }
+  };
+
 
   const handleStartScan = async () => {
     setIsScanning(true);
@@ -252,8 +290,34 @@ export const ScannerModal: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-2 w-full sm:w-auto justify-end shrink-0">
+                      {/* Test RTSP Connection Button */}
+                      <button
+                        onClick={() => handleTestRtsp(dev)}
+                        disabled={testingIp === dev.ip}
+                        className={`px-2.5 py-2 rounded-lg font-medium text-xs flex items-center gap-1 transition-all border ${
+                          testResult[dev.ip]?.ok
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                            : testResult[dev.ip]?.ok === false
+                            ? "bg-rose-500/20 text-rose-300 border-rose-500/40"
+                            : "bg-slate-800 hover:bg-slate-700 text-slate-300 border-slate-700"
+                        }`}
+                        title="Testar Conectividade RTSP"
+                      >
+                        {testingIp === dev.ip ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+                        ) : testResult[dev.ip]?.ok ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        ) : testResult[dev.ip]?.ok === false ? (
+                          <AlertCircle className="w-3.5 h-3.5 text-rose-400" />
+                        ) : (
+                          <Play className="w-3 h-3 text-cyan-400" />
+                        )}
+                        <span>{testResult[dev.ip]?.msg || "Testar"}</span>
+                      </button>
+
                       <button
                         onClick={() => handleAddDirect(dev)}
+
                         disabled={addingIp === dev.ip || addedSuccess === dev.ip}
                         className={`px-3.5 py-2 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all ${
                           addedSuccess === dev.ip

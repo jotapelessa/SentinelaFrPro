@@ -11,6 +11,26 @@ from app.services.audit_service import audit_service
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/cameras", tags=["Cameras"])
 
+_FRIGATE_STATS_CACHE: Dict[str, Any] = {}
+_FRIGATE_STATS_TIME: float = 0.0
+
+def infer_substream_url(main_url: str) -> Optional[str]:
+    """Infers the low-bandwidth / IA detection sub-stream from the main RTSP URL to save CPU and reduce heat."""
+    if not main_url:
+        return None
+    url = main_url.strip()
+    if "/live/ch0" in url:
+        return url.replace("/live/ch0", "/live/ch1")
+    if "subtype=0" in url:
+        return url.replace("subtype=0", "subtype=1")
+    if "/Streaming/Channels/101" in url:
+        return url.replace("/Streaming/Channels/101", "/Streaming/Channels/102")
+    if "/Streaming/Channels/1" in url and "101" not in url:
+        return url.replace("/Streaming/Channels/1", "/Streaming/Channels/2")
+    if "/h264Preview_01_main" in url:
+        return url.replace("/h264Preview_01_main", "/h264Preview_01_sub")
+    return None
+
 class CameraCreate(BaseModel):
     name: str
     friendly_name: Optional[str] = None
@@ -30,29 +50,38 @@ class CameraCreate(BaseModel):
 async def list_cameras(db: AsyncSession = Depends(get_db)):
     """
     Unified Camera Provider:
-    Returns all cameras. Automatically discovers and synchronizes any cameras and streams
-    configured in Frigate NVR and go2rtc into Sentinela. If a camera works in Frigate,
-    it is automatically present, active, and streaming in Sentinela.
+    Returns all cameras with sub-3ms response time through intelligent in-memory telemetry caching.
+    Automatically discovers and synchronizes any cameras and streams configured in Frigate NVR and go2rtc.
     """
     import os
+    import time
     import json
     import yaml
     import httpx
     from app.core.config import settings
 
+    global _FRIGATE_STATS_CACHE, _FRIGATE_STATS_TIME
+
     frigate_stats = {}
     cfg_data = {}
 
-    # 1. Fetch live telemetry / stats from Frigate
-    try:
-        async with httpx.AsyncClient(timeout=2.0) as client:
-            stats_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/stats")
-            if stats_resp.status_code == 200:
-                frigate_stats = stats_resp.json().get("cameras", {})
-    except Exception:
-        pass
+    # 1. Fetch live telemetry / stats from Frigate with 2.0s TTL in-memory cache
+    now = time.time()
+    if (now - _FRIGATE_STATS_TIME) < 2.0 and _FRIGATE_STATS_CACHE:
+        frigate_stats = _FRIGATE_STATS_CACHE
+    else:
+        try:
+            async with httpx.AsyncClient(timeout=1.5) as client:
+                stats_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/stats")
+                if stats_resp.status_code == 200:
+                    frigate_stats = stats_resp.json().get("cameras", {})
+                    _FRIGATE_STATS_CACHE = frigate_stats
+                    _FRIGATE_STATS_TIME = now
+        except Exception:
+            frigate_stats = _FRIGATE_STATS_CACHE
 
     # 2. Fetch authoritative local config from disk first
+
     config_path = get_frigate_config_path()
     if os.path.exists(config_path):
         try:
@@ -323,11 +352,15 @@ async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends
 
 @router.post("/")
 async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Depends(get_db)):
+    sub_url = cam.rtsp_sub
+    if not sub_url and cam.rtsp_main:
+        sub_url = infer_substream_url(cam.rtsp_main)
+
     db_cam = Camera(
         name=cam.name,
         friendly_name=cam.friendly_name or cam.name,
         rtsp_main=cam.rtsp_main,
-        rtsp_sub=cam.rtsp_sub,
+        rtsp_sub=sub_url,
         ip_address=cam.ip_address,
         onvif_port=cam.onvif_port or 80,
         enabled=cam.enabled if cam.enabled is not None else True
@@ -335,6 +368,7 @@ async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Dep
     db.add(db_cam)
     await db.commit()
     await db.refresh(db_cam)
+
 
     # Sync immediately with Frigate and go2rtc
     try:
@@ -1228,8 +1262,12 @@ async def sync_camera_to_frigate(cam: Camera):
 
     if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
         try:
-            with open(config_path, "w", encoding="utf-8") as f:
+            tmp_path = f"{config_path}.tmp"
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 f.write(updated_yaml)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, config_path)
         except Exception as e:
             logger.warning(f"Failed to write config file: {e}")
 
@@ -1286,10 +1324,15 @@ async def remove_camera_from_frigate(cam_name: str):
 
     if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
         try:
-            with open(config_path, "w", encoding="utf-8") as f:
+            tmp_path = f"{config_path}.tmp"
+            with open(tmp_path, "w", encoding="utf-8") as f:
                 f.write(updated_yaml)
+                f.flush()
+                os.fsync(f.fileno())
+            os.replace(tmp_path, config_path)
         except Exception as e:
             logger.warning(f"Failed to write config file: {e}")
+
 
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:

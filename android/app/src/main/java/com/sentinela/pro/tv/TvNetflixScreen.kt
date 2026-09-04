@@ -2029,7 +2029,7 @@ fun TvSettingsViewport(tailscaleIp: String) {
                 Text("ID: ${prefs.deviceIdentifier}", color = TvColors.CyberCyan, fontSize = 12.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("Nome da TV: ${prefs.friendlyName}", color = Color.White, fontSize = 12.sp)
                 Spacer(modifier = Modifier.height(2.dp))
-                Text("VERSÃO DO APLICATIVO: v001.000.000.052 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                Text("VERSÃO DO APLICATIVO: v001.000.000.053 (Android TV Leanback Edition)", color = TvColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
             }
         }
     }
