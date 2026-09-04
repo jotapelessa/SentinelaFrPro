@@ -552,7 +552,7 @@ export default function ScreensPage() {
                 PiP Ultra Gateway
               </span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
-                v001.000.000.050
+                v001.000.000.051
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1">

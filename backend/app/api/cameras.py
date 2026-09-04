@@ -1030,26 +1030,44 @@ async def sync_camera_to_frigate(cam: Camera):
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
 
+    # Build optimized ffmpeg inputs: Sub-stream for detect (low CPU), Main-stream for record (high-res 5MP)
+    ffmpeg_inputs = []
+    if cam.rtsp_sub and cam.rtsp_sub.strip():
+        ffmpeg_inputs.append({
+            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}_sub",
+            "input_args": "preset-rtsp-restream",
+            "roles": ["detect"]
+        })
+        ffmpeg_inputs.append({
+            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
+            "input_args": "preset-rtsp-restream",
+            "roles": ["record"]
+        })
+    else:
+        ffmpeg_inputs.append({
+            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
+            "input_args": "preset-rtsp-restream",
+            "roles": ["detect", "record"]
+        })
+
     if target_cam_key not in cfg["cameras"] or not isinstance(cfg["cameras"][target_cam_key], dict):
         cfg["cameras"][target_cam_key] = {
             "ffmpeg": {
-                "inputs": [
-                    {
-                        "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
-                        "input_args": "preset-rtsp-restream",
-                        "roles": ["detect", "record"]
-                    }
-                ]
+                "inputs": ffmpeg_inputs
             },
             "detect": {
                 "enabled": bool(cam.enabled),
                 "width": 1280,
                 "height": 720,
-                "fps": 5
+                "fps": cam.detect_fps or 5
             }
         }
     else:
         cam_block = cfg["cameras"][target_cam_key]
+        if "ffmpeg" not in cam_block or not isinstance(cam_block["ffmpeg"], dict):
+            cam_block["ffmpeg"] = {}
+        cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
+
         if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
             cam_block["detect"] = {"width": 1280, "height": 720, "fps": 5}
         cam_block["detect"]["enabled"] = bool(cam.enabled)

@@ -108,6 +108,14 @@ export interface DiscoveredDevice {
   open_ports?: number[];
   services?: string[];
   rtsp_url_hint?: string;
+  rtsp_main?: string;
+  rtsp_sub?: string;
+  onvif_port?: number;
+  resolution?: string;
+  features?: string[];
+  is_5mp?: boolean;
+  manufacturer?: string;
+  model?: string;
   confidence?: string;
 }
 

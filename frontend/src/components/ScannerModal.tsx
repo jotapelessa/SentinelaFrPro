@@ -61,9 +61,10 @@ export const ScannerModal: React.FC = () => {
       const payload = {
         name: camName,
         friendly_name: dev.friendly_name || `Câmera (${dev.ip})`,
-        rtsp_main: dev.rtsp_url_hint || `rtsp://${dev.ip}:554/live/ch0`,
+        rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:554/live/ch0`,
+        rtsp_sub: dev.rtsp_sub || (dev.is_5mp ? `rtsp://${dev.ip}:554/live/ch1` : undefined),
         ip_address: dev.ip,
-        onvif_port: dev.port === 3702 ? 80 : 80,
+        onvif_port: dev.onvif_port || (dev.port === 3702 ? 8899 : 80),
         enabled: true
       };
 
@@ -105,7 +106,7 @@ export const ScannerModal: React.FC = () => {
                 Scanner Autêntico de Câmeras & ONVIF
               </h3>
               <p className="text-xs text-slate-400">
-                Varredura real de portas RTSP (554/8554), sondas ONVIF (UDP 3702) e Intelbras/Dahua
+                Detecção avançada de Câmeras IP (AITEK 5MP SEG6050BP, Xiongmai, ONVIF 8899/80, RTSP 554)
               </p>
             </div>
           </div>
@@ -182,73 +183,115 @@ export const ScannerModal: React.FC = () => {
               </p>
             </div>
           ) : (
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-1">
-                Câmeras & Dispositivos de Vídeo Reais ({scanResults.length})
+                Câmeras & Dispositivos de Vídeo Detectados ({scanResults.length})
               </div>
-              {scanResults.map((dev, idx) => (
-                <div
-                  key={idx}
-                  className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/40 transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3"
-                >
-                  <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-sm text-cyan-300">{dev.ip}</span>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold flex items-center gap-1">
-                        <ShieldCheck className="w-3 h-3" />
-                        <span>{dev.protocol || "Câmera RTSP"}</span>
-                      </span>
-                    </div>
-                    {dev.services && dev.services.length > 0 && (
-                      <p className="text-xs text-slate-400">
-                        Serviços: <span className="text-slate-300 font-mono">{dev.services.join(", ")}</span>
-                      </p>
-                    )}
-                    {dev.rtsp_url_hint && (
-                      <p className="text-[11px] font-mono text-slate-400 truncate max-w-md bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
-                        {dev.rtsp_url_hint}
-                      </p>
-                    )}
-                  </div>
+              {scanResults.map((dev, idx) => {
+                const is5Mp = dev.is_5mp || dev.resolution?.includes("5MP") || dev.friendly_name?.includes("AITEK");
+                return (
+                  <div
+                    key={idx}
+                    className={`p-4 rounded-xl transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+                      is5Mp
+                        ? "bg-slate-950/90 border border-cyan-500/50 shadow-lg shadow-cyan-950/30"
+                        : "bg-slate-950 border border-slate-800 hover:border-slate-700"
+                    }`}
+                  >
+                    <div className="space-y-1.5 flex-1 min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono font-bold text-sm text-cyan-300">{dev.ip}</span>
+                        {dev.friendly_name && (
+                          <span className="text-xs font-semibold text-white truncate max-w-[200px] sm:max-w-xs">
+                            {dev.friendly_name}
+                          </span>
+                        )}
+                        {is5Mp && (
+                          <span className="text-[10px] px-2 py-0.5 rounded-full bg-gradient-to-r from-purple-500/20 to-cyan-500/20 text-cyan-300 border border-cyan-400/40 font-bold uppercase tracking-wider">
+                            5MP Ultra HD
+                          </span>
+                        )}
+                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold flex items-center gap-1">
+                          <ShieldCheck className="w-3 h-3" />
+                          <span>{dev.protocol || "Câmera RTSP"}</span>
+                        </span>
+                      </div>
 
-                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-                    <button
-                      onClick={() => handleAddDirect(dev)}
-                      disabled={addingIp === dev.ip || addedSuccess === dev.ip}
-                      className={`px-3 py-1.5 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all ${
-                        addedSuccess === dev.ip
-                          ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
-                          : "bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 shadow-md shadow-cyan-500/20"
-                      }`}
-                    >
-                      {addedSuccess === dev.ip ? (
-                        <>
-                          <CheckCircle2 className="w-3.5 h-3.5" />
-                          <span>Adicionada!</span>
-                        </>
-                      ) : addingIp === dev.ip ? (
-                        <>
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>Salvando...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Plus className="w-3.5 h-3.5" />
-                          <span>Adicionar</span>
-                        </>
+                      {/* Features Badges */}
+                      {dev.features && dev.features.length > 0 && (
+                        <div className="flex flex-wrap gap-1 pt-0.5">
+                          {dev.features.map((feat, fIdx) => (
+                            <span
+                              key={fIdx}
+                              className="text-[10px] px-1.5 py-0.2 rounded bg-slate-800/80 text-slate-300 border border-slate-700/60 font-mono"
+                            >
+                              {feat}
+                            </span>
+                          ))}
+                        </div>
                       )}
-                    </button>
 
-                    <button
-                      onClick={() => handleCopySingle(dev.ip, `ip-${idx}`)}
-                      className="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300 border border-slate-700"
-                      title="Copiar IP"
-                    >
-                      {copiedIp === `ip-${idx}` ? "Copiado!" : "IP"}
-                    </button>
+                      {/* Stream hints */}
+                      <div className="space-y-0.5 pt-1">
+                        {dev.rtsp_main && (
+                          <p className="text-[11px] font-mono text-slate-400 truncate max-w-md bg-slate-900 px-2 py-0.5 rounded border border-slate-800/80">
+                            <span className="text-cyan-400 font-semibold">Gravação (5MP):</span> {dev.rtsp_main}
+                          </p>
+                        )}
+                        {dev.rtsp_sub && (
+                          <p className="text-[11px] font-mono text-slate-400 truncate max-w-md bg-slate-900 px-2 py-0.5 rounded border border-slate-800/80">
+                            <span className="text-emerald-400 font-semibold">IA Detecção (Sub):</span> {dev.rtsp_sub}
+                          </p>
+                        )}
+                        {!dev.rtsp_main && dev.rtsp_url_hint && (
+                          <p className="text-[11px] font-mono text-slate-400 truncate max-w-md bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+                            {dev.rtsp_url_hint}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 w-full sm:w-auto justify-end shrink-0">
+                      <button
+                        onClick={() => handleAddDirect(dev)}
+                        disabled={addingIp === dev.ip || addedSuccess === dev.ip}
+                        className={`px-3.5 py-2 rounded-lg font-bold text-xs flex items-center gap-1.5 transition-all ${
+                          addedSuccess === dev.ip
+                            ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/40"
+                            : is5Mp
+                            ? "bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-400 text-obsidian-950 shadow-md shadow-cyan-500/30"
+                            : "bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 shadow-md shadow-cyan-500/20"
+                        }`}
+                      >
+                        {addedSuccess === dev.ip ? (
+                          <>
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            <span>Adicionada!</span>
+                          </>
+                        ) : addingIp === dev.ip ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                            <span>Sincronizando...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Plus className="w-3.5 h-3.5" />
+                            <span>{is5Mp ? "Adicionar 5MP Otimizada" : "Adicionar Câmera"}</span>
+                          </>
+                        )}
+                      </button>
+
+                      <button
+                        onClick={() => handleCopySingle(dev.ip, `ip-${idx}`)}
+                        className="px-2.5 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300 border border-slate-700"
+                        title="Copiar IP"
+                      >
+                        {copiedIp === `ip-${idx}` ? "Copiado!" : "IP"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>
