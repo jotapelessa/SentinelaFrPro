@@ -205,7 +205,7 @@ data class LogEntryItem(
 fun CameraItem.toEntity(index: Int, host: String): CameraEntity {
     val cleanHost = host.removePrefix("http://").removePrefix("https://").trimEnd('/')
     val snapUrl = "http://$cleanHost:5000/api/${this.name}/latest.jpg"
-    val stream = "http://$cleanHost:1984/api/stream.html?src=${this.name}&mode=webrtc,mse,mp4"
+    val stream = "http://$cleanHost:1984/api/stream.html?src=${this.name}&mode=webrtc"
     return CameraEntity(
         id = this.name,
         name = this.friendlyName.ifBlank { this.name.replace("_", " ").replaceFirstChar { it.uppercase() } },

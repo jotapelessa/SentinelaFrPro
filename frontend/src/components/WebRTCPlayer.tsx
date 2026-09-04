@@ -138,10 +138,10 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   const getStreamUrl = () => {
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc,mse`;
+        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc`;
 
       case "mse":
-        return `/go2rtc/stream.html?src=${cameraSrc}&mode=webrtc,mse`;
+        return `/go2rtc/stream.html?src=${cameraSrc}&mode=mse`;
       default:
         return frameUrl;
     }
