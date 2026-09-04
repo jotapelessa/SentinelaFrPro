@@ -18,7 +18,7 @@ logger:
 ffmpeg:
   hwaccel_args: preset-intel-qsv-h264
   output_args:
-    record: preset-record-generic
+    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -an
 
 
 # Global Model Config (ensures detector frame resizing matches OpenVINO 300x300 input)
@@ -47,8 +47,8 @@ detectors:
 # Motion Detection Fine-Tuning (High Sensitivity, Natural Lighting)
 motion:
   threshold: 25
-  contour_area: 30
-  improve_contrast: false
+  contour_area: 20
+  improve_contrast: true
 
 # Global Object Tracking Defaults & Detection Sensitivity
 objects:
@@ -62,33 +62,33 @@ objects:
     - bicycle
   filters:
     person:
-      min_score: 0.65
-      threshold: 0.72
-      min_area: 1200
+      min_score: 0.50
+      threshold: 0.60
+      min_area: 400
     car:
-      min_score: 0.70
-      threshold: 0.80
-      min_area: 5000
+      min_score: 0.55
+      threshold: 0.65
+      min_area: 1200
     motorcycle:
-      min_score: 0.70
-      threshold: 0.78
-      min_area: 3000
+      min_score: 0.55
+      threshold: 0.65
+      min_area: 800
     bus:
-      min_score: 0.70
-      threshold: 0.80
-      min_area: 7000
+      min_score: 0.55
+      threshold: 0.65
+      min_area: 2000
     bicycle:
-      min_score: 0.70
-      threshold: 0.78
-      min_area: 2000
+      min_score: 0.55
+      threshold: 0.65
+      min_area: 500
     dog:
-      min_score: 0.72
-      threshold: 0.80
-      min_area: 2000
+      min_score: 0.55
+      threshold: 0.65
+      min_area: 500
     cat:
-      min_score: 0.72
-      threshold: 0.80
-      min_area: 1500
+      min_score: 0.55
+      threshold: 0.65
+      min_area: 400
 
 # Watermarked High-Res Snapshots
 snapshots:
@@ -126,7 +126,7 @@ cameras:
       enabled: true
       width: 640
       height: 360
-      fps: 3
+      fps: 5
     record:
       enabled: true
       continuous:

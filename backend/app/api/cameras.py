@@ -871,17 +871,18 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         if "enabled" not in cfg["mqtt"]:
             cfg["mqtt"]["enabled"] = True
 
-    # 1b. Guarantee global ffmpeg with Intel QSV and clean record output_args
+    # 1b. Guarantee global ffmpeg with Intel QSV and clean record output_args with redundant PPS filter
+    record_clean_args = "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -an"
     if "ffmpeg" not in cfg or not isinstance(cfg["ffmpeg"], dict):
         cfg["ffmpeg"] = {
             "hwaccel_args": "preset-intel-qsv-h264",
-            "output_args": {"record": "preset-record-generic"}
+            "output_args": {"record": record_clean_args}
         }
     else:
         if "output_args" not in cfg["ffmpeg"] or not isinstance(cfg["ffmpeg"]["output_args"], dict):
-            cfg["ffmpeg"]["output_args"] = {"record": "preset-record-generic"}
-        elif "record" not in cfg["ffmpeg"]["output_args"]:
-            cfg["ffmpeg"]["output_args"]["record"] = "preset-record-generic"
+            cfg["ffmpeg"]["output_args"] = {"record": record_clean_args}
+        else:
+            cfg["ffmpeg"]["output_args"]["record"] = record_clean_args
 
     # 2. Guarantee Model & Detectors section with OpenVINO GPU Acceleration (300x300 for ssdlite)
     ov_model_defaults = {
@@ -1003,13 +1004,13 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 }
             ]
 
-        # 3. Guarantee detect block (tuned for Intel N5105 low-power)
+        # 3. Guarantee detect block (tuned for Intel N5105 low-power, 5 FPS)
         if "detect" not in cam_cfg or not isinstance(cam_cfg["detect"], dict):
             cam_cfg["detect"] = {
                 "enabled": True,
                 "width": 640,
                 "height": 360,
-                "fps": 3
+                "fps": 5
             }
         else:
             if "width" not in cam_cfg["detect"]:
@@ -1017,7 +1018,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
             if "height" not in cam_cfg["detect"]:
                 cam_cfg["detect"]["height"] = 360
             if "fps" not in cam_cfg["detect"]:
-                cam_cfg["detect"]["fps"] = 3
+                cam_cfg["detect"]["fps"] = 5
 
         # 4. Guarantee record block syntax for Frigate 0.17 (no retain/events under record)
         if "record" not in cam_cfg or not isinstance(cam_cfg["record"], dict):

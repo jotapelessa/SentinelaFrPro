@@ -1,6 +1,6 @@
 #!/bin/bash
 set -e
-echo "Iniciando compilação de APKs v061..."
+echo "Iniciando compilação de APKs v062..."
 cd android
 chmod +x gradlew
 ./gradlew assembleRelease --no-daemon

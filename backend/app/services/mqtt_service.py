@@ -406,7 +406,25 @@ class MQTTService:
             except Exception as e:
                 logger.warning(f"Tentativa {attempt} de envio de clipe do Frigate falhou: {e}")
 
-        logger.warning(f"⚠️ Não foi possível obter o clipe oficial do Frigate para o evento {event_id} após {len(delays)} tentativas.")
+        logger.warning(f"⚠️ Não foi possível obter o clipe oficial do Frigate para o evento {event_id} após {len(delays)} tentativas. Acionando gravação de emergência via FrigateBridge...")
+        try:
+            live_clip = await frigate_bridge.record_live_video(
+                camera_name=camera,
+                duration_s=int(target_duration)
+            )
+            if live_clip and frigate_bridge.has_video_stream(live_clip):
+                logger.info(f"✅ Vídeo de emergência capturado com sucesso via FrigateBridge ({len(live_clip)} bytes). Enviando para o Telegram...")
+                await telegram_vault_service.send_alert_video(
+                    video_bytes=live_clip,
+                    camera_name=camera,
+                    label=label,
+                    zone=zone_name,
+                    duration_s=target_duration,
+                    score=score,
+                    friendly_name=friendly_name
+                )
+        except Exception as fb_err:
+            logger.error(f"❌ Falha no fallback de gravação ao vivo para Telegram: {fb_err}")
 
     async def start_listening(self):
         """Connects to MQTT and runs consumer loop with automatic reconnection."""
