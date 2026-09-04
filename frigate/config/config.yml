@@ -102,8 +102,6 @@ go2rtc:
   streams:
     camera_principal:
       - rtsp://192.168.1.6:8554/stream#backchannel=0
-    camera_principal_h264:
-      - "ffmpeg:camera_principal#video=h264#hardware"
   webrtc:
     candidates:
       - 100.93.129.91:8555
@@ -120,12 +118,9 @@ cameras:
     ffmpeg:
       inputs:
         - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream -fflags +genpts+discardcorrupt -err_detect ignore_err
+          input_args: preset-rtsp-restream
           roles:
             - record
-        - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream -fflags +genpts+discardcorrupt -err_detect ignore_err
-          roles:
             - detect
     detect:
       enabled: true

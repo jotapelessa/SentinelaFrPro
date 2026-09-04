@@ -871,10 +871,10 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         if "enabled" not in cfg["mqtt"]:
             cfg["mqtt"]["enabled"] = True
 
-    # 1b. Guarantee global ffmpeg with VAAPI and clean record output_args
+    # 1b. Guarantee global ffmpeg with Intel QSV and clean record output_args
     if "ffmpeg" not in cfg or not isinstance(cfg["ffmpeg"], dict):
         cfg["ffmpeg"] = {
-            "hwaccel_args": "preset-vaapi",
+            "hwaccel_args": "preset-intel-qsv-h264",
             "output_args": {"record": "preset-record-generic"}
         }
     else:
@@ -999,12 +999,7 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 {
                     "path": f"rtsp://127.0.0.1:8554/{cam_name}",
                     "input_args": "preset-rtsp-restream",
-                    "roles": ["record"]
-                },
-                {
-                    "path": f"rtsp://127.0.0.1:8554/{cam_name}",
-                    "input_args": "preset-rtsp-restream",
-                    "roles": ["detect"]
+                    "roles": ["record", "detect"]
                 }
             ]
 
