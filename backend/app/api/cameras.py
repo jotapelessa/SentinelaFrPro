@@ -448,11 +448,9 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
     await db.commit()
     await db.refresh(cam)
 
-    # Sync RTSP and camera state directly with Frigate config
-    try:
-        await sync_camera_to_frigate(cam)
-    except Exception as e:
-        logger.warning(f"Error syncing camera to Frigate config: {e}")
+    # Sync RTSP and camera state asynchronously in background to ensure instant API return (<100ms)
+    import asyncio
+    asyncio.create_task(sync_camera_to_frigate(cam))
 
     await audit_service.log(
         action="CAMERA_UPDATED",

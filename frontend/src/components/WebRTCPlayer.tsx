@@ -285,20 +285,10 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
                 <PauseCircle className="w-2.5 h-2.5" />
                 STANDBY
               </span>
-            ) : streamMode === "monitor" ? (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold flex items-center gap-1">
-                <Gauge className="w-2.5 h-2.5" />
-                {ecoFps} FPS (Eco & Sync Total)
-              </span>
-            ) : streamMode === "webrtc" ? (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold flex items-center gap-1">
-                <Zap className="w-2.5 h-2.5" />
-                WebRTC (&lt;50ms)
-              </span>
             ) : (
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-300 border border-blue-500/30 font-bold flex items-center gap-1">
-                <Zap className="w-2.5 h-2.5" />
-                MSE (24 FPS)
+              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold flex items-center gap-1">
+                <Zap className="w-2.5 h-2.5 text-cyan-400" />
+                LIVE 24 FPS (WebRTC / MSE)
               </span>
             )}
 
@@ -364,37 +354,6 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
 
         {/* Floating Action Controls on Hover */}
         <div className="absolute bottom-3 right-3 flex items-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity z-20">
-          {/* Stream Mode Switcher */}
-          <div className="flex items-center bg-black/85 backdrop-blur rounded-lg p-1 border border-slate-700 text-[10px] font-bold">
-            <button
-              onClick={() => setStreamMode("monitor")}
-              className={`px-2 py-1 rounded transition-all ${
-                streamMode === "monitor" ? "bg-emerald-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
-              }`}
-              title={`Modo Eco (${ecoFps} FPS @ 720p: Zero atraso, CPU Mínima)`}
-            >
-              Eco ({ecoFps} FPS)
-            </button>
-            <button
-              onClick={() => setStreamMode("webrtc")}
-              className={`px-2 py-1 rounded transition-all ${
-                streamMode === "webrtc" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
-              }`}
-              title="WebRTC (Latência Ultra-Baixa &lt;50ms)"
-            >
-              WebRTC
-            </button>
-            <button
-              onClick={() => setStreamMode("mse")}
-              className={`px-2 py-1 rounded transition-all ${
-                streamMode === "mse" ? "bg-cyan-500 text-obsidian-950 font-black" : "text-slate-400 hover:text-white"
-              }`}
-              title="MSE (Fluxo Contínuo 24 FPS)"
-            >
-              MSE (24 FPS)
-            </button>
-          </div>
-
           <button
             onClick={reloadStream}
             className="p-2 rounded-lg bg-black/80 hover:bg-slate-800 text-slate-300 border border-slate-700 transition-all text-xs"
