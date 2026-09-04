@@ -891,10 +891,10 @@ object SentinelaRepository {
     suspend fun checkServicesHealth(): List<ServiceStatus> = withContext(Dispatchers.IO) {
         val list = mutableListOf<ServiceStatus>()
         val endpoints = listOf(
-            Triple("FastAPI Core API", "${SentinelaConfig.BASE_URL}/api/cameras", "REST API e Telemetria"),
+            Triple("FastAPI Core API", "${SentinelaConfig.BASE_URL}/api/health", "REST API e Telemetria"),
             Triple("Frigate NVR 0.17", "${SentinelaConfig.BASE_URL}/frigate/api/version", "Detecção IA e Gravação NVMe"),
             Triple("go2rtc Streaming", "${SentinelaConfig.BASE_URL}/go2rtc/api/streams", "Hub MSE e WebRTC"),
-            Triple("Mosquitto MQTT", "${SentinelaConfig.BASE_URL}/api/telemetry", "Barramento de Eventos e Triggers")
+            Triple("Mosquitto MQTT", "${SentinelaConfig.BASE_URL}/api/telemetry/", "Barramento de Eventos e Triggers")
         )
 
         for ((name, urlStr, detail) in endpoints) {
@@ -902,13 +902,15 @@ object SentinelaRepository {
             var ok = false
             try {
                 val conn = openConnection(URL(urlStr)).apply {
-                    connectTimeout = 2500
-                    readTimeout = 2500
+                    connectTimeout = 3500
+                    readTimeout = 3500
+                    instanceFollowRedirects = true
                     requestMethod = "GET"
+                    setRequestProperty("User-Agent", "SentinelaPro/Android")
                 }
                 val code = conn.responseCode
                 conn.disconnect()
-                ok = code in 200..299
+                ok = code in 200..399
             } catch (e: Exception) {
                 ok = false
             }

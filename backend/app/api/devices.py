@@ -86,6 +86,7 @@ class TestPiPRequest(BaseModel):
 class TestSingleDeviceRequest(BaseModel):
     camera_name: str = "camera_principal"
 
+@router.get("")
 @router.get("/")
 async def list_devices(db: AsyncSession = Depends(get_db)):
     stmt = select(PairedDevice)

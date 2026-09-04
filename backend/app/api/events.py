@@ -27,6 +27,7 @@ class EventBatchDeleteRequest(BaseModel):
     force_retained: bool = False
 
 
+@router.get("")
 @router.get("/")
 async def list_events(
     camera: Optional[str] = None,

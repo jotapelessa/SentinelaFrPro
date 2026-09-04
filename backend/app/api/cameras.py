@@ -25,6 +25,7 @@ class CameraCreate(BaseModel):
     detect_fps: Optional[int] = 5
     motion_threshold: Optional[int] = 25
 
+@router.get("")
 @router.get("/")
 async def list_cameras(db: AsyncSession = Depends(get_db)):
     """
