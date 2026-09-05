@@ -48,6 +48,7 @@ ONVIF_GET_DEVICE_INFO_SOAP = """<?xml version="1.0" encoding="utf-8"?>
 # Priority ports for modern IP cameras (including AITEK SEG6050BP, Xiongmai, Pineng, Intelbras, Dahua, Hikvision)
 PRIMARY_CCTV_PORTS = {
     554: "RTSP Padrão (H.264 / H.265)",
+    1935: "RTSP Alternativo (Porta 1935)",
     8899: "ONVIF da AITEK / Xiongmai / Pineng (Porta SOAP)",
     34567: "Xiongmai / XMeye / Pineng Sx-959 Nativo",
     80: "HTTP / ONVIF Web Padrão",
@@ -135,14 +136,14 @@ class ScannerService:
         except Exception:
             return False
 
-    async def verify_rtsp_stream(self, ip: str, port: int = 554, timeout: float = 0.8) -> Dict[str, Any]:
+    async def verify_rtsp_stream(self, ip: str, port: int = 554, timeout: float = 0.8, path: str = "/live/ch0") -> Dict[str, Any]:
         """
         Sends authentic RTSP OPTIONS / DESCRIBE probes to verify real video stream capability
         and test default credentials (including AITEK SEG6050BP defaults).
         """
         result = {
             "verified": False,
-            "best_url_main": f"rtsp://admin:admin@{ip}:{port}/live/ch0",
+            "best_url_main": f"rtsp://admin:admin@{ip}:{port}{path}",
             "best_url_sub": f"rtsp://admin:admin@{ip}:{port}/live/ch1",
             "codec": "H.265 / H.264",
             "credentials_tested": "admin:admin"
@@ -162,7 +163,7 @@ class ScannerService:
                 timeout=timeout
             )
             # Test OPTIONS
-            req = f"OPTIONS rtsp://{ip}:{port}/live/ch0 RTSP/1.0\r\nCSeq: 1\r\nUser-Agent: SentinelaFrigatePro/1.0\r\n\r\n"
+            req = f"OPTIONS rtsp://{ip}:{port}{path} RTSP/1.0\r\nCSeq: 1\r\nUser-Agent: SentinelaFrigatePro/1.0\r\n\r\n"
             writer.write(req.encode())
             await writer.drain()
             data = await asyncio.wait_for(reader.read(512), timeout=timeout)
@@ -420,9 +421,18 @@ class ScannerService:
                     # Verify RTSP stream capability
                     is_cctv = False
                     rtsp_info = {"verified": False, "best_url_main": f"rtsp://admin:admin@{ip}:554/live/ch0", "best_url_sub": f"rtsp://admin:admin@{ip}:554/live/ch1", "codec": "H.265 / H.264"}
-                    if 554 in port_nums or 8554 in port_nums:
-                        rtsp_p = 554 if 554 in port_nums else 8554
-                        rtsp_info = await self.verify_rtsp_stream(ip, port=rtsp_p, timeout=0.6)
+                    rtsp_port = None
+                    rtsp_path = "/live/ch0"
+                    if 554 in port_nums:
+                        rtsp_port = 554
+                    elif 8554 in port_nums:
+                        rtsp_port = 8554
+                    elif 1935 in port_nums:
+                        rtsp_port = 1935
+                        rtsp_path = ""
+
+                    if rtsp_port:
+                        rtsp_info = await self.verify_rtsp_stream(ip, port=rtsp_port, timeout=0.6, path=rtsp_path)
                         is_cctv = True
                     elif 8899 in port_nums or 34567 in port_nums or 37777 in port_nums:
                         is_cctv = True
@@ -438,6 +448,11 @@ class ScannerService:
 
                     # Classify camera profile
                     profile = self.identify_camera_profile(ip, port_nums, onvif_info)
+
+                    # Cameras exposing only port 1935 (non-standard RTSP) use a pathless URL
+                    if 1935 in port_nums and 554 not in port_nums:
+                        profile["rtsp_main"] = f"rtsp://admin:admin@{ip}:1935"
+                        profile["rtsp_sub"] = None
 
                     # Only register if it has true CCTV ports
                     if is_cctv or onvif_info or 8899 in port_nums or 34567 in port_nums:

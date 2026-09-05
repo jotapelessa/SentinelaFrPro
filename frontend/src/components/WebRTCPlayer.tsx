@@ -205,6 +205,7 @@ interface WebRTCPlayerProps {
   camera: Camera;
   isSpotlight?: boolean;
   isActivePlayer?: boolean;
+  small?: boolean;
   onActivate?: () => void;
   onToggleSpotlight?: () => void;
   onCameraUpdated?: () => void;
@@ -214,6 +215,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   camera,
   isSpotlight = false,
   isActivePlayer = true,
+  small = false,
   onActivate,
   onToggleSpotlight,
   onCameraUpdated
@@ -344,7 +346,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     <>
       <div
         className={`relative group rounded-2xl overflow-hidden glass-panel transition-colors bg-obsidian-950 select-none border border-slate-800 ${
-          isSpotlight ? "h-[65vh] min-h-[420px]" : "h-72 sm:h-80"
+          isSpotlight ? "h-[65vh] min-h-[420px]" : small ? "h-40 sm:h-48" : "h-72 sm:h-80"
         }`}
       >
         {/* Isolated Zustand Subscription Overlays (Prevents iframe re-renders) */}
@@ -500,5 +502,6 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 export const WebRTCPlayer = React.memo(WebRTCPlayerBase, (prev, next) =>
   prev.camera === next.camera &&
   prev.isSpotlight === next.isSpotlight &&
-  prev.isActivePlayer === next.isActivePlayer
+  prev.isActivePlayer === next.isActivePlayer &&
+  prev.small === next.small
 );

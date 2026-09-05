@@ -1253,8 +1253,8 @@ async def sync_camera_to_frigate(cam: Camera):
             },
             "detect": {
                 "enabled": bool(cam.enabled),
-                "width": 1280,
-                "height": 720,
+                "width": 640,
+                "height": 360,
                 "fps": cam.detect_fps or 5
             }
         }
@@ -1266,7 +1266,7 @@ async def sync_camera_to_frigate(cam: Camera):
         cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
 
         if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
-            cam_block["detect"] = {"width": 1280, "height": 720, "fps": 5}
+            cam_block["detect"] = {"width": 640, "height": 360, "fps": 5}
         cam_block["detect"]["enabled"] = bool(cam.enabled)
 
         # Sync tracked objects
@@ -1283,7 +1283,7 @@ async def sync_camera_to_frigate(cam: Camera):
         # Sync detect fps & motion sensitivity
         if getattr(cam, "detect_fps", None) is not None:
             if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
-                cam_block["detect"] = {"width": 1280, "height": 720, "fps": 5}
+                cam_block["detect"] = {"width": 640, "height": 360, "fps": 5}
             cam_block["detect"]["fps"] = int(cam.detect_fps)
 
         if getattr(cam, "motion_threshold", None) is not None:

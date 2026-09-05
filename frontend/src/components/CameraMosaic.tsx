@@ -122,6 +122,12 @@ export const CameraMosaic: React.FC = () => {
     }
   }, [cameras, activeStreamingCameraId]);
 
+  const activeCamKey = activeStreamingCameraId;
+  const activeCamera = cameras.find(c => (c.id || c.name) === activeCamKey) ?? cameras[0];
+  const otherCameras = activeCamera
+    ? cameras.filter(c => (c.id || c.name) !== (activeCamera.id || activeCamera.name))
+    : [];
+
   return (
     <section className="w-full space-y-4">
       {/* Mosaic Header Bar & Live Counters HUD */}
@@ -254,26 +260,88 @@ export const CameraMosaic: React.FC = () => {
           </div>
         ) : (
           <div className="space-y-4">
-            <div className={`grid gap-4 ${cameras.length === 1 ? "grid-cols-1" : "grid-cols-1 md:grid-cols-2"}`}>
-              {cameras.map((camera) => {
-                const camId = camera.id || camera.name;
-                const isCurrentActive = activeStreamingCameraId === camId || cameras.length === 1;
-                return (
-                  <WebRTCPlayer
-                    key={camId}
-                    camera={camera}
-                    isSpotlight={cameras.length === 1}
-                    isActivePlayer={isCurrentActive}
-                    onActivate={() => setActiveStreamingCameraId(camId)}
-                    onToggleSpotlight={() => {
-                      setActiveStreamingCameraId(camId);
-                      setSpotlightCamera(camera);
-                    }}
-                    onCameraUpdated={fetchCameras}
-                  />
-                );
-              })}
-            </div>
+            {/* Camera switcher bar (single live stream) */}
+            {cameras.length > 1 && (
+              <div className="flex items-center gap-2 flex-wrap">
+                {cameras.map((camera) => {
+                  const camId = camera.id || camera.name;
+                  const isActive = activeStreamingCameraId === camId;
+                  return (
+                    <button
+                      key={camId}
+                      type="button"
+                      onClick={() => setActiveStreamingCameraId(camId)}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${
+                        isActive
+                          ? "bg-cyan-500 text-obsidian-950 border-cyan-400 shadow-md shadow-cyan-500/20"
+                          : "bg-slate-800 text-slate-300 border-slate-700 hover:border-cyan-500/40 hover:text-white"
+                      }`}
+                    >
+                      {camera.friendly_name || camera.name}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+
+            {cameras.length === 1 ? (
+              <div className="grid grid-cols-1 gap-4">
+                <WebRTCPlayer
+                  camera={cameras[0]}
+                  isActivePlayer={true}
+                  onToggleSpotlight={() => setSpotlightCamera(cameras[0])}
+                  onCameraUpdated={fetchCameras}
+                />
+              </div>
+            ) : cameras.length === 2 ? (
+              <div className="grid grid-cols-1 gap-4">
+                {cameras.map((camera) => {
+                  const camId = camera.id || camera.name;
+                  const isCurrentActive = activeStreamingCameraId === camId;
+                  return (
+                    <WebRTCPlayer
+                      key={camId}
+                      camera={camera}
+                      isActivePlayer={isCurrentActive}
+                      onActivate={() => setActiveStreamingCameraId(camId)}
+                      onToggleSpotlight={() => {
+                        setActiveStreamingCameraId(camId);
+                        setSpotlightCamera(camera);
+                      }}
+                      onCameraUpdated={fetchCameras}
+                    />
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <WebRTCPlayer
+                  camera={activeCamera}
+                  isActivePlayer={true}
+                  onToggleSpotlight={() => setSpotlightCamera(activeCamera)}
+                  onCameraUpdated={fetchCameras}
+                />
+                <div className="grid grid-cols-2 gap-4">
+                  {otherCameras.map((camera) => {
+                    const camId = camera.id || camera.name;
+                    return (
+                      <WebRTCPlayer
+                        key={camId}
+                        camera={camera}
+                        small
+                        isActivePlayer={false}
+                        onActivate={() => setActiveStreamingCameraId(camId)}
+                        onToggleSpotlight={() => {
+                          setActiveStreamingCameraId(camId);
+                          setSpotlightCamera(camera);
+                        }}
+                        onCameraUpdated={fetchCameras}
+                      />
+                    );
+                  })}
+                </div>
+              </div>
+            )}
 
             <TimelinePlayback
               camera={cameras[0]}

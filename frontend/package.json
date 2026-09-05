@@ -1,6 +1,6 @@
 {
   "name": "sentinela-frontend",
-  "version": "001.000.000.081",
+  "version": "001.000.000.082",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",
