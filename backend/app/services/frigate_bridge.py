@@ -255,6 +255,22 @@ class FrigateBridgeService:
             pass
         return info
 
+    @staticmethod
+    def _has_audio_stream(path: str) -> bool:
+        """Checks whether the file contains an audio stream."""
+        try:
+            cmd = [
+                "ffprobe", "-v", "error",
+                "-select_streams", "a:0",
+                "-show_entries", "stream=codec_type",
+                "-of", "csv=p=0",
+                path
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=4, text=True)
+            return res.returncode == 0 and "audio" in res.stdout.lower()
+        except Exception:
+            return False
+
     async def transcode_to_30fps(self, video_bytes: bytes, target_fps: int = 25) -> Optional[bytes]:
         """Robust H.264/AAC constant-frame-rate preparation for Telegram & mobile playback.
 
@@ -277,23 +293,31 @@ class FrigateBridgeService:
             info = self._probe_video_info(in_file)
             avg_fps = info["fps"]
 
-            # Determine the clean constant frame rate from the real source rate.
-            out_fps = target_fps if (target_fps and 5 <= target_fps <= 30) else 25
+            # Determine a clean constant frame rate from the real source rate.
+            out_fps = target_fps if (target_fps and 5 <= target_fps <= 30) else 15
             if avg_fps and 10 <= avg_fps <= 30:
                 out_fps = int(round(avg_fps))
             elif avg_fps and 5 <= avg_fps < 10:
                 out_fps = 15
             elif avg_fps and 30 < avg_fps <= 60:
                 out_fps = 30
+            elif avg_fps and avg_fps > 60:
+                out_fps = 15  # broken timestamps (e.g. 90000/1) -> safe default
 
-            vf = f"fps={out_fps}:round=near"
+            # Regenerate PTS from the frame index, completely ignoring broken source timestamps.
+            vf = f"setpts=N/({out_fps}*TB)"
+            has_audio = self._has_audio_stream(in_file)
+            audio_args = ["-af", "asetpts=N/SR/TB", "-c:a", "aac", "-b:a", "128k"] if has_audio else ["-an"]
 
-            # 1. Primary: Intel QSV hardware transcode (fast, low CPU) at native CFR
+            # 1. Primary: Intel QSV hardware transcode at a clean constant frame rate
             cmd_qsv = [
                 "ffmpeg", "-y",
+                "-fflags", "+genpts+discardcorrupt",
                 "-hwaccel", "qsv",
                 "-i", in_file,
                 "-vf", vf,
+                *audio_args,
+                "-r", str(out_fps),
                 "-c:v", "h264_qsv",
                 "-profile:v", "main",
                 "-g", str(out_fps * 2),
@@ -301,8 +325,7 @@ class FrigateBridgeService:
                 "-maxrate", "2500k",
                 "-bufsize", "5000k",
                 "-movflags", "+faststart",
-                "-c:a", "aac",
-                "-b:a", "128k",
+                "-shortest",
                 out_file
             ]
             proc = subprocess.run(cmd_qsv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
@@ -316,8 +339,10 @@ class FrigateBridgeService:
             # 2. Software fallback: libx264 ultrafast, universally compatible
             cmd_x264 = [
                 "ffmpeg", "-y",
+                "-fflags", "+genpts+discardcorrupt",
                 "-i", in_file,
                 "-vf", vf,
+                *audio_args,
                 "-r", str(out_fps),
                 "-c:v", "libx264",
                 "-preset", "ultrafast",
@@ -328,8 +353,7 @@ class FrigateBridgeService:
                 "-maxrate", "2500k",
                 "-bufsize", "5000k",
                 "-movflags", "+faststart",
-                "-c:a", "aac",
-                "-b:a", "128k",
+                "-shortest",
                 out_file
             ]
             proc_x264 = subprocess.run(cmd_x264, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=90)

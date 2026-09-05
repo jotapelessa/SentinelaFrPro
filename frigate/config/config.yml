@@ -4,8 +4,6 @@ mqtt:
   port: 1883
   topic_prefix: frigate
   client_id: frigate_nvr
-
-# Detailed Structured Logging
 logger:
   default: info
   logs:
@@ -13,15 +11,10 @@ logger:
     frigate.detectors: info
     frigate.events: info
     frigate.video: info
-
-# Intel Jasper Lake N5105 Hardware Acceleration (QSV)
 ffmpeg:
   hwaccel_args: preset-intel-qsv-h264
   output_args:
     record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a copy
-
-
-# Global Model Config (ensures detector frame resizing matches OpenVINO 300x300 input)
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
   width: 300
@@ -29,41 +22,34 @@ model:
   input_tensor: nhwc
   input_pixel_format: bgr
   labelmap_path: /openvino-model/coco_91cl_bkgr.txt
-
-# Detectors: Intel OpenVINO Hardware Acceleration (pinned to iGPU so inference never competes with CPU decode/encode of the streaming pipeline)
 detectors:
   ov:
     type: openvino
     device: GPU
+    model_path: /openvino-model/ssdlite_mobilenet_v2.xml
     model:
-      path: /openvino-model/ssdlite_mobilenet_v2.xml
       width: 300
       height: 300
       input_tensor: nhwc
       input_pixel_format: bgr
-      labelmap_path: /openvino-model/coco_91cl_bkgr.txt
-
-
-# Motion Detection Fine-Tuning (High Sensitivity, Natural Lighting)
+      path: /openvino-model/ssdlite_mobilenet_v2.xml
 motion:
   threshold: 25
   contour_area: 20
   improve_contrast: true
-
-# Global Object Tracking Defaults & Detection Sensitivity
 objects:
   track:
-    - person
-    - car
-    - motorcycle
-    - bus
-    - dog
-    - cat
-    - bicycle
+  - person
+  - car
+  - motorcycle
+  - bus
+  - dog
+  - cat
+  - bicycle
   filters:
     person:
-      min_score: 0.50
-      threshold: 0.60
+      min_score: 0.5
+      threshold: 0.6
       min_area: 400
     car:
       min_score: 0.55
@@ -89,39 +75,36 @@ objects:
       min_score: 0.55
       threshold: 0.65
       min_area: 400
-
-# Watermarked High-Res Snapshots
 snapshots:
   enabled: true
   clean_copy: true
   timestamp: true
   bounding_box: true
-
-# go2rtc WebRTC Hub
 go2rtc:
   streams:
     camera_principal:
-      - ffmpeg:rtsp://192.168.1.6:8554/stream#video=copy#audio=copy
+    - rtsp://192.168.1.6:8554/stream
+    camera_secundaria:
+    - rtsp://192.168.1.136:8554/stream
   webrtc:
     candidates:
-      - 100.93.129.91:8555
-      - 192.168.1.247:8555
-      - stun:8555
-      - stun:stun.l.google.com:19302
-
-
-
-# Câmeras Ativas
+    - 100.93.129.91:8555
+    - 192.168.1.247:8555
+    - stun:8555
+    - stun:stun.l.google.com:19302
 cameras:
   camera_principal:
     enabled: true
     ffmpeg:
       inputs:
-        - path: rtsp://127.0.0.1:8554/camera_principal
-          input_args: preset-rtsp-restream
-          roles:
-            - record
-            - detect
+      - path: rtsp://127.0.0.1:8554/camera_principal
+        input_args: -rtsp_transport tcp -re -fflags +genpts+discardcorrupt -use_wallclock_as_timestamps 1
+        roles:
+        - record
+      - path: rtsp://127.0.0.1:8554/camera_principal
+        input_args: preset-rtsp-restream
+        roles:
+        - detect
     detect:
       enabled: true
       width: 640
@@ -152,47 +135,115 @@ cameras:
       zona_monitoramento:
         coordinates: 5,360,635,360,635,5,5,5
         objects:
-          - person
-          - car
-          - motorcycle
-          - bus
-          - dog
-          - cat
-          - bicycle
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
       zona_entrada:
         coordinates: 100,360,540,360,540,125,100,125
         objects:
-          - person
-          - car
-          - motorcycle
-          - bus
-          - dog
-          - cat
-          - bicycle
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
     review:
       alerts:
         labels:
-          - person
-          - car
-          - motorcycle
-          - bus
-          - dog
-          - cat
-          - bicycle
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
         required_zones: []
       detections:
         labels:
-          - person
-          - car
-          - motorcycle
-          - bus
-          - dog
-          - cat
-          - bicycle
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
         required_zones: []
-
-
-
-
-
-
+    objects:
+      track:
+      - motorcycle
+      - cat
+      - car
+      - bus
+      - person
+      - bicycle
+      - dog
+      filters:
+        person:
+          threshold: 0.8
+    motion:
+      threshold: 30
+  camera_secundaria:
+    enabled: true
+    ffmpeg:
+      inputs:
+      - path: rtsp://127.0.0.1:8554/camera_secundaria
+        input_args: preset-rtsp-restream
+        roles:
+        - record
+      - path: rtsp://127.0.0.1:8554/camera_secundaria
+        input_args: preset-rtsp-restream
+        roles:
+        - detect
+    detect:
+      enabled: true
+      width: 640
+      height: 360
+      fps: 5
+    record:
+      enabled: true
+      continuous:
+        days: 0
+      motion:
+        days: 3
+      alerts:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+      detections:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+    snapshots:
+      enabled: true
+      bounding_box: true
+    review:
+      alerts:
+        labels:
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
+        required_zones: []
+      detections:
+        labels:
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
+        required_zones: []
+version: 0.17-0
