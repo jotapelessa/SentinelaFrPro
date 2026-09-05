@@ -498,6 +498,21 @@ def _dir_size_bytes(path: str) -> int:
     return total
 
 
+_DIR_SIZE_CACHE: Dict[str, tuple] = {}
+
+
+def _cached_dir_size(path: str, ttl_seconds: float = 60.0) -> int:
+    """Returns a directory tree size in bytes, cached for ttl_seconds to avoid heavy I/O on polling."""
+    import time
+    now = time.time()
+    cached = _DIR_SIZE_CACHE.get(path)
+    if cached and (now - cached[0]) < ttl_seconds:
+        return cached[1]
+    size = _dir_size_bytes(path)
+    _DIR_SIZE_CACHE[path] = (now, size)
+    return size
+
+
 def _purge_recordings(media_base: str, cutoff_ts: float) -> int:
     """Deletes Frigate recording segment folders older than cutoff under recordings/{YYYY-MM-DD}/{HH}."""
     import os
@@ -555,8 +570,8 @@ def _purge_clips(media_base: str, cutoff_ts: float) -> int:
 async def get_storage_status():
     """Returns real-time Ubuntu Server NVMe SSD storage status, breakdown and partition information."""
     import os
+    import asyncio
     import psutil
-    import httpx
 
     disk_path = "/"
     if os.path.exists("/media/frigate"):
@@ -571,20 +586,21 @@ async def get_storage_status():
     except Exception:
         total_gb, used_gb, free_gb, percent = 468.0, 110.0, 334.0, 24.8
 
-    # Query Frigate storage API if available for exact recordings & clips stats
+    # Measure the ACTUAL sizes of recordings and clips/snapshots subdirectories
+    # (Frigate 0.17 /api/stats reports the whole mount usage under both keys,
+    #  which made "recordings" and "capturas" show the same full-disk number).
+    media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
     recordings_gb = 0.0
     clips_mb = 0.0
     try:
-        async with httpx.AsyncClient(timeout=2.0) as client:
-            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/stats")
-            if resp.status_code == 200:
-                storage_data = resp.json().get("service", {}).get("storage", {})
-                rec_info = storage_data.get("/media/frigate/recordings", {})
-                if rec_info:
-                    recordings_gb = round(rec_info.get("used", 0) / 1024, 1)
-                clip_info = storage_data.get("/media/frigate/clips", {})
-                if clip_info:
-                    clips_mb = round(clip_info.get("used", 0), 1)
+        rec_root = os.path.join(media_base, "recordings")
+        clips_root = os.path.join(media_base, "clips")
+        rec_bytes, clips_bytes = await asyncio.gather(
+            asyncio.to_thread(_cached_dir_size, rec_root),
+            asyncio.to_thread(_cached_dir_size, clips_root)
+        )
+        recordings_gb = round(rec_bytes / (1024**3), 1)
+        clips_mb = round(clips_bytes / (1024**2), 1)
     except Exception:
         pass
 
@@ -636,6 +652,10 @@ async def clean_server_storage(
             freed_bytes += await asyncio.to_thread(_purge_clips, media_base, cutoff_ts)
     except Exception as e:
         logger.warning(f"Filesystem purge failed: {e}")
+
+    # Invalidate the directory-size cache so /storage/status reflects freed space immediately.
+    _DIR_SIZE_CACHE.pop(os.path.join(media_base, "recordings"), None)
+    _DIR_SIZE_CACHE.pop(os.path.join(media_base, "clips"), None)
 
     # ---- 2. Frigate API event deletion (metadata + event snapshot/clip) ----
     try:
