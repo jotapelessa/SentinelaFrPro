@@ -23,6 +23,8 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [isZoneModalOpen, setIsZoneModalOpen] = useState(false);
   const [testingRtsp, setTestingRtsp] = useState(false);
   const [rtspTestResult, setRtspTestResult] = useState<{ success: boolean; message: string; suggested_port?: number; suggested_url?: string } | null>(null);
+  const [loadingStreamInfo, setLoadingStreamInfo] = useState(false);
+  const [streamInfo, setStreamInfo] = useState<{ main?: { codec: string; width: number; height: number; fps: number } | null; sub?: { codec: string; width: number; height: number; fps: number } | null } | null>(null);
 
   // Diagnostics State
   const [loadingDiag, setLoadingDiag] = useState(false);
@@ -110,6 +112,24 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
     if (rtspTestResult?.suggested_url) {
       setRtspMain(rtspTestResult.suggested_url);
       setRtspTestResult(null);
+    }
+  };
+
+  const fetchStreamInfo = async () => {
+    setLoadingStreamInfo(true);
+    setStreamInfo(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const camId = camera.id || camera.name || "camera_principal";
+      const res = await fetch(`${apiUrl}/cameras/${camId}/stream-info`);
+      if (res.ok) {
+        const data = await res.json();
+        setStreamInfo({ main: data.main || null, sub: data.sub || null });
+      }
+    } catch (err) {
+      console.error("Error probing stream resolution:", err);
+    } finally {
+      setLoadingStreamInfo(false);
     }
   };
 
@@ -386,6 +406,51 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   placeholder="Ex: rtsp://192.168.1.6:554/substream"
                   className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono focus:outline-none focus:border-cyan-500"
                 />
+              </div>
+
+              {/* Resolução & Qualidade do Stream */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <label className="text-slate-300 font-bold block">Resolução & Qualidade do Stream:</label>
+                    <span className="text-[10px] text-slate-500">Detecta a resolução real que a câmera está transmitindo.</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={fetchStreamInfo}
+                    disabled={loadingStreamInfo}
+                    className="px-2.5 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500 hover:text-obsidian-950 font-bold text-[10px] transition-all flex items-center gap-1.5 shrink-0 disabled:opacity-50"
+                  >
+                    {loadingStreamInfo ? <RefreshCw className="w-3 h-3 animate-spin" /> : <Search className="w-3 h-3" />}
+                    <span>{loadingStreamInfo ? "Detectando..." : "Detectar Resolução"}</span>
+                  </button>
+                </div>
+
+                {streamInfo && (
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-[11px] bg-slate-900 px-2.5 py-1.5 rounded border border-slate-800 gap-2">
+                      <span className="text-slate-400 font-semibold shrink-0">Fluxo Principal:</span>
+                      {streamInfo.main ? (
+                        <span className="font-mono text-cyan-300 truncate">{streamInfo.main.width}×{streamInfo.main.height} · {streamInfo.main.fps}fps · {streamInfo.main.codec.toUpperCase()}</span>
+                      ) : (
+                        <span className="text-rose-400 font-semibold">Não detectado</span>
+                      )}
+                    </div>
+                    <div className="flex items-center justify-between text-[11px] bg-slate-900 px-2.5 py-1.5 rounded border border-slate-800 gap-2">
+                      <span className="text-slate-400 font-semibold shrink-0">Substream:</span>
+                      {streamInfo.sub ? (
+                        <span className="font-mono text-emerald-300 truncate">{streamInfo.sub.width}×{streamInfo.sub.height} · {streamInfo.sub.fps}fps · {streamInfo.sub.codec.toUpperCase()}</span>
+                      ) : (
+                        <span className="text-slate-500">{rtspSub ? "Não detectado" : "Não configurado"}</span>
+                      )}
+                    </div>
+                    {streamInfo.main && streamInfo.main.height < 720 && (
+                      <p className="text-[10px] text-amber-300 bg-amber-500/10 border border-amber-500/20 rounded px-2 py-1">
+                        ⚠️ Fonte em {streamInfo.main.height}p. Para 1080p, informe a URL do stream principal de alta resolução da câmera no campo acima e salve.
+                      </p>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div className="grid grid-cols-2 gap-3">

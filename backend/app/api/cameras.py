@@ -33,6 +33,51 @@ def infer_substream_url(main_url: str) -> Optional[str]:
         return url.replace("/h264Preview_01_main", "/h264Preview_01_sub")
     return None
 
+
+def _probe_rtsp_stream_info(rtsp_url: str, timeout: int = 8) -> Optional[Dict[str, Any]]:
+    """Probes an RTSP stream via ffprobe and returns codec, resolution and frame rate."""
+    import subprocess
+    import json
+    if not rtsp_url or not rtsp_url.strip().startswith("rtsp://"):
+        return None
+    try:
+        cmd = [
+            "ffprobe", "-v", "error",
+            "-rtsp_transport", "tcp",
+            "-analyzeduration", "3000000",
+            "-probesize", "3000000",
+            "-select_streams", "v:0",
+            "-show_entries", "stream=codec_name,width,height,avg_frame_rate",
+            "-of", "json",
+            rtsp_url.strip()
+        ]
+        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout, text=True)
+        if res.returncode != 0:
+            return None
+        data = json.loads(res.stdout or "{}")
+        streams = data.get("streams") or []
+        if not streams:
+            return None
+        s = streams[0]
+        fps = 0.0
+        fps_raw = s.get("avg_frame_rate") or ""
+        if "/" in fps_raw:
+            num, _, den = fps_raw.partition("/")
+            try:
+                if int(den) > 0 and int(num) > 0:
+                    fps = round(int(num) / int(den), 1)
+            except (ValueError, ZeroDivisionError):
+                pass
+        return {
+            "codec": s.get("codec_name", "unknown"),
+            "width": int(s.get("width") or 0),
+            "height": int(s.get("height") or 0),
+            "fps": fps
+        }
+    except Exception:
+        return None
+
+
 class CameraCreate(BaseModel):
     name: str
     friendly_name: Optional[str] = None
@@ -659,6 +704,49 @@ async def get_camera_diagnostics(camera_id: str, db: AsyncSession = Depends(get_
         },
         "logs": filtered_logs[-50:],
         "audit_history": audit_history
+    }
+
+@router.get("/{camera_id}/stream-info")
+async def get_camera_stream_info(camera_id: str, db: AsyncSession = Depends(get_db)):
+    """Probes the camera's main and sub RTSP streams and returns their codec, resolution and frame rate."""
+    import asyncio
+    import time
+
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+
+    if not cam:
+        raise HTTPException(status_code=404, detail="Camera not found")
+
+    main_url = cam.rtsp_main or ""
+    sub_url = cam.rtsp_sub or ""
+
+    # Cache probe results for 30s to avoid re-probing on every click
+    _STREAM_INFO_CACHE: Dict[str, tuple] = getattr(get_camera_stream_info, "_cache", {})
+    cache_key = f"{cam.name}:{main_url}:{sub_url}"
+    cached = _STREAM_INFO_CACHE.get(cache_key)
+    if cached and (time.time() - cached[0]) < 30.0:
+        main_info, sub_info = cached[1], cached[2]
+    else:
+        main_info, sub_info = await asyncio.gather(
+            asyncio.to_thread(_probe_rtsp_stream_info, main_url),
+            asyncio.to_thread(_probe_rtsp_stream_info, sub_url)
+        )
+        _STREAM_INFO_CACHE[cache_key] = (time.time(), main_info, sub_info)
+        get_camera_stream_info._cache = _STREAM_INFO_CACHE
+
+    return {
+        "status": "success",
+        "camera": cam.name,
+        "main": main_info,
+        "sub": sub_info
     }
 
 @router.post("/{camera_id}/toggle-fallback")
