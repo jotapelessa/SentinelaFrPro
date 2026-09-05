@@ -473,16 +473,16 @@ class FrigateBridgeService:
                 logger.info(f"🎥 FrigateBridge: Capturando {duration_s}s de vídeo a 30 FPS via RTSP ({url})...")
                 cmd = [
                     "ffmpeg", "-y",
-                    "-hwaccel", "qsv",
                     "-rtsp_transport", "tcp",
                     "-timeout", "4000000",
                     "-i", url,
                     "-t", str(duration_s),
                     "-r", "30",
-                    "-vf", f"scale={scale_w}:{scale_h}:force_original_aspect_ratio=decrease,pad={scale_w}:{scale_h}:(ow-iw)/2:(oh-ih)/2,format=nv12",
-                    "-c:v", "h264_qsv",
+                    "-vf", f"scale={scale_w}:{scale_h}:force_original_aspect_ratio=decrease,pad={scale_w}:{scale_h}:(ow-iw)/2:(oh-ih)/2",
+                    "-c:v", "libx264",
                     "-preset", preset,
-                    "-b:v", "2500k",
+                    "-crf", str(crf),
+                    "-pix_fmt", "yuv420p",
                     "-movflags", "+faststart",
                     temp_file
                 ]
@@ -521,14 +521,13 @@ class FrigateBridgeService:
             logger.info("🎥 FrigateBridge: Gerando clipe de vídeo sintético com timestamp...")
             cmd = [
                 "ffmpeg", "-y",
-                "-hwaccel", "qsv",
                 "-f", "lavfi",
                 "-i", f"testsrc=size={scale_w}x{scale_h}:rate=25",
                 "-t", str(duration_s),
-                "-vf", "format=nv12",
-                "-c:v", "h264_qsv",
+                "-c:v", "libx264",
                 "-preset", "veryfast",
-                "-b:v", "2500k",
+                "-crf", "23",
+                "-pix_fmt", "yuv420p",
                 "-movflags", "+faststart",
                 temp_file
             ]
