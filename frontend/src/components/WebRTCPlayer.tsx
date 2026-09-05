@@ -190,14 +190,17 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   return (
     <>
       <div
-        className={`relative group rounded-2xl overflow-hidden glass-panel transition-all bg-obsidian-950 select-none ${
-          activeDet
-            ? "border-2 border-rose-500 ring-4 ring-rose-500/30 shadow-2xl shadow-rose-500/25"
-            : isMotion
-            ? "border border-amber-500/80 ring-2 ring-amber-500/20"
-            : "border border-slate-800 hover:border-cyan-500/50"
-        } ${isSpotlight ? "h-[65vh] min-h-[420px]" : "h-72 sm:h-80"}`}
+        className={`relative group rounded-2xl overflow-hidden glass-panel transition-colors bg-obsidian-950 select-none border border-slate-800 ${
+          isSpotlight ? "h-[65vh] min-h-[420px]" : "h-72 sm:h-80"
+        }`}
       >
+        {/* Isolated GPU-accelerated Detection & Motion Border Layer (Eliminates video reflows/stuttering) */}
+        {activeDet ? (
+          <div className="absolute inset-0 border-2 border-rose-500 rounded-2xl pointer-events-none z-30 shadow-2xl shadow-rose-500/25 animate-pulse" />
+        ) : isMotion ? (
+          <div className="absolute inset-0 border border-amber-500/80 rounded-2xl pointer-events-none z-30 shadow-lg shadow-amber-500/20" />
+        ) : null}
+
         {/* Stream Viewer - Enforce STRICT SINGLE PLAYER POLICY */}
         {isPaused ? (
           <div className="w-full h-full relative bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 flex flex-col items-center justify-center p-6 text-center select-none z-10">
@@ -379,25 +382,75 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
           </div>
         </div>
 
-        {/* Floating Action Controls on Hover */}
-        <div className="absolute bottom-3 right-3 flex items-center gap-2 opacity-90 group-hover:opacity-100 transition-opacity z-20">
-          <button
-            onClick={reloadStream}
-            className="p-2 rounded-lg bg-black/80 hover:bg-slate-800 text-slate-300 border border-slate-700 transition-all text-xs"
-            title="Recarregar Transmissão"
-          >
-            <RefreshCw className="w-4 h-4" />
-          </button>
+        {/* Floating Action Controls on Hover: Stream Mode Selector (Eco 10 FPS, WebRTC, MSE 24 FPS) & Utils */}
+        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none z-20">
+          {/* Stream Mode Switcher (Eco 10 FPS, WebRTC, MSE 24 FPS) - Mutual Exclusivity Enforced */}
+          {!isPaused && isActivePlayer && (
+            <div className="flex items-center gap-1 bg-black/85 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 shadow-2xl pointer-events-auto">
+              <button
+                type="button"
+                onClick={() => setStreamMode("monitor")}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
+                  streamMode === "monitor"
+                    ? "bg-emerald-500 text-obsidian-950 shadow-md shadow-emerald-500/30"
+                    : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800/80"
+                }`}
+                title="Modo Eco 10 FPS: Máxima economia de CPU e largura de banda"
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "monitor" ? "bg-obsidian-950" : "bg-emerald-400"}`} />
+                <span>Eco 10 FPS</span>
+              </button>
 
-          {onToggleSpotlight && (
-            <button
-              onClick={onToggleSpotlight}
-              className="p-2 rounded-lg bg-black/80 hover:bg-cyan-500 hover:text-obsidian-950 text-white border border-slate-700 transition-all"
-              title={isSpotlight ? "Modo Mosaico" : "Focar em Tela Cheia (Spotlight)"}
-            >
-              {isSpotlight ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-            </button>
+              <button
+                type="button"
+                onClick={() => setStreamMode("webrtc")}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
+                  streamMode === "webrtc"
+                    ? "bg-cyan-500 text-obsidian-950 shadow-md shadow-cyan-500/30"
+                    : "text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80"
+                }`}
+                title="Modo WebRTC: Ultra-baixa latência (<50ms)"
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "webrtc" ? "bg-obsidian-950" : "bg-cyan-400"}`} />
+                <span>WebRTC</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setStreamMode("mse")}
+                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
+                  streamMode === "mse"
+                    ? "bg-purple-500 text-white shadow-md shadow-purple-500/30"
+                    : "text-slate-400 hover:text-purple-300 hover:bg-slate-800/80"
+                }`}
+                title="Modo MSE 24 FPS: Fluxo de vídeo H.264 ultra-suave com buffer anti-jitter"
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "mse" ? "bg-white" : "bg-purple-400"}`} />
+                <span>MSE 24 FPS</span>
+              </button>
+            </div>
           )}
+
+          {/* Right Tools (Reload & Spotlight) */}
+          <div className="flex items-center gap-1.5 pointer-events-auto ml-auto">
+            <button
+              onClick={reloadStream}
+              className="p-1.5 sm:p-2 rounded-lg bg-black/85 hover:bg-slate-800 text-slate-300 border border-slate-700 shadow-md transition-all text-xs"
+              title="Recarregar Transmissão"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+            </button>
+
+            {onToggleSpotlight && (
+              <button
+                onClick={onToggleSpotlight}
+                className="p-1.5 sm:p-2 rounded-lg bg-black/85 hover:bg-cyan-500 hover:text-obsidian-950 text-white border border-slate-700 shadow-md transition-all"
+                title={isSpotlight ? "Modo Mosaico" : "Focar em Tela Cheia (Spotlight)"}
+              >
+                {isSpotlight ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
