@@ -338,33 +338,92 @@ fun PhoneBottomNavigationBar(
 @Composable
 fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
     var selectedZoomCamera by remember { mutableStateOf<CameraItem?>(null) }
+    var isAlertsSilenced by remember { mutableStateOf(false) }
+    var isSilencingLoading by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
-    LazyColumn(
-        state = listState,
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(
-            start = SentinelaDimens.screenPadding,
-            end = SentinelaDimens.screenPadding,
-            top = 10.dp,
-            bottom = 20.dp
-        ),
-        verticalArrangement = Arrangement.spacedBy(SentinelaDimens.feedGap)
-    ) {
-        items(cameras, key = { it.name }) { camera ->
-            PhoneCameraStreamCard(
-                camera = camera,
-                onCaptureSnapshot = {
-                    Toast.makeText(context, "📸 Snapshot salvo: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
-                },
-                onRecordClip = {
-                    Toast.makeText(context, "🎬 Gravando evidência de 10s: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
-                },
-                onExpandFullscreen = {
-                    selectedZoomCamera = camera
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            state = listState,
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                start = SentinelaDimens.screenPadding,
+                end = SentinelaDimens.screenPadding,
+                top = 10.dp,
+                bottom = 80.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(SentinelaDimens.feedGap)
+        ) {
+            items(cameras, key = { it.name }) { camera ->
+                PhoneCameraStreamCard(
+                    camera = camera,
+                    onCaptureSnapshot = {
+                        Toast.makeText(context, "📸 Snapshot salvo: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                    },
+                    onRecordClip = {
+                        Toast.makeText(context, "🎬 Gravando evidência de 10s: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                    },
+                    onExpandFullscreen = {
+                        selectedZoomCamera = camera
+                    }
+                )
+            }
+        }
+
+        // Floating Action Button: Silenciar / Reativar Alertas Telegram por 1 Hora
+        FloatingActionButton(
+            onClick = {
+                if (isSilencingLoading) return@FloatingActionButton
+                isSilencingLoading = true
+                coroutineScope.launch {
+                    if (isAlertsSilenced) {
+                        val ok = SentinelaRepository.resumeAlerts()
+                        if (ok) {
+                            isAlertsSilenced = false
+                            Toast.makeText(context, "🔔 Alertas do Telegram REATIVADOS!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Erro ao reativar alertas", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        val ok = SentinelaRepository.pauseAlerts(60)
+                        if (ok) {
+                            isAlertsSilenced = true
+                            Toast.makeText(context, "🔕 Alertas silenciados por 1 HORA!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "Erro ao silenciar alertas", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                    isSilencingLoading = false
                 }
-            )
+            },
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 18.dp, bottom = 18.dp)
+                .size(56.dp),
+            shape = CircleShape,
+            containerColor = if (isAlertsSilenced) Color(0xFFD97706) else Color(0xFF0F172A),
+            contentColor = if (isAlertsSilenced) Color.White else Color(0xFF38BDF8),
+            border = BorderStroke(
+                width = 1.5.dp,
+                color = if (isAlertsSilenced) Color(0xFFFBBF24) else Color(0xFF38BDF8).copy(alpha = 0.6f)
+            ),
+            elevation = FloatingActionButtonDefaults.elevation(8.dp)
+        ) {
+            if (isSilencingLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp),
+                    color = Color.White,
+                    strokeWidth = 2.5.dp
+                )
+            } else {
+                Icon(
+                    imageVector = if (isAlertsSilenced) Icons.Default.NotificationsOff else Icons.Default.NotificationsActive,
+                    contentDescription = if (isAlertsSilenced) "Reativar Alertas" else "Silenciar 1h",
+                    modifier = Modifier.size(26.dp)
+                )
+            }
         }
     }
 

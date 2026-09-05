@@ -1027,4 +1027,44 @@ object SentinelaRepository {
         }
         list
     }
+
+    suspend fun pauseAlerts(minutes: Int = 60): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/settings/pause")
+            val conn = openConnection(url).apply {
+                connectTimeout = 4000
+                readTimeout = 4000
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val payload = JSONObject().apply { put("minutes", minutes) }
+            conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            val ok = conn.responseCode in 200..299
+            conn.disconnect()
+            ok
+        } catch (e: Exception) {
+            Log.w(TAG, "pauseAlerts error: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun resumeAlerts(): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/settings/resume")
+            val conn = openConnection(url).apply {
+                connectTimeout = 4000
+                readTimeout = 4000
+                requestMethod = "POST"
+                setRequestProperty("Accept", "application/json")
+            }
+            val ok = conn.responseCode in 200..299
+            conn.disconnect()
+            ok
+        } catch (e: Exception) {
+            Log.w(TAG, "resumeAlerts error: ${e.message}")
+            false
+        }
+    }
 }
