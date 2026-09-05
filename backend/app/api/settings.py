@@ -553,12 +553,23 @@ async def clean_server_storage(
     errors_count = 0
 
     try:
-        # Fetch events older than cutoff from Frigate
-        params: Dict[str, Any] = {"before": cutoff_ts, "limit": 100}
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params=params)
-            if resp.status_code == 200:
+        has_more_events = True
+        sem = asyncio.Semaphore(15)  # Increased concurrency to speed up bulk deletions
+        
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            while has_more_events:
+                # Fetch events older than cutoff from Frigate
+                params: Dict[str, Any] = {"before": cutoff_ts, "limit": 500}
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params=params)
+                
+                if resp.status_code != 200:
+                    break
+                    
                 events_list = resp.json()
+                if not events_list:
+                    has_more_events = False
+                    break
+                    
                 candidate_ids = []
                 for ev in events_list:
                     if req.exclude_retained and ev.get("retain_indefinitely", False):
@@ -572,14 +583,23 @@ async def clean_server_storage(
                         continue
                         
                     candidate_ids.append(ev.get("id"))
+                
+                if not candidate_ids:
+                    # Avoid infinite loops if events are returned but all are retained/filtered out
+                    # We adjust cutoff_ts to the oldest event in the batch to paginate
+                    oldest_in_batch = min([ev.get("start_time", cutoff_ts) for ev in events_list])
+                    if oldest_in_batch >= cutoff_ts:
+                        # Fallback if no progression
+                        cutoff_ts -= 60 
+                    else:
+                        cutoff_ts = int(oldest_in_batch)
+                    continue
 
-                # Delete matching candidates in batches with concurrency semaphore
-                sem = asyncio.Semaphore(5)
                 async def _delete_frigate(ev_id: str):
                     nonlocal deleted_events_count, errors_count
                     async with sem:
                         try:
-                            d_resp = await client.delete(f"{settings.FRIGATE_API_URL}/api/events/{ev_id}", timeout=3.0)
+                            d_resp = await client.delete(f"{settings.FRIGATE_API_URL}/api/events/{ev_id}", timeout=5.0)
                             if d_resp.status_code == 200:
                                 deleted_events_count += 1
                             else:
@@ -599,6 +619,10 @@ async def clean_server_storage(
                         await db.commit()
                     except Exception:
                         await db.rollback()
+                        
+                # Progress pagination backwards
+                oldest_in_batch = min([ev.get("start_time", cutoff_ts) for ev in events_list])
+                cutoff_ts = int(oldest_in_batch)
     except Exception as e:
         await audit_service.log(
             action="STORAGE_CLEAN_ERROR",

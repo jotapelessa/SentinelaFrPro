@@ -215,23 +215,21 @@ class FrigateBridgeService:
             # 1. Primary: High-efficiency CFR transcode with Closed GOP & H.264 Main L4.0 (guarantees fluid mobile Telegram playback)
             cmd_transcode = [
                 "ffmpeg", "-y",
+                "-hwaccel", "qsv",
                 "-i", in_file,
-                "-vf", f"fps=fps={target_fps}:round=near",
-                "-c:v", "libx264",
+                "-vf", f"fps=fps={target_fps}:round=near,format=nv12",
+                "-c:v", "h264_qsv",
                 "-profile:v", "main",
                 "-level", "4.0",
                 "-preset", "veryfast",
-                "-crf", "23",
                 "-g", str(target_fps * 2),
                 "-keyint_min", str(target_fps),
-                "-sc_threshold", "0",
+                "-b:v", "2500k",
                 "-maxrate", "2500k",
                 "-bufsize", "5000k",
-                "-pix_fmt", "yuv420p",
                 "-movflags", "+faststart",
                 "-c:a", "aac",
                 "-b:a", "128k",
-                "-threads", "2",
                 out_file
             ]
             proc = subprocess.run(cmd_transcode, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
@@ -353,16 +351,16 @@ class FrigateBridgeService:
                 logger.info(f"🎥 FrigateBridge: Capturando {duration_s}s de vídeo a 30 FPS via RTSP ({url})...")
                 cmd = [
                     "ffmpeg", "-y",
+                    "-hwaccel", "qsv",
                     "-rtsp_transport", "tcp",
                     "-timeout", "4000000",
                     "-i", url,
                     "-t", str(duration_s),
                     "-r", "30",
-                    "-vf", f"scale={scale_w}:{scale_h}:force_original_aspect_ratio=decrease,pad={scale_w}:{scale_h}:(ow-iw)/2:(oh-ih)/2,format=yuv420p",
-                    "-c:v", "libx264",
+                    "-vf", f"scale={scale_w}:{scale_h}:force_original_aspect_ratio=decrease,pad={scale_w}:{scale_h}:(ow-iw)/2:(oh-ih)/2,format=nv12",
+                    "-c:v", "h264_qsv",
                     "-preset", preset,
-                    "-crf", str(crf),
-                    "-pix_fmt", "yuv420p",
+                    "-b:v", "2500k",
                     "-movflags", "+faststart",
                     temp_file
                 ]
@@ -401,12 +399,14 @@ class FrigateBridgeService:
             logger.info("🎥 FrigateBridge: Gerando clipe de vídeo sintético com timestamp...")
             cmd = [
                 "ffmpeg", "-y",
+                "-hwaccel", "qsv",
                 "-f", "lavfi",
                 "-i", f"testsrc=size={scale_w}x{scale_h}:rate=25",
                 "-t", str(duration_s),
-                "-pix_fmt", "yuv420p",
-                "-c:v", "libx264",
-                "-preset", "ultrafast",
+                "-vf", "format=nv12",
+                "-c:v", "h264_qsv",
+                "-preset", "veryfast",
+                "-b:v", "2500k",
                 "-movflags", "+faststart",
                 temp_file
             ]

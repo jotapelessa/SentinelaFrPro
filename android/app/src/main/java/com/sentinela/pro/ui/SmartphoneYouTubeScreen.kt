@@ -176,7 +176,7 @@ fun PhoneTopBar(
                         )
                     }
                     Text(
-                        text = "v001.000.000.056 • NVR MOBILE",
+                        text = "v${com.sentinela.pro.BuildConfig.VERSION_NAME} • NVR MOBILE",
                         style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.TextMuted)
                     )
                 }
@@ -445,7 +445,7 @@ fun PhoneCameraStreamCard(
                         contentDescription = camera.friendlyName,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
-                        refreshIntervalMs = 42L,
+                        refreshIntervalMs = if (streamMode == "eco") 100L else 42L,
                         isStreaming = true,
                         forceSnapshotMode = streamMode == "eco",
                         streamMode = streamMode

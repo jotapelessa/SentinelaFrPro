@@ -23,6 +23,7 @@ class MQTTService:
     def __init__(self):
         self.ws_broadcast_callbacks: List[Callable[[Dict[str, Any]], Any]] = []
         self._processed_events: TTLCache = TTLCache(maxsize=10000, ttl=86400)
+        self._processed_videos: TTLCache = TTLCache(maxsize=1000, ttl=86400)
         self._cooldowns: Dict[str, float] = {}
         self._mqtt_traffic: List[Dict[str, Any]] = []
 
@@ -215,6 +216,11 @@ class MQTTService:
                 allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
 
                 if send_mode in ["both", "video_only"] and label in allowed_tg_events:
+                    if event_id in self._processed_videos:
+                        logger.debug(f"Video para evento {event_id} já enviado. Ignorando evento de FIM duplicado.")
+                        return
+                    
+                    self._processed_videos[event_id] = True
                     friendly_name = None
                     try:
                         from app.db.models import Camera
@@ -259,8 +265,8 @@ class MQTTService:
             snapshot_bytes = None
             async with httpx.AsyncClient(timeout=6.0) as client:
                 try:
-                    # 1. Fetch full uncropped HD snapshot (clean=0 preserves annotations, crop=0 guarantees full sensor frame, h=1080)
-                    resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?crop=0&h=1080")
+                    # 1. Fetch full uncropped native HD snapshot (clean=0 preserves annotations, crop=0 guarantees full sensor frame)
+                    resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?crop=0")
                     if resp.status_code == 200 and len(resp.content) > 2000:
                         snapshot_bytes = resp.content
                     else:
@@ -269,8 +275,8 @@ class MQTTService:
                         if resp_ev.status_code == 200 and len(resp_ev.content) > 2000:
                             snapshot_bytes = resp_ev.content
                         else:
-                            # 3. High-definition current camera frame fallback
-                            resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg?h=1080")
+                            # 3. Native current camera frame fallback
+                            resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg")
                             if resp_latest.status_code == 200 and len(resp_latest.content) > 2000:
                                 snapshot_bytes = resp_latest.content
                 except Exception as e:
