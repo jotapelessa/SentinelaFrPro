@@ -597,9 +597,9 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                 {/* Eco FPS Selection */}
                 {(streamMode === "eco" || streamMode === "monitor") && (
                   <div className="pt-2 border-t border-slate-800">
-                    <label className="text-slate-300 font-bold block mb-1.5 text-[11px]">Taxa de Quadros do Modo Eco:</label>
+                    <label className="text-slate-300 font-bold block mb-1.5 text-[11px]">Taxa de Quadros do Modo Eco (Snapshots):</label>
                     <div className="grid grid-cols-3 gap-2">
-                      {[5, 10, 15].map((fps) => (
+                      {[2, 5, 10].map((fps) => (
                         <button
                           key={fps}
                           type="button"
@@ -608,7 +608,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                             ecoFps === fps ? "bg-emerald-500 text-obsidian-950 border-emerald-400 shadow-md shadow-emerald-500/20" : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
                           }`}
                         >
-                          {fps} FPS {fps === 5 ? "(Econômico)" : fps === 10 ? "(Equilibrado)" : "(Fluido)"}
+                          {fps} FPS {fps === 2 ? "(Ultra-Eco)" : fps === 5 ? "(Equilibrado)" : "(Fluido)"}
                         </button>
                       ))}
                     </div>

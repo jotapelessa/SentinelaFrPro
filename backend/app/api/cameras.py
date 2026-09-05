@@ -1336,6 +1336,21 @@ async def sync_camera_to_frigate(cam: Camera):
         except Exception as e:
             logger.warning(f"Failed to write config file: {e}")
 
+    # Sanitização preventiva do SQLite do Frigate para evitar alertas de bandwidth anômalos (ex: 2.500.000 MB/hr)
+    try:
+        import sqlite3
+        frigate_db_candidates = ["/config/frigate.db", "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/frigate.db", "./frigate/config/frigate.db"]
+        for db_file in frigate_db_candidates:
+            if os.path.exists(db_file):
+                conn = sqlite3.connect(db_file, timeout=5.0)
+                cur = conn.cursor()
+                cur.execute("DELETE FROM recordings WHERE (end_time - start_time) < 0.5")
+                conn.commit()
+                conn.close()
+                break
+    except Exception as e:
+        logger.debug(f"Frigate DB sanitization skipped: {e}")
+
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:
             await client.post(f"{settings.FRIGATE_API_URL}/api/restart")

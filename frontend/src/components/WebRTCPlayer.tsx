@@ -88,17 +88,23 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
     setKey((prev) => prev + 1);
   };
 
-  // Double-buffered Eco FPS frame ticker with AbortController for clean teardown
+  // Double-buffered Eco FPS frame ticker with Tab Visibility Detection (Eliminates CPU/network thrashing)
   useEffect(() => {
-    if (streamMode !== "monitor" || isPaused) return;
+    if (streamMode !== "monitor" || isPaused || !isActivePlayer) return;
 
     let active = true;
     let timer: NodeJS.Timeout;
-    let abortCtrl = new AbortController();
-    const intervalMs = Math.max(200, Math.round(1000 / (ecoFps || 2)));
+    // Eco FPS target interval: Clamp safely between 500ms (2 FPS) and 1000ms (1 FPS) to protect NVR
+    const safeFps = Math.min(Math.max(1, ecoFps || 2), 5);
+    const intervalMs = Math.round(1000 / safeFps);
 
     const fetchNextFrame = () => {
-      abortCtrl = new AbortController();
+      // Pause polling completely if tab is in background
+      if (typeof document !== "undefined" && document.hidden) {
+        timer = setTimeout(fetchNextFrame, 2000);
+        return;
+      }
+
       const nextSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=360&t=${Date.now()}`;
       const img = new Image();
       img.onload = () => {
@@ -122,7 +128,7 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
           gImg.onerror = () => {
             if (active) {
               setIsLiveOnline(false);
-              timer = setTimeout(fetchNextFrame, 2000);
+              timer = setTimeout(fetchNextFrame, 3000);
             }
           };
           gImg.src = gSrc;
@@ -133,12 +139,19 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
 
     fetchNextFrame();
 
+    const handleVisibilityChange = () => {
+      if (!document.hidden && active) {
+        fetchNextFrame();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
     return () => {
       active = false;
       clearTimeout(timer);
-      abortCtrl.abort();
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [streamMode, cameraSrc, ecoFps, key]);
+  }, [streamMode, cameraSrc, ecoFps, key, isPaused, isActivePlayer]);
 
   const getStreamUrl = () => {
     switch (streamMode) {
