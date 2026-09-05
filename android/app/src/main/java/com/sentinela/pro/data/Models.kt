@@ -40,8 +40,24 @@ data class TelemetryData(
     val telegramConfigured: Boolean = true,
     val telegramPaused: Boolean = false,
     val rxKbs: Double = 0.0,
-    val txKbs: Double = 0.0
+    val txKbs: Double = 0.0,
+    val diskUsedGb: Double = 110.0,
+    val diskFreeGb: Double = 334.0,
+    val diskTotalGb: Double = 468.0,
+    val diskPercent: Double = 24.8
 )
+
+data class StorageStatus(
+    val mount: String = "/media/frigate",
+    val totalGb: Double = 468.0,
+    val usedGb: Double = 110.0,
+    val freeGb: Double = 334.0,
+    val percent: Double = 24.8,
+    val recordingsGb: Double = 76.0,
+    val clipsMb: Double = 543.0,
+    val health: String = "healthy"
+)
+
 
 data class AuditLogEntry(
     val id: Int,

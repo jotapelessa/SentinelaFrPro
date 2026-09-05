@@ -53,14 +53,14 @@ export default function DashboardPage() {
               Central de Vigilância Sentinela
             </h1>
             <p className="text-xs text-slate-500 font-mono">
-              SentinelaPro.v001.000.000.076 • Protegido por IA OpenVINO & Tailscale Encrypted
+              SentinelaPro.v001.000.000.077 • Protegido por IA OpenVINO & Tailscale Encrypted
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <span className="text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono">
-            🛡️ v001.000.000.076
+            🛡️ v001.000.000.077
           </span>
           <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

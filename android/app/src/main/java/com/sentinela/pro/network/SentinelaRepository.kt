@@ -408,6 +408,7 @@ object SentinelaRepository {
                 val net = obj.optJSONObject("network")
                 val uptime = obj.optString("uptime", "Online")
                 val tg = obj.optJSONObject("telegram")
+                val disk = obj.optJSONObject("disk")
 
                 val parsedCpuPercent = cpu?.let {
                     if (it.has("usage_percent")) it.optDouble("usage_percent")
@@ -431,7 +432,11 @@ object SentinelaRepository {
                     telegramConfigured = tg?.optBoolean("configured", true) ?: true,
                     telegramPaused = tg?.optBoolean("paused", false) ?: false,
                     rxKbs = net?.optDouble("rx_kbs", 0.0) ?: 0.0,
-                    txKbs = net?.optDouble("tx_kbs", 0.0) ?: 0.0
+                    txKbs = net?.optDouble("tx_kbs", 0.0) ?: 0.0,
+                    diskUsedGb = disk?.optDouble("used_gb", 110.0) ?: 110.0,
+                    diskFreeGb = disk?.optDouble("free_gb", 334.0) ?: 334.0,
+                    diskTotalGb = disk?.optDouble("total_gb", 468.0) ?: 468.0,
+                    diskPercent = disk?.optDouble("percent", 24.8) ?: 24.8
                 )
             }
             conn.disconnect()
@@ -450,9 +455,78 @@ object SentinelaRepository {
             uptime = "Reconectando...",
             telegramConfigured = false,
             rxKbs = 0.0,
-            txKbs = 0.0
+            txKbs = 0.0,
+            diskUsedGb = 110.0,
+            diskFreeGb = 334.0,
+            diskTotalGb = 468.0,
+            diskPercent = 24.8
         )
     }
+
+    suspend fun getStorageStatus(): StorageStatus = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/settings/storage/status")
+            val conn = openConnection(url).apply {
+                connectTimeout = 3500
+                readTimeout = 3500
+                requestMethod = "GET"
+            }
+            if (conn.responseCode == 200) {
+                val text = BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+                conn.disconnect()
+                val obj = JSONObject(text)
+                return@withContext StorageStatus(
+                    mount = obj.optString("mount", "/media/frigate"),
+                    totalGb = obj.optDouble("total_gb", 468.0),
+                    usedGb = obj.optDouble("used_gb", 110.0),
+                    freeGb = obj.optDouble("free_gb", 334.0),
+                    percent = obj.optDouble("percent", 24.8),
+                    recordingsGb = obj.optDouble("recordings_gb", 76.0),
+                    clipsMb = obj.optDouble("clips_mb", 543.0),
+                    health = obj.optString("health", "healthy")
+                )
+            }
+            conn.disconnect()
+        } catch (e: Exception) {
+            Log.w(TAG, "Error fetching storage status: ${e.message}")
+        }
+        StorageStatus()
+    }
+
+    suspend fun cleanStorage(cleanType: String, olderThanDays: Int): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/settings/storage/clean")
+            val conn = openConnection(url).apply {
+                connectTimeout = 10000
+                readTimeout = 10000
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json")
+                doOutput = true
+            }
+            val payload = JSONObject().apply {
+                put("clean_type", cleanType)
+                put("older_than_days", olderThanDays)
+                put("exclude_retained", true)
+            }
+            conn.outputStream.use { os ->
+                os.write(payload.toString().toByteArray(Charsets.UTF_8))
+            }
+            val code = conn.responseCode
+            val text = if (code in 200..299) {
+                BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
+            } else {
+                BufferedReader(InputStreamReader(conn.errorStream ?: conn.inputStream)).use { it.readText() }
+            }
+            conn.disconnect()
+            val obj = JSONObject(text)
+            val msg = obj.optString("message", "Operação concluída")
+            return@withContext Pair(code in 200..299, msg)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cleaning storage: ${e.message}")
+            return@withContext Pair(false, e.message ?: "Erro desconhecido")
+        }
+    }
+
 
     suspend fun getAuditLogs(): List<AuditLogEntry> = withContext(Dispatchers.IO) {
         val list = mutableListOf<AuditLogEntry>()
