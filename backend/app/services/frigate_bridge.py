@@ -307,7 +307,7 @@ class FrigateBridgeService:
             # Regenerate PTS from the frame index, completely ignoring broken source timestamps.
             vf = f"setpts=N/({out_fps}*TB)"
             has_audio = self._has_audio_stream(in_file)
-            audio_args = ["-af", "asetpts=N/SR/TB", "-c:a", "aac", "-b:a", "128k"] if has_audio else ["-an"]
+            audio_args = ["-c:a", "aac", "-b:a", "128k"] if has_audio else ["-an"]
 
             # 1. Primary: Intel QSV hardware transcode at a clean constant frame rate
             cmd_qsv = [
@@ -324,9 +324,7 @@ class FrigateBridgeService:
                 "-b:v", "4000k",
                 "-maxrate", "4000k",
                 "-bufsize", "8000k",
-                "-look_ahead", "1",
                 "-movflags", "+faststart",
-                "-shortest",
                 out_file
             ]
             proc = subprocess.run(cmd_qsv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
@@ -354,7 +352,6 @@ class FrigateBridgeService:
                 "-maxrate", "6000k",
                 "-bufsize", "8000k",
                 "-movflags", "+faststart",
-                "-shortest",
                 out_file
             ]
             proc_x264 = subprocess.run(cmd_x264, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=90)
