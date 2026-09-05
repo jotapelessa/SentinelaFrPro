@@ -17,6 +17,8 @@ export const TimelinePlayback: React.FC<TimelinePlaybackProps> = ({ camera, onOp
   const [isLiveMode, setIsLiveMode] = useState(true);
   const [activeModalVideo, setActiveModalVideo] = useState<{ url: string; title: string } | null>(null);
 
+  const [isSeeking, setIsSeeking] = useState(false);
+
   // Active camera object
   const currentCamera = cameras.find((c) => c.name === activeCamName) || camera;
 
@@ -54,31 +56,58 @@ export const TimelinePlayback: React.FC<TimelinePlaybackProps> = ({ camera, onOp
     setIsLiveMode(false);
   };
 
-  const handlePlaySelectedTime = () => {
+  const handlePlaySelectedTime = async () => {
+    setIsSeeking(true);
     const timeFormatted = `${String(selectedHour).padStart(2, "0")}:${String(selectedMinute).padStart(2, "0")}`;
     const title = `Gravação SSD - ${currentCamera.friendly_name || currentCamera.name} às ${timeFormatted}`;
-    
-    // Find matching event close to this time
-    const matchingEvent = cameraEvents.find((ev) => {
-      const d = new Date(ev.timestamp);
-      return d.getHours() === selectedHour && Math.abs(d.getMinutes() - selectedMinute) <= 15;
-    });
 
-    const videoUrl = matchingEvent?.clip_url 
-      || `/frigate/api/events/${matchingEvent?.id || "latest"}/clip.mp4`;
+    try {
+      // 1. Calculate target timestamp in epoch seconds for today at selectedHour:selectedMinute
+      const targetDate = new Date();
+      targetDate.setHours(selectedHour, selectedMinute, 0, 0);
+      const targetTs = Math.floor(targetDate.getTime() / 1000);
 
-    if (onOpenClip) {
-      onOpenClip(videoUrl, title);
-    } else {
-      setActiveModalVideo({ url: videoUrl, title });
+      // 2. Look for closest AI event within 45 minutes of target time
+      let matchingEvent: any = null;
+      let minDiff = Infinity;
+      for (const ev of cameraEvents) {
+        const evTs = ev.start_time || Math.floor(new Date(ev.timestamp).getTime() / 1000);
+        const diff = Math.abs(evTs - targetTs);
+        if (diff < minDiff && diff <= 45 * 60) {
+          minDiff = diff;
+          matchingEvent = ev;
+        }
+      }
+
+      let videoUrl: string;
+      if (matchingEvent) {
+        videoUrl = matchingEvent.clip_url || `/api/events/${matchingEvent.id}/clip.mp4`;
+      } else {
+        // Continuous recording slice: Frigate /api/<camera>/start/<start>/end/<end>/clip.mp4 (60s slice)
+        const startSlice = Math.max(0, targetTs - 15);
+        const endSlice = targetTs + 45;
+        videoUrl = `/frigate/api/${currentCamera.name}/start/${startSlice}/end/${endSlice}/clip.mp4`;
+      }
+
+      if (onOpenClip) {
+        onOpenClip(videoUrl, title);
+      } else {
+        setActiveModalVideo({ url: videoUrl, title });
+      }
+    } finally {
+      setIsSeeking(false);
     }
   };
 
   const handlePlayEvent = (ev: any) => {
     const evDate = new Date(ev.timestamp);
+    setSelectedHour(evDate.getHours());
+    setSelectedMinute(evDate.getMinutes());
+    setIsLiveMode(false);
+
     const timeFormatted = evDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     const title = `Evento: ${ev.label.toUpperCase()} em ${currentCamera.friendly_name || currentCamera.name} (${timeFormatted})`;
-    const videoUrl = ev.clip_url || `/frigate/api/events/${ev.id}/clip.mp4`;
+    const videoUrl = ev.clip_url || `/api/events/${ev.id}/clip.mp4`;
 
     if (onOpenClip) {
       onOpenClip(videoUrl, title);
@@ -167,10 +196,13 @@ export const TimelinePlayback: React.FC<TimelinePlaybackProps> = ({ camera, onOp
           <button
             type="button"
             onClick={handlePlaySelectedTime}
-            className="px-3.5 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-black shadow-md shadow-cyan-500/20 flex items-center gap-1.5 transition-all"
+            disabled={isSeeking}
+            className={`px-3.5 py-1 rounded bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-black shadow-md shadow-cyan-500/20 flex items-center gap-1.5 transition-all ${
+              isSeeking ? "opacity-75 cursor-wait" : ""
+            }`}
           >
-            <Film className="w-3.5 h-3.5" />
-            <span>Assistir Gravação</span>
+            <Film className={`w-3.5 h-3.5 ${isSeeking ? "animate-spin" : ""}`} />
+            <span>{isSeeking ? "Carregando..." : "Assistir Gravação"}</span>
           </button>
         </div>
       </div>

@@ -53,14 +53,14 @@ export default function DashboardPage() {
               Central de Vigilância Sentinela
             </h1>
             <p className="text-xs text-slate-500 font-mono">
-              SentinelaPro.v001.000.000.073 • Protegido por IA OpenVINO & Tailscale Encrypted
+              SentinelaPro.v001.000.000.074 • Protegido por IA OpenVINO & Tailscale Encrypted
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <span className="text-xs px-2.5 py-1 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 font-mono">
-            🛡️ v001.000.000.073
+            🛡️ v001.000.000.074
           </span>
           <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -128,15 +128,27 @@ export default function DashboardPage() {
               filteredEvents.slice(0, 10).map((ev, idx) => {
                 const isPerson = ev.label.toLowerCase() === "person";
                 const snapshotUrl = ev.snapshot_url || `/frigate/api/events/${ev.id}/snapshot.jpg`;
+                const evDate = new Date(ev.timestamp);
+                
+                // Relative time helper
+                const diffMinutes = Math.floor((Date.now() - evDate.getTime()) / 60000);
+                const timeAgo = diffMinutes <= 0 
+                  ? "agora" 
+                  : diffMinutes < 60 
+                  ? `${diffMinutes}m atrás` 
+                  : `${Math.floor(diffMinutes / 60)}h atrás`;
+
+                const durationStr = (ev as any).duration_formatted || (ev.duration ? `${Math.round(ev.duration)}s` : null);
+                const scoreDisplay = ev.score || (ev.top_score ? Math.round(ev.top_score * 100) : 85);
 
                 return (
                   <div
                     key={ev.id || idx}
                     onClick={() => setActiveEventVideo(ev)}
-                    className="p-2.5 rounded-2xl bg-obsidian-950/90 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/60 transition-all cursor-pointer flex items-center gap-3 group shadow-sm"
+                    className="p-2.5 rounded-xl bg-obsidian-950/90 border border-slate-800 hover:border-cyan-500/50 hover:bg-slate-900/70 transition-all cursor-pointer flex items-center gap-3 group shadow-sm"
                   >
-                    {/* Thumbnail Snapshot */}
-                    <div className="relative w-16 h-14 rounded-xl overflow-hidden bg-slate-900 border border-slate-800 shrink-0">
+                    {/* 16:9 Thumbnail Snapshot */}
+                    <div className="relative w-20 h-14 rounded-lg overflow-hidden bg-slate-900 border border-slate-800 shrink-0">
                       <img
                         src={snapshotUrl}
                         alt={ev.label}
@@ -145,37 +157,50 @@ export default function DashboardPage() {
                           (e.target as HTMLElement).style.display = 'none';
                         }}
                       />
-                      <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-colors flex items-center justify-center">
-                        <Play className="w-4 h-4 text-white opacity-80 group-hover:scale-110 transition-transform" />
+                      <div className="absolute inset-0 bg-black/35 group-hover:bg-transparent transition-colors flex items-center justify-center">
+                        <Play className="w-4 h-4 text-white opacity-90 group-hover:scale-110 transition-transform" />
                       </div>
+                      {durationStr && (
+                        <div className="absolute bottom-1 right-1 px-1 py-0.2 bg-black/80 text-[9px] font-mono text-cyan-300 font-bold rounded">
+                          {durationStr}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Event Details */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-1 mb-1">
+                    {/* Event Rich Details */}
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center justify-between gap-1">
                         <div className="flex items-center gap-1.5 truncate">
                           <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase tracking-wider ${
                             isPerson 
                               ? "bg-rose-500/20 text-rose-300 border border-rose-500/30" 
                               : "bg-cyan-500/20 text-cyan-300 border border-cyan-500/30"
                           }`}>
-                            {ev.label}
+                            {isPerson ? "👤 " : ""}{ev.label}
                           </span>
-                          {ev.score && (
-                            <span className="text-[10px] font-mono font-bold text-slate-400">
-                              {ev.score}%
-                            </span>
-                          )}
+                          <span className="text-[10px] font-mono font-bold text-slate-300 bg-slate-800/80 px-1.5 py-0.2 rounded border border-slate-700/50">
+                            {scoreDisplay}%
+                          </span>
                         </div>
 
-                        <span className="text-[10px] font-mono text-slate-500 shrink-0">
-                          {new Date(ev.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+                        <span className="text-[10px] font-mono text-cyan-400 font-medium shrink-0" title={evDate.toLocaleTimeString()}>
+                          {timeAgo}
                         </span>
                       </div>
 
-                      <p className="text-[11px] text-slate-300 font-mono truncate">
-                        {ev.camera} {ev.zone ? `• Zona: ${ev.zone}` : ""}
-                      </p>
+                      {/* Camera & ROI Zone info */}
+                      <div className="flex items-center justify-between text-[10px] font-mono text-slate-400 truncate gap-1">
+                        <span className="truncate text-slate-300 font-semibold">{ev.camera}</span>
+                        {ev.zone ? (
+                          <span className="shrink-0 text-[9px] px-1.5 py-0.2 rounded bg-cyan-950 border border-cyan-800/60 text-cyan-300">
+                            {ev.zone}
+                          </span>
+                        ) : (
+                          <span className="shrink-0 text-[9px] text-slate-500">
+                            Geral
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );

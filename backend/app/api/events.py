@@ -59,7 +59,14 @@ async def list_events(
                 for item in resp.json():
                     zones = item.get("zones") or []
                     zone_val = zones[0] if zones else None
-                    score = item.get("top_score") or item.get("score") or 0.0
+                    raw_data = item.get("data") if isinstance(item.get("data"), dict) else {}
+                    score = (
+                        item.get("top_score") 
+                        or item.get("score") 
+                        or raw_data.get("top_score") 
+                        or raw_data.get("score") 
+                        or 0.85
+                    )
                     start_ts = item.get("start_time")
                     end_ts = item.get("end_time")
                     time_str = datetime.datetime.fromtimestamp(start_ts, tz=datetime.timezone.utc).isoformat() if start_ts else datetime.datetime.now(datetime.timezone.utc).isoformat()

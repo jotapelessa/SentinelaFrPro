@@ -40,10 +40,10 @@ export const Header: React.FC = () => {
 
   return (
     <header className="sticky top-0 z-50 w-full h-14 bg-slate-950/90 backdrop-blur-md border-b border-cyan-500/20 px-3 sm:px-4 select-none shadow-lg shadow-black/40">
-      <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-3 h-full">
+      <div className="relative w-full max-w-7xl mx-auto flex items-center justify-between gap-3 h-full">
         
         {/* ZONE 1: BRAND & SYSTEM STATUS (Left aligned) */}
-        <div className="flex items-center gap-3 flex-shrink-0 min-w-[200px]">
+        <div className="flex items-center gap-3 flex-shrink-0 z-20">
           <Link href="/" className="flex items-center gap-2 group">
             <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-cyan-600 to-teal-400 flex items-center justify-center shadow-md shadow-cyan-500/20 group-hover:scale-105 transition-transform flex-shrink-0">
               <Shield className="w-4 h-4 text-obsidian-950 font-black" />
@@ -56,7 +56,7 @@ export const Header: React.FC = () => {
                 <span className="text-[9px] uppercase tracking-widest px-1 py-0.2 rounded bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 font-extrabold">
                   PRO
                 </span>
-                <span className="text-[10px] text-cyan-400 font-mono tracking-widest uppercase font-semibold">001.000.000.073</span>
+                <span className="text-[10px] text-cyan-400 font-mono tracking-widest uppercase font-semibold">001.000.000.074</span>
               </div>
               <span className="text-[10px] text-slate-400 font-mono flex items-center gap-1 mt-0.5 leading-none">
                 <span className={`w-1.5 h-1.5 rounded-full ${wsConnected ? "bg-emerald-400 animate-pulse shadow-sm shadow-emerald-400" : "bg-rose-400"}`} />
@@ -67,8 +67,8 @@ export const Header: React.FC = () => {
           </Link>
         </div>
 
-        {/* ZONE 2: CENTERED PRIMARY NAVIGATION TABS (Strictly Centered) */}
-        <nav className="flex items-center justify-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 shadow-inner flex-shrink-0">
+        {/* ZONE 2: CENTERED PRIMARY NAVIGATION TABS (Mathematically Centered) */}
+        <nav className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center gap-1 bg-slate-900/90 p-1 rounded-xl border border-slate-800 shadow-inner flex-shrink-0">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = item.href === "/"
@@ -93,7 +93,7 @@ export const Header: React.FC = () => {
         </nav>
 
         {/* ZONE 3: ACTIONS & LIVE TELEMETRY HUD (Right aligned) */}
-        <div className="flex items-center justify-end gap-2 flex-shrink-0 min-w-[200px]">
+        <div className="flex items-center justify-end gap-2 flex-shrink-0 z-20">
           {/* LIVE TELEMETRY HUD */}
           {telemetry && (
             <div className="hidden xl:flex items-center gap-1.5 font-mono text-[11px] tabular-nums flex-shrink-0">

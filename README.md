@@ -2,33 +2,35 @@
 
 <div align="center">
 
-![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.073-06B6D4?style=for-the-badge&logo=android&logoColor=white)
-![Build](https://img.shields.io/badge/Compilador_Codespaces-Gradle_8.5_Java_17-emerald?style=for-the-badge)
-![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.073-success?style=for-the-badge&logo=github)
-![Aceleração](https://img.shields.io/badge/Intel_VAAPI/QSV-Jasper_Lake_N5105-blue?style=for-the-badge)
-![IA](https://img.shields.io/badge/Inferência-OpenVINO_NPU/GPU-violet?style=for-the-badge)
-![Rede](https://img.shields.io/badge/Rede_Segura-Tailscale_VPN-darkblue?style=for-the-badge)
+![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.074-06B6D4?style=for-the-badge&logo=android&logoColor=white)
+![Build](https://img.shields.io/badge/Status-Estável-emerald?style=for-the-badge)
+![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.074-success?style=for-the-badge&logo=github)
+![Frigate](https://img.shields.io/badge/Frigate_NVR-v0.17--0882103-blue?style=for-the-badge)
+![go2rtc](https://img.shields.io/badge/go2rtc-v1.9.9--WebRTC-orange?style=for-the-badge)
+![OpenVINO](https://img.shields.io/badge/OpenVINO-2024.5.0-purple?style=for-the-badge)
+![Tailscale](https://img.shields.io/badge/Tailscale-Mesh_VPN-3B82F6?style=for-the-badge)
 
 </div>
 
-> **Plataforma de videomonitoramento inteligente, NVR local, detecção por IA com aceleração de hardware, telemetria em tempo real, automação de alertas e clientes nativos Android (TV 55" estilo Netflix e Smartphone estilo YouTube).**
+---
 
-Projetada com foco em **eficiência energética extrema e latência sub-200ms** para Mini PCs baseados no processador **Intel Celeron Jasper Lake N5105 (TDP 10W)** com **Ubuntu Server**.
+## 🎯 Visão Geral
+O **SentinelaFrigate PRO** é um sistema completo de videomonitoramento de nível empresarial desenvolvido para alta performance, baixa latência e total soberania de dados. Projetado para rodar em hardware de baixo consumo (Intel Jasper Lake Celeron N5105 com aceleração QuickSync e OpenVINO), integra o melhor do ecossistema de visão computacional em uma arquitetura de microsserviços blindada e moderna.
 
 ---
 
-## 📥 Download dos APKs Oficiais (`v001.000.000.073`)
+## 📥 Download dos APKs Oficiais (`v001.000.000.074`)
 
-Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.073):
+Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.074):
 
-* 📺 **[Download Android TV APK (v001.000.000.073)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.073/sentinela-android-tv-v001.000.000.073.apk)**  
-  *(Ou baixe sempre a última versão: [sentinela-android-tv-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.073/sentinela-android-tv-latest.apk))*
-* 📱 **[Download Android Smartphone APK (v001.000.000.073)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.073/sentinela-android-smartphone-v001.000.000.073.apk)**  
-  *(Ou baixe sempre a última versão: [sentinela-android-smartphone-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.073/sentinela-android-smartphone-latest.apk))*
+* 📺 **[Download Android TV APK (v001.000.000.074)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.074/sentinela-android-tv-v001.000.000.074.apk)**  
+  *(Ou baixe sempre a última versão: [sentinela-android-tv-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.074/sentinela-android-tv-latest.apk))*
+* 📱 **[Download Android Smartphone APK (v001.000.000.074)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.074/sentinela-android-smartphone-v001.000.000.074.apk)**  
+  *(Ou baixe sempre a última versão: [sentinela-android-smartphone-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.074/sentinela-android-smartphone-latest.apk))*
 
 ---
 
-## 📱 Aplicativos Nativos Android (`v001.000.000.073`)
+## 📱 Aplicativos Nativos Android (`v001.000.000.074`)
 
 ### 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix)
 * **Aba 1 • Câmeras**: Spotlight imersivo com navegação D-Pad, carrossel dinâmico e alternância para tela cheia instantânea.
