@@ -321,9 +321,10 @@ class FrigateBridgeService:
                 "-c:v", "h264_qsv",
                 "-profile:v", "main",
                 "-g", str(out_fps * 2),
-                "-b:v", "2500k",
-                "-maxrate", "2500k",
-                "-bufsize", "5000k",
+                "-b:v", "4000k",
+                "-maxrate", "4000k",
+                "-bufsize", "8000k",
+                "-look_ahead", "1",
                 "-movflags", "+faststart",
                 "-shortest",
                 out_file
@@ -336,7 +337,7 @@ class FrigateBridgeService:
                     logger.info(f"✅ Vídeo otimizado para Telegram (QSV): {len(video_bytes)} -> {len(smooth_bytes)} bytes em {out_fps} FPS CFR")
                     return smooth_bytes
 
-            # 2. Software fallback: libx264 ultrafast, universally compatible
+            # 2. Software fallback: libx264 veryfast, high quality, universally compatible
             cmd_x264 = [
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
@@ -345,13 +346,13 @@ class FrigateBridgeService:
                 *audio_args,
                 "-r", str(out_fps),
                 "-c:v", "libx264",
-                "-preset", "ultrafast",
-                "-crf", "23",
+                "-preset", "veryfast",
+                "-crf", "20",
                 "-pix_fmt", "yuv420p",
                 "-profile:v", "main",
                 "-g", str(out_fps * 2),
-                "-maxrate", "2500k",
-                "-bufsize", "5000k",
+                "-maxrate", "6000k",
+                "-bufsize", "8000k",
                 "-movflags", "+faststart",
                 "-shortest",
                 out_file

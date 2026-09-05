@@ -26,6 +26,7 @@ class MQTTService:
         self._processed_videos: TTLCache = TTLCache(maxsize=1000, ttl=86400)
         self._cooldowns: Dict[str, float] = {}
         self._mqtt_traffic: List[Dict[str, Any]] = []
+        self._video_transcode_lock = asyncio.Semaphore(1)
 
     def record_mqtt_traffic(self, topic: str, payload_summary: Dict[str, Any]):
         entry = {
@@ -385,16 +386,23 @@ class MQTTService:
 
         now_ts = datetime.datetime.now(datetime.timezone.utc).timestamp()
         event_start = start_time if start_time > 0 else (now_ts - 10.0)
-        
-        # 1. 7 full seconds of pre-capture before the object enters the detection zone
-        clip_start_ts = int(event_start - 7.0)
-        
-        # 2. At least 7 seconds of post-capture after the object finishes moving AND guarantee minimum 30 seconds (capped at 45s max for Telegram)
-        event_end = end_time if end_time > 0 else (event_start + duration_s)
-        clip_end_ts = int(min(max(event_end + 7.0, clip_start_ts + 30.0), clip_start_ts + 45.0))
-        
+
+        # Regra de duração: 5s antes + detecção (mín. 10s) + 5s depois = mínimo 20s (máximo 60s)
+        pre_capture = 5.0
+        post_capture = 5.0
+        min_detection = 10.0
+        event_end = end_time if (end_time and end_time > event_start) else (event_start + min_detection)
+        if event_end - event_start < min_detection:
+            event_end = event_start + min_detection
+        clip_start_ts = int(event_start - pre_capture)
+        clip_end_ts = int(event_end + post_capture)
+        if clip_end_ts - clip_start_ts < 20:
+            clip_end_ts = clip_start_ts + 20
+        if clip_end_ts - clip_start_ts > 60:
+            clip_end_ts = clip_start_ts + 60
+
         target_duration = int(clip_end_ts - clip_start_ts)
-        logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 7s pré + 7s pós, min 30s/max 45s) para Telegram (Câmera: {camera}, Evento: {event_id})...")
+        logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 5s pré + mín 10s detecção + 5s pós) para Telegram (Câmera: {camera}, Evento: {event_id})...")
 
         # 3. Intelligent synchronization: wait until clip_end_ts timestamp has passed + 1s for Frigate to flush disk segments
         wait_seconds = max(0.0, (clip_end_ts - datetime.datetime.now(datetime.timezone.utc).timestamp()) + 1.0)
@@ -428,31 +436,33 @@ class MQTTService:
                             logger.warning(f"⚠️ Clipe retornado pelo Frigate para evento {event_id} ainda não possui stream de vídeo finalizado (tentativa {attempt}/{len(delays)}). Aguardando flush...")
                             continue
 
-                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264 CFR 25 FPS fluidos...")
-                        smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=25)
-                        if smooth_video and frigate_bridge.has_video_stream(smooth_video):
-                            real_clip_dur = frigate_bridge.get_video_duration(smooth_video)
-                            final_dur = real_clip_dur if real_clip_dur > 0 else target_duration
-                            sent_ok = await telegram_vault_service.send_alert_video(
-                                video_bytes=smooth_video,
-                                camera_name=camera,
-                                label=label,
-                                zone=zone_name,
-                                duration_s=final_dur,
-                                score=score,
-                                friendly_name=friendly_name
-                            )
-                            if sent_ok:
-                                async with AsyncSessionLocal() as session:
-                                    stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
-                                    res = await session.execute(stmt)
-                                    ev = res.scalar_one_or_none()
-                                    if ev:
-                                        ev.has_clip = True
-                                        ev.video_sent = True
-                                        ev.end_time = datetime.datetime.utcnow()
-                                        await session.commit()
-                                return
+                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264 CFR fluido...")
+                        async with self._video_transcode_lock:
+                            smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=25)
+                            sent_ok = False
+                            if smooth_video and frigate_bridge.has_video_stream(smooth_video):
+                                real_clip_dur = frigate_bridge.get_video_duration(smooth_video)
+                                final_dur = real_clip_dur if real_clip_dur > 0 else target_duration
+                                sent_ok = await telegram_vault_service.send_alert_video(
+                                    video_bytes=smooth_video,
+                                    camera_name=camera,
+                                    label=label,
+                                    zone=zone_name,
+                                    duration_s=final_dur,
+                                    score=score,
+                                    friendly_name=friendly_name
+                                )
+                        if sent_ok:
+                            async with AsyncSessionLocal() as session:
+                                stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
+                                res = await session.execute(stmt)
+                                ev = res.scalar_one_or_none()
+                                if ev:
+                                    ev.has_clip = True
+                                    ev.video_sent = True
+                                    ev.end_time = datetime.datetime.utcnow()
+                                    await session.commit()
+                            return
             except Exception as e:
                 logger.warning(f"Tentativa {attempt} de envio de clipe do Frigate falhou: {e}")
 
@@ -463,17 +473,18 @@ class MQTTService:
                 duration_s=min(int(target_duration), 20)
             )
             if live_clip and frigate_bridge.has_video_stream(live_clip):
-                smooth_live = await frigate_bridge.transcode_to_30fps(live_clip, target_fps=20) or live_clip
-                logger.info(f"✅ Vídeo de emergência capturado com sucesso via FrigateBridge ({len(smooth_live)} bytes). Enviando para o Telegram...")
-                sent_ok = await telegram_vault_service.send_alert_video(
-                    video_bytes=smooth_live,
-                    camera_name=camera,
-                    label=label,
-                    zone=zone_name,
-                    duration_s=min(target_duration, 20.0),
-                    score=score,
-                    friendly_name=friendly_name
-                )
+                async with self._video_transcode_lock:
+                    smooth_live = await frigate_bridge.transcode_to_30fps(live_clip, target_fps=20) or live_clip
+                    logger.info(f"✅ Vídeo de emergência capturado com sucesso via FrigateBridge ({len(smooth_live)} bytes). Enviando para o Telegram...")
+                    sent_ok = await telegram_vault_service.send_alert_video(
+                        video_bytes=smooth_live,
+                        camera_name=camera,
+                        label=label,
+                        zone=zone_name,
+                        duration_s=min(target_duration, 20.0),
+                        score=score,
+                        friendly_name=friendly_name
+                    )
                 if sent_ok:
                     async with AsyncSessionLocal() as session:
                         stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)

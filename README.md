@@ -2,16 +2,16 @@
 
 <div align="center">
 
-![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.083-06B6D4?style=for-the-badge&logo=android&logoColor=white)
+![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.084-06B6D4?style=for-the-badge&logo=android&logoColor=white)
 ![Build](https://img.shields.io/badge/Status-Estável-emerald?style=for-the-badge)
-![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.083-success?style=for-the-badge&logo=github)
+![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.084-success?style=for-the-badge&logo=github)
 ![Frigate](https://img.shields.io/badge/Frigate_NVR-v0.17--0882103-blue?style=for-the-badge)
 ![go2rtc](https://img.shields.io/badge/go2rtc-v1.9.9--WebRTC-orange?style=for-the-badge)
 ![OpenVINO](https://img.shields.io/badge/OpenVINO-2024.5.0-purple?style=for-the-badge)
 ![Tailscale](https://img.shields.io/badge/Tailscale-Mesh_VPN-3B82F6?style=for-the-badge)
-![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.083-06B6D4?style=for-the-badge&logo=android&logoColor=white)
+![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.084-06B6D4?style=for-the-badge&logo=android&logoColor=white)
 ![Build](https://img.shields.io/badge/Build-Passing-emerald?style=for-the-badge&logo=githubactions)
-![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.083-success?style=for-the-badge&logo=github)
+![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.084-success?style=for-the-badge&logo=github)
 ![Arquitetura](https://img.shields.io/badge/Plataforma-Android%20TV%20%7C%20Smartphone%20%7C%20Web%20%7C%20Ubuntu-8A2BE2?style=for-the-badge)
 
 </div>
@@ -23,18 +23,18 @@ O **SentinelaFrigate PRO** é um sistema completo de videomonitoramento de níve
 
 ---
 
-## 📥 Download dos APKs Oficiais (`v001.000.000.083`)
+## 📥 Download dos APKs Oficiais (`v001.000.000.084`)
 
-Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.083):
+Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.084):
 
-* 📺 **[Download Android TV APK (v001.000.000.083)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.083/sentinela-android-tv-v001.000.000.083.apk)**  
-  *(Ou baixe sempre a última versão: [sentinela-android-tv-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.083/sentinela-android-tv-latest.apk))*
-* 📱 **[Download Smartphone APK (v001.000.000.083)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.083/sentinela-smartphone-v001.000.000.083.apk)**  
-  *(Ou baixe sempre a última versão: [sentinela-smartphone-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.083/sentinela-smartphone-latest.apk))*
+* 📺 **[Download Android TV APK (v001.000.000.084)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.084/sentinela-android-tv-v001.000.000.084.apk)**  
+  *(Ou baixe sempre a última versão: [sentinela-android-tv-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.084/sentinela-android-tv-latest.apk))*
+* 📱 **[Download Smartphone APK (v001.000.000.084)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.084/sentinela-smartphone-v001.000.000.084.apk)**  
+  *(Ou baixe sempre a última versão: [sentinela-smartphone-latest.apk](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.084/sentinela-smartphone-latest.apk))*
 
 ---
 
-## 📱 Aplicativos Nativos Android (`v001.000.000.083`)
+## 📱 Aplicativos Nativos Android (`v001.000.000.084`)
 
 ### 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix)
 * **Aba 1 • Câmeras**: Spotlight imersivo com navegação D-Pad, carrossel dinâmico e alternância para tela cheia instantânea.
@@ -90,8 +90,8 @@ git pull origin main
 ```
 
 2. Escolha a opção desejada no menu:
-   - `[1]` Android TV (`BETA.sentinela.android.tv.001.000.000.083.apk`)
-   - `[2]` Android Smartphone (`BETA.sentinela.android.smartphone.001.000.000.083.apk`)
+   - `[1]` Android TV (`BETA.sentinela.android.tv.001.000.000.084.apk`)
+   - `[2]` Android Smartphone (`BETA.sentinela.android.smartphone.001.000.000.084.apk`)
    - `[3]` Compilar Ambos (TV e Smartphone)
 
 3. Ao final da compilação, o script permite publicar a nova versão diretamente no GitHub Releases via `gh CLI` ou baixar o arquivo pelo menu lateral do Codespaces.
