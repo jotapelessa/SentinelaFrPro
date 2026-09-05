@@ -864,17 +864,61 @@ class BatchTestRequest(BaseModel):
     duration_seconds: int = 10
 
 
+class MasterToggleRequest(BaseModel):
+    is_master_admin: Optional[bool] = None
+
+_last_master_toggle_time: Dict[str, float] = {}
+
 @router.post("/{device_identifier}/toggle-master")
-async def toggle_device_master(device_identifier: str, request: Request, db: AsyncSession = Depends(get_db)):
-    """Toggles Master Admin rights for a smartphone device."""
+async def toggle_device_master(
+    device_identifier: str,
+    request: Request,
+    payload: Optional[MasterToggleRequest] = None,
+    db: AsyncSession = Depends(get_db)
+):
+    """Toggles Master Admin rights for a smartphone device with debounce and idempotency."""
     from app.api.ws import ws_manager
+    import time
+
+    now_ts = time.time()
+    last_toggle = _last_master_toggle_time.get(device_identifier, 0.0)
+    # Debounce spam clicks within 1.5 seconds if target state isn't explicitly defined
+    if payload is None or payload.is_master_admin is None:
+        if (now_ts - last_toggle) < 1.5:
+            # Return current state without duplicating toggle actions or logs
+            stmt_curr = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
+            res_curr = await db.execute(stmt_curr)
+            dev_curr = res_curr.scalar_one_or_none()
+            if dev_curr:
+                return {
+                    "status": "success",
+                    "is_master_admin": bool(dev_curr.is_master_admin),
+                    "device_identifier": device_identifier,
+                    "debounced": True
+                }
+
     stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
     res = await db.execute(stmt)
     dev = res.scalar_one_or_none()
     if not dev:
         raise HTTPException(status_code=404, detail="Dispositivo não encontrado")
 
-    new_state = not bool(dev.is_master_admin)
+    current_state = bool(dev.is_master_admin)
+    if payload and payload.is_master_admin is not None:
+        new_state = payload.is_master_admin
+    else:
+        new_state = not current_state
+
+    # Idempotency check: if state is unchanged, return without logging or broadcasting
+    if new_state == current_state and (now_ts - last_toggle) < 5.0:
+        return {
+            "status": "success",
+            "is_master_admin": new_state,
+            "device_identifier": device_identifier,
+            "unchanged": True
+        }
+
+    _last_master_toggle_time[device_identifier] = now_ts
     dev.is_master_admin = new_state
     dev.admin_unlocked_at = datetime.datetime.utcnow() if new_state else None
     await db.commit()
@@ -895,6 +939,7 @@ async def toggle_device_master(device_identifier: str, request: Request, db: Asy
         client_ip=client_ip
     )
     return {"status": "success", "is_master_admin": new_state, "device_identifier": device_identifier}
+
 
 
 @router.post("/batch-test")

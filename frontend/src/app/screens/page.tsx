@@ -54,6 +54,7 @@ export default function ScreensPage() {
   const [testingDeviceId, setTestingDeviceId] = useState<number | null>(null);
   const [testResult, setTestResult] = useState<{ text: string; type: "success" | "error" | "info" } | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [togglingMasterId, setTogglingMasterId] = useState<string | null>(null);
 
   // Search & Filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -287,9 +288,20 @@ export default function ScreensPage() {
   };
 
   const handleToggleMaster = async (device: PairedDevice) => {
+    if (togglingMasterId === device.device_identifier) return;
+    setTogglingMasterId(device.device_identifier);
+
+    const targetState = !device.is_master_admin;
+    // Optimistic UI update
+    setDevices((prev) =>
+      prev.map((d) => (d.id === device.id ? { ...d, is_master_admin: targetState } : d))
+    );
+
     try {
       const res = await fetch(`${apiUrl}/devices/${device.device_identifier}/toggle-master`, {
-        method: "POST"
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ is_master_admin: targetState })
       });
       if (res.ok) {
         const data = await res.json();
@@ -298,13 +310,22 @@ export default function ScreensPage() {
             ? `⭐ Permissões MASTER VIP concedidas para ${device.friendly_name}!`
             : `🔒 Permissões MASTER revogadas de ${device.friendly_name}.`,
           "success",
-          5000
+          4000
         );
-        fetchDevices(true);
+      } else {
+        throw new Error("Falha ao alternar privilégios");
       }
     } catch (e) {
       console.error("Failed to toggle master:", e);
+      // Revert optimistic update
+      setDevices((prev) =>
+        prev.map((d) => (d.id === device.id ? { ...d, is_master_admin: device.is_master_admin } : d))
+      );
       showToast("⚠️ Erro ao alterar privilégios master.", "error");
+    } finally {
+      setTimeout(() => {
+        setTogglingMasterId(null);
+      }, 600);
     }
   };
 
@@ -552,7 +573,7 @@ export default function ScreensPage() {
                 PiP Ultra Gateway
               </span>
               <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
-                v001.000.000.071
+                v001.000.000.072
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1">
@@ -1059,9 +1080,12 @@ export default function ScreensPage() {
                     {/* Master Unlock Button for Smartphones */}
                     {device.device_type === "smartphone" && (
                       <button
+                        disabled={togglingMasterId === device.device_identifier}
                         onClick={() => handleToggleMaster(device)}
-                        className={`p-2.5 rounded-xl border transition-all text-xs font-bold ${
-                          device.is_master_admin
+                        className={`p-2.5 rounded-xl border transition-all text-xs font-bold disabled:opacity-50 ${
+                          togglingMasterId === device.device_identifier
+                            ? "animate-pulse bg-amber-500/30 text-amber-300 border-amber-500/50"
+                            : device.is_master_admin
                             ? "bg-amber-500/20 text-amber-300 border-amber-500/40 hover:bg-amber-500/30"
                             : "bg-slate-800 text-slate-300 border-slate-700 hover:border-amber-500/50 hover:text-amber-300"
                         }`}

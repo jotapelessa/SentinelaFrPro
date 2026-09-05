@@ -442,8 +442,16 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
         raise HTTPException(status_code=404, detail="Camera not found")
 
     update_data = update.model_dump(exclude_unset=True)
+    real_changes = {}
     for field, value in update_data.items():
-        setattr(cam, field, value)
+        current_val = getattr(cam, field, None)
+        if current_val != value:
+            real_changes[field] = value
+            setattr(cam, field, value)
+
+    if not real_changes:
+        # No actual fields changed, return immediately without touching DB or Frigate
+        return cam
 
     await db.commit()
     await db.refresh(cam)
@@ -456,7 +464,7 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
         action="CAMERA_UPDATED",
         module="CAMERA",
         severity="INFO",
-        details=f"Parâmetros da câmera {cam.name} alterados ({', '.join(update_data.keys())})",
+        details=f"Parâmetros da câmera {cam.name} alterados ({', '.join(real_changes.keys())})",
         client_ip=request.client.host if request.client else "unknown"
     )
     return cam
@@ -747,6 +755,8 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
         "message": f"Modo alterado com sucesso: {action_desc}."
     }
 
+_last_cam_pause_toggle_time: Dict[str, float] = {}
+
 @router.post("/{camera_id}/toggle-pause")
 async def toggle_camera_pause(camera_id: str, request: Request, db: AsyncSession = Depends(get_db)):
     """
@@ -756,6 +766,10 @@ async def toggle_camera_pause(camera_id: str, request: Request, db: AsyncSession
     - Shuts down CPU consumption and eliminates crash loops / 404 errors.
     - Frees browser WebRTC and Eco FPS streaming loops.
     """
+    import time
+    now_ts = time.time()
+    last_toggle = _last_cam_pause_toggle_time.get(camera_id, 0.0)
+
     cam = None
     if camera_id.isdigit():
         stmt = select(Camera).where(Camera.id == int(camera_id))
@@ -772,6 +786,22 @@ async def toggle_camera_pause(camera_id: str, request: Request, db: AsyncSession
 
     if not cam:
         raise HTTPException(status_code=404, detail="Camera not found")
+
+    # Debounce rapid toggle clicks within 2.0s
+    if (now_ts - last_toggle) < 2.0:
+        return {
+            "status": "success",
+            "camera": cam.name,
+            "enabled": cam.enabled,
+            "is_paused": not cam.enabled,
+            "debounced": True,
+            "message": f"Comando ignorado por debounce (<2s)."
+        }
+
+    _last_cam_pause_toggle_time[camera_id] = now_ts
+    _last_cam_pause_toggle_time[cam.name] = now_ts
+    if hasattr(cam, "id") and cam.id:
+        _last_cam_pause_toggle_time[str(cam.id)] = now_ts
 
     new_enabled_state = not bool(cam.enabled)
     cam.enabled = new_enabled_state
