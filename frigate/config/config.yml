@@ -108,7 +108,7 @@ cameras:
     detect:
       enabled: true
       width: 640
-      height: 480
+      height: 360
       fps: 5
     record:
       enabled: true
@@ -133,7 +133,7 @@ cameras:
       bounding_box: true
     zones:
       zona_monitoramento:
-        coordinates: 5,480,635,480,635,5,5,5
+        coordinates: 5,360,635,360,635,5,5,5
         objects:
         - person
         - car
@@ -143,7 +143,7 @@ cameras:
         - cat
         - bicycle
       zona_entrada:
-        coordinates: 100,480,540,480,540,167,100,167
+        coordinates: 100,360,540,360,540,125,100,125
         objects:
         - person
         - car
@@ -202,7 +202,7 @@ cameras:
     detect:
       enabled: true
       width: 640
-      height: 480
+      height: 360
       fps: 5
     record:
       enabled: true
