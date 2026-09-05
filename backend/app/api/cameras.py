@@ -501,9 +501,17 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
     await db.commit()
     await db.refresh(cam)
 
-    # Sync RTSP and camera state asynchronously in background to ensure instant API return (<100ms)
-    import asyncio
-    asyncio.create_task(sync_camera_to_frigate(cam))
+    # Only sync Frigate config + restart when fields that affect the NVR pipeline changed.
+    # Frontend-only preferences (stream_mode, eco_fps, notify_*, cooldown, etc.) must NOT
+    # trigger a full Frigate restart (avoids downtime and camera reconnect churn).
+    frigate_relevant_fields = {
+        "rtsp_main", "rtsp_sub", "enabled", "zones", "objects_to_track",
+        "min_score", "detect_fps", "motion_threshold", "record_mode", "record_retain_days"
+    }
+    if real_changes.keys() & frigate_relevant_fields:
+        # Sync RTSP and camera state asynchronously in background to ensure instant API return (<100ms)
+        import asyncio
+        asyncio.create_task(sync_camera_to_frigate(cam))
 
     await audit_service.log(
         action="CAMERA_UPDATED",

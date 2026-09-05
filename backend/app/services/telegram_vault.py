@@ -646,10 +646,15 @@ class TelegramVaultService:
                 await asyncio.sleep(3)
 
     def start_polling_task(self):
-        """Spawns or restarts the background polling task."""
+        """Spawns or reuses the background polling task.
+
+        Credentials are read in-place by the running loop, so when the token/chat_id
+        changes we simply reuse the existing task instead of restarting it. This avoids
+        two concurrent getUpdates requests (which cause Telegram 409 Conflict).
+        """
         import asyncio
         if hasattr(self, "_polling_task") and self._polling_task and not self._polling_task.done():
-            self._polling_task.cancel()
+            return self._polling_task
         self._polling_task = asyncio.create_task(self.start_polling())
         return self._polling_task
 
