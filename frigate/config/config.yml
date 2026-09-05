@@ -30,11 +30,11 @@ model:
   input_pixel_format: bgr
   labelmap_path: /openvino-model/coco_91cl_bkgr.txt
 
-# Detectors: Intel OpenVINO Hardware Acceleration (Auto GPU/CPU fallback)
+# Detectors: Intel OpenVINO Hardware Acceleration (pinned to iGPU so inference never competes with CPU decode/encode of the streaming pipeline)
 detectors:
   ov:
     type: openvino
-    device: AUTO
+    device: GPU
     model:
       path: /openvino-model/ssdlite_mobilenet_v2.xml
       width: 300

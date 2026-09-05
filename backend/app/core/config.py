@@ -7,7 +7,7 @@ class Settings(BaseSettings):
 
     PROJECT_NAME: str = "SentinelaFrigate PRO"
     APP_TITLE: str = "Sentinela NVR"
-    VERSION: str = "001.000.000.078"
+    VERSION: str = "001.000.000.081"
     API_V1_STR: str = "/api"
     ENVIRONMENT: str = "production"
     DEBUG: bool = False
@@ -31,9 +31,9 @@ class Settings(BaseSettings):
     GO2RTC_API_URL: str = "http://frigate:1984"
     MEDIA_DIR: str = "/media/frigate"
     
-    # Telegram Cloud Vault
-    TELEGRAM_BOT_TOKEN: str = "8857963953:AAFsPQ965S6IgoEaWPkTghMbf6Qv6YCWu0E"
-    TELEGRAM_CHAT_ID: str = "-1003995215102"
+    # Telegram Cloud Vault (loaded from environment / .env)
+    TELEGRAM_BOT_TOKEN: str = ""
+    TELEGRAM_CHAT_ID: str = ""
 
     
     # Hardware & Performance

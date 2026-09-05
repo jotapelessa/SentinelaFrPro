@@ -3,11 +3,19 @@
 import React, { useEffect, useRef } from "react";
 import { useSentinelaStore, SecurityEvent } from "@/store/useSentinelaStore";
 
+let _sharedAudioCtx: AudioContext | null = null;
+
 function playAlertChime() {
   try {
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return;
-    const ctx = new AudioCtx();
+    if (!_sharedAudioCtx) {
+      _sharedAudioCtx = new AudioCtx();
+    }
+    const ctx = _sharedAudioCtx;
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
+    }
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 

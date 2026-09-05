@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Maximize2, Minimize2, Radio, RefreshCw, Zap, Settings, ShieldAlert, Activity, Pause, Play, PauseCircle, Loader2 } from "lucide-react";
 import { Camera, useSentinelaStore } from "@/store/useSentinelaStore";
 import { CameraConfigModal } from "./CameraConfigModal";
@@ -210,7 +210,7 @@ interface WebRTCPlayerProps {
   onCameraUpdated?: () => void;
 }
 
-export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
+export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   camera,
   isSpotlight = false,
   isActivePlayer = true,
@@ -256,13 +256,13 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
   };
 
   const cameraSrc = camera.name || "camera_principal";
-  const cameraAliases = new Set<string>([
+  const cameraAliases = useMemo(() => new Set<string>([
     cameraSrc,
     camera.name || "",
     camera.friendly_name || "",
     camera.ip_address || "",
     "camera_principal"
-  ].filter(Boolean));
+  ].filter(Boolean)), [cameraSrc, camera.name, camera.friendly_name, camera.ip_address]);
 
   const reloadStream = () => {
     setKey((prev) => prev + 1);
@@ -496,3 +496,9 @@ export const WebRTCPlayer: React.FC<WebRTCPlayerProps> = ({
     </>
   );
 };
+
+export const WebRTCPlayer = React.memo(WebRTCPlayerBase, (prev, next) =>
+  prev.camera === next.camera &&
+  prev.isSpotlight === next.isSpotlight &&
+  prev.isActivePlayer === next.isActivePlayer
+);

@@ -265,20 +265,31 @@ class MQTTService:
             snapshot_bytes = None
             async with httpx.AsyncClient(timeout=6.0) as client:
                 try:
-                    # 1. Fetch full uncropped native HD snapshot (clean=0 preserves annotations, crop=0 guarantees full sensor frame)
-                    resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?crop=0")
-                    if resp.status_code == 200 and len(resp.content) > 2000:
-                        snapshot_bytes = resp.content
-                    else:
-                        # 2. Direct event snapshot fallback
-                        resp_ev = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg")
-                        if resp_ev.status_code == 200 and len(resp_ev.content) > 2000:
-                            snapshot_bytes = resp_ev.content
+                    # 1. Native-resolution main-stream frame via go2rtc (highest quality, >=1080p)
+                    for src in [camera, "camera_principal"]:
+                        try:
+                            g_resp = await client.get(f"{settings.GO2RTC_API_URL}/api/frame.jpeg?src={src}")
+                            if g_resp.status_code == 200 and len(g_resp.content) > 2000:
+                                snapshot_bytes = g_resp.content
+                                break
+                        except Exception:
+                            continue
+
+                    # 2. Event snapshot (full sensor frame, detect-stream resolution fallback)
+                    if not snapshot_bytes:
+                        resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?crop=0")
+                        if resp.status_code == 200 and len(resp.content) > 2000:
+                            snapshot_bytes = resp.content
                         else:
-                            # 3. Native current camera frame fallback
-                            resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg")
-                            if resp_latest.status_code == 200 and len(resp_latest.content) > 2000:
-                                snapshot_bytes = resp_latest.content
+                            resp_ev = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg")
+                            if resp_ev.status_code == 200 and len(resp_ev.content) > 2000:
+                                snapshot_bytes = resp_ev.content
+
+                    # 3. Native current camera frame fallback
+                    if not snapshot_bytes:
+                        resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg")
+                        if resp_latest.status_code == 200 and len(resp_latest.content) > 2000:
+                            snapshot_bytes = resp_latest.content
                 except Exception as e:
                     logger.debug(f"Could not retrieve snapshot: {e}")
 
@@ -353,6 +364,25 @@ class MQTTService:
         """Asynchronously acquires the exact duration 30 FPS MP4 video with >= 7s pre-capture, >= 7s post-capture, and min 25s duration."""
         from app.services.frigate_bridge import frigate_bridge
 
+        if not event_id:
+            logger.warning("Evento sem ID válido para envio de vídeo ao Telegram. Ignorando envio (evita duplicados).")
+            return
+
+        # Persistent idempotency guard: skip if this event's video was already sent (survives restarts).
+        try:
+            from app.db.session import AsyncSessionLocal
+            from app.db.models import EventRecord
+            from sqlalchemy import select
+            async with AsyncSessionLocal() as session:
+                stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
+                res = await session.execute(stmt)
+                existing = res.scalar_one_or_none()
+                if existing and existing.video_sent:
+                    logger.debug(f"Vídeo do evento {event_id} já enviado (guarda persistente). Ignorando.")
+                    return
+        except Exception as e:
+            logger.debug(f"Falha ao verificar idempotência persistente: {e}")
+
         now_ts = datetime.datetime.now(datetime.timezone.utc).timestamp()
         event_start = start_time if start_time > 0 else (now_ts - 10.0)
         
@@ -419,6 +449,7 @@ class MQTTService:
                                     ev = res.scalar_one_or_none()
                                     if ev:
                                         ev.has_clip = True
+                                        ev.video_sent = True
                                         ev.end_time = datetime.datetime.utcnow()
                                         await session.commit()
                                 return
@@ -434,7 +465,7 @@ class MQTTService:
             if live_clip and frigate_bridge.has_video_stream(live_clip):
                 smooth_live = await frigate_bridge.transcode_to_30fps(live_clip, target_fps=20) or live_clip
                 logger.info(f"✅ Vídeo de emergência capturado com sucesso via FrigateBridge ({len(smooth_live)} bytes). Enviando para o Telegram...")
-                await telegram_vault_service.send_alert_video(
+                sent_ok = await telegram_vault_service.send_alert_video(
                     video_bytes=smooth_live,
                     camera_name=camera,
                     label=label,
@@ -443,6 +474,15 @@ class MQTTService:
                     score=score,
                     friendly_name=friendly_name
                 )
+                if sent_ok:
+                    async with AsyncSessionLocal() as session:
+                        stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
+                        res = await session.execute(stmt)
+                        ev = res.scalar_one_or_none()
+                        if ev:
+                            ev.has_clip = True
+                            ev.video_sent = True
+                            await session.commit()
         except Exception as fb_err:
             logger.error(f"❌ Falha no fallback de gravação ao vivo para Telegram: {fb_err}")
 

@@ -59,7 +59,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /sys:/sys:ro
       - ./backend/data:/app/data
-      - ./frigate/storage:/media/frigate:ro
+      - ./frigate/storage:/media/frigate
       - ./frigate/config:/config
       - /var/run/docker.sock:/var/run/docker.sock:ro
     environment:
@@ -70,8 +70,8 @@ services:
       - FRIGATE_API_URL=http://frigate:5000
       - GO2RTC_API_URL=http://frigate:1984
       - DATABASE_URL=sqlite+aiosqlite:////app/data/sentinela.db
-      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-8857963953:AAFsPQ965S6IgoEaWPkTghMbf6Qv6YCWu0E}
-      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:--1003995215102}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN:-}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID:-}
     depends_on:
       - mosquitto
       - frigate

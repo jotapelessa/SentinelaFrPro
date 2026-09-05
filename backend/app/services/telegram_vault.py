@@ -108,7 +108,19 @@ class TelegramVaultService:
 
             out_buf = io.BytesIO()
             image.save(out_buf, format="JPEG", quality=95, subsampling=0)
-            return out_buf.getvalue()
+            data = out_buf.getvalue()
+
+            # Keep the photo under Telegram's ~5MB limit while preserving max resolution.
+            max_bytes = 4_500_000
+            scale = 1.0
+            while len(data) > max_bytes and scale > 0.15:
+                scale *= 0.8
+                resized = image.resize((max(1, int(width * scale)), max(1, int(height * scale))), Image.LANCZOS)
+                buf = io.BytesIO()
+                resized.save(buf, format="JPEG", quality=85, subsampling=0)
+                data = buf.getvalue()
+
+            return data
         except Exception as e:
             logger.error(f"Error applying watermark: {e}")
             return image_bytes

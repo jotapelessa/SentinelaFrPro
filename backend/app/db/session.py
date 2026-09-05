@@ -68,6 +68,13 @@ async def init_db():
             except Exception:
                 pass
 
+        # SQLite automatic column migration for events (video_sent idempotency flag)
+        try:
+            from sqlalchemy import text
+            await conn.execute(text("ALTER TABLE events ADD COLUMN video_sent BOOLEAN DEFAULT 0"))
+        except Exception:
+            pass
+
         # SQLite automatic column migration for paired_devices
         paired_columns = [
             ("allowed_cameras", "TEXT"),

@@ -48,6 +48,7 @@ class EventRecord(Base):
     clip_path = Column(String(512), nullable=True)
     telegram_notified = Column(Boolean, default=False)
     pip_dispatched = Column(Boolean, default=False)
+    video_sent = Column(Boolean, default=False)
 
 class PairedDevice(Base):
     __tablename__ = "paired_devices"

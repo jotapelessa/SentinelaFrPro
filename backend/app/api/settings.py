@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from pydantic import BaseModel
 from typing import Optional, Dict, Any
+import logging
 from app.services.telegram_vault import telegram_vault_service
 from app.services.pip_gateway import pip_gateway_service
 from app.services.frigate_bridge import frigate_bridge
@@ -10,6 +11,8 @@ from app.db.session import get_db
 from app.db.models import Camera, PairedDevice
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/settings", tags=["Settings"])
 
@@ -480,6 +483,74 @@ class StorageCleanRequest(BaseModel):
     older_than_days: int = 3
     exclude_retained: bool = True
 
+
+def _dir_size_bytes(path: str) -> int:
+    """Sums the byte size of all files under a directory tree."""
+    import os
+    total = 0
+    for root, _dirs, files in os.walk(path):
+        for f in files:
+            fp = os.path.join(root, f)
+            try:
+                total += os.stat(fp).st_size
+            except Exception:
+                pass
+    return total
+
+
+def _purge_recordings(media_base: str, cutoff_ts: float) -> int:
+    """Deletes Frigate recording segment folders older than cutoff under recordings/{YYYY-MM-DD}/{HH}."""
+    import os
+    import shutil
+    import datetime
+    freed = 0
+    rec_root = os.path.join(media_base, "recordings")
+    if not os.path.isdir(rec_root):
+        return 0
+    for date_dir in sorted(os.listdir(rec_root)):
+        date_path = os.path.join(rec_root, date_dir)
+        if not os.path.isdir(date_path):
+            continue
+        try:
+            d = datetime.datetime.strptime(date_dir, "%Y-%m-%d")
+        except ValueError:
+            continue
+        if d.timestamp() >= cutoff_ts:
+            continue
+        freed += _dir_size_bytes(date_path)
+        try:
+            shutil.rmtree(date_path, ignore_errors=True)
+        except Exception:
+            pass
+    return freed
+
+
+def _purge_clips(media_base: str, cutoff_ts: float) -> int:
+    """Deletes Frigate clips/snapshots files older than cutoff (by mtime) under clips/."""
+    import os
+    freed = 0
+    clips_root = os.path.join(media_base, "clips")
+    if not os.path.isdir(clips_root):
+        return 0
+    for root, dirs, files in os.walk(clips_root, topdown=False):
+        for name in files:
+            fp = os.path.join(root, name)
+            try:
+                st = os.stat(fp)
+                if st.st_mtime < cutoff_ts:
+                    freed += st.st_size
+                    os.remove(fp)
+            except Exception:
+                pass
+        for d in dirs:
+            dp = os.path.join(root, d)
+            try:
+                os.rmdir(dp)
+            except OSError:
+                pass
+    return freed
+
+
 @router.get("/storage/status")
 async def get_storage_status():
     """Returns real-time Ubuntu Server NVMe SSD storage status, breakdown and partition information."""
@@ -537,8 +608,10 @@ async def clean_server_storage(
 ):
     """
     Cleans old non-retained recordings and/or snapshots from Ubuntu Server SSD NVMe.
-    Delegates to Frigate API events deletion and updates SQLite sentinela.db cache.
+    Performs a direct filesystem purge of recording segments/clips (real space recovery)
+    plus Frigate API event deletion, and updates SQLite sentinela.db cache.
     """
+    import os
     import datetime
     import asyncio
     import httpx
@@ -551,46 +624,59 @@ async def clean_server_storage(
 
     deleted_events_count = 0
     errors_count = 0
+    freed_bytes = 0
 
+    media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
+
+    # ---- 1. Direct filesystem purge of recording segments & clips (real space recovery) ----
+    try:
+        if req.clean_type in ("recordings", "all"):
+            freed_bytes += await asyncio.to_thread(_purge_recordings, media_base, cutoff_ts)
+        if req.clean_type in ("snapshots", "all"):
+            freed_bytes += await asyncio.to_thread(_purge_clips, media_base, cutoff_ts)
+    except Exception as e:
+        logger.warning(f"Filesystem purge failed: {e}")
+
+    # ---- 2. Frigate API event deletion (metadata + event snapshot/clip) ----
     try:
         has_more_events = True
         sem = asyncio.Semaphore(15)  # Increased concurrency to speed up bulk deletions
-        
+
         async with httpx.AsyncClient(timeout=10.0) as client:
             while has_more_events:
                 # Fetch events older than cutoff from Frigate
                 params: Dict[str, Any] = {"before": cutoff_ts, "limit": 500}
                 resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params=params)
-                
+
                 if resp.status_code != 200:
                     break
-                    
+
                 events_list = resp.json()
                 if not events_list:
                     has_more_events = False
                     break
-                    
+
                 candidate_ids = []
                 for ev in events_list:
                     if req.exclude_retained and ev.get("retain_indefinitely", False):
                         continue
                     has_clip = ev.get("has_clip", False)
                     has_snap = ev.get("has_snapshot", False)
-                    
+
                     if req.clean_type == "snapshots" and not has_snap:
                         continue
                     if req.clean_type == "recordings" and not has_clip:
                         continue
-                        
+
                     candidate_ids.append(ev.get("id"))
-                
+
                 if not candidate_ids:
                     # Avoid infinite loops if events are returned but all are retained/filtered out
                     # We adjust cutoff_ts to the oldest event in the batch to paginate
                     oldest_in_batch = min([ev.get("start_time", cutoff_ts) for ev in events_list])
                     if oldest_in_batch >= cutoff_ts:
                         # Fallback if no progression
-                        cutoff_ts -= 60 
+                        cutoff_ts -= 60
                     else:
                         cutoff_ts = int(oldest_in_batch)
                     continue
@@ -619,7 +705,7 @@ async def clean_server_storage(
                         await db.commit()
                     except Exception:
                         await db.rollback()
-                        
+
                 # Progress pagination backwards
                 oldest_in_batch = min([ev.get("start_time", cutoff_ts) for ev in events_list])
                 cutoff_ts = int(oldest_in_batch)
@@ -633,11 +719,14 @@ async def clean_server_storage(
         )
         raise HTTPException(status_code=500, detail=str(e))
 
+    freed_gb = round(freed_bytes / (1024**3), 2)
+    freed_mb = round(freed_bytes / (1024**2), 2)
+
     await audit_service.log(
         action="STORAGE_CLEAN_EXECUTED",
         module="STORAGE",
         severity="WARNING",
-        details=f"Limpeza de SSD executada ({req.clean_type}, > {req.older_than_days} dias). Sucessos: {deleted_events_count}, Falhas: {errors_count}.",
+        details=f"Limpeza de SSD executada ({req.clean_type}, > {req.older_than_days} dias). Sucessos: {deleted_events_count}, Falhas: {errors_count}, Espaço liberado: {freed_gb} GB.",
         client_ip=client_ip
     )
 
@@ -647,7 +736,10 @@ async def clean_server_storage(
         "older_than_days": req.older_than_days,
         "deleted_count": deleted_events_count,
         "errors_count": errors_count,
-        "message": f"Limpeza concluída! {deleted_events_count} registro(s) expurgados do SSD."
+        "freed_bytes": freed_bytes,
+        "freed_gb": freed_gb,
+        "freed_mb": freed_mb,
+        "message": f"Limpeza concluída! {deleted_events_count} registro(s) expurgados e {freed_gb} GB liberados do SSD."
     }
 
 

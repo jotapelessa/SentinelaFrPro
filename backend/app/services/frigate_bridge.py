@@ -109,22 +109,12 @@ class FrigateBridgeService:
 
     async def get_live_snapshot(self, camera_name: str = "camera_principal") -> Optional[bytes]:
         """
-        Retrieves a live JPEG frame from Frigate / go2rtc using a multi-channel pipeline:
-        1. Frigate latest.jpg endpoint
-        2. go2rtc frame.jpeg endpoint
-        3. Local FFmpeg RTSP snapshot
+        Retrieves a live JPEG frame at native/main-stream resolution using a multi-channel pipeline:
+        1. go2rtc frame.jpeg (main stream, native resolution — highest quality)
+        2. Local FFmpeg RTSP snapshot (native resolution)
+        3. Frigate latest.jpg (detect stream, fallback)
         """
-        # Channel 1: Frigate latest frame
-        for cam in [camera_name, "cam_192_168_1_6", "camera_principal"]:
-            try:
-                async with httpx.AsyncClient(timeout=3.0) as client:
-                    res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
-                    if res.status_code == 200 and len(res.content) > 1000:
-                        return res.content
-            except Exception:
-                pass
-
-        # Channel 2: go2rtc frame
+        # Channel 1: go2rtc main-stream frame (native resolution)
         for src in [camera_name, "cam_192_168_1_6", "camera_principal"]:
             try:
                 async with httpx.AsyncClient(timeout=3.0) as client:
@@ -134,7 +124,7 @@ class FrigateBridgeService:
             except Exception:
                 pass
 
-        # Channel 3: FFmpeg RTSP capture
+        # Channel 2: FFmpeg RTSP capture at native resolution
         rtsp_urls = [
             f"rtsp://frigate:8554/{camera_name}",
             "rtsp://frigate:8554/camera_principal",
@@ -164,6 +154,16 @@ class FrigateBridgeService:
                         os.remove(temp_img)
                     except Exception:
                         pass
+
+        # Channel 3: Frigate latest.jpg (detect stream, lower resolution fallback)
+        for cam in [camera_name, "cam_192_168_1_6", "camera_principal"]:
+            try:
+                async with httpx.AsyncClient(timeout=3.0) as client:
+                    res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
+                    if res.status_code == 200 and len(res.content) > 1000:
+                        return res.content
+            except Exception:
+                pass
 
         return None
 
@@ -198,11 +198,73 @@ class FrigateBridgeService:
                     pass
         return False
 
+    @staticmethod
+    def _probe_video_info(path: str) -> Dict[str, float]:
+        """Probes average frame rate, duration, width and height of a video file."""
+        info: Dict[str, float] = {"fps": 25.0, "duration": 0.0, "width": 1920, "height": 1080}
+        try:
+            import json
+            cmd = [
+                "ffprobe", "-v", "error",
+                "-select_streams", "v:0",
+                "-show_entries", "stream=avg_frame_rate,r_frame_rate,width,height:format=duration",
+                "-of", "json",
+                path
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5, text=True)
+            if res.returncode == 0:
+                data = json.loads(res.stdout or "{}")
+                streams = data.get("streams") or []
+                fmt = data.get("format") or {}
+                if streams:
+                    s = streams[0]
+                    try:
+                        info["width"] = int(s.get("width") or 1920)
+                    except (ValueError, TypeError):
+                        pass
+                    try:
+                        info["height"] = int(s.get("height") or 1080)
+                    except (ValueError, TypeError):
+                        pass
+                    # Prefer avg_frame_rate (real frames / duration) over r_frame_rate (container hint, can be 90000)
+                    for key in ("avg_frame_rate", "r_frame_rate"):
+                        val = s.get(key) or ""
+                        if "/" in val:
+                            num, _, den = val.partition("/")
+                            try:
+                                if int(den) > 0 and int(num) > 0:
+                                    info["fps"] = int(num) / int(den)
+                                    break
+                            except (ValueError, ZeroDivisionError):
+                                continue
+                        elif val:
+                            try:
+                                v = float(val)
+                                if 0 < v <= 1000:
+                                    info["fps"] = v
+                                    break
+                            except ValueError:
+                                continue
+                dur = fmt.get("duration") or ""
+                if dur:
+                    try:
+                        info["duration"] = float(dur)
+                    except ValueError:
+                        pass
+        except Exception:
+            pass
+        return info
+
     async def transcode_to_30fps(self, video_bytes: bytes, target_fps: int = 25) -> Optional[bytes]:
-        """Optimized high-efficiency video preparation for Telegram & mobile playback:
-        1. Ultrafast CFR 25 FPS transcode with bitrate control (2.5 Mbps cap, CRF 23, YUV420p, +faststart).
-           Reduces file size from ~46MB to ~5-9MB and fixes 90000 FPS stuttering with fluid 25 FPS CFR.
-        2. Fallback to lossless stream copy if transcode fails.
+        """Robust H.264/AAC constant-frame-rate preparation for Telegram & mobile playback.
+
+        Probes the real source frame rate and re-encodes to a clean CFR at that native rate,
+        fixing the ~3 FPS stutter caused by variable-frame-rate segments with broken timestamps
+        (no more forcing 25 FPS onto a source with few unique frames, which duplicates frames).
+
+        1. QSV hardware transcode at the probed native FPS (fast, GPU).
+        2. libx264 software fallback (universally compatible, ultrafast).
+        3. Lossless stream copy as last resort.
         """
         if not video_bytes or len(video_bytes) < 2000:
             return None
@@ -211,19 +273,30 @@ class FrigateBridgeService:
         try:
             with open(in_file, "wb") as f:
                 f.write(video_bytes)
-            
-            # 1. Primary: High-efficiency CFR transcode with Closed GOP & H.264 Main L4.0 (guarantees fluid mobile Telegram playback)
-            cmd_transcode = [
+
+            info = self._probe_video_info(in_file)
+            avg_fps = info["fps"]
+
+            # Determine the clean constant frame rate from the real source rate.
+            out_fps = target_fps if (target_fps and 5 <= target_fps <= 30) else 25
+            if avg_fps and 10 <= avg_fps <= 30:
+                out_fps = int(round(avg_fps))
+            elif avg_fps and 5 <= avg_fps < 10:
+                out_fps = 15
+            elif avg_fps and 30 < avg_fps <= 60:
+                out_fps = 30
+
+            vf = f"fps={out_fps}:round=near"
+
+            # 1. Primary: Intel QSV hardware transcode (fast, low CPU) at native CFR
+            cmd_qsv = [
                 "ffmpeg", "-y",
                 "-hwaccel", "qsv",
                 "-i", in_file,
-                "-vf", f"fps=fps={target_fps}:round=near,format=nv12",
+                "-vf", vf,
                 "-c:v", "h264_qsv",
                 "-profile:v", "main",
-                "-level", "4.0",
-                "-preset", "veryfast",
-                "-g", str(target_fps * 2),
-                "-keyint_min", str(target_fps),
+                "-g", str(out_fps * 2),
                 "-b:v", "2500k",
                 "-maxrate", "2500k",
                 "-bufsize", "5000k",
@@ -232,15 +305,42 @@ class FrigateBridgeService:
                 "-b:a", "128k",
                 out_file
             ]
-            proc = subprocess.run(cmd_transcode, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
+            proc = subprocess.run(cmd_qsv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
             if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
                 with open(out_file, "rb") as f:
                     smooth_bytes = f.read()
                 if self.has_video_stream(smooth_bytes):
-                    logger.info(f"✅ Vídeo otimizado para Telegram: {len(video_bytes)} -> {len(smooth_bytes)} bytes (-{round((1 - len(smooth_bytes)/len(video_bytes))*100, 1)}%) em {target_fps} FPS CFR Closed-GOP")
+                    logger.info(f"✅ Vídeo otimizado para Telegram (QSV): {len(video_bytes)} -> {len(smooth_bytes)} bytes em {out_fps} FPS CFR")
                     return smooth_bytes
 
-            # 2. Fallback path: Zero-CPU Lossless Stream Copy with +faststart
+            # 2. Software fallback: libx264 ultrafast, universally compatible
+            cmd_x264 = [
+                "ffmpeg", "-y",
+                "-i", in_file,
+                "-vf", vf,
+                "-r", str(out_fps),
+                "-c:v", "libx264",
+                "-preset", "ultrafast",
+                "-crf", "23",
+                "-pix_fmt", "yuv420p",
+                "-profile:v", "main",
+                "-g", str(out_fps * 2),
+                "-maxrate", "2500k",
+                "-bufsize", "5000k",
+                "-movflags", "+faststart",
+                "-c:a", "aac",
+                "-b:a", "128k",
+                out_file
+            ]
+            proc_x264 = subprocess.run(cmd_x264, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=90)
+            if proc_x264.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
+                with open(out_file, "rb") as f:
+                    smooth_bytes = f.read()
+                if self.has_video_stream(smooth_bytes):
+                    logger.info(f"✅ Vídeo otimizado para Telegram (libx264): {len(video_bytes)} -> {len(smooth_bytes)} bytes em {out_fps} FPS CFR")
+                    return smooth_bytes
+
+            # 3. Last resort: lossless stream copy with +faststart
             cmd_copy = [
                 "ffmpeg", "-y",
                 "-i", in_file,

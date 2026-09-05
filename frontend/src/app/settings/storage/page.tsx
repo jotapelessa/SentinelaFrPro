@@ -58,7 +58,8 @@ export default function StorageSettingsPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        setCleanFeedback(`✅ ${data.message}`);
+        const freed = data.freed_gb != null ? ` · ${data.freed_gb} GB liberados` : "";
+        setCleanFeedback(`✅ ${data.message}${freed}`);
         await fetchStorageStatus();
       } else {
         setCleanFeedback(`⚠️ Falha: ${data.detail || "Erro ao processar"}`);
