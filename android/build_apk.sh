@@ -3,7 +3,13 @@ set -e
 
 # Base directory detection
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ANDROID_DIR="$SCRIPT_DIR/android"
+if [ -f "$SCRIPT_DIR/version.properties" ]; then
+    ANDROID_DIR="$SCRIPT_DIR"
+    PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+else
+    ANDROID_DIR="$SCRIPT_DIR/android"
+    PROJECT_ROOT="$SCRIPT_DIR"
+fi
 VERSION_FILE="$ANDROID_DIR/version.properties"
 
 if [ ! -f "$VERSION_FILE" ]; then
@@ -129,7 +135,7 @@ if [ "$BUILD_TV" = true ]; then
     echo "🔨 Compilando Android TV..."
     ./gradlew assembleTvDebug --no-daemon
     TV_SRC="app/build/outputs/apk/tv/debug/app-tv-debug.apk"
-    TV_DEST="$SCRIPT_DIR/sentinela.android.tv.$FORMATTED_VERSION.apk"
+    TV_DEST="$PROJECT_ROOT/sentinela.android.tv.$FORMATTED_VERSION.apk"
     if [ -f "$TV_SRC" ]; then
         cp "$TV_SRC" "$TV_DEST"
         echo "✅ APK Android TV gerado: $TV_DEST"
@@ -140,7 +146,7 @@ if [ "$BUILD_PHONE" = true ]; then
     echo "🔨 Compilando Android Smartphone..."
     ./gradlew assembleSmartphoneDebug --no-daemon
     PHONE_SRC="app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk"
-    PHONE_DEST="$SCRIPT_DIR/sentinela.android.smartphone.$FORMATTED_VERSION.apk"
+    PHONE_DEST="$PROJECT_ROOT/sentinela.android.smartphone.$FORMATTED_VERSION.apk"
     if [ -f "$PHONE_SRC" ]; then
         cp "$PHONE_SRC" "$PHONE_DEST"
         echo "✅ APK Android Smartphone gerado: $PHONE_DEST"
