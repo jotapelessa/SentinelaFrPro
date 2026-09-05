@@ -52,11 +52,18 @@ export default function SettingsLayout({
       color: "text-cyan-400"
     },
     {
+      name: "Armazenamento & SSD NVMe",
+      href: "/settings/storage",
+      icon: HardDrive,
+      desc: "Uso do disco, expurgo & saúde",
+      color: "text-emerald-400"
+    },
+    {
       name: "Backup & Dados",
       href: "/settings/backup",
-      icon: HardDrive,
+      icon: ShieldCheck,
       desc: "Download SQLite & restauração",
-      color: "text-emerald-400"
+      color: "text-teal-400"
     },
     {
       name: "Telas & PiP Pareados",

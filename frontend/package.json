@@ -1,6 +1,6 @@
 {
-  "name": "sentinela-ui",
-  "version": "1.0.0",
+  "name": "sentinela-frontend",
+  "version": "001.000.000.078",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",

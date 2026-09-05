@@ -257,15 +257,22 @@ class MQTTService:
         """Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast without blocking PiP."""
         try:
             snapshot_bytes = None
-            async with httpx.AsyncClient(timeout=4.0) as client:
+            async with httpx.AsyncClient(timeout=6.0) as client:
                 try:
-                    resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg")
-                    if resp.status_code == 200:
+                    # 1. Fetch full uncropped HD snapshot (clean=0 preserves annotations, crop=0 guarantees full sensor frame, h=1080)
+                    resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?crop=0&h=1080")
+                    if resp.status_code == 200 and len(resp.content) > 2000:
                         snapshot_bytes = resp.content
                     else:
-                        resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg")
-                        if resp_latest.status_code == 200:
-                            snapshot_bytes = resp_latest.content
+                        # 2. Direct event snapshot fallback
+                        resp_ev = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg")
+                        if resp_ev.status_code == 200 and len(resp_ev.content) > 2000:
+                            snapshot_bytes = resp_ev.content
+                        else:
+                            # 3. High-definition current camera frame fallback
+                            resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg?h=1080")
+                            if resp_latest.status_code == 200 and len(resp_latest.content) > 2000:
+                                snapshot_bytes = resp_latest.content
                 except Exception as e:
                     logger.debug(f"Could not retrieve snapshot: {e}")
 

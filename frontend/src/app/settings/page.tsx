@@ -144,32 +144,29 @@ export default function SettingsHubPage() {
               <HardDrive className="w-6 h-6" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h2 className="text-base font-black text-white tracking-wide">
-                  Armazenamento & SSD NVMe (Ubuntu Server)
-                </h2>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/80 font-bold uppercase">
-                  {storageData?.mount || "/media/frigate"}
-                </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-800/80 font-bold">
-                  {storageData?.health === "healthy" ? "100% SAUDÁVEL" : "ATENÇÃO"}
-                </span>
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Monitoramento de integridade e ferramentas de manutenção rápida para vídeos e fotos do Frigate NVR.
-              </p>
+              <h3 className="text-sm font-black text-white">Armazenamento & SSD NVMe (Ubuntu Server)</h3>
+              <p className="text-[11px] text-slate-400">Monitoramento e limpeza de vídeos MP4 e fotos HD</p>
             </div>
           </div>
-
-          <button
-            onClick={fetchStorageStatus}
-            disabled={storageLoading}
-            className="self-start sm:self-auto p-2 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-300 transition-all border border-slate-700 text-xs flex items-center gap-1.5 font-bold disabled:opacity-50"
-            title="Atualizar métricas de disco"
-          >
-            <RefreshCw className={`w-3.5 h-3.5 ${storageLoading ? "animate-spin text-cyan-400" : ""}`} />
-            <span>Atualizar</span>
-          </button>
+          
+          <div className="flex items-center gap-2">
+            <Link
+              href="/settings/storage"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/40 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all"
+            >
+              <span>Painel Completo</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+            <button
+              type="button"
+              onClick={fetchStorageStatus}
+              disabled={storageLoading}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs font-mono text-slate-300 border border-slate-700 hover:border-slate-600 transition-all"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${storageLoading ? "animate-spin text-cyan-400" : ""}`} />
+              <span>Atualizar</span>
+            </button>
+          </div>
         </div>
 
         {/* Feedback visual de limpeza */}

@@ -86,14 +86,14 @@ class TelegramVaultService:
         self.pause_until = datetime.datetime.now() + datetime.timedelta(minutes=minutes)
 
     def apply_watermark(self, image_bytes: bytes, camera_name: str, label: str, zone: Optional[str] = None) -> bytes:
-        """Applies a professional HUD watermark on the snapshot."""
+        """Applies a professional HUD watermark on the snapshot with dynamic scaling for 1080p HD."""
         try:
             image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
             draw = ImageDraw.Draw(image)
             width, height = image.size
 
-            # HUD banner background (semi-transparent dark bar at top)
-            bar_height = max(int(height * 0.08), 36)
+            # HUD banner background (proportional dark bar at top)
+            bar_height = max(int(height * 0.06), 36)
             draw.rectangle([(0, 0), (width, bar_height)], fill=(8, 13, 20))
 
             # HUD Accent line (Cyan)
@@ -101,13 +101,13 @@ class TelegramVaultService:
 
             now_str = datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             zone_str = f" | Zona: {zone}" if zone else ""
-            hud_text = f"🛡️ SENTINELA | {camera_name.upper()} | OBJETO: {label.upper()}{zone_str} | {now_str}"
+            hud_text = f"🛡️ SENTINELA PRO | {camera_name.upper()} | OBJETO: {label.upper()}{zone_str} | {now_str}"
 
             # Draw text
-            draw.text((15, int(bar_height * 0.25)), hud_text, fill=(255, 255, 255))
+            draw.text((15, int(bar_height * 0.22)), hud_text, fill=(255, 255, 255))
 
             out_buf = io.BytesIO()
-            image.save(out_buf, format="JPEG", quality=90)
+            image.save(out_buf, format="JPEG", quality=95, subsampling=0)
             return out_buf.getvalue()
         except Exception as e:
             logger.error(f"Error applying watermark: {e}")

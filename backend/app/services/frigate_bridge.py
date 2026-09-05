@@ -212,21 +212,26 @@ class FrigateBridgeService:
             with open(in_file, "wb") as f:
                 f.write(video_bytes)
             
-            # 1. Primary: High-speed CFR transcode (cures camera timestamp jitter & guarantees smooth 25 FPS)
+            # 1. Primary: High-efficiency CFR transcode with Closed GOP & H.264 Main L4.0 (guarantees fluid mobile Telegram playback)
             cmd_transcode = [
                 "ffmpeg", "-y",
                 "-i", in_file,
-                "-r", str(target_fps),
-                "-vsync", "cfr",
+                "-vf", f"fps=fps={target_fps}:round=near",
                 "-c:v", "libx264",
-                "-preset", "ultrafast",
+                "-profile:v", "main",
+                "-level", "4.0",
+                "-preset", "veryfast",
                 "-crf", "23",
+                "-g", str(target_fps * 2),
+                "-keyint_min", str(target_fps),
+                "-sc_threshold", "0",
                 "-maxrate", "2500k",
                 "-bufsize", "5000k",
                 "-pix_fmt", "yuv420p",
                 "-movflags", "+faststart",
                 "-c:a", "aac",
                 "-b:a", "128k",
+                "-threads", "2",
                 out_file
             ]
             proc = subprocess.run(cmd_transcode, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=30)
@@ -234,7 +239,7 @@ class FrigateBridgeService:
                 with open(out_file, "rb") as f:
                     smooth_bytes = f.read()
                 if self.has_video_stream(smooth_bytes):
-                    logger.info(f"✅ Vídeo otimizado para Telegram: {len(video_bytes)} -> {len(smooth_bytes)} bytes (-{round((1 - len(smooth_bytes)/len(video_bytes))*100, 1)}%) em {target_fps} FPS CFR")
+                    logger.info(f"✅ Vídeo otimizado para Telegram: {len(video_bytes)} -> {len(smooth_bytes)} bytes (-{round((1 - len(smooth_bytes)/len(video_bytes))*100, 1)}%) em {target_fps} FPS CFR Closed-GOP")
                     return smooth_bytes
 
             # 2. Fallback path: Zero-CPU Lossless Stream Copy with +faststart
