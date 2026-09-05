@@ -837,7 +837,7 @@ fun DeviceConfigEditDialog(
                         Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                             Text("ID: ${device.deviceIdentifier}", color = SentinelaColors.PrimaryCyan, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
                             Text("IP: ${device.ipAddress} • MAC: ${device.macAddress ?: "Automático"}", color = SentinelaColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-                            Text("App: ${device.appVersion ?: "v001.000.000.072"} • Modelo: ${device.deviceModel ?: device.deviceType}", color = SentinelaColors.TextSecondary, fontSize = 9.sp)
+                            Text("App: ${device.appVersion ?: "v001.000.000.073"} • Modelo: ${device.deviceModel ?: device.deviceType}", color = SentinelaColors.TextSecondary, fontSize = 9.sp)
                         }
                     }
                 }

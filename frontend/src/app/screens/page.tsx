@@ -558,8 +558,8 @@ export default function ScreensPage() {
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto pb-12">
-      {/* Top Header Bar */}
-      <div className="flex flex-col xl:flex-row items-start xl:items-center justify-between gap-4 p-5 rounded-3xl glass-panel border border-slate-800/80 shadow-2xl bg-gradient-to-r from-slate-900/90 via-obsidian-950/80 to-slate-900/90">
+      {/* Top Header Bar & Primary Broadcast Actions */}
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 p-5 rounded-3xl glass-panel border border-slate-800/80 shadow-2xl bg-gradient-to-r from-slate-900/90 via-obsidian-950/80 to-slate-900/90">
         <div className="flex items-center gap-4">
           <div className="p-3.5 rounded-2xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20 shadow-lg shadow-cyan-500/10">
             <Tv className="w-7 h-7" />
@@ -572,8 +572,8 @@ export default function ScreensPage() {
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
                 PiP Ultra Gateway
               </span>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
-                v001.000.000.072
+              <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
+                v001.000.000.073
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1">
@@ -582,12 +582,12 @@ export default function ScreensPage() {
           </div>
         </div>
 
-        {/* Global Toolbar */}
-        <div className="flex items-center gap-2 flex-wrap w-full xl:w-auto justify-end">
+        {/* Primary Broadcast Bar (Test PiP on All Screens) */}
+        <div className="flex items-center gap-2.5 flex-wrap w-full lg:w-auto justify-start lg:justify-end">
           {/* Camera Picker */}
-          <div className="flex items-center gap-2 bg-obsidian-950/80 px-3 py-2 rounded-xl border border-slate-800 text-xs">
+          <div className="flex items-center gap-2 bg-obsidian-950/90 px-3 py-2.5 rounded-xl border border-slate-800 text-xs shadow-inner">
             <Camera className="w-4 h-4 text-cyan-400" />
-            <span className="text-slate-400 text-[11px] hidden sm:inline">Câmera Teste:</span>
+            <span className="text-slate-400 text-[11px] hidden sm:inline font-semibold">Câmera:</span>
             <select
               value={selectedCam}
               onChange={(e) => setSelectedCam(e.target.value)}
@@ -602,29 +602,35 @@ export default function ScreensPage() {
           </div>
 
           <button
-            onClick={() => {
-              if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(() => {});
-                setKioskMode(true);
-              } else {
-                document.exitFullscreen().catch(() => {});
-                setKioskMode(false);
-              }
-            }}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold transition-all"
-            title="Modo Painel de Portaria em Tela Cheia"
+            disabled={testingPiP}
+            onClick={handleTestPiPBroadcast}
+            className="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-obsidian-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50"
           >
-            <Tablet className="w-4 h-4" />
-            <span className="hidden sm:inline">{kioskMode ? "Sair Quiosque" : "Modo Quiosque"}</span>
+            <Play className="w-4 h-4 fill-current" />
+            <span>{testingPiP ? "Transmitindo..." : "Testar em Todas as TVs"}</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Secondary Management & Utilities Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 rounded-2xl glass-panel border border-slate-800/80 bg-slate-950/60 shadow-lg">
+        {/* Management Tools */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-all shadow-sm"
+          >
+            <Plus className="w-4 h-4 text-emerald-400" />
+            <span>Adicionar Tela</span>
           </button>
 
           <button
             disabled={scanningTVs}
             onClick={handleScanTVs}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all disabled:opacity-50 shadow-sm"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all disabled:opacity-50 shadow-sm"
           >
-            <RefreshCw className={`w-4 h-4 ${scanningTVs ? "animate-spin" : ""}`} />
-            <span>{scanningTVs ? "Buscando..." : "Escanear TVs"}</span>
+            <RefreshCw className={`w-3.5 h-3.5 ${scanningTVs ? "animate-spin text-cyan-400" : "text-cyan-400"}`} />
+            <span>{scanningTVs ? "Buscando TVs..." : "Escanear TVs"}</span>
           </button>
 
           <button
@@ -641,38 +647,41 @@ export default function ScreensPage() {
                 showToast("Erro ao deduplicar telas.", "error");
               }
             }}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold transition-all shadow-sm"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold transition-all shadow-sm"
             title="Remove telas duplicadas e consolida dispositivos repetidos de reinstalações"
           >
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <span>Consolidar</span>
+            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+            <span>Consolidar Telas</span>
           </button>
+        </div>
 
-          <button
-            onClick={() => setIsModalOpen(true)}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold transition-all"
-          >
-            <Plus className="w-4 h-4 text-emerald-400" />
-            <span>Adicionar</span>
-          </button>
-
+        {/* Simulation and Display Modes */}
+        <div className="flex items-center gap-2 flex-wrap">
           <button
             disabled={testingPiP}
             onClick={() => handleBatchTest("simulated_detection")}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 text-xs font-bold transition-all disabled:opacity-50"
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 text-xs font-bold transition-all disabled:opacity-50"
             title="Simula um evento de detecção de pessoa com IA para todas as telas"
           >
-            <Sparkles className="w-4 h-4 text-indigo-400" />
-            <span className="hidden sm:inline">Simular IA</span>
+            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Simular Alerta IA</span>
           </button>
 
           <button
-            disabled={testingPiP}
-            onClick={handleTestPiPBroadcast}
-            className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-teal-400 hover:from-cyan-400 hover:to-teal-300 text-obsidian-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all disabled:opacity-50"
+            onClick={() => {
+              if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+                setKioskMode(true);
+              } else {
+                document.exitFullscreen().catch(() => {});
+                setKioskMode(false);
+              }
+            }}
+            className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-bold transition-all"
+            title="Modo Painel de Portaria em Tela Cheia"
           >
-            <Play className="w-4 h-4 fill-current" />
-            <span>{testingPiP ? "Transmitindo..." : "Testar em Todas as TVs"}</span>
+            <Tablet className="w-3.5 h-3.5 text-cyan-400" />
+            <span>{kioskMode ? "Sair Quiosque" : "Modo Quiosque"}</span>
           </button>
         </div>
       </div>
