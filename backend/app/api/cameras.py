@@ -409,8 +409,48 @@ async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends
     }
 
 
+@router.post("")
 @router.post("/")
 async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Depends(get_db)):
+    # 1. Verificar se já existe câmera cadastrada com este nome ou IP
+    existing_q = await db.execute(
+        select(Camera).where(
+            (Camera.name == cam.name) | 
+            ((Camera.ip_address == cam.ip_address) & (Camera.ip_address.isnot(None)) & (Camera.ip_address != ""))
+        )
+    )
+    existing_cam = existing_q.scalars().first()
+    
+    if existing_cam:
+        # Atualiza os dados da câmera existente em vez de estourar erro de unicidade
+        if cam.friendly_name:
+            existing_cam.friendly_name = cam.friendly_name
+        if cam.rtsp_main:
+            existing_cam.rtsp_main = cam.rtsp_main
+        if cam.rtsp_sub:
+            existing_cam.rtsp_sub = cam.rtsp_sub
+        if cam.onvif_port:
+            existing_cam.onvif_port = cam.onvif_port
+        if cam.enabled is not None:
+            existing_cam.enabled = cam.enabled
+            
+        await db.commit()
+        await db.refresh(existing_cam)
+        
+        try:
+            await sync_camera_to_frigate(existing_cam)
+        except Exception as e:
+            logger.warning(f"Error syncing updated camera to Frigate: {e}")
+            
+        await audit_service.log(
+            action="CAMERA_UPDATED",
+            module="CAMERA",
+            severity="SUCCESS",
+            details=f"Câmera existente atualizada via cadastro: {existing_cam.name} ({existing_cam.ip_address})",
+            client_ip=request.client.host if request.client else "unknown"
+        )
+        return existing_cam
+
     sub_url = cam.rtsp_sub
     if not sub_url and cam.rtsp_main:
         sub_url = infer_substream_url(cam.rtsp_main)
@@ -427,7 +467,6 @@ async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Dep
     db.add(db_cam)
     await db.commit()
     await db.refresh(db_cam)
-
 
     # Sync immediately with Frigate and go2rtc
     try:
