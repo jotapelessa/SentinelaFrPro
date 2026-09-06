@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TvDesignTokens.kt"
+community: "dependencies"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvDesignTokenskt
+  - community/dependencies
 ---
 
 # PipAlert
@@ -14,4 +14,4 @@ tags:
 - [[TvNetflixScreenCore()]] - `calls` [EXTRACTED]
 - [[TvPipFloatingWindow()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt
+#graphify/code #graphify/EXTRACTED #community/dependencies

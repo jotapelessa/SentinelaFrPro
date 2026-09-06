@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TvDesignTokens.kt"
+community: "dependencies"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvDesignTokenskt
+  - community/dependencies
 ---
 
 # androidx
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[TvCamerasViewport()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt
+#graphify/code #graphify/EXTRACTED #community/dependencies

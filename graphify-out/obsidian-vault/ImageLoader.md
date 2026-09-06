@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "PiPGatewayService"
+community: "X509Certificate"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/X509Certificate
 ---
 
 # ImageLoader
@@ -14,4 +14,4 @@ tags:
 - [[dot-newImageLoader()]] - `references` [EXTRACTED]
 - [[SentinelaApplication.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/X509Certificate

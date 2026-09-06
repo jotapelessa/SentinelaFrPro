@@ -10,7 +10,7 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[androidbuild.gradle.kts]] - code - android/build.gradle.kts
+- [[sentinela-pro-mobile-nvrvite.config.ts]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/vite.config.ts
 
 ## Live Query (requires Dataview plugin)
 

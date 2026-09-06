@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "rationale"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "compilerOptions"
 location: "L275"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/compilerOptions
 ---
 
 # Robust H.264/AAC constant-frame-rate preparation for Telegram & mobile…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-transcode_to_30fps()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/rationale #graphify/EXTRACTED #community/compilerOptions

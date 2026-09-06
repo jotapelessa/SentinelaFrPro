@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/ws.py"
 type: "rationale"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "Settings"
 location: "L74"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/Settings
 ---
 
 # Background loop sending hardware telemetry every 5.0 seconds to connected UI…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[telemetry_broadcast_loop()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/rationale #graphify/EXTRACTED #community/Settings

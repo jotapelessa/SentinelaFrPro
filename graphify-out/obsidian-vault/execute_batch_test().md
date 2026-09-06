@@ -1,23 +1,23 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L946"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # execute_batch_test()
 
 ## Connections
-- [[AsyncSession]] - `references` [EXTRACTED]
+- [[AsyncSession_1]] - `references` [EXTRACTED]
 - [[BatchTestRequest]] - `references` [EXTRACTED]
 - [[Executes batch tests across multiple or all devices simultaneously.]] - `rationale_for` [EXTRACTED]
 - [[PairedDevice_1]] - `uses` [INFERRED]
-- [[Request]] - `references` [EXTRACTED]
+- [[Request_1]] - `references` [EXTRACTED]
 - [[devices.py]] - `contains` [EXTRACTED]
-- [[post]] - `references` [EXTRACTED]
+- [[post_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

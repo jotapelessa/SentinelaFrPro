@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "useSentinelaStore"
+community: "compilerOptions"
 location: "L128"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # .format_event_message()
@@ -16,4 +16,4 @@ tags:
 - [[dot-send_alert_video()]] - `calls` [EXTRACTED]
 - [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

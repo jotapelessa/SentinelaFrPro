@@ -1,12 +1,12 @@
 ---
 source_file: "README.md"
 type: "document"
-community: "Resgate do Sistema: Solução Final para o Vídeo do Telegram (v060.4)"
+community: "TvAudioManager"
 location: "L79"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Resgate_do_Sistema_Solução_Final_para_o_Vídeo_do_Telegram_v0604
+  - community/TvAudioManager
 ---
 
 # 🚀 Como Compilar os APKs no GitHub Codespaces
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[🛡️ Sentinela Frigate Pro]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Resgate_do_Sistema_Solução_Final_para_o_Vídeo_do_Telegram_v0604
+#graphify/document #graphify/EXTRACTED #community/TvAudioManager

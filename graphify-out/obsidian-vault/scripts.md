@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "code"
-community: "TvAudioManager"
+community: "SentinelaMobileTokens.kt"
 location: "L6"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvAudioManager
+  - community/SentinelaMobileTokenskt
 ---
 
 # scripts
@@ -19,4 +19,4 @@ tags:
 - [[preview]] - `contains` [EXTRACTED]
 - [[sentinela-pro-mobile-nvrpackage.json]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvAudioManager
+#graphify/code #graphify/EXTRACTED #community/SentinelaMobileTokenskt

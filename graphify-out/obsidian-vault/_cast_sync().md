@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "MseCameraView"
+community: "dependencies"
 location: "L13"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/MseCameraView
+  - community/dependencies
 ---
 
 # _cast_sync()
@@ -16,4 +16,4 @@ tags:
 - [[dot-test_single_device()]] - `indirect_call` [INFERRED]
 - [[pip_gateway.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/MseCameraView
+#graphify/code #graphify/INFERRED #community/dependencies

@@ -1,17 +1,18 @@
 ---
 type: community
-cohesion: 1.00
-members: 2
+cohesion: 0.67
+members: 3
 ---
 
 # android/build.gradle.kts
 
-**Cohesion:** 1.00 - tightly connected
-**Members:** 2 nodes
+**Cohesion:** 0.67 - moderately connected
+**Members:** 3 nodes
 
 ## Members
-- [[compile_apk.sh]] - code - compile_apk.sh
-- [[compile_apk.sh script]] - code - compile_apk.sh
+- [[BaseSettings]] - code
+- [[Settings]] - code - backend/app/core/config.py
+- [[config.py]] - code - backend/app/core/config.py
 
 ## Live Query (requires Dataview plugin)
 

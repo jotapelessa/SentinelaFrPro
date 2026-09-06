@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "rationale"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L715"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # Removes all paired devices so fresh real devices can register via heartbeat.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[cleanup_all_devices()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/OverlayService
+#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore

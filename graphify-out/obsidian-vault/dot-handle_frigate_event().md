@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "code"
-community: "useSentinelaStore"
+community: "TvNetflixScreen.kt"
 location: "L106"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/TvNetflixScreenkt
 ---
 
 # .handle_frigate_event()
@@ -19,7 +19,7 @@ tags:
 - [[dot-broadcast_event()]] - `calls` [EXTRACTED]
 - [[dot-record_mqtt_traffic()]] - `calls` [EXTRACTED]
 - [[dot-start_listening()]] - `calls` [EXTRACTED]
-- [[Any_2]] - `references` [EXTRACTED]
+- [[Any]] - `references` [EXTRACTED]
 - [[MQTTService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

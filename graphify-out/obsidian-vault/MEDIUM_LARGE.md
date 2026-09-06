@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "devices.py"
+community: "ScannerService"
 location: "L93"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/ScannerService
 ---
 
 # MEDIUM_LARGE
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[PipSize]] - `case_of` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/ScannerService

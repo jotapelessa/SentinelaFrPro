@@ -1,12 +1,12 @@
 ---
 source_file: "scripts/simulate_event.sh"
 type: "code"
-community: "Community 65"
+community: "Community 71"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_65
+  - community/Community_71
 ---
 
 # simulate_event.sh script
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[simulate_event.sh]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_65
+#graphify/code #graphify/EXTRACTED #community/Community_71

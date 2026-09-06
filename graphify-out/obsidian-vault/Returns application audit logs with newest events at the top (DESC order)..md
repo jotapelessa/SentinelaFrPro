@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "rationale"
-community: "api/telemetry.py"
+community: "app/build.gradle.kts"
 location: "L351"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/app/buildgradlekts
 ---
 
 # Returns application audit logs with newest events at the top (DESC order).
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_audit_logs()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/rationale #graphify/EXTRACTED #community/app/buildgradlekts

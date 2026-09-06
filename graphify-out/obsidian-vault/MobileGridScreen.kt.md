@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt"
 type: "code"
-community: "X509Certificate"
+community: "FrigateBridgeService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509Certificate
+  - community/FrigateBridgeService
 ---
 
 # MobileGridScreen.kt
@@ -20,4 +20,4 @@ tags:
 - [[SeamlessCameraImage()]] - `imports` [EXTRACTED]
 - [[SentinelaConfig]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509Certificate
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

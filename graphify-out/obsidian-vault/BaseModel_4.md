@@ -1,16 +1,19 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "cameras.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/cameraspy
 ---
 
 # BaseModel
 
 ## Connections
-- [[BenchmarkPayload]] - `inherits` [EXTRACTED]
+- [[CameraCreate]] - `inherits` [EXTRACTED]
+- [[CameraUpdate]] - `inherits` [EXTRACTED]
+- [[FrigateZonesPayload]] - `inherits` [EXTRACTED]
+- [[RtspTestPayload]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/cameraspy

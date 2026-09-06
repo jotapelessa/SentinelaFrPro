@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "rationale"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L623"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # Quickly toggle PiP alerts state for a single device with 1-click.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[toggle_device_pip()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/OverlayService
+#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore

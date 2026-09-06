@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "Observer"
+community: "SentinelaRepository"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/SentinelaRepository
 ---
 
 # SessionDescription
@@ -15,4 +15,4 @@ tags:
 - [[dot-onCreateSuccess()_1]] - `references` [EXTRACTED]
 - [[dot-sendOfferToGo2Rtc()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

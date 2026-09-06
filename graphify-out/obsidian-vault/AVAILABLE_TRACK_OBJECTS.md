@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/components/ZoneCanvasModal.tsx"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "OverlayService"
 location: "L41"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/OverlayService
 ---
 
 # AVAILABLE_TRACK_OBJECTS
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[ZoneCanvasModal.tsx]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/OverlayService

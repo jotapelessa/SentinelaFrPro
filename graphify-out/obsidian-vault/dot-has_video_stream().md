@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "compilerOptions"
 location: "L171"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/compilerOptions
 ---
 
 # .has_video_stream()
@@ -17,4 +17,4 @@ tags:
 - [[FrigateBridgeService]] - `method` [EXTRACTED]
 - [[Verifies with ffprobe that the MP4 contains at least one valid video stream and…]] - `rationale_for` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

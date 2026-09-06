@@ -1,17 +1,19 @@
 ---
 source_file: ""
 type: "code"
-community: "OverlayService"
+community: "TvNetflixScreen.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/TvNetflixScreenkt
 ---
 
 # delete
 
 ## Connections
-- [[cleanup_all_devices()]] - `references` [EXTRACTED]
-- [[delete_device()]] - `references` [EXTRACTED]
+- [[clear_audit_trail()]] - `calls` [EXTRACTED]
+- [[delete_event()]] - `references` [EXTRACTED]
+- [[delete_events_batch()]] - `calls` [EXTRACTED]
+- [[delete_events_by_date()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

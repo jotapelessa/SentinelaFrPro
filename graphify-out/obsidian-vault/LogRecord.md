@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "backup/page.tsx"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/backup/pagetsx
 ---
 
 # LogRecord
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[dot-emit()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/backup/pagetsx

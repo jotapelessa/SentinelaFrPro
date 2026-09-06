@@ -1,17 +1,18 @@
 ---
 type: community
-cohesion: 1.00
-members: 2
+cohesion: 0.67
+members: 3
 ---
 
 # sentinela-pro-mobile-nvr/vite.config.ts
 
-**Cohesion:** 1.00 - tightly connected
-**Members:** 2 nodes
+**Cohesion:** 0.67 - moderately connected
+**Members:** 3 nodes
 
 ## Members
-- [[AGENTS]] - document - AGENTS.md
-- [[graphify]] - document - AGENTS.md
+- [[Run Locally]] - document - ai_studio_imports/sentinela-pro-mobile-nvr/README.md
+- [[Run and deploy your AI Studio app]] - document - ai_studio_imports/sentinela-pro-mobile-nvr/README.md
+- [[sentinela-pro-mobile-nvrREADME]] - document - ai_studio_imports/sentinela-pro-mobile-nvr/README.md
 
 ## Live Query (requires Dataview plugin)
 

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "rationale"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L23"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # Scans LAN subnet for Smart TVs and Chromecast devices.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[discover_tvs()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/OverlayService
+#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore

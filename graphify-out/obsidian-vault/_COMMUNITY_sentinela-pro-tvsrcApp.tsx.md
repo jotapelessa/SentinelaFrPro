@@ -10,7 +10,7 @@ members: 52
 **Members:** 52 nodes
 
 ## Members
-- [[App()_1]] - code - ai_studio_imports/sentinela-pro-tv/src/App.tsx
+- [[App()]] - code - ai_studio_imports/sentinela-pro-tv/src/App.tsx
 - [[BoundingBox]] - code - ai_studio_imports/sentinela-pro-tv/src/types/tv.ts
 - [[CameraEntity_1]] - code - ai_studio_imports/sentinela-pro-tv/src/types/tv.ts
 - [[CameraStatus_1]] - code - ai_studio_imports/sentinela-pro-tv/src/types/tv.ts
@@ -71,7 +71,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_logspage.tsx]]
+- 1 edge to [[_COMMUNITY_build_apk.sh]]
 
 ## Top bridge nodes
 - [[audioFeedback.ts]] - degree 13, connects to 1 community

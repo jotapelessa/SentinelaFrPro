@@ -1,12 +1,12 @@
 ---
 source_file: "implementation_plan.md"
 type: "document"
-community: "compile_apk.sh"
+community: "settings/page.tsx"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/compile_apksh
+  - community/settings/pagetsx
 ---
 
 # Resgate do Sistema: Solução Final para o Vídeo do Telegram (v060.4)
@@ -17,4 +17,4 @@ tags:
 - [[User Review Required]] - `contains` [EXTRACTED]
 - [[implementation_plan]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/compile_apksh
+#graphify/document #graphify/EXTRACTED #community/settings/pagetsx

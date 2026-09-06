@@ -1,55 +1,52 @@
 ---
 type: community
-cohesion: 0.11
-members: 40
+cohesion: 0.07
+members: 37
 ---
 
 # SentinelaRepository
 
-**Cohesion:** 0.11 - loosely connected
-**Members:** 40 nodes
+**Cohesion:** 0.07 - loosely connected
+**Members:** 37 nodes
 
 ## Members
-- [[AiDetectionEvent]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/types.ts
-- [[App()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/App.tsx
-- [[BottomNavTab]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/types.ts
-- [[CameraFeed]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/types.ts
-- [[CameraStreamCardItem()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/LiveFeedView.tsx
-- [[CameraStreamCardItemProps]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/LiveFeedView.tsx
-- [[CaptureItem]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/types.ts
-- [[CapturesView()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/CapturesView.tsx
-- [[CapturesView.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/CapturesView.tsx
-- [[CapturesViewProps]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/CapturesView.tsx
-- [[DESIGN_TOKENS_KOTLIN]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/kotlinCode.ts
-- [[DesignTokensDoc()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/DesignTokensDoc.tsx
-- [[DesignTokensDoc.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/DesignTokensDoc.tsx
-- [[INITIAL_CAMERAS]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/data/mockData.ts
-- [[INITIAL_CAPTURES]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/data/mockData.ts
-- [[INITIAL_TVS]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/data/mockData.ts
-- [[KotlinCodeViewer()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/KotlinCodeViewer.tsx
-- [[KotlinCodeViewer.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/KotlinCodeViewer.tsx
-- [[LiveFeedView()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/LiveFeedView.tsx
-- [[LiveFeedView.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/LiveFeedView.tsx
-- [[LiveFeedViewProps]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/LiveFeedView.tsx
-- [[MasterCentralView()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/MasterCentralView.tsx
-- [[MasterCentralView.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/MasterCentralView.tsx
-- [[MasterCentralViewProps]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/MasterCentralView.tsx
-- [[PhoneSimulator()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/PhoneSimulator.tsx
-- [[PhoneSimulator.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/PhoneSimulator.tsx
-- [[PhoneSimulatorProps]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/PhoneSimulator.tsx
-- [[SCREEN_KOTLIN]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/kotlinCode.ts
-- [[SettingsView()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/SettingsView.tsx
-- [[SettingsView.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/SettingsView.tsx
-- [[SettingsViewProps]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/SettingsView.tsx
-- [[TvDevice]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/types.ts
-- [[TvMasterCardItem()]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/MasterCentralView.tsx
-- [[TvMasterCardItemProps]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/components/MasterCentralView.tsx
-- [[VIEWMODEL_KOTLIN]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/kotlinCode.ts
-- [[kotlinCode.ts]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/kotlinCode.ts
-- [[sentinela-pro-mobile-nvrsrcApp.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/App.tsx
-- [[sentinela-pro-mobile-nvrsrcdatamockData.ts]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/data/mockData.ts
-- [[sentinela-pro-mobile-nvrsrcmain.tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/main.tsx
-- [[types.ts]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/src/types.ts
+- [[dot-onAddStream()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onAddTrack()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onCreateFailure()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onCreateFailure()_1]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onCreateSuccess()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onCreateSuccess()_1]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onDataChannel()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onIceCandidate()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onIceCandidatesRemoved()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onIceConnectionChange()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onIceConnectionReceivingChange()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onIceGatheringChange()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onRemoveStream()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onRenegotiationNeeded()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onSetFailure()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onSetFailure()_1]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onSetSuccess()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onSetSuccess()_1]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-onSignalingChange()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-release()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-sendOfferToGo2Rtc()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[dot-startStream()]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[DataChannel]] - code
+- [[EglBase]] - code
+- [[IceCandidate]] - code
+- [[MediaStream]] - code
+- [[Observer]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[PeerConnection]] - code
+- [[PeerConnectionFactory]] - code
+- [[RtpReceiver]] - code
+- [[SdpObserver]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[SdpObserver_1]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[SdpObserver_2]] - code
+- [[SessionDescription]] - code
+- [[SurfaceViewRenderer]] - code
+- [[WebRtcManager]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
+- [[WebRtcManager.kt]] - code - android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt
 
 ## Live Query (requires Dataview plugin)
 
@@ -57,3 +54,9 @@ members: 40
 TABLE source_file, type FROM #community/SentinelaRepository
 SORT file.name ASC
 ```
+
+## Connections to other communities
+- 1 edge to [[_COMMUNITY_devices.py]]
+
+## Top bridge nodes
+- [[WebRtcManager]] - degree 8, connects to 1 community

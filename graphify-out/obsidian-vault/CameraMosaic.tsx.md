@@ -1,18 +1,18 @@
 ---
 source_file: "frontend/src/components/CameraMosaic.tsx"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "OverlayService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/OverlayService
 ---
 
 # CameraMosaic.tsx
 
 ## Connections
-- [[Camera]] - `imports` [EXTRACTED]
+- [[Camera_1]] - `imports` [EXTRACTED]
 - [[CameraMosaic()]] - `contains` [EXTRACTED]
 - [[TimelinePlayback()]] - `imports` [EXTRACTED]
 - [[TimelinePlayback.tsx]] - `imports_from` [EXTRACTED]
@@ -23,4 +23,4 @@ tags:
 - [[useSentinelaStore]] - `imports` [EXTRACTED]
 - [[useSentinelaStore.ts]] - `imports_from` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/OverlayService

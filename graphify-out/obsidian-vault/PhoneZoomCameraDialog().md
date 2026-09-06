@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt"
 type: "code"
-community: "ScannerService"
+community: "TvDesignTokens.kt"
 location: "L2357"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ScannerService
+  - community/TvDesignTokenskt
 ---
 
 # PhoneZoomCameraDialog()
@@ -17,4 +17,4 @@ tags:
 - [[SeamlessCameraImage()]] - `calls` [INFERRED]
 - [[SmartphoneYouTubeScreen.kt]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ScannerService
+#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt

@@ -1,45 +1,41 @@
 ---
 type: community
-cohesion: 0.08
-members: 30
+cohesion: 0.09
+members: 26
 ---
 
 # compilerOptions
 
-**Cohesion:** 0.08 - loosely connected
-**Members:** 30 nodes
+**Cohesion:** 0.09 - loosely connected
+**Members:** 26 nodes
 
 ## Members
-- [[@googlegenai]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[@googlegenai_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[@googlegenai_2]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
-- [[@tailwindcssvite]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[@tailwindcssvite_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[@tailwindcssvite_2]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
-- [[@vitejsplugin-react]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[@vitejsplugin-react_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[@vitejsplugin-react_2]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
-- [[dependencies]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[dependencies_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[dotenv]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[dotenv_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[dotenv_2]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
-- [[express]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[express_2]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[express_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[express_3]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
-- [[lucide-react]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[lucide-react_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[lucide-react_2]] - code - frontend/package.json
-- [[lucide-react_3]] - concept - frontend/package.json
-- [[motion]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[motion_2]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[motion_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[motion_3]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
-- [[react]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[react_2]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[react_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[react_3]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
+- [[ALERT]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[CAMERAS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[CameraEntity]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[CameraStatus]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[CameraStreamTelemetry]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[Color]] - code
+- [[DetectionBox]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[LOGS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[LogEntryItem]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[Modifier]] - code
+- [[ONLINE]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[PipAlert]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[RECORDING]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[RECORDINGS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[SETTINGS_1]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[STANDBY]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[Shape]] - code
+- [[TOOLS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[TvColors]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[TvDesignTokens.kt]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[TvDimens]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[TvShapes]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[TvTab]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[TvTypography]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[toEntity()]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[tvDpadFocusable()]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
 
 ## Live Query (requires Dataview plugin)
 
@@ -49,13 +45,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 3 edges to [[_COMMUNITY_TelemetryService]]
-- 1 edge to [[_COMMUNITY_TvAudioManager]]
-- 1 edge to [[_COMMUNITY_dependencies_2]]
-- 1 edge to [[_COMMUNITY_SentinelaMobileTokens.kt]]
-- 1 edge to [[_COMMUNITY_X509TrustManager]]
+- 1 edge to [[_COMMUNITY_dependencies]]
+- 1 edge to [[_COMMUNITY_FrigateBridgeService]]
 
 ## Top bridge nodes
-- [[dependencies]] - degree 11, connects to 3 communities
-- [[dependencies_1]] - degree 11, connects to 3 communities
-- [[lucide-react_2]] - degree 2, connects to 1 community
+- [[TvDesignTokens.kt]] - degree 18, connects to 2 communities

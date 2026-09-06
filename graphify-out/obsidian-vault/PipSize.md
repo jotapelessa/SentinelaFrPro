@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "devices.py"
+community: "ScannerService"
 location: "L88"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/ScannerService
 ---
 
 # PipSize
@@ -23,4 +23,4 @@ tags:
 - [[SMALL]] - `case_of` [EXTRACTED]
 - [[SentinelaPreferences]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/ScannerService

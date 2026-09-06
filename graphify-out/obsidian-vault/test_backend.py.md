@@ -1,12 +1,12 @@
 ---
 source_file: "backend/tests/test_backend.py"
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "TvNetflixScreen.kt"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/TvNetflixScreenkt
 ---
 
 # test_backend.py
@@ -18,4 +18,4 @@ tags:
 - [[test_telemetry_service()]] - `contains` [EXTRACTED]
 - [[test_watermark_generation()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

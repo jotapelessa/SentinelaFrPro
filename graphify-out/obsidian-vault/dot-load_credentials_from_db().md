@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "useSentinelaStore"
+community: "compilerOptions"
 location: "L39"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # .load_credentials_from_db()
@@ -22,4 +22,4 @@ tags:
 - [[SystemSetting]] - `calls` [EXTRACTED]
 - [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

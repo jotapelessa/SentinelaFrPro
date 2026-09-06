@@ -1,16 +1,23 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "cameras.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/cameraspy
 ---
 
 # Request
 
 ## Connections
-- [[audit_http_requests()]] - `references` [EXTRACTED]
+- [[add_camera()]] - `references` [EXTRACTED]
+- [[delete_camera()]] - `references` [EXTRACTED]
+- [[pause_camera()]] - `references` [EXTRACTED]
+- [[resume_camera()]] - `references` [EXTRACTED]
+- [[sync_cameras_from_frigate()]] - `references` [EXTRACTED]
+- [[toggle_camera_fallback()]] - `references` [EXTRACTED]
+- [[toggle_camera_pause()]] - `references` [EXTRACTED]
+- [[update_camera()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/cameraspy

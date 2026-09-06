@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "asyncio"
+community: "settings.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # Request
@@ -19,4 +19,4 @@ tags:
 - [[test_telegram_video()]] - `references` [EXTRACTED]
 - [[update_telegram_config()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/settingspy

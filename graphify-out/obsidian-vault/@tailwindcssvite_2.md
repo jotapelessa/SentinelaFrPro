@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
 type: "concept"
-community: "compilerOptions"
+community: "Observer"
 location: "L15"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/Observer
 ---
 
 # @tailwindcss/vite
@@ -15,4 +15,4 @@ tags:
 - [[@tailwindcssvite]] - `imports` [EXTRACTED]
 - [[@tailwindcssvite_1]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/compilerOptions
+#graphify/concept #graphify/EXTRACTED #community/Observer

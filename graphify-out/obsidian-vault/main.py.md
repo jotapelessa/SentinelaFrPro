@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/main.py"
 type: "code"
-community: "api/telemetry.py"
+community: "manifest.json"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/manifestjson
 ---
 
 # main.py
@@ -21,4 +21,4 @@ tags:
 - [[lifespan()]] - `contains` [EXTRACTED]
 - [[root()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/manifestjson

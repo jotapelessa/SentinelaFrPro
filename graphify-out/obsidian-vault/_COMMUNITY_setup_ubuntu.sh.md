@@ -1,18 +1,19 @@
 ---
 type: community
-cohesion: 0.67
-members: 3
+cohesion: 0.50
+members: 4
 ---
 
 # setup_ubuntu.sh
 
-**Cohesion:** 0.67 - moderately connected
-**Members:** 3 nodes
+**Cohesion:** 0.50 - moderately connected
+**Members:** 4 nodes
 
 ## Members
-- [[AuditLogItem_1]] - code - frontend/src/app/settings/logs/page.tsx
-- [[LogsSettingsPage()]] - code - frontend/src/app/settings/logs/page.tsx
-- [[logspage.tsx]] - code - frontend/src/app/settings/logs/page.tsx
+- [[android-smartphone-app.spec.test.js]] - code - test/android-smartphone-app.spec.test.js
+- [[prefsFile]] - code - test/android-smartphone-app.spec.test.js
+- [[repoFile]] - code - test/android-smartphone-app.spec.test.js
+- [[smartphoneScreenFile]] - code - test/android-smartphone-app.spec.test.js
 
 ## Live Query (requires Dataview plugin)
 

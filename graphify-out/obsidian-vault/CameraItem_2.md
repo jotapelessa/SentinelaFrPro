@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "settings.py"
+community: "api/telemetry.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/settingspy
+  - community/api/telemetrypy
 ---
 
 # CameraItem
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[dot-getCameras()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/settingspy
+#graphify/code #graphify/EXTRACTED #community/api/telemetrypy

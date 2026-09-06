@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "rationale"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L741"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # Receives physical execution confirmation from the Android TV overlay service.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[receive_pip_ack()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/OverlayService
+#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore

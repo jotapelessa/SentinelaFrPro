@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[SettingsHubPage()]] - code - frontend/src/app/settings/page.tsx
-- [[settingspage.tsx]] - code - frontend/src/app/settings/page.tsx
+- [[build_apk.sh]] - code - android/build_apk.sh
+- [[build_apk.sh script]] - code - android/build_apk.sh
 
 ## Live Query (requires Dataview plugin)
 

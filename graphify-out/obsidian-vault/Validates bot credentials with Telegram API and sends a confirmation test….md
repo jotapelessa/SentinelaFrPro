@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "rationale"
-community: "useSentinelaStore"
+community: "compilerOptions"
 location: "L396"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # Validates bot credentials with Telegram API and sends a confirmation test…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-test_connection()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/rationale #graphify/EXTRACTED #community/compilerOptions

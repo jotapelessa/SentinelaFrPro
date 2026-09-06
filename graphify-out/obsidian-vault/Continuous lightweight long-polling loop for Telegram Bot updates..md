@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "rationale"
-community: "useSentinelaStore"
+community: "compilerOptions"
 location: "L578"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # Continuous lightweight long-polling loop for Telegram Bot updates.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-start_polling()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/rationale #graphify/EXTRACTED #community/compilerOptions

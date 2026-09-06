@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "manifest.json"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/manifestjson
 ---
 
 # middleware
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[audit_http_requests()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/manifestjson

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt"
 type: "code"
-community: "settings.py"
+community: "api/telemetry.py"
 location: "L177"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/settingspy
+  - community/api/telemetrypy
 ---
 
 # .registerOrHeartbeat()
@@ -20,4 +20,4 @@ tags:
 - [[SentinelaPreferences_1]] - `references` [EXTRACTED]
 - [[SentinelaRepository]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/settingspy
+#graphify/code #graphify/EXTRACTED #community/api/telemetrypy

@@ -1,22 +1,21 @@
 ---
 source_file: ""
 type: "code"
-community: "useSentinelaStore"
+community: "TelegramVaultService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/TelegramVaultService
 ---
 
 # Any
 
 ## Connections
-- [[dot-_dispatch_background_alert_tasks()]] - `references` [EXTRACTED]
-- [[dot-_get_telegram_policy()]] - `references` [EXTRACTED]
-- [[dot-broadcast_event()]] - `references` [EXTRACTED]
-- [[dot-get_mqtt_traffic()]] - `references` [EXTRACTED]
-- [[dot-handle_frigate_event()]] - `references` [EXTRACTED]
-- [[dot-record_mqtt_traffic()]] - `references` [EXTRACTED]
-- [[dot-register_ws_callback()]] - `references` [EXTRACTED]
+- [[dot-discover_onvif_devices()]] - `references` [EXTRACTED]
+- [[dot-discover_smart_tvs()]] - `references` [EXTRACTED]
+- [[dot-identify_camera_profile()]] - `references` [EXTRACTED]
+- [[dot-run_full_scan()]] - `references` [EXTRACTED]
+- [[dot-scan_subnet_cctv_ports()]] - `references` [EXTRACTED]
+- [[dot-verify_rtsp_stream()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

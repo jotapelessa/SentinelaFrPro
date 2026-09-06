@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/events.py"
 type: "code"
-community: "events.py"
+community: "TvNetflixScreen.kt"
 location: "L173"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/TvNetflixScreenkt
 ---
 
 # get_events_summary()
@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[Returns real-time analytics summary directly from Frigate NVR.]] - `rationale_for` [EXTRACTED]
 - [[events.py]] - `contains` [EXTRACTED]
-- [[get_1]] - `references` [EXTRACTED]
+- [[get]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/eventspy
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

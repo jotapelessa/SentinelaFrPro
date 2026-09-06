@@ -1,42 +1,38 @@
 ---
 type: community
-cohesion: 0.07
-members: 27
+cohesion: 0.13
+members: 23
 ---
 
 # TelegramVaultService
 
-**Cohesion:** 0.07 - loosely connected
-**Members:** 27 nodes
+**Cohesion:** 0.13 - loosely connected
+**Members:** 23 nodes
 
 ## Members
-- [[dot-ts]] - concept - frontend/tsconfig.json
-- [[dot-tsx]] - concept - frontend/tsconfig.json
-- [[dot-nexttypes.ts]] - concept - frontend/tsconfig.json
-- [[allowJs_2]] - code - frontend/tsconfig.json
-- [[compilerOptions_2]] - code - frontend/tsconfig.json
-- [[dom_2]] - concept - frontend/tsconfig.json
-- [[downlevelIteration]] - code - frontend/tsconfig.json
-- [[esModuleInterop]] - code - frontend/tsconfig.json
-- [[esnext]] - concept - frontend/tsconfig.json
-- [[exclude]] - code - frontend/tsconfig.json
-- [[frontendtsconfig.json]] - code - frontend/tsconfig.json
-- [[include]] - code - frontend/tsconfig.json
-- [[incremental]] - code - frontend/tsconfig.json
-- [[isolatedModules_2]] - code - frontend/tsconfig.json
-- [[jsx_2]] - code - frontend/tsconfig.json
-- [[lib_2]] - code - frontend/tsconfig.json
-- [[module_2]] - code - frontend/tsconfig.json
-- [[moduleResolution_2]] - code - frontend/tsconfig.json
-- [[next-env.d.ts]] - concept - frontend/tsconfig.json
-- [[noEmit_2]] - code - frontend/tsconfig.json
-- [[node_modules]] - concept - frontend/tsconfig.json
-- [[paths_2]] - code - frontend/tsconfig.json
-- [[plugins]] - code - frontend/tsconfig.json
-- [[resolveJsonModule]] - code - frontend/tsconfig.json
-- [[skipLibCheck_2]] - code - frontend/tsconfig.json
-- [[strict]] - code - frontend/tsconfig.json
-- [[target_2]] - code - frontend/tsconfig.json
+- [[dot-discover_onvif_devices()]] - code - backend/app/services/scanner_service.py
+- [[dot-discover_smart_tvs()]] - code - backend/app/services/scanner_service.py
+- [[dot-get_local_subnets()]] - code - backend/app/services/scanner_service.py
+- [[dot-get_self_ips()]] - code - backend/app/services/scanner_service.py
+- [[dot-identify_camera_profile()]] - code - backend/app/services/scanner_service.py
+- [[dot-probe_onvif_device_info()]] - code - backend/app/services/scanner_service.py
+- [[dot-run_full_scan()]] - code - backend/app/services/scanner_service.py
+- [[dot-scan_port()]] - code - backend/app/services/scanner_service.py
+- [[dot-scan_subnet_cctv_ports()]] - code - backend/app/services/scanner_service.py
+- [[dot-verify_rtsp_stream()]] - code - backend/app/services/scanner_service.py
+- [[Any_2]] - code
+- [[Classifies camera hardware, identifying AITEK SEG6050BP (Guangdong Pineng…]] - rationale - backend/app/services/scanner_service.py
+- [[Collects all IP addresses belonging to the host itself so they are not detected…]] - rationale - backend/app/services/scanner_service.py
+- [[Concurrently scans CCTV ports with semaphore control, ONVIF SOAP inspection,…]] - rationale - backend/app/services/scanner_service.py
+- [[Discovers all local subnets, prioritizing physical LAN interfaces.]] - rationale - backend/app/services/scanner_service.py
+- [[Queries ONVIF SOAP GetDeviceInformation to retrieve real hardware metadata…]] - rationale - backend/app/services/scanner_service.py
+- [[Runs comprehensive multi-probe scan discovering ONVIF and RTSP CCTV devices.]] - rationale - backend/app/services/scanner_service.py
+- [[ScannerService]] - code - backend/app/services/scanner_service.py
+- [[Scans the local network for Smart TVs (Google Cast, TCL, Samsung, LG, Android…]] - rationale - backend/app/services/scanner_service.py
+- [[Sends authentic RTSP OPTIONS  DESCRIBE probes to verify real video stream…]] - rationale - backend/app/services/scanner_service.py
+- [[Sends hybrid WS-Discovery UDP probes on port 3702 to all subnets (wildcard +…]] - rationale - backend/app/services/scanner_service.py
+- [[Tries to connect to a specific port on an IP address.]] - rationale - backend/app/services/scanner_service.py
+- [[scanner_service.py]] - code - backend/app/services/scanner_service.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -46,7 +42,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_compilerOptions]]
+- 1 edge to [[_COMMUNITY_TvNetflixScreen.kt]]
 
 ## Top bridge nodes
-- [[lib_2]] - degree 4, connects to 1 community
+- [[scanner_service.py]] - degree 2, connects to 1 community

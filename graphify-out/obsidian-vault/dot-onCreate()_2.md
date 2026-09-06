@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/MainActivity.kt"
 type: "code"
-community: "graphify.js"
+community: "compile_apk.sh"
 location: "L27"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/graphifyjs
+  - community/compile_apksh
 ---
 
 # .onCreate()
@@ -21,4 +21,4 @@ tags:
 - [[TvNetflixScreen()]] - `calls` [EXTRACTED]
 - [[X509TrustManager_2]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/graphifyjs
+#graphify/code #graphify/EXTRACTED #community/compile_apksh

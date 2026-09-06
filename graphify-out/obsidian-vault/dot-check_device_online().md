@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "MseCameraView"
+community: "dependencies"
 location: "L189"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/dependencies
 ---
 
 # .check_device_online()
@@ -15,4 +15,4 @@ tags:
 - [[Fast concurrent non-blocking port check to verify if Smart TV  device is…]] - `rationale_for` [EXTRACTED]
 - [[PiPGatewayService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/dependencies

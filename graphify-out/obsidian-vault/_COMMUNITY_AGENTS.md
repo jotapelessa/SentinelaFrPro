@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[TelegramSettingsPage()]] - code - frontend/src/app/settings/telegram/page.tsx
-- [[telegrampage.tsx]] - code - frontend/src/app/settings/telegram/page.tsx
+- [[next.config.mjs]] - code - frontend/next.config.mjs
+- [[nextConfig]] - code - frontend/next.config.mjs
 
 ## Live Query (requires Dataview plugin)
 

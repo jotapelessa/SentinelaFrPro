@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt"
 type: "code"
-community: "TvDesignTokens.kt"
+community: "dependencies"
 location: "L956"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvDesignTokenskt
+  - community/dependencies
 ---
 
 # TvToolsViewport()
@@ -22,4 +22,4 @@ tags:
 - [[TvNetflixScreenCore()]] - `calls` [EXTRACTED]
 - [[TvToolCard()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt
+#graphify/code #graphify/EXTRACTED #community/dependencies

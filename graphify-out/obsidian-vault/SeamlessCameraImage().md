@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt"
 type: "code"
-community: "X509Certificate"
+community: "FrigateBridgeService"
 location: "L39"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509Certificate
+  - community/FrigateBridgeService
 ---
 
 # SeamlessCameraImage()
@@ -32,4 +32,4 @@ tags:
 - [[TvRecordingsViewport()]] - `calls` [EXTRACTED]
 - [[TvSettingsViewport()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509Certificate
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

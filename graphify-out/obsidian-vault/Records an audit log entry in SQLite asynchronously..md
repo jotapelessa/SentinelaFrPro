@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/audit_service.py"
 type: "rationale"
-community: "events.py"
+community: "TvNetflixScreen.kt"
 location: "L18"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/TvNetflixScreenkt
 ---
 
 # Records an audit log entry in SQLite asynchronously.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-log()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/eventspy
+#graphify/rationale #graphify/EXTRACTED #community/TvNetflixScreenkt

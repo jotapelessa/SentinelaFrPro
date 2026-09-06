@@ -1,70 +1,72 @@
 ---
 type: community
-cohesion: 0.07
-members: 55
+cohesion: 0.09
+members: 57
 ---
 
 # useSentinelaStore
 
-**Cohesion:** 0.07 - loosely connected
-**Members:** 55 nodes
+**Cohesion:** 0.09 - loosely connected
+**Members:** 57 nodes
 
 ## Members
-- [[dot-__init__()_1]] - code - backend/app/services/mqtt_service.py
-- [[dot-__init__()]] - code - backend/app/services/telegram_vault.py
-- [[dot-_dispatch_background_alert_tasks()]] - code - backend/app/services/mqtt_service.py
-- [[dot-_dispatch_telegram_video_with_retry()]] - code - backend/app/services/mqtt_service.py
-- [[dot-_get_telegram_policy()]] - code - backend/app/services/mqtt_service.py
-- [[dot-_mark_processed()]] - code - backend/app/services/mqtt_service.py
-- [[dot-apply_watermark()]] - code - backend/app/services/telegram_vault.py
-- [[dot-broadcast_event()]] - code - backend/app/services/mqtt_service.py
-- [[dot-format_event_message()]] - code - backend/app/services/telegram_vault.py
-- [[dot-get_audit_logs()]] - code - backend/app/services/telegram_vault.py
-- [[dot-get_mqtt_traffic()]] - code - backend/app/services/mqtt_service.py
-- [[dot-get_system_status_text()]] - code - backend/app/services/telegram_vault.py
-- [[dot-handle_command()]] - code - backend/app/services/telegram_vault.py
-- [[dot-handle_frigate_event()]] - code - backend/app/services/mqtt_service.py
-- [[dot-is_configured()]] - code - backend/app/services/telegram_vault.py
-- [[dot-is_paused()]] - code - backend/app/services/telegram_vault.py
-- [[dot-load_credentials_from_db()]] - code - backend/app/services/telegram_vault.py
-- [[dot-pause_alerts()]] - code - backend/app/services/telegram_vault.py
-- [[dot-record_audit()]] - code - backend/app/services/telegram_vault.py
-- [[dot-record_mqtt_traffic()]] - code - backend/app/services/mqtt_service.py
-- [[dot-register_ws_callback()]] - code - backend/app/services/mqtt_service.py
-- [[dot-send_alert_photo()]] - code - backend/app/services/telegram_vault.py
-- [[dot-send_alert_video()]] - code - backend/app/services/telegram_vault.py
-- [[dot-send_document()]] - code - backend/app/services/telegram_vault.py
-- [[dot-send_message()]] - code - backend/app/services/telegram_vault.py
-- [[dot-start_listening()]] - code - backend/app/services/mqtt_service.py
-- [[dot-start_polling()]] - code - backend/app/services/telegram_vault.py
-- [[dot-start_polling_task()]] - code - backend/app/services/telegram_vault.py
-- [[dot-test_connection()]] - code - backend/app/services/telegram_vault.py
-- [[Any_2]] - code
-- [[Any_1]] - code
-- [[Appends an event to the in-memory Telegram audit trail.]] - rationale - backend/app/services/telegram_vault.py
-- [[Applies a professional HUD watermark on the snapshot with dynamic scaling for…]] - rationale - backend/app/services/telegram_vault.py
-- [[Asynchronously acquires the exact duration 30 FPS MP4 video with = 7s pre-…]] - rationale - backend/app/services/mqtt_service.py
-- [[Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast…]] - rationale - backend/app/services/mqtt_service.py
-- [[Base]] - code
-- [[Connects to MQTT and runs consumer loop with automatic reconnection.]] - rationale - backend/app/services/mqtt_service.py
-- [[Continuous lightweight long-polling loop for Telegram Bot updates.]] - rationale - backend/app/services/telegram_vault.py
-- [[Dispatches MP4 clip to Telegram using the classic template.]] - rationale - backend/app/services/telegram_vault.py
-- [[Dispatches watermarked snapshot to Telegram using the classic template.]] - rationale - backend/app/services/telegram_vault.py
-- [[Dynamically loads live Telegram settings with 30s in-memory cache.]] - rationale - backend/app/services/mqtt_service.py
-- [[EventRecord]] - code - backend/app/db/models.py
-- [[Formats real-time telemetry into a rich Telegram status message.]] - rationale - backend/app/services/telegram_vault.py
-- [[Loads Bot Token and Chat ID from database if available, or seeds defaults.]] - rationale - backend/app/services/telegram_vault.py
-- [[MQTTService]] - code - backend/app/services/mqtt_service.py
-- [[Processes interactive bot commands received via Telegram chat.]] - rationale - backend/app/services/telegram_vault.py
-- [[Sends a document (e.g. database backup) to Telegram.]] - rationale - backend/app/services/telegram_vault.py
-- [[Sends a text message to the configured Telegram chat.]] - rationale - backend/app/services/telegram_vault.py
-- [[Spawns or reuses the background polling task. Credentials are read in-place by…]] - rationale - backend/app/services/telegram_vault.py
-- [[SystemSetting]] - code - backend/app/db/models.py
-- [[TelegramVaultService]] - code - backend/app/services/telegram_vault.py
-- [[Validates bot credentials with Telegram API and sends a confirmation test…]] - rationale - backend/app/services/telegram_vault.py
-- [[models.py]] - code - backend/app/db/models.py
-- [[mqtt_service.py]] - code - backend/app/services/mqtt_service.py
-- [[telegram_vault.py]] - code - backend/app/services/telegram_vault.py
+- [[AsyncSession_1]] - code
+- [[Automatic heartbeat & registration from Android TV and Smartphone apps.]] - rationale - backend/app/api/devices.py
+- [[BaseModel_1]] - code
+- [[BatchTestRequest]] - code - backend/app/api/devices.py
+- [[Checks real-time onlinereachable status for all paired screens. Optimized O(1)…]] - rationale - backend/app/api/devices.py
+- [[Consolidates duplicate devices with identical IP or Model, retaining the most…]] - rationale - backend/app/api/devices.py
+- [[DeviceAllowedCamerasUpdate]] - code - backend/app/api/devices.py
+- [[DeviceCreate]] - code - backend/app/api/devices.py
+- [[DeviceHeartbeat]] - code - backend/app/api/devices.py
+- [[DevicePermissionsUpdate]] - code - backend/app/api/devices.py
+- [[DeviceStatusUpdate]] - code - backend/app/api/devices.py
+- [[Executes batch tests across multiple or all devices simultaneously.]] - rationale - backend/app/api/devices.py
+- [[MasterToggleRequest]] - code - backend/app/api/devices.py
+- [[PairedDevice_1]] - code - backend/app/db/models.py
+- [[PipAckRequest]] - code - backend/app/api/devices.py
+- [[Quickly toggle PiP alerts state for a single device with 1-click.]] - rationale - backend/app/api/devices.py
+- [[Receives physical execution confirmation from the Android TV overlay service.]] - rationale - backend/app/api/devices.py
+- [[Removes all paired devices so fresh real devices can register via heartbeat.]] - rationale - backend/app/api/devices.py
+- [[Request_1]] - code
+- [[RestartContainerRequest]] - code - backend/app/api/devices.py
+- [[Returns the full granular policy and permissions for a specific device.]] - rationale - backend/app/api/devices.py
+- [[Returns the list of cameras permitted for a specific screendevice.]] - rationale - backend/app/api/devices.py
+- [[Scans LAN subnet for Smart TVs and Chromecast devices.]] - rationale - backend/app/api/devices.py
+- [[TestPiPRequest]] - code - backend/app/api/devices.py
+- [[TestSingleDeviceRequest]] - code - backend/app/api/devices.py
+- [[Toggles Master Admin rights for a smartphone device with debounce and…]] - rationale - backend/app/api/devices.py
+- [[Triggers a broadcast PiP test to all active TVs.]] - rationale - backend/app/api/devices.py
+- [[Triggers an interactive PiP test to this single TV with the selected camera.]] - rationale - backend/app/api/devices.py
+- [[Updates complete granular permissions for a paired screendevice.]] - rationale - backend/app/api/devices.py
+- [[check_devices_health()]] - code - backend/app/api/devices.py
+- [[cleanup_all_devices()]] - code - backend/app/api/devices.py
+- [[deduplicate_devices()]] - code - backend/app/api/devices.py
+- [[delete_1]] - code
+- [[delete_device()]] - code - backend/app/api/devices.py
+- [[device_diagnostics()]] - code - backend/app/api/devices.py
+- [[device_heartbeat()]] - code - backend/app/api/devices.py
+- [[devices.py]] - code - backend/app/api/devices.py
+- [[discover_tvs()]] - code - backend/app/api/devices.py
+- [[execute_batch_test()]] - code - backend/app/api/devices.py
+- [[get_1]] - code
+- [[get_device_permitted_cameras()]] - code - backend/app/api/devices.py
+- [[get_device_policy()]] - code - backend/app/api/devices.py
+- [[list_devices()]] - code - backend/app/api/devices.py
+- [[patch]] - code
+- [[post_1]] - code
+- [[put]] - code
+- [[receive_pip_ack()]] - code - backend/app/api/devices.py
+- [[register_device()]] - code - backend/app/api/devices.py
+- [[remote_reboot_server()]] - code - backend/app/api/devices.py
+- [[remote_restart_container()]] - code - backend/app/api/devices.py
+- [[test_pip()]] - code - backend/app/api/devices.py
+- [[test_single_device()]] - code - backend/app/api/devices.py
+- [[toggle_device_master()]] - code - backend/app/api/devices.py
+- [[toggle_device_pip()]] - code - backend/app/api/devices.py
+- [[update_device_allowed_cameras()]] - code - backend/app/api/devices.py
+- [[update_device_permissions()]] - code - backend/app/api/devices.py
+- [[update_device_status()]] - code - backend/app/api/devices.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -74,15 +76,15 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 8 edges to [[_COMMUNITY_asyncio]]
-- 7 edges to [[_COMMUNITY_events.py]]
-- 4 edges to [[_COMMUNITY_cameras.py]]
-- 2 edges to [[_COMMUNITY_OverlayService]]
-- 1 edge to [[_COMMUNITY_sentinela-pro-mobile-nvrsrcApp.tsx]]
+- 7 edges to [[_COMMUNITY_TvNetflixScreen.kt]]
+- 2 edges to [[_COMMUNITY_settings.py]]
+- 2 edges to [[_COMMUNITY_dependencies_1]]
+- 2 edges to [[_COMMUNITY_manifest.json]]
+- 1 edge to [[_COMMUNITY_devices.py]]
 
 ## Top bridge nodes
-- [[models.py]] - degree 5, connects to 3 communities
-- [[Base]] - degree 5, connects to 3 communities
-- [[EventRecord]] - degree 12, connects to 2 communities
-- [[mqtt_service.py]] - degree 5, connects to 2 communities
-- [[MQTTService]] - degree 15, connects to 1 community
+- [[PairedDevice_1]] - degree 25, connects to 3 communities
+- [[devices.py]] - degree 39, connects to 2 communities
+- [[get_device_permitted_cameras()]] - degree 6, connects to 1 community
+- [[device_diagnostics()]] - degree 5, connects to 1 community
+- [[put]] - degree 3, connects to 1 community

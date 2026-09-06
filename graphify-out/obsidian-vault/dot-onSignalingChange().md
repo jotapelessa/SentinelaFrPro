@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt"
 type: "code"
-community: "Observer"
+community: "SentinelaRepository"
 location: "L47"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/SentinelaRepository
 ---
 
 # .onSignalingChange()
@@ -15,4 +15,4 @@ tags:
 - [[Observer]] - `method` [EXTRACTED]
 - [[PeerConnection]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

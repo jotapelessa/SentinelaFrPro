@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "MseCameraView"
+community: "dependencies"
 location: "L46"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/dependencies
 ---
 
 # .record_ack()
@@ -15,4 +15,4 @@ tags:
 - [[PiPGatewayService]] - `method` [EXTRACTED]
 - [[Records an execution acknowledgement from a remote device overlay.]] - `rationale_for` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/dependencies

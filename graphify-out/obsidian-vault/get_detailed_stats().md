@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "code"
-community: "api/telemetry.py"
+community: "MseCameraView"
 location: "L30"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/MseCameraView
 ---
 
 # get_detailed_stats()
@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe…]] - `rationale_for` [EXTRACTED]
 - [[apitelemetry.py]] - `contains` [EXTRACTED]
-- [[get_3]] - `references` [EXTRACTED]
+- [[get_2]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/MseCameraView

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "useSentinelaStore"
+community: "compilerOptions"
 location: "L85"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # .pause_alerts()
@@ -15,4 +15,4 @@ tags:
 - [[dot-handle_command()]] - `calls` [EXTRACTED]
 - [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

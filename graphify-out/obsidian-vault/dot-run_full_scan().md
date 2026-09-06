@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L481"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # .run_full_scan()
@@ -16,8 +16,8 @@ tags:
 - [[dot-get_local_subnets()]] - `calls` [EXTRACTED]
 - [[dot-get_self_ips()]] - `calls` [EXTRACTED]
 - [[dot-scan_subnet_cctv_ports()]] - `calls` [EXTRACTED]
-- [[Any]] - `references` [EXTRACTED]
+- [[Any_2]] - `references` [EXTRACTED]
 - [[Runs comprehensive multi-probe scan discovering ONVIF and RTSP CCTV devices.]] - `rationale_for` [EXTRACTED]
 - [[ScannerService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

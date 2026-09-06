@@ -1,17 +1,17 @@
 ---
-source_file: "backend/app/services/telemetry.py"
+source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "🛡️ Sentinela Frigate Pro"
-location: "L11"
+community: "dependencies"
+location: "L39"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_Sentinela_Frigate_Pro
+  - community/dependencies
 ---
 
 # .__init__()
 
 ## Connections
-- [[TelemetryService]] - `method` [EXTRACTED]
+- [[PiPGatewayService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro
+#graphify/code #graphify/EXTRACTED #community/dependencies

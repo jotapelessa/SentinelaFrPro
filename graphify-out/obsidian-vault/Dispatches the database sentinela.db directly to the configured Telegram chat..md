@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "rationale"
-community: "asyncio"
+community: "settings.py"
 location: "L456"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # Dispatches the database sentinela.db directly to the configured Telegram chat.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dispatch_backup_to_telegram()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/asyncio
+#graphify/rationale #graphify/EXTRACTED #community/settingspy

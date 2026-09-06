@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "rationale"
-community: "asyncio"
+community: "settings.py"
 location: "L625"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # Cleans old non-retained recordings and/or snapshots from Ubuntu Server SSD…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[clean_server_storage()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/asyncio
+#graphify/rationale #graphify/EXTRACTED #community/settingspy

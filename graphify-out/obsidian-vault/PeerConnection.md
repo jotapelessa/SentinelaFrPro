@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "Observer"
+community: "SentinelaRepository"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/SentinelaRepository
 ---
 
 # PeerConnection
@@ -16,4 +16,4 @@ tags:
 - [[dot-onSignalingChange()]] - `references` [EXTRACTED]
 - [[WebRtcManager]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

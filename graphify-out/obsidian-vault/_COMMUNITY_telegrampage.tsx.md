@@ -1,18 +1,20 @@
 ---
 type: community
-cohesion: 0.67
-members: 3
+cohesion: 0.40
+members: 5
 ---
 
 # telegram/page.tsx
 
-**Cohesion:** 0.67 - moderately connected
-**Members:** 3 nodes
+**Cohesion:** 0.40 - moderately connected
+**Members:** 5 nodes
 
 ## Members
-- [[Run Locally]] - document - ai_studio_imports/sentinela-pro-mobile-nvr/README.md
-- [[Run and deploy your AI Studio app]] - document - ai_studio_imports/sentinela-pro-mobile-nvr/README.md
-- [[sentinela-pro-mobile-nvrREADME]] - document - ai_studio_imports/sentinela-pro-mobile-nvr/README.md
+- [[BaseModel_3]] - code
+- [[BenchmarkPayload]] - code - backend/app/api/telemetry.py
+- [[Runs on-demand stress & performance benchmarks for 1080p, 2K, 4K, IA detection…]] - rationale - backend/app/api/telemetry.py
+- [[post_3]] - code
+- [[run_server_benchmark()]] - code - backend/app/api/telemetry.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -20,3 +22,10 @@ members: 3
 TABLE source_file, type FROM #community/telegram/pagetsx
 SORT file.name ASC
 ```
+
+## Connections to other communities
+- 2 edges to [[_COMMUNITY_MseCameraView]]
+
+## Top bridge nodes
+- [[run_server_benchmark()]] - degree 4, connects to 1 community
+- [[BenchmarkPayload]] - degree 3, connects to 1 community

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "rationale"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L184"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # Queries ONVIF SOAP GetDeviceInformation to retrieve real hardware metadata:…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-probe_onvif_device_info()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService

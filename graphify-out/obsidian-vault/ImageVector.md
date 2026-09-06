@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TvDesignTokens.kt"
+community: "dependencies"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvDesignTokenskt
+  - community/dependencies
 ---
 
 # ImageVector
@@ -14,4 +14,4 @@ tags:
 - [[TvNetflixScreen.kt]] - `imports` [EXTRACTED]
 - [[TvToolCard()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt
+#graphify/code #graphify/EXTRACTED #community/dependencies

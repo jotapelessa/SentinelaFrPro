@@ -1,12 +1,12 @@
 ---
 source_file: ".opencode/plugins/graphify.js"
 type: "code"
-community: "simulate_event.sh"
+community: "next"
 location: "L12"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/simulate_eventsh
+  - community/next
 ---
 
 # GraphifyPlugin()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[graphify.js]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/simulate_eventsh
+#graphify/code #graphify/EXTRACTED #community/next

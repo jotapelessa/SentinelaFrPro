@@ -1,12 +1,12 @@
 ---
 source_file: "android/build_apk.sh"
 type: "code"
-community: "app/build.gradle.kts"
+community: "Run and deploy your AI Studio app"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/app/buildgradlekts
+  - community/Run_and_deploy_your_AI_Studio_app
 ---
 
 # build_apk.sh
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[build_apk.sh script]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/app/buildgradlekts
+#graphify/code #graphify/EXTRACTED #community/Run_and_deploy_your_AI_Studio_app

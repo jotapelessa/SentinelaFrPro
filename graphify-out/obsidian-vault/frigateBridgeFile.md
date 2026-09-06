@@ -1,12 +1,12 @@
 ---
 source_file: "test/telegram-vault.spec.test.js"
 type: "code"
-community: "storage/page.tsx"
+community: "simulate_event.sh"
 location: "L15"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/storage/pagetsx
+  - community/simulate_eventsh
 ---
 
 # frigateBridgeFile
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[telegram-vault.spec.test.js]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/storage/pagetsx
+#graphify/code #graphify/EXTRACTED #community/simulate_eventsh

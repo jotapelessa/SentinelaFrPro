@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "code"
-community: "compilerOptions"
+community: "Observer"
 location: "L16"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/Observer
 ---
 
 # @vitejs/plugin-react
@@ -15,4 +15,4 @@ tags:
 - [[@vitejsplugin-react_2]] - `imports` [EXTRACTED]
 - [[dependencies]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/Observer

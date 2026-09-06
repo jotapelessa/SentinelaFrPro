@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/store/useSentinelaStore.ts"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "OverlayService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/OverlayService
 ---
 
 # useSentinelaStore.ts
@@ -15,7 +15,7 @@ tags:
 - [[ActiveDetection]] - `contains` [EXTRACTED]
 - [[AlertToast.tsx]] - `imports_from` [EXTRACTED]
 - [[AuditLogItem]] - `contains` [EXTRACTED]
-- [[Camera]] - `contains` [EXTRACTED]
+- [[Camera_1]] - `contains` [EXTRACTED]
 - [[CameraConfigModal.tsx]] - `imports_from` [EXTRACTED]
 - [[CameraMosaic.tsx]] - `imports_from` [EXTRACTED]
 - [[DiscoveredDevice]] - `contains` [EXTRACTED]
@@ -36,4 +36,4 @@ tags:
 - [[settingslayout.tsx]] - `imports_from` [EXTRACTED]
 - [[useSentinelaStore]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/OverlayService

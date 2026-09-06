@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[config_1]] - code - frontend/tailwind.config.ts
-- [[tailwind.config.ts]] - code - frontend/tailwind.config.ts
+- [[NOTE This file should not be edited]] - rationale - frontend/next-env.d.ts
+- [[next-env.d.ts_1]] - code - frontend/next-env.d.ts
 
 ## Live Query (requires Dataview plugin)
 

@@ -36,7 +36,7 @@ SORT file.name ASC
 ## Connections to other communities
 - 3 edges to [[_COMMUNITY_dependencies_2]]
 - 3 edges to [[_COMMUNITY_X509TrustManager]]
-- 1 edge to [[_COMMUNITY_postcss.config.mjs]]
+- 1 edge to [[_COMMUNITY_graphify.js]]
 
 ## Top bridge nodes
 - [[devDependencies]] - degree 8, connects to 3 communities

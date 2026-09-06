@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "rationale"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L287"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # Returns the list of cameras permitted for a specific screen/device.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_device_permitted_cameras()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/OverlayService
+#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore

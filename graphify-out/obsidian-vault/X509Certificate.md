@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "PiPGatewayService"
+community: "X509Certificate"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/X509Certificate
 ---
 
 # X509Certificate
@@ -20,4 +20,4 @@ tags:
 - [[SentinelaApplication.kt]] - `imports` [EXTRACTED]
 - [[SentinelaWebSocket.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/X509Certificate

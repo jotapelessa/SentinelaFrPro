@@ -1,27 +1,27 @@
 ---
 type: community
-cohesion: 0.17
+cohesion: 0.21
 members: 12
 ---
 
 # manifest.json
 
-**Cohesion:** 0.17 - loosely connected
+**Cohesion:** 0.21 - loosely connected
 **Members:** 12 nodes
 
 ## Members
-- [[1. Visão Geral da Arquitetura]] - document - docs/ARQUITETURA_E_API.md
-- [[2. Mapa de Serviços e Portas de Rede]] - document - docs/ARQUITETURA_E_API.md
-- [[3. Catálogo de Endpoints da API REST (`api`)]] - document - docs/ARQUITETURA_E_API.md
-- [[3.1. Módulo de Câmeras (`apicameras`)]] - document - docs/ARQUITETURA_E_API.md
-- [[3.2. Módulo de Dispositivos e Telas PiP (`apidevices`)]] - document - docs/ARQUITETURA_E_API.md
-- [[3.3. Módulo de Eventos & Gravações (`apievents`)]] - document - docs/ARQUITETURA_E_API.md
-- [[3.4. Módulo de Telemetria e Diagnósticos (`apitelemetry`)]] - document - docs/ARQUITETURA_E_API.md
-- [[3.5. Módulo de Configurações & Telegram (`apisettings`)]] - document - docs/ARQUITETURA_E_API.md
-- [[3.6. Módulo Scanner de Rede (`apiscanner`)]] - document - docs/ARQUITETURA_E_API.md
-- [[4. Guia de Compilação dos APKs no GitHub Codespaces]] - document - docs/ARQUITETURA_E_API.md
-- [[ARQUITETURA_E_API]] - document - docs/ARQUITETURA_E_API.md
-- [[SentinelaFrigate PRO — Documentação Completa da Aplicação]] - document - docs/ARQUITETURA_E_API.md
+- [[FastAPI]] - code
+- [[Request_2]] - code
+- [[audit_http_requests()]] - code - backend/app/main.py
+- [[get_3]] - code
+- [[get_db()]] - code - backend/app/db/session.py
+- [[health_check()]] - code - backend/app/main.py
+- [[init_db()]] - code - backend/app/db/session.py
+- [[lifespan()]] - code - backend/app/main.py
+- [[main.py]] - code - backend/app/main.py
+- [[middleware]] - code
+- [[root()]] - code - backend/app/main.py
+- [[session.py]] - code - backend/app/db/session.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -29,3 +29,18 @@ members: 12
 TABLE source_file, type FROM #community/manifestjson
 SORT file.name ASC
 ```
+
+## Connections to other communities
+- 3 edges to [[_COMMUNITY_TvNetflixScreen.kt]]
+- 2 edges to [[_COMMUNITY_useSentinelaStore]]
+- 2 edges to [[_COMMUNITY_settings.py]]
+- 2 edges to [[_COMMUNITY_MseCameraView]]
+- 1 edge to [[_COMMUNITY_backuppage.tsx]]
+- 1 edge to [[_COMMUNITY_cameras.py]]
+- 1 edge to [[_COMMUNITY_next-env.d.ts]]
+- 1 edge to [[_COMMUNITY_Settings]]
+
+## Top bridge nodes
+- [[FastAPI]] - degree 9, connects to 7 communities
+- [[get_db()]] - degree 5, connects to 4 communities
+- [[main.py]] - degree 8, connects to 2 communities

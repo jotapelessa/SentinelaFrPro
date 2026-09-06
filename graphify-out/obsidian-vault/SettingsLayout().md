@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/settings/layout.tsx"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "OverlayService"
 location: "L24"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/OverlayService
 ---
 
 # SettingsLayout()
@@ -15,4 +15,4 @@ tags:
 - [[settingslayout.tsx]] - `contains` [EXTRACTED]
 - [[useSentinelaStore]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/OverlayService

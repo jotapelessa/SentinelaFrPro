@@ -1,23 +1,24 @@
 ---
 type: community
-cohesion: 0.39
-members: 8
+cohesion: 0.22
+members: 9
 ---
 
 # graphify.js
 
-**Cohesion:** 0.39 - loosely connected
-**Members:** 8 nodes
+**Cohesion:** 0.22 - loosely connected
+**Members:** 9 nodes
 
 ## Members
-- [[dot-hasOverlayPermission()]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
-- [[dot-isTv()]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
-- [[dot-onCreate()_2]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
-- [[Bundle]] - code
-- [[ComponentActivity]] - code
-- [[MainActivity]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
-- [[MainActivity.kt]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
-- [[TvNetflixScreen()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[build_2]] - code - frontend/package.json
+- [[dev_2]] - code - frontend/package.json
+- [[frontendpackage.json]] - code - frontend/package.json
+- [[lint_2]] - code - frontend/package.json
+- [[name_3]] - code - frontend/package.json
+- [[private_2]] - code - frontend/package.json
+- [[scripts_2]] - code - frontend/package.json
+- [[start]] - code - frontend/package.json
+- [[version_2]] - code - frontend/package.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -27,14 +28,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 3 edges to [[_COMMUNITY_X509Certificate]]
-- 2 edges to [[_COMMUNITY_devices.py]]
-- 2 edges to [[_COMMUNITY_TvDesignTokens.kt]]
-- 2 edges to [[_COMMUNITY_ScannerService]]
-- 1 edge to [[_COMMUNITY_build_apk.sh]]
-- 1 edge to [[_COMMUNITY_settings.py]]
+- 1 edge to [[_COMMUNITY_TelemetryService]]
+- 1 edge to [[_COMMUNITY_3. Catálogo de Endpoints da API REST (`api`)]]
 
 ## Top bridge nodes
-- [[MainActivity.kt]] - degree 8, connects to 4 communities
-- [[dot-onCreate()_2]] - degree 8, connects to 4 communities
-- [[TvNetflixScreen()]] - degree 5, connects to 2 communities
+- [[frontendpackage.json]] - degree 6, connects to 2 communities

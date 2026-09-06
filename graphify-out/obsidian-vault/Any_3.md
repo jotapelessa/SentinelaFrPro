@@ -1,18 +1,17 @@
 ---
 source_file: ""
 type: "code"
-community: "MseCameraView"
+community: "compilerOptions"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/compilerOptions
 ---
 
 # Any
 
 ## Connections
-- [[dot-dispatch_pip_alert()]] - `references` [EXTRACTED]
-- [[dot-get_active_tv_devices()]] - `references` [EXTRACTED]
-- [[dot-test_single_device()]] - `references` [EXTRACTED]
+- [[dot-check_connectivity()]] - `references` [EXTRACTED]
+- [[dot-get_connectivity_logs()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

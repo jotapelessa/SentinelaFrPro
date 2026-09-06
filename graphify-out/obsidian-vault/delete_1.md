@@ -1,19 +1,17 @@
 ---
 source_file: ""
 type: "code"
-community: "events.py"
+community: "useSentinelaStore"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/useSentinelaStore
 ---
 
 # delete
 
 ## Connections
-- [[clear_audit_trail()]] - `calls` [EXTRACTED]
-- [[delete_event()]] - `references` [EXTRACTED]
-- [[delete_events_batch()]] - `calls` [EXTRACTED]
-- [[delete_events_by_date()]] - `references` [EXTRACTED]
+- [[cleanup_all_devices()]] - `references` [EXTRACTED]
+- [[delete_device()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/eventspy
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

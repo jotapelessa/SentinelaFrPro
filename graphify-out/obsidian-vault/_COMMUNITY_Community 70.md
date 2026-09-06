@@ -1,16 +1,17 @@
 ---
 type: community
 cohesion: 1.00
-members: 1
+members: 2
 ---
 
 # Community 70
 
 **Cohesion:** 1.00 - tightly connected
-**Members:** 1 nodes
+**Members:** 2 nodes
 
 ## Members
-- [[Context_3]] - code
+- [[setup_ubuntu.sh]] - code - scripts/setup_ubuntu.sh
+- [[setup_ubuntu.sh script]] - code - scripts/setup_ubuntu.sh
 
 ## Live Query (requires Dataview plugin)
 

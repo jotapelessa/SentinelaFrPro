@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/README.md"
 type: "document"
-community: "telegram/page.tsx"
+community: "sentinela-pro-mobile-nvr/vite.config.ts"
 location: "L11"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/telegram/pagetsx
+  - community/sentinela-pro-mobile-nvr/viteconfigts
 ---
 
 # Run Locally
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Run and deploy your AI Studio app]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/telegram/pagetsx
+#graphify/document #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/viteconfigts

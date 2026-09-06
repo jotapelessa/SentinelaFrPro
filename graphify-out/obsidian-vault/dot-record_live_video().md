@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "compilerOptions"
 location: "L419"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/compilerOptions
 ---
 
 # .record_live_video()
@@ -17,4 +17,4 @@ tags:
 - [[Captures a live video clip directly from the camera stream with constant 30…]] - `rationale_for` [EXTRACTED]
 - [[FrigateBridgeService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

@@ -1,17 +1,18 @@
 ---
 type: community
-cohesion: 1.00
-members: 2
+cohesion: 0.67
+members: 3
 ---
 
 # next
 
-**Cohesion:** 1.00 - tightly connected
-**Members:** 2 nodes
+**Cohesion:** 0.67 - moderately connected
+**Members:** 3 nodes
 
 ## Members
-- [[NOTE This file should not be edited]] - rationale - frontend/next-env.d.ts
-- [[next-env.d.ts_1]] - code - frontend/next-env.d.ts
+- [[GraphifyPlugin()]] - code - .opencode/plugins/graphify.js
+- [[IMPORTANT keep the reminder string free of backticks and $(...) constructs.]] - rationale - .opencode/plugins/graphify.js
+- [[graphify.js]] - code - .opencode/plugins/graphify.js
 
 ## Live Query (requires Dataview plugin)
 

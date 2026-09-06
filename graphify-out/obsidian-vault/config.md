@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/postcss.config.mjs"
 type: "code"
-community: "apply_bc_config.py"
+community: "Community 63"
 location: "L2"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/apply_bc_configpy
+  - community/Community_63
 ---
 
 # config
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[postcss.config.mjs]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/apply_bc_configpy
+#graphify/code #graphify/EXTRACTED #community/Community_63

@@ -10,17 +10,17 @@ members: 11
 **Members:** 11 nodes
 
 ## Members
-- [[build_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[clean_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[dev_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[lint_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[name_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[preview_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[private_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[scripts_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[sentinela-pro-tvpackage.json]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[type_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[version_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[build]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[clean]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[dev]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[lint]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[name]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[preview]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[private]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[scripts]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[sentinela-pro-mobile-nvrpackage.json]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[type]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[version]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -30,8 +30,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_compilerOptions_1]]
-- 1 edge to [[_COMMUNITY_X509TrustManager]]
+- 1 edge to [[_COMMUNITY_Observer]]
+- 1 edge to [[_COMMUNITY_dependencies_2]]
 
 ## Top bridge nodes
-- [[sentinela-pro-tvpackage.json]] - degree 7, connects to 2 communities
+- [[sentinela-pro-mobile-nvrpackage.json]] - degree 7, connects to 2 communities

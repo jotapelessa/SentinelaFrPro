@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # put
@@ -15,4 +15,4 @@ tags:
 - [[update_device_permissions()]] - `references` [EXTRACTED]
 - [[update_device_status()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

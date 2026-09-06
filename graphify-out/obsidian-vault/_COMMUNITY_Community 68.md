@@ -1,16 +1,17 @@
 ---
 type: community
 cohesion: 1.00
-members: 1
+members: 2
 ---
 
 # Community 68
 
 **Cohesion:** 1.00 - tightly connected
-**Members:** 1 nodes
+**Members:** 2 nodes
 
 ## Members
-- [[sentinela-pro-tvvite.config.ts]] - code - ai_studio_imports/sentinela-pro-tv/vite.config.ts
+- [[config_1]] - code - frontend/tailwind.config.ts
+- [[tailwind.config.ts]] - code - frontend/tailwind.config.ts
 
 ## Live Query (requires Dataview plugin)
 

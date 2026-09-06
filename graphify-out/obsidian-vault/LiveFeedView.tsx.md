@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/src/components/LiveFeedView.tsx"
 type: "code"
-community: "SentinelaRepository"
+community: "sentinela-pro-mobile-nvr/src/App.tsx"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/SentinelaRepository
+  - community/sentinela-pro-mobile-nvr/src/Apptsx
 ---
 
 # LiveFeedView.tsx
@@ -21,4 +21,4 @@ tags:
 - [[PhoneSimulator.tsx]] - `imports_from` [EXTRACTED]
 - [[types.ts]] - `imports_from` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/SentinelaRepository
+#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx

@@ -10,7 +10,7 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[sentinela-core.spec.test.js]] - code - test/sentinela-core.spec.test.js
+- [[X509TrustManager_6]] - code
 
 ## Live Query (requires Dataview plugin)
 

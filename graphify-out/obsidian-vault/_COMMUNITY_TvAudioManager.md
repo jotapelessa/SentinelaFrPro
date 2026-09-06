@@ -1,26 +1,27 @@
 ---
 type: community
-cohesion: 0.18
-members: 11
+cohesion: 0.17
+members: 12
 ---
 
 # TvAudioManager
 
-**Cohesion:** 0.18 - loosely connected
-**Members:** 11 nodes
+**Cohesion:** 0.17 - loosely connected
+**Members:** 12 nodes
 
 ## Members
-- [[build]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[clean]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[dev]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[lint]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[name]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[preview]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[private]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[scripts]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[sentinela-pro-mobile-nvrpackage.json]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[type]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[version]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[README]] - document - README.md
+- [[⚡ Principais Recursos do Servidor & NVR]] - document - README.md
+- [[🎯 Visão Geral]] - document - README.md
+- [[📄 Licença]] - document - README.md
+- [[📥 Download dos APKs Oficiais (`v001.000.000.087`)]] - document - README.md
+- [[📱 2. Android Smartphone (Layout Vertical Estilo YouTube)]] - document - README.md
+- [[📱 Aplicativos Nativos Android (`v001.000.000.087`)]] - document - README.md
+- [[📺 1. Android TV 55 (Layout Horizontal Estilo Netflix)]] - document - README.md
+- [[🖥️ Como Atualizar o Servidor Ubuntu]] - document - README.md
+- [[🗺️ Mapa de Portas e Serviços]] - document - README.md
+- [[🚀 Como Compilar os APKs no GitHub Codespaces]] - document - README.md
+- [[🛡️ Sentinela Frigate Pro]] - document - README.md
 
 ## Live Query (requires Dataview plugin)
 
@@ -28,10 +29,3 @@ members: 11
 TABLE source_file, type FROM #community/TvAudioManager
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 1 edge to [[_COMMUNITY_compilerOptions_1]]
-- 1 edge to [[_COMMUNITY_dependencies_2]]
-
-## Top bridge nodes
-- [[sentinela-pro-mobile-nvrpackage.json]] - degree 7, connects to 2 communities

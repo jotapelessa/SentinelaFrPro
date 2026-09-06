@@ -1,19 +1,19 @@
 ---
 source_file: "backend/app/main.py"
 type: "code"
-community: "api/telemetry.py"
+community: "manifest.json"
 location: "L84"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/manifestjson
 ---
 
 # audit_http_requests()
 
 ## Connections
-- [[Request_3]] - `references` [EXTRACTED]
+- [[Request_2]] - `references` [EXTRACTED]
 - [[main.py]] - `contains` [EXTRACTED]
 - [[middleware]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/manifestjson

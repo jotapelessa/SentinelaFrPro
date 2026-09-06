@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "rationale"
-community: "api/telemetry.py"
+community: "MseCameraView"
 location: "L255"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/MseCameraView
 ---
 
 # Compiles a complete diagnostic report (.txt) of all services for one-click…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[download_diagnostic_logs()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/rationale #graphify/EXTRACTED #community/MseCameraView

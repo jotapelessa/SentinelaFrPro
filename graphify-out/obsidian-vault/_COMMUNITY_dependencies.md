@@ -1,41 +1,37 @@
 ---
 type: community
-cohesion: 0.09
-members: 26
+cohesion: 0.21
+members: 22
 ---
 
 # dependencies
 
-**Cohesion:** 0.09 - loosely connected
-**Members:** 26 nodes
+**Cohesion:** 0.21 - loosely connected
+**Members:** 22 nodes
 
 ## Members
-- [[ALERT]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[CAMERAS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[CameraEntity]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[CameraStatus]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[CameraStreamTelemetry]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[Color]] - code
-- [[DetectionBox]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[LOGS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[LogEntryItem]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[Modifier]] - code
-- [[ONLINE]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[PipAlert]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[RECORDING]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[RECORDINGS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[SETTINGS_1]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[STANDBY]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[Shape]] - code
-- [[TOOLS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvColors]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvDesignTokens.kt]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvDimens]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvShapes]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvTab]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvTypography]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[toEntity()]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[tvDpadFocusable()]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[CameraEntity_2]] - code
+- [[Color_1]] - code
+- [[FocusRequester]] - code
+- [[ImageVector]] - code
+- [[Modifier_1]] - code
+- [[PipAlert_2]] - code
+- [[RecordingClipItem]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[TvCamerasViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvClipPlayerDialog()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvDiagnosticRow()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvFullScreenLiveDialog()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvLogsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvNetflixScreen.kt]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvNetflixScreenCore()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvPipFloatingWindow()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvRecordingsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvSidebar()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvTab_2]] - code
+- [[TvTelemetryMetricCard()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvToolCard()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[TvToolsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
+- [[androidx]] - code
 
 ## Live Query (requires Dataview plugin)
 
@@ -45,8 +41,16 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_TvDesignTokens.kt]]
-- 1 edge to [[_COMMUNITY_X509Certificate]]
+- 8 edges to [[_COMMUNITY_FrigateBridgeService]]
+- 6 edges to [[_COMMUNITY_apitelemetry.py]]
+- 4 edges to [[_COMMUNITY_devices.py]]
+- 2 edges to [[_COMMUNITY_ScannerService]]
+- 2 edges to [[_COMMUNITY_compile_apk.sh]]
+- 1 edge to [[_COMMUNITY_compilerOptions_1]]
 
 ## Top bridge nodes
-- [[TvDesignTokens.kt]] - degree 18, connects to 2 communities
+- [[TvNetflixScreen.kt]] - degree 23, connects to 4 communities
+- [[TvRecordingsViewport()]] - degree 8, connects to 3 communities
+- [[TvNetflixScreenCore()]] - degree 12, connects to 2 communities
+- [[TvToolsViewport()]] - degree 9, connects to 2 communities
+- [[TvLogsViewport()]] - degree 6, connects to 2 communities

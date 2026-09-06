@@ -1,17 +1,17 @@
 ---
-source_file: "backend/app/services/mqtt_service.py"
+source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "useSentinelaStore"
-location: "L23"
+community: "compilerOptions"
+location: "L13"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # .__init__()
 
 ## Connections
-- [[MQTTService]] - `method` [EXTRACTED]
+- [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

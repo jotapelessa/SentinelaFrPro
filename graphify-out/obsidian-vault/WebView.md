@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "dependencies"
+community: "PiPGatewayService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/PiPGatewayService
 ---
 
 # WebView
@@ -16,4 +16,4 @@ tags:
 - [[dot-onReceivedSslError()]] - `references` [EXTRACTED]
 - [[MseCameraView()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/PiPGatewayService

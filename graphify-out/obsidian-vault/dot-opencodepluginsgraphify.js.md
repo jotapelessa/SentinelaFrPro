@@ -1,12 +1,12 @@
 ---
 source_file: ".opencode/opencode.json"
 type: "concept"
-community: "backup/page.tsx"
+community: "setup-autostart.sh"
 location: "L3"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/backup/pagetsx
+  - community/setup-autostartsh
 ---
 
 # .opencode/plugins/graphify.js
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[plugin]] - `extends` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/backup/pagetsx
+#graphify/concept #graphify/EXTRACTED #community/setup-autostartsh

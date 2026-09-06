@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/db/models.py"
 type: "code"
-community: "useSentinelaStore"
+community: "TvNetflixScreen.kt"
 location: "L34"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/TvNetflixScreenkt
 ---
 
 # EventRecord
@@ -25,4 +25,4 @@ tags:
 - [[settings.py]] - `imports` [EXTRACTED]
 - [[sync_events_from_frigate()]] - `uses` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

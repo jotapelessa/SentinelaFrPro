@@ -1,17 +1,18 @@
 ---
 type: community
-cohesion: 1.00
-members: 2
+cohesion: 0.67
+members: 3
 ---
 
 # sentinela-pro-tv/vite.config.ts
 
-**Cohesion:** 1.00 - tightly connected
-**Members:** 2 nodes
+**Cohesion:** 0.67 - moderately connected
+**Members:** 3 nodes
 
 ## Members
-- [[Diretrizes Operacionais do Agente (Antigravity Rules)]] - document - .agents/rules/execution.md
-- [[execution]] - document - .agents/rules/execution.md
+- [[Run Locally_1]] - document - ai_studio_imports/sentinela-pro-tv/README.md
+- [[Run and deploy your AI Studio app_1]] - document - ai_studio_imports/sentinela-pro-tv/README.md
+- [[sentinela-pro-tvREADME]] - document - ai_studio_imports/sentinela-pro-tv/README.md
 
 ## Live Query (requires Dataview plugin)
 

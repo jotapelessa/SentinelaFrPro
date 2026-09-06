@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "code"
-community: "asyncio"
+community: "settings.py"
 location: "L19"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # TelegramConfigUpdate
@@ -16,4 +16,4 @@ tags:
 - [[settings.py]] - `contains` [EXTRACTED]
 - [[update_telegram_config()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/settingspy

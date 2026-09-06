@@ -1,17 +1,17 @@
 ---
 source_file: "frontend/tsconfig.json"
 type: "code"
-community: "TelegramVaultService"
+community: "events.py"
 location: "L10"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/eventspy
 ---
 
 # esModuleInterop
 
 ## Connections
-- [[compilerOptions_2]] - `contains` [EXTRACTED]
+- [[compilerOptions]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/eventspy

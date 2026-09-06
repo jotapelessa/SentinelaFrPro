@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/core/logging_handler.py"
 type: "rationale"
-community: "api/telemetry.py"
+community: "backup/page.tsx"
 location: "L20"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/backup/pagetsx
 ---
 
 # Captures all logging records in memory for real-time API streaming.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[MemoryRingBufferHandler]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/rationale #graphify/EXTRACTED #community/backup/pagetsx

@@ -15,7 +15,7 @@ tags:
 - [[dot-get_cpu_temperature()]] - `calls` [EXTRACTED]
 - [[dot-get_detailed_stats()]] - `calls` [EXTRACTED]
 - [[dot-get_uptime_string()]] - `calls` [EXTRACTED]
-- [[Any_4]] - `references` [EXTRACTED]
+- [[Any_5]] - `references` [EXTRACTED]
 - [[TelemetryService]] - `method` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro

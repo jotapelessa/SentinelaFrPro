@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "compilerOptions"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/compilerOptions
 ---
 
 # frigate_bridge.py
@@ -15,4 +15,4 @@ tags:
 - [[FrigateBridgeService]] - `contains` [EXTRACTED]
 - [[asyncio]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

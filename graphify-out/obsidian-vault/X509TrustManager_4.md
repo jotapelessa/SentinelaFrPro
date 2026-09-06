@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "PiPGatewayService"
+community: "X509Certificate"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/X509Certificate
 ---
 
 # X509TrustManager
@@ -15,4 +15,4 @@ tags:
 - [[X509TrustManager]] - `implements` [EXTRACTED]
 - [[X509TrustManager_1]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/X509Certificate

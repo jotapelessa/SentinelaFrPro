@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "useSentinelaStore"
+community: "compilerOptions"
 location: "L303"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # .send_alert_video()
@@ -19,4 +19,4 @@ tags:
 - [[Dispatches MP4 clip to Telegram using the classic template.]] - `rationale_for` [EXTRACTED]
 - [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

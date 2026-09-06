@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/src/data/mockData.ts"
 type: "code"
-community: "SentinelaRepository"
+community: "sentinela-pro-mobile-nvr/src/App.tsx"
 location: "L3"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/SentinelaRepository
+  - community/sentinela-pro-mobile-nvr/src/Apptsx
 ---
 
 # INITIAL_CAMERAS
@@ -15,4 +15,4 @@ tags:
 - [[sentinela-pro-mobile-nvrsrcApp.tsx]] - `imports` [EXTRACTED]
 - [[sentinela-pro-mobile-nvrsrcdatamockData.ts]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/SentinelaRepository
+#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx

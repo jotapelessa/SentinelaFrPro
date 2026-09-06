@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "compilerOptions"
 location: "L274"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/compilerOptions
 ---
 
 # .transcode_to_30fps()
@@ -19,4 +19,4 @@ tags:
 - [[FrigateBridgeService]] - `method` [EXTRACTED]
 - [[Robust H.264AAC constant-frame-rate preparation for Telegram & mobile…]] - `rationale_for` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

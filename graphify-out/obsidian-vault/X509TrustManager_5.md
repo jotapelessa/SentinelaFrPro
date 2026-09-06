@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "build_apk.sh"
+community: "next.config.mjs"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/build_apksh
+  - community/nextconfigmjs
 ---
 
 # X509TrustManager
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[X509TrustManager_2]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/build_apksh
+#graphify/code #graphify/EXTRACTED #community/nextconfigmjs

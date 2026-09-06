@@ -1,16 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "telegram/page.tsx"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/telegram/pagetsx
 ---
 
 # BaseModel
 
 ## Connections
-- [[ScanPayload]] - `inherits` [EXTRACTED]
+- [[BenchmarkPayload]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/telegram/pagetsx

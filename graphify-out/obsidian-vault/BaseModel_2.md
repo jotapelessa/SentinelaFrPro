@@ -1,19 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "cameras.py"
+community: "next-env.d.ts"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/cameraspy
+  - community/next-envdts
 ---
 
 # BaseModel
 
 ## Connections
-- [[CameraCreate]] - `inherits` [EXTRACTED]
-- [[CameraUpdate]] - `inherits` [EXTRACTED]
-- [[FrigateZonesPayload]] - `inherits` [EXTRACTED]
-- [[RtspTestPayload]] - `inherits` [EXTRACTED]
+- [[ScanPayload]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/cameraspy
+#graphify/code #graphify/EXTRACTED #community/next-envdts

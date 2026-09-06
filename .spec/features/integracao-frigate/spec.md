@@ -69,6 +69,16 @@ Para manter vigilância contínua sem necessidade de recarregar a página ou rec
 - **Quando** o backend iniciar a transcodificação e empacotamento do clipe MP4
 - **Então** o pipeline CFR deve validar a integridade dos streams com ffprobe, regenerar os timestamps PTS (`setpts=N/(FPS*TB)`), incorporar áudio AAC sincronizado e manter retry exponencial com validação de stream de vídeo antes do envio.
 
+### US-020 — Persistência e Sincronização Instantânea de Câmeras Descobertas
+Como operador do sistema
+Quero que qualquer câmera encontrada pelo scanner e adicionada seja gravada de forma persistente e imediata no Frigate, go2rtc e banco de dados
+Para que ela apareça instantaneamente no mosaico do app web, nos APKs e TVs sem ser descartada por purges indevidos ou dessincronia de cache.
+
+#### AC-031 — Persistência Atômica Bidirecional e Invalidação de Cache de Câmeras
+- **Dado** que o scanner de rede descobre uma nova câmera IP (RTSP/ONVIF)
+- **Quando** o usuário confirmar a adição direta via modal ou formulário de cadastro
+- **Então** o sistema deve persistir a câmera no banco SQLite/Postgres, gravar sua configuração no arquivo `config.yml` do Frigate e go2rtc, invalidar o cache em memória do backend, e garantir que rotinas de listagem não a purguem indevidamente, refletindo a nova câmera instantaneamente nas interfaces.
+
 ## Fora de escopo
 
 - Treinamento local de modelos de inteligência artificial (usa-se os modelos otimizados padrão do Frigate).

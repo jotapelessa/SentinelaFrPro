@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[setup_ubuntu.sh]] - code - scripts/setup_ubuntu.sh
-- [[setup_ubuntu.sh script]] - code - scripts/setup_ubuntu.sh
+- [[BackupSettingsPage()]] - code - frontend/src/app/settings/backup/page.tsx
+- [[backuppage.tsx]] - code - frontend/src/app/settings/backup/page.tsx
 
 ## Live Query (requires Dataview plugin)
 

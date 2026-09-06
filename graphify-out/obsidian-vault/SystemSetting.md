@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/db/models.py"
 type: "code"
-community: "useSentinelaStore"
+community: "settings.py"
 location: "L84"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/useSentinelaStore
+  - community/settingspy
 ---
 
 # SystemSetting
@@ -26,4 +26,4 @@ tags:
 - [[update_dnd_settings()]] - `uses` [INFERRED]
 - [[update_telegram_config()]] - `uses` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/useSentinelaStore
+#graphify/code #graphify/INFERRED #community/settingspy

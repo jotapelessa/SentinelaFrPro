@@ -1,20 +1,20 @@
 ---
-source_file: "frontend/tsconfig.json"
+source_file: "ai_studio_imports/sentinela-pro-tv/tsconfig.json"
 type: "code"
-community: "TelegramVaultService"
-location: "L5"
+community: "asyncio"
+location: "L7"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/asyncio
 ---
 
 # lib
 
 ## Connections
+- [[DOM_2]] - `extends` [EXTRACTED]
+- [[ES2022_1]] - `extends` [EXTRACTED]
 - [[compilerOptions_2]] - `contains` [EXTRACTED]
-- [[dom_2]] - `extends` [EXTRACTED]
 - [[dom.iterable]] - `extends` [EXTRACTED]
-- [[esnext]] - `extends` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/asyncio

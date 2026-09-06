@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/ws.py"
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "Settings"
 location: "L22"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/Settings
 ---
 
 # .disconnect()
@@ -15,4 +15,4 @@ tags:
 - [[WebSocket]] - `references` [EXTRACTED]
 - [[WebSocketManager]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/Settings

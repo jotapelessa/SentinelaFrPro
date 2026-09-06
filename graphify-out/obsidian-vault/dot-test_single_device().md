@@ -1,20 +1,20 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "MseCameraView"
+community: "dependencies"
 location: "L211"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/dependencies
 ---
 
 # .test_single_device()
 
 ## Connections
-- [[Any_3]] - `references` [EXTRACTED]
+- [[Any_4]] - `references` [EXTRACTED]
 - [[Dispatches an interactive test PiP alert to a specific TV using real accessible…]] - `rationale_for` [EXTRACTED]
 - [[PiPGatewayService]] - `method` [EXTRACTED]
 - [[_cast_sync()]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/dependencies

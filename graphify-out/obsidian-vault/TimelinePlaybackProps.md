@@ -1,18 +1,18 @@
 ---
 source_file: "frontend/src/components/TimelinePlayback.tsx"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "OverlayService"
 location: "L7"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/OverlayService
 ---
 
 # TimelinePlaybackProps
 
 ## Connections
-- [[Camera]] - `references` [EXTRACTED]
+- [[Camera_1]] - `references` [EXTRACTED]
 - [[TimelinePlayback.tsx]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/OverlayService

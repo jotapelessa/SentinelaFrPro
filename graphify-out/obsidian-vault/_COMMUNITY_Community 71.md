@@ -1,16 +1,17 @@
 ---
 type: community
 cohesion: 1.00
-members: 1
+members: 2
 ---
 
 # Community 71
 
 **Cohesion:** 1.00 - tightly connected
-**Members:** 1 nodes
+**Members:** 2 nodes
 
 ## Members
-- [[java_2]] - code
+- [[simulate_event.sh]] - code - scripts/simulate_event.sh
+- [[simulate_event.sh script]] - code - scripts/simulate_event.sh
 
 ## Live Query (requires Dataview plugin)
 

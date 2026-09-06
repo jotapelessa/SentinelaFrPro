@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "code"
-community: "api/telemetry.py"
+community: "app/build.gradle.kts"
 location: "L344"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/app/buildgradlekts
 ---
 
 # get_audit_logs()
@@ -16,6 +16,6 @@ tags:
 - [[AuditLog]] - `uses` [INFERRED]
 - [[Returns application audit logs with newest events at the top (DESC order).]] - `rationale_for` [EXTRACTED]
 - [[apitelemetry.py]] - `contains` [EXTRACTED]
-- [[get_3]] - `references` [EXTRACTED]
+- [[get_2]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/app/buildgradlekts

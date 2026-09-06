@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "FrigateBridgeService"
+community: "ScannerService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FrigateBridgeService
+  - community/ScannerService
 ---
 
 # Models.kt
@@ -24,4 +24,4 @@ tags:
 - [[StorageStatus]] - `contains` [EXTRACTED]
 - [[TelemetryData_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService
+#graphify/code #graphify/EXTRACTED #community/ScannerService

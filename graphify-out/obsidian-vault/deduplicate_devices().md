@@ -1,22 +1,22 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L671"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # deduplicate_devices()
 
 ## Connections
-- [[AsyncSession]] - `references` [EXTRACTED]
+- [[AsyncSession_1]] - `references` [EXTRACTED]
 - [[Consolidates duplicate devices with identical IP or Model, retaining the most…]] - `rationale_for` [EXTRACTED]
 - [[PairedDevice_1]] - `uses` [INFERRED]
-- [[Request]] - `references` [EXTRACTED]
+- [[Request_1]] - `references` [EXTRACTED]
 - [[devices.py]] - `contains` [EXTRACTED]
-- [[post]] - `references` [EXTRACTED]
+- [[post_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

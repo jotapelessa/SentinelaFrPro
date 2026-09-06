@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "TvNetflixScreen.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/TvNetflixScreenkt
 ---
 
 # asyncio
@@ -27,4 +27,4 @@ tags:
 - [[verify_system.py]] - `imports` [EXTRACTED]
 - [[ws.py]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

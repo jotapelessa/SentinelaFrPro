@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/store/useSentinelaStore.ts"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "OverlayService"
 location: "L103"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/OverlayService
 ---
 
 # DiscoveredDevice
@@ -15,4 +15,4 @@ tags:
 - [[ScannerModal.tsx]] - `imports` [EXTRACTED]
 - [[useSentinelaStore.ts]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/OverlayService

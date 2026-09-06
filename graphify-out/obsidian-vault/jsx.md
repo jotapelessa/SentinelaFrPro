@@ -1,12 +1,12 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json"
+source_file: "frontend/tsconfig.json"
 type: "code"
-community: "compilerOptions"
-location: "L17"
+community: "events.py"
+location: "L15"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/eventspy
 ---
 
 # jsx
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[compilerOptions]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/eventspy

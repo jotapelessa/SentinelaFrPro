@@ -1,24 +1,25 @@
 ---
 type: community
-cohesion: 0.22
-members: 9
+cohesion: 0.20
+members: 10
 ---
 
 # postcss.config.mjs
 
-**Cohesion:** 0.22 - loosely connected
-**Members:** 9 nodes
+**Cohesion:** 0.20 - loosely connected
+**Members:** 10 nodes
 
 ## Members
-- [[build_2]] - code - frontend/package.json
-- [[dev_2]] - code - frontend/package.json
-- [[frontendpackage.json]] - code - frontend/package.json
-- [[lint_2]] - code - frontend/package.json
-- [[name_3]] - code - frontend/package.json
-- [[private_2]] - code - frontend/package.json
-- [[scripts_2]] - code - frontend/package.json
-- [[start]] - code - frontend/package.json
-- [[version_2]] - code - frontend/package.json
+- [[background_color]] - code - frontend/public/manifest.json
+- [[description]] - code - frontend/public/manifest.json
+- [[display]] - code - frontend/public/manifest.json
+- [[icons]] - code - frontend/public/manifest.json
+- [[manifest.json]] - code - frontend/public/manifest.json
+- [[name_2]] - code - frontend/public/manifest.json
+- [[orientation]] - code - frontend/public/manifest.json
+- [[short_name]] - code - frontend/public/manifest.json
+- [[start_url]] - code - frontend/public/manifest.json
+- [[theme_color]] - code - frontend/public/manifest.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -26,10 +27,3 @@ members: 9
 TABLE source_file, type FROM #community/postcssconfigmjs
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 1 edge to [[_COMMUNITY_TelemetryService]]
-- 1 edge to [[_COMMUNITY_3. Catálogo de Endpoints da API REST (`api`)]]
-
-## Top bridge nodes
-- [[frontendpackage.json]] - degree 6, connects to 2 communities

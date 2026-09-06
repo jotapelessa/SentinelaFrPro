@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "rationale"
-community: "asyncio"
+community: "settings.py"
 location: "L441"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # Returns the sentinela.db SQLite binary file directly as a download.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[download_database_file()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/asyncio
+#graphify/rationale #graphify/EXTRACTED #community/settingspy

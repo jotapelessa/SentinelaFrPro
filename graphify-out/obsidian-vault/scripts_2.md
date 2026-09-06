@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/package.json"
 type: "code"
-community: "postcss.config.mjs"
+community: "graphify.js"
 location: "L5"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/postcssconfigmjs
+  - community/graphifyjs
 ---
 
 # scripts
@@ -18,4 +18,4 @@ tags:
 - [[lint_2]] - `contains` [EXTRACTED]
 - [[start]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/postcssconfigmjs
+#graphify/code #graphify/EXTRACTED #community/graphifyjs

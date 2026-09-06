@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "rationale"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L388"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # Concurrently scans CCTV ports with semaphore control, ONVIF SOAP inspection,…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-scan_subnet_cctv_ports()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService

@@ -1,16 +1,17 @@
 ---
 type: community
 cohesion: 1.00
-members: 1
+members: 2
 ---
 
 # Community 69
 
 **Cohesion:** 1.00 - tightly connected
-**Members:** 1 nodes
+**Members:** 2 nodes
 
 ## Members
-- [[appbuild.gradle.kts]] - code - android/app/build.gradle.kts
+- [[setup-autostart.sh]] - code - scripts/setup-autostart.sh
+- [[setup-autostart.sh script]] - code - scripts/setup-autostart.sh
 
 ## Live Query (requires Dataview plugin)
 

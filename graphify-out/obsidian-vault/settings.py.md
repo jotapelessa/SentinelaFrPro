@@ -1,18 +1,18 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "code"
-community: "asyncio"
+community: "settings.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # settings.py
 
 ## Connections
-- [[Camera_1]] - `imports` [EXTRACTED]
+- [[Camera]] - `imports` [EXTRACTED]
 - [[DNDConfigUpdate]] - `contains` [EXTRACTED]
 - [[EventRecord]] - `imports` [EXTRACTED]
 - [[FastAPI]] - `imports_from` [EXTRACTED]
@@ -46,4 +46,4 @@ tags:
 - [[update_dnd_settings()]] - `contains` [EXTRACTED]
 - [[update_telegram_config()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/settingspy

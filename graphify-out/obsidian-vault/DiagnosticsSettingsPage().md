@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/settings/diagnostics/page.tsx"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "OverlayService"
 location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/OverlayService
 ---
 
 # DiagnosticsSettingsPage()
@@ -15,4 +15,4 @@ tags:
 - [[diagnosticspage.tsx]] - `contains` [EXTRACTED]
 - [[useSentinelaStore]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/OverlayService

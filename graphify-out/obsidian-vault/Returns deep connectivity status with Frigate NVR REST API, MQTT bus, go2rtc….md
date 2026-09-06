@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "rationale"
-community: "api/telemetry.py"
+community: "MseCameraView"
 location: "L24"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/MseCameraView
 ---
 
 # Returns deep connectivity status with Frigate NVR REST API, MQTT bus, go2rtc…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_frigate_deep_status()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/rationale #graphify/EXTRACTED #community/MseCameraView

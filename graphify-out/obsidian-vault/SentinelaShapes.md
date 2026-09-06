@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/theme/SentinelaMobileTokens.kt"
 type: "code"
-community: "next.config.mjs"
+community: "storage/page.tsx"
 location: "L70"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/nextconfigmjs
+  - community/storage/pagetsx
 ---
 
 # SentinelaShapes
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[SentinelaMobileTokens.kt]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/nextconfigmjs
+#graphify/code #graphify/EXTRACTED #community/storage/pagetsx

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "FrigateBridgeService"
+community: "devices.py"
 location: "L99"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FrigateBridgeService
+  - community/devicespy
 ---
 
 # PipPosition
@@ -23,4 +23,4 @@ tags:
 - [[TOP_LEFT]] - `case_of` [EXTRACTED]
 - [[TOP_RIGHT]] - `case_of` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService
+#graphify/code #graphify/EXTRACTED #community/devicespy

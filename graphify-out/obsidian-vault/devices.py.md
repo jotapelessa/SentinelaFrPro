@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # devices.py
@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[AuditLog]] - `imports` [EXTRACTED]
 - [[BatchTestRequest]] - `contains` [EXTRACTED]
-- [[Camera_1]] - `imports` [EXTRACTED]
+- [[Camera]] - `imports` [EXTRACTED]
 - [[DeviceAllowedCamerasUpdate]] - `contains` [EXTRACTED]
 - [[DeviceCreate]] - `contains` [EXTRACTED]
 - [[DeviceHeartbeat]] - `contains` [EXTRACTED]
@@ -52,4 +52,4 @@ tags:
 - [[update_device_permissions()]] - `contains` [EXTRACTED]
 - [[update_device_status()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

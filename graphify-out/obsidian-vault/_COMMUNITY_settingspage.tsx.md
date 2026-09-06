@@ -1,19 +1,21 @@
 ---
 type: community
-cohesion: 0.50
-members: 4
+cohesion: 0.33
+members: 6
 ---
 
 # settings/page.tsx
 
-**Cohesion:** 0.50 - moderately connected
-**Members:** 4 nodes
+**Cohesion:** 0.33 - loosely connected
+**Members:** 6 nodes
 
 ## Members
-- [[android-smartphone-app.spec.test.js]] - code - test/android-smartphone-app.spec.test.js
-- [[prefsFile]] - code - test/android-smartphone-app.spec.test.js
-- [[repoFile]] - code - test/android-smartphone-app.spec.test.js
-- [[smartphoneScreenFile]] - code - test/android-smartphone-app.spec.test.js
+- [[Proposed Changes]] - document - implementation_plan.md
+- [[Resgate do Sistema Solução Final para o Vídeo do Telegram (v060.4)]] - document - implementation_plan.md
+- [[Status Atual]] - document - implementation_plan.md
+- [[User Review Required]] - document - implementation_plan.md
+- [[`frigateconfigconfig.yml`]] - document - implementation_plan.md
+- [[implementation_plan]] - document - implementation_plan.md
 
 ## Live Query (requires Dataview plugin)
 

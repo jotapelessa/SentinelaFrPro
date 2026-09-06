@@ -1,19 +1,22 @@
 ---
 source_file: ""
 type: "code"
-community: "cameras.py"
+community: "MseCameraView"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/cameraspy
+  - community/MseCameraView
 ---
 
 # get
 
 ## Connections
-- [[get_camera_diagnostics()]] - `references` [EXTRACTED]
-- [[get_camera_stream_info()]] - `references` [EXTRACTED]
-- [[get_frigate_camera_zones()]] - `references` [EXTRACTED]
-- [[list_cameras()]] - `references` [EXTRACTED]
+- [[download_diagnostic_logs()]] - `references` [EXTRACTED]
+- [[get_audit_logs()]] - `references` [EXTRACTED]
+- [[get_detailed_stats()]] - `references` [EXTRACTED]
+- [[get_frigate_deep_status()]] - `references` [EXTRACTED]
+- [[get_service_logs()]] - `references` [EXTRACTED]
+- [[get_system_diagnostics()]] - `references` [EXTRACTED]
+- [[get_telemetry()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/cameraspy
+#graphify/code #graphify/EXTRACTED #community/MseCameraView

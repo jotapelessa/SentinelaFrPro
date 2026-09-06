@@ -612,10 +612,10 @@
     "semantic_hash": "75417281178fff8ddf1f41b31d5af66c"
   },
   "frontend/src/components/CameraMosaic.tsx": {
-    "mtime": 1788623471.7714605,
-    "seen": 1788641395.5382872,
-    "ast_hash": "62a8830ef2e793870debd25bce116b95",
-    "semantic_hash": "62a8830ef2e793870debd25bce116b95"
+    "mtime": 1788691694.8394728,
+    "seen": 1788691736.9423869,
+    "ast_hash": "4e965702b5cc173b3415c99383074f11",
+    "semantic_hash": "4e965702b5cc173b3415c99383074f11"
   },
   "frontend/src/components/Header.tsx": {
     "mtime": 1788648921.2250974,
@@ -636,10 +636,10 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1788623405.1809847,
-    "seen": 1788641395.538288,
-    "ast_hash": "46b7d758e38f669bc7bc31f5d00d0366",
-    "semantic_hash": "46b7d758e38f669bc7bc31f5d00d0366"
+    "mtime": 1788691686.5500503,
+    "seen": 1788691736.942445,
+    "ast_hash": "61a19b659126db04e4cc1d2f936637da",
+    "semantic_hash": "61a19b659126db04e4cc1d2f936637da"
   },
   "frontend/src/components/WebSocketProvider.tsx": {
     "mtime": 1788615925.5338562,
@@ -816,22 +816,22 @@
     "semantic_hash": "df610bc84cea342db1b3c3cfee010fc3"
   },
   ".spec/verification/integracao-frigate.json": {
-    "mtime": 1788672953.5945177,
-    "seen": 1788672977.844815,
-    "ast_hash": "40bf7e18ff0d9a2e25120580974add9f",
-    "semantic_hash": "40bf7e18ff0d9a2e25120580974add9f"
+    "mtime": 1788691730.6216686,
+    "seen": 1788691736.939531,
+    "ast_hash": "f44ff1953718211ebda257ab601326b7",
+    "semantic_hash": "f44ff1953718211ebda257ab601326b7"
   },
   ".spec/verification/sinais.json": {
-    "mtime": 1788687941.8286357,
-    "seen": 1788687950.480116,
-    "ast_hash": "b962ead27c73ed631e453cab31720816",
-    "semantic_hash": "b962ead27c73ed631e453cab31720816"
+    "mtime": 1788691733.424657,
+    "seen": 1788691736.93955,
+    "ast_hash": "87c50578454ea00b73efc7212cb2c538",
+    "semantic_hash": "87c50578454ea00b73efc7212cb2c538"
   },
   "test/integracao-frigate.spec.test.js": {
-    "mtime": 1788672895.1988769,
-    "seen": 1788672977.846524,
-    "ast_hash": "4e58aa94f4d8ab95458f256612099fa6",
-    "semantic_hash": "4e58aa94f4d8ab95458f256612099fa6"
+    "mtime": 1788691659.4652507,
+    "seen": 1788691736.942658,
+    "ast_hash": "c4b8d336396df28395d44c58e4ed8043",
+    "semantic_hash": "c4b8d336396df28395d44c58e4ed8043"
   },
   ".spec/verification/sentinela-core.json": {
     "mtime": 1788673104.107469,

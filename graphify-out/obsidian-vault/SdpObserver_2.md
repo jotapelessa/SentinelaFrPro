@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "Observer"
+community: "SentinelaRepository"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/SentinelaRepository
 ---
 
 # SdpObserver
@@ -14,4 +14,4 @@ tags:
 - [[SdpObserver]] - `implements` [EXTRACTED]
 - [[SdpObserver_1]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

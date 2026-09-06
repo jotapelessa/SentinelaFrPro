@@ -10,7 +10,7 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[integracao-frigate.spec.test.js]] - code - test/integracao-frigate.spec.test.js
+- [[java_2]] - code
 
 ## Live Query (requires Dataview plugin)
 

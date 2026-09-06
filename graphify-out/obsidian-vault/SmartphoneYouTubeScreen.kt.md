@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt"
 type: "code"
-community: "ScannerService"
+community: "TvDesignTokens.kt"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ScannerService
+  - community/TvDesignTokenskt
 ---
 
 # SmartphoneYouTubeScreen.kt
@@ -32,4 +32,4 @@ tags:
 - [[SmartphoneYouTubeScreen()]] - `contains` [EXTRACTED]
 - [[TvDeviceStatus]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ScannerService
+#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt

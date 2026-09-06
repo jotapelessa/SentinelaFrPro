@@ -12,7 +12,7 @@ tags:
 # TelemetryService
 
 ## Connections
-- [[dot-__init__()_3]] - `method` [EXTRACTED]
+- [[dot-__init__()_4]] - `method` [EXTRACTED]
 - [[dot-get_cpu_temperature()]] - `method` [EXTRACTED]
 - [[dot-get_detailed_stats()]] - `method` [EXTRACTED]
 - [[dot-get_telemetry_snapshot()]] - `method` [EXTRACTED]

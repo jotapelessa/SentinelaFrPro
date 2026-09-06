@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/core/logging_handler.py"
 type: "code"
-community: "api/telemetry.py"
+community: "MseCameraView"
 location: "L29"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/MseCameraView
 ---
 
 # get_backend_logs()
@@ -18,4 +18,4 @@ tags:
 - [[get_service_logs()]] - `calls` [EXTRACTED]
 - [[logging_handler.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/MseCameraView

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "code"
-community: "asyncio"
+community: "settings.py"
 location: "L487"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # _dir_size_bytes()
@@ -17,4 +17,4 @@ tags:
 - [[_purge_recordings()]] - `calls` [EXTRACTED]
 - [[settings.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/settingspy

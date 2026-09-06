@@ -2,7 +2,7 @@
 source_file: "backend/app/api/cameras.py"
 type: "rationale"
 community: "cameras.py"
-location: "L858"
+location: "L862"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED

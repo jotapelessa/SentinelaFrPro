@@ -1,19 +1,19 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L223"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # .identify_camera_profile()
 
 ## Connections
-- [[Any]] - `references` [EXTRACTED]
+- [[Any_2]] - `references` [EXTRACTED]
 - [[Classifies camera hardware, identifying AITEK SEG6050BP (Guangdong Pineng…]] - `rationale_for` [EXTRACTED]
 - [[ScannerService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

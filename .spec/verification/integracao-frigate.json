@@ -1,11 +1,11 @@
 {
   "feature": "integracao-frigate",
-  "timestamp": "2026-09-06T10:48:50.607Z",
-  "gitRev": "68b6a7e",
+  "timestamp": "2026-09-06T11:48:51.186Z",
+  "gitRev": "bf1c2ec",
   "command": "node --test --test-reporter tap test/*.test.js",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 30,
+  "testsParsed": 31,
   "results": {
     "AC-001": {
       "status": "pass",
@@ -45,6 +45,11 @@
     "AC-030": {
       "status": "pass",
       "testName": "AC-030: Pipeline de Clipes Resiliente com Sincronismo PTS e Verificação de Áudio AAC @spec:AC-030",
+      "method": "tap"
+    },
+    "AC-031": {
+      "status": "pass",
+      "testName": "AC-031: Persistência Atômica Bidirecional e Invalidação de Cache de Câmeras @spec:AC-031",
       "method": "tap"
     }
   },

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L68"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # ScannerService
@@ -24,4 +24,4 @@ tags:
 - [[dot-verify_rtsp_stream()]] - `method` [EXTRACTED]
 - [[scanner_service.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

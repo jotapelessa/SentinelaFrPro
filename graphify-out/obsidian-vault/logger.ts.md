@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/utils/logger.ts"
 type: "code"
-community: "next-env.d.ts"
+community: "tailwind.config.ts"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/next-envdts
+  - community/tailwindconfigts
 ---
 
 # logger.ts
@@ -17,4 +17,4 @@ tags:
 - [[formatTimestamp()]] - `contains` [EXTRACTED]
 - [[logger]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/next-envdts
+#graphify/code #graphify/EXTRACTED #community/tailwindconfigts

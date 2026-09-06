@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/events.py"
 type: "code"
-community: "events.py"
+community: "TvNetflixScreen.kt"
 location: "L450"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/TvNetflixScreenkt
 ---
 
 # get_event_clip()
@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[Streams a universally compatible H.264 MP4 video clip with HTTP Range support.…]] - `rationale_for` [EXTRACTED]
 - [[events.py]] - `contains` [EXTRACTED]
-- [[get_1]] - `references` [EXTRACTED]
+- [[get]] - `references` [EXTRACTED]
 - [[head]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/eventspy
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "rationale"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L527"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # Scans the local network for Smart TVs (Google Cast, TCL, Samsung, LG, Android…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-discover_smart_tvs()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService

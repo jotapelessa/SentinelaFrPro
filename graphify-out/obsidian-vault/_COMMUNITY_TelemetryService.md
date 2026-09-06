@@ -34,8 +34,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 3 edges to [[_COMMUNITY_compilerOptions_1]]
-- 1 edge to [[_COMMUNITY_postcss.config.mjs]]
+- 3 edges to [[_COMMUNITY_Observer]]
+- 1 edge to [[_COMMUNITY_graphify.js]]
 
 ## Top bridge nodes
 - [[dependencies_2]] - degree 8, connects to 2 communities

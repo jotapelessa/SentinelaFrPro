@@ -1,16 +1,17 @@
 ---
 type: community
 cohesion: 1.00
-members: 1
+members: 2
 ---
 
 # Community 67
 
 **Cohesion:** 1.00 - tightly connected
-**Members:** 1 nodes
+**Members:** 2 nodes
 
 ## Members
-- [[sentinela-pro-mobile-nvrvite.config.ts]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/vite.config.ts
+- [[TelegramSettingsPage()]] - code - frontend/src/app/settings/telegram/page.tsx
+- [[telegrampage.tsx]] - code - frontend/src/app/settings/telegram/page.tsx
 
 ## Live Query (requires Dataview plugin)
 

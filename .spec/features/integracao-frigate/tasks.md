@@ -36,3 +36,8 @@
 - Refs: US-019, AC-030
 - Arquivos: backend/app/services/frigate_bridge.py, backend/app/services/mqtt_service.py
 - Notas: Transcodificação com regeneração de timestamps PTS, preservação de áudio AAC e verificação rigorosa de integridade de fluxo antes do envio.
+
+## T-008 — Persistência e Sincronização Atômica de Câmeras Escaneadas [concluida]
+- Refs: US-020, AC-031
+- Arquivos: backend/app/api/cameras.py, frontend/src/components/ScannerModal.tsx, frontend/src/components/CameraMosaic.tsx
+- Notas: Garante que novas câmeras adicionadas sejam salvas no YAML do Frigate e no banco sem sofrer purges no list_cameras e invalidem o cache em memória.

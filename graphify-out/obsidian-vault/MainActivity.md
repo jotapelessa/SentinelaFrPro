@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/MainActivity.kt"
 type: "code"
-community: "graphify.js"
+community: "compile_apk.sh"
 location: "L26"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/graphifyjs
+  - community/compile_apksh
 ---
 
 # MainActivity
@@ -18,4 +18,4 @@ tags:
 - [[ComponentActivity]] - `inherits` [EXTRACTED]
 - [[MainActivity.kt]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/graphifyjs
+#graphify/code #graphify/EXTRACTED #community/compile_apksh

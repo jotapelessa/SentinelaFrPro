@@ -1,20 +1,20 @@
 ---
 source_file: "backend/app/api/events.py"
 type: "code"
-community: "events.py"
+community: "TvNetflixScreen.kt"
 location: "L25"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/TvNetflixScreenkt
 ---
 
 # EventBatchDeleteRequest
 
 ## Connections
-- [[BaseModel_1]] - `inherits` [EXTRACTED]
+- [[BaseModel]] - `inherits` [EXTRACTED]
 - [[delete_events_batch()]] - `references` [EXTRACTED]
 - [[delete_events_by_date()]] - `calls` [EXTRACTED]
 - [[events.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/eventspy
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

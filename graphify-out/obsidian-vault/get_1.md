@@ -1,19 +1,21 @@
 ---
 source_file: ""
 type: "code"
-community: "events.py"
+community: "useSentinelaStore"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/useSentinelaStore
 ---
 
 # get
 
 ## Connections
-- [[get_audit_trail()]] - `references` [EXTRACTED]
-- [[get_event_clip()]] - `references` [EXTRACTED]
-- [[get_events_summary()]] - `references` [EXTRACTED]
-- [[list_events()]] - `references` [EXTRACTED]
+- [[check_devices_health()]] - `references` [EXTRACTED]
+- [[device_diagnostics()]] - `references` [EXTRACTED]
+- [[discover_tvs()]] - `references` [EXTRACTED]
+- [[get_device_permitted_cameras()]] - `references` [EXTRACTED]
+- [[get_device_policy()]] - `references` [EXTRACTED]
+- [[list_devices()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/eventspy
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

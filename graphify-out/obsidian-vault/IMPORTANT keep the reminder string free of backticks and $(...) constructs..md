@@ -1,12 +1,12 @@
 ---
 source_file: ".opencode/plugins/graphify.js"
 type: "rationale"
-community: "simulate_event.sh"
+community: "next"
 location: "L4"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/simulate_eventsh
+  - community/next
 ---
 
 # IMPORTANT: keep the reminder string free of backticks and $(...) constructs.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[graphify.js]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/simulate_eventsh
+#graphify/rationale #graphify/EXTRACTED #community/next

@@ -4,6 +4,7 @@ from sqlalchemy import select
 from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import logging
+import datetime
 from app.db.session import get_db
 from app.db.models import Camera
 from app.services.audit_service import audit_service
@@ -236,12 +237,15 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
                         existing.rtsp_main = rtsp_url
                         db_changed = True
 
-        # Purge any DB cameras that are not in Frigate config
+        # Purge any DB cameras that are neither in Frigate config nor recently created in DB
         if isinstance(frigate_cams, dict) and len(frigate_cams) > 0:
             stmt_all = select(Camera)
             res_all = await db.execute(stmt_all)
+            now_dt = datetime.datetime.utcnow()
             for db_c in res_all.scalars().all():
-                if db_c.name not in frigate_cams:
+                # Protege câmeras recém-adicionadas (menos de 60 segundos) ou que ainda aguardam reload do Frigate
+                created_ago_s = (now_dt - db_c.created_at).total_seconds() if db_c.created_at else 999
+                if db_c.name not in frigate_cams and created_ago_s > 60:
                     await db.delete(db_c)
                     db_changed = True
 
@@ -1429,6 +1433,10 @@ async def sync_camera_to_frigate(cam: Camera):
                 f.flush()
                 os.fsync(f.fileno())
             os.replace(tmp_path, config_path)
+            # Invalidação imediata do cache de configuração em memória para o frontend refletir a nova câmera instantaneamente
+            global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
+            _YAML_CONFIG_CACHE = {}
+            _YAML_CONFIG_TIME = 0.0
         except Exception as e:
             logger.warning(f"Failed to write config file: {e}")
 
@@ -1506,6 +1514,9 @@ async def remove_camera_from_frigate(cam_name: str):
                 f.flush()
                 os.fsync(f.fileno())
             os.replace(tmp_path, config_path)
+            global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
+            _YAML_CONFIG_CACHE = {}
+            _YAML_CONFIG_TIME = 0.0
         except Exception as e:
             logger.warning(f"Failed to write config file: {e}")
 

@@ -12,7 +12,7 @@ tags:
 # sentinela-pro-tv/src/main.tsx
 
 ## Connections
-- [[App()_1]] - `imports` [EXTRACTED]
+- [[App()]] - `imports` [EXTRACTED]
 - [[sentinela-pro-tvsrcApp.tsx]] - `imports_from` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/sentinela-pro-tv/src/Apptsx

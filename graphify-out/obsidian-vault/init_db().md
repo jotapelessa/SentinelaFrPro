@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/db/session.py"
 type: "code"
-community: "api/telemetry.py"
+community: "manifest.json"
 location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/manifestjson
 ---
 
 # init_db()
@@ -16,4 +16,4 @@ tags:
 - [[main.py]] - `imports` [EXTRACTED]
 - [[session.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/manifestjson

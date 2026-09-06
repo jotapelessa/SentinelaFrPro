@@ -10,7 +10,7 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[settings.gradle.kts]] - code - android/settings.gradle.kts
+- [[sentinela-pro-tvvite.config.ts]] - code - ai_studio_imports/sentinela-pro-tv/vite.config.ts
 
 ## Live Query (requires Dataview plugin)
 

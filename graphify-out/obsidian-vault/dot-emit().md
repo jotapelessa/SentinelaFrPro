@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/core/logging_handler.py"
 type: "code"
-community: "api/telemetry.py"
+community: "backup/page.tsx"
 location: "L21"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/backup/pagetsx
 ---
 
 # .emit()
@@ -16,4 +16,4 @@ tags:
 - [[MemoryRingBufferHandler]] - `method` [EXTRACTED]
 - [[mask_sensitive_data()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/backup/pagetsx

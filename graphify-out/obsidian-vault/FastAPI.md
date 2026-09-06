@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "manifest.json"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/manifestjson
 ---
 
 # FastAPI
@@ -21,4 +21,4 @@ tags:
 - [[settings.py]] - `imports_from` [EXTRACTED]
 - [[ws.py]] - `imports_from` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/manifestjson

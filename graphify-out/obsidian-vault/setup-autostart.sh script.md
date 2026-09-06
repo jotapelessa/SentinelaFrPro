@@ -1,12 +1,12 @@
 ---
 source_file: "scripts/setup-autostart.sh"
 type: "code"
-community: "Community 63"
+community: "Community 69"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_63
+  - community/Community_69
 ---
 
 # setup-autostart.sh script
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[setup-autostart.sh]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_63
+#graphify/code #graphify/EXTRACTED #community/Community_69

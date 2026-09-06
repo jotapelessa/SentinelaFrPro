@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "rationale"
-community: "asyncio"
+community: "settings.py"
 location: "L517"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # Deletes Frigate recording segment folders older than cutoff under…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[_purge_recordings()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/asyncio
+#graphify/rationale #graphify/EXTRACTED #community/settingspy

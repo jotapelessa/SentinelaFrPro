@@ -1,26 +1,18 @@
 ---
 source_file: ""
 type: "code"
-community: "OverlayService"
+community: "TvNetflixScreen.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/TvNetflixScreenkt
 ---
 
 # post
 
 ## Connections
-- [[deduplicate_devices()]] - `references` [EXTRACTED]
-- [[device_heartbeat()]] - `references` [EXTRACTED]
-- [[execute_batch_test()]] - `references` [EXTRACTED]
-- [[receive_pip_ack()]] - `references` [EXTRACTED]
-- [[register_device()]] - `references` [EXTRACTED]
-- [[remote_reboot_server()]] - `references` [EXTRACTED]
-- [[remote_restart_container()]] - `references` [EXTRACTED]
-- [[test_pip()]] - `references` [EXTRACTED]
-- [[test_single_device()]] - `references` [EXTRACTED]
-- [[toggle_device_master()]] - `references` [EXTRACTED]
-- [[toggle_device_pip()]] - `references` [EXTRACTED]
+- [[delete_events_batch()]] - `references` [EXTRACTED]
+- [[retain_event()]] - `references` [EXTRACTED]
+- [[sync_events_from_frigate()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

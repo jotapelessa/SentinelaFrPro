@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "X509Certificate"
+community: "FrigateBridgeService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509Certificate
+  - community/FrigateBridgeService
 ---
 
 # ContentScale
@@ -18,4 +18,4 @@ tags:
 - [[TvLeanbackGrid.kt]] - `imports` [EXTRACTED]
 - [[TvNetflixScreen.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509Certificate
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

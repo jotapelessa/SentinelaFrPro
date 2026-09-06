@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "useSentinelaStore"
+community: "compilerOptions"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # Any
@@ -15,4 +15,4 @@ tags:
 - [[dot-record_audit()]] - `references` [EXTRACTED]
 - [[dot-test_connection()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

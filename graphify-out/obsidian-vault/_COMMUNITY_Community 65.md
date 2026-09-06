@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[simulate_event.sh]] - code - scripts/simulate_event.sh
-- [[simulate_event.sh script]] - code - scripts/simulate_event.sh
+- [[SettingsHubPage()]] - code - frontend/src/app/settings/page.tsx
+- [[settingspage.tsx]] - code - frontend/src/app/settings/page.tsx
 
 ## Live Query (requires Dataview plugin)
 

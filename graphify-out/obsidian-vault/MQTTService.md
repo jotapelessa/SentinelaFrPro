@@ -1,18 +1,18 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "code"
-community: "useSentinelaStore"
+community: "TvNetflixScreen.kt"
 location: "L22"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/TvNetflixScreenkt
 ---
 
 # MQTTService
 
 ## Connections
-- [[dot-__init__()_1]] - `method` [EXTRACTED]
+- [[dot-__init__()]] - `method` [EXTRACTED]
 - [[dot-_dispatch_background_alert_tasks()]] - `method` [EXTRACTED]
 - [[dot-_dispatch_telegram_video_with_retry()]] - `method` [EXTRACTED]
 - [[dot-_get_telegram_policy()]] - `method` [EXTRACTED]
@@ -23,9 +23,9 @@ tags:
 - [[dot-record_mqtt_traffic()]] - `method` [EXTRACTED]
 - [[dot-register_ws_callback()]] - `method` [EXTRACTED]
 - [[dot-start_listening()]] - `method` [EXTRACTED]
-- [[Camera_1]] - `uses` [INFERRED]
+- [[Camera]] - `uses` [INFERRED]
 - [[EventRecord]] - `uses` [INFERRED]
 - [[SystemSetting]] - `uses` [INFERRED]
 - [[mqtt_service.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

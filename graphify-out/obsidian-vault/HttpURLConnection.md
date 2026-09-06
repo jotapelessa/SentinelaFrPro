@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "settings.py"
+community: "api/telemetry.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/settingspy
+  - community/api/telemetrypy
 ---
 
 # HttpURLConnection
@@ -14,4 +14,4 @@ tags:
 - [[dot-openConnection()]] - `references` [EXTRACTED]
 - [[SentinelaRepository.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/settingspy
+#graphify/code #graphify/EXTRACTED #community/api/telemetrypy

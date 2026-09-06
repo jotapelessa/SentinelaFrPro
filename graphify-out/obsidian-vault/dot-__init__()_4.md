@@ -1,17 +1,17 @@
 ---
-source_file: "backend/app/services/frigate_bridge.py"
+source_file: "backend/app/services/telemetry.py"
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
-location: "L17"
+community: "🛡️ Sentinela Frigate Pro"
+location: "L11"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/_Sentinela_Frigate_Pro
 ---
 
 # .__init__()
 
 ## Connections
-- [[FrigateBridgeService]] - `method` [EXTRACTED]
+- [[TelemetryService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro

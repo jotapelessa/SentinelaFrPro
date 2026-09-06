@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt"
 type: "code"
-community: "dependencies"
+community: "compilerOptions"
 location: "L163"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/compilerOptions
 ---
 
 # CameraEntity
@@ -15,4 +15,4 @@ tags:
 - [[TvDesignTokens.kt]] - `contains` [EXTRACTED]
 - [[toEntity()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

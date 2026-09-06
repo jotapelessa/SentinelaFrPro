@@ -68,3 +68,15 @@ test('AC-030: Pipeline de Clipes Resiliente com Sincronismo PTS e Verificação 
   assert.ok(mqttCode.includes('_dispatch_telegram_video_with_retry'), 'MQTTService deve implementar despacho resiliente de vídeo');
 });
 
+// US-020 — Persistência e Sincronização Instantânea de Câmeras Descobertas
+test('AC-031: Persistência Atômica Bidirecional e Invalidação de Cache de Câmeras @spec:AC-031', () => {
+  // Verifica se o backend sincroniza com Frigate, invalida cache e não descarta novas câmeras
+  const camerasApiCode = fs.readFileSync('backend/app/api/cameras.py', 'utf8');
+  const scannerModalCode = fs.readFileSync('frontend/src/components/ScannerModal.tsx', 'utf8');
+
+  assert.ok(camerasApiCode.includes('sync_camera_to_frigate'), 'cameras.py deve sincronizar com Frigate');
+  assert.ok(camerasApiCode.includes('_YAML_CONFIG_CACHE = {}') || camerasApiCode.includes('_YAML_CONFIG_TIME = 0'), 'cameras.py deve invalidar cache de configuração');
+  assert.ok(scannerModalCode.includes('handleAddDirect') && scannerModalCode.includes('/cameras'), 'ScannerModal deve permitir adicionar e recarregar câmeras');
+});
+
+

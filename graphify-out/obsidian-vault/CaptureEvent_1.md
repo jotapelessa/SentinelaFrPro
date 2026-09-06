@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "ScannerService"
+community: "TvDesignTokens.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ScannerService
+  - community/TvDesignTokenskt
 ---
 
 # CaptureEvent
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[PhoneClipPlayerDialog()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ScannerService
+#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt

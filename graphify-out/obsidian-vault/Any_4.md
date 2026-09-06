@@ -1,19 +1,18 @@
 ---
 source_file: ""
 type: "code"
-community: "🛡️ Sentinela Frigate Pro"
+community: "dependencies"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_Sentinela_Frigate_Pro
+  - community/dependencies
 ---
 
 # Any
 
 ## Connections
-- [[dot-get_detailed_stats()]] - `references` [EXTRACTED]
-- [[dot-get_telemetry_snapshot()]] - `references` [EXTRACTED]
-- [[dot-get_top_processes()]] - `references` [EXTRACTED]
-- [[dot-run_benchmark()]] - `references` [EXTRACTED]
+- [[dot-dispatch_pip_alert()]] - `references` [EXTRACTED]
+- [[dot-get_active_tv_devices()]] - `references` [EXTRACTED]
+- [[dot-test_single_device()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro
+#graphify/code #graphify/EXTRACTED #community/dependencies

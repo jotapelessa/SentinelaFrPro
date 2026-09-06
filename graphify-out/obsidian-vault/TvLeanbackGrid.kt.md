@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt"
 type: "code"
-community: "X509Certificate"
+community: "FrigateBridgeService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509Certificate
+  - community/FrigateBridgeService
 ---
 
 # TvLeanbackGrid.kt
@@ -20,4 +20,4 @@ tags:
 - [[TvFullScreenCameraDialog()]] - `contains` [EXTRACTED]
 - [[TvLeanbackGrid()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509Certificate
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

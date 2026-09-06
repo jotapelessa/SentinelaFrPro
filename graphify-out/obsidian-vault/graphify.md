@@ -1,12 +1,12 @@
 ---
 source_file: "AGENTS.md"
 type: "document"
-community: "sentinela-pro-mobile-nvr/vite.config.ts"
+community: "apply_bc_config.py"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/viteconfigts
+  - community/apply_bc_configpy
 ---
 
 # graphify
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[AGENTS]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/viteconfigts
+#graphify/document #graphify/EXTRACTED #community/apply_bc_configpy

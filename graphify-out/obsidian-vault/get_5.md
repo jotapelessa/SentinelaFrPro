@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "asyncio"
+community: "settings.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # get
@@ -17,4 +17,4 @@ tags:
 - [[get_settings()]] - `references` [EXTRACTED]
 - [[get_storage_status()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/settingspy

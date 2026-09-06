@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "X509Certificate"
+community: "FrigateBridgeService"
 location: "L3"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509Certificate
+  - community/FrigateBridgeService
 ---
 
 # CameraItem
@@ -27,4 +27,4 @@ tags:
 - [[TvNetflixScreen()]] - `references` [EXTRACTED]
 - [[TvNetflixScreen.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509Certificate
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

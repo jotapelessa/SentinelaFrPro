@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "concept"
-community: "compilerOptions"
+community: "Observer"
 location: "L18"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/Observer
 ---
 
 # react
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[react]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/compilerOptions
+#graphify/concept #graphify/EXTRACTED #community/Observer

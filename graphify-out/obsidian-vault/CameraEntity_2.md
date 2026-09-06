@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TvDesignTokens.kt"
+community: "dependencies"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvDesignTokenskt
+  - community/dependencies
 ---
 
 # CameraEntity
@@ -17,4 +17,4 @@ tags:
 - [[TvRecordingsViewport()]] - `references` [EXTRACTED]
 - [[TvToolsViewport()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt
+#graphify/code #graphify/EXTRACTED #community/dependencies

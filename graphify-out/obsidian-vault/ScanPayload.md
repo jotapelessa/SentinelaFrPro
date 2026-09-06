@@ -1,19 +1,19 @@
 ---
 source_file: "backend/app/api/scanner.py"
 type: "code"
-community: "api/telemetry.py"
+community: "next-env.d.ts"
 location: "L8"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/next-envdts
 ---
 
 # ScanPayload
 
 ## Connections
-- [[BaseModel_3]] - `inherits` [EXTRACTED]
+- [[BaseModel_2]] - `inherits` [EXTRACTED]
 - [[scanner.py]] - `contains` [EXTRACTED]
 - [[trigger_network_scan()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/next-envdts

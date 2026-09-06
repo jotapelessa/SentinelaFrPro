@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "Observer"
+community: "SentinelaRepository"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/SentinelaRepository
 ---
 
 # IceCandidate
@@ -14,4 +14,4 @@ tags:
 - [[dot-onIceCandidate()]] - `references` [EXTRACTED]
 - [[dot-onIceCandidatesRemoved()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

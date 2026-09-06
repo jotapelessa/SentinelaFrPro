@@ -1,18 +1,18 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "useSentinelaStore"
+community: "compilerOptions"
 location: "L12"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/compilerOptions
 ---
 
 # TelegramVaultService
 
 ## Connections
-- [[dot-__init__()]] - `method` [EXTRACTED]
+- [[dot-__init__()_1]] - `method` [EXTRACTED]
 - [[dot-apply_watermark()]] - `method` [EXTRACTED]
 - [[dot-format_event_message()]] - `method` [EXTRACTED]
 - [[dot-get_audit_logs()]] - `method` [EXTRACTED]
@@ -33,4 +33,4 @@ tags:
 - [[SystemSetting]] - `uses` [INFERRED]
 - [[telegram_vault.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

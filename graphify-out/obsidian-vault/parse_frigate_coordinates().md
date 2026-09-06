@@ -2,7 +2,7 @@
 source_file: "backend/app/api/cameras.py"
 type: "code"
 community: "cameras.py"
-location: "L1572"
+location: "L1583"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -12,7 +12,7 @@ tags:
 # parse_frigate_coordinates()
 
 ## Connections
-- [[Any_5]] - `references` [EXTRACTED]
+- [[Any_6]] - `references` [EXTRACTED]
 - [[Parses various Frigate coordinate representations into normalized {x 0..1, y…]] - `rationale_for` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]
 - [[get_frigate_camera_zones()]] - `calls` [EXTRACTED]

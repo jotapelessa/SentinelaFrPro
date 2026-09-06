@@ -1,18 +1,19 @@
 ---
 type: community
-cohesion: 0.67
-members: 3
+cohesion: 0.50
+members: 4
 ---
 
 # simulate_event.sh
 
-**Cohesion:** 0.67 - moderately connected
-**Members:** 3 nodes
+**Cohesion:** 0.50 - moderately connected
+**Members:** 4 nodes
 
 ## Members
-- [[GraphifyPlugin()]] - code - .opencode/plugins/graphify.js
-- [[IMPORTANT keep the reminder string free of backticks and $(...) constructs.]] - rationale - .opencode/plugins/graphify.js
-- [[graphify.js]] - code - .opencode/plugins/graphify.js
+- [[frigateBridgeFile]] - code - test/telegram-vault.spec.test.js
+- [[mqttServiceFile]] - code - test/telegram-vault.spec.test.js
+- [[telegram-vault.spec.test.js]] - code - test/telegram-vault.spec.test.js
+- [[tgVaultFile]] - code - test/telegram-vault.spec.test.js
 
 ## Live Query (requires Dataview plugin)
 

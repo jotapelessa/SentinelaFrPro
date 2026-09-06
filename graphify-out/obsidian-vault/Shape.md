@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "dependencies"
+community: "compilerOptions"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/compilerOptions
 ---
 
 # Shape
@@ -14,4 +14,4 @@ tags:
 - [[TvDesignTokens.kt]] - `imports` [EXTRACTED]
 - [[tvDpadFocusable()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

@@ -24,28 +24,25 @@ members: 54
 - [[dot-removePiP()]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
 - [[dot-showPiP()]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
 - [[dot-triggerPiP()]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
+- [[BOTTOM_CENTER]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[BOTTOM_LEFT]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[BOTTOM_RIGHT]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
 - [[BootReceiver]] - code - android/app/src/main/java/com/sentinela/pro/BootReceiver.kt
 - [[BootReceiver.kt]] - code - android/app/src/main/java/com/sentinela/pro/BootReceiver.kt
 - [[BroadcastReceiver]] - code
-- [[CINEMA]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[CENTER_LEFT]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[CENTER_RIGHT]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
 - [[Context]] - code
 - [[Context_1]] - code
-- [[EXTRA_LARGE]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[EXTRA_SMALL]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
 - [[HttpClient]] - code
 - [[IBinder]] - code
 - [[Intent]] - code
 - [[Intent_1]] - code
 - [[Job]] - code
-- [[LARGE]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[MEDIUM]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[MEDIUM_LARGE]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[MEDIUM_SMALL]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
 - [[Notification]] - code
 - [[OverlayService]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
 - [[OverlayService.kt]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
-- [[PipSize]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[SMALL]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[PipPosition]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
 - [[SentinelaPreferences]] - code - android/app/src/main/java/com/sentinela/pro/data/SentinelaPreferences.kt
 - [[SentinelaPreferences.kt]] - code - android/app/src/main/java/com/sentinela/pro/data/SentinelaPreferences.kt
 - [[SentinelaWebSocket]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt
@@ -54,6 +51,9 @@ members: 54
 - [[SharedPreferences]] - code
 - [[SslError]] - code
 - [[SslErrorHandler_1]] - code
+- [[TOP_CENTER]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[TOP_LEFT]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[TOP_RIGHT]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
 - [[TextView]] - code
 - [[TvSettingsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
 - [[View]] - code
@@ -73,16 +73,16 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 4 edges to [[_COMMUNITY_TvDesignTokens.kt]]
-- 3 edges to [[_COMMUNITY_X509Certificate]]
-- 2 edges to [[_COMMUNITY_FrigateBridgeService]]
-- 2 edges to [[_COMMUNITY_graphify.js]]
-- 1 edge to [[_COMMUNITY_Observer]]
-- 1 edge to [[_COMMUNITY_Settings]]
-- 1 edge to [[_COMMUNITY_settings.py]]
-- 1 edge to [[_COMMUNITY_OverlayService]]
+- 4 edges to [[_COMMUNITY_dependencies]]
+- 3 edges to [[_COMMUNITY_FrigateBridgeService]]
+- 2 edges to [[_COMMUNITY_ScannerService]]
+- 2 edges to [[_COMMUNITY_compile_apk.sh]]
+- 1 edge to [[_COMMUNITY_SentinelaRepository]]
+- 1 edge to [[_COMMUNITY_logspage.tsx]]
+- 1 edge to [[_COMMUNITY_apitelemetry.py]]
+- 1 edge to [[_COMMUNITY_useSentinelaStore]]
+- 1 edge to [[_COMMUNITY_X509Certificate]]
 - 1 edge to [[_COMMUNITY_PiPGatewayService]]
-- 1 edge to [[_COMMUNITY_dependencies_1]]
 
 ## Top bridge nodes
 - [[SentinelaPreferences]] - degree 11, connects to 4 communities

@@ -1,24 +1,25 @@
 ---
 type: community
-cohesion: 0.22
-members: 9
+cohesion: 0.24
+members: 10
 ---
 
 # Settings
 
-**Cohesion:** 0.22 - loosely connected
-**Members:** 9 nodes
+**Cohesion:** 0.24 - loosely connected
+**Members:** 10 nodes
 
 ## Members
-- [[D_10S]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[D_15S]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[D_20S]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[D_30S]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[D_45S]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[D_5S]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[D_60S]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[INFINITE]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[PipDuration]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[dot-__init__()_5]] - code - backend/app/api/ws.py
+- [[dot-broadcast_json()]] - code - backend/app/api/ws.py
+- [[dot-connect()]] - code - backend/app/api/ws.py
+- [[dot-disconnect()]] - code - backend/app/api/ws.py
+- [[Background loop sending hardware telemetry every 5.0 seconds to connected UI…]] - rationale - backend/app/api/ws.py
+- [[WebSocket]] - code
+- [[WebSocketManager]] - code - backend/app/api/ws.py
+- [[telemetry_broadcast_loop()]] - code - backend/app/api/ws.py
+- [[websocket_endpoint()]] - code - backend/app/api/ws.py
+- [[ws.py]] - code - backend/app/api/ws.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -28,8 +29,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_devices.py]]
-- 1 edge to [[_COMMUNITY_FrigateBridgeService]]
+- 1 edge to [[_COMMUNITY_TvNetflixScreen.kt]]
+- 1 edge to [[_COMMUNITY_manifest.json]]
 
 ## Top bridge nodes
-- [[PipDuration]] - degree 10, connects to 2 communities
+- [[ws.py]] - degree 5, connects to 2 communities

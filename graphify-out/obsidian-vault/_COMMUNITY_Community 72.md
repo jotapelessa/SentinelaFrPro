@@ -10,7 +10,7 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[X509TrustManager_6]] - code
+- [[onp-spec.mjs]] - code - .agents/skills/onp-spec-driven/scripts/onp-spec.mjs
 
 ## Live Query (requires Dataview plugin)
 

@@ -1,17 +1,17 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json"
 type: "code"
-community: "compilerOptions"
+community: "asyncio"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/asyncio
 ---
 
 # sentinela-pro-mobile-nvr/tsconfig.json
 
 ## Connections
-- [[compilerOptions]] - `contains` [EXTRACTED]
+- [[compilerOptions_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/asyncio

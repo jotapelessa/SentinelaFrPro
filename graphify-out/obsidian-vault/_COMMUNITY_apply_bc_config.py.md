@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[config]] - code - frontend/postcss.config.mjs
-- [[postcss.config.mjs]] - code - frontend/postcss.config.mjs
+- [[AGENTS]] - document - AGENTS.md
+- [[graphify]] - document - AGENTS.md
 
 ## Live Query (requires Dataview plugin)
 

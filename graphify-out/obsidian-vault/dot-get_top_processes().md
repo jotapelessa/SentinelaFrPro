@@ -13,7 +13,7 @@ tags:
 
 ## Connections
 - [[dot-get_detailed_stats()]] - `calls` [EXTRACTED]
-- [[Any_4]] - `references` [EXTRACTED]
+- [[Any_5]] - `references` [EXTRACTED]
 - [[Scans Linux processes and returns top consumers of CPU and RAM.]] - `rationale_for` [EXTRACTED]
 - [[TelemetryService]] - `method` [EXTRACTED]
 

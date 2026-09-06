@@ -1,12 +1,12 @@
 ---
 source_file: "implementation_plan.md"
 type: "document"
-community: "compile_apk.sh"
+community: "settings/page.tsx"
 location: "L9"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/compile_apksh
+  - community/settings/pagetsx
 ---
 
 # `frigate/config/config.yml`
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Proposed Changes]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/compile_apksh
+#graphify/document #graphify/EXTRACTED #community/settings/pagetsx

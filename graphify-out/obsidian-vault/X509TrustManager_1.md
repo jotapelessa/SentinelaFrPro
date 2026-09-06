@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt"
 type: "code"
-community: "PiPGatewayService"
+community: "X509Certificate"
 location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/X509Certificate
 ---
 
 # X509TrustManager
@@ -18,4 +18,4 @@ tags:
 - [[dot-onCreate()]] - `contains` [EXTRACTED]
 - [[X509TrustManager_4]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/X509Certificate

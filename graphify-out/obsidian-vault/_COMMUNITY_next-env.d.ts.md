@@ -1,20 +1,21 @@
 ---
 type: community
 cohesion: 0.40
-members: 5
+members: 6
 ---
 
 # next-env.d.ts
 
 **Cohesion:** 0.40 - moderately connected
-**Members:** 5 nodes
+**Members:** 6 nodes
 
 ## Members
-- [[COLORS]] - code - frontend/src/utils/logger.ts
-- [[LogLevel]] - code - frontend/src/utils/logger.ts
-- [[formatTimestamp()]] - code - frontend/src/utils/logger.ts
-- [[logger]] - code - frontend/src/utils/logger.ts
-- [[logger.ts]] - code - frontend/src/utils/logger.ts
+- [[BaseModel_2]] - code
+- [[ScanPayload]] - code - backend/app/api/scanner.py
+- [[Triggers concurrent ONVIF Discovery and verified CCTV port scanner.]] - rationale - backend/app/api/scanner.py
+- [[post_2]] - code
+- [[scanner.py]] - code - backend/app/api/scanner.py
+- [[trigger_network_scan()]] - code - backend/app/api/scanner.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -22,3 +23,9 @@ members: 5
 TABLE source_file, type FROM #community/next-envdts
 SORT file.name ASC
 ```
+
+## Connections to other communities
+- 1 edge to [[_COMMUNITY_manifest.json]]
+
+## Top bridge nodes
+- [[scanner.py]] - degree 3, connects to 1 community

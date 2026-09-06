@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/package.json"
 type: "code"
-community: "postcss.config.mjs"
+community: "graphify.js"
 location: "L3"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/postcssconfigmjs
+  - community/graphifyjs
 ---
 
 # version
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[frontendpackage.json]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/postcssconfigmjs
+#graphify/code #graphify/EXTRACTED #community/graphifyjs

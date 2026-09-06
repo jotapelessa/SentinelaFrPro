@@ -2,7 +2,7 @@
 source_file: "backend/app/api/cameras.py"
 type: "code"
 community: "cameras.py"
-location: "L81"
+location: "L82"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -12,7 +12,7 @@ tags:
 # CameraCreate
 
 ## Connections
-- [[BaseModel_2]] - `inherits` [EXTRACTED]
+- [[BaseModel_4]] - `inherits` [EXTRACTED]
 - [[add_camera()]] - `references` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]
 

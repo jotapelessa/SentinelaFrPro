@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "code"
-community: "asyncio"
+community: "settings.py"
 location: "L516"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # _purge_recordings()
@@ -17,4 +17,4 @@ tags:
 - [[clean_server_storage()]] - `indirect_call` [INFERRED]
 - [[settings.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/settingspy

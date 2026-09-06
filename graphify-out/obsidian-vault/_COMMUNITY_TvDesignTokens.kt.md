@@ -1,37 +1,33 @@
 ---
 type: community
 cohesion: 0.21
-members: 22
+members: 18
 ---
 
 # TvDesignTokens.kt
 
 **Cohesion:** 0.21 - loosely connected
-**Members:** 22 nodes
+**Members:** 18 nodes
 
 ## Members
-- [[CameraEntity_2]] - code
-- [[Color_1]] - code
-- [[FocusRequester]] - code
-- [[ImageVector]] - code
-- [[Modifier_1]] - code
-- [[PipAlert_2]] - code
-- [[RecordingClipItem]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvCamerasViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvClipPlayerDialog()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvDiagnosticRow()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvFullScreenLiveDialog()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvLogsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvNetflixScreen.kt]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvNetflixScreenCore()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvPipFloatingWindow()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvRecordingsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvSidebar()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvTab_2]] - code
-- [[TvTelemetryMetricCard()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvToolCard()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvToolsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[androidx]] - code
+- [[CameraItem_1]] - code
+- [[CaptureEvent_1]] - code
+- [[DeviceConfigEditDialog()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneBottomNavigationBar()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneCameraStreamCard()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneCapturesTab()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneClipPlayerDialog()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneLiveCamerasTab()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneLogsTab()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneMasterCentralTab()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneSettingsTab()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneToolsTab()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneTopBar()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[PhoneZoomCameraDialog()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[SmartphoneYouTubeScreen()]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[SmartphoneYouTubeScreen.kt]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[TvDeviceStatus]] - code - android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt
+- [[com]] - code
 
 ## Live Query (requires Dataview plugin)
 
@@ -41,16 +37,13 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 8 edges to [[_COMMUNITY_X509Certificate]]
-- 6 edges to [[_COMMUNITY_settings.py]]
-- 4 edges to [[_COMMUNITY_devices.py]]
-- 2 edges to [[_COMMUNITY_FrigateBridgeService]]
-- 2 edges to [[_COMMUNITY_graphify.js]]
-- 1 edge to [[_COMMUNITY_dependencies]]
+- 6 edges to [[_COMMUNITY_FrigateBridgeService]]
+- 2 edges to [[_COMMUNITY_apitelemetry.py]]
+- 2 edges to [[_COMMUNITY_compile_apk.sh]]
 
 ## Top bridge nodes
-- [[TvNetflixScreen.kt]] - degree 23, connects to 4 communities
-- [[TvRecordingsViewport()]] - degree 8, connects to 3 communities
-- [[TvNetflixScreenCore()]] - degree 12, connects to 2 communities
-- [[TvToolsViewport()]] - degree 9, connects to 2 communities
-- [[TvLogsViewport()]] - degree 6, connects to 2 communities
+- [[SmartphoneYouTubeScreen.kt]] - degree 19, connects to 2 communities
+- [[SmartphoneYouTubeScreen()]] - degree 12, connects to 1 community
+- [[PhoneCameraStreamCard()]] - degree 4, connects to 1 community
+- [[PhoneClipPlayerDialog()]] - degree 4, connects to 1 community
+- [[PhoneZoomCameraDialog()]] - degree 4, connects to 1 community

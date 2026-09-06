@@ -1,20 +1,20 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "MseCameraView"
+community: "dependencies"
 location: "L65"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/dependencies
 ---
 
 # .get_active_tv_devices()
 
 ## Connections
 - [[dot-dispatch_pip_alert()]] - `calls` [EXTRACTED]
-- [[Any_3]] - `references` [EXTRACTED]
+- [[Any_4]] - `references` [EXTRACTED]
 - [[Fetches allowed Android TV  Tablet devices from DB with granular camera &…]] - `rationale_for` [EXTRACTED]
 - [[PiPGatewayService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/dependencies

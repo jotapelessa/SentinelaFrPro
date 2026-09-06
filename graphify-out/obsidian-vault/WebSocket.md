@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "Settings"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/Settings
 ---
 
 # WebSocket
@@ -15,4 +15,4 @@ tags:
 - [[dot-disconnect()]] - `references` [EXTRACTED]
 - [[websocket_endpoint()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/Settings

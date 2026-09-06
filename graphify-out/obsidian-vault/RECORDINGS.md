@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt"
 type: "code"
-community: "dependencies"
+community: "compilerOptions"
 location: "L135"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/compilerOptions
 ---
 
 # RECORDINGS
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[TvTab]] - `case_of` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

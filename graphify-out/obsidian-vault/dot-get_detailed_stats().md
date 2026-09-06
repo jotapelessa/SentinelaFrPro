@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[dot-get_telemetry_snapshot()]] - `calls` [EXTRACTED]
 - [[dot-get_top_processes()]] - `calls` [EXTRACTED]
-- [[Any_4]] - `references` [EXTRACTED]
+- [[Any_5]] - `references` [EXTRACTED]
 - [[Provides an exhaustive statistical overview of the entire system.]] - `rationale_for` [EXTRACTED]
 - [[TelemetryService]] - `method` [EXTRACTED]
 

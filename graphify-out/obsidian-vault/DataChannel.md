@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "Observer"
+community: "SentinelaRepository"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/SentinelaRepository
 ---
 
 # DataChannel
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[dot-onDataChannel()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

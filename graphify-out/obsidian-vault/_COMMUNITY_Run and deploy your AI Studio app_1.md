@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[StorageSettingsPage()]] - code - frontend/src/app/settings/storage/page.tsx
-- [[storagepage.tsx]] - code - frontend/src/app/settings/storage/page.tsx
+- [[compile_apk.sh]] - code - compile_apk.sh
+- [[compile_apk.sh script]] - code - compile_apk.sh
 
 ## Live Query (requires Dataview plugin)
 

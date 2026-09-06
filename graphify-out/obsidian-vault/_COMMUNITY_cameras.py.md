@@ -1,20 +1,19 @@
 ---
 type: community
 cohesion: 0.10
-members: 49
+members: 48
 ---
 
 # cameras.py
 
 **Cohesion:** 0.10 - loosely connected
-**Members:** 49 nodes
+**Members:** 48 nodes
 
 ## Members
 - [[Aggregates real-time Frigate stats, go2rtc stream health, filtered…]] - rationale - backend/app/api/cameras.py
-- [[Any_5]] - code
+- [[Any_6]] - code
 - [[AsyncSession_2]] - code
-- [[BaseModel_2]] - code
-- [[Camera_1]] - code - backend/app/db/models.py
+- [[BaseModel_4]] - code
 - [[Camera_2]] - code
 - [[CameraCreate]] - code - backend/app/api/cameras.py
 - [[CameraUpdate]] - code - backend/app/api/cameras.py
@@ -26,7 +25,7 @@ members: 49
 - [[Parses various Frigate coordinate representations into normalized {x 0..1, y…]] - rationale - backend/app/api/cameras.py
 - [[Probes an RTSP stream via ffprobe and returns codec, resolution and frame rate.]] - rationale - backend/app/api/cameras.py
 - [[Probes the camera's main and sub RTSP streams and returns their codec,…]] - rationale - backend/app/api/cameras.py
-- [[Request_2]] - code
+- [[Request_3]] - code
 - [[RtspTestPayload]] - code - backend/app/api/cameras.py
 - [[Sanitizes Frigate 0.17 configuration to strictly satisfy Pydantic models.…]] - rationale - backend/app/api/cameras.py
 - [[Tests TCP connectivity to the camera's RTSP endpoint with predictive port…]] - rationale - backend/app/api/cameras.py
@@ -38,7 +37,7 @@ members: 49
 - [[cameras.py]] - code - backend/app/api/cameras.py
 - [[delete_2]] - code
 - [[delete_camera()]] - code - backend/app/api/cameras.py
-- [[get_2]] - code
+- [[get_4]] - code
 - [[get_camera_diagnostics()]] - code - backend/app/api/cameras.py
 - [[get_camera_stream_info()]] - code - backend/app/api/cameras.py
 - [[get_frigate_camera_zones()]] - code - backend/app/api/cameras.py
@@ -48,7 +47,7 @@ members: 49
 - [[parse_frigate_coordinates()]] - code - backend/app/api/cameras.py
 - [[patch_1]] - code
 - [[pause_camera()]] - code - backend/app/api/cameras.py
-- [[post_2]] - code
+- [[post_4]] - code
 - [[remove_camera_from_frigate()]] - code - backend/app/api/cameras.py
 - [[resume_camera()]] - code - backend/app/api/cameras.py
 - [[sanitize_frigate_config()]] - code - backend/app/api/cameras.py
@@ -68,14 +67,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 4 edges to [[_COMMUNITY_useSentinelaStore]]
-- 2 edges to [[_COMMUNITY_events.py]]
-- 2 edges to [[_COMMUNITY_MseCameraView]]
-- 2 edges to [[_COMMUNITY_OverlayService]]
-- 2 edges to [[_COMMUNITY_asyncio]]
-- 2 edges to [[_COMMUNITY_apitelemetry.py]]
+- 1 edge to [[_COMMUNITY_manifest.json]]
 
 ## Top bridge nodes
-- [[Camera_1]] - degree 25, connects to 4 communities
-- [[cameras.py]] - degree 29, connects to 2 communities
-- [[get_camera_diagnostics()]] - degree 6, connects to 1 community
+- [[cameras.py]] - degree 26, connects to 1 community

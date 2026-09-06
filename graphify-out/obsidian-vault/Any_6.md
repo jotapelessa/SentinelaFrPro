@@ -1,17 +1,17 @@
 ---
 source_file: ""
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "cameras.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/cameraspy
 ---
 
 # Any
 
 ## Connections
-- [[dot-check_connectivity()]] - `references` [EXTRACTED]
-- [[dot-get_connectivity_logs()]] - `references` [EXTRACTED]
+- [[_probe_rtsp_stream_info()]] - `references` [EXTRACTED]
+- [[parse_frigate_coordinates()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/cameraspy

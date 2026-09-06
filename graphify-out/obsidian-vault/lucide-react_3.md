@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/package.json"
 type: "concept"
-community: "compilerOptions"
+community: "Observer"
 location: "L13"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/Observer
 ---
 
 # lucide-react
@@ -16,4 +16,4 @@ tags:
 - [[lucide-react_1]] - `imports` [EXTRACTED]
 - [[lucide-react_2]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/compilerOptions
+#graphify/concept #graphify/EXTRACTED #community/Observer

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "app/build.gradle.kts"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/app/buildgradlekts
 ---
 
 # AsyncSession
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[get_audit_logs()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/app/buildgradlekts

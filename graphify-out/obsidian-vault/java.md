@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "build_apk.sh"
+community: "next.config.mjs"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/build_apksh
+  - community/nextconfigmjs
 ---
 
 # java
@@ -15,4 +15,4 @@ tags:
 - [[dot-checkServerTrusted()_2]] - `references` [EXTRACTED]
 - [[dot-getAcceptedIssuers()_2]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/build_apksh
+#graphify/code #graphify/EXTRACTED #community/nextconfigmjs

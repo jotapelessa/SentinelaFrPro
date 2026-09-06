@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "rationale"
-community: "useSentinelaStore"
+community: "TvNetflixScreen.kt"
 location: "L501"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/TvNetflixScreenkt
 ---
 
 # Connects to MQTT and runs consumer loop with automatic reconnection.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-start_listening()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/rationale #graphify/EXTRACTED #community/TvNetflixScreenkt

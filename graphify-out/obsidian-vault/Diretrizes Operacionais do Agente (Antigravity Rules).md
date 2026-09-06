@@ -1,12 +1,12 @@
 ---
 source_file: ".agents/rules/execution.md"
 type: "document"
-community: "sentinela-pro-tv/vite.config.ts"
+community: "opencode.json"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/sentinela-pro-tv/viteconfigts
+  - community/opencodejson
 ---
 
 # Diretrizes Operacionais do Agente (Antigravity Rules)
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[execution]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/sentinela-pro-tv/viteconfigts
+#graphify/document #graphify/EXTRACTED #community/opencodejson

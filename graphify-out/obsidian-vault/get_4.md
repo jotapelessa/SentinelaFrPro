@@ -1,17 +1,19 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "cameras.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/cameraspy
 ---
 
 # get
 
 ## Connections
-- [[health_check()]] - `references` [EXTRACTED]
-- [[root()]] - `references` [EXTRACTED]
+- [[get_camera_diagnostics()]] - `references` [EXTRACTED]
+- [[get_camera_stream_info()]] - `references` [EXTRACTED]
+- [[get_frigate_camera_zones()]] - `references` [EXTRACTED]
+- [[list_cameras()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/cameraspy

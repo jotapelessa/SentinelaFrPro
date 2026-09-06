@@ -1,17 +1,17 @@
 ---
-source_file: "backend/app/services/pip_gateway.py"
+source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "MseCameraView"
-location: "L39"
+community: "compilerOptions"
+location: "L17"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/compilerOptions
 ---
 
 # .__init__()
 
 ## Connections
-- [[PiPGatewayService]] - `method` [EXTRACTED]
+- [[FrigateBridgeService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

@@ -34,8 +34,8 @@ SORT file.name ASC
 ## Connections to other communities
 - 4 edges to [[_COMMUNITY_X509TrustManager]]
 - 3 edges to [[_COMMUNITY_3. Catálogo de Endpoints da API REST (`api`)]]
-- 1 edge to [[_COMMUNITY_compilerOptions_1]]
-- 1 edge to [[_COMMUNITY_TvAudioManager]]
+- 1 edge to [[_COMMUNITY_Observer]]
+- 1 edge to [[_COMMUNITY_SentinelaMobileTokens.kt]]
 
 ## Top bridge nodes
 - [[devDependencies_1]] - degree 9, connects to 3 communities

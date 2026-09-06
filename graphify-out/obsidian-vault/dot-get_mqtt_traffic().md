@@ -1,18 +1,18 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "code"
-community: "useSentinelaStore"
+community: "TvNetflixScreen.kt"
 location: "L41"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/TvNetflixScreenkt
 ---
 
 # .get_mqtt_traffic()
 
 ## Connections
-- [[Any_2]] - `references` [EXTRACTED]
+- [[Any]] - `references` [EXTRACTED]
 - [[MQTTService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

@@ -1,17 +1,17 @@
 ---
 source_file: "frontend/tsconfig.json"
 type: "concept"
-community: "TelegramVaultService"
+community: "events.py"
 location: "L5"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/eventspy
 ---
 
 # esnext
 
 ## Connections
-- [[lib_2]] - `extends` [EXTRACTED]
+- [[lib]] - `extends` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/concept #graphify/EXTRACTED #community/eventspy

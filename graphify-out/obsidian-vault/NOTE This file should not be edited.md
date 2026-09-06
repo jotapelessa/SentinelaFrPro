@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/next-env.d.ts"
 type: "rationale"
-community: "next"
+community: "execution.md"
 location: "L4"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/next
+  - community/executionmd
 ---
 
 # NOTE: This file should not be edited
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[next-env.d.ts_1]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/next
+#graphify/rationale #graphify/EXTRACTED #community/executionmd

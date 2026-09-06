@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "rationale"
-community: "api/telemetry.py"
+community: "MseCameraView"
 location: "L43"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/MseCameraView
 ---
 
 # Detailed hardware diagnostics for Intel Jasper Lake N5105 / VAAPI.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_system_diagnostics()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/rationale #graphify/EXTRACTED #community/MseCameraView

@@ -1,17 +1,17 @@
 ---
-source_file: "backend/app/services/telegram_vault.py"
+source_file: "backend/app/services/mqtt_service.py"
 type: "code"
-community: "useSentinelaStore"
-location: "L13"
+community: "TvNetflixScreen.kt"
+location: "L23"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/TvNetflixScreenkt
 ---
 
 # .__init__()
 
 ## Connections
-- [[TelegramVaultService]] - `method` [EXTRACTED]
+- [[MQTTService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

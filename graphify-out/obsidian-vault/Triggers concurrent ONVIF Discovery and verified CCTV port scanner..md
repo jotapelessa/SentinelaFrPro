@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/scanner.py"
 type: "rationale"
-community: "api/telemetry.py"
+community: "next-env.d.ts"
 location: "L13"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/next-envdts
 ---
 
 # Triggers concurrent ONVIF Discovery and verified CCTV port scanner.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[trigger_network_scan()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/rationale #graphify/EXTRACTED #community/next-envdts

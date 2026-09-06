@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[BackupSettingsPage()]] - code - frontend/src/app/settings/backup/page.tsx
-- [[backuppage.tsx]] - code - frontend/src/app/settings/backup/page.tsx
+- [[Diretrizes Operacionais do Agente (Antigravity Rules)]] - document - .agents/rules/execution.md
+- [[execution]] - document - .agents/rules/execution.md
 
 ## Live Query (requires Dataview plugin)
 

@@ -1,19 +1,19 @@
 ---
 source_file: "frontend/tsconfig.json"
 type: "concept"
-community: "compilerOptions"
+community: "asyncio"
 location: "L5"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/asyncio
 ---
 
 # dom.iterable
 
 ## Connections
-- [[lib]] - `extends` [EXTRACTED]
 - [[lib_1]] - `extends` [EXTRACTED]
 - [[lib_2]] - `extends` [EXTRACTED]
+- [[lib]] - `extends` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/compilerOptions
+#graphify/concept #graphify/EXTRACTED #community/asyncio

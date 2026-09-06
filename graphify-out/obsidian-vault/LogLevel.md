@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/utils/logger.ts"
 type: "code"
-community: "next-env.d.ts"
+community: "tailwind.config.ts"
 location: "L5"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/next-envdts
+  - community/tailwindconfigts
 ---
 
 # LogLevel
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[logger.ts]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/next-envdts
+#graphify/code #graphify/EXTRACTED #community/tailwindconfigts

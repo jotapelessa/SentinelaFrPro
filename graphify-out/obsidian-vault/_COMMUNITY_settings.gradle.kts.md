@@ -1,17 +1,18 @@
 ---
 type: community
-cohesion: 1.00
-members: 2
+cohesion: 0.67
+members: 3
 ---
 
 # settings.gradle.kts
 
-**Cohesion:** 1.00 - tightly connected
-**Members:** 2 nodes
+**Cohesion:** 0.67 - moderately connected
+**Members:** 3 nodes
 
 ## Members
-- [[next.config.mjs]] - code - frontend/next.config.mjs
-- [[nextConfig]] - code - frontend/next.config.mjs
+- [[AuditLogItem_1]] - code - frontend/src/app/settings/logs/page.tsx
+- [[LogsSettingsPage()]] - code - frontend/src/app/settings/logs/page.tsx
+- [[logspage.tsx]] - code - frontend/src/app/settings/logs/page.tsx
 
 ## Live Query (requires Dataview plugin)
 

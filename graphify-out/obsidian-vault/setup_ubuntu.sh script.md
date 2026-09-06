@@ -1,12 +1,12 @@
 ---
 source_file: "scripts/setup_ubuntu.sh"
 type: "code"
-community: "Community 64"
+community: "Community 70"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_64
+  - community/Community_70
 ---
 
 # setup_ubuntu.sh script
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[setup_ubuntu.sh]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_64
+#graphify/code #graphify/EXTRACTED #community/Community_70

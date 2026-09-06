@@ -1,12 +1,12 @@
 ---
 source_file: "verify_system.py"
 type: "code"
-community: "sentinela-pro-mobile-nvr/src/App.tsx"
+community: "TvNetflixScreen.kt"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/src/Apptsx
+  - community/TvNetflixScreenkt
 ---
 
 # verify_system.py
@@ -15,4 +15,4 @@ tags:
 - [[asyncio]] - `imports` [EXTRACTED]
 - [[verify_system()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/src/Apptsx
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

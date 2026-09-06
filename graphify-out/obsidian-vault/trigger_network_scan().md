@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/scanner.py"
 type: "code"
-community: "api/telemetry.py"
+community: "next-env.d.ts"
 location: "L12"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/next-envdts
 ---
 
 # trigger_network_scan()
@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[ScanPayload]] - `references` [EXTRACTED]
 - [[Triggers concurrent ONVIF Discovery and verified CCTV port scanner.]] - `rationale_for` [EXTRACTED]
-- [[post_3]] - `references` [EXTRACTED]
+- [[post_2]] - `references` [EXTRACTED]
 - [[scanner.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/next-envdts

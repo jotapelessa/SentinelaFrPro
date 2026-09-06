@@ -1,21 +1,21 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L652"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # delete_device()
 
 ## Connections
-- [[AsyncSession]] - `references` [EXTRACTED]
+- [[AsyncSession_1]] - `references` [EXTRACTED]
 - [[PairedDevice_1]] - `uses` [INFERRED]
-- [[Request]] - `references` [EXTRACTED]
-- [[delete]] - `references` [EXTRACTED]
+- [[Request_1]] - `references` [EXTRACTED]
+- [[delete_1]] - `references` [EXTRACTED]
 - [[devices.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

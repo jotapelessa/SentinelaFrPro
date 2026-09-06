@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "asyncio"
+community: "settings.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/settingspy
 ---
 
 # BaseModel
@@ -19,4 +19,4 @@ tags:
 - [[TelegramVideoTestPayload]] - `inherits` [EXTRACTED]
 - [[ZoneUpdate]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/settingspy

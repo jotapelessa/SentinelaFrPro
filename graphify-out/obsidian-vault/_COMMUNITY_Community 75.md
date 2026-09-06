@@ -10,7 +10,7 @@ members: 1
 **Members:** 1 nodes
 
 ## Members
-- [[apply_bc_config.py]] - code - scripts/apply_bc_config.py
+- [[appbuild.gradle.kts]] - code - android/app/build.gradle.kts
 
 ## Live Query (requires Dataview plugin)
 

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L128"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # .scan_port()
@@ -15,4 +15,4 @@ tags:
 - [[ScannerService]] - `method` [EXTRACTED]
 - [[Tries to connect to a specific port on an IP address.]] - `rationale_for` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

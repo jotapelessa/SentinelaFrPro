@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/core/config.py"
 type: "code"
-community: "setup-autostart.sh"
+community: "android/build.gradle.kts"
 location: "L5"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/setup-autostartsh
+  - community/android/buildgradlekts
 ---
 
 # Settings
@@ -15,4 +15,4 @@ tags:
 - [[BaseSettings]] - `inherits` [EXTRACTED]
 - [[config.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/setup-autostartsh
+#graphify/code #graphify/EXTRACTED #community/android/buildgradlekts

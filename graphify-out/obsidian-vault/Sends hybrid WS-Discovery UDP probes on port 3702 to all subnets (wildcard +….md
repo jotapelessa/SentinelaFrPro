@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "rationale"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L320"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # Sends hybrid WS-Discovery UDP probes on port 3702 to all subnets (wildcard +…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-discover_onvif_devices()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService

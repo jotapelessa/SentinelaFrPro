@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/MainActivity.kt"
 type: "code"
-community: "build_apk.sh"
+community: "next.config.mjs"
 location: "L50"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/build_apksh
+  - community/nextconfigmjs
 ---
 
 # X509TrustManager
@@ -18,4 +18,4 @@ tags:
 - [[dot-onCreate()_2]] - `contains` [EXTRACTED]
 - [[X509TrustManager_5]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/build_apksh
+#graphify/code #graphify/EXTRACTED #community/nextconfigmjs

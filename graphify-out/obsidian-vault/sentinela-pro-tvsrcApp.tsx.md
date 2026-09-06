@@ -12,7 +12,7 @@ tags:
 # sentinela-pro-tv/src/App.tsx
 
 ## Connections
-- [[App()_1]] - `contains` [EXTRACTED]
+- [[App()]] - `contains` [EXTRACTED]
 - [[CameraEntity_1]] - `imports` [EXTRACTED]
 - [[KotlinCodeModal()]] - `imports` [EXTRACTED]
 - [[KotlinCodeModal.tsx]] - `imports_from` [EXTRACTED]

@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/layout.tsx"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "OverlayService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/OverlayService
 ---
 
 # app/layout.tsx
@@ -24,4 +24,4 @@ tags:
 - [[metadata]] - `contains` [EXTRACTED]
 - [[viewport]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/OverlayService

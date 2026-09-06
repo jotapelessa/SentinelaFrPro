@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "setup-autostart.sh"
+community: "android/build.gradle.kts"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/setup-autostartsh
+  - community/android/buildgradlekts
 ---
 
 # BaseSettings
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[Settings]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/setup-autostartsh
+#graphify/code #graphify/EXTRACTED #community/android/buildgradlekts

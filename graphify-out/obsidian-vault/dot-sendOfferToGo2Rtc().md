@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt"
 type: "code"
-community: "Observer"
+community: "SentinelaRepository"
 location: "L79"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/SentinelaRepository
 ---
 
 # .sendOfferToGo2Rtc()
@@ -17,4 +17,4 @@ tags:
 - [[SessionDescription]] - `calls` [EXTRACTED]
 - [[WebRtcManager]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

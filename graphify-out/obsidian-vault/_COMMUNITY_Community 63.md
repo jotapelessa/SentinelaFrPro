@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[setup-autostart.sh]] - code - scripts/setup-autostart.sh
-- [[setup-autostart.sh script]] - code - scripts/setup-autostart.sh
+- [[config]] - code - frontend/postcss.config.mjs
+- [[postcss.config.mjs]] - code - frontend/postcss.config.mjs
 
 ## Live Query (requires Dataview plugin)
 

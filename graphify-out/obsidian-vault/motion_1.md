@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
 type: "code"
-community: "compilerOptions"
+community: "Observer"
 location: "L23"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/Observer
 ---
 
 # motion
@@ -15,4 +15,4 @@ tags:
 - [[dependencies_1]] - `contains` [EXTRACTED]
 - [[motion_3]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/Observer

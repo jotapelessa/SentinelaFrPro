@@ -1,12 +1,12 @@
 ---
-source_file: "frontend/tsconfig.json"
+source_file: "ai_studio_imports/sentinela-pro-tv/tsconfig.json"
 type: "code"
-community: "TelegramVaultService"
-location: "L9"
+community: "asyncio"
+location: "L24"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/asyncio
 ---
 
 # noEmit
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[compilerOptions_2]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/asyncio

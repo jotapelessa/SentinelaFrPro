@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/public/manifest.json"
 type: "code"
-community: "logger.ts"
+community: "postcss.config.mjs"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/loggerts
+  - community/postcssconfigmjs
 ---
 
 # manifest.json
@@ -22,4 +22,4 @@ tags:
 - [[start_url]] - `contains` [EXTRACTED]
 - [[theme_color]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/loggerts
+#graphify/code #graphify/EXTRACTED #community/postcssconfigmjs
