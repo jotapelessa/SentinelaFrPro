@@ -1,0 +1,15 @@
+{
+  "testCommand": "cd frontend && npm run build",
+  "reporter": "tap",
+  "testGlobs": [
+    "backend/tests/**",
+    "frontend/tests/**",
+    "frontend/src/**/*.test.*",
+    "android/app/src/test/**"
+  ],
+  "srcGlobs": [
+    "backend/app/**",
+    "frontend/src/**",
+    "android/app/src/main/**"
+  ]
+}
