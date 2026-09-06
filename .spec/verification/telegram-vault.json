@@ -1,0 +1,42 @@
+{
+  "feature": "telegram-vault",
+  "timestamp": "2026-09-06T09:45:39.331Z",
+  "gitRev": "d80fa51",
+  "command": "node --test --test-reporter tap test/*.test.js",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 27,
+  "results": {
+    "AC-022": {
+      "status": "pass",
+      "testName": "AC-022: Marca d'Água HUD Dinâmica e Formatação de Snapshot @spec:AC-022",
+      "method": "tap"
+    },
+    "AC-023": {
+      "status": "pass",
+      "testName": "AC-023: Formatação Rica de Mensagem com Tags de Busca (Telegram Drive) @spec:AC-023",
+      "method": "tap"
+    },
+    "AC-024": {
+      "status": "pass",
+      "testName": "AC-024: Captura de Clipe Estendido com Pré e Pós-Captura @spec:AC-024",
+      "method": "tap"
+    },
+    "AC-025": {
+      "status": "pass",
+      "testName": "AC-025: Transcodificação H.264 CFR Fluida e Envio com Streaming @spec:AC-025",
+      "method": "tap"
+    },
+    "AC-026": {
+      "status": "pass",
+      "testName": "AC-026: Guarda de Idempotência em Memória e Banco de Dados @spec:AC-026",
+      "method": "tap"
+    },
+    "AC-027": {
+      "status": "pass",
+      "testName": "AC-027: Trilha de Auditoria em Memória e Suporte a Pausa de Alertas @spec:AC-027",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}
