@@ -55,9 +55,10 @@ jobs:
         yes | sdkmanager --licenses || true
         gradle wrapper --gradle-version 8.5 --distribution-type all
         chmod +x gradlew
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --stacktrace --no-daemon
+        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --info --stacktrace --no-daemon
 
     - name: Prepare Release Artifacts
+      if: success()
       run: |
         mkdir -p release-apks
         VER="${{ steps.get_version.outputs.version }}"
