@@ -30,31 +30,55 @@ export const ScannerModal: React.FC = () => {
   const [testResult, setTestResult] = useState<{ [ip: string]: { ok: boolean; msg: string } }>({});
   const [scanInfo, setScanInfo] = useState<{ duration?: number; scanned_ips?: number } | null>(null);
 
-  // Customization drawer per device
+  // Customization drawer per device with full editing capability
   const [expandedCustomIp, setExpandedCustomIp] = useState<string | null>(null);
   const [customForms, setCustomForms] = useState<{
     [ip: string]: {
+      ip: string;
+      rtsp_port: string;
+      onvif_port: string;
       name: string;
       friendly_name: string;
       rtsp_user?: string;
       rtsp_pass?: string;
       rtsp_main?: string;
       rtsp_sub?: string;
+      is_manual_rtsp?: boolean;
     }
   }>({});
 
   if (!isScannerOpen) return null;
+
+  const buildRtspUrl = (
+    ip: string,
+    port: string,
+    user?: string,
+    pass?: string,
+    path = "live"
+  ) => {
+    const cleanIp = ip.trim();
+    const cleanPort = port.trim();
+    const creds = user?.trim() && pass?.trim()
+      ? `${encodeURIComponent(user.trim())}:${encodeURIComponent(pass.trim())}@`
+      : "";
+    const portPart = cleanPort ? `:${cleanPort}` : "";
+    const pathPart = path.startsWith("/") ? path : `/${path}`;
+    return `rtsp://${creds}${cleanIp}${portPart}${pathPart}`;
+  };
 
   const handleTestRtsp = async (dev: DiscoveredDevice) => {
     setTestingIp(dev.ip);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const custom = customForms[dev.ip];
-      let rtspUrl = custom?.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`;
-
-      // Apply credentials if customized
-      if (custom?.rtsp_user && custom?.rtsp_pass && !rtspUrl.includes("@")) {
-        rtspUrl = rtspUrl.replace("rtsp://", `rtsp://${encodeURIComponent(custom.rtsp_user)}:${encodeURIComponent(custom.rtsp_pass)}@`);
+      
+      let rtspUrl = custom?.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint;
+      if (!rtspUrl) {
+        const port = custom?.rtsp_port || (dev.open_ports?.find(p => p !== 80 && p !== 8899) ? String(dev.open_ports.find(p => p !== 80 && p !== 8899)) : "8554");
+        rtspUrl = buildRtspUrl(custom?.ip || dev.ip, port, custom?.rtsp_user, custom?.rtsp_pass, "live");
+      } else if (custom?.rtsp_user && custom?.rtsp_pass && !rtspUrl.includes("@")) {
+        const userPass = `${encodeURIComponent(custom.rtsp_user)}:${encodeURIComponent(custom.rtsp_pass)}@`;
+        rtspUrl = rtspUrl.replace("rtsp://", `rtsp://${userPass}`);
       }
 
       const res = await fetch(`${apiUrl}/cameras/test-rtsp`, {
@@ -133,19 +157,85 @@ export const ScannerModal: React.FC = () => {
       setExpandedCustomIp(dev.ip);
       if (!customForms[dev.ip]) {
         const cleanName = `cam_${dev.ip.replace(/\./g, "_")}`;
+        const defaultPort = dev.open_ports?.find(p => p !== 80 && p !== 8899 && p !== 3702)
+          ? String(dev.open_ports.find(p => p !== 80 && p !== 8899 && p !== 3702))
+          : "8554";
+        const defaultOnvif = String(dev.onvif_port || (dev.port === 3702 ? 8899 : 80));
+        const initialMain = dev.rtsp_main || dev.rtsp_url_hint || buildRtspUrl(dev.ip, defaultPort, "", "", "live");
+
         setCustomForms(prev => ({
           ...prev,
           [dev.ip]: {
+            ip: dev.ip,
+            rtsp_port: defaultPort,
+            onvif_port: defaultOnvif,
             name: cleanName,
             friendly_name: dev.friendly_name || `Câmera ${dev.ip}`,
             rtsp_user: "",
             rtsp_pass: "",
-            rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`,
-            rtsp_sub: dev.rtsp_sub || ""
+            rtsp_main: initialMain,
+            rtsp_sub: dev.rtsp_sub || "",
+            is_manual_rtsp: false
           }
         }));
       }
     }
+  };
+
+  const handleUpdateCustomField = (
+    devIp: string,
+    field: "ip" | "rtsp_port" | "onvif_port" | "name" | "friendly_name" | "rtsp_user" | "rtsp_pass" | "rtsp_main" | "rtsp_sub",
+    value: string
+  ) => {
+    setCustomForms(prev => {
+      const current = prev[devIp];
+      if (!current) return prev;
+
+      const updated = { ...current, [field]: value };
+
+      // Se editou a URL diretamente, ativa trava manual
+      if (field === "rtsp_main" || field === "rtsp_sub") {
+        updated.is_manual_rtsp = true;
+      } else if (!updated.is_manual_rtsp && (field === "ip" || field === "rtsp_port" || field === "rtsp_user" || field === "rtsp_pass")) {
+        // Recálculo reativo se não estiver travado manualmente
+        updated.rtsp_main = buildRtspUrl(
+          updated.ip,
+          updated.rtsp_port,
+          updated.rtsp_user,
+          updated.rtsp_pass,
+          "live"
+        );
+        if (updated.rtsp_sub && !updated.rtsp_sub.includes("ch1")) {
+          updated.rtsp_sub = buildRtspUrl(
+            updated.ip,
+            updated.rtsp_port,
+            updated.rtsp_user,
+            updated.rtsp_pass,
+            "live/sub"
+          );
+        }
+      }
+
+      return {
+        ...prev,
+        [devIp]: updated
+      };
+    });
+  };
+
+  const handleResetRtspUrl = (devIp: string) => {
+    setCustomForms(prev => {
+      const current = prev[devIp];
+      if (!current) return prev;
+      return {
+        ...prev,
+        [devIp]: {
+          ...current,
+          is_manual_rtsp: false,
+          rtsp_main: buildRtspUrl(current.ip, current.rtsp_port, current.rtsp_user, current.rtsp_pass, "live")
+        }
+      };
+    });
   };
 
   const handleAddDirect = async (dev: DiscoveredDevice) => {
@@ -160,8 +250,12 @@ export const ScannerModal: React.FC = () => {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const custom = customForms[dev.ip];
       
-      const camName = (custom?.name || `cam_${dev.ip.replace(/\./g, "_")}`).trim();
-      let mainUrl = (custom?.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`).trim();
+      const targetIp = (custom?.ip || dev.ip).trim();
+      const targetPort = (custom?.rtsp_port || (dev.open_ports?.find(p => p !== 80 && p !== 8899) ? String(dev.open_ports.find(p => p !== 80 && p !== 8899)) : "8554")).trim();
+      const onvifPortNum = parseInt(custom?.onvif_port || String(dev.onvif_port || (dev.port === 3702 ? 8899 : 80)), 10) || 80;
+
+      const camName = (custom?.name || `cam_${targetIp.replace(/\./g, "_")}`).trim().toLowerCase().replace(/[^a-z0-9_]/g, "_");
+      let mainUrl = (custom?.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint || buildRtspUrl(targetIp, targetPort, custom?.rtsp_user, custom?.rtsp_pass, "live")).trim();
       let subUrl = (custom?.rtsp_sub || dev.rtsp_sub || "").trim() || undefined;
 
       // Injetar credenciais se preenchidas e ainda não presentes no RTSP
@@ -177,11 +271,11 @@ export const ScannerModal: React.FC = () => {
 
       const payload = {
         name: camName,
-        friendly_name: (custom?.friendly_name || dev.friendly_name || `Câmera (${dev.ip})`).trim(),
+        friendly_name: (custom?.friendly_name || dev.friendly_name || `Câmera (${targetIp})`).trim(),
         rtsp_main: mainUrl,
         rtsp_sub: subUrl,
-        ip_address: dev.ip,
-        onvif_port: dev.onvif_port || (dev.port === 3702 ? 8899 : 80),
+        ip_address: targetIp,
+        onvif_port: onvifPortNum,
         enabled: true
       };
 
@@ -337,14 +431,27 @@ export const ScannerModal: React.FC = () => {
                 );
 
                 const isCustomExpanded = expandedCustomIp === dev.ip;
+                const defaultPort = dev.open_ports?.find(p => p !== 80 && p !== 8899 && p !== 3702)
+                  ? String(dev.open_ports.find(p => p !== 80 && p !== 8899 && p !== 3702))
+                  : "8554";
+                const defaultOnvif = String(dev.onvif_port || (dev.port === 3702 ? 8899 : 80));
+
                 const custom = customForms[dev.ip] || {
+                  ip: dev.ip,
+                  rtsp_port: defaultPort,
+                  onvif_port: defaultOnvif,
                   name: `cam_${dev.ip.replace(/\./g, "_")}`,
                   friendly_name: dev.friendly_name || `Câmera ${dev.ip}`,
                   rtsp_user: "",
                   rtsp_pass: "",
-                  rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`,
-                  rtsp_sub: dev.rtsp_sub || ""
+                  rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || buildRtspUrl(dev.ip, defaultPort, "", "", "live"),
+                  rtsp_sub: dev.rtsp_sub || "",
+                  is_manual_rtsp: false
                 };
+
+                const currentDisplayIp = custom.ip || dev.ip;
+                const currentDisplayMain = custom.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint;
+                const currentDisplaySub = custom.rtsp_sub || dev.rtsp_sub;
 
                 return (
                   <div
@@ -362,10 +469,10 @@ export const ScannerModal: React.FC = () => {
                       <div className="flex flex-wrap items-center gap-2.5">
                         <div className="flex items-center gap-2">
                           <span className="font-mono font-bold text-sm sm:text-base text-cyan-300 bg-cyan-950/40 px-2.5 py-1 rounded-lg border border-cyan-800/50">
-                            {dev.ip}
+                            {currentDisplayIp}
                           </span>
                           <button
-                            onClick={() => handleCopyText(dev.ip, `ip-${idx}`)}
+                            onClick={() => handleCopyText(currentDisplayIp, `ip-${idx}`)}
                             className="p-1 rounded text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition-colors cursor-pointer"
                             title="Copiar IP"
                           >
@@ -373,9 +480,9 @@ export const ScannerModal: React.FC = () => {
                           </button>
                         </div>
 
-                        {dev.friendly_name && (
+                        {custom.friendly_name && (
                           <span className="text-xs sm:text-sm font-semibold text-white">
-                            {dev.friendly_name}
+                            {custom.friendly_name}
                           </span>
                         )}
 
@@ -407,7 +514,7 @@ export const ScannerModal: React.FC = () => {
                         )}
                         {dev.open_ports && dev.open_ports.length > 0 && (
                           <span className="px-2 py-0.5 rounded bg-slate-900 border border-slate-800 text-cyan-400">
-                            Portas: {dev.open_ports.join(", ")}
+                            Portas Abertas: {dev.open_ports.join(", ")}
                           </span>
                         )}
                       </div>
@@ -429,18 +536,18 @@ export const ScannerModal: React.FC = () => {
 
                     {/* URLs RTSP Espaçosas Sem Truncamento */}
                     <div className="space-y-1.5 pt-1">
-                      {dev.rtsp_main && (
+                      {currentDisplayMain && (
                         <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                           <div className="flex items-start sm:items-center gap-2 overflow-x-auto min-w-0">
                             <span className="text-[11px] font-bold text-cyan-400 shrink-0 bg-cyan-950/60 px-2 py-0.5 rounded border border-cyan-800/40">
                               Gravação (Main 5MP):
                             </span>
                             <code className="text-xs font-mono text-slate-300 select-all break-all sm:break-normal">
-                              {dev.rtsp_main}
+                              {currentDisplayMain}
                             </code>
                           </div>
                           <button
-                            onClick={() => handleCopyText(dev.rtsp_main || "", `main-${idx}`)}
+                            onClick={() => handleCopyText(currentDisplayMain || "", `main-${idx}`)}
                             className="self-end sm:self-auto px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-mono flex items-center gap-1 border border-slate-700 shrink-0 cursor-pointer"
                             title="Copiar URL RTSP Main"
                           >
@@ -450,18 +557,18 @@ export const ScannerModal: React.FC = () => {
                         </div>
                       )}
 
-                      {dev.rtsp_sub && (
+                      {currentDisplaySub && (
                         <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                           <div className="flex items-start sm:items-center gap-2 overflow-x-auto min-w-0">
                             <span className="text-[11px] font-bold text-emerald-400 shrink-0 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
                               IA Detecção (Sub):
                             </span>
                             <code className="text-xs font-mono text-slate-300 select-all break-all sm:break-normal">
-                              {dev.rtsp_sub}
+                              {currentDisplaySub}
                             </code>
                           </div>
                           <button
-                            onClick={() => handleCopyText(dev.rtsp_sub || "", `sub-${idx}`)}
+                            onClick={() => handleCopyText(currentDisplaySub || "", `sub-${idx}`)}
                             className="self-end sm:self-auto px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-mono flex items-center gap-1 border border-slate-700 shrink-0 cursor-pointer"
                             title="Copiar URL RTSP Sub"
                           >
@@ -470,84 +577,150 @@ export const ScannerModal: React.FC = () => {
                           </button>
                         </div>
                       )}
-
-                      {!dev.rtsp_main && dev.rtsp_url_hint && (
-                        <div className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <div className="flex items-center gap-2 overflow-x-auto min-w-0">
-                            <span className="text-[11px] font-bold text-slate-400 shrink-0">
-                              Stream RTSP Sugerido:
-                            </span>
-                            <code className="text-xs font-mono text-slate-300 select-all break-all sm:break-normal">
-                              {dev.rtsp_url_hint}
-                            </code>
-                          </div>
-                          <button
-                            onClick={() => handleCopyText(dev.rtsp_url_hint || "", `hint-${idx}`)}
-                            className="self-end sm:self-auto px-2 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-300 text-[10px] font-mono flex items-center gap-1 border border-slate-700 shrink-0 cursor-pointer"
-                          >
-                            {copiedItem === `hint-${idx}` ? <Check className="w-3 h-3 text-emerald-400" /> : <Copy className="w-3 h-3" />}
-                            <span>{copiedItem === `hint-${idx}` ? "Copiado!" : "Copiar"}</span>
-                          </button>
-                        </div>
-                      )}
                     </div>
 
-                    {/* Gaveta Opcional de Personalização */}
+                    {/* Gaveta Completa de Edição de Dados */}
                     {isCustomExpanded && (
-                      <div className="p-4 rounded-xl bg-slate-900 border border-cyan-500/30 space-y-3 animate-in fade-in duration-150">
-                        <div className="text-xs font-bold text-cyan-300 flex items-center gap-2">
-                          <Settings2 className="w-4 h-4" />
-                          <span>Personalizar Dados Antes de Adicionar</span>
+                      <div className="p-4 rounded-xl bg-slate-900/95 border border-cyan-500/40 space-y-3.5 shadow-lg animate-in fade-in duration-150">
+                        <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+                          <div className="text-xs font-bold text-cyan-300 flex items-center gap-2">
+                            <Settings2 className="w-4 h-4 text-cyan-400" />
+                            <span>Editar Todos os Dados da Câmera (IP, Portas, Nomes e RTSP)</span>
+                          </div>
+                          {custom.is_manual_rtsp && (
+                            <button
+                              type="button"
+                              onClick={() => handleResetRtspUrl(dev.ip)}
+                              className="text-[10px] text-amber-400 hover:text-amber-300 underline flex items-center gap-1 cursor-pointer"
+                              title="Recalcular RTSP com base no IP e Porta"
+                            >
+                              Restaurar URL Automática
+                            </button>
+                          )}
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+
+                        {/* Linha 1: IP e Portas */}
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                           <div>
-                            <label className="block text-slate-400 mb-1">Identificador Único (slug sem espaços)</label>
+                            <label className="block text-slate-400 mb-1 font-medium">Endereço IP</label>
                             <input
                               type="text"
-                              value={custom.name}
-                              onChange={(e) => setCustomForms(prev => ({
-                                ...prev,
-                                [dev.ip]: { ...custom, name: e.target.value }
-                              }))}
+                              value={custom.ip}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "ip", e.target.value)}
+                              placeholder="192.168.1.6"
+                              className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                            />
+                          </div>
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="text-slate-400 font-medium">Porta RTSP</label>
+                              {dev.open_ports && dev.open_ports.length > 0 && (
+                                <div className="flex gap-1">
+                                  {dev.open_ports.map(p => (
+                                    <button
+                                      key={p}
+                                      type="button"
+                                      onClick={() => handleUpdateCustomField(dev.ip, "rtsp_port", String(p))}
+                                      className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950 text-cyan-300 border border-cyan-800/60 hover:bg-cyan-900 cursor-pointer"
+                                      title={`Usar porta ${p}`}
+                                    >
+                                      {p}
+                                    </button>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                            <input
+                              type="text"
+                              value={custom.rtsp_port}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "rtsp_port", e.target.value)}
+                              placeholder="8554"
                               className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-cyan-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-slate-400 mb-1">Nome Amigável de Exibição</label>
+                            <label className="block text-slate-400 mb-1 font-medium">Porta ONVIF</label>
+                            <input
+                              type="text"
+                              value={custom.onvif_port}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "onvif_port", e.target.value)}
+                              placeholder="80 ou 8899"
+                              className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-cyan-500"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Linha 2: Identificação e Credenciais */}
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
+                          <div>
+                            <label className="block text-slate-400 mb-1 font-medium">Slug Frigate (sem espaços)</label>
+                            <input
+                              type="text"
+                              value={custom.name}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "name", e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_"))}
+                              className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-400 mb-1 font-medium">Nome Amigável</label>
                             <input
                               type="text"
                               value={custom.friendly_name}
-                              onChange={(e) => setCustomForms(prev => ({
-                                ...prev,
-                                [dev.ip]: { ...custom, friendly_name: e.target.value }
-                              }))}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "friendly_name", e.target.value)}
                               className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-cyan-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-slate-400 mb-1">Usuário RTSP (Opcional se tiver senha)</label>
+                            <label className="block text-slate-400 mb-1 font-medium">Usuário RTSP (Opcional)</label>
                             <input
                               type="text"
                               placeholder="admin"
-                              value={custom.rtsp_user}
-                              onChange={(e) => setCustomForms(prev => ({
-                                ...prev,
-                                [dev.ip]: { ...custom, rtsp_user: e.target.value }
-                              }))}
+                              value={custom.rtsp_user || ""}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "rtsp_user", e.target.value)}
                               className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-cyan-500"
                             />
                           </div>
                           <div>
-                            <label className="block text-slate-400 mb-1">Senha RTSP</label>
+                            <label className="block text-slate-400 mb-1 font-medium">Senha RTSP</label>
                             <input
                               type="password"
                               placeholder="••••••••"
-                              value={custom.rtsp_pass}
-                              onChange={(e) => setCustomForms(prev => ({
-                                ...prev,
-                                [dev.ip]: { ...custom, rtsp_pass: e.target.value }
-                              }))}
+                              value={custom.rtsp_pass || ""}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "rtsp_pass", e.target.value)}
                               className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-white text-xs focus:outline-none focus:border-cyan-500"
+                            />
+                          </div>
+                        </div>
+
+                        {/* Linha 3: URLs RTSP Customizadas */}
+                        <div className="space-y-2 text-xs">
+                          <div>
+                            <div className="flex items-center justify-between mb-1">
+                              <label className="text-slate-400 font-medium flex items-center gap-1.5">
+                                <span>URL RTSP Main (Gravação / HD 1080p ou 5MP)</span>
+                                {custom.is_manual_rtsp && (
+                                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                                    Manual
+                                  </span>
+                                )}
+                              </label>
+                            </div>
+                            <input
+                              type="text"
+                              value={custom.rtsp_main || ""}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "rtsp_main", e.target.value)}
+                              placeholder="rtsp://admin:admin@192.168.1.6:8554/live"
+                              className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-cyan-300 font-mono text-xs focus:outline-none focus:border-cyan-500"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-slate-400 mb-1 font-medium">URL RTSP Sub (Detecção IA - Opcional)</label>
+                            <input
+                              type="text"
+                              value={custom.rtsp_sub || ""}
+                              onChange={(e) => handleUpdateCustomField(dev.ip, "rtsp_sub", e.target.value)}
+                              placeholder="rtsp://admin:admin@192.168.1.6:8554/live/sub"
+                              className="w-full px-3 py-1.5 rounded-lg bg-slate-950 border border-slate-700 text-emerald-300 font-mono text-xs focus:outline-none focus:border-cyan-500"
                             />
                           </div>
                         </div>

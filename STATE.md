@@ -72,7 +72,12 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
       - `✅ FrigateBridge: Vídeo 30 FPS (3s) gravado com sucesso via RTSP (198858 bytes)`
       - `📤 Enviando vídeo MP4 de alerta para o Telegram (-1003995215102, 198858 bytes)...`
       - Resposta da API Telegram: `200 OK` - Clipes sintéticos eliminados definitivamente; vídeo real da câmera entregue no grupo/canal do Telegram.
-- **Scanner Autêntico de Câmeras & ONVIF - Otimização de Layout e Adição com 1 Clique:**
+- **Scanner Autêntico de Câmeras & ONVIF - Edição Completa e Reativa Pré-Cadastro:**
+  - **Edição Granular de Todos os Dados**: No `ScannerModal.tsx`, a gaveta de personalização foi expandida para permitir ao operador editar livremente o **Endereço IP**, **Porta RTSP** (com atalho das portas abertas descobertas), **Porta ONVIF**, **Slug do Frigate**, **Nome Amigável**, **Usuário**, **Senha**, **URL RTSP Main** e **URL RTSP Sub**.
+  - **Sincronização Reativa com Trava Manual**: Alterações no IP, portas ou credenciais recalculam as URLs RTSP instantaneamente, preservando edições manuais livres quando o operador customiza as URLs diretamente (com suporte a botão para restaurar a URL automática).
+  - **Validações e Teste RTSP Integrado**: Botão *"Testar RTSP"* executa verificação contra os dados editados antes de submeter ao Sentinela e Frigate NVR.
+- **Deploy e Validação em Produção no Servidor Ubuntu (`192.168.1.247`) via SSH**:
+  - Repositório sincronizado no host (`/home/jotape/ServONVIF2/SentinelaFrPro`) via `git pull origin main`.
   - **Causa Raiz Resolvida**: O modal sofria com truncamento forçado (`max-w-2xl`, `truncate max-w-md`), cortando as URLs de gravação 5MP e detecção sub. Além disso, o botão de adição de câmeras acionava `POST /api/cameras` (sem barra no final), o que era rejeitado pelo FastAPI com `HTTP 405 Method Not Allowed` em silêncio.
   - **Solução no Backend (`cameras.py`)**: Adicionado `@router.post("")` junto a `@router.post("/")` e implementada lógica elegante de desduplicação/upsert para câmeras já cadastradas (por nome ou IP) sem causar colisão de chave primária.
   - **Solução no Frontend (`ScannerModal.tsx`)**:

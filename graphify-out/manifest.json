@@ -624,9 +624,9 @@
     "semantic_hash": "6635df6411148588ca4744ed15a887c0"
   },
   "frontend/src/components/ScannerModal.tsx": {
-    "mtime": 1788720366.3928711,
-    "seen": 1788720439.639248,
-    "ast_hash": "9ad35b65c1af1357f706cde527b52413",
+    "mtime": 1788721250.753841,
+    "seen": 1788721275.111634,
+    "ast_hash": "1d971f40d62876d88f1158c719962899",
     "semantic_hash": ""
   },
   "frontend/src/components/TimelinePlayback.tsx": {
@@ -822,9 +822,9 @@
     "semantic_hash": "92217e35a3557369a2a7a424dbc87c48"
   },
   ".spec/verification/sinais.json": {
-    "mtime": 1788720408.1478746,
-    "seen": 1788720439.639198,
-    "ast_hash": "4a8ea9ee56f1f655c73d1d130e8dca7c",
+    "mtime": 1788721270.0361867,
+    "seen": 1788721275.111582,
+    "ast_hash": "49103ee378bc2a91210f95739b19f10c",
     "semantic_hash": ""
   },
   "test/integracao-frigate.spec.test.js": {
