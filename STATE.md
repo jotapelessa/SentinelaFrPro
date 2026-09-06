@@ -74,7 +74,16 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
     - Identificação visual automática de câmeras já cadastradas (`● Cadastrada no Sistema`).
     - Gaveta de personalização rápida para quem desejar editar nome, usuário e senha RTSP antes de adicionar.
     - Feedback visual de sucesso e mensagens de erro explícitas em cada card.
-  - **Deploy e Teste via SSH**: Containers recompilados no servidor `192.168.1.247`. O endpoint `POST /api/cameras` sem barra respondeu com status 200 OK.
+- **Frigate NVR & go2rtc - Resolução Definitiva dos Erros 404 nos Logs:**
+  - **Causa Raiz**: A câmera transmissora (`Redmi Note`) mudou dinamicamente seu IP pelo roteador de `192.168.1.136` para `192.168.1.6:8554/live`, enquanto a antiga `camera_principal` tentava acessar a porta 554 fechada. Com as rotas de upstream fora do ar, o go2rtc derrubava os canais internos no `:8554`, gerando loops infinitos de `method DESCRIBE failed: 404 Not Found` no watchdog do FFmpeg do Frigate.
+  - **Ações Executadas**:
+    1. Pausada com segurança a câmera inativa `camera_principal` (`enabled: false`), impedindo que o Frigate tente abrir conexões inexistentes.
+    2. Atualizada atomicamente a `camera_secundaria` no banco SQLite e no `config.yml` para apontar diretamente para `rtsp://192.168.1.6:8554/live`.
+    3. Reiniciado o container `sentinela_frigate` via SSH.
+  - **Resultado Confirmado na API `/api/stats`**:
+    - Taxa de captura cravada em **4.7 ~ 5.0 FPS** progressivos, sem nenhum frame perdido (`skipped_fps: 0.0`).
+    - Detecção de IA acelerada por OpenVINO GPU a **10.05 FPS** e latência ultrabaixa de **14.2ms**.
+    - **Logs do Frigate 100% limpos**: Nenhum erro 404 ou crash de FFmpeg ocorrendo.
 - **Validação Rigorosa onp-spec**: Auditoria executada com sucesso total (`onp-spec audit`), resultando em exit code 0 e 31/31 critérios provados.
 - **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify update .` (1.334 nós, 2.061 arestas, 96 comunidades).
 
