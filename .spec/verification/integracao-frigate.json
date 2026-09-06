@@ -1,0 +1,37 @@
+{
+  "feature": "integracao-frigate",
+  "timestamp": "2026-09-06T05:35:53.581Z",
+  "gitRev": "d9e79f9",
+  "command": "node --test --test-reporter tap test/*.test.js",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 5,
+  "results": {
+    "AC-001": {
+      "status": "pass",
+      "testName": "AC-001: Streaming WebRTC funcional via go2rtc @spec:AC-001",
+      "method": "tap"
+    },
+    "AC-002": {
+      "status": "pass",
+      "testName": "AC-002: Detecção de Objetos e Bounding Boxes por IA @spec:AC-002",
+      "method": "tap"
+    },
+    "AC-003": {
+      "status": "pass",
+      "testName": "AC-003: Snapshot em Resolução Nativa com Marca d'Água HUD @spec:AC-003",
+      "method": "tap"
+    },
+    "AC-004": {
+      "status": "pass",
+      "testName": "AC-004: Clipes de Vídeo em Framerate Constante (CFR) @spec:AC-004",
+      "method": "tap"
+    },
+    "AC-005": {
+      "status": "pass",
+      "testName": "AC-005: Medição Real e Purge do Armazenamento @spec:AC-005",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}

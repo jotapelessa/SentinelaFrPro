@@ -1,0 +1,725 @@
+{
+  "schema": 1,
+  "sinais": {
+    "AC_SEM_TESTE::integracao-frigate::AC-001": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "integracao-frigate",
+      "ref": "AC-001",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-06T05:34:25.687Z",
+      "ultimaVez": "2026-09-06T05:34:25.692Z",
+      "gitRev": "d9e79f9"
+    },
+    "AC_SEM_TESTE::integracao-frigate::AC-002": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "integracao-frigate",
+      "ref": "AC-002",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:34:25.692Z",
+      "gitRev": "d9e79f9"
+    },
+    "AC_SEM_TESTE::integracao-frigate::AC-003": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "integracao-frigate",
+      "ref": "AC-003",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:34:25.692Z",
+      "gitRev": "d9e79f9"
+    },
+    "AC_SEM_TESTE::integracao-frigate::AC-004": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "integracao-frigate",
+      "ref": "AC-004",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:34:25.692Z",
+      "gitRev": "d9e79f9"
+    },
+    "AC_SEM_TESTE::integracao-frigate::AC-005": {
+      "codigo": "AC_SEM_TESTE",
+      "feature": "integracao-frigate",
+      "ref": "AC-005",
+      "ocorrencias": 1,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:34:25.692Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/AndroidManifest.xml": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/AndroidManifest.xml",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/BootReceiver.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/BootReceiver.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/MainActivity.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/SentinelaConfig.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/SentinelaConfig.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/data/Models.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/data/SentinelaPreferences.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/data/SentinelaPreferences.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/java/com/sentinela/pro/ui/theme/SentinelaMobileTokens.kt": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/java/com/sentinela/pro/ui/theme/SentinelaMobileTokens.kt",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/res/drawable/ic_banner.xml": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/res/drawable/ic_banner.xml",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/res/drawable/ic_launcher_background.xml": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/res/drawable/ic_launcher_background.xml",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/res/drawable/ic_launcher_foreground.xml": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/res/drawable/ic_launcher_foreground.xml",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/res/mipmap-anydpi-v26/ic_launcher_round.xml",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::android/app/src/main/res/values/themes.xml": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "android/app/src/main/res/values/themes.xml",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/__pycache__/main.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/__pycache__/main.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/api/__pycache__/cameras.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/api/__pycache__/cameras.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/api/__pycache__/settings.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/api/__pycache__/settings.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/api/cameras.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/api/cameras.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/api/devices.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/api/devices.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/api/events.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/api/events.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/api/scanner.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/api/scanner.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/api/telemetry.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/api/telemetry.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/api/ws.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/api/ws.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/core/__pycache__/config.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/core/__pycache__/config.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/core/config.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/core/config.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/core/logging_handler.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/core/logging_handler.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/db/__pycache__/models.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/db/__pycache__/models.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/db/__pycache__/session.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/db/__pycache__/session.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/db/models.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/db/models.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/db/session.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/db/session.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/main.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/main.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/mocks/mock_publisher.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/mocks/mock_publisher.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/__pycache__/frigate_bridge.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/__pycache__/frigate_bridge.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/__pycache__/mqtt_service.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/__pycache__/mqtt_service.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/__pycache__/pip_gateway.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/__pycache__/pip_gateway.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/__pycache__/scanner_service.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/__pycache__/scanner_service.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/__pycache__/telegram_vault.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/__pycache__/telegram_vault.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/__pycache__/telemetry.cpython-314.pyc": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/__pycache__/telemetry.cpython-314.pyc",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/audit_service.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/audit_service.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/pip_gateway.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/pip_gateway.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/scanner_service.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/scanner_service.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::backend/app/services/telemetry.py": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "backend/app/services/telemetry.py",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/cameras/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/cameras/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/events/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/events/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/globals.css": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/globals.css",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/layout.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/layout.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/screens/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/screens/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/settings/backup/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/settings/backup/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/settings/diagnostics/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/settings/diagnostics/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/settings/layout.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/settings/layout.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/settings/logs/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/settings/logs/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/settings/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/settings/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/settings/storage/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/settings/storage/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/app/settings/telegram/page.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/app/settings/telegram/page.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/components/AlertToast.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/components/AlertToast.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/components/CameraConfigModal.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/components/CameraConfigModal.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/components/CameraMosaic.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/components/CameraMosaic.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/components/Header.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/components/Header.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/components/ScannerModal.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/components/ScannerModal.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/components/TimelinePlayback.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/components/TimelinePlayback.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/components/WebSocketProvider.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/components/WebSocketProvider.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/components/ZoneCanvasModal.tsx": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/components/ZoneCanvasModal.tsx",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/store/useSentinelaStore.ts": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/store/useSentinelaStore.ts",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    },
+    "ARQUIVO_ORFAO::—::frontend/src/utils/logger.ts": {
+      "codigo": "ARQUIVO_ORFAO",
+      "feature": "—",
+      "ref": "frontend/src/utils/logger.ts",
+      "ocorrencias": 2,
+      "primeiraVez": "2026-09-06T05:34:25.692Z",
+      "ultimaVez": "2026-09-06T05:36:06.203Z",
+      "gitRev": "d9e79f9"
+    }
+  }
+}

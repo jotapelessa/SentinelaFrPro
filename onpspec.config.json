@@ -1,7 +1,8 @@
 {
-  "testCommand": "cd frontend && npm run build",
+  "testCommand": "node --test --test-reporter tap test/*.test.js",
   "reporter": "tap",
   "testGlobs": [
+    "test/**",
     "backend/tests/**",
     "frontend/tests/**",
     "frontend/src/**/*.test.*",
