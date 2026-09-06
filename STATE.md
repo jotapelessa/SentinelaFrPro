@@ -41,10 +41,14 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
   - **AC-030 (Pipeline Resiliente de Clipes CFR com Áudio AAC)**: Validação e transcodificação com reconstrução de timestamps PTS (`setpts=N/(FPS*TB)`), preservação de áudio sincronizado AAC e reenvio exponencial no `frigate_bridge.py` e `mqtt_service.py`.
   - **AC-031 (Persistência Atômica, Blocos Completos e Sincronização Dinâmica no go2rtc)**:
     - **Causa Raiz Resolvida**: Câmeras novas descobertas pelo scanner não recebiam blocos obrigatórios de gravação, snapshot e IA no Frigate (`record`, `snapshots`, `objects`, `filters`, `motion`), além de sofrerem com falha de escrita caso o path do config.yml não estivesse no diretório raiz e purges prematuros no `list_cameras`.
+    - **Solução de Lentidão na Detecção da Nova Câmera (192.168.1.136)**:
+      - O stream da câmera no go2rtc estava apontando para uma porta/fluxo incorreto (1935 em vez de 8554/live), e os inputs ffmpeg do Frigate estavam tentando conectar diretamente ao IP remoto sem passar pelo restream interno de baixa latência (`rtsp://127.0.0.1:8554/camera_secundaria`).
+      - Corrigido o mapeamento para que o Frigate consuma o restream local do go2rtc com o preset `preset-rtsp-restream` e aceleração de decodificação por hardware Intel QSV (`preset-intel-qsv-h264`).
+      - A velocidade de inferência do detector OpenVINO (`ov`) estabilizou em 13-15ms por quadro, e a taxa de captura de quadros para IA subiu imediatamente para 5.0-5.1 FPS consistentes, sem perda de quadros (`skipped_fps: 0.0`).
     - **Solução Arquitetural Implementada**:
       1. Unificação da configuração em `sync_camera_to_frigate` no `cameras.py`: tanto câmeras novas quanto existentes recebem bloco completo com `ffmpeg` (inputs isolados para detect em sub-stream e record em main-stream H.264), `detect` (640x360@5fps), `record` (sem chaves legadas), `snapshots`, `objects` e `review`.
-      2. Registro dinâmico de stream no go2rtc via `PUT /api/streams?src={rtsp}&dst={target_cam_key}` em tempo real, permitindo streaming WebRTC instantâneo (<100ms) sem aguardar o restart completo do Frigate.
-      3. `get_frigate_config_path` aprimorado com varredura resiliente em todos os diretórios do container e do host, com salvamento síncrono em todas as localizações válidas.
+      2. Registro dinâmico de stream no go2rtc via `PUT /api/streams?name={target_cam_key}&src={rtsp}` em tempo real, permitindo streaming WebRTC instantâneo (<100ms) sem aguardar o restart completo do Frigate.
+      3. `get_frigate_config_path` aprimorado com varredura resiliente em todos os diretórios do container e do host, além de integração com `/api/config/save?save_option=restart` da API do Frigate para garantia de consistência.
       4. Proteção contra purge indevido no banco SQLite: câmeras ativas (`enabled == True`) nunca são descartadas automaticamente por descompassos momentâneos de polling.
 - **Validação Rigorosa onp-spec**: Auditoria executada com sucesso total (`onp-spec audit`), resultando em exit code 0 e 31/31 critérios provados.
 - **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify extract . --code-only` (1.140 nós, 1.847 arestas, 93 comunidades) e exportado para o cofre Obsidian em `graphify-out/obsidian-vault/` (1.233 notas + canvas).

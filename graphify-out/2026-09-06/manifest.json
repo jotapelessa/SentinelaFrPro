@@ -366,10 +366,10 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1788695305.2321684,
-    "seen": 1788695344.120215,
-    "ast_hash": "a86d3c7b5fc4525a402cd46be0d5570c",
-    "semantic_hash": "a86d3c7b5fc4525a402cd46be0d5570c"
+    "mtime": 1788697869.9631329,
+    "seen": 1788697920.8533251,
+    "ast_hash": "b319cde5cb3ab3576002018996633c2c",
+    "semantic_hash": "b319cde5cb3ab3576002018996633c2c"
   },
   "backend/app/api/devices.py": {
     "mtime": 1788567293.306468,
@@ -822,16 +822,16 @@
     "semantic_hash": "92217e35a3557369a2a7a424dbc87c48"
   },
   ".spec/verification/sinais.json": {
-    "mtime": 1788695335.9332528,
-    "seen": 1788695344.119257,
-    "ast_hash": "7c095dd58bdf921d32d3a34d420bae5c",
-    "semantic_hash": "7c095dd58bdf921d32d3a34d420bae5c"
+    "mtime": 1788697915.9085226,
+    "seen": 1788697920.852166,
+    "ast_hash": "4989056232c168a1aa28477e47d7e718",
+    "semantic_hash": "4989056232c168a1aa28477e47d7e718"
   },
   "test/integracao-frigate.spec.test.js": {
-    "mtime": 1788695237.0565045,
-    "seen": 1788695344.121014,
-    "ast_hash": "342fe75a2af043c2c602e34404eb058d",
-    "semantic_hash": "342fe75a2af043c2c602e34404eb058d"
+    "mtime": 1788697897.8306868,
+    "seen": 1788697920.854264,
+    "ast_hash": "06259245062c69cb367618591b2ff3ce",
+    "semantic_hash": "06259245062c69cb367618591b2ff3ce"
   },
   ".spec/verification/sentinela-core.json": {
     "mtime": 1788673104.107469,

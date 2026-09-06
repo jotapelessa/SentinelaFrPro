@@ -2752,7 +2752,7 @@
       "height": 60
     },
     {
-      "id": "n_backend_app_api_cameras_rationale_1623",
+      "id": "n_backend_app_api_cameras_rationale_1630",
       "type": "file",
       "file": "Parses various Frigate coordinate representations into normalized {x 0..1, y\u2026.md",
       "x": 10440,

@@ -1458,13 +1458,13 @@ async def sync_camera_to_frigate(cam: Camera):
     _YAML_CONFIG_CACHE = {}
     _YAML_CONFIG_TIME = 0.0
 
-    # Registrar dinamicamente o stream no go2rtc via API PUT para streaming imediato sem esperar restart
+    # Registrar dinamicamente o stream no go2rtc via API PUT com parâmetros name e src para streaming imediato sem esperar restart
     if rtsp_url:
         try:
             async with httpx.AsyncClient(timeout=3.0) as client:
-                await client.put(f"{settings.GO2RTC_API_URL}/api/streams?src={rtsp_url.strip()}&dst={target_cam_key}")
+                await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": target_cam_key, "src": rtsp_url.strip()})
                 if cam.rtsp_sub and cam.rtsp_sub.strip():
-                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams?src={cam.rtsp_sub.strip()}&dst={target_cam_key}_sub")
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_sub", "src": cam.rtsp_sub.strip()})
         except Exception as e:
             logger.debug(f"Dynamic go2rtc stream registration skipped or pending restart: {e}")
 
@@ -1488,11 +1488,18 @@ async def sync_camera_to_frigate(cam: Camera):
     except Exception as e:
         logger.debug(f"Frigate DB sanitization skipped: {e}")
 
+    # Salva e recarrega de forma autoritativa no Frigate via API oficial
     try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            save_resp = await client.post(
+                f"{settings.FRIGATE_API_URL}/api/config/save?save_option=restart",
+                content=updated_yaml,
+                headers={"Content-Type": "text/plain"}
+            )
+            if save_resp.status_code != 200:
+                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
     except Exception as e:
-        logger.warning(f"Failed to trigger Frigate restart: {e}")
+        logger.warning(f"Failed to trigger Frigate config save/restart: {e}")
 
 
 async def remove_camera_from_frigate(cam_name: str):
