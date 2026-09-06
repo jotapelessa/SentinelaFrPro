@@ -86,7 +86,7 @@ export const CameraMosaic: React.FC = () => {
     setFormCam({
       name: `cam_${dev.ip.replace(/\./g, "_")}`,
       friendly_name: `Câmera (${dev.ip})`,
-      rtsp_main: dev.rtsp_url_hint || `rtsp://${dev.ip}:554/live/ch0`,
+      rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`,
       ip_address: dev.ip
     });
   };

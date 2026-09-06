@@ -365,7 +365,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   type="text"
                   value={rtspMain}
                   onChange={(e) => setRtspMain(e.target.value)}
-                  placeholder="Ex: rtsp://192.168.1.6:554/stream ou rtsp://admin:senha@192.168.1.6:554/live/ch0"
+                  placeholder="Ex: rtsp://192.168.1.6:8554/live ou rtsp://admin:senha@192.168.1.6:8554/live"
                   required
                   className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono focus:outline-none focus:border-cyan-500"
                 />
@@ -390,7 +390,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                       onClick={applyPortFix}
                       className="px-3 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-obsidian-950 font-bold text-xs flex items-center gap-1 shrink-0 shadow transition-all"
                     >
-                      <span>✨ Corrigir para Porta 554</span>
+                      <span>✨ Usar Porta Ativa {rtspTestResult.suggested_port}</span>
                     </button>
                   </div>
                 )}
@@ -403,7 +403,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   type="text"
                   value={rtspSub}
                   onChange={(e) => setRtspSub(e.target.value)}
-                  placeholder="Ex: rtsp://192.168.1.6:554/substream"
+                  placeholder="Ex: rtsp://192.168.1.6:8554/live"
                   className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono focus:outline-none focus:border-cyan-500"
                 />
               </div>

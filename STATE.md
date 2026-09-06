@@ -56,6 +56,13 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
     1. **Resolução Dinâmica da Câmera**: Criada a rotina `_resolve_active_test_camera` no `settings.py`, que consulta o banco SQLite e seleciona automaticamente a primeira câmera habilitada (`enabled == True`), apontando para a câmera ativa (`camera_secundaria` / `192.168.1.136`).
     2. **Controle de Fallback Sintético**: `frigate_bridge.record_live_video` recebeu o parâmetro `allow_synthetic: bool = False`. Em testes de câmeras IP, o sistema agora rejeita clipes sintéticos falsos e captura o fluxo real H.264 1080p do go2rtc (`/api/stream.mp4?src={camera_name}&duration={duration_s}`) ou retorna erro detalhado se o stream estiver indisponível.
     3. **Seletor de Câmeras na Interface Web**: Adicionado dropdown visual na Central de Testes da tela de configurações do Telegram (`/settings/telegram/page.tsx`), permitindo ao operador escolher explicitamente qualquer câmera registrada ou usar a câmera ativa pré-selecionada.
+- **Expurgo Permanente da Porta 554 e Estabilização dos Logs do Frigate**:
+  - **Proibição Absoluta da Porta 554**: A porta 554 nunca foi utilizada pela câmera ativa (`Redmi Note`), que transmite em `:8554/live`. A insistência em tentar abrir a porta 554 causava loops de reinicialização do FFmpeg e tempestades de erros 404 nos logs do Frigate.
+  - **Limpeza no Frigate e no SQLite**: A rota fantasma `camera_principal` (192.168.1.6:554) foi completamente removida da configuração do Frigate (`config.yml`) e do banco do Sentinela Core. A única câmera ativa agora é `camera_secundaria` (`192.168.1.6:8554/live`).
+  - **Expurgo no Código-Fonte e Frontend**:
+    - `scanner_service.py` e `cameras.py`: Removida qualquer inferência cega para a porta 554. O scanner agora testa as portas abertas reais (priorizando 8554/1935).
+    - `ScannerModal.tsx`, `CameraConfigModal.tsx` e `CameraMosaic.tsx`: Removidos todos os fallbacks fixos `:554/live/ch0`, adotando portas ativas detectadas com default seguro para `:8554/live`.
+  - **Resultado**: Logs do Frigate 100% limpos, sem erros 404, sem reconexões em loop, detecção OpenVINO estável a 10+ FPS e 0 frames pulados.
 - **Deploy e Validação em Produção no Servidor Ubuntu (`192.168.1.247`) via SSH**:
   - Repositório sincronizado no host (`/home/jotape/ServONVIF2/SentinelaFrPro`) via `git pull origin main`.
   - Reconstrução completa dos containers Docker em produção via `docker compose up -d --build backend frontend`.

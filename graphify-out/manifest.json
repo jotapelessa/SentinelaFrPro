@@ -366,10 +366,10 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1788699273.8067188,
-    "seen": 1788699310.277743,
-    "ast_hash": "a750af10f6c46726467e580bdff95085",
-    "semantic_hash": "a750af10f6c46726467e580bdff95085"
+    "mtime": 1788720339.0817382,
+    "seen": 1788720439.639227,
+    "ast_hash": "77befe2b2297942a47a07641d4356ffe",
+    "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
     "mtime": 1788567293.306468,
@@ -468,10 +468,10 @@
     "semantic_hash": "bea707c176e2b7e9bdcfdf35efa03539"
   },
   "backend/app/services/scanner_service.py": {
-    "mtime": 1788623317.718477,
-    "seen": 1788641395.5382771,
-    "ast_hash": "f8fc3c88a37f6bf4e2b919615a360e85",
-    "semantic_hash": "f8fc3c88a37f6bf4e2b919615a360e85"
+    "mtime": 1788720379.4165108,
+    "seen": 1788720439.6392362,
+    "ast_hash": "55d3cbcbc3e3fe4dc581e049e64508dc",
+    "semantic_hash": ""
   },
   "backend/app/services/telegram_vault.py": {
     "mtime": 1788629297.8791637,
@@ -594,9 +594,9 @@
     "semantic_hash": "aa29f0d2730f70bcb8684904f1dee7af"
   },
   "frontend/src/app/settings/telegram/page.tsx": {
-    "mtime": 1788715980.0119162,
-    "seen": 1788716089.791394,
-    "ast_hash": "54d569c2c6105285eba37cfed277db64",
+    "mtime": 1788716936.061773,
+    "seen": 1788717056.334972,
+    "ast_hash": "e46b6c74162fb7ccdd7df162085a2465",
     "semantic_hash": ""
   },
   "frontend/src/components/AlertToast.tsx": {
@@ -606,16 +606,16 @@
     "semantic_hash": "a333981fcd6ac487ab144803eff91fba"
   },
   "frontend/src/components/CameraConfigModal.tsx": {
-    "mtime": 1788625203.8525176,
-    "seen": 1788641395.538286,
-    "ast_hash": "75417281178fff8ddf1f41b31d5af66c",
-    "semantic_hash": "75417281178fff8ddf1f41b31d5af66c"
+    "mtime": 1788720349.3730402,
+    "seen": 1788720439.6392472,
+    "ast_hash": "1e5fff8c03b23f3bfc3a7b54d7071a22",
+    "semantic_hash": ""
   },
   "frontend/src/components/CameraMosaic.tsx": {
-    "mtime": 1788691694.8394728,
-    "seen": 1788691736.9423869,
-    "ast_hash": "4e965702b5cc173b3415c99383074f11",
-    "semantic_hash": "4e965702b5cc173b3415c99383074f11"
+    "mtime": 1788720317.5291655,
+    "seen": 1788720439.6392472,
+    "ast_hash": "f51412173f7c12aa684a20fa327f5dd0",
+    "semantic_hash": ""
   },
   "frontend/src/components/Header.tsx": {
     "mtime": 1788648921.2250974,
@@ -624,10 +624,10 @@
     "semantic_hash": "6635df6411148588ca4744ed15a887c0"
   },
   "frontend/src/components/ScannerModal.tsx": {
-    "mtime": 1788501766.6717093,
-    "seen": 1788641395.5382872,
-    "ast_hash": "08fe20429d9b88feb0fd719345920fde",
-    "semantic_hash": "08fe20429d9b88feb0fd719345920fde"
+    "mtime": 1788720366.3928711,
+    "seen": 1788720439.639248,
+    "ast_hash": "9ad35b65c1af1357f706cde527b52413",
+    "semantic_hash": ""
   },
   "frontend/src/components/TimelinePlayback.tsx": {
     "mtime": 1788599533.3872476,
@@ -822,9 +822,9 @@
     "semantic_hash": "92217e35a3557369a2a7a424dbc87c48"
   },
   ".spec/verification/sinais.json": {
-    "mtime": 1788716006.2427044,
-    "seen": 1788716089.7913442,
-    "ast_hash": "cf586e80ce7049db5064d6f16d351b96",
+    "mtime": 1788720408.1478746,
+    "seen": 1788720439.639198,
+    "ast_hash": "4a8ea9ee56f1f655c73d1d130e8dca7c",
     "semantic_hash": ""
   },
   "test/integracao-frigate.spec.test.js": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1788699738.50749,
-    "seen": 1788716089.7914171,
-    "ast_hash": "37a38b1d4f006b03876633b1f4a60bd3",
+    "mtime": 1788720428.2762291,
+    "seen": 1788720439.639269,
+    "ast_hash": "c27a917df9e3cdfb16c02c4dea4d0ebb",
     "semantic_hash": ""
   }
 }

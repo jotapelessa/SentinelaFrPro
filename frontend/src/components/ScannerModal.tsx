@@ -50,7 +50,7 @@ export const ScannerModal: React.FC = () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const custom = customForms[dev.ip];
-      let rtspUrl = custom?.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:554/live/ch0`;
+      let rtspUrl = custom?.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`;
 
       // Apply credentials if customized
       if (custom?.rtsp_user && custom?.rtsp_pass && !rtspUrl.includes("@")) {
@@ -140,8 +140,8 @@ export const ScannerModal: React.FC = () => {
             friendly_name: dev.friendly_name || `Câmera ${dev.ip}`,
             rtsp_user: "",
             rtsp_pass: "",
-            rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:554/live/ch0`,
-            rtsp_sub: dev.rtsp_sub || (dev.is_5mp ? `rtsp://${dev.ip}:554/live/ch1` : "")
+            rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`,
+            rtsp_sub: dev.rtsp_sub || ""
           }
         }));
       }
@@ -161,8 +161,8 @@ export const ScannerModal: React.FC = () => {
       const custom = customForms[dev.ip];
       
       const camName = (custom?.name || `cam_${dev.ip.replace(/\./g, "_")}`).trim();
-      let mainUrl = (custom?.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:554/live/ch0`).trim();
-      let subUrl = (custom?.rtsp_sub || dev.rtsp_sub || (dev.is_5mp ? `rtsp://${dev.ip}:554/live/ch1` : "")).trim() || undefined;
+      let mainUrl = (custom?.rtsp_main || dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`).trim();
+      let subUrl = (custom?.rtsp_sub || dev.rtsp_sub || "").trim() || undefined;
 
       // Injetar credenciais se preenchidas e ainda não presentes no RTSP
       if (custom?.rtsp_user && custom?.rtsp_pass) {
@@ -239,7 +239,7 @@ export const ScannerModal: React.FC = () => {
                 </span>
               </h3>
               <p className="text-xs text-slate-400">
-                Detecção avançada de câmeras na LAN (AITEK 5MP SEG6050BP, Xiongmai, ONVIF 8899/80, RTSP 554)
+                Detecção avançada de câmeras na LAN (AITEK 5MP SEG6050BP, Xiongmai, ONVIF 8899/80, RTSP 8554)
               </p>
             </div>
           </div>
@@ -342,8 +342,8 @@ export const ScannerModal: React.FC = () => {
                   friendly_name: dev.friendly_name || `Câmera ${dev.ip}`,
                   rtsp_user: "",
                   rtsp_pass: "",
-                  rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:554/live/ch0`,
-                  rtsp_sub: dev.rtsp_sub || (dev.is_5mp ? `rtsp://${dev.ip}:554/live/ch1` : "")
+                  rtsp_main: dev.rtsp_main || dev.rtsp_url_hint || `rtsp://${dev.ip}:8554/live`,
+                  rtsp_sub: dev.rtsp_sub || ""
                 };
 
                 return (

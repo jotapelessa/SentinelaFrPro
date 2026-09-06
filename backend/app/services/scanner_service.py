@@ -248,6 +248,15 @@ class ScannerService:
         elif "HIKVISION" in man or "HIKVISION" in mod:
             is_hikvision = True
 
+        # Identificar porta RTSP real verificada
+        rtsp_port_to_use = 8554
+        if 8554 in open_ports:
+            rtsp_port_to_use = 8554
+        elif 1935 in open_ports:
+            rtsp_port_to_use = 1935
+        elif 554 in open_ports:
+            rtsp_port_to_use = 554
+
         # Default profile values
         if is_aitek:
             friendly_name = "Câmera AITEK 5MP POE com IA (SEG6050BP)"
@@ -261,8 +270,8 @@ class ScannerService:
                 "Microfone Integrado",
                 "Alimentação POE Integrada (802.3af)"
             ]
-            rtsp_main = f"rtsp://admin:admin@{ip}:554/live/ch0"
-            rtsp_sub = f"rtsp://admin:admin@{ip}:554/live/ch1"
+            rtsp_main = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch0" if rtsp_port_to_use != 8554 else f"rtsp://{ip}:8554/live"
+            rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch1" if rtsp_port_to_use != 8554 else None
             onvif_port = int(onvif_info.get("onvif_port", 8899)) if onvif_info else (8899 if 8899 in open_ports else 80)
             is_5mp = True
         elif is_xiongmai:
@@ -270,8 +279,8 @@ class ScannerService:
             protocol = "Xiongmai NetIP / ONVIF"
             resolution = "5MP / 4MP / 1080p"
             features = ["Compressão H.265/H.264", "Detecção IA", "Microfone", "ONVIF 8899"]
-            rtsp_main = f"rtsp://admin:admin@{ip}:554/live/ch0"
-            rtsp_sub = f"rtsp://admin:admin@{ip}:554/live/ch1"
+            rtsp_main = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch0" if rtsp_port_to_use != 8554 else f"rtsp://{ip}:8554/live"
+            rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch1" if rtsp_port_to_use != 8554 else None
             onvif_port = 8899 if 8899 in open_ports else 80
             is_5mp = True
         elif is_intelbras:
@@ -279,8 +288,8 @@ class ScannerService:
             protocol = "Intelbras / Dahua ONVIF"
             resolution = "Full HD / 4MP"
             features = ["Intelbras Media Stream", "ONVIF", "Áudio"]
-            rtsp_main = f"rtsp://admin:admin@{ip}:554/cam/realmonitor?channel=1&subtype=0"
-            rtsp_sub = f"rtsp://admin:admin@{ip}:554/cam/realmonitor?channel=1&subtype=1"
+            rtsp_main = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/cam/realmonitor?channel=1&subtype=0" if rtsp_port_to_use != 8554 else f"rtsp://{ip}:8554/live"
+            rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/cam/realmonitor?channel=1&subtype=1" if rtsp_port_to_use != 8554 else None
             onvif_port = 80
             is_5mp = False
         elif is_hikvision:
@@ -288,8 +297,8 @@ class ScannerService:
             protocol = "Hikvision ISAPI / ONVIF"
             resolution = "Full HD / 4MP"
             features = ["Hikvision Stream", "ONVIF", "Áudio"]
-            rtsp_main = f"rtsp://admin:admin@{ip}:554/Streaming/Channels/101"
-            rtsp_sub = f"rtsp://admin:admin@{ip}:554/Streaming/Channels/102"
+            rtsp_main = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/Streaming/Channels/101" if rtsp_port_to_use != 8554 else f"rtsp://{ip}:8554/live"
+            rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/Streaming/Channels/102" if rtsp_port_to_use != 8554 else None
             onvif_port = 80
             is_5mp = False
         else:
@@ -297,8 +306,8 @@ class ScannerService:
             protocol = "ONVIF Universal / RTSP"
             resolution = "Full HD (1080p)"
             features = ["RTSP H.264/H.265", "ONVIF Profile S"]
-            rtsp_main = f"rtsp://admin:admin@{ip}:554/live/ch0"
-            rtsp_sub = f"rtsp://admin:admin@{ip}:554/live/ch1"
+            rtsp_main = f"rtsp://{ip}:{rtsp_port_to_use}/live" if rtsp_port_to_use == 8554 else f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch0"
+            rtsp_sub = None if rtsp_port_to_use == 8554 else f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch1"
             onvif_port = 80
             is_5mp = False
 
@@ -366,10 +375,10 @@ class ScannerService:
                             "friendly_name": f"Câmera ONVIF ({ip})",
                             "protocol": "ONVIF (WS-Discovery)",
                             "port": onvif_p,
-                            "open_ports": [554, onvif_p, 3702],
+                            "open_ports": [onvif_p, 3702],
                             "services": ["ONVIF Device", "RTSP Stream H.265/H.264"],
                             "onvif_service_url": service_url,
-                            "rtsp_url_hint": f"rtsp://admin:admin@{ip}:554/live/ch0",
+                            "rtsp_url_hint": f"rtsp://{ip}:8554/live",
                             "confidence": "high"
                         })
                 except (BlockingIOError, InterruptedError):
@@ -420,16 +429,24 @@ class ScannerService:
 
                     # Verify RTSP stream capability
                     is_cctv = False
-                    rtsp_info = {"verified": False, "best_url_main": f"rtsp://admin:admin@{ip}:554/live/ch0", "best_url_sub": f"rtsp://admin:admin@{ip}:554/live/ch1", "codec": "H.265 / H.264"}
                     rtsp_port = None
-                    rtsp_path = "/live/ch0"
-                    if 554 in port_nums:
-                        rtsp_port = 554
-                    elif 8554 in port_nums:
+                    rtsp_path = "/live"
+                    if 8554 in port_nums:
                         rtsp_port = 8554
+                        rtsp_path = "/live"
                     elif 1935 in port_nums:
                         rtsp_port = 1935
                         rtsp_path = ""
+                    elif 554 in port_nums:
+                        rtsp_port = 554
+                        rtsp_path = "/live/ch0"
+
+                    rtsp_info = {
+                        "verified": False, 
+                        "best_url_main": f"rtsp://{ip}:{rtsp_port or 8554}{rtsp_path}", 
+                        "best_url_sub": f"rtsp://{ip}:{rtsp_port or 8554}/live/ch1" if rtsp_port == 554 else None, 
+                        "codec": "H.265 / H.264"
+                    }
 
                     if rtsp_port:
                         rtsp_info = await self.verify_rtsp_stream(ip, port=rtsp_port, timeout=0.6, path=rtsp_path)

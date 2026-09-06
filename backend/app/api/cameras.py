@@ -594,19 +594,21 @@ async def test_rtsp_connection(payload: RtspTestPayload):
             "message": f"Conexão bem-sucedida! Porta RTSP {port} em {host} está aberta e respondendo."
         }
     except Exception as e:
-        # Predictive Port Scan: if user typed a port other than 554 (e.g. 8554), check if standard 554 is open!
+        # Predictive Port Scan: se a porta falhou, testar se 8554 ou 1935 estão abertas no host
         suggested_url = None
         suggested_port = None
-        if port != 554:
-            try:
-                fut554 = asyncio.open_connection(host, 554)
-                r554, w554 = await asyncio.wait_for(fut554, timeout=1.5)
-                w554.close()
-                await w554.wait_closed()
-                suggested_port = 554
-                suggested_url = re.sub(r":\d+", ":554", rtsp_url)
-            except Exception:
-                pass
+        for candidate_port in [8554, 1935]:
+            if candidate_port != port:
+                try:
+                    fut_cand = asyncio.open_connection(host, candidate_port)
+                    rc, wc = await asyncio.wait_for(fut_cand, timeout=1.0)
+                    wc.close()
+                    await wc.wait_closed()
+                    suggested_port = candidate_port
+                    suggested_url = re.sub(r":\d+", f":{candidate_port}", rtsp_url)
+                    break
+                except Exception:
+                    pass
 
         if suggested_port:
             return {
@@ -615,7 +617,7 @@ async def test_rtsp_connection(payload: RtspTestPayload):
                 "port": port,
                 "suggested_port": suggested_port,
                 "suggested_url": suggested_url,
-                "message": f"A porta {port} recusou conexão em {host}. No entanto, a porta padrão 554 de câmeras IP está ABERTA e respondendo!"
+                "message": f"A porta {port} recusou conexão em {host}. A porta ativa {suggested_port} está respondendo no host!"
             }
 
         return {
