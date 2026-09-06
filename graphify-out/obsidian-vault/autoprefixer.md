@@ -1,0 +1,18 @@
+---
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
+type: "code"
+community: "3. Catálogo de Endpoints da API REST (`/api`)"
+location: "L27"
+tags:
+  - graphify/code
+  - graphify/EXTRACTED
+  - community/3_Catálogo_de_Endpoints_da_API_REST_/api
+---
+
+# autoprefixer
+
+## Connections
+- [[autoprefixer_3]] - `imports` [EXTRACTED]
+- [[devDependencies_1]] - `contains` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/3_Catálogo_de_Endpoints_da_API_REST_/api

@@ -1,11 +1,11 @@
 {
   "feature": "integracao-frigate",
-  "timestamp": "2026-09-06T05:35:53.581Z",
-  "gitRev": "d9e79f9",
+  "timestamp": "2026-09-06T10:48:50.607Z",
+  "gitRev": "68b6a7e",
   "command": "node --test --test-reporter tap test/*.test.js",
   "reporter": "tap",
   "exitCode": 0,
-  "testsParsed": 5,
+  "testsParsed": 30,
   "results": {
     "AC-001": {
       "status": "pass",
@@ -30,6 +30,21 @@
     "AC-005": {
       "status": "pass",
       "testName": "AC-005: Medição Real e Purge do Armazenamento @spec:AC-005",
+      "method": "tap"
+    },
+    "AC-028": {
+      "status": "pass",
+      "testName": "AC-028: Watchdog de Auto-Reconexão e Anti-Congelamento no Player @spec:AC-028",
+      "method": "tap"
+    },
+    "AC-029": {
+      "status": "pass",
+      "testName": "AC-029: Pipeline HD Nativo Prioritário para Snapshots e Thumbnails @spec:AC-029",
+      "method": "tap"
+    },
+    "AC-030": {
+      "status": "pass",
+      "testName": "AC-030: Pipeline de Clipes Resiliente com Sincronismo PTS e Verificação de Áudio AAC @spec:AC-030",
       "method": "tap"
     }
   },

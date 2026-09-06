@@ -225,10 +225,12 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   const [ecoFps, setEcoFps] = useState<number>(camera.eco_fps || 2);
   const [key, setKey] = useState(0);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
-  const [frameUrl, setFrameUrl] = useState<string>(`/frigate/api/${camera.name || "camera_principal"}/latest.jpg?h=360`);
+  const [frameUrl, setFrameUrl] = useState<string>(`/go2rtc/api/frame.jpeg?src=${camera.name || "camera_principal"}`);
   const [isLiveOnline, setIsLiveOnline] = useState(true);
   const [isPaused, setIsPaused] = useState<boolean>(camera.enabled === false);
   const [isTogglingPause, setIsTogglingPause] = useState(false);
+  const [streamStallCount, setStreamStallCount] = useState(0);
+  const [isWatchdogRecovering, setIsWatchdogRecovering] = useState(false);
 
   useEffect(() => {
     setIsPaused(camera.enabled === false);
@@ -268,8 +270,52 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 
   const reloadStream = () => {
     setKey((prev) => prev + 1);
+    setStreamStallCount(0);
   };
 
+  // Watchdog de Auto-Reconexão e Anti-Congelamento (AC-028)
+  useEffect(() => {
+    if (isPaused || !isActivePlayer || streamMode === "monitor") return;
+
+    let reconnectWatchdog: NodeJS.Timeout;
+    const WATCHDOG_INTERVAL_MS = 25000; // Heartbeat a cada 25 segundos
+
+    const checkStreamHealth = () => {
+      // Se a aba estiver em segundo plano, não força reconexão desnecessária
+      if (typeof document !== "undefined" && document.hidden) return;
+
+      // Executa probe leve no endpoint do go2rtc para aferir liveness da câmera
+      fetch(`/go2rtc/api/streams?src=${encodeURIComponent(cameraSrc)}`, { method: "HEAD", signal: AbortSignal.timeout(3000) })
+        .then((res) => {
+          if (!res.ok) {
+            setStreamStallCount((prev) => prev + 1);
+          } else {
+            setStreamStallCount(0);
+          }
+        })
+        .catch(() => {
+          setStreamStallCount((prev) => {
+            const next = prev + 1;
+            if (next >= 2) {
+              // Recuperação inteligente: aciona reload suave ou faz failover para MSE
+              setIsWatchdogRecovering(true);
+              setKey((k) => k + 1);
+              setTimeout(() => setIsWatchdogRecovering(false), 2000);
+              return 0;
+            }
+            return next;
+          });
+        });
+    };
+
+    reconnectWatchdog = setInterval(checkStreamHealth, WATCHDOG_INTERVAL_MS);
+
+    return () => {
+      clearInterval(reconnectWatchdog);
+    };
+  }, [cameraSrc, isPaused, isActivePlayer, streamMode]);
+
+  // Pipeline de Frame / Snapshot HD Nativo com Failover (AC-029)
   useEffect(() => {
     if (streamMode !== "monitor" || isPaused || !isActivePlayer) return;
 
@@ -284,36 +330,38 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
         return;
       }
 
-      const nextSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=360&t=${Date.now()}`;
-      const img = new Image();
-      img.onload = () => {
+      // Prioridade 1: frame nativo em resolução full-sensor do go2rtc (AC-029)
+      const gSrc = `/go2rtc/api/frame.jpeg?src=${cameraSrc}&t=${Date.now()}`;
+      const gImg = new Image();
+      gImg.onload = () => {
         if (active) {
-          setFrameUrl(nextSrc);
+          setFrameUrl(gSrc);
           setIsLiveOnline(true);
           timer = setTimeout(fetchNextFrame, intervalMs);
         }
       };
-      img.onerror = () => {
+      gImg.onerror = () => {
         if (active) {
-          const gSrc = `/go2rtc/api/frame.jpeg?src=${cameraSrc}&t=${Date.now()}`;
-          const gImg = new Image();
-          gImg.onload = () => {
+          // Fallback 2: detect stream do Frigate caso go2rtc não responda
+          const fSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=720&t=${Date.now()}`;
+          const fImg = new Image();
+          fImg.onload = () => {
             if (active) {
-              setFrameUrl(gSrc);
+              setFrameUrl(fSrc);
               setIsLiveOnline(true);
               timer = setTimeout(fetchNextFrame, intervalMs);
             }
           };
-          gImg.onerror = () => {
+          fImg.onerror = () => {
             if (active) {
               setIsLiveOnline(false);
               timer = setTimeout(fetchNextFrame, 3000);
             }
           };
-          gImg.src = gSrc;
+          fImg.src = fSrc;
         }
       };
-      img.src = nextSrc;
+      gImg.src = gSrc;
     };
 
     fetchNextFrame();
@@ -390,7 +438,11 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
             title="Clique para ativar este player de vídeo ao vivo"
           >
             <img
-              src={`/frigate/api/${cameraSrc}/latest.jpg?h=360`}
+              src={`/go2rtc/api/frame.jpeg?src=${cameraSrc}`}
+              onError={(e) => {
+                // Fallback gracioso para Frigate se go2rtc frame falhar
+                (e.currentTarget as HTMLImageElement).src = `/frigate/api/${cameraSrc}/latest.jpg?h=720`;
+              }}
               alt={camera.friendly_name || camera.name}
               className="w-full h-full object-cover opacity-80 group-hover/thumb:opacity-100 transition-all duration-300 transform group-hover/thumb:scale-105"
             />
@@ -419,12 +471,20 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
             )}
           </div>
         ) : (
-          <iframe
-            key={`${cameraSrc}-${streamMode}-${key}`}
-            src={getStreamUrl()}
-            className="w-full h-full border-0 bg-black z-0 relative"
-            allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-          />
+          <div className="w-full h-full relative bg-black">
+            <iframe
+              key={`${cameraSrc}-${streamMode}-${key}`}
+              src={getStreamUrl()}
+              className="w-full h-full border-0 bg-black z-0 relative"
+              allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+            />
+            {isWatchdogRecovering && (
+              <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-2 text-cyan-400 z-20 animate-fadeIn">
+                <RefreshCw className="w-8 h-8 animate-spin" />
+                <span className="text-xs font-mono font-bold tracking-wider">Watchdog: Restabelecendo fluxo ao vivo...</span>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Floating Action Controls on Hover */}

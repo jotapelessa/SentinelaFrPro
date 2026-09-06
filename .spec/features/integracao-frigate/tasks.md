@@ -21,3 +21,18 @@
 - Refs: US-003, AC-005
 - Arquivos: backend/app/api/settings.py
 - Notas: Purge físico com liberação de espaço em `/media/frigate/recordings` e `/media/frigate/clips`.
+
+## T-005 — Watchdog de Auto-Reconexão e Anti-Congelamento WebRTC/MSE [concluida]
+- Refs: US-019, AC-028
+- Arquivos: frontend/src/components/WebRTCPlayer.tsx
+- Notas: Monitoramento periódico de heartbeat e watchdog para reconexão suave e failover de streaming sem travar a interface.
+
+## T-006 — Ingestão Prioritária de Snapshots HD Nativos [concluida]
+- Refs: US-019, AC-029
+- Arquivos: frontend/src/components/WebRTCPlayer.tsx, frontend/src/components/CameraMosaic.tsx, backend/app/services/frigate_bridge.py
+- Notas: Garante resolução nativa e nítida via go2rtc/RTSP antes de degradar para o detect stream do Frigate.
+
+## T-007 — Validação e Empacotamento Resiliente de Clipes CFR com Áudio AAC [concluida]
+- Refs: US-019, AC-030
+- Arquivos: backend/app/services/frigate_bridge.py, backend/app/services/mqtt_service.py
+- Notas: Transcodificação com regeneração de timestamps PTS, preservação de áudio AAC e verificação rigorosa de integridade de fluxo antes do envio.

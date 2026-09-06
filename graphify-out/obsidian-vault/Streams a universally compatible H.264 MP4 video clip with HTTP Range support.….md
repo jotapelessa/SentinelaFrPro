@@ -1,0 +1,17 @@
+---
+source_file: "backend/app/api/events.py"
+type: "rationale"
+community: "events.py"
+location: "L451"
+tags:
+  - graphify/rationale
+  - graphify/EXTRACTED
+  - community/eventspy
+---
+
+# Streams a universally compatible H.264 MP4 video clip with HTTP Range support.…
+
+## Connections
+- [[get_event_clip()]] - `rationale_for` [EXTRACTED]
+
+#graphify/rationale #graphify/EXTRACTED #community/eventspy

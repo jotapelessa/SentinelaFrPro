@@ -49,6 +49,26 @@ Para impedir que o disco atinja 100% de ocupação e trave o sistema operacional
 - **Quando** a rotina de limpeza (`/api/settings/storage/clean`) for executada
 - **Então** os arquivos de gravação e clipes mais antigos que a retenção devem ser deletados fisicamente do diretório `/media/frigate`, liberando espaço real no sistema de arquivos.
 
+### US-019 — Estabilidade de Conexão, Resolução HD e Resiliência Anti-Travamento
+Como usuário do aplicativo web, TV ou smartphone
+Quero que a reprodução das câmeras se auto-recupere de travamentos e que as fotos e vídeos tenham a máxima nitidez nativa
+Para manter vigilância contínua sem necessidade de recarregar a página ou receber mídias de baixa resolução.
+
+#### AC-028 — Watchdog de Auto-Reconexão e Anti-Congelamento no Player
+- **Dado** que o player WebRTC/MSE está reproduzindo o stream de vídeo ao vivo
+- **Quando** a conexão de rede oscilar, o stream congelar ou o elemento de vídeo registrar stall/erro
+- **Então** o player deve ativar o watchdog inteligente com heartbeat, reconectando automaticamente o fluxo sem travar a interface e alternando suavemente entre WebRTC e MSE se persistir.
+
+#### AC-029 — Pipeline HD Nativo Prioritário para Snapshots e Thumbnails
+- **Dado** que um evento de detecção ocorre ou o usuário visualiza as câmeras em modo de economia/mosaico
+- **Quando** o sistema requisitar a imagem estática da câmera
+- **Então** o pipeline deve buscar primeiramente o frame em resolução nativa HD via `/go2rtc/api/frame.jpeg` ou RTSP nativo, recorrendo ao detect stream do Frigate apenas se o frame nativo estiver inacessível.
+
+#### AC-030 — Pipeline de Clipes Resiliente com Sincronismo PTS e Verificação de Áudio AAC
+- **Dado** que o Frigate finaliza a gravação de um evento com timestamps variáveis
+- **Quando** o backend iniciar a transcodificação e empacotamento do clipe MP4
+- **Então** o pipeline CFR deve validar a integridade dos streams com ffprobe, regenerar os timestamps PTS (`setpts=N/(FPS*TB)`), incorporar áudio AAC sincronizado e manter retry exponencial com validação de stream de vídeo antes do envio.
+
 ## Fora de escopo
 
 - Treinamento local de modelos de inteligência artificial (usa-se os modelos otimizados padrão do Frigate).

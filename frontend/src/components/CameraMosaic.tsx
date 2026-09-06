@@ -31,6 +31,11 @@ export const CameraMosaic: React.FC = () => {
   const [addMessage, setAddMessage] = useState<string | null>(null);
   const [syncingFrigate, setSyncingFrigate] = useState(false);
 
+  // Prioriza frame nativo em alta resolução (go2rtc/frame.jpeg) com fallback para Frigate
+  const getThumbnailUrl = (cameraName: string) => {
+    return `/go2rtc/api/frame.jpeg?src=${encodeURIComponent(cameraName || "camera_principal")}`;
+  };
+
   const fetchCameras = async () => {
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";

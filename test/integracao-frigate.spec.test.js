@@ -38,3 +38,33 @@ test('AC-005: Medição Real e Purge do Armazenamento @spec:AC-005', () => {
   assert.ok(settingsCode.includes('_purge_recordings') && settingsCode.includes('_cached_dir_size'), 'Settings deve implementar purge real do disco');
 });
 
+// US-004 — Estabilidade de Conexão, Resolução HD e Resiliência Anti-Travamento
+test('AC-028: Watchdog de Auto-Reconexão e Anti-Congelamento no Player @spec:AC-028', () => {
+  // Verifica se o WebRTCPlayer implementa watchdog de reconexão e monitoramento de congelamento
+  const playerCode = fs.readFileSync('frontend/src/components/WebRTCPlayer.tsx', 'utf8');
+  assert.ok(playerCode.includes('reconnectWatchdog') && playerCode.includes('streamStallCount'), 'WebRTCPlayer deve implementar watchdog de reconexão e tolerância a stalls');
+});
+
+// US-004 — Estabilidade de Conexão, Resolução HD e Resiliência Anti-Travamento
+test('AC-029: Pipeline HD Nativo Prioritário para Snapshots e Thumbnails @spec:AC-029', () => {
+  // Verifica se o frontend e backend priorizam o frame em resolução nativa (go2rtc/frame.jpeg) antes do detect stream
+  const playerCode = fs.readFileSync('frontend/src/components/WebRTCPlayer.tsx', 'utf8');
+  const mosaicCode = fs.readFileSync('frontend/src/components/CameraMosaic.tsx', 'utf8');
+  const bridgeCode = fs.readFileSync('backend/app/services/frigate_bridge.py', 'utf8');
+
+  assert.ok(playerCode.includes('/go2rtc/api/frame.jpeg'), 'WebRTCPlayer deve utilizar frame nativo go2rtc');
+  assert.ok(mosaicCode.includes('frame.jpeg') || mosaicCode.includes('getThumbnailUrl'), 'CameraMosaic deve priorizar thumbnails HD');
+  assert.ok(bridgeCode.includes('go2rtc_url') && bridgeCode.includes('frame.jpeg'), 'FrigateBridge deve priorizar frame nativo go2rtc');
+});
+
+// US-004 — Estabilidade de Conexão, Resolução HD e Resiliência Anti-Travamento
+test('AC-030: Pipeline de Clipes Resiliente com Sincronismo PTS e Verificação de Áudio AAC @spec:AC-030', () => {
+  // Verifica se o backend valida codecs, reconstrói PTS com CFR e assegura áudio AAC
+  const bridgeCode = fs.readFileSync('backend/app/services/frigate_bridge.py', 'utf8');
+  const mqttCode = fs.readFileSync('backend/app/services/mqtt_service.py', 'utf8');
+
+  assert.ok(bridgeCode.includes('transcode_to_30fps') && bridgeCode.includes('setpts='), 'FrigateBridge deve reescrever PTS');
+  assert.ok(bridgeCode.includes('_has_audio_stream') && bridgeCode.includes('aac'), 'FrigateBridge deve preservar e sincronizar áudio AAC');
+  assert.ok(mqttCode.includes('_dispatch_telegram_video_with_retry'), 'MQTTService deve implementar despacho resiliente de vídeo');
+});
+
