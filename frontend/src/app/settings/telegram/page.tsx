@@ -506,6 +506,23 @@ export default function TelegramSettingsPage() {
 
       </form>
 
+      {/* 3. Central de Testes de Envio Imediato (Telegram) */}
+      <div className="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 space-y-5 shadow-xl">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex items-center gap-2.5">
+            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="text-base font-bold text-white">Central de Testes de Envio do Telegram</h2>
+              <p className="text-xs text-slate-400">Valide instantaneamente o recebimento de mídias, vídeos com HUD, logs e relatórios no seu chat</p>
+            </div>
+          </div>
+          <span className="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-[11px] font-mono text-cyan-400 self-start sm:self-auto">
+            MODO TESTE ATIVO
+          </span>
+        </div>
+
         {/* Seletor de Câmera Alvo para Teste */}
         <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
