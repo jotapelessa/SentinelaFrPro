@@ -46,9 +46,13 @@ jobs:
         echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
         echo "📦 Compilando Versão: ${FORMATTED_VERSION} (Tag: ${TAG_NAME})"
 
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+
     - name: Build Android TV and Smartphone APKs
       working-directory: android
       run: |
+        yes | sdkmanager --licenses || true
         gradle wrapper --gradle-version 8.5 --distribution-type all
         chmod +x gradlew
         ./gradlew assembleTvDebug assembleSmartphoneDebug --stacktrace --no-daemon
