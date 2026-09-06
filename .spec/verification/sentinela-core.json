@@ -1,0 +1,37 @@
+{
+  "feature": "sentinela-core",
+  "timestamp": "2026-09-06T05:38:24.093Z",
+  "gitRev": "d605c32",
+  "command": "node --test --test-reporter tap test/*.test.js",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 10,
+  "results": {
+    "AC-006": {
+      "status": "pass",
+      "testName": "AC-006: Telemetria de Hardware via WebSocket e REST @spec:AC-006",
+      "method": "tap"
+    },
+    "AC-007": {
+      "status": "pass",
+      "testName": "AC-007: Gerenciamento de Câmeras e Zonas no Mosaico @spec:AC-007",
+      "method": "tap"
+    },
+    "AC-008": {
+      "status": "pass",
+      "testName": "AC-008: Pareamento de Dispositivos e Políticas de Acesso @spec:AC-008",
+      "method": "tap"
+    },
+    "AC-009": {
+      "status": "pass",
+      "testName": "AC-009: Botão Flutuante (FAB) de Silenciamento de Alertas no Smartphone @spec:AC-009",
+      "method": "tap"
+    },
+    "AC-010": {
+      "status": "pass",
+      "testName": "AC-010: Gateway Picture-in-Picture (PiP) para Android TV @spec:AC-010",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}
