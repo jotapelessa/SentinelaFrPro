@@ -65,6 +65,16 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
       - `✅ FrigateBridge: Vídeo 30 FPS (3s) gravado com sucesso via RTSP (198858 bytes)`
       - `📤 Enviando vídeo MP4 de alerta para o Telegram (-1003995215102, 198858 bytes)...`
       - Resposta da API Telegram: `200 OK` - Clipes sintéticos eliminados definitivamente; vídeo real da câmera entregue no grupo/canal do Telegram.
+- **Scanner Autêntico de Câmeras & ONVIF - Otimização de Layout e Adição com 1 Clique:**
+  - **Causa Raiz Resolvida**: O modal sofria com truncamento forçado (`max-w-2xl`, `truncate max-w-md`), cortando as URLs de gravação 5MP e detecção sub. Além disso, o botão de adição de câmeras acionava `POST /api/cameras` (sem barra no final), o que era rejeitado pelo FastAPI com `HTTP 405 Method Not Allowed` em silêncio.
+  - **Solução no Backend (`cameras.py`)**: Adicionado `@router.post("")` junto a `@router.post("/")` e implementada lógica elegante de desduplicação/upsert para câmeras já cadastradas (por nome ou IP) sem causar colisão de chave primária.
+  - **Solução no Frontend (`ScannerModal.tsx`)**:
+    - Janela expandida para `max-w-4xl` com altura flexível (`max-h-[90vh]`).
+    - Exibição limpa e sem cortes das URLs RTSP Main e Sub com botões de cópia individual.
+    - Identificação visual automática de câmeras já cadastradas (`● Cadastrada no Sistema`).
+    - Gaveta de personalização rápida para quem desejar editar nome, usuário e senha RTSP antes de adicionar.
+    - Feedback visual de sucesso e mensagens de erro explícitas em cada card.
+  - **Deploy e Teste via SSH**: Containers recompilados no servidor `192.168.1.247`. O endpoint `POST /api/cameras` sem barra respondeu com status 200 OK.
 - **Validação Rigorosa onp-spec**: Auditoria executada com sucesso total (`onp-spec audit`), resultando em exit code 0 e 31/31 critérios provados.
 - **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify update .` (1.334 nós, 2.061 arestas, 96 comunidades).
 
