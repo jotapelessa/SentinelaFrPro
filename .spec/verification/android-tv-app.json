@@ -1,0 +1,37 @@
+{
+  "feature": "android-tv-app",
+  "timestamp": "2026-09-06T09:40:29.027Z",
+  "gitRev": "5c0b742",
+  "command": "node --test --test-reporter tap test/*.test.js",
+  "reporter": "tap",
+  "exitCode": 0,
+  "testsParsed": 15,
+  "results": {
+    "AC-011": {
+      "status": "pass",
+      "testName": "AC-011: Sidebar Fixa com Relógio e Indicador de Foco @spec:AC-011",
+      "method": "tap"
+    },
+    "AC-012": {
+      "status": "pass",
+      "testName": "AC-012: Player Hero com Telemetria e Alternância por Carrossel @spec:AC-012",
+      "method": "tap"
+    },
+    "AC-013": {
+      "status": "pass",
+      "testName": "AC-013: Galeria de Capturas e Reprodução de Vídeos @spec:AC-013",
+      "method": "tap"
+    },
+    "AC-014": {
+      "status": "pass",
+      "testName": "AC-014: Execução de Ferramentas e Disparo de Alerta PiP de Teste @spec:AC-014",
+      "method": "tap"
+    },
+    "AC-015": {
+      "status": "pass",
+      "testName": "AC-015: Ajuste de Parâmetros PiP e Monitoramento de Logs @spec:AC-015",
+      "method": "tap"
+    }
+  },
+  "principles": {}
+}
