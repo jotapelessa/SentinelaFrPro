@@ -70,11 +70,23 @@ jobs:
         mkdir -p release-apks
         VER="${{ steps.get_version.outputs.version }}"
         
-        # Copy and rename APKs
-        cp android/app/build/outputs/apk/tv/debug/app-tv-debug.apk release-apks/sentinela-android-tv-v${VER}.apk
-        cp android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk release-apks/sentinela-android-smartphone-v${VER}.apk
-        cp android/app/build/outputs/apk/tv/debug/app-tv-debug.apk release-apks/sentinela-android-tv-latest.apk
-        cp android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk release-apks/sentinela-android-smartphone-latest.apk
+        echo "🔍 Procurando APKs gerados pelo Gradle..."
+        find android/app/build/outputs -type f -name "*.apk"
+        
+        TV_APK=$(find android/app/build/outputs -type f -name "*tv*.apk" | head -n 1)
+        PHONE_APK=$(find android/app/build/outputs -type f -name "*smartphone*.apk" | head -n 1)
+        
+        if [ -n "$TV_APK" ]; then
+          cp "$TV_APK" release-apks/sentinela-android-tv-v${VER}.apk
+          cp "$TV_APK" release-apks/sentinela-android-tv-latest.apk
+          echo "✅ TV APK copiado de $TV_APK"
+        fi
+        
+        if [ -n "$PHONE_APK" ]; then
+          cp "$PHONE_APK" release-apks/sentinela-android-smartphone-v${VER}.apk
+          cp "$PHONE_APK" release-apks/sentinela-android-smartphone-latest.apk
+          echo "✅ Smartphone APK copiado de $PHONE_APK"
+        fi
         
         ls -la release-apks/
 
