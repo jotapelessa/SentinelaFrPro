@@ -55,7 +55,14 @@ jobs:
         yes | sdkmanager --licenses || true
         gradle wrapper --gradle-version 8.5 --distribution-type all
         chmod +x gradlew
-        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --info --stacktrace --no-daemon
+        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon 2>&1 | tee gradle_build.log || (echo "=== ERRO NA COMPILACAO GRADLE ===" && tail -n 120 gradle_build.log && exit 1)
+
+    - name: Upload Build Log on Failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: gradle-build-failure-log
+        path: android/gradle_build.log
 
     - name: Prepare Release Artifacts
       if: success()
