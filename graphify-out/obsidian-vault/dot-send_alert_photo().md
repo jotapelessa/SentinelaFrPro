@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L247"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # .send_alert_photo()
@@ -20,4 +20,4 @@ tags:
 - [[Dispatches watermarked snapshot to Telegram using the classic template.]] - `rationale_for` [EXTRACTED]
 - [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

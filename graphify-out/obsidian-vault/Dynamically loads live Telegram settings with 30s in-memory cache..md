@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "rationale"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L60"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # Dynamically loads live Telegram settings with 30s in-memory cache.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-_get_telegram_policy()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/rationale #graphify/EXTRACTED #community/eventspy

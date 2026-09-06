@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts"
 type: "code"
-community: "build_apk.sh"
+community: "TvAudioManager"
 location: "L3"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/build_apksh
+  - community/TvAudioManager
 ---
 
 # TvAudioManager
@@ -21,4 +21,4 @@ tags:
 - [[dot-setEnabled()]] - `method` [EXTRACTED]
 - [[audioFeedback.ts]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/build_apksh
+#graphify/code #graphify/EXTRACTED #community/TvAudioManager

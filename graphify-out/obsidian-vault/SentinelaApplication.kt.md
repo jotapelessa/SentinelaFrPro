@@ -17,6 +17,6 @@ tags:
 - [[ImageLoaderFactory]] - `imports` [EXTRACTED]
 - [[SentinelaApplication]] - `contains` [EXTRACTED]
 - [[X509Certificate]] - `imports` [EXTRACTED]
-- [[X509TrustManager_4]] - `imports` [EXTRACTED]
+- [[X509TrustManager_5]] - `imports` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/X509Certificate

@@ -1,16 +1,28 @@
 ---
 source_file: ""
 type: "code"
-community: "app/build.gradle.kts"
+community: "Lições — aprendizado com lastro mecânico"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/app/buildgradlekts
+  - community/Lições__aprendizado_com_lastro_mecânico
 ---
 
 # AsyncSession
 
 ## Connections
-- [[get_audit_logs()]] - `references` [EXTRACTED]
+- [[add_camera()]] - `references` [EXTRACTED]
+- [[delete_camera()]] - `references` [EXTRACTED]
+- [[get_camera_diagnostics()]] - `references` [EXTRACTED]
+- [[get_camera_stream_info()]] - `references` [EXTRACTED]
+- [[get_frigate_camera_zones()]] - `references` [EXTRACTED]
+- [[list_cameras()]] - `references` [EXTRACTED]
+- [[pause_camera()]] - `references` [EXTRACTED]
+- [[resume_camera()]] - `references` [EXTRACTED]
+- [[save_frigate_camera_zones()]] - `references` [EXTRACTED]
+- [[sync_cameras_from_frigate()]] - `references` [EXTRACTED]
+- [[toggle_camera_fallback()]] - `references` [EXTRACTED]
+- [[toggle_camera_pause()]] - `references` [EXTRACTED]
+- [[update_camera()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/app/buildgradlekts
+#graphify/code #graphify/EXTRACTED #community/Lições__aprendizado_com_lastro_mecânico

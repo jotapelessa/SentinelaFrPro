@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L375"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # .get_system_status_text()
@@ -17,4 +17,4 @@ tags:
 - [[Formats real-time telemetry into a rich Telegram status message.]] - `rationale_for` [EXTRACTED]
 - [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

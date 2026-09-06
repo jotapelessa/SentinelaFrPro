@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/components/CameraConfigModal.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L19"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # CameraConfigModal()
@@ -15,4 +15,4 @@ tags:
 - [[CameraConfigModal.tsx]] - `contains` [EXTRACTED]
 - [[WebRTCPlayer.tsx]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

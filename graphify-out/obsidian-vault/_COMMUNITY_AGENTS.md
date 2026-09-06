@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[next.config.mjs]] - code - frontend/next.config.mjs
-- [[nextConfig]] - code - frontend/next.config.mjs
+- [[AGENTS]] - document - AGENTS.md
+- [[graphify]] - document - AGENTS.md
 
 ## Live Query (requires Dataview plugin)
 

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 location: "L464"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # update_device_permissions()
@@ -20,4 +20,4 @@ tags:
 - [[devices.py]] - `contains` [EXTRACTED]
 - [[put]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/devicespy

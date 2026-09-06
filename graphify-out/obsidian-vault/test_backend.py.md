@@ -1,12 +1,12 @@
 ---
 source_file: "backend/tests/test_backend.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # test_backend.py
@@ -18,4 +18,4 @@ tags:
 - [[test_telemetry_service()]] - `contains` [EXTRACTED]
 - [[test_watermark_generation()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

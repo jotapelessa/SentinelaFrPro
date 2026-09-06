@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # delete
@@ -16,4 +16,4 @@ tags:
 - [[delete_events_batch()]] - `calls` [EXTRACTED]
 - [[delete_events_by_date()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

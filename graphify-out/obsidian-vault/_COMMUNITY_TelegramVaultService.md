@@ -1,38 +1,48 @@
 ---
 type: community
-cohesion: 0.13
-members: 23
+cohesion: 0.10
+members: 33
 ---
 
 # TelegramVaultService
 
-**Cohesion:** 0.13 - loosely connected
-**Members:** 23 nodes
+**Cohesion:** 0.10 - loosely connected
+**Members:** 33 nodes
 
 ## Members
-- [[dot-discover_onvif_devices()]] - code - backend/app/services/scanner_service.py
-- [[dot-discover_smart_tvs()]] - code - backend/app/services/scanner_service.py
-- [[dot-get_local_subnets()]] - code - backend/app/services/scanner_service.py
-- [[dot-get_self_ips()]] - code - backend/app/services/scanner_service.py
-- [[dot-identify_camera_profile()]] - code - backend/app/services/scanner_service.py
-- [[dot-probe_onvif_device_info()]] - code - backend/app/services/scanner_service.py
-- [[dot-run_full_scan()]] - code - backend/app/services/scanner_service.py
-- [[dot-scan_port()]] - code - backend/app/services/scanner_service.py
-- [[dot-scan_subnet_cctv_ports()]] - code - backend/app/services/scanner_service.py
-- [[dot-verify_rtsp_stream()]] - code - backend/app/services/scanner_service.py
-- [[Any_2]] - code
-- [[Classifies camera hardware, identifying AITEK SEG6050BP (Guangdong Pineng…]] - rationale - backend/app/services/scanner_service.py
-- [[Collects all IP addresses belonging to the host itself so they are not detected…]] - rationale - backend/app/services/scanner_service.py
-- [[Concurrently scans CCTV ports with semaphore control, ONVIF SOAP inspection,…]] - rationale - backend/app/services/scanner_service.py
-- [[Discovers all local subnets, prioritizing physical LAN interfaces.]] - rationale - backend/app/services/scanner_service.py
-- [[Queries ONVIF SOAP GetDeviceInformation to retrieve real hardware metadata…]] - rationale - backend/app/services/scanner_service.py
-- [[Runs comprehensive multi-probe scan discovering ONVIF and RTSP CCTV devices.]] - rationale - backend/app/services/scanner_service.py
-- [[ScannerService]] - code - backend/app/services/scanner_service.py
-- [[Scans the local network for Smart TVs (Google Cast, TCL, Samsung, LG, Android…]] - rationale - backend/app/services/scanner_service.py
-- [[Sends authentic RTSP OPTIONS  DESCRIBE probes to verify real video stream…]] - rationale - backend/app/services/scanner_service.py
-- [[Sends hybrid WS-Discovery UDP probes on port 3702 to all subnets (wildcard +…]] - rationale - backend/app/services/scanner_service.py
-- [[Tries to connect to a specific port on an IP address.]] - rationale - backend/app/services/scanner_service.py
-- [[scanner_service.py]] - code - backend/app/services/scanner_service.py
+- [[dot-__init__()_1]] - code - backend/app/services/telegram_vault.py
+- [[dot-apply_watermark()]] - code - backend/app/services/telegram_vault.py
+- [[dot-format_event_message()]] - code - backend/app/services/telegram_vault.py
+- [[dot-get_audit_logs()]] - code - backend/app/services/telegram_vault.py
+- [[dot-get_system_status_text()]] - code - backend/app/services/telegram_vault.py
+- [[dot-handle_command()]] - code - backend/app/services/telegram_vault.py
+- [[dot-is_configured()]] - code - backend/app/services/telegram_vault.py
+- [[dot-is_paused()]] - code - backend/app/services/telegram_vault.py
+- [[dot-load_credentials_from_db()]] - code - backend/app/services/telegram_vault.py
+- [[dot-pause_alerts()]] - code - backend/app/services/telegram_vault.py
+- [[dot-record_audit()]] - code - backend/app/services/telegram_vault.py
+- [[dot-send_alert_photo()]] - code - backend/app/services/telegram_vault.py
+- [[dot-send_alert_video()]] - code - backend/app/services/telegram_vault.py
+- [[dot-send_document()]] - code - backend/app/services/telegram_vault.py
+- [[dot-send_message()]] - code - backend/app/services/telegram_vault.py
+- [[dot-start_polling()]] - code - backend/app/services/telegram_vault.py
+- [[dot-start_polling_task()]] - code - backend/app/services/telegram_vault.py
+- [[dot-test_connection()]] - code - backend/app/services/telegram_vault.py
+- [[Any_1]] - code
+- [[Appends an event to the in-memory Telegram audit trail.]] - rationale - backend/app/services/telegram_vault.py
+- [[Applies a professional HUD watermark on the snapshot with dynamic scaling for…]] - rationale - backend/app/services/telegram_vault.py
+- [[Continuous lightweight long-polling loop for Telegram Bot updates.]] - rationale - backend/app/services/telegram_vault.py
+- [[Dispatches MP4 clip to Telegram using the classic template.]] - rationale - backend/app/services/telegram_vault.py
+- [[Dispatches watermarked snapshot to Telegram using the classic template.]] - rationale - backend/app/services/telegram_vault.py
+- [[Formats real-time telemetry into a rich Telegram status message.]] - rationale - backend/app/services/telegram_vault.py
+- [[Loads Bot Token and Chat ID from database if available, or seeds defaults.]] - rationale - backend/app/services/telegram_vault.py
+- [[Processes interactive bot commands received via Telegram chat.]] - rationale - backend/app/services/telegram_vault.py
+- [[Sends a document (e.g. database backup) to Telegram.]] - rationale - backend/app/services/telegram_vault.py
+- [[Sends a text message to the configured Telegram chat.]] - rationale - backend/app/services/telegram_vault.py
+- [[Spawns or reuses the background polling task. Credentials are read in-place by…]] - rationale - backend/app/services/telegram_vault.py
+- [[TelegramVaultService]] - code - backend/app/services/telegram_vault.py
+- [[Validates bot credentials with Telegram API and sends a confirmation test…]] - rationale - backend/app/services/telegram_vault.py
+- [[telegram_vault.py]] - code - backend/app/services/telegram_vault.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -42,7 +52,9 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_TvNetflixScreen.kt]]
+- 3 edges to [[_COMMUNITY_settings.py]]
 
 ## Top bridge nodes
-- [[scanner_service.py]] - degree 2, connects to 1 community
+- [[TelegramVaultService]] - degree 20, connects to 1 community
+- [[dot-load_credentials_from_db()]] - degree 9, connects to 1 community
+- [[telegram_vault.py]] - degree 2, connects to 1 community

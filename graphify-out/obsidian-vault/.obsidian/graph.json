@@ -1,28 +1,28 @@
 {
   "colorGroups": [
     {
-      "query": "tag:#community/TvNetflixScreenkt",
+      "query": "tag:#community/eventspy",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/OverlayService",
+      "query": "tag:#community/useSentinelaStore",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/useSentinelaStore",
+      "query": "tag:#community/devicespy",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/devicespy",
+      "query": "tag:#community/OverlayService",
       "color": {
         "a": 1,
         "rgb": 7780274
@@ -43,7 +43,7 @@
       }
     },
     {
-      "query": "tag:#community/api/telemetrypy",
+      "query": "tag:#community/SentinelaRepository",
       "color": {
         "a": 1,
         "rgb": 11565729
@@ -64,84 +64,84 @@
       }
     },
     {
-      "query": "tag:#community/asyncio",
-      "color": {
-        "a": 1,
-        "rgb": 12234924
-      }
-    },
-    {
-      "query": "tag:#community/SentinelaRepository",
-      "color": {
-        "a": 1,
-        "rgb": 5142951
-      }
-    },
-    {
       "query": "tag:#community/compilerOptions",
       "color": {
         "a": 1,
-        "rgb": 15896107
+        "rgb": 12234924
       }
     },
     {
       "query": "tag:#community/Observer",
       "color": {
         "a": 1,
-        "rgb": 14767961
-      }
-    },
-    {
-      "query": "tag:#community/eventspy",
-      "color": {
-        "a": 1,
-        "rgb": 7780274
-      }
-    },
-    {
-      "query": "tag:#community/compilerOptions",
-      "color": {
-        "a": 1,
-        "rgb": 5873999
+        "rgb": 5142951
       }
     },
     {
       "query": "tag:#community/TelegramVaultService",
       "color": {
         "a": 1,
-        "rgb": 15583560
+        "rgb": 15896107
       }
     },
     {
       "query": "tag:#community/dependencies",
       "color": {
         "a": 1,
-        "rgb": 11565729
+        "rgb": 14767961
       }
     },
     {
       "query": "tag:#community/compilerOptions",
       "color": {
         "a": 1,
-        "rgb": 16752039
+        "rgb": 7780274
       }
     },
     {
       "query": "tag:#community/TvDesignTokenskt",
       "color": {
         "a": 1,
-        "rgb": 10253663
+        "rgb": 5873999
       }
     },
     {
       "query": "tag:#community/ScannerService",
       "color": {
         "a": 1,
-        "rgb": 12234924
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/TvNetflixScreenkt",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
       }
     },
     {
       "query": "tag:#community/FrigateBridgeService",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
+      }
+    },
+    {
+      "query": "tag:#community/Hist\u00f3rias",
+      "color": {
+        "a": 1,
+        "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/PipSize",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/compilerOptions",
       "color": {
         "a": 1,
         "rgb": 5142951
@@ -155,119 +155,259 @@
       }
     },
     {
-      "query": "tag:#community/PiPGatewayService",
+      "query": "tag:#community/MseCameraView",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/dependencies",
+      "query": "tag:#community/PiPGatewayService",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/MseCameraView",
+      "query": "tag:#community/api/telemetrypy",
       "color": {
         "a": 1,
         "rgb": 5873999
+      }
+    },
+    {
+      "query": "tag:#community/dependencies",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/Hist\u00f3rias",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
       }
     },
     {
       "query": "tag:#community/TelemetryService",
       "color": {
         "a": 1,
-        "rgb": 15583560
-      }
-    },
-    {
-      "query": "tag:#community/3_Cat\u00e1logo_de_Endpoints_da_API_REST_/api",
-      "color": {
-        "a": 1,
-        "rgb": 11565729
-      }
-    },
-    {
-      "query": "tag:#community/_Sentinela_Frigate_Pro",
-      "color": {
-        "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/dependencies",
+      "query": "tag:#community/Hist\u00f3rias",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/X509TrustManager",
+      "query": "tag:#community/Spec_Disparo_de_Fotos_e_V\u00eddeos_de_Intrus\u00e3o_para_o_Telegram_Telegram_Vault__Drive",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/manifestjson",
+      "query": "tag:#community/FastAPI",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/Resgate_do_Sistema_Solu\u00e7\u00e3o_Final_para_o_V\u00eddeo_do_Telegram_v0604",
+      "query": "tag:#community/3_Cat\u00e1logo_de_Endpoints_da_API_REST_/api",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/TvAudioManager",
+      "query": "tag:#community/_Sentinela_Frigate_Pro",
       "color": {
         "a": 1,
         "rgb": 14767961
       }
     },
     {
-      "query": "tag:#community/SentinelaMobileTokenskt",
+      "query": "tag:#community/dependencies",
       "color": {
         "a": 1,
         "rgb": 7780274
       }
     },
     {
-      "query": "tag:#community/loggerts",
+      "query": "tag:#community/Spec_Sentinela_Core_Ecosystem_Web_Mobile__Orquestrador",
       "color": {
         "a": 1,
         "rgb": 5873999
       }
     },
     {
-      "query": "tag:#community/Settings",
+      "query": "tag:#community/wspy",
       "color": {
         "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/postcssconfigmjs",
+      "query": "tag:#community/manifestjson",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/logs/pagetsx",
+      "query": "tag:#community/PipDuration",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
+      "query": "tag:#community/asyncio",
+      "color": {
+        "a": 1,
+        "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/TvAudioManager",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/onp-spec-driven__a_especifica\u00e7\u00e3o_que_continua_verdadeira_Antigravity",
+      "color": {
+        "a": 1,
+        "rgb": 5142951
+      }
+    },
+    {
+      "query": "tag:#community/Modelskt",
+      "color": {
+        "a": 1,
+        "rgb": 15896107
+      }
+    },
+    {
+      "query": "tag:#community/trigger_network_scan",
+      "color": {
+        "a": 1,
+        "rgb": 14767961
+      }
+    },
+    {
+      "query": "tag:#community/MemoryRingBufferHandler",
+      "color": {
+        "a": 1,
+        "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community/Resgate_do_Sistema_Solu\u00e7\u00e3o_Final_para_o_V\u00eddeo_do_Telegram_v0604",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
+      }
+    },
+    {
+      "query": "tag:#community/SentinelaMobileTokenskt",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/run_server_benchmark",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
+      }
+    },
+    {
+      "query": "tag:#community/loggerts",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
+      }
+    },
+    {
+      "query": "tag:#community/opencodejson",
+      "color": {
+        "a": 1,
+        "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/android-smartphone-appspectestjs",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/telegram-vaultspectestjs",
+      "color": {
+        "a": 1,
+        "rgb": 5142951
+      }
+    },
+    {
+      "query": "tag:#community/Run_and_deploy_your_AI_Studio_app",
+      "color": {
+        "a": 1,
+        "rgb": 15896107
+      }
+    },
+    {
+      "query": "tag:#community/Run_and_deploy_your_AI_Studio_app",
+      "color": {
+        "a": 1,
+        "rgb": 14767961
+      }
+    },
+    {
+      "query": "tag:#community/Tasks_Integra\u00e7\u00e3o_Frigate_NVR_017__go2rtc",
+      "color": {
+        "a": 1,
+        "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community/Settings",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
+      }
+    },
+    {
+      "query": "tag:#community/logs/pagetsx",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
       "query": "tag:#community/graphifyjs",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
+      }
+    },
+    {
+      "query": "tag:#community/AGENTSmd",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
+      }
+    },
+    {
+      "query": "tag:#community/executionmd",
       "color": {
         "a": 1,
         "rgb": 10253663
@@ -302,143 +442,269 @@
       }
     },
     {
-      "query": "tag:#community/backup/pagetsx",
+      "query": "tag:#community/postcssconfigmjs",
       "color": {
         "a": 1,
         "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community/backup/pagetsx",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
       }
     },
     {
       "query": "tag:#community/settings/pagetsx",
       "color": {
         "a": 1,
-        "rgb": 5873999
+        "rgb": 15583560
       }
     },
     {
       "query": "tag:#community/storage/pagetsx",
       "color": {
         "a": 1,
-        "rgb": 15583560
+        "rgb": 11565729
       }
     },
     {
       "query": "tag:#community/telegram/pagetsx",
       "color": {
         "a": 1,
-        "rgb": 11565729
+        "rgb": 16752039
       }
     },
     {
       "query": "tag:#community/tailwindconfigts",
       "color": {
         "a": 1,
-        "rgb": 16752039
+        "rgb": 10253663
       }
     },
     {
       "query": "tag:#community/setup-autostartsh",
       "color": {
         "a": 1,
-        "rgb": 10253663
+        "rgb": 12234924
       }
     },
     {
       "query": "tag:#community/setup_ubuntush",
       "color": {
         "a": 1,
-        "rgb": 12234924
+        "rgb": 5142951
       }
     },
     {
       "query": "tag:#community/simulate_eventsh",
       "color": {
         "a": 1,
-        "rgb": 5142951
+        "rgb": 15896107
+      }
+    },
+    {
+      "query": "tag:#community/onp-specmjs",
+      "color": {
+        "a": 1,
+        "rgb": 14767961
       }
     },
     {
       "query": "tag:#community/sentinela-pro-mobile-nvr/viteconfigts",
       "color": {
         "a": 1,
-        "rgb": 15896107
+        "rgb": 7780274
       }
     },
     {
       "query": "tag:#community/sentinela-pro-tv/viteconfigts",
       "color": {
         "a": 1,
-        "rgb": 14767961
+        "rgb": 5873999
       }
     },
     {
       "query": "tag:#community/app/buildgradlekts",
       "color": {
         "a": 1,
-        "rgb": 7780274
-      }
-    },
-    {
-      "query": "tag:#community/android/buildgradlekts",
-      "color": {
-        "a": 1,
-        "rgb": 5873999
-      }
-    },
-    {
-      "query": "tag:#community/settingsgradlekts",
-      "color": {
-        "a": 1,
         "rgb": 15583560
       }
     },
     {
-      "query": "tag:#community/next",
+      "query": "tag:#community/SentinelaRepositorykt",
       "color": {
         "a": 1,
         "rgb": 11565729
       }
     },
     {
-      "query": "tag:#community/apply_bc_configpy",
+      "query": "tag:#community/X509TrustManager",
       "color": {
         "a": 1,
         "rgb": 16752039
       }
     },
     {
-      "query": "tag:#community/opencodejson",
+      "query": "tag:#community/PipPosition",
       "color": {
         "a": 1,
         "rgb": 10253663
       }
     },
     {
-      "query": "tag:#community/Run_and_deploy_your_AI_Studio_app",
+      "query": "tag:#community/android/buildgradlekts",
       "color": {
         "a": 1,
         "rgb": 12234924
       }
     },
     {
-      "query": "tag:#community/Run_and_deploy_your_AI_Studio_app",
+      "query": "tag:#community/settingsgradlekts",
       "color": {
         "a": 1,
         "rgb": 5142951
       }
     },
     {
-      "query": "tag:#community/AGENTSmd",
+      "query": "tag:#community/Escrevendo_especifica\u00e7\u00f5es_audit\u00e1veis",
       "color": {
         "a": 1,
         "rgb": 15896107
       }
     },
     {
-      "query": "tag:#community/executionmd",
+      "query": "tag:#community/Li\u00e7\u00f5es__aprendizado_com_lastro_mec\u00e2nico",
       "color": {
         "a": 1,
         "rgb": 14767961
+      }
+    },
+    {
+      "query": "tag:#community/Passo_a_passo_no_Antigravity",
+      "color": {
+        "a": 1,
+        "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community/Tasks_Aplicativo_Android_Smartphone_Sentinela_Mobile_YouTube_Edition",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
+      }
+    },
+    {
+      "query": "tag:#community/Fluxo_detalhado__do_zero_ao_audit_limpo",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/Tasks_Aplicativo_Android_TV_Sentinela_TV_Netflix_Edition",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
+      }
+    },
+    {
+      "query": "tag:#community/Tasks_Sentinela_Core_Ecosystem_Web_Mobile__Orquestrador",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
+      }
+    },
+    {
+      "query": "tag:#community/Constitui\u00e7\u00e3o__v110",
+      "color": {
+        "a": 1,
+        "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/apply_bc_configpy",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/android-tv-appspectestjs",
+      "color": {
+        "a": 1,
+        "rgb": 5142951
+      }
+    },
+    {
+      "query": "tag:#community/integracao-frigatespectestjs",
+      "color": {
+        "a": 1,
+        "rgb": 15896107
+      }
+    },
+    {
+      "query": "tag:#community/sentinela-corespectestjs",
+      "color": {
+        "a": 1,
+        "rgb": 14767961
+      }
+    },
+    {
+      "query": "tag:#community/STATEmd__Mem\u00f3ria_Persistente_do_Projeto",
+      "color": {
+        "a": 1,
+        "rgb": 7780274
+      }
+    },
+    {
+      "query": "tag:#community/Constitui\u00e7\u00e3o__princ\u00edpios_que_a_m\u00e1quina_verifica",
+      "color": {
+        "a": 1,
+        "rgb": 5873999
+      }
+    },
+    {
+      "query": "tag:#community/TvLogsViewport",
+      "color": {
+        "a": 1,
+        "rgb": 15583560
+      }
+    },
+    {
+      "query": "tag:#community/SKILLmd",
+      "color": {
+        "a": 1,
+        "rgb": 11565729
+      }
+    },
+    {
+      "query": "tag:#community/rules/graphifymd",
+      "color": {
+        "a": 1,
+        "rgb": 16752039
+      }
+    },
+    {
+      "query": "tag:#community/workflows/graphifymd",
+      "color": {
+        "a": 1,
+        "rgb": 10253663
+      }
+    },
+    {
+      "query": "tag:#community/telegram-vault/tasksmd",
+      "color": {
+        "a": 1,
+        "rgb": 12234924
+      }
+    },
+    {
+      "query": "tag:#community/next",
+      "color": {
+        "a": 1,
+        "rgb": 5142951
       }
     }
   ]

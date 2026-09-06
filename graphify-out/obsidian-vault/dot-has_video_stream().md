@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L171"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # .has_video_stream()
@@ -17,4 +17,4 @@ tags:
 - [[FrigateBridgeService]] - `method` [EXTRACTED]
 - [[Verifies with ffprobe that the MP4 contains at least one valid video stream and…]] - `rationale_for` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

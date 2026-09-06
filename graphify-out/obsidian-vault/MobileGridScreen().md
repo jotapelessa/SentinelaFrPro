@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt"
 type: "code"
-community: "FrigateBridgeService"
+community: "compilerOptions"
 location: "L36"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FrigateBridgeService
+  - community/compilerOptions
 ---
 
 # MobileGridScreen()
@@ -17,4 +17,4 @@ tags:
 - [[FullScreenCameraDialog()]] - `calls` [EXTRACTED]
 - [[MobileGridScreen.kt]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

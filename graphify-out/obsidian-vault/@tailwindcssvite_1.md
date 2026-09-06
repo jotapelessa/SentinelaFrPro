@@ -1,18 +1,17 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
-type: "code"
-community: "Observer"
+type: "concept"
+community: "dependencies"
 location: "L15"
 tags:
-  - graphify/code
+  - graphify/concept
   - graphify/EXTRACTED
-  - community/Observer
+  - community/dependencies
 ---
 
 # @tailwindcss/vite
 
 ## Connections
-- [[@tailwindcssvite_2]] - `imports` [EXTRACTED]
-- [[dependencies_1]] - `contains` [EXTRACTED]
+- [[@tailwindcssvite]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/concept #graphify/EXTRACTED #community/dependencies

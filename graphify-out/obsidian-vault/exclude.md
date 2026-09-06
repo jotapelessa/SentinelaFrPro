@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/tsconfig.json"
 type: "code"
-community: "events.py"
+community: "compilerOptions"
 location: "L27"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/compilerOptions
 ---
 
 # exclude
@@ -15,4 +15,4 @@ tags:
 - [[frontendtsconfig.json]] - `contains` [EXTRACTED]
 - [[node_modules]] - `extends` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/eventspy
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

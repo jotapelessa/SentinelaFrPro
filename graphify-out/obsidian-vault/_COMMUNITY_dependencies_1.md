@@ -1,32 +1,30 @@
 ---
 type: community
-cohesion: 0.16
-members: 17
+cohesion: 0.13
+members: 15
 ---
 
 # dependencies
 
-**Cohesion:** 0.16 - loosely connected
-**Members:** 17 nodes
+**Cohesion:** 0.13 - loosely connected
+**Members:** 15 nodes
 
 ## Members
-- [[dot-__init__()_3]] - code - backend/app/services/pip_gateway.py
-- [[dot-check_device_online()]] - code - backend/app/services/pip_gateway.py
-- [[dot-dispatch_pip_alert()]] - code - backend/app/services/pip_gateway.py
-- [[dot-get_active_tv_devices()]] - code - backend/app/services/pip_gateway.py
-- [[dot-is_in_dnd()]] - code - backend/app/services/pip_gateway.py
-- [[dot-record_ack()]] - code - backend/app/services/pip_gateway.py
-- [[dot-test_single_device()]] - code - backend/app/services/pip_gateway.py
-- [[Any_4]] - code
-- [[Checks if current time falls in Do Not Disturb period.]] - rationale - backend/app/services/pip_gateway.py
-- [[Dispatches Picture-in-Picture or Google Cast notification to registered TVs.…]] - rationale - backend/app/services/pip_gateway.py
-- [[Dispatches an interactive test PiP alert to a specific TV using real accessible…]] - rationale - backend/app/services/pip_gateway.py
-- [[Fast concurrent non-blocking port check to verify if Smart TV  device is…]] - rationale - backend/app/services/pip_gateway.py
-- [[Fetches allowed Android TV  Tablet devices from DB with granular camera &…]] - rationale - backend/app/services/pip_gateway.py
-- [[PiPGatewayService]] - code - backend/app/services/pip_gateway.py
-- [[Records an execution acknowledgement from a remote device overlay.]] - rationale - backend/app/services/pip_gateway.py
-- [[_cast_sync()]] - code - backend/app/services/pip_gateway.py
-- [[pip_gateway.py]] - code - backend/app/services/pip_gateway.py
+- [[clsx_1]] - concept - frontend/package.json
+- [[clsx]] - code - frontend/package.json
+- [[dependencies_1]] - code - frontend/package.json
+- [[next_1]] - code - frontend/package.json
+- [[next_2]] - concept - frontend/package.json
+- [[react_2]] - code - frontend/package.json
+- [[react_3]] - concept - frontend/package.json
+- [[react-dom_4]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[react-dom]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[react-dom_2]] - code - frontend/package.json
+- [[react-dom_3]] - concept - frontend/package.json
+- [[tailwind-merge]] - code - frontend/package.json
+- [[tailwind-merge_1]] - concept - frontend/package.json
+- [[zustand]] - code - frontend/package.json
+- [[zustand_1]] - concept - frontend/package.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -36,9 +34,10 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 3 edges to [[_COMMUNITY_TvNetflixScreen.kt]]
-- 2 edges to [[_COMMUNITY_useSentinelaStore]]
+- 3 edges to [[_COMMUNITY_dependencies]]
+- 1 edge to [[_COMMUNITY_asyncio]]
 
 ## Top bridge nodes
-- [[PiPGatewayService]] - degree 10, connects to 2 communities
-- [[pip_gateway.py]] - degree 5, connects to 2 communities
+- [[dependencies_1]] - degree 8, connects to 2 communities
+- [[react-dom_4]] - degree 2, connects to 1 community
+- [[react-dom]] - degree 2, connects to 1 community

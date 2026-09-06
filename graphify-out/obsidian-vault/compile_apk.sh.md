@@ -1,12 +1,12 @@
 ---
 source_file: "compile_apk.sh"
 type: "code"
-community: "Run and deploy your AI Studio app"
+community: "compile_apk.sh"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Run_and_deploy_your_AI_Studio_app
+  - community/compile_apksh
 ---
 
 # compile_apk.sh
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[compile_apk.sh script]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Run_and_deploy_your_AI_Studio_app
+#graphify/code #graphify/EXTRACTED #community/compile_apksh

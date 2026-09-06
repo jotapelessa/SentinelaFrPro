@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TvDesignTokens.kt"
+community: "Histórias"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvDesignTokenskt
+  - community/Histórias
 ---
 
 # com
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[DeviceConfigEditDialog()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt
+#graphify/code #graphify/EXTRACTED #community/Histórias

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # BaseModel
@@ -23,4 +23,4 @@ tags:
 - [[TestPiPRequest]] - `inherits` [EXTRACTED]
 - [[TestSingleDeviceRequest]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/devicespy

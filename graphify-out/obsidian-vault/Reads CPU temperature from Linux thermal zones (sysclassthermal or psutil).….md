@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telemetry.py"
 type: "rationale"
-community: "🛡️ Sentinela Frigate Pro"
+community: "TelemetryService"
 location: "L17"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/_Sentinela_Frigate_Pro
+  - community/TelemetryService
 ---
 
 # Reads CPU temperature from Linux thermal zones (/sys/class/thermal/ or psutil).…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-get_cpu_temperature()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro
+#graphify/rationale #graphify/EXTRACTED #community/TelemetryService

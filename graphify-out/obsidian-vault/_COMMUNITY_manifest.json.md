@@ -1,27 +1,25 @@
 ---
 type: community
-cohesion: 0.21
-members: 12
+cohesion: 0.20
+members: 10
 ---
 
 # manifest.json
 
-**Cohesion:** 0.21 - loosely connected
-**Members:** 12 nodes
+**Cohesion:** 0.20 - loosely connected
+**Members:** 10 nodes
 
 ## Members
-- [[FastAPI]] - code
-- [[Request_2]] - code
-- [[audit_http_requests()]] - code - backend/app/main.py
-- [[get_3]] - code
-- [[get_db()]] - code - backend/app/db/session.py
-- [[health_check()]] - code - backend/app/main.py
-- [[init_db()]] - code - backend/app/db/session.py
-- [[lifespan()]] - code - backend/app/main.py
-- [[main.py]] - code - backend/app/main.py
-- [[middleware]] - code
-- [[root()]] - code - backend/app/main.py
-- [[session.py]] - code - backend/app/db/session.py
+- [[background_color]] - code - frontend/public/manifest.json
+- [[description]] - code - frontend/public/manifest.json
+- [[display]] - code - frontend/public/manifest.json
+- [[icons]] - code - frontend/public/manifest.json
+- [[manifest.json]] - code - frontend/public/manifest.json
+- [[name_3]] - code - frontend/public/manifest.json
+- [[orientation]] - code - frontend/public/manifest.json
+- [[short_name]] - code - frontend/public/manifest.json
+- [[start_url]] - code - frontend/public/manifest.json
+- [[theme_color]] - code - frontend/public/manifest.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -29,18 +27,3 @@ members: 12
 TABLE source_file, type FROM #community/manifestjson
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 3 edges to [[_COMMUNITY_TvNetflixScreen.kt]]
-- 2 edges to [[_COMMUNITY_useSentinelaStore]]
-- 2 edges to [[_COMMUNITY_settings.py]]
-- 2 edges to [[_COMMUNITY_MseCameraView]]
-- 1 edge to [[_COMMUNITY_backuppage.tsx]]
-- 1 edge to [[_COMMUNITY_cameras.py]]
-- 1 edge to [[_COMMUNITY_next-env.d.ts]]
-- 1 edge to [[_COMMUNITY_Settings]]
-
-## Top bridge nodes
-- [[FastAPI]] - degree 9, connects to 7 communities
-- [[get_db()]] - degree 5, connects to 4 communities
-- [[main.py]] - degree 8, connects to 2 communities

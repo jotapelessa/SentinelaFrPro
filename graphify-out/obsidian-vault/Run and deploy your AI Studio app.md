@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/README.md"
 type: "document"
-community: "sentinela-pro-mobile-nvr/vite.config.ts"
+community: "Run and deploy your AI Studio app"
 location: "L5"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/sentinela-pro-mobile-nvr/viteconfigts
+  - community/Run_and_deploy_your_AI_Studio_app
 ---
 
 # Run and deploy your AI Studio app
@@ -15,4 +15,4 @@ tags:
 - [[Run Locally]] - `contains` [EXTRACTED]
 - [[sentinela-pro-mobile-nvrREADME]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/sentinela-pro-mobile-nvr/viteconfigts
+#graphify/document #graphify/EXTRACTED #community/Run_and_deploy_your_AI_Studio_app

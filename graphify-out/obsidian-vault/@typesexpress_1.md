@@ -1,18 +1,17 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
-type: "code"
-community: "dependencies"
+type: "concept"
+community: "Histórias"
 location: "L33"
 tags:
-  - graphify/code
+  - graphify/concept
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/Histórias
 ---
 
 # @types/express
 
 ## Connections
-- [[@typesexpress_2]] - `imports` [EXTRACTED]
-- [[devDependencies_2]] - `contains` [EXTRACTED]
+- [[@typesexpress]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/concept #graphify/EXTRACTED #community/Histórias

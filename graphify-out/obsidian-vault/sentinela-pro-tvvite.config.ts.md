@@ -1,14 +1,14 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/vite.config.ts"
 type: "code"
-community: "Community 74"
+community: "sentinela-pro-tv/vite.config.ts"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_74
+  - community/sentinela-pro-tv/viteconfigts
 ---
 
 # sentinela-pro-tv/vite.config.ts
 
-#graphify/code #graphify/EXTRACTED #community/Community_74
+#graphify/code #graphify/EXTRACTED #community/sentinela-pro-tv/viteconfigts

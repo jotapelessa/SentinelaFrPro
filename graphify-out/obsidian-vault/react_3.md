@@ -1,17 +1,17 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
+source_file: "frontend/package.json"
 type: "concept"
-community: "Observer"
-location: "L18"
+community: "dependencies"
+location: "L15"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Observer
+  - community/dependencies
 ---
 
 # react
 
 ## Connections
-- [[react_1]] - `imports` [EXTRACTED]
+- [[react_2]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Observer
+#graphify/concept #graphify/EXTRACTED #community/dependencies

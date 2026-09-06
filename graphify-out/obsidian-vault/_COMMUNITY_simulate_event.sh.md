@@ -1,19 +1,17 @@
 ---
 type: community
-cohesion: 0.50
-members: 4
+cohesion: 1.00
+members: 2
 ---
 
 # simulate_event.sh
 
-**Cohesion:** 0.50 - moderately connected
-**Members:** 4 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 2 nodes
 
 ## Members
-- [[frigateBridgeFile]] - code - test/telegram-vault.spec.test.js
-- [[mqttServiceFile]] - code - test/telegram-vault.spec.test.js
-- [[telegram-vault.spec.test.js]] - code - test/telegram-vault.spec.test.js
-- [[tgVaultFile]] - code - test/telegram-vault.spec.test.js
+- [[simulate_event.sh]] - code - scripts/simulate_event.sh
+- [[simulate_event.sh script]] - code - scripts/simulate_event.sh
 
 ## Live Query (requires Dataview plugin)
 

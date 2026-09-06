@@ -1,41 +1,42 @@
 ---
 type: community
-cohesion: 0.09
-members: 26
+cohesion: 0.07
+members: 27
 ---
 
 # compilerOptions
 
-**Cohesion:** 0.09 - loosely connected
-**Members:** 26 nodes
+**Cohesion:** 0.07 - loosely connected
+**Members:** 27 nodes
 
 ## Members
-- [[ALERT]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[CAMERAS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[CameraEntity]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[CameraStatus]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[CameraStreamTelemetry]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[Color]] - code
-- [[DetectionBox]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[LOGS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[LogEntryItem]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[Modifier]] - code
-- [[ONLINE]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[PipAlert]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[RECORDING]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[RECORDINGS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[SETTINGS_1]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[STANDBY]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[Shape]] - code
-- [[TOOLS]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvColors]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvDesignTokens.kt]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvDimens]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvShapes]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvTab]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvTypography]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[toEntity()]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[tvDpadFocusable()]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
+- [[dot-ts]] - concept - frontend/tsconfig.json
+- [[dot-tsx]] - concept - frontend/tsconfig.json
+- [[dot-nexttypes.ts]] - concept - frontend/tsconfig.json
+- [[allowJs]] - code - frontend/tsconfig.json
+- [[compilerOptions]] - code - frontend/tsconfig.json
+- [[dom]] - concept - frontend/tsconfig.json
+- [[downlevelIteration]] - code - frontend/tsconfig.json
+- [[esModuleInterop]] - code - frontend/tsconfig.json
+- [[esnext]] - concept - frontend/tsconfig.json
+- [[exclude]] - code - frontend/tsconfig.json
+- [[frontendtsconfig.json]] - code - frontend/tsconfig.json
+- [[include]] - code - frontend/tsconfig.json
+- [[incremental]] - code - frontend/tsconfig.json
+- [[isolatedModules]] - code - frontend/tsconfig.json
+- [[jsx]] - code - frontend/tsconfig.json
+- [[lib]] - code - frontend/tsconfig.json
+- [[module]] - code - frontend/tsconfig.json
+- [[moduleResolution]] - code - frontend/tsconfig.json
+- [[next-env.d.ts]] - concept - frontend/tsconfig.json
+- [[noEmit]] - code - frontend/tsconfig.json
+- [[node_modules]] - concept - frontend/tsconfig.json
+- [[paths]] - code - frontend/tsconfig.json
+- [[plugins]] - code - frontend/tsconfig.json
+- [[resolveJsonModule]] - code - frontend/tsconfig.json
+- [[skipLibCheck]] - code - frontend/tsconfig.json
+- [[strict]] - code - frontend/tsconfig.json
+- [[target]] - code - frontend/tsconfig.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -45,8 +46,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_dependencies]]
-- 1 edge to [[_COMMUNITY_FrigateBridgeService]]
+- 1 edge to [[_COMMUNITY_compilerOptions]]
 
 ## Top bridge nodes
-- [[TvDesignTokens.kt]] - degree 18, connects to 2 communities
+- [[lib]] - degree 4, connects to 1 community

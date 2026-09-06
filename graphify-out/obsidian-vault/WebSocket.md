@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "Settings"
+community: "ws.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Settings
+  - community/wspy
 ---
 
 # WebSocket
@@ -15,4 +15,4 @@ tags:
 - [[dot-disconnect()]] - `references` [EXTRACTED]
 - [[websocket_endpoint()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Settings
+#graphify/code #graphify/EXTRACTED #community/wspy

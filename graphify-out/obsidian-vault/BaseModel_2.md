@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "next-env.d.ts"
+community: "trigger_network_scan"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/next-envdts
+  - community/trigger_network_scan
 ---
 
 # BaseModel
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[ScanPayload]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/next-envdts
+#graphify/code #graphify/EXTRACTED #community/trigger_network_scan

@@ -12,7 +12,8 @@ tags:
 # update_camera()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[CameraUpdate]] - `references` [EXTRACTED]
 - [[Request_3]] - `references` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]

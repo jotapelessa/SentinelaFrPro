@@ -1,20 +1,17 @@
 ---
 type: community
-cohesion: 0.40
-members: 5
+cohesion: 1.00
+members: 2
 ---
 
 # storage/page.tsx
 
-**Cohesion:** 0.40 - moderately connected
-**Members:** 5 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 2 nodes
 
 ## Members
-- [[SentinelaColors]] - code - android/app/src/main/java/com/sentinela/pro/ui/theme/SentinelaMobileTokens.kt
-- [[SentinelaDimens]] - code - android/app/src/main/java/com/sentinela/pro/ui/theme/SentinelaMobileTokens.kt
-- [[SentinelaMobileTokens.kt]] - code - android/app/src/main/java/com/sentinela/pro/ui/theme/SentinelaMobileTokens.kt
-- [[SentinelaShapes]] - code - android/app/src/main/java/com/sentinela/pro/ui/theme/SentinelaMobileTokens.kt
-- [[SentinelaTypography]] - code - android/app/src/main/java/com/sentinela/pro/ui/theme/SentinelaMobileTokens.kt
+- [[StorageSettingsPage()]] - code - frontend/src/app/settings/storage/page.tsx
+- [[storagepage.tsx]] - code - frontend/src/app/settings/storage/page.tsx
 
 ## Live Query (requires Dataview plugin)
 

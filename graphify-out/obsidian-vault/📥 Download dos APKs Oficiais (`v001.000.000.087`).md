@@ -1,12 +1,12 @@
 ---
 source_file: "README.md"
 type: "document"
-community: "TvAudioManager"
+community: "🛡️ Sentinela Frigate Pro"
 location: "L26"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/TvAudioManager
+  - community/_Sentinela_Frigate_Pro
 ---
 
 # 📥 Download dos APKs Oficiais (`v001.000.000.087`)
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[🛡️ Sentinela Frigate Pro]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/TvAudioManager
+#graphify/document #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/BootReceiver.kt"
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # BootReceiver.kt
@@ -18,4 +18,4 @@ tags:
 - [[Intent]] - `imports` [EXTRACTED]
 - [[OverlayService]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

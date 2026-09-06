@@ -1,12 +1,12 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json"
+source_file: "ai_studio_imports/sentinela-pro-tv/tsconfig.json"
 type: "concept"
-community: "asyncio"
+community: "compilerOptions"
 location: "L7"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/compilerOptions
 ---
 
 # DOM
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[lib_1]] - `extends` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/asyncio
+#graphify/concept #graphify/EXTRACTED #community/compilerOptions

@@ -1,37 +1,45 @@
 ---
 type: community
-cohesion: 0.21
-members: 22
+cohesion: 0.08
+members: 30
 ---
 
 # dependencies
 
-**Cohesion:** 0.21 - loosely connected
-**Members:** 22 nodes
+**Cohesion:** 0.08 - loosely connected
+**Members:** 30 nodes
 
 ## Members
-- [[CameraEntity_2]] - code
-- [[Color_1]] - code
-- [[FocusRequester]] - code
-- [[ImageVector]] - code
-- [[Modifier_1]] - code
-- [[PipAlert_2]] - code
-- [[RecordingClipItem]] - code - android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt
-- [[TvCamerasViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvClipPlayerDialog()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvDiagnosticRow()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvFullScreenLiveDialog()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvLogsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvNetflixScreen.kt]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvNetflixScreenCore()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvPipFloatingWindow()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvRecordingsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvSidebar()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvTab_2]] - code
-- [[TvTelemetryMetricCard()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvToolCard()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[TvToolsViewport()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt
-- [[androidx]] - code
+- [[@googlegenai_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[@googlegenai]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[@googlegenai_1]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
+- [[@tailwindcssvite_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[@tailwindcssvite]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[@tailwindcssvite_1]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
+- [[@vitejsplugin-react_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[@vitejsplugin-react]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[@vitejsplugin-react_1]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
+- [[dependencies_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[dependencies]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[dotenv_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[dotenv]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[dotenv_1]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
+- [[express_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[express_3]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[express]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[express_1]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
+- [[lucide-react_4]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[lucide-react]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[lucide-react_2]] - code - frontend/package.json
+- [[lucide-react_3]] - concept - frontend/package.json
+- [[motion_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[motion_3]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[motion]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[motion_1]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
+- [[react_4]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[react_5]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[react]] - code - ai_studio_imports/sentinela-pro-tv/package.json
+- [[react_1]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -41,16 +49,13 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 8 edges to [[_COMMUNITY_FrigateBridgeService]]
-- 6 edges to [[_COMMUNITY_apitelemetry.py]]
-- 4 edges to [[_COMMUNITY_devices.py]]
-- 2 edges to [[_COMMUNITY_ScannerService]]
-- 2 edges to [[_COMMUNITY_compile_apk.sh]]
-- 1 edge to [[_COMMUNITY_compilerOptions_1]]
+- 3 edges to [[_COMMUNITY_dependencies_1]]
+- 1 edge to [[_COMMUNITY_Spec Sentinela Core Ecosystem (Web, Mobile & Orquestrador)]]
+- 1 edge to [[_COMMUNITY_Spec Disparo de Fotos e Vídeos de Intrusão para o Telegram (Telegram Vault & Drive)]]
+- 1 edge to [[_COMMUNITY_dependencies_2]]
+- 1 edge to [[_COMMUNITY_Histórias_2]]
 
 ## Top bridge nodes
-- [[TvNetflixScreen.kt]] - degree 23, connects to 4 communities
-- [[TvRecordingsViewport()]] - degree 8, connects to 3 communities
-- [[TvNetflixScreenCore()]] - degree 12, connects to 2 communities
-- [[TvToolsViewport()]] - degree 9, connects to 2 communities
-- [[TvLogsViewport()]] - degree 6, connects to 2 communities
+- [[dependencies_2]] - degree 11, connects to 3 communities
+- [[dependencies]] - degree 11, connects to 3 communities
+- [[lucide-react_2]] - degree 2, connects to 1 community

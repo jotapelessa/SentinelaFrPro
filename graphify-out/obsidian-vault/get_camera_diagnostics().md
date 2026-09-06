@@ -13,7 +13,9 @@ tags:
 
 ## Connections
 - [[Aggregates real-time Frigate stats, go2rtc stream health, filtered…]] - `rationale_for` [EXTRACTED]
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
+- [[AuditLog]] - `uses` [INFERRED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[cameras.py]] - `contains` [EXTRACTED]
 - [[get_4]] - `references` [EXTRACTED]
 

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "rationale"
-community: "MseCameraView"
+community: "api/telemetry.py"
 location: "L31"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/api/telemetrypy
 ---
 
 # Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_detailed_stats()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/MseCameraView
+#graphify/rationale #graphify/EXTRACTED #community/api/telemetrypy

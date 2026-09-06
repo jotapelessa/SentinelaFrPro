@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "ScannerService"
+community: "PipSize"
 location: "L88"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/ScannerService
+  - community/PipSize
 ---
 
 # PipSize
@@ -23,4 +23,4 @@ tags:
 - [[SMALL]] - `case_of` [EXTRACTED]
 - [[SentinelaPreferences]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/ScannerService
+#graphify/code #graphify/EXTRACTED #community/PipSize

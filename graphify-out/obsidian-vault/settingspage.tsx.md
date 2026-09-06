@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/settings/page.tsx"
 type: "code"
-community: "Community 65"
+community: "settings/page.tsx"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_65
+  - community/settings/pagetsx
 ---
 
 # settings/page.tsx
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[SettingsHubPage()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_65
+#graphify/code #graphify/EXTRACTED #community/settings/pagetsx

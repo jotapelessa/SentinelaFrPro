@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "SentinelaRepository"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/SentinelaRepository
 ---
 
 # TelemetryData
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[dot-getTelemetry()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

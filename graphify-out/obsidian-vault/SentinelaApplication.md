@@ -13,7 +13,7 @@ tags:
 
 ## Connections
 - [[dot-newImageLoader()]] - `method` [EXTRACTED]
-- [[dot-onCreate()]] - `method` [EXTRACTED]
+- [[dot-onCreate()_1]] - `method` [EXTRACTED]
 - [[Application]] - `inherits` [EXTRACTED]
 - [[ImageLoaderFactory]] - `implements` [EXTRACTED]
 - [[SentinelaApplication.kt]] - `contains` [EXTRACTED]

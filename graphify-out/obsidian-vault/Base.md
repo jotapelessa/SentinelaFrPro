@@ -1,20 +1,20 @@
 ---
 source_file: ""
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # Base
 
 ## Connections
 - [[AuditLog]] - `inherits` [EXTRACTED]
-- [[Camera]] - `inherits` [EXTRACTED]
+- [[Camera_1]] - `inherits` [EXTRACTED]
 - [[EventRecord]] - `inherits` [EXTRACTED]
 - [[PairedDevice_1]] - `inherits` [EXTRACTED]
 - [[SystemSetting]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

@@ -1,52 +1,24 @@
 ---
 type: community
-cohesion: 0.05
-members: 37
+cohesion: 0.22
+members: 9
 ---
 
 # asyncio
 
-**Cohesion:** 0.05 - loosely connected
-**Members:** 37 nodes
+**Cohesion:** 0.22 - loosely connected
+**Members:** 9 nodes
 
 ## Members
-- [[DOM_1]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[DOM_2]] - concept - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[ES2022]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[ES2022_1]] - concept - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[allowImportingTsExtensions]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[allowImportingTsExtensions_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[allowJs_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[allowJs_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[compilerOptions_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[compilerOptions_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[dom.iterable]] - concept - frontend/tsconfig.json
-- [[experimentalDecorators]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[experimentalDecorators_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[isolatedModules_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[isolatedModules_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[jsx_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[jsx_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[lib_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[lib_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[module_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[module_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[moduleDetection]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[moduleDetection_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[moduleResolution_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[moduleResolution_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[noEmit_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[noEmit_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[paths_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[paths_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[sentinela-pro-mobile-nvrtsconfig.json]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[sentinela-pro-tvtsconfig.json]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[skipLibCheck_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[skipLibCheck_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[target_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[target_2]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
-- [[useDefineForClassFields]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
-- [[useDefineForClassFields_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[build_1]] - code - frontend/package.json
+- [[dev_1]] - code - frontend/package.json
+- [[frontendpackage.json]] - code - frontend/package.json
+- [[lint_1]] - code - frontend/package.json
+- [[name_1]] - code - frontend/package.json
+- [[private_1]] - code - frontend/package.json
+- [[scripts_1]] - code - frontend/package.json
+- [[start]] - code - frontend/package.json
+- [[version_1]] - code - frontend/package.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -56,7 +28,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_events.py]]
+- 1 edge to [[_COMMUNITY_dependencies_1]]
+- 1 edge to [[_COMMUNITY_Histórias_1]]
 
 ## Top bridge nodes
-- [[dom.iterable]] - degree 3, connects to 1 community
+- [[frontendpackage.json]] - degree 6, connects to 2 communities

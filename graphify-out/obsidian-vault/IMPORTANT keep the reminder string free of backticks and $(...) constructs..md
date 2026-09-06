@@ -1,12 +1,12 @@
 ---
 source_file: ".opencode/plugins/graphify.js"
 type: "rationale"
-community: "next"
+community: "graphify.js"
 location: "L4"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/next
+  - community/graphifyjs
 ---
 
 # IMPORTANT: keep the reminder string free of backticks and $(...) constructs.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[graphify.js]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/next
+#graphify/rationale #graphify/EXTRACTED #community/graphifyjs

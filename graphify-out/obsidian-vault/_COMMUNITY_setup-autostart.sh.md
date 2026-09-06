@@ -1,19 +1,17 @@
 ---
 type: community
-cohesion: 0.50
-members: 4
+cohesion: 1.00
+members: 2
 ---
 
 # setup-autostart.sh
 
-**Cohesion:** 0.50 - moderately connected
-**Members:** 4 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 2 nodes
 
 ## Members
-- [[$schema]] - code - .opencode/opencode.json
-- [[dot-opencodepluginsgraphify.js]] - concept - .opencode/opencode.json
-- [[opencode.json]] - code - .opencode/opencode.json
-- [[plugin]] - code - .opencode/opencode.json
+- [[setup-autostart.sh]] - code - scripts/setup-autostart.sh
+- [[setup-autostart.sh script]] - code - scripts/setup-autostart.sh
 
 ## Live Query (requires Dataview plugin)
 

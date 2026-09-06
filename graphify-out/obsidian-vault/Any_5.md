@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "🛡️ Sentinela Frigate Pro"
+community: "TelemetryService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_Sentinela_Frigate_Pro
+  - community/TelemetryService
 ---
 
 # Any
@@ -16,4 +16,4 @@ tags:
 - [[dot-get_top_processes()]] - `references` [EXTRACTED]
 - [[dot-run_benchmark()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro
+#graphify/code #graphify/EXTRACTED #community/TelemetryService

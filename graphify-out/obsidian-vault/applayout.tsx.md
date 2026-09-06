@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/layout.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # app/layout.tsx
@@ -24,4 +24,4 @@ tags:
 - [[metadata]] - `contains` [EXTRACTED]
 - [[viewport]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

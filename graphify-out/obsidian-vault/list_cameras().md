@@ -12,8 +12,9 @@ tags:
 # list_cameras()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
 - [[Camera_2]] - `calls` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[Unified Camera Provider Returns all cameras with sub-3ms response time through…]] - `rationale_for` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]
 - [[get_4]] - `references` [EXTRACTED]

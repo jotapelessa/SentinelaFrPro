@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "rationale"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L20"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # Appends an event to the in-memory Telegram audit trail.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-record_audit()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService

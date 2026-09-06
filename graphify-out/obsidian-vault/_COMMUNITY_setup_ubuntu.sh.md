@@ -1,19 +1,17 @@
 ---
 type: community
-cohesion: 0.50
-members: 4
+cohesion: 1.00
+members: 2
 ---
 
 # setup_ubuntu.sh
 
-**Cohesion:** 0.50 - moderately connected
-**Members:** 4 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 2 nodes
 
 ## Members
-- [[android-smartphone-app.spec.test.js]] - code - test/android-smartphone-app.spec.test.js
-- [[prefsFile]] - code - test/android-smartphone-app.spec.test.js
-- [[repoFile]] - code - test/android-smartphone-app.spec.test.js
-- [[smartphoneScreenFile]] - code - test/android-smartphone-app.spec.test.js
+- [[setup_ubuntu.sh]] - code - scripts/setup_ubuntu.sh
+- [[setup_ubuntu.sh script]] - code - scripts/setup_ubuntu.sh
 
 ## Live Query (requires Dataview plugin)
 

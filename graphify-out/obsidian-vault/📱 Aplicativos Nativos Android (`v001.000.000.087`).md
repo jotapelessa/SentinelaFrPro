@@ -1,12 +1,12 @@
 ---
 source_file: "README.md"
 type: "document"
-community: "TvAudioManager"
+community: "🛡️ Sentinela Frigate Pro"
 location: "L37"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/TvAudioManager
+  - community/_Sentinela_Frigate_Pro
 ---
 
 # 📱 Aplicativos Nativos Android (`v001.000.000.087`)
@@ -16,4 +16,4 @@ tags:
 - [[📺 1. Android TV 55 (Layout Horizontal Estilo Netflix)]] - `contains` [EXTRACTED]
 - [[🛡️ Sentinela Frigate Pro]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/TvAudioManager
+#graphify/document #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro

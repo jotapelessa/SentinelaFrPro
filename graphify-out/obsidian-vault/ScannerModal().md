@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/components/ScannerModal.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L7"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # ScannerModal()
@@ -16,4 +16,4 @@ tags:
 - [[applayout.tsx]] - `imports` [EXTRACTED]
 - [[useSentinelaStore]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt"
 type: "code"
-community: "SentinelaRepository"
+community: "Observer"
 location: "L44"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/SentinelaRepository
+  - community/Observer
 ---
 
 # Observer
@@ -24,5 +24,6 @@ tags:
 - [[dot-onRenegotiationNeeded()]] - `method` [EXTRACTED]
 - [[dot-onSignalingChange()]] - `method` [EXTRACTED]
 - [[dot-startStream()]] - `contains` [EXTRACTED]
+- [[Observer]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/SentinelaRepository
+#graphify/code #graphify/EXTRACTED #community/Observer

@@ -1,23 +1,17 @@
 ---
 type: community
-cohesion: 0.39
-members: 8
+cohesion: 1.00
+members: 2
 ---
 
 # build_apk.sh
 
-**Cohesion:** 0.39 - loosely connected
-**Members:** 8 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 2 nodes
 
 ## Members
-- [[dot-constructor()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
-- [[dot-getContext()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
-- [[dot-playAlertSound()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
-- [[dot-playBackSound()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
-- [[dot-playFocusTick()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
-- [[dot-playSelectSound()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
-- [[dot-setEnabled()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
-- [[TvAudioManager]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
+- [[build_apk.sh]] - code - android/build_apk.sh
+- [[build_apk.sh script]] - code - android/build_apk.sh
 
 ## Live Query (requires Dataview plugin)
 
@@ -25,9 +19,3 @@ members: 8
 TABLE source_file, type FROM #community/build_apksh
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 1 edge to [[_COMMUNITY_sentinela-pro-tvsrcApp.tsx]]
-
-## Top bridge nodes
-- [[TvAudioManager]] - degree 8, connects to 1 community

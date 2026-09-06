@@ -1,17 +1,17 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/tsconfig.json"
 type: "code"
-community: "asyncio"
+community: "compilerOptions"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/compilerOptions
 ---
 
 # sentinela-pro-tv/tsconfig.json
 
 ## Connections
-- [[compilerOptions_2]] - `contains` [EXTRACTED]
+- [[compilerOptions_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

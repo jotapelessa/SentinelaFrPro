@@ -1,12 +1,12 @@
 ---
 source_file: "test/telegram-vault.spec.test.js"
 type: "code"
-community: "simulate_event.sh"
+community: "telegram-vault.spec.test.js"
 location: "L11"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/simulate_eventsh
+  - community/telegram-vaultspectestjs
 ---
 
 # mqttServiceFile
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[telegram-vault.spec.test.js]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/simulate_eventsh
+#graphify/code #graphify/EXTRACTED #community/telegram-vaultspectestjs

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L110"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # .get_live_snapshot()
@@ -15,4 +15,4 @@ tags:
 - [[FrigateBridgeService]] - `method` [EXTRACTED]
 - [[Retrieves a live JPEG frame at nativemain-stream resolution using a multi-…]] - `rationale_for` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

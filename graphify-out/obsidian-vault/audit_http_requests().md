@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/main.py"
 type: "code"
-community: "manifest.json"
+community: "FastAPI"
 location: "L84"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/manifestjson
+  - community/FastAPI
 ---
 
 # audit_http_requests()
@@ -16,4 +16,4 @@ tags:
 - [[main.py]] - `contains` [EXTRACTED]
 - [[middleware]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/manifestjson
+#graphify/code #graphify/EXTRACTED #community/FastAPI

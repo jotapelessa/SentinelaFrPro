@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "rationale"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L36"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # Performs deep health check of all Frigate & go2rtc communication channels with…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-check_connectivity()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/FrigateBridgeService

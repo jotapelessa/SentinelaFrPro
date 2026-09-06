@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/core/logging_handler.py"
 type: "code"
-community: "backup/page.tsx"
+community: "MemoryRingBufferHandler"
 location: "L14"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/backup/pagetsx
+  - community/MemoryRingBufferHandler
 ---
 
 # mask_sensitive_data()
@@ -15,4 +15,4 @@ tags:
 - [[dot-emit()]] - `calls` [EXTRACTED]
 - [[logging_handler.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/backup/pagetsx
+#graphify/code #graphify/EXTRACTED #community/MemoryRingBufferHandler

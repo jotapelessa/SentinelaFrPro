@@ -1,18 +1,17 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
-type: "code"
-community: "TelemetryService"
+type: "concept"
+community: "Community None"
 location: "L19"
 tags:
-  - graphify/code
+  - graphify/concept
   - graphify/EXTRACTED
-  - community/TelemetryService
+  - community/Community_None
 ---
 
 # react-dom
 
 ## Connections
-- [[dependencies_1]] - `contains` [EXTRACTED]
-- [[react-dom_3]] - `imports` [EXTRACTED]
+- [[react-dom]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelemetryService
+#graphify/concept #graphify/EXTRACTED #community/Community_None

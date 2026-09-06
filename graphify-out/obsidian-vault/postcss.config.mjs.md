@@ -1,17 +1,18 @@
 ---
 source_file: "frontend/postcss.config.mjs"
 type: "code"
-community: "Community 63"
+community: "postcss.config.mjs"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_63
+  - community/postcssconfigmjs
 ---
 
 # postcss.config.mjs
 
 ## Connections
 - [[config]] - `contains` [EXTRACTED]
+- [[postcss-load-config]] - `dynamic_import` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_63
+#graphify/code #graphify/EXTRACTED #community/postcssconfigmjs

@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/settings/layout.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L24"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # SettingsLayout()
@@ -15,4 +15,4 @@ tags:
 - [[settingslayout.tsx]] - `contains` [EXTRACTED]
 - [[useSentinelaStore]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/screens/page.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L12"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # PairedDevice
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[screenspage.tsx]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

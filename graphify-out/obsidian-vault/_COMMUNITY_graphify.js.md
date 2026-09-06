@@ -1,24 +1,18 @@
 ---
 type: community
-cohesion: 0.22
-members: 9
+cohesion: 0.67
+members: 3
 ---
 
 # graphify.js
 
-**Cohesion:** 0.22 - loosely connected
-**Members:** 9 nodes
+**Cohesion:** 0.67 - moderately connected
+**Members:** 3 nodes
 
 ## Members
-- [[build_2]] - code - frontend/package.json
-- [[dev_2]] - code - frontend/package.json
-- [[frontendpackage.json]] - code - frontend/package.json
-- [[lint_2]] - code - frontend/package.json
-- [[name_3]] - code - frontend/package.json
-- [[private_2]] - code - frontend/package.json
-- [[scripts_2]] - code - frontend/package.json
-- [[start]] - code - frontend/package.json
-- [[version_2]] - code - frontend/package.json
+- [[GraphifyPlugin()]] - code - .opencode/plugins/graphify.js
+- [[IMPORTANT keep the reminder string free of backticks and $(...) constructs.]] - rationale - .opencode/plugins/graphify.js
+- [[graphify.js]] - code - .opencode/plugins/graphify.js
 
 ## Live Query (requires Dataview plugin)
 
@@ -26,10 +20,3 @@ members: 9
 TABLE source_file, type FROM #community/graphifyjs
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 1 edge to [[_COMMUNITY_TelemetryService]]
-- 1 edge to [[_COMMUNITY_3. Catálogo de Endpoints da API REST (`api`)]]
-
-## Top bridge nodes
-- [[frontendpackage.json]] - degree 6, connects to 2 communities

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # Any
@@ -14,4 +14,4 @@ tags:
 - [[dot-check_connectivity()]] - `references` [EXTRACTED]
 - [[dot-get_connectivity_logs()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "rationale"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L314"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # Dispatches MP4 clip to Telegram using the classic template.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-send_alert_video()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService

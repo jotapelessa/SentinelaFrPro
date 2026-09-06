@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # delete
@@ -14,4 +14,4 @@ tags:
 - [[cleanup_all_devices()]] - `references` [EXTRACTED]
 - [[delete_device()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/devicespy

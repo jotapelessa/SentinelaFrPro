@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "rationale"
-community: "dependencies"
+community: "PiPGatewayService"
 location: "L57"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/PiPGatewayService
 ---
 
 # Checks if current time falls in Do Not Disturb period.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-is_in_dnd()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/dependencies
+#graphify/rationale #graphify/EXTRACTED #community/PiPGatewayService

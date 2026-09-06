@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "TelegramVaultService"
+community: "ScannerService"
 location: "L69"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/ScannerService
 ---
 
 # .get_self_ips()
@@ -17,4 +17,4 @@ tags:
 - [[Collects all IP addresses belonging to the host itself so they are not detected…]] - `rationale_for` [EXTRACTED]
 - [[ScannerService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/ScannerService

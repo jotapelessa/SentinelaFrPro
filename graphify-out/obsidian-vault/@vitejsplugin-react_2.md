@@ -1,18 +1,18 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
-type: "concept"
-community: "Observer"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
+type: "code"
+community: "dependencies"
 location: "L16"
 tags:
-  - graphify/concept
+  - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/dependencies
 ---
 
 # @vitejs/plugin-react
 
 ## Connections
-- [[@vitejsplugin-react]] - `imports` [EXTRACTED]
-- [[@vitejsplugin-react_1]] - `imports` [EXTRACTED]
+- [[@vitejsplugin-react_3]] - `imports` [EXTRACTED]
+- [[dependencies_2]] - `contains` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/dependencies

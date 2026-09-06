@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/next.config.mjs"
 type: "code"
-community: "AGENTS.md"
+community: "next.config.mjs"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/AGENTSmd
+  - community/nextconfigmjs
 ---
 
 # next.config.mjs
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[nextConfig]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/AGENTSmd
+#graphify/code #graphify/EXTRACTED #community/nextconfigmjs

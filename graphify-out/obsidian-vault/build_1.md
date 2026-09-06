@@ -1,12 +1,12 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
+source_file: "frontend/package.json"
 type: "code"
-community: "logger.ts"
-location: "L8"
+community: "asyncio"
+location: "L7"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/loggerts
+  - community/asyncio
 ---
 
 # build
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[scripts_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/loggerts
+#graphify/code #graphify/EXTRACTED #community/asyncio

@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/components/WebRTCPlayer.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L214"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # WebRTCPlayerBase()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[WebRTCPlayer.tsx]] - `indirect_call` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/OverlayService
+#graphify/code #graphify/INFERRED #community/useSentinelaStore

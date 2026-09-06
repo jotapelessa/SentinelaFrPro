@@ -1,12 +1,12 @@
 ---
 source_file: "implementation_plan.md"
 type: "document"
-community: "settings/page.tsx"
+community: "Resgate do Sistema: Solução Final para o Vídeo do Telegram (v060.4)"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/settings/pagetsx
+  - community/Resgate_do_Sistema_Solução_Final_para_o_Vídeo_do_Telegram_v0604
 ---
 
 # implementation_plan.md
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Resgate do Sistema Solução Final para o Vídeo do Telegram (v060.4)]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/settings/pagetsx
+#graphify/document #graphify/EXTRACTED #community/Resgate_do_Sistema_Solução_Final_para_o_Vídeo_do_Telegram_v0604

@@ -12,8 +12,9 @@ tags:
 # sync_cameras_from_frigate()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
 - [[Camera_2]] - `calls` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[Deep synchronization Reads all active cameras from Frigate NVR API and creates…]] - `rationale_for` [EXTRACTED]
 - [[Request_3]] - `references` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]

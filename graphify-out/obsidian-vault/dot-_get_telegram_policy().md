@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L59"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # ._get_telegram_policy()
@@ -17,4 +17,4 @@ tags:
 - [[Dynamically loads live Telegram settings with 30s in-memory cache.]] - `rationale_for` [EXTRACTED]
 - [[MQTTService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

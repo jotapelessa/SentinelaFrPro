@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # SharedPreferences
@@ -14,4 +14,4 @@ tags:
 - [[SentinelaPreferences]] - `references` [EXTRACTED]
 - [[SentinelaPreferences.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

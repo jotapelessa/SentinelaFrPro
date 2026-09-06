@@ -12,7 +12,8 @@ tags:
 # toggle_camera_pause()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[Request_3]] - `references` [EXTRACTED]
 - [[Toggles camera activity state (Pause  Resume  Standby). When paused…]] - `rationale_for` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]

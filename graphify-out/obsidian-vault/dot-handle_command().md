@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L482"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # .handle_command()
@@ -21,4 +21,4 @@ tags:
 - [[Processes interactive bot commands received via Telegram chat.]] - `rationale_for` [EXTRACTED]
 - [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

@@ -1,24 +1,29 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "FrigateBridgeService"
+community: "compilerOptions"
 location: "L3"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FrigateBridgeService
+  - community/compilerOptions
 ---
 
 # CameraItem
 
 ## Connections
-- [[dot-onCreate()_2]] - `calls` [EXTRACTED]
+- [[dot-getCameras()]] - `calls` [EXTRACTED]
+- [[dot-onCreate()]] - `calls` [EXTRACTED]
 - [[CameraCardMobile()]] - `references` [EXTRACTED]
 - [[FullScreenCameraDialog()]] - `references` [EXTRACTED]
 - [[MainActivity.kt]] - `imports` [EXTRACTED]
 - [[MobileGridScreen()]] - `references` [EXTRACTED]
 - [[MobileGridScreen.kt]] - `imports` [EXTRACTED]
 - [[Models.kt]] - `contains` [EXTRACTED]
+- [[PhoneCameraStreamCard()]] - `references` [EXTRACTED]
+- [[PhoneLiveCamerasTab()]] - `references` [EXTRACTED]
+- [[PhoneZoomCameraDialog()]] - `references` [EXTRACTED]
+- [[SmartphoneYouTubeScreen()]] - `references` [EXTRACTED]
 - [[TvCameraCard()]] - `references` [EXTRACTED]
 - [[TvDesignTokens.kt]] - `imports` [EXTRACTED]
 - [[TvFullScreenCameraDialog()]] - `references` [EXTRACTED]
@@ -27,4 +32,4 @@ tags:
 - [[TvNetflixScreen()]] - `references` [EXTRACTED]
 - [[TvNetflixScreen.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

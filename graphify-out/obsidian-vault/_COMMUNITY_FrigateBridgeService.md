@@ -1,32 +1,37 @@
 ---
 type: community
-cohesion: 0.27
-members: 17
+cohesion: 0.13
+members: 22
 ---
 
 # FrigateBridgeService
 
-**Cohesion:** 0.27 - loosely connected
-**Members:** 17 nodes
+**Cohesion:** 0.13 - loosely connected
+**Members:** 22 nodes
 
 ## Members
-- [[dot-getGo2rtcFrameUrl()]] - code - android/app/src/main/java/com/sentinela/pro/SentinelaConfig.kt
-- [[dot-getSnapshotUrl()]] - code - android/app/src/main/java/com/sentinela/pro/SentinelaConfig.kt
-- [[CameraCardMobile()]] - code - android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt
-- [[CameraItem]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[ContentScale]] - code
-- [[FullScreenCameraDialog()]] - code - android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt
-- [[MobileGridScreen()]] - code - android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt
-- [[MobileGridScreen.kt]] - code - android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt
-- [[Modifier_2]] - code
-- [[SeamlessCameraImage()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt
-- [[SeamlessCameraImage.kt]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt
-- [[SentinelaConfig]] - code - android/app/src/main/java/com/sentinela/pro/SentinelaConfig.kt
-- [[SentinelaConfig.kt]] - code - android/app/src/main/java/com/sentinela/pro/SentinelaConfig.kt
-- [[TvCameraCard()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt
-- [[TvFullScreenCameraDialog()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt
-- [[TvLeanbackGrid()]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt
-- [[TvLeanbackGrid.kt]] - code - android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt
+- [[dot-__init__()_2]] - code - backend/app/services/frigate_bridge.py
+- [[dot-_has_audio_stream()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-_probe_video_info()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-check_connectivity()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-get_connectivity_logs()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-get_live_snapshot()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-get_video_duration()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-has_video_stream()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-log_probe()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-record_live_video()]] - code - backend/app/services/frigate_bridge.py
+- [[dot-transcode_to_30fps()]] - code - backend/app/services/frigate_bridge.py
+- [[Accurately extracts real playback duration of video_bytes using ffprobe in ~2ms.]] - rationale - backend/app/services/frigate_bridge.py
+- [[Any_3]] - code
+- [[Captures a live video clip directly from the camera stream with constant 30…]] - rationale - backend/app/services/frigate_bridge.py
+- [[Checks whether the file contains an audio stream.]] - rationale - backend/app/services/frigate_bridge.py
+- [[FrigateBridgeService]] - code - backend/app/services/frigate_bridge.py
+- [[Performs deep health check of all Frigate & go2rtc communication channels with…]] - rationale - backend/app/services/frigate_bridge.py
+- [[Probes average frame rate, duration, width and height of a video file.]] - rationale - backend/app/services/frigate_bridge.py
+- [[Retrieves a live JPEG frame at nativemain-stream resolution using a multi-…]] - rationale - backend/app/services/frigate_bridge.py
+- [[Robust H.264AAC constant-frame-rate preparation for Telegram & mobile…]] - rationale - backend/app/services/frigate_bridge.py
+- [[Verifies with ffprobe that the MP4 contains at least one valid video stream and…]] - rationale - backend/app/services/frigate_bridge.py
+- [[frigate_bridge.py]] - code - backend/app/services/frigate_bridge.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -36,18 +41,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 8 edges to [[_COMMUNITY_dependencies]]
-- 6 edges to [[_COMMUNITY_TvDesignTokens.kt]]
-- 3 edges to [[_COMMUNITY_compile_apk.sh]]
-- 3 edges to [[_COMMUNITY_devices.py]]
-- 2 edges to [[_COMMUNITY_PiPGatewayService]]
-- 1 edge to [[_COMMUNITY_compilerOptions_1]]
-- 1 edge to [[_COMMUNITY_ScannerService]]
-- 1 edge to [[_COMMUNITY_apitelemetry.py]]
+- 1 edge to [[_COMMUNITY_events.py]]
 
 ## Top bridge nodes
-- [[SeamlessCameraImage()]] - degree 19, connects to 4 communities
-- [[CameraItem]] - degree 14, connects to 4 communities
-- [[SentinelaConfig]] - degree 10, connects to 3 communities
-- [[ContentScale]] - degree 6, connects to 2 communities
-- [[SentinelaConfig.kt]] - degree 3, connects to 2 communities
+- [[frigate_bridge.py]] - degree 2, connects to 1 community

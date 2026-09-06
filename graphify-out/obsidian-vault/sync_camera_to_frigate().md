@@ -12,7 +12,7 @@ tags:
 # sync_camera_to_frigate()
 
 ## Connections
-- [[Camera_2]] - `references` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[add_camera()]] - `calls` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]
 - [[get_frigate_config_path()]] - `calls` [EXTRACTED]

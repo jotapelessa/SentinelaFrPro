@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "rationale"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L203"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # Probes average frame rate, duration, width and height of a video file.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-_probe_video_info()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/FrigateBridgeService

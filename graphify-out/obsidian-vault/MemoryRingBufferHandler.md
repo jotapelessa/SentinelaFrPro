@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/core/logging_handler.py"
 type: "code"
-community: "backup/page.tsx"
+community: "MemoryRingBufferHandler"
 location: "L19"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/backup/pagetsx
+  - community/MemoryRingBufferHandler
 ---
 
 # MemoryRingBufferHandler
@@ -17,4 +17,4 @@ tags:
 - [[logging_handler.py]] - `contains` [EXTRACTED]
 - [[main.py]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/backup/pagetsx
+#graphify/code #graphify/EXTRACTED #community/MemoryRingBufferHandler

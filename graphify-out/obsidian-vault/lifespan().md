@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/main.py"
 type: "code"
-community: "manifest.json"
+community: "FastAPI"
 location: "L36"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/manifestjson
+  - community/FastAPI
 ---
 
 # lifespan()
@@ -16,4 +16,4 @@ tags:
 - [[init_db()]] - `calls` [EXTRACTED]
 - [[main.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/manifestjson
+#graphify/code #graphify/EXTRACTED #community/FastAPI

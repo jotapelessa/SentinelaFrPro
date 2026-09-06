@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telemetry.py"
 type: "rationale"
-community: "🛡️ Sentinela Frigate Pro"
+community: "TelemetryService"
 location: "L168"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/_Sentinela_Frigate_Pro
+  - community/TelemetryService
 ---
 
 # Provides an exhaustive statistical overview of the entire system.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-get_detailed_stats()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro
+#graphify/rationale #graphify/EXTRACTED #community/TelemetryService

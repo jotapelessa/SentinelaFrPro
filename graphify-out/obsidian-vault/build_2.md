@@ -1,12 +1,12 @@
 ---
-source_file: "frontend/package.json"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "code"
-community: "graphify.js"
-location: "L7"
+community: "dependencies"
+location: "L8"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/graphifyjs
+  - community/dependencies
 ---
 
 # build
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[scripts_2]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/graphifyjs
+#graphify/code #graphify/EXTRACTED #community/dependencies

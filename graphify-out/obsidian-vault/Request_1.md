@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # Request
@@ -26,4 +26,4 @@ tags:
 - [[update_device_permissions()]] - `references` [EXTRACTED]
 - [[update_device_status()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/devicespy

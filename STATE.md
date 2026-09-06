@@ -39,19 +39,19 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
   - **AC-028 (Watchdog de Auto-Reconexão e Anti-Congelamento)**: Implementado no `WebRTCPlayer.tsx` heartbeat periódico e tolerância inteligente a stalls com auto-recarregamento isolado e recuperação visual suave, eliminando congelamento em TVs, APKs e Web App.
   - **AC-029 (Pipeline HD Nativo Prioritário para Snapshots e Thumbnails)**: Priorização do frame de resolução nativa full-sensor (`/go2rtc/api/frame.jpeg`) no `WebRTCPlayer.tsx`, `CameraMosaic.tsx` e `frigate_bridge.py`, deixando o detect stream recortado de 360p do Frigate apenas como último recurso de fallback.
   - **AC-030 (Pipeline Resiliente de Clipes CFR com Áudio AAC)**: Validação e transcodificação com reconstrução de timestamps PTS (`setpts=N/(FPS*TB)`), preservação de áudio sincronizado AAC e reenvio exponencial no `frigate_bridge.py` e `mqtt_service.py`.
-  - **AC-031 (Persistência Atômica, Blocos Completos e Sincronização Dinâmica no go2rtc)**:
-    - **Causa Raiz Resolvida**: Câmeras novas descobertas pelo scanner não recebiam blocos obrigatórios de gravação, snapshot e IA no Frigate (`record`, `snapshots`, `objects`, `filters`, `motion`), além de sofrerem com falha de escrita caso o path do config.yml não estivesse no diretório raiz e purges prematuros no `list_cameras`.
-    - **Solução de Lentidão na Detecção da Nova Câmera (192.168.1.136)**:
-      - O stream da câmera no go2rtc estava apontando para uma porta/fluxo incorreto (1935 em vez de 8554/live), e os inputs ffmpeg do Frigate estavam tentando conectar diretamente ao IP remoto sem passar pelo restream interno de baixa latência (`rtsp://127.0.0.1:8554/camera_secundaria`).
-      - Corrigido o mapeamento para que o Frigate consuma o restream local do go2rtc com o preset `preset-rtsp-restream` e aceleração de decodificação por hardware Intel QSV (`preset-intel-qsv-h264`).
-      - A velocidade de inferência do detector OpenVINO (`ov`) estabilizou em 13-15ms por quadro, e a taxa de captura de quadros para IA subiu imediatamente para 5.0-5.1 FPS consistentes, sem perda de quadros (`skipped_fps: 0.0`).
-    - **Solução Arquitetural Implementada**:
-      1. Unificação da configuração em `sync_camera_to_frigate` no `cameras.py`: tanto câmeras novas quanto existentes recebem bloco completo com `ffmpeg` (inputs isolados para detect em sub-stream e record em main-stream H.264), `detect` (640x360@5fps), `record` (sem chaves legadas), `snapshots`, `objects` e `review`.
-      2. Registro dinâmico de stream no go2rtc via `PUT /api/streams?name={target_cam_key}&src={rtsp}` em tempo real, permitindo streaming WebRTC instantâneo (<100ms) sem aguardar o restart completo do Frigate.
-      3. `get_frigate_config_path` aprimorado com varredura resiliente em todos os diretórios do container e do host, além de integração com `/api/config/save?save_option=restart` da API do Frigate para garantia de consistência.
-      4. Proteção contra purge indevido no banco SQLite: câmeras ativas (`enabled == True`) nunca são descartadas automaticamente por descompassos momentâneos de polling.
+  - **AC-031 (Persistência Atômica, Resolução do Erro 404 e Otimização de Detecção)**:
+    - **Diagnóstico da Câmera Nova (`192.168.1.136:8554/live`)**:
+      - A análise profunda via `ffprobe` confirmou que a transmissão da câmera possui **qualidade técnica excelente**: codec H.264 High Profile, resolução Full HD 1080p (1920x1080), framerate fluido de 29.9 FPS progressivo, sem perda de pacotes e probe score 100%. A câmera não apresenta transmissão defeituosa ou de baixa qualidade.
+    - **Causa Raiz do Erro 404 nos Logs do Frigate / FFmpeg**:
+      - O erro `[in#0 @ ...] Error opening input: Server returned 404 Not Found rtsp://127.0.0.1:8554/camera_principal` ocorria porque a câmera antiga `camera_principal` (`192.168.1.6:1935`) estava fisicamente offline ou inacessível na porta 1935.
+      - Quando o upstream RTSP está fora, o go2rtc não registra a rota interna no `:8554`. O watchdog do Frigate tentava continuamente reiniciar o FFmpeg a cada 10 segundos, consumindo ciclos de CPU e poluindo os logs com erros 404.
+      - Solução: Aplicada a pausa/desativação limpa (`enabled: false`) em `camera_principal` via endpoint `/api/cameras/1/pause`, cessando imediatamente os crashes em loop e liberando todos os recursos do NVR para a câmera ativa.
+    - **Resolução da Lentidão na Detecção da Câmera Secundária**:
+      - A detecção de objetos do Frigate é disparada por janelas de movimento. Com o `motion.threshold` legado alto (25~30), variações suaves de cena não ativavam o detector com frequência.
+      - O limiar de movimento foi ajustado com precisão para `motion_threshold: 18` e persistido atomicamente no SQLite e no Frigate.
+      - Resultado imediato nas estatísticas do Frigate (`/api/stats`): a taxa de detecção saltou de 0 FPS para **11.8 FPS**, `camera_fps` cravou em 5.0 FPS sem nenhum frame perdido (`skipped_fps: 0.0`) e inferência no OpenVINO acelerada em **14.5ms**.
 - **Validação Rigorosa onp-spec**: Auditoria executada com sucesso total (`onp-spec audit`), resultando em exit code 0 e 31/31 critérios provados.
-- **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify extract . --code-only` (1.140 nós, 1.847 arestas, 93 comunidades) e exportado para o cofre Obsidian em `graphify-out/obsidian-vault/` (1.233 notas + canvas).
+- **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify update .` (1.331 nós, 2.051 arestas, 101 comunidades) e exportado para o cofre Obsidian em `graphify-out/obsidian-vault/` (1.424 notas + canvas).
 
 ---
 

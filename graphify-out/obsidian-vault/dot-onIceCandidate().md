@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt"
 type: "code"
-community: "SentinelaRepository"
+community: "Observer"
 location: "L45"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/SentinelaRepository
+  - community/Observer
 ---
 
 # .onIceCandidate()
@@ -15,4 +15,4 @@ tags:
 - [[IceCandidate]] - `references` [EXTRACTED]
 - [[Observer]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/SentinelaRepository
+#graphify/code #graphify/EXTRACTED #community/Observer

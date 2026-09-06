@@ -1,18 +1,16 @@
 ---
 type: community
-cohesion: 0.67
-members: 3
+cohesion: 1.00
+members: 1
 ---
 
 # settings.gradle.kts
 
-**Cohesion:** 0.67 - moderately connected
-**Members:** 3 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 1 nodes
 
 ## Members
-- [[AuditLogItem_1]] - code - frontend/src/app/settings/logs/page.tsx
-- [[LogsSettingsPage()]] - code - frontend/src/app/settings/logs/page.tsx
-- [[logspage.tsx]] - code - frontend/src/app/settings/logs/page.tsx
+- [[settings.gradle.kts]] - code - android/settings.gradle.kts
 
 ## Live Query (requires Dataview plugin)
 

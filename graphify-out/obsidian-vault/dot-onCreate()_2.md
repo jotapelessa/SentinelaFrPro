@@ -1,24 +1,22 @@
 ---
-source_file: "android/app/src/main/java/com/sentinela/pro/MainActivity.kt"
+source_file: "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt"
 type: "code"
-community: "compile_apk.sh"
-location: "L27"
+community: "OverlayService"
+location: "L48"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compile_apksh
+  - community/OverlayService
 ---
 
 # .onCreate()
 
 ## Connections
-- [[dot-isTv()]] - `calls` [EXTRACTED]
-- [[Bundle]] - `references` [EXTRACTED]
-- [[CameraItem]] - `calls` [EXTRACTED]
-- [[MainActivity]] - `method` [EXTRACTED]
-- [[SentinelaPreferences]] - `calls` [EXTRACTED]
-- [[SmartphoneYouTubeScreen()]] - `calls` [EXTRACTED]
-- [[TvNetflixScreen()]] - `calls` [EXTRACTED]
-- [[X509TrustManager_2]] - `contains` [EXTRACTED]
+- [[dot-buildNotification()]] - `calls` [EXTRACTED]
+- [[dot-createNotificationChannel()]] - `calls` [EXTRACTED]
+- [[dot-showPiP()]] - `calls` [EXTRACTED]
+- [[OverlayService]] - `method` [EXTRACTED]
+- [[SentinelaPreferences]] - `calls` [INFERRED]
+- [[SentinelaWebSocket]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compile_apksh
+#graphify/code #graphify/EXTRACTED #community/OverlayService

@@ -1,12 +1,12 @@
 ---
 source_file: "test/android-smartphone-app.spec.test.js"
 type: "code"
-community: "setup_ubuntu.sh"
+community: "android-smartphone-app.spec.test.js"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/setup_ubuntush
+  - community/android-smartphone-appspectestjs
 ---
 
 # android-smartphone-app.spec.test.js
@@ -16,4 +16,4 @@ tags:
 - [[repoFile]] - `contains` [EXTRACTED]
 - [[smartphoneScreenFile]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/setup_ubuntush
+#graphify/code #graphify/EXTRACTED #community/android-smartphone-appspectestjs

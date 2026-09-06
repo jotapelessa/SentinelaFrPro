@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/settings/storage/page.tsx"
 type: "code"
-community: "Community 66"
+community: "storage/page.tsx"
 location: "L21"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_66
+  - community/storage/pagetsx
 ---
 
 # StorageSettingsPage()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[storagepage.tsx]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_66
+#graphify/code #graphify/EXTRACTED #community/storage/pagetsx

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt"
 type: "code"
-community: "SentinelaRepository"
+community: "Observer"
 location: "L12"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/SentinelaRepository
+  - community/Observer
 ---
 
 # WebRtcManager
@@ -21,4 +21,4 @@ tags:
 - [[PeerConnectionFactory]] - `references` [EXTRACTED]
 - [[WebRtcManager.kt]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/SentinelaRepository
+#graphify/code #graphify/EXTRACTED #community/Observer

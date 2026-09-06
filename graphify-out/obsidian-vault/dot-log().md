@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/audit_service.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L10"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # .log()
@@ -16,4 +16,4 @@ tags:
 - [[AuditService]] - `method` [EXTRACTED]
 - [[Records an audit log entry in SQLite asynchronously.]] - `rationale_for` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

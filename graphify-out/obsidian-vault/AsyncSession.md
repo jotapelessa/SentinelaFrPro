@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # AsyncSession
@@ -19,4 +19,4 @@ tags:
 - [[list_events()]] - `references` [EXTRACTED]
 - [[sync_events_from_frigate()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

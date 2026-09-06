@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 location: "L858"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # BatchTestRequest
@@ -16,4 +16,4 @@ tags:
 - [[devices.py]] - `contains` [EXTRACTED]
 - [[execute_batch_test()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/devicespy

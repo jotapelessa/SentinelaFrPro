@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "TelegramVaultService"
+community: "ScannerService"
 location: "L481"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/ScannerService
 ---
 
 # .run_full_scan()
@@ -20,4 +20,4 @@ tags:
 - [[Runs comprehensive multi-probe scan discovering ONVIF and RTSP CCTV devices.]] - `rationale_for` [EXTRACTED]
 - [[ScannerService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/ScannerService

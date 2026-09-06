@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # head
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[get_event_clip()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

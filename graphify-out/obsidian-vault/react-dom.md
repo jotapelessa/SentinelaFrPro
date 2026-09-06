@@ -1,18 +1,18 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
+source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
 type: "code"
-community: "TelemetryService"
+community: "dependencies"
 location: "L19"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelemetryService
+  - community/dependencies
 ---
 
 # react-dom
 
 ## Connections
 - [[dependencies]] - `contains` [EXTRACTED]
-- [[react-dom_3]] - `imports` [EXTRACTED]
+- [[react-dom_1]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelemetryService
+#graphify/code #graphify/EXTRACTED #community/dependencies

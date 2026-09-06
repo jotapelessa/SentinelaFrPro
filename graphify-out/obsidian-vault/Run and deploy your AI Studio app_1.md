@@ -1,12 +1,12 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/README.md"
 type: "document"
-community: "sentinela-pro-tv/vite.config.ts"
+community: "Run and deploy your AI Studio app"
 location: "L5"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/sentinela-pro-tv/viteconfigts
+  - community/Run_and_deploy_your_AI_Studio_app
 ---
 
 # Run and deploy your AI Studio app
@@ -15,4 +15,4 @@ tags:
 - [[Run Locally_1]] - `contains` [EXTRACTED]
 - [[sentinela-pro-tvREADME]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/sentinela-pro-tv/viteconfigts
+#graphify/document #graphify/EXTRACTED #community/Run_and_deploy_your_AI_Studio_app

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # android
@@ -14,4 +14,4 @@ tags:
 - [[dot-onPermissionRequest()_1]] - `references` [EXTRACTED]
 - [[OverlayService]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

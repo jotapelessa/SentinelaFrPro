@@ -1,20 +1,17 @@
 ---
 type: community
-cohesion: 0.40
-members: 5
+cohesion: 1.00
+members: 2
 ---
 
 # tailwind.config.ts
 
-**Cohesion:** 0.40 - moderately connected
-**Members:** 5 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 2 nodes
 
 ## Members
-- [[COLORS]] - code - frontend/src/utils/logger.ts
-- [[LogLevel]] - code - frontend/src/utils/logger.ts
-- [[formatTimestamp()]] - code - frontend/src/utils/logger.ts
-- [[logger]] - code - frontend/src/utils/logger.ts
-- [[logger.ts]] - code - frontend/src/utils/logger.ts
+- [[config_1]] - code - frontend/tailwind.config.ts
+- [[tailwind.config.ts]] - code - frontend/tailwind.config.ts
 
 ## Live Query (requires Dataview plugin)
 

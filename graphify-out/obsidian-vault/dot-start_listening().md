@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L500"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # .start_listening()
@@ -17,4 +17,4 @@ tags:
 - [[Connects to MQTT and runs consumer loop with automatic reconnection.]] - `rationale_for` [EXTRACTED]
 - [[MQTTService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

@@ -1,18 +1,18 @@
 ---
 source_file: ""
 type: "code"
-community: "next.config.mjs"
+community: "Models.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/nextconfigmjs
+  - community/Modelskt
 ---
 
 # java
 
 ## Connections
-- [[dot-checkClientTrusted()_2]] - `references` [EXTRACTED]
-- [[dot-checkServerTrusted()_2]] - `references` [EXTRACTED]
-- [[dot-getAcceptedIssuers()_2]] - `references` [EXTRACTED]
+- [[dot-checkClientTrusted()]] - `references` [EXTRACTED]
+- [[dot-checkServerTrusted()]] - `references` [EXTRACTED]
+- [[dot-getAcceptedIssuers()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/nextconfigmjs
+#graphify/code #graphify/EXTRACTED #community/Modelskt

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt"
 type: "code"
-community: "api/telemetry.py"
+community: "SentinelaRepository"
 location: "L177"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/SentinelaRepository
 ---
 
 # .registerOrHeartbeat()
@@ -17,7 +17,8 @@ tags:
 - [[dot-openConnection()]] - `calls` [EXTRACTED]
 - [[dot-pingServer()]] - `calls` [EXTRACTED]
 - [[dot-runSpeedAndPingTest()]] - `calls` [EXTRACTED]
-- [[SentinelaPreferences_1]] - `references` [EXTRACTED]
+- [[SentinelaPreferences]] - `references` [EXTRACTED]
 - [[SentinelaRepository]] - `method` [EXTRACTED]
+- [[put]] - `calls` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L16"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # FrigateBridgeService
@@ -25,4 +25,4 @@ tags:
 - [[dot-transcode_to_30fps()]] - `method` [EXTRACTED]
 - [[frigate_bridge.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

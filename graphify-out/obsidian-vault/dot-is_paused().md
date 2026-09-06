@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L76"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # .is_paused()
@@ -17,4 +17,4 @@ tags:
 - [[dot-send_alert_video()]] - `calls` [EXTRACTED]
 - [[TelegramVaultService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

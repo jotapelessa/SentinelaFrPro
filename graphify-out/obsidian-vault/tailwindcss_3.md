@@ -1,19 +1,17 @@
 ---
 source_file: "frontend/package.json"
 type: "concept"
-community: "dependencies"
+community: "Histórias"
 location: "L26"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/Histórias
 ---
 
 # tailwindcss
 
 ## Connections
-- [[tailwindcss]] - `imports` [EXTRACTED]
-- [[tailwindcss_1]] - `imports` [EXTRACTED]
 - [[tailwindcss_2]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/dependencies
+#graphify/concept #graphify/EXTRACTED #community/Histórias

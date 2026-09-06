@@ -1,27 +1,23 @@
 ---
 type: community
-cohesion: 0.17
-members: 12
+cohesion: 0.39
+members: 8
 ---
 
 # TvAudioManager
 
-**Cohesion:** 0.17 - loosely connected
-**Members:** 12 nodes
+**Cohesion:** 0.39 - loosely connected
+**Members:** 8 nodes
 
 ## Members
-- [[README]] - document - README.md
-- [[⚡ Principais Recursos do Servidor & NVR]] - document - README.md
-- [[🎯 Visão Geral]] - document - README.md
-- [[📄 Licença]] - document - README.md
-- [[📥 Download dos APKs Oficiais (`v001.000.000.087`)]] - document - README.md
-- [[📱 2. Android Smartphone (Layout Vertical Estilo YouTube)]] - document - README.md
-- [[📱 Aplicativos Nativos Android (`v001.000.000.087`)]] - document - README.md
-- [[📺 1. Android TV 55 (Layout Horizontal Estilo Netflix)]] - document - README.md
-- [[🖥️ Como Atualizar o Servidor Ubuntu]] - document - README.md
-- [[🗺️ Mapa de Portas e Serviços]] - document - README.md
-- [[🚀 Como Compilar os APKs no GitHub Codespaces]] - document - README.md
-- [[🛡️ Sentinela Frigate Pro]] - document - README.md
+- [[dot-constructor()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
+- [[dot-getContext()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
+- [[dot-playAlertSound()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
+- [[dot-playBackSound()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
+- [[dot-playFocusTick()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
+- [[dot-playSelectSound()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
+- [[dot-setEnabled()]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
+- [[TvAudioManager]] - code - ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts
 
 ## Live Query (requires Dataview plugin)
 
@@ -29,3 +25,9 @@ members: 12
 TABLE source_file, type FROM #community/TvAudioManager
 SORT file.name ASC
 ```
+
+## Connections to other communities
+- 1 edge to [[_COMMUNITY_sentinela-pro-tvsrcApp.tsx]]
+
+## Top bridge nodes
+- [[TvAudioManager]] - degree 8, connects to 1 community

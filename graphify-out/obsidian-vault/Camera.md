@@ -1,26 +1,26 @@
 ---
-source_file: "backend/app/db/models.py"
+source_file: "frontend/src/store/useSentinelaStore.ts"
 type: "code"
-community: "TvNetflixScreen.kt"
-location: "L5"
+community: "useSentinelaStore"
+location: "L70"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/useSentinelaStore
 ---
 
 # Camera
 
 ## Connections
-- [[Base]] - `inherits` [EXTRACTED]
-- [[MQTTService]] - `uses` [INFERRED]
-- [[PiPGatewayService]] - `uses` [INFERRED]
-- [[devices.py]] - `imports` [EXTRACTED]
-- [[export_backup()]] - `uses` [INFERRED]
-- [[get_device_permitted_cameras()]] - `uses` [INFERRED]
-- [[models.py]] - `contains` [EXTRACTED]
-- [[mqtt_service.py]] - `imports` [EXTRACTED]
-- [[pip_gateway.py]] - `imports` [EXTRACTED]
-- [[settings.py]] - `imports` [EXTRACTED]
+- [[CameraConfigModal.tsx]] - `imports` [EXTRACTED]
+- [[CameraConfigModalProps]] - `references` [EXTRACTED]
+- [[CameraMosaic.tsx]] - `imports` [EXTRACTED]
+- [[TimelinePlayback.tsx]] - `imports` [EXTRACTED]
+- [[TimelinePlaybackProps]] - `references` [EXTRACTED]
+- [[WebRTCPlayer.tsx]] - `imports` [EXTRACTED]
+- [[WebRTCPlayerProps]] - `references` [EXTRACTED]
+- [[ZoneCanvasModal.tsx]] - `imports` [EXTRACTED]
+- [[ZoneCanvasModalProps]] - `references` [EXTRACTED]
+- [[useSentinelaStore.ts]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

@@ -1,14 +1,14 @@
 ---
 source_file: "scripts/apply_bc_config.py"
 type: "code"
-community: "Community 89"
+community: "apply_bc_config.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_89
+  - community/apply_bc_configpy
 ---
 
 # apply_bc_config.py
 
-#graphify/code #graphify/EXTRACTED #community/Community_89
+#graphify/code #graphify/EXTRACTED #community/apply_bc_configpy

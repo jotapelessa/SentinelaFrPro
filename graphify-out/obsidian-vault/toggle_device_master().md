@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 location: "L873"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # toggle_device_master()
@@ -20,4 +20,4 @@ tags:
 - [[devices.py]] - `contains` [EXTRACTED]
 - [[post_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/devicespy

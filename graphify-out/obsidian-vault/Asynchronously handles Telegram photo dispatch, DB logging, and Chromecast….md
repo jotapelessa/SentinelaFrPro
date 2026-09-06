@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "rationale"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L264"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-_dispatch_background_alert_tasks()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/rationale #graphify/EXTRACTED #community/eventspy

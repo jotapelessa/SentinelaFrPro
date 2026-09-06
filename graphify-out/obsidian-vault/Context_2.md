@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "SentinelaRepository.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/SentinelaRepositorykt
 ---
 
 # Context
@@ -13,6 +13,5 @@ tags:
 ## Connections
 - [[dot-pingServer()]] - `references` [EXTRACTED]
 - [[SentinelaRepository.kt]] - `imports` [EXTRACTED]
-- [[SmartphoneYouTubeScreen.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepositorykt

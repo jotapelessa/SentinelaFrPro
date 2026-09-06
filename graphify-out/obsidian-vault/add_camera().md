@@ -12,8 +12,9 @@ tags:
 # add_camera()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
 - [[Camera_2]] - `calls` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[CameraCreate]] - `references` [EXTRACTED]
 - [[Request_3]] - `references` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]

@@ -61,10 +61,10 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 8 edges to [[_COMMUNITY_TvNetflixScreen.kt]]
-- 3 edges to [[_COMMUNITY_compilerOptions]]
-- 2 edges to [[_COMMUNITY_useSentinelaStore]]
-- 2 edges to [[_COMMUNITY_manifest.json]]
+- 8 edges to [[_COMMUNITY_events.py]]
+- 3 edges to [[_COMMUNITY_TelegramVaultService]]
+- 2 edges to [[_COMMUNITY_devices.py]]
+- 2 edges to [[_COMMUNITY_FastAPI]]
 
 ## Top bridge nodes
 - [[settings.py]] - degree 33, connects to 3 communities

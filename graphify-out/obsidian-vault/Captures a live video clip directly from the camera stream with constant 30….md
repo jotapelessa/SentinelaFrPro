@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "rationale"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L427"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # Captures a live video clip directly from the camera stream with constant 30…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-record_live_video()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/FrigateBridgeService

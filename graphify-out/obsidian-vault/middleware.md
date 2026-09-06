@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "manifest.json"
+community: "FastAPI"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/manifestjson
+  - community/FastAPI
 ---
 
 # middleware
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[audit_http_requests()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/manifestjson
+#graphify/code #graphify/EXTRACTED #community/FastAPI

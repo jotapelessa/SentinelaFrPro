@@ -1,28 +1,26 @@
 ---
 type: community
-cohesion: 0.15
-members: 13
+cohesion: 0.18
+members: 11
 ---
 
 # dependencies
 
-**Cohesion:** 0.15 - loosely connected
-**Members:** 13 nodes
+**Cohesion:** 0.18 - loosely connected
+**Members:** 11 nodes
 
 ## Members
-- [[@typesexpress]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[@typesexpress_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[@typesexpress_2]] - concept - ai_studio_imports/sentinela-pro-tv/package.json
-- [[devDependencies_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[tailwindcss]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[tailwindcss_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[tailwindcss_2]] - code - frontend/package.json
-- [[tailwindcss_3]] - concept - frontend/package.json
-- [[tsx]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[tsx_1]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[vite]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[vite_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[vite_2]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[build_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[clean_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[dev_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[lint_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[name_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[preview_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[private_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[scripts_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[sentinela-pro-mobile-nvrpackage.json]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[type_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
+- [[version_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -32,14 +30,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 4 edges to [[_COMMUNITY_X509TrustManager]]
-- 3 edges to [[_COMMUNITY_3. Catálogo de Endpoints da API REST (`api`)]]
-- 1 edge to [[_COMMUNITY_Observer]]
-- 1 edge to [[_COMMUNITY_SentinelaMobileTokens.kt]]
+- 1 edge to [[_COMMUNITY_dependencies]]
+- 1 edge to [[_COMMUNITY_Histórias_2]]
 
 ## Top bridge nodes
-- [[devDependencies_1]] - degree 9, connects to 3 communities
-- [[vite]] - degree 2, connects to 1 community
-- [[tailwindcss_1]] - degree 2, connects to 1 community
-- [[@typesexpress_1]] - degree 2, connects to 1 community
-- [[tailwindcss_2]] - degree 2, connects to 1 community
+- [[sentinela-pro-mobile-nvrpackage.json]] - degree 7, connects to 2 communities

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "manifest.json"
+community: "FastAPI"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/manifestjson
+  - community/FastAPI
 ---
 
 # FastAPI
@@ -21,4 +21,4 @@ tags:
 - [[settings.py]] - `imports_from` [EXTRACTED]
 - [[ws.py]] - `imports_from` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/manifestjson
+#graphify/code #graphify/EXTRACTED #community/FastAPI

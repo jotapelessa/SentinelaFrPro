@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "TelegramVaultService"
+community: "ScannerService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/ScannerService
 ---
 
 # Any
@@ -18,4 +18,4 @@ tags:
 - [[dot-scan_subnet_cctv_ports()]] - `references` [EXTRACTED]
 - [[dot-verify_rtsp_stream()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/ScannerService

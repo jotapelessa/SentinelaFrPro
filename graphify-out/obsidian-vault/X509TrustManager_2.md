@@ -1,12 +1,12 @@
 ---
-source_file: "android/app/src/main/java/com/sentinela/pro/MainActivity.kt"
+source_file: "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt"
 type: "code"
-community: "next.config.mjs"
-location: "L50"
+community: "X509Certificate"
+location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/nextconfigmjs
+  - community/X509Certificate
 ---
 
 # X509TrustManager
@@ -15,7 +15,7 @@ tags:
 - [[dot-checkClientTrusted()_2]] - `method` [EXTRACTED]
 - [[dot-checkServerTrusted()_2]] - `method` [EXTRACTED]
 - [[dot-getAcceptedIssuers()_2]] - `method` [EXTRACTED]
-- [[dot-onCreate()_2]] - `contains` [EXTRACTED]
+- [[dot-onCreate()_1]] - `contains` [EXTRACTED]
 - [[X509TrustManager_5]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/nextconfigmjs
+#graphify/code #graphify/EXTRACTED #community/X509Certificate

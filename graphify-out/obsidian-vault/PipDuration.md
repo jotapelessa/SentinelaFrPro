@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "logs/page.tsx"
+community: "PipDuration"
 location: "L110"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/logs/pagetsx
+  - community/PipDuration
 ---
 
 # PipDuration
@@ -23,4 +23,4 @@ tags:
 - [[Models.kt]] - `contains` [EXTRACTED]
 - [[SentinelaPreferences]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/logs/pagetsx
+#graphify/code #graphify/EXTRACTED #community/PipDuration

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "telegram/page.tsx"
+community: "run_server_benchmark"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/telegram/pagetsx
+  - community/run_server_benchmark
 ---
 
 # BaseModel
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[BenchmarkPayload]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/telegram/pagetsx
+#graphify/code #graphify/EXTRACTED #community/run_server_benchmark

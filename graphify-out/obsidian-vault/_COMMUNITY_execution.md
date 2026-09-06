@@ -10,8 +10,8 @@ members: 2
 **Members:** 2 nodes
 
 ## Members
-- [[NOTE This file should not be edited]] - rationale - frontend/next-env.d.ts
-- [[next-env.d.ts_1]] - code - frontend/next-env.d.ts
+- [[Diretrizes Operacionais do Agente (Antigravity Rules)]] - document - .agents/rules/execution.md
+- [[execution]] - document - .agents/rules/execution.md
 
 ## Live Query (requires Dataview plugin)
 

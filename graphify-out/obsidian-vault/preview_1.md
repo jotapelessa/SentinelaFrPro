@@ -1,17 +1,17 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "code"
-community: "logger.ts"
+community: "dependencies"
 location: "L9"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/loggerts
+  - community/dependencies
 ---
 
 # preview
 
 ## Connections
-- [[scripts_1]] - `contains` [EXTRACTED]
+- [[scripts_2]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/loggerts
+#graphify/code #graphify/EXTRACTED #community/dependencies

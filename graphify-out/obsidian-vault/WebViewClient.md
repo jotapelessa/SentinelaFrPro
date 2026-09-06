@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt"
 type: "code"
-community: "PiPGatewayService"
+community: "MseCameraView"
 location: "L161"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/MseCameraView
 ---
 
 # WebViewClient
@@ -18,4 +18,4 @@ tags:
 - [[MseCameraView()]] - `contains` [EXTRACTED]
 - [[WebViewClient_2]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/MseCameraView

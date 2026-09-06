@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "cameras.py"
+community: "Tasks: Sentinela Core Ecosystem (Web, Mobile & Orquestrador)"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/cameraspy
+  - community/Tasks_Sentinela_Core_Ecosystem_Web_Mobile__Orquestrador
 ---
 
 # post
@@ -20,4 +20,4 @@ tags:
 - [[toggle_camera_fallback()]] - `references` [EXTRACTED]
 - [[toggle_camera_pause()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/cameraspy
+#graphify/code #graphify/EXTRACTED #community/Tasks_Sentinela_Core_Ecosystem_Web_Mobile__Orquestrador

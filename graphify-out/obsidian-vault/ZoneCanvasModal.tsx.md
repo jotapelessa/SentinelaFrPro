@@ -1,19 +1,19 @@
 ---
 source_file: "frontend/src/components/ZoneCanvasModal.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # ZoneCanvasModal.tsx
 
 ## Connections
 - [[AVAILABLE_TRACK_OBJECTS]] - `contains` [EXTRACTED]
-- [[Camera_1]] - `imports` [EXTRACTED]
+- [[Camera]] - `imports` [EXTRACTED]
 - [[CameraConfigModal.tsx]] - `imports_from` [EXTRACTED]
 - [[Point]] - `contains` [EXTRACTED]
 - [[ZONE_COLORS]] - `contains` [EXTRACTED]
@@ -22,4 +22,4 @@ tags:
 - [[ZoneItem]] - `contains` [EXTRACTED]
 - [[useSentinelaStore.ts]] - `imports_from` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

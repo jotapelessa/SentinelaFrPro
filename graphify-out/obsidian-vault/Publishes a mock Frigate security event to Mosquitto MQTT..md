@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/mocks/mock_publisher.py"
 type: "rationale"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L14"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # Publishes a mock Frigate security event to Mosquitto MQTT.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[publish_simulated_event()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/rationale #graphify/EXTRACTED #community/eventspy

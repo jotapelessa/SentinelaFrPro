@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L17"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # .__init__()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[FrigateBridgeService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

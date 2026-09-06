@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "rationale"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L260"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # Checks whether the file contains an audio stream.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-_has_audio_stream()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/FrigateBridgeService

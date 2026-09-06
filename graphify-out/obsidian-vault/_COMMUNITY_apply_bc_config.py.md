@@ -1,17 +1,16 @@
 ---
 type: community
 cohesion: 1.00
-members: 2
+members: 1
 ---
 
 # apply_bc_config.py
 
 **Cohesion:** 1.00 - tightly connected
-**Members:** 2 nodes
+**Members:** 1 nodes
 
 ## Members
-- [[AGENTS]] - document - AGENTS.md
-- [[graphify]] - document - AGENTS.md
+- [[apply_bc_config.py]] - code - scripts/apply_bc_config.py
 
 ## Live Query (requires Dataview plugin)
 

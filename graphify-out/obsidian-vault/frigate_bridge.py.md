@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
-community: "compilerOptions"
+community: "FrigateBridgeService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/FrigateBridgeService
 ---
 
 # frigate_bridge.py
@@ -15,4 +15,4 @@ tags:
 - [[FrigateBridgeService]] - `contains` [EXTRACTED]
 - [[asyncio]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService

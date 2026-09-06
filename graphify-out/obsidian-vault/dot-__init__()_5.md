@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/ws.py"
 type: "code"
-community: "Settings"
+community: "ws.py"
 location: "L14"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Settings
+  - community/wspy
 ---
 
 # .__init__()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[WebSocketManager]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Settings
+#graphify/code #graphify/EXTRACTED #community/wspy

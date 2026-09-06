@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 location: "L714"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # cleanup_all_devices()
@@ -19,4 +19,4 @@ tags:
 - [[delete_1]] - `references` [EXTRACTED]
 - [[devices.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/devicespy

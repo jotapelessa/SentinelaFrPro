@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/settings/backup/page.tsx"
 type: "code"
-community: "Community 64"
+community: "backup/page.tsx"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_64
+  - community/backup/pagetsx
 ---
 
 # backup/page.tsx
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[BackupSettingsPage()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Community_64
+#graphify/code #graphify/EXTRACTED #community/backup/pagetsx

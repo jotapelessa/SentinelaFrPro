@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt"
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 location: "L478"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # .removePiP()
@@ -16,4 +16,4 @@ tags:
 - [[dot-showPiP()]] - `calls` [EXTRACTED]
 - [[OverlayService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

@@ -12,7 +12,8 @@ tags:
 # save_frigate_camera_zones()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[FrigateZonesPayload]] - `references` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]
 - [[get_frigate_config_path()]] - `calls` [EXTRACTED]

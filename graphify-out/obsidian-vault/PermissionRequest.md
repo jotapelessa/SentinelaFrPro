@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "PiPGatewayService"
+community: "MseCameraView"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/MseCameraView
 ---
 
 # PermissionRequest
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[dot-onPermissionRequest()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/MseCameraView

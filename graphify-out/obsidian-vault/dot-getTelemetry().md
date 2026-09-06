@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt"
 type: "code"
-community: "api/telemetry.py"
+community: "SentinelaRepository"
 location: "L392"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/SentinelaRepository
 ---
 
 # .getTelemetry()
@@ -18,4 +18,4 @@ tags:
 - [[TvLogsViewport()]] - `calls` [EXTRACTED]
 - [[TvToolsViewport()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

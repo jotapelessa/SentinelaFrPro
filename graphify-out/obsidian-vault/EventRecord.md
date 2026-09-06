@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/db/models.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L34"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # EventRecord
@@ -25,4 +25,4 @@ tags:
 - [[settings.py]] - `imports` [EXTRACTED]
 - [[sync_events_from_frigate()]] - `uses` [INFERRED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

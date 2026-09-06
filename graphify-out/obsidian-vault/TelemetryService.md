@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telemetry.py"
 type: "code"
-community: "🛡️ Sentinela Frigate Pro"
+community: "TelemetryService"
 location: "L10"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_Sentinela_Frigate_Pro
+  - community/TelemetryService
 ---
 
 # TelemetryService
@@ -21,4 +21,4 @@ tags:
 - [[dot-run_benchmark()]] - `method` [EXTRACTED]
 - [[servicestelemetry.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro
+#graphify/code #graphify/EXTRACTED #community/TelemetryService

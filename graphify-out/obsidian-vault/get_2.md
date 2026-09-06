@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "MseCameraView"
+community: "api/telemetry.py"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/api/telemetrypy
 ---
 
 # get
@@ -19,4 +19,4 @@ tags:
 - [[get_system_diagnostics()]] - `references` [EXTRACTED]
 - [[get_telemetry()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/api/telemetrypy

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/SentinelaPreferences.kt"
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # SentinelaPreferences.kt
@@ -15,4 +15,4 @@ tags:
 - [[SentinelaPreferences]] - `contains` [EXTRACTED]
 - [[SharedPreferences]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

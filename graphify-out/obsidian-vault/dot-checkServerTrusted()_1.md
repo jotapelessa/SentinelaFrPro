@@ -2,7 +2,7 @@
 source_file: "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt"
 type: "code"
 community: "X509Certificate"
-location: "L37"
+location: "L52"
 tags:
   - graphify/code
   - graphify/EXTRACTED

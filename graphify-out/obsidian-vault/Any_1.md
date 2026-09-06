@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "compilerOptions"
+community: "TelegramVaultService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # Any
@@ -15,4 +15,4 @@ tags:
 - [[dot-record_audit()]] - `references` [EXTRACTED]
 - [[dot-test_connection()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TelegramVaultService

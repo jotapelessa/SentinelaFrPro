@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "TelegramVaultService"
+community: "ScannerService"
 location: "L387"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/ScannerService
 ---
 
 # .scan_subnet_cctv_ports()
@@ -18,4 +18,4 @@ tags:
 - [[Concurrently scans CCTV ports with semaphore control, ONVIF SOAP inspection,…]] - `rationale_for` [EXTRACTED]
 - [[ScannerService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/ScannerService

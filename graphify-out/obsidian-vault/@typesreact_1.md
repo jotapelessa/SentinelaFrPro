@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/package.json"
 type: "concept"
-community: "3. Catálogo de Endpoints da API REST (`/api`)"
+community: "Histórias"
 location: "L22"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/3_Catálogo_de_Endpoints_da_API_REST_/api
+  - community/Histórias
 ---
 
 # @types/react
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[@typesreact]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/3_Catálogo_de_Endpoints_da_API_REST_/api
+#graphify/concept #graphify/EXTRACTED #community/Histórias

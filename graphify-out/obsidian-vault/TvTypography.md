@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt"
 type: "code"
-community: "compilerOptions"
+community: "TvDesignTokens.kt"
 location: "L68"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TvDesignTokenskt
 ---
 
 # TvTypography
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[TvDesignTokens.kt]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt"
 type: "code"
-community: "compilerOptions"
+community: "TvDesignTokens.kt"
 location: "L141"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TvDesignTokenskt
 ---
 
 # CameraStatus
@@ -18,4 +18,4 @@ tags:
 - [[STANDBY]] - `case_of` [EXTRACTED]
 - [[TvDesignTokens.kt]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt

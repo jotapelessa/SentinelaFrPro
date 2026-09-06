@@ -1,48 +1,52 @@
 ---
 type: community
-cohesion: 0.10
-members: 33
+cohesion: 0.05
+members: 37
 ---
 
 # compilerOptions
 
-**Cohesion:** 0.10 - loosely connected
-**Members:** 33 nodes
+**Cohesion:** 0.05 - loosely connected
+**Members:** 37 nodes
 
 ## Members
-- [[dot-__init__()_1]] - code - backend/app/services/telegram_vault.py
-- [[dot-apply_watermark()]] - code - backend/app/services/telegram_vault.py
-- [[dot-format_event_message()]] - code - backend/app/services/telegram_vault.py
-- [[dot-get_audit_logs()]] - code - backend/app/services/telegram_vault.py
-- [[dot-get_system_status_text()]] - code - backend/app/services/telegram_vault.py
-- [[dot-handle_command()]] - code - backend/app/services/telegram_vault.py
-- [[dot-is_configured()]] - code - backend/app/services/telegram_vault.py
-- [[dot-is_paused()]] - code - backend/app/services/telegram_vault.py
-- [[dot-load_credentials_from_db()]] - code - backend/app/services/telegram_vault.py
-- [[dot-pause_alerts()]] - code - backend/app/services/telegram_vault.py
-- [[dot-record_audit()]] - code - backend/app/services/telegram_vault.py
-- [[dot-send_alert_photo()]] - code - backend/app/services/telegram_vault.py
-- [[dot-send_alert_video()]] - code - backend/app/services/telegram_vault.py
-- [[dot-send_document()]] - code - backend/app/services/telegram_vault.py
-- [[dot-send_message()]] - code - backend/app/services/telegram_vault.py
-- [[dot-start_polling()]] - code - backend/app/services/telegram_vault.py
-- [[dot-start_polling_task()]] - code - backend/app/services/telegram_vault.py
-- [[dot-test_connection()]] - code - backend/app/services/telegram_vault.py
-- [[Any_1]] - code
-- [[Appends an event to the in-memory Telegram audit trail.]] - rationale - backend/app/services/telegram_vault.py
-- [[Applies a professional HUD watermark on the snapshot with dynamic scaling for…]] - rationale - backend/app/services/telegram_vault.py
-- [[Continuous lightweight long-polling loop for Telegram Bot updates.]] - rationale - backend/app/services/telegram_vault.py
-- [[Dispatches MP4 clip to Telegram using the classic template.]] - rationale - backend/app/services/telegram_vault.py
-- [[Dispatches watermarked snapshot to Telegram using the classic template.]] - rationale - backend/app/services/telegram_vault.py
-- [[Formats real-time telemetry into a rich Telegram status message.]] - rationale - backend/app/services/telegram_vault.py
-- [[Loads Bot Token and Chat ID from database if available, or seeds defaults.]] - rationale - backend/app/services/telegram_vault.py
-- [[Processes interactive bot commands received via Telegram chat.]] - rationale - backend/app/services/telegram_vault.py
-- [[Sends a document (e.g. database backup) to Telegram.]] - rationale - backend/app/services/telegram_vault.py
-- [[Sends a text message to the configured Telegram chat.]] - rationale - backend/app/services/telegram_vault.py
-- [[Spawns or reuses the background polling task. Credentials are read in-place by…]] - rationale - backend/app/services/telegram_vault.py
-- [[TelegramVaultService]] - code - backend/app/services/telegram_vault.py
-- [[Validates bot credentials with Telegram API and sends a confirmation test…]] - rationale - backend/app/services/telegram_vault.py
-- [[telegram_vault.py]] - code - backend/app/services/telegram_vault.py
+- [[DOM_2]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[DOM_1]] - concept - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[ES2022_1]] - concept - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[ES2022]] - concept - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[allowImportingTsExtensions_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[allowImportingTsExtensions]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[allowJs_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[allowJs_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[compilerOptions_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[compilerOptions_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[dom.iterable]] - concept - frontend/tsconfig.json
+- [[experimentalDecorators_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[experimentalDecorators]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[isolatedModules_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[isolatedModules_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[jsx_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[jsx_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[lib_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[lib_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[module_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[module_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[moduleDetection_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[moduleDetection]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[moduleResolution_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[moduleResolution_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[noEmit_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[noEmit_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[paths_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[paths_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[sentinela-pro-mobile-nvrtsconfig.json]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[sentinela-pro-tvtsconfig.json]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[skipLibCheck_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[skipLibCheck_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[target_2]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[target_1]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
+- [[useDefineForClassFields_1]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/tsconfig.json
+- [[useDefineForClassFields]] - code - ai_studio_imports/sentinela-pro-tv/tsconfig.json
 
 ## Live Query (requires Dataview plugin)
 
@@ -52,9 +56,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 3 edges to [[_COMMUNITY_settings.py]]
+- 1 edge to [[_COMMUNITY_compilerOptions_1]]
 
 ## Top bridge nodes
-- [[TelegramVaultService]] - degree 20, connects to 1 community
-- [[dot-load_credentials_from_db()]] - degree 9, connects to 1 community
-- [[telegram_vault.py]] - degree 2, connects to 1 community
+- [[dom.iterable]] - degree 1, connects to 1 community

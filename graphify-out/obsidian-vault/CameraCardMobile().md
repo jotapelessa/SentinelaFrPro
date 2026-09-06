@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt"
 type: "code"
-community: "FrigateBridgeService"
+community: "compilerOptions"
 location: "L136"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FrigateBridgeService
+  - community/compilerOptions
 ---
 
 # CameraCardMobile()
@@ -17,4 +17,4 @@ tags:
 - [[MobileGridScreen.kt]] - `contains` [EXTRACTED]
 - [[SeamlessCameraImage()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

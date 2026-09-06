@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt"
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 location: "L34"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # OverlayService
@@ -15,7 +15,7 @@ tags:
 - [[dot-buildNotification()]] - `method` [EXTRACTED]
 - [[dot-createNotificationChannel()]] - `method` [EXTRACTED]
 - [[dot-onBind()]] - `method` [EXTRACTED]
-- [[dot-onCreate()_1]] - `method` [EXTRACTED]
+- [[dot-onCreate()_2]] - `method` [EXTRACTED]
 - [[dot-onDestroy()]] - `method` [EXTRACTED]
 - [[dot-onStartCommand()]] - `method` [EXTRACTED]
 - [[dot-removePiP()]] - `method` [EXTRACTED]
@@ -33,4 +33,4 @@ tags:
 - [[WindowManager]] - `references` [EXTRACTED]
 - [[android_1]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

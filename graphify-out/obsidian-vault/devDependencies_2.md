@@ -1,25 +1,25 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "code"
-community: "X509TrustManager"
+community: "Histórias"
 location: "L25"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509TrustManager
+  - community/Histórias
 ---
 
 # devDependencies
 
 ## Connections
-- [[@typesexpress_1]] - `contains` [EXTRACTED]
-- [[@typesnode_1]] - `contains` [EXTRACTED]
-- [[autoprefixer_1]] - `contains` [EXTRACTED]
-- [[esbuild_1]] - `contains` [EXTRACTED]
-- [[sentinela-pro-tvpackage.json]] - `contains` [EXTRACTED]
-- [[tailwindcss_1]] - `contains` [EXTRACTED]
+- [[@typesexpress_2]] - `contains` [EXTRACTED]
+- [[@typesnode_4]] - `contains` [EXTRACTED]
+- [[autoprefixer_4]] - `contains` [EXTRACTED]
+- [[esbuild_2]] - `contains` [EXTRACTED]
+- [[sentinela-pro-mobile-nvrpackage.json]] - `contains` [EXTRACTED]
+- [[tailwindcss_4]] - `contains` [EXTRACTED]
 - [[tsx_2]] - `contains` [EXTRACTED]
-- [[typescript_1]] - `contains` [EXTRACTED]
+- [[typescript_4]] - `contains` [EXTRACTED]
 - [[vite_4]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509TrustManager
+#graphify/code #graphify/EXTRACTED #community/Histórias

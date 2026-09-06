@@ -1,29 +1,27 @@
 ---
 type: community
-cohesion: 0.23
-members: 14
+cohesion: 0.17
+members: 12
 ---
 
 # 🛡️ Sentinela Frigate Pro
 
-**Cohesion:** 0.23 - loosely connected
-**Members:** 14 nodes
+**Cohesion:** 0.17 - loosely connected
+**Members:** 12 nodes
 
 ## Members
-- [[dot-__init__()_4]] - code - backend/app/services/telemetry.py
-- [[dot-get_cpu_temperature()]] - code - backend/app/services/telemetry.py
-- [[dot-get_detailed_stats()]] - code - backend/app/services/telemetry.py
-- [[dot-get_telemetry_snapshot()]] - code - backend/app/services/telemetry.py
-- [[dot-get_top_processes()]] - code - backend/app/services/telemetry.py
-- [[dot-get_uptime_string()]] - code - backend/app/services/telemetry.py
-- [[dot-run_benchmark()]] - code - backend/app/services/telemetry.py
-- [[Any_5]] - code
-- [[Executes real stressbenchmark workloads on the server CPUiGPU and returns…]] - rationale - backend/app/services/telemetry.py
-- [[Provides an exhaustive statistical overview of the entire system.]] - rationale - backend/app/services/telemetry.py
-- [[Reads CPU temperature from Linux thermal zones (sysclassthermal or psutil).…]] - rationale - backend/app/services/telemetry.py
-- [[Scans Linux processes and returns top consumers of CPU and RAM.]] - rationale - backend/app/services/telemetry.py
-- [[TelemetryService]] - code - backend/app/services/telemetry.py
-- [[servicestelemetry.py]] - code - backend/app/services/telemetry.py
+- [[README]] - document - README.md
+- [[⚡ Principais Recursos do Servidor & NVR]] - document - README.md
+- [[🎯 Visão Geral]] - document - README.md
+- [[📄 Licença]] - document - README.md
+- [[📥 Download dos APKs Oficiais (`v001.000.000.087`)]] - document - README.md
+- [[📱 2. Android Smartphone (Layout Vertical Estilo YouTube)]] - document - README.md
+- [[📱 Aplicativos Nativos Android (`v001.000.000.087`)]] - document - README.md
+- [[📺 1. Android TV 55 (Layout Horizontal Estilo Netflix)]] - document - README.md
+- [[🖥️ Como Atualizar o Servidor Ubuntu]] - document - README.md
+- [[🗺️ Mapa de Portas e Serviços]] - document - README.md
+- [[🚀 Como Compilar os APKs no GitHub Codespaces]] - document - README.md
+- [[🛡️ Sentinela Frigate Pro]] - document - README.md
 
 ## Live Query (requires Dataview plugin)
 

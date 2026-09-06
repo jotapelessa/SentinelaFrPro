@@ -12,7 +12,8 @@ tags:
 # get_camera_stream_info()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[Probes the camera's main and sub RTSP streams and returns their codec,…]] - `rationale_for` [EXTRACTED]
 - [[_probe_rtsp_stream_info()]] - `indirect_call` [INFERRED]
 - [[cameras.py]] - `contains` [EXTRACTED]

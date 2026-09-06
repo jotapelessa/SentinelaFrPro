@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "cameras.py"
+community: "Tasks: Aplicativo Android Smartphone (Sentinela Mobile YouTube Edition)"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/cameraspy
+  - community/Tasks_Aplicativo_Android_Smartphone_Sentinela_Mobile_YouTube_Edition
 ---
 
 # delete
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[delete_camera()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/cameraspy
+#graphify/code #graphify/EXTRACTED #community/Tasks_Aplicativo_Android_Smartphone_Sentinela_Mobile_YouTube_Edition

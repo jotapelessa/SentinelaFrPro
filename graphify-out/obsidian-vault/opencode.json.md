@@ -1,12 +1,12 @@
 ---
 source_file: ".opencode/opencode.json"
 type: "code"
-community: "setup-autostart.sh"
+community: "opencode.json"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/setup-autostartsh
+  - community/opencodejson
 ---
 
 # opencode.json
@@ -15,4 +15,4 @@ tags:
 - [[$schema]] - `contains` [EXTRACTED]
 - [[plugin]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/setup-autostartsh
+#graphify/code #graphify/EXTRACTED #community/opencodejson

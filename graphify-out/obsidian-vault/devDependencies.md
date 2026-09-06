@@ -1,24 +1,25 @@
 ---
-source_file: "frontend/package.json"
+source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
 type: "code"
-community: "3. Catálogo de Endpoints da API REST (`/api`)"
-location: "L20"
+community: "Spec: Disparo de Fotos e Vídeos de Intrusão para o Telegram (Telegram Vault & Drive)"
+location: "L25"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/3_Catálogo_de_Endpoints_da_API_REST_/api
+  - community/Spec_Disparo_de_Fotos_e_Vídeos_de_Intrusão_para_o_Telegram_Telegram_Vault__Drive
 ---
 
 # devDependencies
 
 ## Connections
-- [[@typesnode_2]] - `contains` [EXTRACTED]
-- [[@typesreact]] - `contains` [EXTRACTED]
-- [[@typesreact-dom]] - `contains` [EXTRACTED]
-- [[autoprefixer_2]] - `contains` [EXTRACTED]
-- [[frontendpackage.json]] - `contains` [EXTRACTED]
-- [[postcss]] - `contains` [EXTRACTED]
-- [[tailwindcss_2]] - `contains` [EXTRACTED]
-- [[typescript_2]] - `contains` [EXTRACTED]
+- [[@typesexpress]] - `contains` [EXTRACTED]
+- [[@typesnode]] - `contains` [EXTRACTED]
+- [[autoprefixer]] - `contains` [EXTRACTED]
+- [[esbuild]] - `contains` [EXTRACTED]
+- [[sentinela-pro-tvpackage.json]] - `contains` [EXTRACTED]
+- [[tailwindcss]] - `contains` [EXTRACTED]
+- [[tsx]] - `contains` [EXTRACTED]
+- [[typescript]] - `contains` [EXTRACTED]
+- [[vite_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/3_Catálogo_de_Endpoints_da_API_REST_/api
+#graphify/code #graphify/EXTRACTED #community/Spec_Disparo_de_Fotos_e_Vídeos_de_Intrusão_para_o_Telegram_Telegram_Vault__Drive

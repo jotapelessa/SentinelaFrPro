@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "code"
-community: "MseCameraView"
+community: "api/telemetry.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/api/telemetrypy
 ---
 
 # api/telemetry.py
@@ -27,4 +27,4 @@ tags:
 - [[get_telemetry()]] - `contains` [EXTRACTED]
 - [[run_server_benchmark()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/api/telemetrypy

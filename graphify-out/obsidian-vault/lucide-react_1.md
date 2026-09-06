@@ -1,18 +1,17 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
-type: "code"
-community: "Observer"
+type: "concept"
+community: "Community None"
 location: "L17"
 tags:
-  - graphify/code
+  - graphify/concept
   - graphify/EXTRACTED
-  - community/Observer
+  - community/Community_None
 ---
 
 # lucide-react
 
 ## Connections
-- [[dependencies_1]] - `contains` [EXTRACTED]
-- [[lucide-react_3]] - `imports` [EXTRACTED]
+- [[lucide-react]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/concept #graphify/EXTRACTED #community/Community_None

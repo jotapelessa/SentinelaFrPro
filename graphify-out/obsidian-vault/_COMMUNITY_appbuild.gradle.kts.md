@@ -1,18 +1,16 @@
 ---
 type: community
-cohesion: 0.67
-members: 3
+cohesion: 1.00
+members: 1
 ---
 
 # app/build.gradle.kts
 
-**Cohesion:** 0.67 - moderately connected
-**Members:** 3 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 1 nodes
 
 ## Members
-- [[AsyncSession_3]] - code
-- [[Returns application audit logs with newest events at the top (DESC order).]] - rationale - backend/app/api/telemetry.py
-- [[get_audit_logs()]] - code - backend/app/api/telemetry.py
+- [[appbuild.gradle.kts]] - code - android/app/build.gradle.kts
 
 ## Live Query (requires Dataview plugin)
 
@@ -20,10 +18,3 @@ members: 3
 TABLE source_file, type FROM #community/app/buildgradlekts
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 2 edges to [[_COMMUNITY_MseCameraView]]
-- 1 edge to [[_COMMUNITY_TvNetflixScreen.kt]]
-
-## Top bridge nodes
-- [[get_audit_logs()]] - degree 5, connects to 2 communities

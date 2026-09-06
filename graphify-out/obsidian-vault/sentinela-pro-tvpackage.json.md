@@ -1,23 +1,23 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
 type: "code"
-community: "logger.ts"
+community: "Spec: Sentinela Core Ecosystem (Web, Mobile & Orquestrador)"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/loggerts
+  - community/Spec_Sentinela_Core_Ecosystem_Web_Mobile__Orquestrador
 ---
 
 # sentinela-pro-tv/package.json
 
 ## Connections
-- [[dependencies_1]] - `contains` [EXTRACTED]
-- [[devDependencies_2]] - `contains` [EXTRACTED]
-- [[name_1]] - `contains` [EXTRACTED]
-- [[private_1]] - `contains` [EXTRACTED]
-- [[scripts_1]] - `contains` [EXTRACTED]
-- [[type_1]] - `contains` [EXTRACTED]
-- [[version_1]] - `contains` [EXTRACTED]
+- [[dependencies]] - `contains` [EXTRACTED]
+- [[devDependencies]] - `contains` [EXTRACTED]
+- [[name]] - `contains` [EXTRACTED]
+- [[private]] - `contains` [EXTRACTED]
+- [[scripts]] - `contains` [EXTRACTED]
+- [[type]] - `contains` [EXTRACTED]
+- [[version]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/loggerts
+#graphify/code #graphify/EXTRACTED #community/Spec_Sentinela_Core_Ecosystem_Web_Mobile__Orquestrador

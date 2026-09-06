@@ -1,21 +1,17 @@
 ---
 type: community
-cohesion: 0.40
-members: 6
+cohesion: 1.00
+members: 2
 ---
 
 # backup/page.tsx
 
-**Cohesion:** 0.40 - moderately connected
-**Members:** 6 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 2 nodes
 
 ## Members
-- [[dot-emit()]] - code - backend/app/core/logging_handler.py
-- [[Captures all logging records in memory for real-time API streaming.]] - rationale - backend/app/core/logging_handler.py
-- [[LogRecord]] - code
-- [[MemoryRingBufferHandler]] - code - backend/app/core/logging_handler.py
-- [[logging_handler.py]] - code - backend/app/core/logging_handler.py
-- [[mask_sensitive_data()]] - code - backend/app/core/logging_handler.py
+- [[BackupSettingsPage()]] - code - frontend/src/app/settings/backup/page.tsx
+- [[backuppage.tsx]] - code - frontend/src/app/settings/backup/page.tsx
 
 ## Live Query (requires Dataview plugin)
 
@@ -23,11 +19,3 @@ members: 6
 TABLE source_file, type FROM #community/backup/pagetsx
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 1 edge to [[_COMMUNITY_manifest.json]]
-- 1 edge to [[_COMMUNITY_MseCameraView]]
-
-## Top bridge nodes
-- [[MemoryRingBufferHandler]] - degree 4, connects to 1 community
-- [[logging_handler.py]] - degree 3, connects to 1 community

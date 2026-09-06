@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/events.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # events.py
@@ -29,4 +29,4 @@ tags:
 - [[retain_event()]] - `contains` [EXTRACTED]
 - [[sync_events_from_frigate()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

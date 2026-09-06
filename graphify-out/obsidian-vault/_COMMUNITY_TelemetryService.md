@@ -1,30 +1,29 @@
 ---
 type: community
-cohesion: 0.13
-members: 15
+cohesion: 0.23
+members: 14
 ---
 
 # TelemetryService
 
-**Cohesion:** 0.13 - loosely connected
-**Members:** 15 nodes
+**Cohesion:** 0.23 - loosely connected
+**Members:** 14 nodes
 
 ## Members
-- [[clsx_1]] - concept - frontend/package.json
-- [[clsx]] - code - frontend/package.json
-- [[dependencies_2]] - code - frontend/package.json
-- [[next]] - code - frontend/package.json
-- [[next_1]] - concept - frontend/package.json
-- [[react_4]] - code - frontend/package.json
-- [[react_5]] - concept - frontend/package.json
-- [[react-dom]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[react-dom_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[react-dom_2]] - code - frontend/package.json
-- [[react-dom_3]] - concept - frontend/package.json
-- [[tailwind-merge]] - code - frontend/package.json
-- [[tailwind-merge_1]] - concept - frontend/package.json
-- [[zustand]] - code - frontend/package.json
-- [[zustand_1]] - concept - frontend/package.json
+- [[dot-__init__()_4]] - code - backend/app/services/telemetry.py
+- [[dot-get_cpu_temperature()]] - code - backend/app/services/telemetry.py
+- [[dot-get_detailed_stats()]] - code - backend/app/services/telemetry.py
+- [[dot-get_telemetry_snapshot()]] - code - backend/app/services/telemetry.py
+- [[dot-get_top_processes()]] - code - backend/app/services/telemetry.py
+- [[dot-get_uptime_string()]] - code - backend/app/services/telemetry.py
+- [[dot-run_benchmark()]] - code - backend/app/services/telemetry.py
+- [[Any_5]] - code
+- [[Executes real stressbenchmark workloads on the server CPUiGPU and returns…]] - rationale - backend/app/services/telemetry.py
+- [[Provides an exhaustive statistical overview of the entire system.]] - rationale - backend/app/services/telemetry.py
+- [[Reads CPU temperature from Linux thermal zones (sysclassthermal or psutil).…]] - rationale - backend/app/services/telemetry.py
+- [[Scans Linux processes and returns top consumers of CPU and RAM.]] - rationale - backend/app/services/telemetry.py
+- [[TelemetryService]] - code - backend/app/services/telemetry.py
+- [[servicestelemetry.py]] - code - backend/app/services/telemetry.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -32,12 +31,3 @@ members: 15
 TABLE source_file, type FROM #community/TelemetryService
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 3 edges to [[_COMMUNITY_Observer]]
-- 1 edge to [[_COMMUNITY_graphify.js]]
-
-## Top bridge nodes
-- [[dependencies_2]] - degree 8, connects to 2 communities
-- [[react-dom]] - degree 2, connects to 1 community
-- [[react-dom_1]] - degree 2, connects to 1 community

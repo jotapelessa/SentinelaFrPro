@@ -1,12 +1,12 @@
 ---
 source_file: ".agents/rules/execution.md"
 type: "document"
-community: "opencode.json"
+community: "execution.md"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/opencodejson
+  - community/executionmd
 ---
 
 # execution.md
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[Diretrizes Operacionais do Agente (Antigravity Rules)]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/opencodejson
+#graphify/document #graphify/EXTRACTED #community/executionmd

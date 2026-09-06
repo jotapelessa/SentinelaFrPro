@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "dependencies"
+community: "PiPGatewayService"
 location: "L38"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/PiPGatewayService
 ---
 
 # PiPGatewayService
@@ -19,8 +19,8 @@ tags:
 - [[dot-is_in_dnd()]] - `method` [EXTRACTED]
 - [[dot-record_ack()]] - `method` [EXTRACTED]
 - [[dot-test_single_device()]] - `method` [EXTRACTED]
-- [[Camera]] - `uses` [INFERRED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[PairedDevice_1]] - `uses` [INFERRED]
 - [[pip_gateway.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/PiPGatewayService

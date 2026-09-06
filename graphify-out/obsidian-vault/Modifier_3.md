@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "PiPGatewayService"
+community: "MseCameraView"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/MseCameraView
 ---
 
 # Modifier
@@ -14,4 +14,4 @@ tags:
 - [[MseCameraView()]] - `references` [EXTRACTED]
 - [[MseCameraView.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/MseCameraView

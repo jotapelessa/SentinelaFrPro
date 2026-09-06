@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "dependencies"
+community: "TvNetflixScreen.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/TvNetflixScreenkt
 ---
 
 # FocusRequester
@@ -17,4 +17,4 @@ tags:
 - [[TvPipFloatingWindow()]] - `references` [EXTRACTED]
 - [[TvSidebar()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

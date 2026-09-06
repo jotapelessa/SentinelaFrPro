@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/mocks/mock_publisher.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # mock_publisher.py
@@ -15,4 +15,4 @@ tags:
 - [[asyncio]] - `imports` [EXTRACTED]
 - [[publish_simulated_event()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

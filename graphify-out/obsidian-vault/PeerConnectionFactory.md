@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "SentinelaRepository"
+community: "Observer"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/SentinelaRepository
+  - community/Observer
 ---
 
 # PeerConnectionFactory
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[WebRtcManager]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/SentinelaRepository
+#graphify/code #graphify/EXTRACTED #community/Observer

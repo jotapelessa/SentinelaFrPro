@@ -1,14 +1,14 @@
 ---
 source_file: "test/integracao-frigate.spec.test.js"
 type: "code"
-community: "Community 91"
+community: "integracao-frigate.spec.test.js"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_91
+  - community/integracao-frigatespectestjs
 ---
 
 # integracao-frigate.spec.test.js
 
-#graphify/code #graphify/EXTRACTED #community/Community_91
+#graphify/code #graphify/EXTRACTED #community/integracao-frigatespectestjs

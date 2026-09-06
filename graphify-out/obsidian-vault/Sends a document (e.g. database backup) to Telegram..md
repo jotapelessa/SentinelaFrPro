@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telegram_vault.py"
 type: "rationale"
-community: "compilerOptions"
+community: "TelegramVaultService"
 location: "L466"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TelegramVaultService
 ---
 
 # Sends a document (e.g. database backup) to Telegram.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-send_document()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/compilerOptions
+#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService

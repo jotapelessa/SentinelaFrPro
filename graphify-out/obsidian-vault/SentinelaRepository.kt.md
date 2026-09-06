@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt"
 type: "code"
-community: "api/telemetry.py"
+community: "SentinelaRepository"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/SentinelaRepository
 ---
 
 # SentinelaRepository.kt
@@ -16,8 +16,8 @@ tags:
 - [[DevicePolicy]] - `contains` [EXTRACTED]
 - [[HttpURLConnection]] - `imports` [EXTRACTED]
 - [[RemoteDeviceItem]] - `contains` [EXTRACTED]
-- [[SentinelaConfig.kt]] - `imports` [EXTRACTED]
+- [[SentinelaConfig]] - `imports` [EXTRACTED]
 - [[SentinelaRepository]] - `contains` [EXTRACTED]
 - [[URL]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/SentinelaRepository

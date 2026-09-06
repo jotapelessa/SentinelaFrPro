@@ -1,12 +1,12 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
+source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
 type: "code"
-community: "dependencies"
+community: "Spec: Disparo de Fotos e Vídeos de Intrusão para o Telegram (Telegram Vault & Drive)"
 location: "L20"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/Spec_Disparo_de_Fotos_e_Vídeos_de_Intrusão_para_o_Telegram_Telegram_Vault__Drive
 ---
 
 # vite
@@ -15,4 +15,4 @@ tags:
 - [[dependencies]] - `contains` [EXTRACTED]
 - [[vite_2]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/Spec_Disparo_de_Fotos_e_Vídeos_de_Intrusão_para_o_Telegram_Telegram_Vault__Drive

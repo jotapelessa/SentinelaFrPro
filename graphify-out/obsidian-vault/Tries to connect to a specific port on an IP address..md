@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "rationale"
-community: "TelegramVaultService"
+community: "ScannerService"
 location: "L129"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/ScannerService
 ---
 
 # Tries to connect to a specific port on an IP address.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-scan_port()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/rationale #graphify/EXTRACTED #community/ScannerService

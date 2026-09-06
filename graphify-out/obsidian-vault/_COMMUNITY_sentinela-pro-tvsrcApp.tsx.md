@@ -71,7 +71,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_build_apk.sh]]
+- 1 edge to [[_COMMUNITY_TvAudioManager]]
 
 ## Top bridge nodes
 - [[audioFeedback.ts]] - degree 13, connects to 1 community

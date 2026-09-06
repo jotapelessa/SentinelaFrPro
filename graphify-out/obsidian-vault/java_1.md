@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "api/telemetry.py"
+community: "X509TrustManager"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/api/telemetrypy
+  - community/X509TrustManager
 ---
 
 # java
@@ -15,4 +15,4 @@ tags:
 - [[dot-checkServerTrusted()_3]] - `references` [EXTRACTED]
 - [[dot-getAcceptedIssuers()_3]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/api/telemetrypy
+#graphify/code #graphify/EXTRACTED #community/X509TrustManager

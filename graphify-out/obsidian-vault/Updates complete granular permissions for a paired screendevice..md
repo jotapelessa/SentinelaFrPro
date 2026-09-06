@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "rationale"
-community: "useSentinelaStore"
+community: "devices.py"
 location: "L470"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # Updates complete granular permissions for a paired screen/device.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[update_device_permissions()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/rationale #graphify/EXTRACTED #community/devicespy

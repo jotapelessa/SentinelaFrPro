@@ -1,12 +1,12 @@
 ---
 source_file: ".opencode/plugins/graphify.js"
 type: "code"
-community: "next"
+community: "graphify.js"
 location: "L12"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/next
+  - community/graphifyjs
 ---
 
 # GraphifyPlugin()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[graphify.js]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/next
+#graphify/code #graphify/EXTRACTED #community/graphifyjs

@@ -1,18 +1,18 @@
 ---
 source_file: "frontend/package.json"
 type: "code"
-community: "3. Catálogo de Endpoints da API REST (`/api`)"
+community: "Histórias"
 location: "L21"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/3_Catálogo_de_Endpoints_da_API_REST_/api
+  - community/Histórias
 ---
 
 # @types/node
 
 ## Connections
 - [[@typesnode_3]] - `imports` [EXTRACTED]
-- [[devDependencies]] - `contains` [EXTRACTED]
+- [[devDependencies_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/3_Catálogo_de_Endpoints_da_API_REST_/api
+#graphify/code #graphify/EXTRACTED #community/Histórias

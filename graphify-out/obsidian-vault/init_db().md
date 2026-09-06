@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/db/session.py"
 type: "code"
-community: "manifest.json"
+community: "FastAPI"
 location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/manifestjson
+  - community/FastAPI
 ---
 
 # init_db()
@@ -16,4 +16,4 @@ tags:
 - [[main.py]] - `imports` [EXTRACTED]
 - [[session.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/manifestjson
+#graphify/code #graphify/EXTRACTED #community/FastAPI

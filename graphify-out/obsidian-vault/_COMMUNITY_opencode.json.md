@@ -1,17 +1,19 @@
 ---
 type: community
-cohesion: 1.00
-members: 2
+cohesion: 0.50
+members: 4
 ---
 
 # opencode.json
 
-**Cohesion:** 1.00 - tightly connected
-**Members:** 2 nodes
+**Cohesion:** 0.50 - moderately connected
+**Members:** 4 nodes
 
 ## Members
-- [[Diretrizes Operacionais do Agente (Antigravity Rules)]] - document - .agents/rules/execution.md
-- [[execution]] - document - .agents/rules/execution.md
+- [[$schema]] - code - .opencode/opencode.json
+- [[dot-opencodepluginsgraphify.js]] - concept - .opencode/opencode.json
+- [[opencode.json]] - code - .opencode/opencode.json
+- [[plugin]] - code - .opencode/opencode.json
 
 ## Live Query (requires Dataview plugin)
 

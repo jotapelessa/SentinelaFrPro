@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/screens/page.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L47"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # ScreensPage()
@@ -15,4 +15,4 @@ tags:
 - [[screenspage.tsx]] - `contains` [EXTRACTED]
 - [[useSentinelaStore]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

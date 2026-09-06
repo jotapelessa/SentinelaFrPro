@@ -1,21 +1,21 @@
 ---
 source_file: "backend/app/db/models.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # models.py
 
 ## Connections
 - [[AuditLog]] - `contains` [EXTRACTED]
-- [[Camera]] - `contains` [EXTRACTED]
+- [[Camera_1]] - `contains` [EXTRACTED]
 - [[EventRecord]] - `contains` [EXTRACTED]
 - [[PairedDevice_1]] - `contains` [EXTRACTED]
 - [[SystemSetting]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

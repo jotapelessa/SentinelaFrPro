@@ -1,31 +1,32 @@
 ---
 type: community
-cohesion: 0.20
-members: 16
+cohesion: 0.15
+members: 17
 ---
 
 # MseCameraView
 
-**Cohesion:** 0.20 - loosely connected
-**Members:** 16 nodes
+**Cohesion:** 0.15 - loosely connected
+**Members:** 17 nodes
 
 ## Members
-- [[Compiles a complete diagnostic report (.txt) of all services for one-click…]] - rationale - backend/app/api/telemetry.py
-- [[Detailed hardware diagnostics for Intel Jasper Lake N5105  VAAPI.]] - rationale - backend/app/api/telemetry.py
-- [[Fetches real-time log lines for the requested service or container.]] - rationale - backend/app/api/telemetry.py
-- [[Returns deep connectivity status with Frigate NVR REST API, MQTT bus, go2rtc…]] - rationale - backend/app/api/telemetry.py
-- [[Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe…]] - rationale - backend/app/api/telemetry.py
-- [[Returns the most recent lines from the in-memory ring buffer.]] - rationale - backend/app/core/logging_handler.py
-- [[apitelemetry.py]] - code - backend/app/api/telemetry.py
-- [[download_diagnostic_logs()]] - code - backend/app/api/telemetry.py
-- [[fetch_docker_container_logs()]] - code - backend/app/api/telemetry.py
-- [[get_2]] - code
-- [[get_backend_logs()]] - code - backend/app/core/logging_handler.py
-- [[get_detailed_stats()]] - code - backend/app/api/telemetry.py
-- [[get_frigate_deep_status()]] - code - backend/app/api/telemetry.py
-- [[get_service_logs()]] - code - backend/app/api/telemetry.py
-- [[get_system_diagnostics()]] - code - backend/app/api/telemetry.py
-- [[get_telemetry()]] - code - backend/app/api/telemetry.py
+- [[dot-onPageFinished()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
+- [[dot-onPermissionRequest()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
+- [[dot-onReceivedError()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
+- [[dot-onReceivedSslError()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
+- [[Modifier_3]] - code
+- [[MseCameraView()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
+- [[MseCameraView.kt]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
+- [[PermissionRequest]] - code
+- [[SslErrorHandler]] - code
+- [[WebChromeClient_2]] - code
+- [[WebChromeClient]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
+- [[WebResourceError]] - code
+- [[WebResourceRequest]] - code
+- [[WebView]] - code
+- [[WebViewClient_2]] - code
+- [[WebViewClient]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
+- [[android]] - code
 
 ## Live Query (requires Dataview plugin)
 
@@ -35,13 +36,9 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 2 edges to [[_COMMUNITY_telegrampage.tsx]]
-- 2 edges to [[_COMMUNITY_manifest.json]]
-- 2 edges to [[_COMMUNITY_appbuild.gradle.kts]]
-- 1 edge to [[_COMMUNITY_TvNetflixScreen.kt]]
-- 1 edge to [[_COMMUNITY_backuppage.tsx]]
+- 2 edges to [[_COMMUNITY_compilerOptions_2]]
+- 1 edge to [[_COMMUNITY_OverlayService]]
 
 ## Top bridge nodes
-- [[apitelemetry.py]] - degree 14, connects to 4 communities
-- [[get_2]] - degree 7, connects to 1 community
-- [[get_backend_logs()]] - degree 5, connects to 1 community
+- [[MseCameraView.kt]] - degree 4, connects to 2 communities
+- [[MseCameraView()]] - degree 6, connects to 1 community

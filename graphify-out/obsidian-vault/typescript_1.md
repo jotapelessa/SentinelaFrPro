@@ -1,18 +1,17 @@
 ---
 source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
-type: "code"
-community: "X509TrustManager"
+type: "concept"
+community: "Community None"
 location: "L31"
 tags:
-  - graphify/code
+  - graphify/concept
   - graphify/EXTRACTED
-  - community/X509TrustManager
+  - community/Community_None
 ---
 
 # typescript
 
 ## Connections
-- [[devDependencies_2]] - `contains` [EXTRACTED]
-- [[typescript_3]] - `imports` [EXTRACTED]
+- [[typescript]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509TrustManager
+#graphify/concept #graphify/EXTRACTED #community/Community_None

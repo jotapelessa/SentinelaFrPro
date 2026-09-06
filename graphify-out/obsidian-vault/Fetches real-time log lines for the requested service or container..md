@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "rationale"
-community: "MseCameraView"
+community: "api/telemetry.py"
 location: "L129"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/api/telemetrypy
 ---
 
 # Fetches real-time log lines for the requested service or container.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_service_logs()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/MseCameraView
+#graphify/rationale #graphify/EXTRACTED #community/api/telemetrypy

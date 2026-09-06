@@ -1,25 +1,24 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
+source_file: "frontend/package.json"
 type: "code"
-community: "dependencies"
-location: "L25"
+community: "Histórias"
+location: "L20"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/Histórias
 ---
 
 # devDependencies
 
 ## Connections
-- [[@typesexpress]] - `contains` [EXTRACTED]
-- [[@typesnode]] - `contains` [EXTRACTED]
-- [[autoprefixer]] - `contains` [EXTRACTED]
-- [[esbuild]] - `contains` [EXTRACTED]
-- [[sentinela-pro-mobile-nvrpackage.json]] - `contains` [EXTRACTED]
-- [[tailwindcss]] - `contains` [EXTRACTED]
-- [[tsx]] - `contains` [EXTRACTED]
-- [[typescript]] - `contains` [EXTRACTED]
-- [[vite_1]] - `contains` [EXTRACTED]
+- [[@typesnode_2]] - `contains` [EXTRACTED]
+- [[@typesreact]] - `contains` [EXTRACTED]
+- [[@typesreact-dom]] - `contains` [EXTRACTED]
+- [[autoprefixer_2]] - `contains` [EXTRACTED]
+- [[frontendpackage.json]] - `contains` [EXTRACTED]
+- [[postcss]] - `contains` [EXTRACTED]
+- [[tailwindcss_2]] - `contains` [EXTRACTED]
+- [[typescript_2]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/Histórias

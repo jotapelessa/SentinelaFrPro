@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/app/page.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L9"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # DashboardPage()
@@ -15,4 +15,4 @@ tags:
 - [[apppage.tsx]] - `contains` [EXTRACTED]
 - [[useSentinelaStore]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

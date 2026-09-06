@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "FrigateBridgeService"
+community: "compilerOptions"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FrigateBridgeService
+  - community/compilerOptions
 ---
 
 # ContentScale
@@ -18,4 +18,4 @@ tags:
 - [[TvLeanbackGrid.kt]] - `imports` [EXTRACTED]
 - [[TvNetflixScreen.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FrigateBridgeService
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt"
 type: "code"
-community: "dependencies"
+community: "TvNetflixScreen.kt"
 location: "L214"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/TvNetflixScreenkt
 ---
 
 # TvSidebar()
@@ -17,4 +17,4 @@ tags:
 - [[TvNetflixScreenCore()]] - `calls` [EXTRACTED]
 - [[TvTab_2]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt

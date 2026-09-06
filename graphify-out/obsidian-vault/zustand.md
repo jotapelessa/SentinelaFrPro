@@ -1,18 +1,18 @@
 ---
 source_file: "frontend/package.json"
 type: "code"
-community: "TelemetryService"
+community: "dependencies"
 location: "L18"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelemetryService
+  - community/dependencies
 ---
 
 # zustand
 
 ## Connections
-- [[dependencies_2]] - `contains` [EXTRACTED]
+- [[dependencies_1]] - `contains` [EXTRACTED]
 - [[zustand_1]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelemetryService
+#graphify/code #graphify/EXTRACTED #community/dependencies

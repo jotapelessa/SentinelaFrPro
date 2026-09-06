@@ -1,27 +1,24 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
+source_file: "frontend/package.json"
 type: "code"
-community: "Observer"
-location: "L13"
+community: "dependencies"
+location: "L11"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/dependencies
 ---
 
 # dependencies
 
 ## Connections
-- [[@googlegenai_1]] - `contains` [EXTRACTED]
-- [[@tailwindcssvite_1]] - `contains` [EXTRACTED]
-- [[@vitejsplugin-react_1]] - `contains` [EXTRACTED]
-- [[dotenv_1]] - `contains` [EXTRACTED]
-- [[express_1]] - `contains` [EXTRACTED]
-- [[lucide-react_1]] - `contains` [EXTRACTED]
-- [[motion_1]] - `contains` [EXTRACTED]
-- [[react_1]] - `contains` [EXTRACTED]
-- [[react-dom_1]] - `contains` [EXTRACTED]
-- [[sentinela-pro-tvpackage.json]] - `contains` [EXTRACTED]
-- [[vite_3]] - `contains` [EXTRACTED]
+- [[clsx]] - `contains` [EXTRACTED]
+- [[frontendpackage.json]] - `contains` [EXTRACTED]
+- [[lucide-react_2]] - `contains` [EXTRACTED]
+- [[next_1]] - `contains` [EXTRACTED]
+- [[react_2]] - `contains` [EXTRACTED]
+- [[react-dom_2]] - `contains` [EXTRACTED]
+- [[tailwind-merge]] - `contains` [EXTRACTED]
+- [[zustand]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/dependencies

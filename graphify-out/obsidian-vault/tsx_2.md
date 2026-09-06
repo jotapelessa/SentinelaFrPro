@@ -1,12 +1,12 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "code"
-community: "X509TrustManager"
+community: "Histórias"
 location: "L30"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509TrustManager
+  - community/Histórias
 ---
 
 # tsx
@@ -15,4 +15,4 @@ tags:
 - [[devDependencies_2]] - `contains` [EXTRACTED]
 - [[tsx_3]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509TrustManager
+#graphify/code #graphify/EXTRACTED #community/Histórias

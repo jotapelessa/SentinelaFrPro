@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "rationale"
-community: "TelegramVaultService"
+community: "ScannerService"
 location: "L140"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/ScannerService
 ---
 
 # Sends authentic RTSP OPTIONS / DESCRIBE probes to verify real video stream…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-verify_rtsp_stream()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/rationale #graphify/EXTRACTED #community/ScannerService

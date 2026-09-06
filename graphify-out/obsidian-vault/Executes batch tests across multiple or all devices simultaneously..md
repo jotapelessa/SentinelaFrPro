@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "rationale"
-community: "useSentinelaStore"
+community: "devices.py"
 location: "L947"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # Executes batch tests across multiple or all devices simultaneously.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[execute_batch_test()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/rationale #graphify/EXTRACTED #community/devicespy

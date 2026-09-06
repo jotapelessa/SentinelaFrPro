@@ -1,18 +1,18 @@
 ---
 source_file: "frontend/src/components/ZoneCanvasModal.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # ZoneCanvasModalProps
 
 ## Connections
-- [[Camera_1]] - `references` [EXTRACTED]
+- [[Camera]] - `references` [EXTRACTED]
 - [[ZoneCanvasModal.tsx]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

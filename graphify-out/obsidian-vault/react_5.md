@@ -1,12 +1,12 @@
 ---
-source_file: "frontend/package.json"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "concept"
-community: "TelemetryService"
-location: "L15"
+community: "dependencies"
+location: "L18"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/TelemetryService
+  - community/dependencies
 ---
 
 # react
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[react_4]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/TelemetryService
+#graphify/concept #graphify/EXTRACTED #community/dependencies

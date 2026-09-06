@@ -1,12 +1,12 @@
 ---
 source_file: "verify_system.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L9"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # verify_system()
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[verify_system.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

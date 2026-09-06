@@ -1,17 +1,18 @@
 ---
 source_file: "AGENTS.md"
 type: "document"
-community: "apply_bc_config.py"
+community: "AGENTS.md"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/apply_bc_configpy
+  - community/AGENTSmd
 ---
 
 # AGENTS.md
 
 ## Connections
+- [[STATE.md (Memória Persistente)]] - `contains` [EXTRACTED]
 - [[graphify]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/apply_bc_configpy
+#graphify/document #graphify/EXTRACTED #community/AGENTSmd

@@ -1,18 +1,18 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt"
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 location: "L194"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # .showPiP()
 
 ## Connections
-- [[dot-onCreate()_1]] - `calls` [EXTRACTED]
+- [[dot-onCreate()_2]] - `calls` [EXTRACTED]
 - [[dot-onStartCommand()]] - `calls` [EXTRACTED]
 - [[dot-removePiP()]] - `calls` [EXTRACTED]
 - [[DevicePolicy]] - `references` [EXTRACTED]
@@ -23,4 +23,4 @@ tags:
 - [[WebView_1]] - `calls` [EXTRACTED]
 - [[WebViewClient_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

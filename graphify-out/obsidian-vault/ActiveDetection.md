@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/store/useSentinelaStore.ts"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L122"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # ActiveDetection
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[useSentinelaStore.ts]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

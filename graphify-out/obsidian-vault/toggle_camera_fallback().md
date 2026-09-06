@@ -12,7 +12,8 @@ tags:
 # toggle_camera_fallback()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[Request_3]] - `references` [EXTRACTED]
 - [[Toggles virtual SMPTE test pattern stream vs real RTSP stream in Frigate…]] - `rationale_for` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]

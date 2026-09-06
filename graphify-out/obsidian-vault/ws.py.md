@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/ws.py"
 type: "code"
-community: "Settings"
+community: "ws.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Settings
+  - community/wspy
 ---
 
 # ws.py
@@ -18,4 +18,4 @@ tags:
 - [[telemetry_broadcast_loop()]] - `contains` [EXTRACTED]
 - [[websocket_endpoint()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Settings
+#graphify/code #graphify/EXTRACTED #community/wspy

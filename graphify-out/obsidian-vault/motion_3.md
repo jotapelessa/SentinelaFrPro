@@ -1,17 +1,17 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "concept"
-community: "Observer"
+community: "dependencies"
 location: "L23"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/Observer
+  - community/dependencies
 ---
 
 # motion
 
 ## Connections
-- [[motion_1]] - `imports` [EXTRACTED]
+- [[motion_2]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/Observer
+#graphify/concept #graphify/EXTRACTED #community/dependencies

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "code"
-community: "MseCameraView"
+community: "api/telemetry.py"
 location: "L104"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/api/telemetrypy
 ---
 
 # fetch_docker_container_logs()
@@ -15,4 +15,4 @@ tags:
 - [[apitelemetry.py]] - `contains` [EXTRACTED]
 - [[get_service_logs()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/api/telemetrypy

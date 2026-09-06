@@ -1,60 +1,31 @@
 ---
 type: community
-cohesion: 0.08
-members: 45
+cohesion: 0.20
+members: 16
 ---
 
 # api/telemetry.py
 
-**Cohesion:** 0.08 - loosely connected
-**Members:** 45 nodes
+**Cohesion:** 0.20 - loosely connected
+**Members:** 16 nodes
 
 ## Members
-- [[dot-checkClientTrusted()_3]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-checkServerTrusted()_3]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-checkServicesHealth()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-cleanStorage()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-discoverNetworkDevices()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-executeBatchTest()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getAcceptedIssuers()_3]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getAuditLogs()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getCameras()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getCaptures()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getDeviceMacAddress()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getDevicePolicy()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getLocalIpAddress()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getPairedDevicesList()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getStorageStatus()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-getTelemetry()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-openConnection()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-pauseAlerts()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-pingServer()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-rebootServer()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-registerOrHeartbeat()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-restartContainers()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-resumeAlerts()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-runSpeedAndPingTest()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-sendPipAck()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-testSingleTv()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-toggleRemoteMaster()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[dot-updateDevicePermissions()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[AuditLogEntry_1]] - code
-- [[CameraItem_2]] - code
-- [[CaptureEvent_2]] - code
-- [[Context_2]] - code
-- [[DevicePolicy]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[HttpURLConnection]] - code
-- [[RemoteDeviceItem]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[SentinelaPreferences_1]] - code
-- [[SentinelaRepository]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[SentinelaRepository.kt]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[ServiceStatus]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[SpeedTestResult_1]] - code
-- [[StorageStatus_1]] - code
-- [[TelemetryData_2]] - code
-- [[URL]] - code
-- [[X509TrustManager_3]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt
-- [[java_1]] - code
+- [[Compiles a complete diagnostic report (.txt) of all services for one-click…]] - rationale - backend/app/api/telemetry.py
+- [[Detailed hardware diagnostics for Intel Jasper Lake N5105  VAAPI.]] - rationale - backend/app/api/telemetry.py
+- [[Fetches real-time log lines for the requested service or container.]] - rationale - backend/app/api/telemetry.py
+- [[Returns deep connectivity status with Frigate NVR REST API, MQTT bus, go2rtc…]] - rationale - backend/app/api/telemetry.py
+- [[Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe…]] - rationale - backend/app/api/telemetry.py
+- [[Returns the most recent lines from the in-memory ring buffer.]] - rationale - backend/app/core/logging_handler.py
+- [[apitelemetry.py]] - code - backend/app/api/telemetry.py
+- [[download_diagnostic_logs()]] - code - backend/app/api/telemetry.py
+- [[fetch_docker_container_logs()]] - code - backend/app/api/telemetry.py
+- [[get_2]] - code
+- [[get_backend_logs()]] - code - backend/app/core/logging_handler.py
+- [[get_detailed_stats()]] - code - backend/app/api/telemetry.py
+- [[get_frigate_deep_status()]] - code - backend/app/api/telemetry.py
+- [[get_service_logs()]] - code - backend/app/api/telemetry.py
+- [[get_system_diagnostics()]] - code - backend/app/api/telemetry.py
+- [[get_telemetry()]] - code - backend/app/api/telemetry.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -64,15 +35,13 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 6 edges to [[_COMMUNITY_dependencies]]
-- 2 edges to [[_COMMUNITY_TvDesignTokens.kt]]
-- 1 edge to [[_COMMUNITY_devices.py]]
-- 1 edge to [[_COMMUNITY_compile_apk.sh]]
-- 1 edge to [[_COMMUNITY_FrigateBridgeService]]
+- 2 edges to [[_COMMUNITY_run_server_benchmark]]
+- 2 edges to [[_COMMUNITY_Tasks Integração Frigate NVR 0.17 & go2rtc]]
+- 2 edges to [[_COMMUNITY_FastAPI]]
+- 1 edge to [[_COMMUNITY_events.py]]
+- 1 edge to [[_COMMUNITY_MemoryRingBufferHandler]]
 
 ## Top bridge nodes
-- [[SentinelaRepository]] - degree 29, connects to 2 communities
-- [[SentinelaRepository.kt]] - degree 7, connects to 1 community
-- [[dot-getCaptures()]] - degree 5, connects to 1 community
-- [[dot-getTelemetry()]] - degree 5, connects to 1 community
-- [[dot-pingServer()]] - degree 5, connects to 1 community
+- [[apitelemetry.py]] - degree 14, connects to 4 communities
+- [[get_2]] - degree 7, connects to 1 community
+- [[get_backend_logs()]] - degree 5, connects to 1 community

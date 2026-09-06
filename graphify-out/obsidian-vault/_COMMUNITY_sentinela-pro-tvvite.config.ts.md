@@ -1,18 +1,16 @@
 ---
 type: community
-cohesion: 0.67
-members: 3
+cohesion: 1.00
+members: 1
 ---
 
 # sentinela-pro-tv/vite.config.ts
 
-**Cohesion:** 0.67 - moderately connected
-**Members:** 3 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 1 nodes
 
 ## Members
-- [[Run Locally_1]] - document - ai_studio_imports/sentinela-pro-tv/README.md
-- [[Run and deploy your AI Studio app_1]] - document - ai_studio_imports/sentinela-pro-tv/README.md
-- [[sentinela-pro-tvREADME]] - document - ai_studio_imports/sentinela-pro-tv/README.md
+- [[sentinela-pro-tvvite.config.ts]] - code - ai_studio_imports/sentinela-pro-tv/vite.config.ts
 
 ## Live Query (requires Dataview plugin)
 

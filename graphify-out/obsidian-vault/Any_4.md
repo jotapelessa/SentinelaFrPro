@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "dependencies"
+community: "PiPGatewayService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/PiPGatewayService
 ---
 
 # Any
@@ -15,4 +15,4 @@ tags:
 - [[dot-get_active_tv_devices()]] - `references` [EXTRACTED]
 - [[dot-test_single_device()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/PiPGatewayService

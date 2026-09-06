@@ -14,6 +14,6 @@ tags:
 ## Connections
 - [[ImageLoader]] - `references` [EXTRACTED]
 - [[SentinelaApplication]] - `method` [EXTRACTED]
-- [[X509TrustManager]] - `contains` [EXTRACTED]
+- [[X509TrustManager_1]] - `contains` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/X509Certificate

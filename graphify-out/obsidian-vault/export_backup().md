@@ -13,7 +13,7 @@ tags:
 
 ## Connections
 - [[AsyncSession_4]] - `references` [EXTRACTED]
-- [[Camera]] - `uses` [INFERRED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[PairedDevice_1]] - `uses` [INFERRED]
 - [[get_5]] - `references` [EXTRACTED]
 - [[settings.py]] - `contains` [EXTRACTED]

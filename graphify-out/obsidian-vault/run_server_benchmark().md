@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "code"
-community: "telegram/page.tsx"
+community: "run_server_benchmark"
 location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/telegram/pagetsx
+  - community/run_server_benchmark
 ---
 
 # run_server_benchmark()
@@ -17,4 +17,4 @@ tags:
 - [[apitelemetry.py]] - `contains` [EXTRACTED]
 - [[post_3]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/telegram/pagetsx
+#graphify/code #graphify/EXTRACTED #community/run_server_benchmark

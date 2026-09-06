@@ -1,22 +1,22 @@
 ---
 source_file: "frontend/package.json"
 type: "code"
-community: "graphify.js"
+community: "asyncio"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/graphifyjs
+  - community/asyncio
 ---
 
 # frontend/package.json
 
 ## Connections
-- [[dependencies_2]] - `contains` [EXTRACTED]
-- [[devDependencies]] - `contains` [EXTRACTED]
-- [[name_3]] - `contains` [EXTRACTED]
-- [[private_2]] - `contains` [EXTRACTED]
-- [[scripts_2]] - `contains` [EXTRACTED]
-- [[version_2]] - `contains` [EXTRACTED]
+- [[dependencies_1]] - `contains` [EXTRACTED]
+- [[devDependencies_1]] - `contains` [EXTRACTED]
+- [[name_1]] - `contains` [EXTRACTED]
+- [[private_1]] - `contains` [EXTRACTED]
+- [[scripts_1]] - `contains` [EXTRACTED]
+- [[version_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/graphifyjs
+#graphify/code #graphify/EXTRACTED #community/asyncio

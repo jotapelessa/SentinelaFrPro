@@ -1,17 +1,17 @@
 ---
-source_file: "frontend/package.json"
+source_file: "frontend/public/manifest.json"
 type: "code"
-community: "graphify.js"
+community: "manifest.json"
 location: "L2"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/graphifyjs
+  - community/manifestjson
 ---
 
 # name
 
 ## Connections
-- [[frontendpackage.json]] - `contains` [EXTRACTED]
+- [[manifest.json]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/graphifyjs
+#graphify/code #graphify/EXTRACTED #community/manifestjson

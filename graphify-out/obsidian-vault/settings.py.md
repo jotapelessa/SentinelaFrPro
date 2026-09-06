@@ -12,7 +12,7 @@ tags:
 # settings.py
 
 ## Connections
-- [[Camera]] - `imports` [EXTRACTED]
+- [[Camera_1]] - `imports` [EXTRACTED]
 - [[DNDConfigUpdate]] - `contains` [EXTRACTED]
 - [[EventRecord]] - `imports` [EXTRACTED]
 - [[FastAPI]] - `imports_from` [EXTRACTED]

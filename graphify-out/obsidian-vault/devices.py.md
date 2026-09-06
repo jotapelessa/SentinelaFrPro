@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/devices.py"
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # devices.py
@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[AuditLog]] - `imports` [EXTRACTED]
 - [[BatchTestRequest]] - `contains` [EXTRACTED]
-- [[Camera]] - `imports` [EXTRACTED]
+- [[Camera_1]] - `imports` [EXTRACTED]
 - [[DeviceAllowedCamerasUpdate]] - `contains` [EXTRACTED]
 - [[DeviceCreate]] - `contains` [EXTRACTED]
 - [[DeviceHeartbeat]] - `contains` [EXTRACTED]
@@ -52,4 +52,4 @@ tags:
 - [[update_device_permissions()]] - `contains` [EXTRACTED]
 - [[update_device_status()]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/useSentinelaStore
+#graphify/code #graphify/EXTRACTED #community/devicespy

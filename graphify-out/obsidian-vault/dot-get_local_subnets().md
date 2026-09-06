@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "TelegramVaultService"
+community: "ScannerService"
 location: "L96"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/ScannerService
 ---
 
 # .get_local_subnets()
@@ -17,4 +17,4 @@ tags:
 - [[Discovers all local subnets, prioritizing physical LAN interfaces.]] - `rationale_for` [EXTRACTED]
 - [[ScannerService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/ScannerService

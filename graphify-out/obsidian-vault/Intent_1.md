@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # Intent
@@ -16,4 +16,4 @@ tags:
 - [[dot-triggerPiP()]] - `calls` [EXTRACTED]
 - [[OverlayService.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

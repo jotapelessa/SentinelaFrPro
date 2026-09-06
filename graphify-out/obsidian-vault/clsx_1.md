@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/package.json"
 type: "concept"
-community: "TelemetryService"
+community: "dependencies"
 location: "L12"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/TelemetryService
+  - community/dependencies
 ---
 
 # clsx
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[clsx]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/TelemetryService
+#graphify/concept #graphify/EXTRACTED #community/dependencies

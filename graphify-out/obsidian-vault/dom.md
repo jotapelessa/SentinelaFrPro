@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/tsconfig.json"
 type: "concept"
-community: "events.py"
+community: "compilerOptions"
 location: "L5"
 tags:
   - graphify/concept
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/compilerOptions
 ---
 
 # dom
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[lib]] - `extends` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/eventspy
+#graphify/concept #graphify/EXTRACTED #community/compilerOptions

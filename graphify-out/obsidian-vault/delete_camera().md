@@ -12,7 +12,8 @@ tags:
 # delete_camera()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[Request_3]] - `references` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]
 - [[delete_2]] - `references` [EXTRACTED]

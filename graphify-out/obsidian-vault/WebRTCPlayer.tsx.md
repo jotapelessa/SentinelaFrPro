@@ -1,18 +1,18 @@
 ---
 source_file: "frontend/src/components/WebRTCPlayer.tsx"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # WebRTCPlayer.tsx
 
 ## Connections
-- [[Camera_1]] - `imports` [EXTRACTED]
+- [[Camera]] - `imports` [EXTRACTED]
 - [[CameraConfigModal()]] - `imports` [EXTRACTED]
 - [[CameraConfigModal.tsx]] - `imports_from` [EXTRACTED]
 - [[CameraHeaderHUD]] - `contains` [EXTRACTED]
@@ -24,4 +24,4 @@ tags:
 - [[useSentinelaStore]] - `imports` [EXTRACTED]
 - [[useSentinelaStore.ts]] - `imports_from` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

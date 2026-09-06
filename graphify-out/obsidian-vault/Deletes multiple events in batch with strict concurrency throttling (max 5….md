@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/events.py"
 type: "rationale"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L260"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # Deletes multiple events in batch with strict concurrency throttling (max 5…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[delete_events_batch()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/rationale #graphify/EXTRACTED #community/eventspy

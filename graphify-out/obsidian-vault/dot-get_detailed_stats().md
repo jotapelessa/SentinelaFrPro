@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/telemetry.py"
 type: "code"
-community: "🛡️ Sentinela Frigate Pro"
+community: "TelemetryService"
 location: "L167"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/_Sentinela_Frigate_Pro
+  - community/TelemetryService
 ---
 
 # .get_detailed_stats()
@@ -18,4 +18,4 @@ tags:
 - [[Provides an exhaustive statistical overview of the entire system.]] - `rationale_for` [EXTRACTED]
 - [[TelemetryService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/_Sentinela_Frigate_Pro
+#graphify/code #graphify/EXTRACTED #community/TelemetryService

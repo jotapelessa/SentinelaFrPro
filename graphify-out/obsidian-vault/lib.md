@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/tsconfig.json"
 type: "code"
-community: "events.py"
+community: "compilerOptions"
 location: "L5"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/eventspy
+  - community/compilerOptions
 ---
 
 # lib
@@ -17,4 +17,4 @@ tags:
 - [[dom.iterable]] - `extends` [EXTRACTED]
 - [[esnext]] - `extends` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/eventspy
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

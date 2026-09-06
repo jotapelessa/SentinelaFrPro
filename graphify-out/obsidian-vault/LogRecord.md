@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "backup/page.tsx"
+community: "MemoryRingBufferHandler"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/backup/pagetsx
+  - community/MemoryRingBufferHandler
 ---
 
 # LogRecord
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[dot-emit()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/backup/pagetsx
+#graphify/code #graphify/EXTRACTED #community/MemoryRingBufferHandler

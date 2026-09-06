@@ -1,30 +1,27 @@
 ---
 type: community
-cohesion: 0.13
-members: 15
+cohesion: 0.17
+members: 12
 ---
 
 # 3. Catálogo de Endpoints da API REST (`/api`)
 
-**Cohesion:** 0.13 - loosely connected
-**Members:** 15 nodes
+**Cohesion:** 0.17 - loosely connected
+**Members:** 12 nodes
 
 ## Members
-- [[@typesnode]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[@typesnode_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[@typesnode_2]] - code - frontend/package.json
-- [[@typesnode_3]] - concept - frontend/package.json
-- [[@typesreact]] - code - frontend/package.json
-- [[@typesreact_1]] - concept - frontend/package.json
-- [[@typesreact-dom]] - code - frontend/package.json
-- [[@typesreact-dom_1]] - concept - frontend/package.json
-- [[autoprefixer]] - code - ai_studio_imports/sentinela-pro-mobile-nvr/package.json
-- [[autoprefixer_1]] - code - ai_studio_imports/sentinela-pro-tv/package.json
-- [[autoprefixer_2]] - code - frontend/package.json
-- [[autoprefixer_3]] - concept - frontend/package.json
-- [[devDependencies]] - code - frontend/package.json
-- [[postcss]] - code - frontend/package.json
-- [[postcss_1]] - concept - frontend/package.json
+- [[1. Visão Geral da Arquitetura]] - document - docs/ARQUITETURA_E_API.md
+- [[2. Mapa de Serviços e Portas de Rede]] - document - docs/ARQUITETURA_E_API.md
+- [[3. Catálogo de Endpoints da API REST (`api`)]] - document - docs/ARQUITETURA_E_API.md
+- [[3.1. Módulo de Câmeras (`apicameras`)]] - document - docs/ARQUITETURA_E_API.md
+- [[3.2. Módulo de Dispositivos e Telas PiP (`apidevices`)]] - document - docs/ARQUITETURA_E_API.md
+- [[3.3. Módulo de Eventos & Gravações (`apievents`)]] - document - docs/ARQUITETURA_E_API.md
+- [[3.4. Módulo de Telemetria e Diagnósticos (`apitelemetry`)]] - document - docs/ARQUITETURA_E_API.md
+- [[3.5. Módulo de Configurações & Telegram (`apisettings`)]] - document - docs/ARQUITETURA_E_API.md
+- [[3.6. Módulo Scanner de Rede (`apiscanner`)]] - document - docs/ARQUITETURA_E_API.md
+- [[4. Guia de Compilação dos APKs no GitHub Codespaces]] - document - docs/ARQUITETURA_E_API.md
+- [[ARQUITETURA_E_API]] - document - docs/ARQUITETURA_E_API.md
+- [[SentinelaFrigate PRO — Documentação Completa da Aplicação]] - document - docs/ARQUITETURA_E_API.md
 
 ## Live Query (requires Dataview plugin)
 
@@ -32,15 +29,3 @@ members: 15
 TABLE source_file, type FROM #community/3_Catálogo_de_Endpoints_da_API_REST_/api
 SORT file.name ASC
 ```
-
-## Connections to other communities
-- 3 edges to [[_COMMUNITY_dependencies_2]]
-- 3 edges to [[_COMMUNITY_X509TrustManager]]
-- 1 edge to [[_COMMUNITY_graphify.js]]
-
-## Top bridge nodes
-- [[devDependencies]] - degree 8, connects to 3 communities
-- [[autoprefixer]] - degree 2, connects to 1 community
-- [[@typesnode]] - degree 2, connects to 1 community
-- [[autoprefixer_1]] - degree 2, connects to 1 community
-- [[@typesnode_1]] - degree 2, connects to 1 community

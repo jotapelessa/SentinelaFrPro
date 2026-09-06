@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/db/models.py"
 type: "code"
-community: "useSentinelaStore"
+community: "devices.py"
 location: "L53"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/useSentinelaStore
+  - community/devicespy
 ---
 
 # PairedDevice
@@ -38,4 +38,4 @@ tags:
 - [[update_device_permissions()]] - `uses` [INFERRED]
 - [[update_device_status()]] - `uses` [INFERRED]
 
-#graphify/code #graphify/INFERRED #community/useSentinelaStore
+#graphify/code #graphify/INFERRED #community/devicespy

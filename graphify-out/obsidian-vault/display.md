@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/public/manifest.json"
 type: "code"
-community: "postcss.config.mjs"
+community: "manifest.json"
 location: "L6"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/postcssconfigmjs
+  - community/manifestjson
 ---
 
 # display
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[manifest.json]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/postcssconfigmjs
+#graphify/code #graphify/EXTRACTED #community/manifestjson

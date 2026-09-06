@@ -1,32 +1,38 @@
 ---
 type: community
-cohesion: 0.12
-members: 17
+cohesion: 0.13
+members: 23
 ---
 
 # ScannerService
 
-**Cohesion:** 0.12 - loosely connected
-**Members:** 17 nodes
+**Cohesion:** 0.13 - loosely connected
+**Members:** 23 nodes
 
 ## Members
-- [[AuditLogEntry]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[CINEMA]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[CaptureEvent]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[DiagnosticStatus]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[EXTRA_LARGE]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[EXTRA_SMALL]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[LARGE]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[MEDIUM]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[MEDIUM_LARGE]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[MEDIUM_SMALL]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[Models.kt]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[PairedDeviceItem]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[PipSize]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[SMALL]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[SpeedTestResult]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[StorageStatus]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
-- [[TelemetryData_1]] - code - android/app/src/main/java/com/sentinela/pro/data/Models.kt
+- [[dot-discover_onvif_devices()]] - code - backend/app/services/scanner_service.py
+- [[dot-discover_smart_tvs()]] - code - backend/app/services/scanner_service.py
+- [[dot-get_local_subnets()]] - code - backend/app/services/scanner_service.py
+- [[dot-get_self_ips()]] - code - backend/app/services/scanner_service.py
+- [[dot-identify_camera_profile()]] - code - backend/app/services/scanner_service.py
+- [[dot-probe_onvif_device_info()]] - code - backend/app/services/scanner_service.py
+- [[dot-run_full_scan()]] - code - backend/app/services/scanner_service.py
+- [[dot-scan_port()]] - code - backend/app/services/scanner_service.py
+- [[dot-scan_subnet_cctv_ports()]] - code - backend/app/services/scanner_service.py
+- [[dot-verify_rtsp_stream()]] - code - backend/app/services/scanner_service.py
+- [[Any_2]] - code
+- [[Classifies camera hardware, identifying AITEK SEG6050BP (Guangdong Pineng…]] - rationale - backend/app/services/scanner_service.py
+- [[Collects all IP addresses belonging to the host itself so they are not detected…]] - rationale - backend/app/services/scanner_service.py
+- [[Concurrently scans CCTV ports with semaphore control, ONVIF SOAP inspection,…]] - rationale - backend/app/services/scanner_service.py
+- [[Discovers all local subnets, prioritizing physical LAN interfaces.]] - rationale - backend/app/services/scanner_service.py
+- [[Queries ONVIF SOAP GetDeviceInformation to retrieve real hardware metadata…]] - rationale - backend/app/services/scanner_service.py
+- [[Runs comprehensive multi-probe scan discovering ONVIF and RTSP CCTV devices.]] - rationale - backend/app/services/scanner_service.py
+- [[ScannerService]] - code - backend/app/services/scanner_service.py
+- [[Scans the local network for Smart TVs (Google Cast, TCL, Samsung, LG, Android…]] - rationale - backend/app/services/scanner_service.py
+- [[Sends authentic RTSP OPTIONS  DESCRIBE probes to verify real video stream…]] - rationale - backend/app/services/scanner_service.py
+- [[Sends hybrid WS-Discovery UDP probes on port 3702 to all subnets (wildcard +…]] - rationale - backend/app/services/scanner_service.py
+- [[Tries to connect to a specific port on an IP address.]] - rationale - backend/app/services/scanner_service.py
+- [[scanner_service.py]] - code - backend/app/services/scanner_service.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -36,13 +42,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 2 edges to [[_COMMUNITY_dependencies]]
-- 2 edges to [[_COMMUNITY_devices.py]]
-- 1 edge to [[_COMMUNITY_FrigateBridgeService]]
-- 1 edge to [[_COMMUNITY_logspage.tsx]]
+- 1 edge to [[_COMMUNITY_events.py]]
 
 ## Top bridge nodes
-- [[Models.kt]] - degree 11, connects to 3 communities
-- [[PipSize]] - degree 10, connects to 1 community
-- [[AuditLogEntry]] - degree 2, connects to 1 community
-- [[CaptureEvent]] - degree 2, connects to 1 community
+- [[scanner_service.py]] - degree 2, connects to 1 community

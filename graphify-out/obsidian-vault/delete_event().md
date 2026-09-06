@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/events.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L373"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # delete_event()
@@ -19,4 +19,4 @@ tags:
 - [[delete]] - `references` [EXTRACTED]
 - [[events.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

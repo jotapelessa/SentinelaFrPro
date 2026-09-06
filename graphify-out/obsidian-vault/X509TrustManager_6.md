@@ -1,13 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "Community 78"
+community: "PipPosition"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Community_78
+  - community/PipPosition
 ---
 
 # X509TrustManager
 
-#graphify/code #graphify/EXTRACTED #community/Community_78
+## Connections
+- [[X509TrustManager_3]] - `implements` [EXTRACTED]
+
+#graphify/code #graphify/EXTRACTED #community/PipPosition

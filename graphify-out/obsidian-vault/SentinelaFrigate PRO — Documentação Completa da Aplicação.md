@@ -1,12 +1,12 @@
 ---
 source_file: "docs/ARQUITETURA_E_API.md"
 type: "document"
-community: "Resgate do Sistema: Solução Final para o Vídeo do Telegram (v060.4)"
+community: "3. Catálogo de Endpoints da API REST (`/api`)"
 location: "L1"
 tags:
   - graphify/document
   - graphify/EXTRACTED
-  - community/Resgate_do_Sistema_Solução_Final_para_o_Vídeo_do_Telegram_v0604
+  - community/3_Catálogo_de_Endpoints_da_API_REST_/api
 ---
 
 # SentinelaFrigate PRO — Documentação Completa da Aplicação
@@ -18,4 +18,4 @@ tags:
 - [[4. Guia de Compilação dos APKs no GitHub Codespaces]] - `contains` [EXTRACTED]
 - [[ARQUITETURA_E_API]] - `contains` [EXTRACTED]
 
-#graphify/document #graphify/EXTRACTED #community/Resgate_do_Sistema_Solução_Final_para_o_Vídeo_do_Telegram_v0604
+#graphify/document #graphify/EXTRACTED #community/3_Catálogo_de_Endpoints_da_API_REST_/api

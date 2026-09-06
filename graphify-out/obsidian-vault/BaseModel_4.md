@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "cameras.py"
+community: "Passo a passo no Antigravity"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/cameraspy
+  - community/Passo_a_passo_no_Antigravity
 ---
 
 # BaseModel
@@ -16,4 +16,4 @@ tags:
 - [[FrigateZonesPayload]] - `inherits` [EXTRACTED]
 - [[RtspTestPayload]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/cameraspy
+#graphify/code #graphify/EXTRACTED #community/Passo_a_passo_no_Antigravity

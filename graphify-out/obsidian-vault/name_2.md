@@ -1,17 +1,17 @@
 ---
-source_file: "frontend/public/manifest.json"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "code"
-community: "postcss.config.mjs"
+community: "dependencies"
 location: "L2"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/postcssconfigmjs
+  - community/dependencies
 ---
 
 # name
 
 ## Connections
-- [[manifest.json]] - `contains` [EXTRACTED]
+- [[sentinela-pro-mobile-nvrpackage.json]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/postcssconfigmjs
+#graphify/code #graphify/EXTRACTED #community/dependencies

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/mqtt_service.py"
 type: "code"
-community: "TvNetflixScreen.kt"
+community: "events.py"
 location: "L22"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvNetflixScreenkt
+  - community/eventspy
 ---
 
 # MQTTService
@@ -23,9 +23,9 @@ tags:
 - [[dot-record_mqtt_traffic()]] - `method` [EXTRACTED]
 - [[dot-register_ws_callback()]] - `method` [EXTRACTED]
 - [[dot-start_listening()]] - `method` [EXTRACTED]
-- [[Camera]] - `uses` [INFERRED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[EventRecord]] - `uses` [INFERRED]
 - [[SystemSetting]] - `uses` [INFERRED]
 - [[mqtt_service.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvNetflixScreenkt
+#graphify/code #graphify/EXTRACTED #community/eventspy

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt"
 type: "code"
-community: "SentinelaRepository"
+community: "Observer"
 location: "L38"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/SentinelaRepository
+  - community/Observer
 ---
 
 # .startStream()
@@ -17,4 +17,4 @@ tags:
 - [[SurfaceViewRenderer]] - `references` [EXTRACTED]
 - [[WebRtcManager]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/SentinelaRepository
+#graphify/code #graphify/EXTRACTED #community/Observer

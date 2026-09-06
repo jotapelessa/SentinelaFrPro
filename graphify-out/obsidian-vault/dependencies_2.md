@@ -1,24 +1,27 @@
 ---
-source_file: "frontend/package.json"
+source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
 type: "code"
-community: "TelemetryService"
-location: "L11"
+community: "dependencies"
+location: "L13"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelemetryService
+  - community/dependencies
 ---
 
 # dependencies
 
 ## Connections
-- [[clsx]] - `contains` [EXTRACTED]
-- [[frontendpackage.json]] - `contains` [EXTRACTED]
-- [[lucide-react_2]] - `contains` [EXTRACTED]
-- [[next]] - `contains` [EXTRACTED]
+- [[@googlegenai_2]] - `contains` [EXTRACTED]
+- [[@tailwindcssvite_2]] - `contains` [EXTRACTED]
+- [[@vitejsplugin-react_2]] - `contains` [EXTRACTED]
+- [[dotenv_2]] - `contains` [EXTRACTED]
+- [[express_2]] - `contains` [EXTRACTED]
+- [[lucide-react_4]] - `contains` [EXTRACTED]
+- [[motion_2]] - `contains` [EXTRACTED]
 - [[react_4]] - `contains` [EXTRACTED]
-- [[react-dom_2]] - `contains` [EXTRACTED]
-- [[tailwind-merge]] - `contains` [EXTRACTED]
-- [[zustand]] - `contains` [EXTRACTED]
+- [[react-dom_4]] - `contains` [EXTRACTED]
+- [[sentinela-pro-mobile-nvrpackage.json]] - `contains` [EXTRACTED]
+- [[vite_3]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelemetryService
+#graphify/code #graphify/EXTRACTED #community/dependencies

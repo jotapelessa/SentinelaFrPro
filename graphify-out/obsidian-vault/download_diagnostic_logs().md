@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/telemetry.py"
 type: "code"
-community: "MseCameraView"
+community: "api/telemetry.py"
 location: "L254"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/api/telemetrypy
 ---
 
 # download_diagnostic_logs()
@@ -18,4 +18,4 @@ tags:
 - [[get_backend_logs()]] - `calls` [EXTRACTED]
 - [[get_system_diagnostics()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/api/telemetrypy

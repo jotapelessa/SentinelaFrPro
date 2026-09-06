@@ -1,21 +1,17 @@
 ---
 type: community
-cohesion: 0.33
-members: 6
+cohesion: 1.00
+members: 2
 ---
 
 # settings/page.tsx
 
-**Cohesion:** 0.33 - loosely connected
-**Members:** 6 nodes
+**Cohesion:** 1.00 - tightly connected
+**Members:** 2 nodes
 
 ## Members
-- [[Proposed Changes]] - document - implementation_plan.md
-- [[Resgate do Sistema Solução Final para o Vídeo do Telegram (v060.4)]] - document - implementation_plan.md
-- [[Status Atual]] - document - implementation_plan.md
-- [[User Review Required]] - document - implementation_plan.md
-- [[`frigateconfigconfig.yml`]] - document - implementation_plan.md
-- [[implementation_plan]] - document - implementation_plan.md
+- [[SettingsHubPage()]] - code - frontend/src/app/settings/page.tsx
+- [[settingspage.tsx]] - code - frontend/src/app/settings/page.tsx
 
 ## Live Query (requires Dataview plugin)
 

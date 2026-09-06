@@ -12,7 +12,8 @@ tags:
 # resume_camera()
 
 ## Connections
-- [[AsyncSession_2]] - `references` [EXTRACTED]
+- [[AsyncSession_3]] - `references` [EXTRACTED]
+- [[Camera_1]] - `uses` [INFERRED]
 - [[Explicitly resumes camera and starts ffmpeg in Frigate.]] - `rationale_for` [EXTRACTED]
 - [[Request_3]] - `references` [EXTRACTED]
 - [[cameras.py]] - `contains` [EXTRACTED]

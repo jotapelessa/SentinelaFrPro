@@ -1,19 +1,18 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt"
 type: "code"
-community: "TvDesignTokens.kt"
+community: "Histórias"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TvDesignTokenskt
+  - community/Histórias
 ---
 
 # SmartphoneYouTubeScreen.kt
 
 ## Connections
 - [[ContentScale]] - `imports` [EXTRACTED]
-- [[Context_2]] - `imports` [EXTRACTED]
 - [[DeviceConfigEditDialog()]] - `contains` [EXTRACTED]
 - [[PhoneBottomNavigationBar()]] - `contains` [EXTRACTED]
 - [[PhoneCameraStreamCard()]] - `contains` [EXTRACTED]
@@ -26,10 +25,10 @@ tags:
 - [[PhoneToolsTab()]] - `contains` [EXTRACTED]
 - [[PhoneTopBar()]] - `contains` [EXTRACTED]
 - [[PhoneZoomCameraDialog()]] - `contains` [EXTRACTED]
-- [[SeamlessCameraImage.kt]] - `imports` [EXTRACTED]
-- [[SentinelaConfig.kt]] - `imports` [EXTRACTED]
+- [[SeamlessCameraImage()]] - `imports` [EXTRACTED]
+- [[SentinelaConfig]] - `imports` [EXTRACTED]
 - [[SentinelaRepository]] - `imports` [EXTRACTED]
 - [[SmartphoneYouTubeScreen()]] - `contains` [EXTRACTED]
 - [[TvDeviceStatus]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt
+#graphify/code #graphify/EXTRACTED #community/Histórias

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "compilerOptions"
+community: "TvDesignTokens.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/compilerOptions
+  - community/TvDesignTokenskt
 ---
 
 # Color
@@ -14,4 +14,4 @@ tags:
 - [[TvDesignTokens.kt]] - `imports` [EXTRACTED]
 - [[tvDpadFocusable()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/compilerOptions
+#graphify/code #graphify/EXTRACTED #community/TvDesignTokenskt

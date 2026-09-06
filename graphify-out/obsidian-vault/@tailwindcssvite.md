@@ -1,18 +1,18 @@
 ---
-source_file: "ai_studio_imports/sentinela-pro-mobile-nvr/package.json"
+source_file: "ai_studio_imports/sentinela-pro-tv/package.json"
 type: "code"
-community: "Observer"
+community: "dependencies"
 location: "L15"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/Observer
+  - community/dependencies
 ---
 
 # @tailwindcss/vite
 
 ## Connections
-- [[@tailwindcssvite_2]] - `imports` [EXTRACTED]
+- [[@tailwindcssvite_1]] - `imports` [EXTRACTED]
 - [[dependencies]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/Observer
+#graphify/code #graphify/EXTRACTED #community/dependencies

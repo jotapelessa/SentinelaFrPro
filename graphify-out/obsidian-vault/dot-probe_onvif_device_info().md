@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/scanner_service.py"
 type: "code"
-community: "TelegramVaultService"
+community: "ScannerService"
 location: "L183"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelegramVaultService
+  - community/ScannerService
 ---
 
 # .probe_onvif_device_info()
@@ -15,4 +15,4 @@ tags:
 - [[Queries ONVIF SOAP GetDeviceInformation to retrieve real hardware metadata…]] - `rationale_for` [EXTRACTED]
 - [[ScannerService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelegramVaultService
+#graphify/code #graphify/EXTRACTED #community/ScannerService

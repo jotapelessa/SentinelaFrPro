@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "dependencies"
+community: "PiPGatewayService"
 location: "L65"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/dependencies
+  - community/PiPGatewayService
 ---
 
 # .get_active_tv_devices()
@@ -17,4 +17,4 @@ tags:
 - [[Fetches allowed Android TV  Tablet devices from DB with granular camera &…]] - `rationale_for` [EXTRACTED]
 - [[PiPGatewayService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/dependencies
+#graphify/code #graphify/EXTRACTED #community/PiPGatewayService

@@ -1,12 +1,12 @@
 ---
 source_file: "android/app/src/main/java/com/sentinela/pro/data/Models.kt"
 type: "code"
-community: "devices.py"
+community: "OverlayService"
 location: "L106"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/devicespy
+  - community/OverlayService
 ---
 
 # CENTER_LEFT
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[PipPosition]] - `case_of` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/devicespy
+#graphify/code #graphify/EXTRACTED #community/OverlayService

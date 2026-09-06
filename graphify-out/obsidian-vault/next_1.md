@@ -1,17 +1,18 @@
 ---
 source_file: "frontend/package.json"
-type: "concept"
-community: "TelemetryService"
+type: "code"
+community: "dependencies"
 location: "L14"
 tags:
-  - graphify/concept
+  - graphify/code
   - graphify/EXTRACTED
-  - community/TelemetryService
+  - community/dependencies
 ---
 
 # next
 
 ## Connections
-- [[next]] - `imports` [EXTRACTED]
+- [[dependencies_1]] - `contains` [EXTRACTED]
+- [[next_2]] - `imports` [EXTRACTED]
 
-#graphify/concept #graphify/EXTRACTED #community/TelemetryService
+#graphify/code #graphify/EXTRACTED #community/dependencies

@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/src/store/useSentinelaStore.ts"
 type: "code"
-community: "OverlayService"
+community: "useSentinelaStore"
 location: "L32"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/OverlayService
+  - community/useSentinelaStore
 ---
 
 # SecurityEvent
@@ -17,4 +17,4 @@ tags:
 - [[eventspage.tsx]] - `imports` [EXTRACTED]
 - [[useSentinelaStore.ts]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/OverlayService
+#graphify/code #graphify/EXTRACTED #community/useSentinelaStore

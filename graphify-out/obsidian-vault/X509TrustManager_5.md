@@ -1,16 +1,18 @@
 ---
 source_file: ""
 type: "code"
-community: "next.config.mjs"
+community: "X509Certificate"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/nextconfigmjs
+  - community/X509Certificate
 ---
 
 # X509TrustManager
 
 ## Connections
+- [[SentinelaApplication.kt]] - `imports` [EXTRACTED]
+- [[X509TrustManager_1]] - `implements` [EXTRACTED]
 - [[X509TrustManager_2]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/nextconfigmjs
+#graphify/code #graphify/EXTRACTED #community/X509Certificate
