@@ -1,6 +1,74 @@
 {
   "communities": {
     "0": [
+      "asyncio",
+      "backend_app_api_events",
+      "backend_app_api_events_clear_audit_trail",
+      "backend_app_api_events_delete_event",
+      "backend_app_api_events_delete_events_batch",
+      "backend_app_api_events_delete_events_by_date",
+      "backend_app_api_events_eventbatchdeleterequest",
+      "backend_app_api_events_get_audit_trail",
+      "backend_app_api_events_get_event_clip",
+      "backend_app_api_events_get_events_summary",
+      "backend_app_api_events_list_events",
+      "backend_app_api_events_py_asyncsession",
+      "backend_app_api_events_py_basemodel",
+      "backend_app_api_events_py_delete",
+      "backend_app_api_events_py_get",
+      "backend_app_api_events_py_post",
+      "backend_app_api_events_py_request",
+      "backend_app_api_events_rationale_174",
+      "backend_app_api_events_rationale_186",
+      "backend_app_api_events_rationale_228",
+      "backend_app_api_events_rationale_260",
+      "backend_app_api_events_rationale_326",
+      "backend_app_api_events_rationale_374",
+      "backend_app_api_events_rationale_40",
+      "backend_app_api_events_rationale_410",
+      "backend_app_api_events_rationale_451",
+      "backend_app_api_events_retain_event",
+      "backend_app_api_events_sync_events_from_frigate",
+      "backend_app_db_models",
+      "backend_app_db_models_auditlog",
+      "backend_app_db_models_camera",
+      "backend_app_db_models_eventrecord",
+      "backend_app_mocks_mock_publisher",
+      "backend_app_mocks_mock_publisher_publish_simulated_event",
+      "backend_app_mocks_mock_publisher_rationale_14",
+      "backend_app_services_audit_service",
+      "backend_app_services_audit_service_auditservice",
+      "backend_app_services_audit_service_auditservice_log",
+      "backend_app_services_audit_service_rationale_18",
+      "backend_app_services_mqtt_service",
+      "backend_app_services_mqtt_service_mqttservice",
+      "backend_app_services_mqtt_service_mqttservice_broadcast_event",
+      "backend_app_services_mqtt_service_mqttservice_dispatch_background_alert_tasks",
+      "backend_app_services_mqtt_service_mqttservice_dispatch_telegram_video_with_retry",
+      "backend_app_services_mqtt_service_mqttservice_get_mqtt_traffic",
+      "backend_app_services_mqtt_service_mqttservice_get_telegram_policy",
+      "backend_app_services_mqtt_service_mqttservice_handle_frigate_event",
+      "backend_app_services_mqtt_service_mqttservice_init",
+      "backend_app_services_mqtt_service_mqttservice_mark_processed",
+      "backend_app_services_mqtt_service_mqttservice_record_mqtt_traffic",
+      "backend_app_services_mqtt_service_mqttservice_register_ws_callback",
+      "backend_app_services_mqtt_service_mqttservice_start_listening",
+      "backend_app_services_mqtt_service_py_any",
+      "backend_app_services_mqtt_service_rationale_264",
+      "backend_app_services_mqtt_service_rationale_365",
+      "backend_app_services_mqtt_service_rationale_501",
+      "backend_app_services_mqtt_service_rationale_60",
+      "backend_tests_test_backend",
+      "backend_tests_test_backend_test_pip_dnd_check",
+      "backend_tests_test_backend_test_scanner_subnets",
+      "backend_tests_test_backend_test_telemetry_service",
+      "backend_tests_test_backend_test_watermark_generation",
+      "base",
+      "head",
+      "verify_system",
+      "verify_system_verify_system"
+    ],
+    "1": [
       "frontend_src_app_cameras_page",
       "frontend_src_app_cameras_page_cameraspage",
       "frontend_src_app_events_page",
@@ -60,7 +128,7 @@
       "frontend_src_store_usesentinelastore_telemetrydata",
       "frontend_src_store_usesentinelastore_usesentinelastore"
     ],
-    "1": [
+    "2": [
       "backend_app_api_devices",
       "backend_app_api_devices_batchtestrequest",
       "backend_app_api_devices_check_devices_health",
@@ -119,78 +187,21 @@
       "backend_app_db_models_paireddevice",
       "put"
     ],
-    "2": [
-      "backend_app_db_models",
-      "backend_app_db_models_eventrecord",
-      "backend_app_db_models_systemsetting",
-      "backend_app_services_mqtt_service",
-      "backend_app_services_mqtt_service_mqttservice",
-      "backend_app_services_mqtt_service_mqttservice_broadcast_event",
-      "backend_app_services_mqtt_service_mqttservice_dispatch_background_alert_tasks",
-      "backend_app_services_mqtt_service_mqttservice_dispatch_telegram_video_with_retry",
-      "backend_app_services_mqtt_service_mqttservice_get_mqtt_traffic",
-      "backend_app_services_mqtt_service_mqttservice_get_telegram_policy",
-      "backend_app_services_mqtt_service_mqttservice_handle_frigate_event",
-      "backend_app_services_mqtt_service_mqttservice_init",
-      "backend_app_services_mqtt_service_mqttservice_mark_processed",
-      "backend_app_services_mqtt_service_mqttservice_record_mqtt_traffic",
-      "backend_app_services_mqtt_service_mqttservice_register_ws_callback",
-      "backend_app_services_mqtt_service_mqttservice_start_listening",
-      "backend_app_services_mqtt_service_py_any",
-      "backend_app_services_mqtt_service_rationale_264",
-      "backend_app_services_mqtt_service_rationale_365",
-      "backend_app_services_mqtt_service_rationale_501",
-      "backend_app_services_mqtt_service_rationale_60",
-      "backend_app_services_telegram_vault",
-      "backend_app_services_telegram_vault_py_any",
-      "backend_app_services_telegram_vault_rationale_20",
-      "backend_app_services_telegram_vault_rationale_257",
-      "backend_app_services_telegram_vault_rationale_314",
-      "backend_app_services_telegram_vault_rationale_376",
-      "backend_app_services_telegram_vault_rationale_396",
-      "backend_app_services_telegram_vault_rationale_40",
-      "backend_app_services_telegram_vault_rationale_450",
-      "backend_app_services_telegram_vault_rationale_466",
-      "backend_app_services_telegram_vault_rationale_483",
-      "backend_app_services_telegram_vault_rationale_578",
-      "backend_app_services_telegram_vault_rationale_649",
-      "backend_app_services_telegram_vault_rationale_89",
-      "backend_app_services_telegram_vault_telegramvaultservice",
-      "backend_app_services_telegram_vault_telegramvaultservice_apply_watermark",
-      "backend_app_services_telegram_vault_telegramvaultservice_format_event_message",
-      "backend_app_services_telegram_vault_telegramvaultservice_get_audit_logs",
-      "backend_app_services_telegram_vault_telegramvaultservice_get_system_status_text",
-      "backend_app_services_telegram_vault_telegramvaultservice_handle_command",
-      "backend_app_services_telegram_vault_telegramvaultservice_init",
-      "backend_app_services_telegram_vault_telegramvaultservice_is_configured",
-      "backend_app_services_telegram_vault_telegramvaultservice_is_paused",
-      "backend_app_services_telegram_vault_telegramvaultservice_load_credentials_from_db",
-      "backend_app_services_telegram_vault_telegramvaultservice_pause_alerts",
-      "backend_app_services_telegram_vault_telegramvaultservice_record_audit",
-      "backend_app_services_telegram_vault_telegramvaultservice_send_alert_photo",
-      "backend_app_services_telegram_vault_telegramvaultservice_send_alert_video",
-      "backend_app_services_telegram_vault_telegramvaultservice_send_document",
-      "backend_app_services_telegram_vault_telegramvaultservice_send_message",
-      "backend_app_services_telegram_vault_telegramvaultservice_start_polling",
-      "backend_app_services_telegram_vault_telegramvaultservice_start_polling_task",
-      "backend_app_services_telegram_vault_telegramvaultservice_test_connection",
-      "base"
-    ],
     "3": [
       "android_app_src_main_java_com_sentinela_pro_bootreceiver",
       "android_app_src_main_java_com_sentinela_pro_bootreceiver_bootreceiver",
       "android_app_src_main_java_com_sentinela_pro_bootreceiver_bootreceiver_onreceive",
       "android_app_src_main_java_com_sentinela_pro_bootreceiver_kt_context",
       "android_app_src_main_java_com_sentinela_pro_bootreceiver_kt_intent",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_cinema",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_large",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_small",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_large",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_large",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_small",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_small",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_bottom_center",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_bottom_left",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_bottom_right",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_center_left",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_center_right",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_top_center",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_top_left",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_top_right",
       "android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences",
       "android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
       "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket",
@@ -287,6 +298,8 @@
       "ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudio"
     ],
     "5": [
+      "any",
+      "asyncsession",
       "backend_app_api_cameras",
       "backend_app_api_cameras_add_camera",
       "backend_app_api_cameras_cameracreate",
@@ -302,27 +315,19 @@
       "backend_app_api_cameras_parse_frigate_coordinates",
       "backend_app_api_cameras_pause_camera",
       "backend_app_api_cameras_probe_rtsp_stream_info",
-      "backend_app_api_cameras_py_any",
-      "backend_app_api_cameras_py_asyncsession",
-      "backend_app_api_cameras_py_basemodel",
-      "backend_app_api_cameras_py_delete",
-      "backend_app_api_cameras_py_get",
-      "backend_app_api_cameras_py_patch",
-      "backend_app_api_cameras_py_post",
-      "backend_app_api_cameras_py_request",
-      "backend_app_api_cameras_rationale_1573",
-      "backend_app_api_cameras_rationale_20",
-      "backend_app_api_cameras_rationale_300",
-      "backend_app_api_cameras_rationale_38",
-      "backend_app_api_cameras_rationale_530",
-      "backend_app_api_cameras_rationale_587",
-      "backend_app_api_cameras_rationale_719",
-      "backend_app_api_cameras_rationale_762",
-      "backend_app_api_cameras_rationale_858",
-      "backend_app_api_cameras_rationale_932",
-      "backend_app_api_cameras_rationale_953",
-      "backend_app_api_cameras_rationale_973",
-      "backend_app_api_cameras_rationale_98",
+      "backend_app_api_cameras_rationale_1584",
+      "backend_app_api_cameras_rationale_21",
+      "backend_app_api_cameras_rationale_304",
+      "backend_app_api_cameras_rationale_39",
+      "backend_app_api_cameras_rationale_534",
+      "backend_app_api_cameras_rationale_591",
+      "backend_app_api_cameras_rationale_723",
+      "backend_app_api_cameras_rationale_766",
+      "backend_app_api_cameras_rationale_862",
+      "backend_app_api_cameras_rationale_936",
+      "backend_app_api_cameras_rationale_957",
+      "backend_app_api_cameras_rationale_977",
+      "backend_app_api_cameras_rationale_99",
       "backend_app_api_cameras_remove_camera_from_frigate",
       "backend_app_api_cameras_resume_camera",
       "backend_app_api_cameras_rtsptestpayload",
@@ -334,60 +339,15 @@
       "backend_app_api_cameras_toggle_camera_fallback",
       "backend_app_api_cameras_toggle_camera_pause",
       "backend_app_api_cameras_update_camera",
-      "backend_app_db_models_camera",
-      "camera"
+      "basemodel",
+      "camera",
+      "delete",
+      "get",
+      "patch",
+      "post",
+      "request"
     ],
     "6": [
-      "backend_app_api_scanner",
-      "backend_app_api_scanner_py_basemodel",
-      "backend_app_api_scanner_py_post",
-      "backend_app_api_scanner_rationale_13",
-      "backend_app_api_scanner_scanpayload",
-      "backend_app_api_scanner_trigger_network_scan",
-      "backend_app_api_telemetry",
-      "backend_app_api_telemetry_benchmarkpayload",
-      "backend_app_api_telemetry_download_diagnostic_logs",
-      "backend_app_api_telemetry_fetch_docker_container_logs",
-      "backend_app_api_telemetry_get_audit_logs",
-      "backend_app_api_telemetry_get_detailed_stats",
-      "backend_app_api_telemetry_get_frigate_deep_status",
-      "backend_app_api_telemetry_get_service_logs",
-      "backend_app_api_telemetry_get_system_diagnostics",
-      "backend_app_api_telemetry_get_telemetry",
-      "backend_app_api_telemetry_py_asyncsession",
-      "backend_app_api_telemetry_py_basemodel",
-      "backend_app_api_telemetry_py_get",
-      "backend_app_api_telemetry_py_post",
-      "backend_app_api_telemetry_rationale_129",
-      "backend_app_api_telemetry_rationale_24",
-      "backend_app_api_telemetry_rationale_255",
-      "backend_app_api_telemetry_rationale_31",
-      "backend_app_api_telemetry_rationale_351",
-      "backend_app_api_telemetry_rationale_36",
-      "backend_app_api_telemetry_rationale_43",
-      "backend_app_api_telemetry_run_server_benchmark",
-      "backend_app_core_logging_handler",
-      "backend_app_core_logging_handler_get_backend_logs",
-      "backend_app_core_logging_handler_mask_sensitive_data",
-      "backend_app_core_logging_handler_memoryringbufferhandler",
-      "backend_app_core_logging_handler_memoryringbufferhandler_emit",
-      "backend_app_core_logging_handler_rationale_20",
-      "backend_app_core_logging_handler_rationale_30",
-      "backend_app_db_session",
-      "backend_app_db_session_get_db",
-      "backend_app_db_session_init_db",
-      "backend_app_main",
-      "backend_app_main_audit_http_requests",
-      "backend_app_main_health_check",
-      "backend_app_main_lifespan",
-      "backend_app_main_py_get",
-      "backend_app_main_py_request",
-      "backend_app_main_root",
-      "fastapi",
-      "logrecord",
-      "middleware"
-    ],
-    "7": [
       "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository",
       "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_devicepolicy",
       "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_cameraitem",
@@ -434,52 +394,7 @@
       "telemetrydata",
       "url"
     ],
-    "8": [
-      "asyncio",
-      "backend_app_api_ws",
-      "backend_app_api_ws_rationale_74",
-      "backend_app_api_ws_telemetry_broadcast_loop",
-      "backend_app_api_ws_websocket_endpoint",
-      "backend_app_api_ws_websocketmanager",
-      "backend_app_api_ws_websocketmanager_broadcast_json",
-      "backend_app_api_ws_websocketmanager_connect",
-      "backend_app_api_ws_websocketmanager_disconnect",
-      "backend_app_api_ws_websocketmanager_init",
-      "backend_app_mocks_mock_publisher",
-      "backend_app_mocks_mock_publisher_publish_simulated_event",
-      "backend_app_mocks_mock_publisher_rationale_14",
-      "backend_app_services_frigate_bridge",
-      "backend_app_services_frigate_bridge_frigatebridgeservice",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_check_connectivity",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_get_connectivity_logs",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_get_live_snapshot",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_get_video_duration",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_has_audio_stream",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_has_video_stream",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_init",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_log_probe",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_probe_video_info",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
-      "backend_app_services_frigate_bridge_frigatebridgeservice_transcode_to_30fps",
-      "backend_app_services_frigate_bridge_py_any",
-      "backend_app_services_frigate_bridge_rationale_111",
-      "backend_app_services_frigate_bridge_rationale_172",
-      "backend_app_services_frigate_bridge_rationale_203",
-      "backend_app_services_frigate_bridge_rationale_260",
-      "backend_app_services_frigate_bridge_rationale_275",
-      "backend_app_services_frigate_bridge_rationale_36",
-      "backend_app_services_frigate_bridge_rationale_392",
-      "backend_app_services_frigate_bridge_rationale_427",
-      "backend_tests_test_backend",
-      "backend_tests_test_backend_test_pip_dnd_check",
-      "backend_tests_test_backend_test_scanner_subnets",
-      "backend_tests_test_backend_test_telemetry_service",
-      "backend_tests_test_backend_test_watermark_generation",
-      "verify_system",
-      "verify_system_verify_system",
-      "websocket"
-    ],
-    "9": [
+    "7": [
       "backend_app_api_settings",
       "backend_app_api_settings_cached_dir_size",
       "backend_app_api_settings_clean_server_storage",
@@ -520,9 +435,10 @@
       "backend_app_api_settings_test_telegram_video",
       "backend_app_api_settings_update_dnd_settings",
       "backend_app_api_settings_update_telegram_config",
-      "backend_app_api_settings_zoneupdate"
+      "backend_app_api_settings_zoneupdate",
+      "backend_app_db_models_systemsetting"
     ],
-    "10": [
+    "8": [
       "ai_studio_imports_sentinela_pro_mobile_nvr_src_app",
       "ai_studio_imports_sentinela_pro_mobile_nvr_src_app_app",
       "ai_studio_imports_sentinela_pro_mobile_nvr_src_components_capturesview",
@@ -564,7 +480,7 @@
       "ai_studio_imports_sentinela_pro_mobile_nvr_src_types_captureitem",
       "ai_studio_imports_sentinela_pro_mobile_nvr_src_types_tvdevice"
     ],
-    "11": [
+    "9": [
       "ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig",
       "ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions",
       "ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_allowimportingtsextensions",
@@ -603,7 +519,7 @@
       "ai_studio_imports_sentinela_pro_tv_tsconfig_json_ref_es2022",
       "frontend_tsconfig_json_ref_dom_iterable"
     ],
-    "12": [
+    "10": [
       "android_app_src_main_java_com_sentinela_pro_network_webrtcmanager",
       "android_app_src_main_java_com_sentinela_pro_network_webrtcmanager_webrtcmanager",
       "android_app_src_main_java_com_sentinela_pro_network_webrtcmanager_webrtcmanager_release",
@@ -642,42 +558,42 @@
       "sessiondescription",
       "surfaceviewrenderer"
     ],
-    "13": [
-      "backend_app_api_events",
-      "backend_app_api_events_clear_audit_trail",
-      "backend_app_api_events_delete_event",
-      "backend_app_api_events_delete_events_batch",
-      "backend_app_api_events_delete_events_by_date",
-      "backend_app_api_events_eventbatchdeleterequest",
-      "backend_app_api_events_get_audit_trail",
-      "backend_app_api_events_get_event_clip",
-      "backend_app_api_events_get_events_summary",
-      "backend_app_api_events_list_events",
-      "backend_app_api_events_py_asyncsession",
-      "backend_app_api_events_py_basemodel",
-      "backend_app_api_events_py_delete",
-      "backend_app_api_events_py_get",
-      "backend_app_api_events_py_post",
-      "backend_app_api_events_py_request",
-      "backend_app_api_events_rationale_174",
-      "backend_app_api_events_rationale_186",
-      "backend_app_api_events_rationale_228",
-      "backend_app_api_events_rationale_260",
-      "backend_app_api_events_rationale_326",
-      "backend_app_api_events_rationale_374",
-      "backend_app_api_events_rationale_40",
-      "backend_app_api_events_rationale_410",
-      "backend_app_api_events_rationale_451",
-      "backend_app_api_events_retain_event",
-      "backend_app_api_events_sync_events_from_frigate",
-      "backend_app_db_models_auditlog",
-      "backend_app_services_audit_service",
-      "backend_app_services_audit_service_auditservice",
-      "backend_app_services_audit_service_auditservice_log",
-      "backend_app_services_audit_service_rationale_18",
-      "head"
+    "11": [
+      "backend_app_services_telegram_vault",
+      "backend_app_services_telegram_vault_py_any",
+      "backend_app_services_telegram_vault_rationale_20",
+      "backend_app_services_telegram_vault_rationale_257",
+      "backend_app_services_telegram_vault_rationale_314",
+      "backend_app_services_telegram_vault_rationale_376",
+      "backend_app_services_telegram_vault_rationale_396",
+      "backend_app_services_telegram_vault_rationale_40",
+      "backend_app_services_telegram_vault_rationale_450",
+      "backend_app_services_telegram_vault_rationale_466",
+      "backend_app_services_telegram_vault_rationale_483",
+      "backend_app_services_telegram_vault_rationale_578",
+      "backend_app_services_telegram_vault_rationale_649",
+      "backend_app_services_telegram_vault_rationale_89",
+      "backend_app_services_telegram_vault_telegramvaultservice",
+      "backend_app_services_telegram_vault_telegramvaultservice_apply_watermark",
+      "backend_app_services_telegram_vault_telegramvaultservice_format_event_message",
+      "backend_app_services_telegram_vault_telegramvaultservice_get_audit_logs",
+      "backend_app_services_telegram_vault_telegramvaultservice_get_system_status_text",
+      "backend_app_services_telegram_vault_telegramvaultservice_handle_command",
+      "backend_app_services_telegram_vault_telegramvaultservice_init",
+      "backend_app_services_telegram_vault_telegramvaultservice_is_configured",
+      "backend_app_services_telegram_vault_telegramvaultservice_is_paused",
+      "backend_app_services_telegram_vault_telegramvaultservice_load_credentials_from_db",
+      "backend_app_services_telegram_vault_telegramvaultservice_pause_alerts",
+      "backend_app_services_telegram_vault_telegramvaultservice_record_audit",
+      "backend_app_services_telegram_vault_telegramvaultservice_send_alert_photo",
+      "backend_app_services_telegram_vault_telegramvaultservice_send_alert_video",
+      "backend_app_services_telegram_vault_telegramvaultservice_send_document",
+      "backend_app_services_telegram_vault_telegramvaultservice_send_message",
+      "backend_app_services_telegram_vault_telegramvaultservice_start_polling",
+      "backend_app_services_telegram_vault_telegramvaultservice_start_polling_task",
+      "backend_app_services_telegram_vault_telegramvaultservice_test_connection"
     ],
-    "14": [
+    "12": [
       "ai_studio_imports_sentinela_pro_mobile_nvr_package_dependencies",
       "ai_studio_imports_sentinela_pro_mobile_nvr_package_dependencies_dotenv",
       "ai_studio_imports_sentinela_pro_mobile_nvr_package_dependencies_express",
@@ -709,7 +625,7 @@
       "frontend_package_dependencies_lucide_react",
       "frontend_package_json_lucide_react"
     ],
-    "15": [
+    "13": [
       "frontend_tsconfig",
       "frontend_tsconfig_compileroptions",
       "frontend_tsconfig_compileroptions_allowjs",
@@ -738,7 +654,7 @@
       "ref_ts",
       "ref_tsx"
     ],
-    "16": [
+    "14": [
       "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens",
       "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_cameraentity",
       "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_camerastatus",
@@ -766,7 +682,7 @@
       "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_tvtypography",
       "shape"
     ],
-    "17": [
+    "15": [
       "backend_app_services_scanner_service",
       "backend_app_services_scanner_service_py_any",
       "backend_app_services_scanner_service_rationale_129",
@@ -791,7 +707,7 @@
       "backend_app_services_scanner_service_scannerservice_scan_subnet_cctv_ports",
       "backend_app_services_scanner_service_scannerservice_verify_rtsp_stream"
     ],
-    "18": [
+    "16": [
       "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem",
       "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen",
       "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_color",
@@ -815,7 +731,31 @@
       "pipalert",
       "tvtab"
     ],
-    "19": [
+    "17": [
+      "backend_app_services_frigate_bridge",
+      "backend_app_services_frigate_bridge_frigatebridgeservice",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_check_connectivity",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_get_connectivity_logs",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_get_live_snapshot",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_get_video_duration",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_has_audio_stream",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_has_video_stream",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_init",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_log_probe",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_probe_video_info",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
+      "backend_app_services_frigate_bridge_frigatebridgeservice_transcode_to_30fps",
+      "backend_app_services_frigate_bridge_py_any",
+      "backend_app_services_frigate_bridge_rationale_111",
+      "backend_app_services_frigate_bridge_rationale_172",
+      "backend_app_services_frigate_bridge_rationale_203",
+      "backend_app_services_frigate_bridge_rationale_260",
+      "backend_app_services_frigate_bridge_rationale_275",
+      "backend_app_services_frigate_bridge_rationale_36",
+      "backend_app_services_frigate_bridge_rationale_392",
+      "backend_app_services_frigate_bridge_rationale_427"
+    ],
+    "18": [
       "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen",
       "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_deviceconfigeditdialog",
       "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_kt_cameraitem",
@@ -835,26 +775,26 @@
       "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_tvdevicestatus",
       "com"
     ],
-    "20": [
+    "19": [
       "android_app_src_main_java_com_sentinela_pro_data_models",
       "android_app_src_main_java_com_sentinela_pro_data_models_auditlogentry",
       "android_app_src_main_java_com_sentinela_pro_data_models_captureevent",
       "android_app_src_main_java_com_sentinela_pro_data_models_diagnosticstatus",
       "android_app_src_main_java_com_sentinela_pro_data_models_paireddeviceitem",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_bottom_center",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_bottom_left",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_bottom_right",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_center_left",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_center_right",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_top_center",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_top_left",
-      "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_top_right",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_cinema",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_large",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_small",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_large",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_large",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_small",
+      "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_small",
       "android_app_src_main_java_com_sentinela_pro_data_models_speedtestresult",
       "android_app_src_main_java_com_sentinela_pro_data_models_storagestatus",
       "android_app_src_main_java_com_sentinela_pro_data_models_telemetrydata"
     ],
-    "21": [
+    "20": [
       "android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
       "android_app_src_main_java_com_sentinela_pro_sentinelaconfig",
       "android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
@@ -873,7 +813,7 @@
       "android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen_mobilegridscreen",
       "contentscale"
     ],
-    "22": [
+    "21": [
       "android_app_src_main_java_com_sentinela_pro_sentinelaapplication",
       "android_app_src_main_java_com_sentinela_pro_sentinelaapplication_kt_x509trustmanager",
       "android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication",
@@ -892,7 +832,7 @@
       "imageloaderfactory",
       "x509certificate"
     ],
-    "23": [
+    "22": [
       "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
       "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
       "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
@@ -911,7 +851,7 @@
       "webresourceerror",
       "webresourcerequest"
     ],
-    "24": [
+    "23": [
       "backend_app_services_pip_gateway",
       "backend_app_services_pip_gateway_cast_sync",
       "backend_app_services_pip_gateway_pipgatewayservice",
@@ -929,6 +869,24 @@
       "backend_app_services_pip_gateway_rationale_47",
       "backend_app_services_pip_gateway_rationale_57",
       "backend_app_services_pip_gateway_rationale_70"
+    ],
+    "24": [
+      "backend_app_api_telemetry",
+      "backend_app_api_telemetry_download_diagnostic_logs",
+      "backend_app_api_telemetry_fetch_docker_container_logs",
+      "backend_app_api_telemetry_get_detailed_stats",
+      "backend_app_api_telemetry_get_frigate_deep_status",
+      "backend_app_api_telemetry_get_service_logs",
+      "backend_app_api_telemetry_get_system_diagnostics",
+      "backend_app_api_telemetry_get_telemetry",
+      "backend_app_api_telemetry_py_get",
+      "backend_app_api_telemetry_rationale_129",
+      "backend_app_api_telemetry_rationale_24",
+      "backend_app_api_telemetry_rationale_255",
+      "backend_app_api_telemetry_rationale_31",
+      "backend_app_api_telemetry_rationale_43",
+      "backend_app_core_logging_handler_get_backend_logs",
+      "backend_app_core_logging_handler_rationale_30"
     ],
     "25": [
       "ai_studio_imports_sentinela_pro_mobile_nvr_package_dependencies_react_dom",
@@ -1011,6 +969,20 @@
       "frontend_package_json_typescript"
     ],
     "30": [
+      "backend_app_db_session",
+      "backend_app_db_session_get_db",
+      "backend_app_db_session_init_db",
+      "backend_app_main",
+      "backend_app_main_audit_http_requests",
+      "backend_app_main_health_check",
+      "backend_app_main_lifespan",
+      "backend_app_main_py_get",
+      "backend_app_main_py_request",
+      "backend_app_main_root",
+      "fastapi",
+      "middleware"
+    ],
+    "31": [
       "docs_arquitetura_e_api",
       "docs_arquitetura_e_api_1_vis\u00e3o_geral_da_arquitetura",
       "docs_arquitetura_e_api_2_mapa_de_servi\u00e7os_e_portas_de_rede",
@@ -1024,7 +996,7 @@
       "docs_arquitetura_e_api_4_guia_de_compila\u00e7\u00e3o_dos_apks_no_github_codespaces",
       "docs_arquitetura_e_api_sentinelafrigate_pro_documenta\u00e7\u00e3o_completa_da_aplica\u00e7\u00e3o"
     ],
-    "31": [
+    "32": [
       "readme",
       "readme_1_android_tv_55_layout_horizontal_estilo_netflix",
       "readme_2_android_smartphone_layout_vertical_estilo_youtube",
@@ -1038,7 +1010,7 @@
       "readme_sentinela_frigate_pro",
       "readme_vis\u00e3o_geral"
     ],
-    "32": [
+    "33": [
       "ai_studio_imports_sentinela_pro_mobile_nvr_package",
       "ai_studio_imports_sentinela_pro_mobile_nvr_package_name",
       "ai_studio_imports_sentinela_pro_mobile_nvr_package_private",
@@ -1051,7 +1023,7 @@
       "ai_studio_imports_sentinela_pro_mobile_nvr_package_type",
       "ai_studio_imports_sentinela_pro_mobile_nvr_package_version"
     ],
-    "33": [
+    "34": [
       "ai_studio_imports_sentinela_pro_tv_package",
       "ai_studio_imports_sentinela_pro_tv_package_name",
       "ai_studio_imports_sentinela_pro_tv_package_private",
@@ -1064,7 +1036,19 @@
       "ai_studio_imports_sentinela_pro_tv_package_type",
       "ai_studio_imports_sentinela_pro_tv_package_version"
     ],
-    "34": [
+    "35": [
+      "backend_app_api_ws",
+      "backend_app_api_ws_rationale_74",
+      "backend_app_api_ws_telemetry_broadcast_loop",
+      "backend_app_api_ws_websocket_endpoint",
+      "backend_app_api_ws_websocketmanager",
+      "backend_app_api_ws_websocketmanager_broadcast_json",
+      "backend_app_api_ws_websocketmanager_connect",
+      "backend_app_api_ws_websocketmanager_disconnect",
+      "backend_app_api_ws_websocketmanager_init",
+      "websocket"
+    ],
+    "36": [
       "frontend_public_manifest",
       "frontend_public_manifest_background_color",
       "frontend_public_manifest_description",
@@ -1076,7 +1060,7 @@
       "frontend_public_manifest_start_url",
       "frontend_public_manifest_theme_color"
     ],
-    "35": [
+    "37": [
       "android_app_src_main_java_com_sentinela_pro_data_models_pipduration",
       "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_10s",
       "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_15s",
@@ -1087,7 +1071,7 @@
       "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_60s",
       "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_infinite"
     ],
-    "36": [
+    "38": [
       "frontend_package",
       "frontend_package_name",
       "frontend_package_private",
@@ -1098,7 +1082,7 @@
       "frontend_package_scripts_start",
       "frontend_package_version"
     ],
-    "37": [
+    "39": [
       "ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager",
       "ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_constructor",
       "ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_getcontext",
@@ -1108,7 +1092,7 @@
       "ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_playselectsound",
       "ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_setenabled"
     ],
-    "38": [
+    "40": [
       "android_app_src_main_java_com_sentinela_pro_mainactivity",
       "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity",
       "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_hasoverlaypermission",
@@ -1118,7 +1102,7 @@
       "bundle",
       "componentactivity"
     ],
-    "39": [
+    "41": [
       "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_java",
       "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_x509trustmanager",
       "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50",
@@ -1126,7 +1110,23 @@
       "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_checkservertrusted",
       "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_getacceptedissuers"
     ],
-    "40": [
+    "42": [
+      "backend_app_api_scanner",
+      "backend_app_api_scanner_py_basemodel",
+      "backend_app_api_scanner_py_post",
+      "backend_app_api_scanner_rationale_13",
+      "backend_app_api_scanner_scanpayload",
+      "backend_app_api_scanner_trigger_network_scan"
+    ],
+    "43": [
+      "backend_app_core_logging_handler",
+      "backend_app_core_logging_handler_mask_sensitive_data",
+      "backend_app_core_logging_handler_memoryringbufferhandler",
+      "backend_app_core_logging_handler_memoryringbufferhandler_emit",
+      "backend_app_core_logging_handler_rationale_20",
+      "logrecord"
+    ],
+    "44": [
       "implementation_plan",
       "implementation_plan_frigate_config_config_yml",
       "implementation_plan_proposed_changes",
@@ -1134,221 +1134,257 @@
       "implementation_plan_status_atual",
       "implementation_plan_user_review_required"
     ],
-    "41": [
+    "45": [
       "android_app_src_main_java_com_sentinela_pro_ui_theme_sentinelamobiletokens",
       "android_app_src_main_java_com_sentinela_pro_ui_theme_sentinelamobiletokens_sentinelacolors",
       "android_app_src_main_java_com_sentinela_pro_ui_theme_sentinelamobiletokens_sentineladimens",
       "android_app_src_main_java_com_sentinela_pro_ui_theme_sentinelamobiletokens_sentinelashapes",
       "android_app_src_main_java_com_sentinela_pro_ui_theme_sentinelamobiletokens_sentinelatypography"
     ],
-    "42": [
+    "46": [
+      "backend_app_api_telemetry_benchmarkpayload",
+      "backend_app_api_telemetry_py_basemodel",
+      "backend_app_api_telemetry_py_post",
+      "backend_app_api_telemetry_rationale_36",
+      "backend_app_api_telemetry_run_server_benchmark"
+    ],
+    "47": [
       "frontend_src_utils_logger",
       "frontend_src_utils_logger_colors",
       "frontend_src_utils_logger_formattimestamp",
       "frontend_src_utils_logger_logger",
       "frontend_src_utils_logger_loglevel"
     ],
-    "43": [
+    "48": [
       "opencode_opencode",
       "opencode_opencode_plugin",
       "opencode_opencode_schema",
       "ref_opencode_plugins_graphify_js"
     ],
-    "44": [
+    "49": [
       "test_android_smartphone_app_spec_test",
       "test_android_smartphone_app_spec_test_prefsfile",
       "test_android_smartphone_app_spec_test_repofile",
       "test_android_smartphone_app_spec_test_smartphonescreenfile"
     ],
-    "45": [
+    "50": [
       "test_telegram_vault_spec_test",
       "test_telegram_vault_spec_test_frigatebridgefile",
       "test_telegram_vault_spec_test_mqttservicefile",
       "test_telegram_vault_spec_test_tgvaultfile"
     ],
-    "46": [
+    "51": [
       "ai_studio_imports_sentinela_pro_mobile_nvr_readme",
       "ai_studio_imports_sentinela_pro_mobile_nvr_readme_run_and_deploy_your_ai_studio_app",
       "ai_studio_imports_sentinela_pro_mobile_nvr_readme_run_locally"
     ],
-    "47": [
+    "52": [
       "ai_studio_imports_sentinela_pro_tv_readme",
       "ai_studio_imports_sentinela_pro_tv_readme_run_and_deploy_your_ai_studio_app",
       "ai_studio_imports_sentinela_pro_tv_readme_run_locally"
     ],
-    "48": [
+    "53": [
+      "backend_app_api_telemetry_get_audit_logs",
+      "backend_app_api_telemetry_py_asyncsession",
+      "backend_app_api_telemetry_rationale_351"
+    ],
+    "54": [
       "backend_app_core_config",
       "backend_app_core_config_settings",
       "basesettings"
     ],
-    "49": [
+    "55": [
       "frontend_src_app_settings_logs_page",
       "frontend_src_app_settings_logs_page_auditlogitem",
       "frontend_src_app_settings_logs_page_logssettingspage"
     ],
-    "50": [
+    "56": [
       "opencode_plugins_graphify",
       "opencode_plugins_graphify_graphifyplugin",
       "opencode_plugins_graphify_rationale_4"
     ],
-    "51": [
+    "57": [
       "agents",
       "agents_graphify"
     ],
-    "52": [
+    "58": [
       "agents_rules_execution",
       "agents_rules_execution_diretrizes_operacionais_do_agente_antigravity_rules"
     ],
-    "53": [
+    "59": [
       "android_build_apk",
       "android_build_apk_sh__entry"
     ],
-    "54": [
+    "60": [
       "compile_apk",
       "compile_apk_sh__entry"
     ],
-    "55": [
+    "61": [
       "frontend_next_config",
       "frontend_next_config_nextconfig"
     ],
-    "56": [
+    "62": [
       "frontend_next_env_d",
       "frontend_next_env_d_rationale_4"
     ],
-    "57": [
+    "63": [
       "frontend_postcss_config",
       "frontend_postcss_config_config"
     ],
-    "58": [
+    "64": [
       "frontend_src_app_settings_backup_page",
       "frontend_src_app_settings_backup_page_backupsettingspage"
     ],
-    "59": [
+    "65": [
       "frontend_src_app_settings_page",
       "frontend_src_app_settings_page_settingshubpage"
     ],
-    "60": [
+    "66": [
       "frontend_src_app_settings_storage_page",
       "frontend_src_app_settings_storage_page_storagesettingspage"
     ],
-    "61": [
+    "67": [
       "frontend_src_app_settings_telegram_page",
       "frontend_src_app_settings_telegram_page_telegramsettingspage"
     ],
-    "62": [
+    "68": [
       "frontend_tailwind_config",
       "frontend_tailwind_config_config"
     ],
-    "63": [
+    "69": [
       "scripts_setup_autostart",
       "scripts_setup_autostart_sh__entry"
     ],
-    "64": [
+    "70": [
       "scripts_setup_ubuntu",
       "scripts_setup_ubuntu_sh__entry"
     ],
-    "65": [
+    "71": [
       "scripts_simulate_event",
       "scripts_simulate_event_sh__entry"
     ],
-    "66": [
+    "72": [
       "agents_skills_onp_spec_driven_scripts_onp_spec"
     ],
-    "67": [
+    "73": [
       "ai_studio_imports_sentinela_pro_mobile_nvr_vite_config"
     ],
-    "68": [
+    "74": [
       "ai_studio_imports_sentinela_pro_tv_vite_config"
     ],
-    "69": [
+    "75": [
       "android_app_build_gradle"
     ],
-    "70": [
+    "76": [
       "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_context"
     ],
-    "71": [
+    "77": [
       "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_java"
     ],
-    "72": [
+    "78": [
       "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_x509trustmanager"
     ],
-    "73": [
+    "79": [
       "android_build_gradle"
     ],
-    "74": [
+    "80": [
       "android_settings_gradle"
     ],
-    "75": [
+    "81": [
+      "backend_app_api_cameras_py_any"
+    ],
+    "82": [
+      "backend_app_api_cameras_py_asyncsession"
+    ],
+    "83": [
+      "backend_app_api_cameras_py_basemodel"
+    ],
+    "84": [
+      "backend_app_api_cameras_py_delete"
+    ],
+    "85": [
+      "backend_app_api_cameras_py_get"
+    ],
+    "86": [
+      "backend_app_api_cameras_py_patch"
+    ],
+    "87": [
+      "backend_app_api_cameras_py_post"
+    ],
+    "88": [
+      "backend_app_api_cameras_py_request"
+    ],
+    "89": [
       "scripts_apply_bc_config"
     ],
-    "76": [
+    "90": [
       "test_android_tv_app_spec_test"
     ],
-    "77": [
+    "91": [
       "test_integracao_frigate_spec_test"
     ],
-    "78": [
+    "92": [
       "test_sentinela_core_spec_test"
     ]
   },
   "cohesion": {
-    "0": 0.07138535995160314,
-    "1": 0.08959899749373433,
-    "2": 0.06599326599326599,
+    "0": 0.05641025641025641,
+    "1": 0.07138535995160314,
+    "2": 0.08959899749373433,
     "3": 0.06009783368273934,
     "4": 0.08974358974358974,
-    "5": 0.10374149659863946,
-    "6": 0.057624113475177305,
-    "7": 0.08080808080808081,
-    "8": 0.06201550387596899,
-    "9": 0.10121951219512196,
-    "10": 0.10512820512820513,
-    "11": 0.05405405405405406,
-    "12": 0.06906906906906907,
-    "13": 0.10984848484848485,
-    "14": 0.07586206896551724,
-    "15": 0.07407407407407407,
-    "16": 0.09230769230769231,
-    "17": 0.13043478260869565,
-    "18": 0.2077922077922078,
-    "19": 0.20915032679738563,
-    "20": 0.11764705882352941,
-    "21": 0.27205882352941174,
-    "22": 0.19852941176470587,
-    "23": 0.14705882352941177,
-    "24": 0.16176470588235295,
+    "5": 0.09574468085106383,
+    "6": 0.08080808080808081,
+    "7": 0.10336817653890824,
+    "8": 0.10512820512820513,
+    "9": 0.05405405405405406,
+    "10": 0.06906906906906907,
+    "11": 0.10416666666666667,
+    "12": 0.07586206896551724,
+    "13": 0.07407407407407407,
+    "14": 0.09230769230769231,
+    "15": 0.13043478260869565,
+    "16": 0.2077922077922078,
+    "17": 0.12554112554112554,
+    "18": 0.20915032679738563,
+    "19": 0.11764705882352941,
+    "20": 0.27205882352941174,
+    "21": 0.19852941176470587,
+    "22": 0.14705882352941177,
+    "23": 0.16176470588235295,
+    "24": 0.2,
     "25": 0.13333333333333333,
     "26": 0.13333333333333333,
     "27": 0.23076923076923078,
     "28": 0.15384615384615385,
     "29": 0.15384615384615385,
-    "30": 0.16666666666666666,
+    "30": 0.21212121212121213,
     "31": 0.16666666666666666,
-    "32": 0.18181818181818182,
+    "32": 0.16666666666666666,
     "33": 0.18181818181818182,
-    "34": 0.2,
-    "35": 0.2222222222222222,
-    "36": 0.2222222222222222,
-    "37": 0.39285714285714285,
-    "38": 0.39285714285714285,
-    "39": 0.4666666666666667,
-    "40": 0.3333333333333333,
-    "41": 0.4,
+    "34": 0.18181818181818182,
+    "35": 0.24444444444444444,
+    "36": 0.2,
+    "37": 0.2222222222222222,
+    "38": 0.2222222222222222,
+    "39": 0.39285714285714285,
+    "40": 0.39285714285714285,
+    "41": 0.4666666666666667,
     "42": 0.4,
-    "43": 0.5,
-    "44": 0.5,
-    "45": 0.5,
-    "46": 0.6666666666666666,
-    "47": 0.6666666666666666,
-    "48": 0.6666666666666666,
-    "49": 0.6666666666666666,
-    "50": 0.6666666666666666,
-    "51": 1.0,
-    "52": 1.0,
-    "53": 1.0,
-    "54": 1.0,
-    "55": 1.0,
-    "56": 1.0,
+    "43": 0.4,
+    "44": 0.3333333333333333,
+    "45": 0.4,
+    "46": 0.4,
+    "47": 0.4,
+    "48": 0.5,
+    "49": 0.5,
+    "50": 0.5,
+    "51": 0.6666666666666666,
+    "52": 0.6666666666666666,
+    "53": 0.6666666666666666,
+    "54": 0.6666666666666666,
+    "55": 0.6666666666666666,
+    "56": 0.6666666666666666,
     "57": 1.0,
     "58": 1.0,
     "59": 1.0,
@@ -1370,7 +1406,21 @@
     "75": 1.0,
     "76": 1.0,
     "77": 1.0,
-    "78": 1.0
+    "78": 1.0,
+    "79": 1.0,
+    "80": 1.0,
+    "81": 1.0,
+    "82": 1.0,
+    "83": 1.0,
+    "84": 1.0,
+    "85": 1.0,
+    "86": 1.0,
+    "87": 1.0,
+    "88": 1.0,
+    "89": 1.0,
+    "90": 1.0,
+    "91": 1.0,
+    "92": 1.0
   },
   "gods": [
     {
@@ -1386,11 +1436,6 @@
     {
       "id": "backend_app_db_models_paireddevice",
       "label": "PairedDevice",
-      "degree": 25
-    },
-    {
-      "id": "backend_app_db_models_camera",
-      "label": "Camera",
       "degree": 25
     },
     {
@@ -1422,6 +1467,11 @@
       "id": "ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions",
       "label": "compilerOptions",
       "degree": 15
+    },
+    {
+      "id": "ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 15
     }
   ],
   "surprises": [
@@ -1448,10 +1498,10 @@
       "why": "inferred connection - not explicitly stated in source; bridges separate communities"
     },
     {
-      "source": "MQTTService",
-      "target": "Camera",
+      "source": "device_diagnostics()",
+      "target": "AuditLog",
       "source_files": [
-        "backend/app/services/mqtt_service.py",
+        "backend/app/api/devices.py",
         "backend/app/db/models.py"
       ],
       "confidence": "INFERRED",
@@ -1459,10 +1509,10 @@
       "why": "inferred connection - not explicitly stated in source; bridges separate communities"
     },
     {
-      "source": "delete_event()",
-      "target": "EventRecord",
+      "source": "get_audit_logs()",
+      "target": "AuditLog",
       "source_files": [
-        "backend/app/api/events.py",
+        "backend/app/api/telemetry.py",
         "backend/app/db/models.py"
       ],
       "confidence": "INFERRED",
@@ -1470,10 +1520,10 @@
       "why": "inferred connection - not explicitly stated in source; bridges separate communities"
     },
     {
-      "source": "delete_events_batch()",
-      "target": "EventRecord",
+      "source": "TelegramVaultService",
+      "target": "SystemSetting",
       "source_files": [
-        "backend/app/api/events.py",
+        "backend/app/services/telegram_vault.py",
         "backend/app/db/models.py"
       ],
       "confidence": "INFERRED",

@@ -76,7 +76,10 @@ test('AC-031: Persistência Atômica Bidirecional e Invalidação de Cache de C�
 
   assert.ok(camerasApiCode.includes('sync_camera_to_frigate'), 'cameras.py deve sincronizar com Frigate');
   assert.ok(camerasApiCode.includes('_YAML_CONFIG_CACHE = {}') || camerasApiCode.includes('_YAML_CONFIG_TIME = 0'), 'cameras.py deve invalidar cache de configuração');
+  assert.ok(camerasApiCode.includes('/api/streams?src=') && camerasApiCode.includes('dst='), 'cameras.py deve registrar stream dinamicamente no go2rtc');
+  assert.ok(camerasApiCode.includes('get_frigate_config_path'), 'cameras.py deve resolver caminhos de configuração com resiliência');
   assert.ok(scannerModalCode.includes('handleAddDirect') && scannerModalCode.includes('/cameras'), 'ScannerModal deve permitir adicionar e recarregar câmeras');
 });
+
 
 

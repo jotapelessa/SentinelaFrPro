@@ -2,7 +2,7 @@
 source_file: "backend/app/api/cameras.py"
 type: "code"
 community: "cameras.py"
-location: "L1569"
+location: "L1602"
 tags:
   - graphify/code
   - graphify/EXTRACTED

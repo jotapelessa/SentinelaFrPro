@@ -243,9 +243,9 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
             res_all = await db.execute(stmt_all)
             now_dt = datetime.datetime.utcnow()
             for db_c in res_all.scalars().all():
-                # Protege câmeras recém-adicionadas (menos de 60 segundos) ou que ainda aguardam reload do Frigate
+                # Protege câmeras ativas (enabled) ou recém-adicionadas (menos de 86400 segundos / 24h) para evitar perda acidental durante reloads do Frigate
                 created_ago_s = (now_dt - db_c.created_at).total_seconds() if db_c.created_at else 999
-                if db_c.name not in frigate_cams and created_ago_s > 60:
+                if db_c.name not in frigate_cams and created_ago_s > 86400 and not db_c.enabled:
                     await db.delete(db_c)
                     db_changed = True
 
@@ -1346,104 +1346,137 @@ async def sync_camera_to_frigate(cam: Camera):
         })
 
     if target_cam_key not in cfg["cameras"] or not isinstance(cfg["cameras"][target_cam_key], dict):
-        cfg["cameras"][target_cam_key] = {
-            "enabled": bool(cam.enabled),
-            "ffmpeg": {
-                "inputs": ffmpeg_inputs
-            },
-            "detect": {
-                "enabled": bool(cam.enabled),
-                "width": 640,
-                "height": 360,
-                "fps": cam.detect_fps or 5
-            }
-        }
+        cfg["cameras"][target_cam_key] = {}
+    
+    cam_block = cfg["cameras"][target_cam_key]
+    cam_block["enabled"] = bool(cam.enabled)
+    
+    # 1. Configurar ffmpeg inputs com go2rtc restream
+    if "ffmpeg" not in cam_block or not isinstance(cam_block["ffmpeg"], dict):
+        cam_block["ffmpeg"] = {}
+    cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
+
+    # 2. Configurar detect otimizado para H.264
+    if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
+        cam_block["detect"] = {"width": 640, "height": 360, "fps": 5}
+    cam_block["detect"]["enabled"] = bool(cam.enabled)
+    cam_block["detect"]["fps"] = int(cam.detect_fps) if getattr(cam, "detect_fps", None) is not None else (cam_block["detect"].get("fps") or 5)
+
+    # 3. Configurar snapshots
+    if "snapshots" not in cam_block or not isinstance(cam_block["snapshots"], dict):
+        cam_block["snapshots"] = {}
+    cam_block["snapshots"]["enabled"] = bool(cam.enabled)
+    cam_block["snapshots"]["bounding_box"] = True
+
+    # 4. Configurar objetos e tracking
+    default_track_objs = ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"]
+    if "objects" not in cam_block or not isinstance(cam_block["objects"], dict):
+        cam_block["objects"] = {"track": default_track_objs}
+    
+    if cam.objects_to_track:
+        try:
+            objs = json.loads(cam.objects_to_track) if isinstance(cam.objects_to_track, str) else cam.objects_to_track
+            if isinstance(objs, list) and len(objs) > 0:
+                cam_block["objects"]["track"] = objs
+        except Exception:
+            pass
+
+    # 5. Configurar threshold de movimento e filtros de score
+    if getattr(cam, "motion_threshold", None) is not None:
+        if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
+            cam_block["motion"] = {}
+        cam_block["motion"]["threshold"] = int(cam.motion_threshold)
+
+    if cam.min_score is not None:
+        if "filters" not in cam_block["objects"] or not isinstance(cam_block["objects"]["filters"], dict):
+            cam_block["objects"]["filters"] = {}
+        if "person" not in cam_block["objects"]["filters"] or not isinstance(cam_block["objects"]["filters"]["person"], dict):
+            cam_block["objects"]["filters"]["person"] = {}
+        cam_block["objects"]["filters"]["person"]["threshold"] = float(cam.min_score)
+
+    # 6. Configurar gravação otimizada (H.264 copy) e retenção
+    if "record" not in cam_block or not isinstance(cam_block["record"], dict):
+        cam_block["record"] = {}
+    
+    if cam.record_mode is not None:
+        cam_block["record"]["enabled"] = bool(cam.enabled) and (cam.record_mode != "off")
     else:
-        cam_block = cfg["cameras"][target_cam_key]
-        cam_block["enabled"] = bool(cam.enabled)
-        if "ffmpeg" not in cam_block or not isinstance(cam_block["ffmpeg"], dict):
-            cam_block["ffmpeg"] = {}
-        cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
+        cam_block["record"]["enabled"] = bool(cam.enabled)
+        
+    # Limpar a chave antiga 'retain' que causa erro de validação no Frigate 0.17
+    if "retain" in cam_block["record"]:
+        del cam_block["record"]["retain"]
+        
+    mode_key = "continuous" if cam.record_mode == "all" else "motion"
+    if mode_key not in cam_block["record"] or not isinstance(cam_block["record"][mode_key], dict):
+        cam_block["record"][mode_key] = {}
+    cam_block["record"][mode_key]["days"] = int(cam.record_retain_days) if cam.record_retain_days else 3
 
-        if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
-            cam_block["detect"] = {"width": 640, "height": 360, "fps": 5}
-        cam_block["detect"]["enabled"] = bool(cam.enabled)
+    # 7. Garantir review labels
+    if "review" not in cam_block or not isinstance(cam_block["review"], dict):
+        cam_block["review"] = {
+            "alerts": {"labels": ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"], "required_zones": []},
+            "detections": {"labels": ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"], "required_zones": []}
+        }
 
-        # Sync tracked objects
-        if cam.objects_to_track:
-            try:
-                objs = json.loads(cam.objects_to_track) if isinstance(cam.objects_to_track, str) else cam.objects_to_track
-                if isinstance(objs, list):
-                    if "objects" not in cam_block or not isinstance(cam_block["objects"], dict):
-                        cam_block["objects"] = {}
-                    cam_block["objects"]["track"] = objs
-            except Exception:
-                pass
-
-        # Sync detect fps & motion sensitivity
-        if getattr(cam, "detect_fps", None) is not None:
-            if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
-                cam_block["detect"] = {"width": 640, "height": 360, "fps": 5}
-            cam_block["detect"]["fps"] = int(cam.detect_fps)
-
-        if getattr(cam, "motion_threshold", None) is not None:
-            if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
-                cam_block["motion"] = {}
-            cam_block["motion"]["threshold"] = int(cam.motion_threshold)
-
-        # Sync min_score
-        if cam.min_score is not None:
-            if "objects" not in cam_block or not isinstance(cam_block["objects"], dict):
-                cam_block["objects"] = {}
-            if "filters" not in cam_block["objects"] or not isinstance(cam_block["objects"]["filters"], dict):
-                cam_block["objects"]["filters"] = {}
-            if "person" not in cam_block["objects"]["filters"] or not isinstance(cam_block["objects"]["filters"]["person"], dict):
-                cam_block["objects"]["filters"]["person"] = {}
-            cam_block["objects"]["filters"]["person"]["threshold"] = float(cam.min_score)
-
-        # Sync record mode and retention
-        if "record" not in cam_block or not isinstance(cam_block["record"], dict):
-            cam_block["record"] = {}
-        if cam.record_mode is not None:
-            cam_block["record"]["enabled"] = bool(cam.enabled) and (cam.record_mode != "off")
-        else:
-            cam_block["record"]["enabled"] = bool(cam.enabled)
-            
-            # Limpar a chave antiga 'retain' que causa erro no Frigate 0.17
-            if "retain" in cam_block["record"]:
-                del cam_block["record"]["retain"]
-                
-            if cam.record_retain_days:
-                mode_key = "continuous" if cam.record_mode == "all" else "motion"
-                if mode_key not in cam_block["record"] or not isinstance(cam_block["record"][mode_key], dict):
-                    cam_block["record"][mode_key] = {}
-                cam_block["record"][mode_key]["days"] = int(cam.record_retain_days)
-
-        if "live" in cam_block:
-            del cam_block["live"]
+    if "live" in cam_block:
+        del cam_block["live"]
 
     cfg = sanitize_frigate_config(cfg)
     updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
 
-    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
+    # Gravar em todos os caminhos válidos existentes para consistência completa (Docker e Host)
+    written_any = False
+    all_possible_paths = [
+        config_path,
+        "/config/config.yml",
+        "./frigate/config/config.yml",
+        os.path.join(os.getcwd(), "frigate/config/config.yml"),
+        os.path.expanduser("~/Documents/DEV45/SentinelaFrigate/frigate/config/config.yml"),
+        "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/config.yml"
+    ]
+    seen_paths = set()
+    for cp in all_possible_paths:
+        if not cp or cp in seen_paths:
+            continue
+        seen_paths.add(cp)
+        dir_name = os.path.dirname(cp)
+        if os.path.exists(dir_name) or os.path.exists(cp):
+            try:
+                tmp_path = f"{cp}.tmp"
+                with open(tmp_path, "w", encoding="utf-8") as f:
+                    f.write(updated_yaml)
+                    f.flush()
+                    os.fsync(f.fileno())
+                os.replace(tmp_path, cp)
+                written_any = True
+            except Exception as e:
+                logger.warning(f"Could not write config to {cp}: {e}")
+
+    # Invalidação imediata do cache de configuração em memória para o frontend refletir a nova câmera instantaneamente
+    global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
+    _YAML_CONFIG_CACHE = {}
+    _YAML_CONFIG_TIME = 0.0
+
+    # Registrar dinamicamente o stream no go2rtc via API PUT para streaming imediato sem esperar restart
+    if rtsp_url:
         try:
-            tmp_path = f"{config_path}.tmp"
-            with open(tmp_path, "w", encoding="utf-8") as f:
-                f.write(updated_yaml)
-                f.flush()
-                os.fsync(f.fileno())
-            os.replace(tmp_path, config_path)
-            # Invalidação imediata do cache de configuração em memória para o frontend refletir a nova câmera instantaneamente
-            global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
-            _YAML_CONFIG_CACHE = {}
-            _YAML_CONFIG_TIME = 0.0
+            async with httpx.AsyncClient(timeout=3.0) as client:
+                await client.put(f"{settings.GO2RTC_API_URL}/api/streams?src={rtsp_url.strip()}&dst={target_cam_key}")
+                if cam.rtsp_sub and cam.rtsp_sub.strip():
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams?src={cam.rtsp_sub.strip()}&dst={target_cam_key}_sub")
         except Exception as e:
-            logger.warning(f"Failed to write config file: {e}")
+            logger.debug(f"Dynamic go2rtc stream registration skipped or pending restart: {e}")
 
     # Sanitização preventiva do SQLite do Frigate para evitar alertas de bandwidth anômalos (ex: 2.500.000 MB/hr)
     try:
         import sqlite3
-        frigate_db_candidates = ["/config/frigate.db", "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/frigate.db", "./frigate/config/frigate.db"]
+        frigate_db_candidates = [
+            "/config/frigate.db",
+            "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/frigate.db",
+            "./frigate/config/frigate.db",
+            os.path.expanduser("~/Documents/DEV45/SentinelaFrigate/frigate/config/frigate.db")
+        ]
         for db_file in frigate_db_candidates:
             if os.path.exists(db_file):
                 conn = sqlite3.connect(db_file, timeout=5.0)
@@ -1574,10 +1607,16 @@ class FrigateZonesPayload(BaseModel):
 
 def get_frigate_config_path() -> str:
     import os
-    if os.path.exists("/config/config.yml"):
-        return "/config/config.yml"
-    elif os.path.exists("./frigate/config/config.yml"):
-        return "./frigate/config/config.yml"
+    candidates = [
+        "/config/config.yml",
+        "./frigate/config/config.yml",
+        os.path.join(os.getcwd(), "frigate/config/config.yml"),
+        os.path.expanduser("~/Documents/DEV45/SentinelaFrigate/frigate/config/config.yml"),
+        "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/config.yml"
+    ]
+    for c in candidates:
+        if os.path.exists(c):
+            return c
     return "/config/config.yml"
 
 def parse_frigate_coordinates(raw_coords: Any, width: int = 1280, height: int = 720) -> List[Dict[str, float]]:

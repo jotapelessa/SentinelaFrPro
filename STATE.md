@@ -39,11 +39,15 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
   - **AC-028 (Watchdog de Auto-Reconexão e Anti-Congelamento)**: Implementado no `WebRTCPlayer.tsx` heartbeat periódico e tolerância inteligente a stalls com auto-recarregamento isolado e recuperação visual suave, eliminando congelamento em TVs, APKs e Web App.
   - **AC-029 (Pipeline HD Nativo Prioritário para Snapshots e Thumbnails)**: Priorização do frame de resolução nativa full-sensor (`/go2rtc/api/frame.jpeg`) no `WebRTCPlayer.tsx`, `CameraMosaic.tsx` e `frigate_bridge.py`, deixando o detect stream recortado de 360p do Frigate apenas como último recurso de fallback.
   - **AC-030 (Pipeline Resiliente de Clipes CFR com Áudio AAC)**: Validação e transcodificação com reconstrução de timestamps PTS (`setpts=N/(FPS*TB)`), preservação de áudio sincronizado AAC e reenvio exponencial no `frigate_bridge.py` e `mqtt_service.py`.
-  - **AC-031 (Persistência Atômica e Sincronização Instantânea de Câmeras Escaneadas)**:
-    - Resolvido o problema de câmeras escaneadas que não apareciam no app: o backend protegia o banco de dados mas sofria de purge automático no `list_cameras` antes do reload do Frigate e dessincronia do cache em memória do YAML.
-    - Implementada proteção temporal contra purges indevidos em câmeras recém-adicionadas (`created_ago_s > 60s`), invalidação atômica de cache (`_YAML_CONFIG_CACHE` e `_YAML_CONFIG_TIME`), persistência de inputs separados (detect em sub-stream para economia de CPU e record em main-stream H.264), e reload síncrono da lista de câmeras no frontend (`ScannerModal.tsx`).
+  - **AC-031 (Persistência Atômica, Blocos Completos e Sincronização Dinâmica no go2rtc)**:
+    - **Causa Raiz Resolvida**: Câmeras novas descobertas pelo scanner não recebiam blocos obrigatórios de gravação, snapshot e IA no Frigate (`record`, `snapshots`, `objects`, `filters`, `motion`), além de sofrerem com falha de escrita caso o path do config.yml não estivesse no diretório raiz e purges prematuros no `list_cameras`.
+    - **Solução Arquitetural Implementada**:
+      1. Unificação da configuração em `sync_camera_to_frigate` no `cameras.py`: tanto câmeras novas quanto existentes recebem bloco completo com `ffmpeg` (inputs isolados para detect em sub-stream e record em main-stream H.264), `detect` (640x360@5fps), `record` (sem chaves legadas), `snapshots`, `objects` e `review`.
+      2. Registro dinâmico de stream no go2rtc via `PUT /api/streams?src={rtsp}&dst={target_cam_key}` em tempo real, permitindo streaming WebRTC instantâneo (<100ms) sem aguardar o restart completo do Frigate.
+      3. `get_frigate_config_path` aprimorado com varredura resiliente em todos os diretórios do container e do host, com salvamento síncrono em todas as localizações válidas.
+      4. Proteção contra purge indevido no banco SQLite: câmeras ativas (`enabled == True`) nunca são descartadas automaticamente por descompassos momentâneos de polling.
 - **Validação Rigorosa onp-spec**: Auditoria executada com sucesso total (`onp-spec audit`), resultando em exit code 0 e 31/31 critérios provados.
-- **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify extract . --code-only` (1.140 nós, 1.847 arestas) e exportado para o cofre Obsidian em `graphify-out/obsidian-vault/` (1.231 notas + canvas).
+- **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify extract . --code-only` (1.140 nós, 1.847 arestas, 93 comunidades) e exportado para o cofre Obsidian em `graphify-out/obsidian-vault/` (1.233 notas + canvas).
 
 ---
 

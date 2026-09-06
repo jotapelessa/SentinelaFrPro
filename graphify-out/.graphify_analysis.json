@@ -315,7 +315,7 @@
       "backend_app_api_cameras_parse_frigate_coordinates",
       "backend_app_api_cameras_pause_camera",
       "backend_app_api_cameras_probe_rtsp_stream_info",
-      "backend_app_api_cameras_rationale_1584",
+      "backend_app_api_cameras_rationale_1623",
       "backend_app_api_cameras_rationale_21",
       "backend_app_api_cameras_rationale_304",
       "backend_app_api_cameras_rationale_39",
@@ -1476,8 +1476,30 @@
   ],
   "surprises": [
     {
+      "source": "MQTTService",
+      "target": "SystemSetting",
+      "source_files": [
+        "backend/app/services/mqtt_service.py",
+        "backend/app/db/models.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
+    },
+    {
+      "source": "get_device_permitted_cameras()",
+      "target": "Camera",
+      "source_files": [
+        "backend/app/api/devices.py",
+        "backend/app/db/models.py"
+      ],
+      "confidence": "INFERRED",
+      "relation": "uses",
+      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
+    },
+    {
       "source": "export_backup()",
-      "target": "PairedDevice",
+      "target": "Camera",
       "source_files": [
         "backend/app/api/settings.py",
         "backend/app/db/models.py"
@@ -1488,7 +1510,7 @@
     },
     {
       "source": "PiPGatewayService",
-      "target": "PairedDevice",
+      "target": "Camera",
       "source_files": [
         "backend/app/services/pip_gateway.py",
         "backend/app/db/models.py"
@@ -1502,28 +1524,6 @@
       "target": "AuditLog",
       "source_files": [
         "backend/app/api/devices.py",
-        "backend/app/db/models.py"
-      ],
-      "confidence": "INFERRED",
-      "relation": "uses",
-      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
-    },
-    {
-      "source": "get_audit_logs()",
-      "target": "AuditLog",
-      "source_files": [
-        "backend/app/api/telemetry.py",
-        "backend/app/db/models.py"
-      ],
-      "confidence": "INFERRED",
-      "relation": "uses",
-      "why": "inferred connection - not explicitly stated in source; bridges separate communities"
-    },
-    {
-      "source": "TelegramVaultService",
-      "target": "SystemSetting",
-      "source_files": [
-        "backend/app/services/telegram_vault.py",
         "backend/app/db/models.py"
       ],
       "confidence": "INFERRED",
