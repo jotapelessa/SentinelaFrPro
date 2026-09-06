@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "SentinelaRepository.kt"
+community: "Community 76"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/SentinelaRepositorykt
+  - community/Community_76
 ---
 
 # Context
@@ -14,4 +14,4 @@ tags:
 - [[dot-pingServer()]] - `references` [EXTRACTED]
 - [[SentinelaRepository.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/SentinelaRepositorykt
+#graphify/code #graphify/EXTRACTED #community/Community_76

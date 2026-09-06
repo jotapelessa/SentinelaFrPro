@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/ws.py"
 type: "code"
-community: "ws.py"
+community: "SmartphoneYouTubeScreen.kt"
 location: "L17"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/wspy
+  - community/SmartphoneYouTubeScreenkt
 ---
 
 # .connect()
@@ -15,4 +15,4 @@ tags:
 - [[WebSocket]] - `references` [EXTRACTED]
 - [[WebSocketManager]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/wspy
+#graphify/code #graphify/EXTRACTED #community/SmartphoneYouTubeScreenkt

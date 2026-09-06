@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "rationale"
-community: "PiPGatewayService"
+community: "asyncio"
 location: "L216"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/asyncio
 ---
 
 # Dispatches an interactive test PiP alert to a specific TV using real accessible…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-test_single_device()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/rationale #graphify/EXTRACTED #community/asyncio

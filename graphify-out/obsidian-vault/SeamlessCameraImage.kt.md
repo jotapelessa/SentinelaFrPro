@@ -13,7 +13,7 @@ tags:
 
 ## Connections
 - [[ContentScale]] - `imports` [EXTRACTED]
-- [[Modifier_2]] - `imports` [EXTRACTED]
+- [[Modifier_3]] - `imports` [EXTRACTED]
 - [[SeamlessCameraImage()]] - `contains` [EXTRACTED]
 - [[SentinelaConfig]] - `imports` [EXTRACTED]
 

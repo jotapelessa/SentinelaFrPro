@@ -14,7 +14,7 @@ members: 54
 - [[dot-connectAndListen()]] - code - android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt
 - [[dot-createNotificationChannel()]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
 - [[dot-onBind()]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
-- [[dot-onCreate()_2]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
+- [[dot-onCreate()_1]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
 - [[dot-onDestroy()]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
 - [[dot-onPageFinished()_1]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
 - [[dot-onPermissionRequest()_1]] - code - android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt
@@ -75,10 +75,10 @@ SORT file.name ASC
 ## Connections to other communities
 - 5 edges to [[_COMMUNITY_Histórias]]
 - 4 edges to [[_COMMUNITY_TvNetflixScreen.kt]]
-- 3 edges to [[_COMMUNITY_SentinelaRepository]]
 - 3 edges to [[_COMMUNITY_compilerOptions_2]]
-- 2 edges to [[_COMMUNITY_onp-spec-driven — a especificação que continua verdadeira (Antigravity)]]
+- 3 edges to [[_COMMUNITY_SentinelaRepository]]
 - 2 edges to [[_COMMUNITY_PipSize]]
+- 2 edges to [[_COMMUNITY_onp-spec-driven — a especificação que continua verdadeira (Antigravity)]]
 - 1 edge to [[_COMMUNITY_Observer]]
 - 1 edge to [[_COMMUNITY_PipDuration]]
 - 1 edge to [[_COMMUNITY_devices.py]]

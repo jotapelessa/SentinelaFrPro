@@ -1,24 +1,18 @@
 ---
-source_file: "android/app/src/main/java/com/sentinela/pro/MainActivity.kt"
+source_file: "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt"
 type: "code"
-community: "onp-spec-driven — a especificação que continua verdadeira (Antigravity)"
-location: "L27"
+community: "X509Certificate"
+location: "L22"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/onp-spec-driven__a_especificação_que_continua_verdadeira_Antigravity
+  - community/X509Certificate
 ---
 
 # .onCreate()
 
 ## Connections
-- [[dot-isTv()]] - `calls` [EXTRACTED]
-- [[Bundle]] - `references` [EXTRACTED]
-- [[CameraItem]] - `calls` [EXTRACTED]
-- [[MainActivity]] - `method` [EXTRACTED]
-- [[SentinelaPreferences]] - `calls` [EXTRACTED]
-- [[SmartphoneYouTubeScreen()]] - `calls` [EXTRACTED]
-- [[TvNetflixScreen()]] - `calls` [EXTRACTED]
-- [[X509TrustManager]] - `contains` [EXTRACTED]
+- [[SentinelaApplication]] - `method` [EXTRACTED]
+- [[X509TrustManager_1]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/onp-spec-driven__a_especificação_que_continua_verdadeira_Antigravity
+#graphify/code #graphify/EXTRACTED #community/X509Certificate

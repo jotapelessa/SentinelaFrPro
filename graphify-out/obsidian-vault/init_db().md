@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/db/session.py"
 type: "code"
-community: "FastAPI"
+community: "SeamlessCameraImage"
 location: "L35"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FastAPI
+  - community/SeamlessCameraImage
 ---
 
 # init_db()
@@ -16,4 +16,4 @@ tags:
 - [[main.py]] - `imports` [EXTRACTED]
 - [[session.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FastAPI
+#graphify/code #graphify/EXTRACTED #community/SeamlessCameraImage

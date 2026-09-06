@@ -13,7 +13,7 @@ tags:
 
 ## Connections
 - [[dot-getCameras()]] - `calls` [EXTRACTED]
-- [[dot-onCreate()]] - `calls` [EXTRACTED]
+- [[dot-onCreate()_2]] - `calls` [EXTRACTED]
 - [[CameraCardMobile()]] - `references` [EXTRACTED]
 - [[FullScreenCameraDialog()]] - `references` [EXTRACTED]
 - [[MainActivity.kt]] - `imports` [EXTRACTED]

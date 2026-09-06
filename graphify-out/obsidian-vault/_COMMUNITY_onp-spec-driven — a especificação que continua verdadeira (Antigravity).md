@@ -12,7 +12,7 @@ members: 8
 ## Members
 - [[dot-hasOverlayPermission()]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
 - [[dot-isTv()]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
-- [[dot-onCreate()]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
+- [[dot-onCreate()_2]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
 - [[Bundle]] - code
 - [[ComponentActivity]] - code
 - [[MainActivity]] - code - android/app/src/main/java/com/sentinela/pro/MainActivity.kt
@@ -29,12 +29,12 @@ SORT file.name ASC
 ## Connections to other communities
 - 3 edges to [[_COMMUNITY_compilerOptions_2]]
 - 2 edges to [[_COMMUNITY_OverlayService]]
-- 2 edges to [[_COMMUNITY_Histórias]]
 - 2 edges to [[_COMMUNITY_TvNetflixScreen.kt]]
+- 2 edges to [[_COMMUNITY_Histórias]]
 - 1 edge to [[_COMMUNITY_Models.kt]]
 - 1 edge to [[_COMMUNITY_SentinelaRepository]]
 
 ## Top bridge nodes
 - [[MainActivity.kt]] - degree 8, connects to 4 communities
-- [[dot-onCreate()]] - degree 8, connects to 4 communities
+- [[dot-onCreate()_2]] - degree 8, connects to 4 communities
 - [[TvNetflixScreen()]] - degree 5, connects to 2 communities

@@ -35,11 +35,11 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 2 edges to [[_COMMUNITY_run_server_benchmark]]
+- 2 edges to [[_COMMUNITY_Community 46]]
 - 2 edges to [[_COMMUNITY_Tasks Integração Frigate NVR 0.17 & go2rtc]]
-- 2 edges to [[_COMMUNITY_FastAPI]]
+- 2 edges to [[_COMMUNITY_SeamlessCameraImage]]
 - 1 edge to [[_COMMUNITY_events.py]]
-- 1 edge to [[_COMMUNITY_MemoryRingBufferHandler]]
+- 1 edge to [[_COMMUNITY_Community 43]]
 
 ## Top bridge nodes
 - [[apitelemetry.py]] - degree 14, connects to 4 communities

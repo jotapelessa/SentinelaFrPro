@@ -88,17 +88,17 @@ SORT file.name ASC
 - 17 edges to [[_COMMUNITY_cameras.py]]
 - 8 edges to [[_COMMUNITY_settings.py]]
 - 7 edges to [[_COMMUNITY_devices.py]]
-- 3 edges to [[_COMMUNITY_PiPGatewayService]]
-- 3 edges to [[_COMMUNITY_FastAPI]]
+- 3 edges to [[_COMMUNITY_asyncio]]
+- 3 edges to [[_COMMUNITY_SeamlessCameraImage]]
 - 1 edge to [[_COMMUNITY_apitelemetry.py]]
 - 1 edge to [[_COMMUNITY_Tasks Integração Frigate NVR 0.17 & go2rtc]]
 - 1 edge to [[_COMMUNITY_ScannerService]]
 - 1 edge to [[_COMMUNITY_FrigateBridgeService]]
-- 1 edge to [[_COMMUNITY_ws.py]]
+- 1 edge to [[_COMMUNITY_SmartphoneYouTubeScreen.kt]]
 
 ## Top bridge nodes
 - [[asyncio]] - degree 15, connects to 6 communities
-- [[Camera_1]] - degree 25, connects to 4 communities
+- [[Camera_1]] - degree 26, connects to 4 communities
 - [[AuditLog]] - degree 14, connects to 4 communities
 - [[models.py]] - degree 5, connects to 2 communities
 - [[Base]] - degree 5, connects to 2 communities

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "FastAPI"
+community: "SeamlessCameraImage"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FastAPI
+  - community/SeamlessCameraImage
 ---
 
 # middleware
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[audit_http_requests()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FastAPI
+#graphify/code #graphify/EXTRACTED #community/SeamlessCameraImage

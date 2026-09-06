@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/core/logging_handler.py"
 type: "code"
-community: "MemoryRingBufferHandler"
+community: "Community 43"
 location: "L21"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MemoryRingBufferHandler
+  - community/Community_43
 ---
 
 # .emit()
@@ -16,4 +16,4 @@ tags:
 - [[MemoryRingBufferHandler]] - `method` [EXTRACTED]
 - [[mask_sensitive_data()]] - `calls` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MemoryRingBufferHandler
+#graphify/code #graphify/EXTRACTED #community/Community_43

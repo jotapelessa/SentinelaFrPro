@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "FastAPI"
+community: "SeamlessCameraImage"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FastAPI
+  - community/SeamlessCameraImage
 ---
 
 # FastAPI
@@ -21,4 +21,4 @@ tags:
 - [[settings.py]] - `imports_from` [EXTRACTED]
 - [[ws.py]] - `imports_from` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FastAPI
+#graphify/code #graphify/EXTRACTED #community/SeamlessCameraImage

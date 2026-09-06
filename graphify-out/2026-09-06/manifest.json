@@ -720,9 +720,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1788641389.936346,
-    "seen": 1788641631.658388,
-    "ast_hash": "6a47d64fcc136324ca395065a707ef76",
+    "mtime": 1788689813.426915,
+    "seen": 1788699727.529417,
+    "ast_hash": "3823a4fbc21744305ed10c669b557229",
     "semantic_hash": ""
   },
   "README.md": {
@@ -822,10 +822,10 @@
     "semantic_hash": "92217e35a3557369a2a7a424dbc87c48"
   },
   ".spec/verification/sinais.json": {
-    "mtime": 1788699302.770445,
-    "seen": 1788699310.276758,
-    "ast_hash": "d797504373dba9c966a742865fb121eb",
-    "semantic_hash": "d797504373dba9c966a742865fb121eb"
+    "mtime": 1788699643.33257,
+    "seen": 1788699727.529345,
+    "ast_hash": "33b235d518bcb6c8366c60b9fa875eb5",
+    "semantic_hash": ""
   },
   "test/integracao-frigate.spec.test.js": {
     "mtime": 1788699288.890397,
@@ -880,5 +880,119 @@
     "seen": 1788687950.48177,
     "ast_hash": "167a1140cb24d73e299f631b887c41d2",
     "semantic_hash": "167a1140cb24d73e299f631b887c41d2"
+  },
+  ".agents/rules/graphify.md": {
+    "mtime": 1788641774.9501092,
+    "seen": 1788699727.529408,
+    "ast_hash": "f1e53ecc9194573d3c28fc116c743a2e",
+    "semantic_hash": ""
+  },
+  ".agents/skills/onp-spec-driven/SKILL.md": {
+    "mtime": 1788664738.110931,
+    "seen": 1788699727.529409,
+    "ast_hash": "6e66688a1a915165ec47c8e14d3795e4",
+    "semantic_hash": ""
+  },
+  ".agents/skills/onp-spec-driven/references/constituicao.md": {
+    "mtime": 1788664738.1039066,
+    "seen": 1788699727.529409,
+    "ast_hash": "b7def7b2998f56cefae071d1add1e2b6",
+    "semantic_hash": ""
+  },
+  ".agents/skills/onp-spec-driven/references/escrevendo-specs.md": {
+    "mtime": 1788664738.1029906,
+    "seen": 1788699727.5294101,
+    "ast_hash": "50494fcb2d17ed0660bc1cf957d4ad68",
+    "semantic_hash": ""
+  },
+  ".agents/skills/onp-spec-driven/references/fluxo.md": {
+    "mtime": 1788664738.102222,
+    "seen": 1788699727.5294101,
+    "ast_hash": "e8a01087c1394e258a5e3dd85ee52cc2",
+    "semantic_hash": ""
+  },
+  ".agents/skills/onp-spec-driven/references/licoes.md": {
+    "mtime": 1788664738.1024458,
+    "seen": 1788699727.529411,
+    "ast_hash": "ee1f4f82f998f3ad4db8c5abe3bad61e",
+    "semantic_hash": ""
+  },
+  ".agents/workflows/graphify.md": {
+    "mtime": 1788641774.9502547,
+    "seen": 1788699727.529411,
+    "ast_hash": "6d73634a678cf1e1c71930adf80bd1f0",
+    "semantic_hash": ""
+  },
+  ".spec/constituicao.md": {
+    "mtime": 1788664761.1700003,
+    "seen": 1788699727.5294132,
+    "ast_hash": "d1d41111b50957233ec186d74b1e2774",
+    "semantic_hash": ""
+  },
+  ".spec/features/android-smartphone-app/spec.md": {
+    "mtime": 1788687708.642336,
+    "seen": 1788699727.5294132,
+    "ast_hash": "0c2c8a1703b990bd4fb0db786322f86d",
+    "semantic_hash": ""
+  },
+  ".spec/features/android-smartphone-app/tasks.md": {
+    "mtime": 1788687733.4989095,
+    "seen": 1788699727.5294132,
+    "ast_hash": "4db647aa090393a533fdc74933335809",
+    "semantic_hash": ""
+  },
+  ".spec/features/android-tv-app/spec.md": {
+    "mtime": 1788687586.9271557,
+    "seen": 1788699727.529414,
+    "ast_hash": "1748092f51bbdb29989a406384bbb15d",
+    "semantic_hash": ""
+  },
+  ".spec/features/android-tv-app/tasks.md": {
+    "mtime": 1788687598.5982018,
+    "seen": 1788699727.529414,
+    "ast_hash": "e9ba6f706bbf2b363bd41b5d34cf5596",
+    "semantic_hash": ""
+  },
+  ".spec/features/integracao-frigate/spec.md": {
+    "mtime": 1788695216.3953907,
+    "seen": 1788699727.529415,
+    "ast_hash": "cdd69e7d67b896f5cd88f8bb534e2074",
+    "semantic_hash": ""
+  },
+  ".spec/features/integracao-frigate/tasks.md": {
+    "mtime": 1788695224.4925919,
+    "seen": 1788699727.529415,
+    "ast_hash": "faaf25014ee665d2eae46780d9ce10e3",
+    "semantic_hash": ""
+  },
+  ".spec/features/sentinela-core/spec.md": {
+    "mtime": 1788673038.2575893,
+    "seen": 1788699727.529415,
+    "ast_hash": "a3cb548b60fad1ebf4852b22a8419a23",
+    "semantic_hash": ""
+  },
+  ".spec/features/sentinela-core/tasks.md": {
+    "mtime": 1788673052.909721,
+    "seen": 1788699727.5294158,
+    "ast_hash": "84185bfc693f8a0dfaf67ec4482dc93f",
+    "semantic_hash": ""
+  },
+  ".spec/features/telegram-vault/spec.md": {
+    "mtime": 1788687915.6192086,
+    "seen": 1788699727.5294158,
+    "ast_hash": "544343f53a2dcaacee884d14345a08df",
+    "semantic_hash": ""
+  },
+  ".spec/features/telegram-vault/tasks.md": {
+    "mtime": 1788687884.4933743,
+    "seen": 1788699727.529417,
+    "ast_hash": "9362b8a1e37999327a88238c80ab0b25",
+    "semantic_hash": ""
+  },
+  "STATE.md": {
+    "mtime": 1788699332.7083306,
+    "seen": 1788699727.529418,
+    "ast_hash": "45c3fbfeb45a9923ad3356e83ea79d77",
+    "semantic_hash": ""
   }
 }

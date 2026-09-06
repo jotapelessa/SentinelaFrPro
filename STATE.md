@@ -50,8 +50,14 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
       - A detecção de objetos do Frigate é disparada por janelas de movimento. Com o `motion.threshold` legado alto (25~30), variações suaves de cena não ativavam o detector com frequência.
       - O limiar de movimento foi ajustado com precisão para `motion_threshold: 18` e persistido atomicamente no SQLite e no Frigate.
       - Resultado imediato nas estatísticas do Frigate (`/api/stats`): a taxa de detecção saltou de 0 FPS para **11.8 FPS**, `camera_fps` cravou em 5.0 FPS sem nenhum frame perdido (`skipped_fps: 0.0`) e inferência no OpenVINO acelerada em **14.5ms**.
+- **Otimização do Envio de Mídia para o Telegram (`telegram-vault`)**:
+  - **Causa Raiz Resolvida**: Nos testes manuais da interface (`/api/settings/telegram/test-video` e `/test-photo`), o backend mantinha hardcoded o nome da câmera offline `"camera_principal"`. Ao falhar o acesso à câmera inativa, o pipeline de captura do `FrigateBridgeService` acionava um canal sintético do FFmpeg (`testsrc=size=...`), gerando barras de cores de teste em vez da transmissão real da câmera IP.
+  - **Solução Arquitetural Implementada**:
+    1. **Resolução Dinâmica da Câmera**: Criada a rotina `_resolve_active_test_camera` no `settings.py`, que consulta o banco SQLite e seleciona automaticamente a primeira câmera habilitada (`enabled == True`), apontando para a câmera ativa (`camera_secundaria` / `192.168.1.136`).
+    2. **Controle de Fallback Sintético**: `frigate_bridge.record_live_video` recebeu o parâmetro `allow_synthetic: bool = False`. Em testes de câmeras IP, o sistema agora rejeita clipes sintéticos falsos e captura o fluxo real H.264 1080p do go2rtc (`/api/stream.mp4?src={camera_name}&duration={duration_s}`) ou retorna erro detalhado se o stream estiver indisponível.
+    3. **Seletor de Câmeras na Interface Web**: Adicionado dropdown visual na Central de Testes da tela de configurações do Telegram (`/settings/telegram/page.tsx`), permitindo ao operador escolher explicitamente qualquer câmera registrada ou usar a câmera ativa pré-selecionada.
 - **Validação Rigorosa onp-spec**: Auditoria executada com sucesso total (`onp-spec audit`), resultando em exit code 0 e 31/31 critérios provados.
-- **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify update .` (1.331 nós, 2.051 arestas, 101 comunidades) e exportado para o cofre Obsidian em `graphify-out/obsidian-vault/` (1.424 notas + canvas).
+- **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify update .` (1.334 nós, 2.061 arestas, 96 comunidades) e exportado para o cofre Obsidian em `graphify-out/obsidian-vault/` (1.427 notas + canvas).
 
 ---
 

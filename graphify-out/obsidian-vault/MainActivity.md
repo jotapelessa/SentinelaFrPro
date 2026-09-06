@@ -14,7 +14,7 @@ tags:
 ## Connections
 - [[dot-hasOverlayPermission()]] - `method` [EXTRACTED]
 - [[dot-isTv()]] - `method` [EXTRACTED]
-- [[dot-onCreate()]] - `method` [EXTRACTED]
+- [[dot-onCreate()_2]] - `method` [EXTRACTED]
 - [[ComponentActivity]] - `inherits` [EXTRACTED]
 - [[MainActivity.kt]] - `contains` [EXTRACTED]
 

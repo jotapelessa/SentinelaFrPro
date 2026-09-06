@@ -15,6 +15,7 @@ tags:
 - [[Base]] - `inherits` [EXTRACTED]
 - [[MQTTService]] - `uses` [INFERRED]
 - [[PiPGatewayService]] - `uses` [INFERRED]
+- [[_resolve_active_test_camera()]] - `uses` [INFERRED]
 - [[add_camera()]] - `uses` [INFERRED]
 - [[cameras.py]] - `imports` [EXTRACTED]
 - [[delete_camera()]] - `uses` [INFERRED]

@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "rationale"
-community: "PiPGatewayService"
+community: "asyncio"
 location: "L70"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/asyncio
 ---
 
 # Fetches allowed Android TV / Tablet devices from DB with granular camera &…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-get_active_tv_devices()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/rationale #graphify/EXTRACTED #community/asyncio

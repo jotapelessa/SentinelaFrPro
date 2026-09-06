@@ -65,7 +65,7 @@ SORT file.name ASC
 - 8 edges to [[_COMMUNITY_Constituição — v1.1.0]]
 - 4 edges to [[_COMMUNITY_Passo a passo no Antigravity]]
 - 4 edges to [[_COMMUNITY_Fluxo detalhado — do zero ao audit limpo]]
-- 2 edges to [[_COMMUNITY_FastAPI]]
+- 2 edges to [[_COMMUNITY_SeamlessCameraImage]]
 - 2 edges to [[_COMMUNITY_Escrevendo especificações auditáveis]]
 - 1 edge to [[_COMMUNITY_Tasks Aplicativo Android Smartphone (Sentinela Mobile YouTube Edition)]]
 - 1 edge to [[_COMMUNITY_Tasks Aplicativo Android TV (Sentinela TV Netflix Edition)]]

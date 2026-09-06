@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "FastAPI"
+community: "SeamlessCameraImage"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FastAPI
+  - community/SeamlessCameraImage
 ---
 
 # get
@@ -14,4 +14,4 @@ tags:
 - [[health_check()]] - `references` [EXTRACTED]
 - [[root()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FastAPI
+#graphify/code #graphify/EXTRACTED #community/SeamlessCameraImage

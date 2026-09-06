@@ -1,18 +1,16 @@
 ---
 source_file: ""
 type: "code"
-community: "X509Certificate"
+community: "Models.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509Certificate
+  - community/Modelskt
 ---
 
 # X509TrustManager
 
 ## Connections
-- [[SentinelaApplication.kt]] - `imports` [EXTRACTED]
-- [[X509TrustManager_1]] - `implements` [EXTRACTED]
 - [[X509TrustManager_2]] - `implements` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509Certificate
+#graphify/code #graphify/EXTRACTED #community/Modelskt

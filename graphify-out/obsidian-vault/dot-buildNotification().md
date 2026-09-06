@@ -12,7 +12,7 @@ tags:
 # .buildNotification()
 
 ## Connections
-- [[dot-onCreate()_2]] - `calls` [EXTRACTED]
+- [[dot-onCreate()_1]] - `calls` [EXTRACTED]
 - [[Notification]] - `references` [EXTRACTED]
 - [[OverlayService]] - `method` [EXTRACTED]
 

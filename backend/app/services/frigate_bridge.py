@@ -115,9 +115,10 @@ class FrigateBridgeService:
         3. Frigate latest.jpg (detect stream, fallback)
         """
         # Channel 1: go2rtc main-stream frame (native resolution)
-        for src in [camera_name, "cam_192_168_1_6", "camera_principal"]:
+        sources = [camera_name] if camera_name else ["camera_secundaria", "camera_principal"]
+        for src in sources:
             try:
-                async with httpx.AsyncClient(timeout=3.0) as client:
+                async with httpx.AsyncClient(timeout=3.5) as client:
                     res = await client.get(f"{self.go2rtc_url}/api/frame.jpeg?src={src}")
                     if res.status_code == 200 and len(res.content) > 1000:
                         return res.content
@@ -126,9 +127,9 @@ class FrigateBridgeService:
 
         # Channel 2: FFmpeg RTSP capture at native resolution
         rtsp_urls = [
+            f"rtsp://127.0.0.1:8554/{camera_name}",
             f"rtsp://frigate:8554/{camera_name}",
-            "rtsp://frigate:8554/camera_principal",
-            "rtsp://192.168.1.6:8554/stream"
+            f"rtsp://localhost:8554/{camera_name}"
         ]
         temp_img = f"/tmp/snap_{uuid.uuid4().hex[:8]}.jpg"
         for url in rtsp_urls:
@@ -418,22 +419,25 @@ class FrigateBridgeService:
 
     async def record_live_video(
         self,
-        camera_name: str = "camera_principal",
+        camera_name: str = "camera_secundaria",
         duration_s: int = 30,
         resolution: str = "1080p",
         video_quality: str = "balanced",
-        include_audio: bool = True
+        include_audio: bool = True,
+        allow_synthetic: bool = False
     ) -> Optional[bytes]:
         """
         Captures a live video clip directly from the camera stream with constant 30 FPS:
         1. go2rtc live MP4 stream generator (Zero-CPU, native 1080p/720p H.264 + AAC, sub-second generation)
         2. Direct FFmpeg RTSP recording with faststart MP4 at 30 FPS to disk
         3. Frigate recording clip fallback
+        4. Synthetic testsrc fallback (only if allow_synthetic=True)
         """
         duration_s = max(min(duration_s, 60), 3)
 
         # Channel 1: High-Performance go2rtc live MP4 endpoint (Fastest & Most Reliable)
-        for src in [camera_name, "camera_principal", "cam_192_168_1_6"]:
+        sources = [camera_name] if camera_name else ["camera_secundaria", "camera_principal"]
+        for src in sources:
             try:
                 logger.info(f"🎥 FrigateBridge: Capturando {duration_s}s de vídeo via go2rtc live MP4 ({src})...")
                 async with httpx.AsyncClient(timeout=duration_s + 15.0) as client:
@@ -462,10 +466,9 @@ class FrigateBridgeService:
 
         # Channel 2: FFmpeg direct RTSP capture at constant 30 FPS
         rtsp_urls = [
+            f"rtsp://127.0.0.1:8554/{camera_name}",
             f"rtsp://frigate:8554/{camera_name}",
-            "rtsp://frigate:8554/camera_principal",
-            "rtsp://127.0.0.1:8554/camera_principal",
-            "rtsp://192.168.1.6:8554/stream"
+            f"rtsp://localhost:8554/{camera_name}"
         ]
 
         for url in rtsp_urls:
@@ -516,35 +519,36 @@ class FrigateBridgeService:
         except Exception:
             pass
 
-        # Channel 4: Synthetic live test clip with animated HUD
-        try:
-            logger.info("🎥 FrigateBridge: Gerando clipe de vídeo sintético com timestamp...")
-            cmd = [
-                "ffmpeg", "-y",
-                "-f", "lavfi",
-                "-i", f"testsrc=size={scale_w}x{scale_h}:rate=25",
-                "-t", str(duration_s),
-                "-c:v", "libx264",
-                "-preset", "veryfast",
-                "-crf", "23",
-                "-pix_fmt", "yuv420p",
-                "-movflags", "+faststart",
-                temp_file
-            ]
-            proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=duration_s + 5)
-            if proc.returncode == 0 and os.path.exists(temp_file) and os.path.getsize(temp_file) > 1000:
-                with open(temp_file, "rb") as vf:
-                    video_bytes = vf.read()
-                os.remove(temp_file)
-                return video_bytes
-        except Exception as e:
-            logger.error(f"FrigateBridge synthetic fallback failed: {e}")
-        finally:
-            if os.path.exists(temp_file):
-                try:
+        # Channel 4: Synthetic live test clip with animated HUD (only if explicitly allowed)
+        if allow_synthetic:
+            try:
+                logger.info("🎥 FrigateBridge: Gerando clipe de vídeo sintético com timestamp...")
+                cmd = [
+                    "ffmpeg", "-y",
+                    "-f", "lavfi",
+                    "-i", f"testsrc=size={scale_w}x{scale_h}:rate=25",
+                    "-t", str(duration_s),
+                    "-c:v", "libx264",
+                    "-preset", "veryfast",
+                    "-crf", "23",
+                    "-pix_fmt", "yuv420p",
+                    "-movflags", "+faststart",
+                    temp_file
+                ]
+                proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=duration_s + 5)
+                if proc.returncode == 0 and os.path.exists(temp_file) and os.path.getsize(temp_file) > 1000:
+                    with open(temp_file, "rb") as vf:
+                        video_bytes = vf.read()
                     os.remove(temp_file)
-                except Exception:
-                    pass
+                    return video_bytes
+            except Exception as e:
+                logger.error(f"FrigateBridge synthetic fallback failed: {e}")
+            finally:
+                if os.path.exists(temp_file):
+                    try:
+                        os.remove(temp_file)
+                    except Exception:
+                        pass
 
         return None
 

@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "trigger_network_scan"
+community: "X509TrustManager"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/trigger_network_scan
+  - community/X509TrustManager
 ---
 
 # BaseModel
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[ScanPayload]] - `inherits` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/trigger_network_scan
+#graphify/code #graphify/EXTRACTED #community/X509TrustManager

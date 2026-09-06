@@ -14,7 +14,7 @@ members: 17
 - [[dot-onPermissionRequest()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
 - [[dot-onReceivedError()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
 - [[dot-onReceivedSslError()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
-- [[Modifier_3]] - code
+- [[Modifier_2]] - code
 - [[MseCameraView()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
 - [[MseCameraView.kt]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
 - [[PermissionRequest]] - code

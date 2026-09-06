@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/main.py"
 type: "code"
-community: "FastAPI"
+community: "SeamlessCameraImage"
 location: "L36"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FastAPI
+  - community/SeamlessCameraImage
 ---
 
 # lifespan()
@@ -16,4 +16,4 @@ tags:
 - [[init_db()]] - `calls` [EXTRACTED]
 - [[main.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FastAPI
+#graphify/code #graphify/EXTRACTED #community/SeamlessCameraImage

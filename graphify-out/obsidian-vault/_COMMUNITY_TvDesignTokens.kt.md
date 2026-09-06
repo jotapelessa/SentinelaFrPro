@@ -45,8 +45,8 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_compilerOptions_2]]
 - 1 edge to [[_COMMUNITY_TvNetflixScreen.kt]]
+- 1 edge to [[_COMMUNITY_compilerOptions_2]]
 
 ## Top bridge nodes
 - [[TvDesignTokens.kt]] - degree 18, connects to 2 communities

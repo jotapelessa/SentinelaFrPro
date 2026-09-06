@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "ws.py"
+community: "SmartphoneYouTubeScreen.kt"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/wspy
+  - community/SmartphoneYouTubeScreenkt
 ---
 
 # WebSocket
@@ -15,4 +15,4 @@ tags:
 - [[dot-disconnect()]] - `references` [EXTRACTED]
 - [[websocket_endpoint()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/wspy
+#graphify/code #graphify/EXTRACTED #community/SmartphoneYouTubeScreenkt

@@ -1,16 +1,21 @@
 ---
 type: community
-cohesion: 1.00
-members: 1
+cohesion: 0.40
+members: 6
 ---
 
 # X509TrustManager
 
-**Cohesion:** 1.00 - tightly connected
-**Members:** 1 nodes
+**Cohesion:** 0.40 - moderately connected
+**Members:** 6 nodes
 
 ## Members
-- [[java_1]] - code
+- [[BaseModel_2]] - code
+- [[ScanPayload]] - code - backend/app/api/scanner.py
+- [[Triggers concurrent ONVIF Discovery and verified CCTV port scanner.]] - rationale - backend/app/api/scanner.py
+- [[post_2]] - code
+- [[scanner.py]] - code - backend/app/api/scanner.py
+- [[trigger_network_scan()]] - code - backend/app/api/scanner.py
 
 ## Live Query (requires Dataview plugin)
 
@@ -20,7 +25,7 @@ SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 3 edges to [[_COMMUNITY_SentinelaRepository]]
+- 1 edge to [[_COMMUNITY_SeamlessCameraImage]]
 
 ## Top bridge nodes
-- [[java_1]] - degree 3, connects to 1 community
+- [[scanner.py]] - degree 3, connects to 1 community

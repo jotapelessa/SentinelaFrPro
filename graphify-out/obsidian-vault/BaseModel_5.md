@@ -15,6 +15,7 @@ tags:
 - [[PauseAlertsRequest]] - `inherits` [EXTRACTED]
 - [[StorageCleanRequest]] - `inherits` [EXTRACTED]
 - [[TelegramConfigUpdate]] - `inherits` [EXTRACTED]
+- [[TelegramPhotoTestPayload]] - `inherits` [EXTRACTED]
 - [[TelegramTestPayload]] - `inherits` [EXTRACTED]
 - [[TelegramVideoTestPayload]] - `inherits` [EXTRACTED]
 - [[ZoneUpdate]] - `inherits` [EXTRACTED]

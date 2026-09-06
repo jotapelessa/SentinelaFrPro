@@ -183,6 +183,16 @@
   },
   "active": "cc9ddfe378e767a1",
   "lastOpenFiles": [
+    "_COMMUNITY_Community 77.md",
+    "_COMMUNITY_Community 76.md",
+    "_COMMUNITY_Community 46.md",
+    "_COMMUNITY_Community 43.md",
+    "_COMMUNITY_MainActivity.kt.md",
+    "_COMMUNITY_SmartphoneYouTubeScreen.kt.md",
+    "_COMMUNITY_SeamlessCameraImage.md",
+    "Resolves the target camera for Telegram test dispatches 1. If specific….md",
+    "_resolve_active_test_camera().md",
+    "TelegramPhotoTestPayload.md",
     "_COMMUNITY_sentinela-core.spec.test.js.md",
     "_COMMUNITY_integracao-frigate.spec.test.js.md",
     "_COMMUNITY_android-tv-app.spec.test.js.md",
@@ -198,16 +208,6 @@
     "_COMMUNITY_SentinelaRepository.kt.md",
     "_COMMUNITY_onp-spec.mjs.md",
     "_COMMUNITY_Tasks Integração Frigate NVR 0.17 & go2rtc.md",
-    "_COMMUNITY_telegram-vault.spec.test.js.md",
-    "_COMMUNITY_android-smartphone-app.spec.test.js.md",
-    "_COMMUNITY_run_server_benchmark.md",
-    "_COMMUNITY_MemoryRingBufferHandler.md",
-    "_COMMUNITY_trigger_network_scan.md",
-    "_COMMUNITY_Models.kt.md",
-    "_COMMUNITY_onp-spec-driven — a especificação que continua verdadeira (Antigravity).md",
-    "_COMMUNITY_PipDuration.md",
-    "_COMMUNITY_ws.py.md",
-    "_COMMUNITY_Spec Sentinela Core Ecosystem (Web, Mobile & Orquestrador).md",
-    "_COMMUNITY_FastAPI.md"
+    "_COMMUNITY_telegram-vault.spec.test.js.md"
   ]
 }

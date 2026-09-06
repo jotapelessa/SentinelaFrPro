@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "MemoryRingBufferHandler"
+community: "Community 43"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MemoryRingBufferHandler
+  - community/Community_43
 ---
 
 # LogRecord
@@ -13,4 +13,4 @@ tags:
 ## Connections
 - [[dot-emit()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MemoryRingBufferHandler
+#graphify/code #graphify/EXTRACTED #community/Community_43

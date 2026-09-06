@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "X509TrustManager"
+community: "Community 77"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/X509TrustManager
+  - community/Community_77
 ---
 
 # java
@@ -15,4 +15,4 @@ tags:
 - [[dot-checkServerTrusted()_3]] - `references` [EXTRACTED]
 - [[dot-getAcceptedIssuers()_3]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/X509TrustManager
+#graphify/code #graphify/EXTRACTED #community/Community_77

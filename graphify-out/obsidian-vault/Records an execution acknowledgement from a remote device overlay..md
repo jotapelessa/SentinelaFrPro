@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "rationale"
-community: "PiPGatewayService"
+community: "asyncio"
 location: "L47"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/asyncio
 ---
 
 # Records an execution acknowledgement from a remote device overlay.
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-record_ack()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/rationale #graphify/EXTRACTED #community/asyncio

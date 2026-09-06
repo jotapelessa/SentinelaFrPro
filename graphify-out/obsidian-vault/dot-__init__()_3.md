@@ -1,17 +1,17 @@
 ---
-source_file: "backend/app/services/pip_gateway.py"
+source_file: "backend/app/api/ws.py"
 type: "code"
-community: "PiPGatewayService"
-location: "L39"
+community: "SmartphoneYouTubeScreen.kt"
+location: "L14"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/SmartphoneYouTubeScreenkt
 ---
 
 # .__init__()
 
 ## Connections
-- [[PiPGatewayService]] - `method` [EXTRACTED]
+- [[WebSocketManager]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/SmartphoneYouTubeScreenkt

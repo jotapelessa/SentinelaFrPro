@@ -2,7 +2,7 @@
 source_file: "backend/app/api/settings.py"
 type: "code"
 community: "settings.py"
-location: "L357"
+location: "L421"
 tags:
   - graphify/code
   - graphify/EXTRACTED

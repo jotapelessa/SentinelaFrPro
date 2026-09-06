@@ -12,7 +12,7 @@ tags:
 # MseCameraView.kt
 
 ## Connections
-- [[Modifier_3]] - `imports` [EXTRACTED]
+- [[Modifier_2]] - `imports` [EXTRACTED]
 - [[MseCameraView()]] - `contains` [EXTRACTED]
 - [[SentinelaConfig]] - `imports` [EXTRACTED]
 - [[View]] - `imports` [EXTRACTED]

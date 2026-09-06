@@ -189,25 +189,74 @@ async def test_telegram_alert(request: Request, payload: Optional[TelegramTestPa
     return res
 
 
+class TelegramPhotoTestPayload(BaseModel):
+    camera_name: Optional[str] = None
+
+
+async def _resolve_active_test_camera(db: AsyncSession, requested_camera: Optional[str] = None):
+    """
+    Resolves the target camera for Telegram test dispatches:
+    1. If specific camera_name requested, validates and returns it.
+    2. Otherwise, dynamically queries the database for the first enabled camera.
+    3. Fallback to any camera or sensible default.
+    """
+    from app.db.models import Camera
+    
+    if requested_camera:
+        stmt = select(Camera).where(Camera.name == requested_camera)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+        if cam:
+            return cam.name, cam.friendly_name or cam.name
+
+    # Query first enabled camera
+    stmt = select(Camera).where(Camera.enabled == True).order_by(Camera.id.asc())
+    res = await db.execute(stmt)
+    active_cam = res.scalar_one_or_none()
+    if active_cam:
+        return active_cam.name, active_cam.friendly_name or active_cam.name
+
+    # Fallback to any registered camera
+    stmt = select(Camera).order_by(Camera.id.asc())
+    res = await db.execute(stmt)
+    any_cam = res.scalar_one_or_none()
+    if any_cam:
+        return any_cam.name, any_cam.friendly_name or any_cam.name
+
+    return "camera_secundaria", "Câmera IP"
+
+
 @router.post("/telegram/test-photo")
-async def test_telegram_photo(request: Request):
+async def test_telegram_photo(
+    request: Request,
+    payload: Optional[TelegramPhotoTestPayload] = None,
+    db: AsyncSession = Depends(get_db)
+):
     client_ip = request.client.host if request.client else "unknown"
     if not telegram_vault_service.is_configured:
         await telegram_vault_service.load_credentials_from_db()
     if not telegram_vault_service.is_configured:
         raise HTTPException(status_code=400, detail="Telegram não configurado.")
 
-    snapshot_bytes = await frigate_bridge.get_live_snapshot("camera_principal")
+    cam_name, friendly_name = await _resolve_active_test_camera(
+        db,
+        payload.camera_name if payload else None
+    )
+
+    snapshot_bytes = await frigate_bridge.get_live_snapshot(cam_name)
     if not snapshot_bytes:
-        raise HTTPException(status_code=500, detail="Não foi possível capturar a foto ao vivo da câmera no Frigate.")
+        raise HTTPException(
+            status_code=502,
+            detail=f"Não foi possível capturar a foto ao vivo da câmera '{friendly_name}'. Verifique o stream RTSP/go2rtc."
+        )
 
     ok = await telegram_vault_service.send_alert_photo(
         image_bytes=snapshot_bytes,
-        camera_name="camera_principal",
+        camera_name=cam_name,
         label="person",
         zone="Entrada Principal",
         score=0.97,
-        friendly_name="Câmera de Teste",
+        friendly_name=friendly_name,
         ignore_pause=True
     )
 
@@ -215,17 +264,22 @@ async def test_telegram_photo(request: Request):
         action="TELEGRAM_PHOTO_TEST",
         module="TELEGRAM",
         severity="SUCCESS" if ok else "WARNING",
-        details="Teste de envio de Foto/Snapshot disparado para o Telegram.",
+        details=f"Teste de envio de Foto/Snapshot disparado para o Telegram via '{cam_name}'.",
         client_ip=client_ip
     )
 
     if ok:
-        return {"status": "success", "message": "📸 Foto de teste enviada com sucesso para o Telegram!"}
+        return {
+            "status": "success",
+            "message": f"📸 Foto da '{friendly_name}' enviada com sucesso para o Telegram!",
+            "camera": cam_name
+        }
     else:
         raise HTTPException(status_code=500, detail="Falha ao enviar foto para o Telegram.")
 
 
 class TelegramVideoTestPayload(BaseModel):
+    camera_name: Optional[str] = None
     duration_seconds: Optional[int] = 15
     resolution: Optional[str] = "1080p"
     video_quality: Optional[str] = "balanced"
@@ -241,6 +295,11 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
     if not telegram_vault_service.is_configured:
         raise HTTPException(status_code=400, detail="Telegram não configurado no Sentinela.")
 
+    cam_name, friendly_name = await _resolve_active_test_camera(
+        db,
+        payload.camera_name if payload else None
+    )
+
     # 1. Determine parameters from Payload or DB
     stmt = select(SystemSetting)
     res = await db.execute(stmt)
@@ -253,25 +312,29 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
     if inc_audio is None:
         inc_audio = db_settings.get("telegram_include_audio", "true").lower() == "true"
 
-    # 2. Record live video using FrigateBridgeService
+    # 2. Record live video using FrigateBridgeService from real camera stream
     video_bytes = await frigate_bridge.record_live_video(
-        camera_name="camera_principal",
+        camera_name=cam_name,
         duration_s=duration_s,
         resolution=resolution,
         video_quality=video_qual,
-        include_audio=inc_audio
+        include_audio=inc_audio,
+        allow_synthetic=False
     )
 
     if not video_bytes:
-        raise HTTPException(status_code=500, detail="Não foi possível capturar nem gerar o vídeo MP4.")
+        raise HTTPException(
+            status_code=502,
+            detail=f"Não foi possível capturar o vídeo ao vivo da câmera '{friendly_name}'. Verifique o stream RTSP/go2rtc."
+        )
 
     ok = await telegram_vault_service.send_alert_video(
         video_bytes=video_bytes,
-        camera_name="camera_principal",
+        camera_name=cam_name,
         label="person",
         duration_s=float(duration_s),
         score=0.98,
-        friendly_name="Câmera Ao Vivo",
+        friendly_name=friendly_name,
         ignore_pause=True
     )
 
@@ -279,14 +342,15 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
         action="TELEGRAM_LIVE_VIDEO_TEST",
         module="TELEGRAM",
         severity="SUCCESS" if ok else "WARNING",
-        details=f"Vídeo de teste ao vivo gravado e disparado ({duration_s}s, {resolution}, {video_qual}).",
+        details=f"Vídeo de teste ao vivo gravado da '{cam_name}' e disparado ({duration_s}s, {resolution}, {video_qual}).",
         client_ip=client_ip
     )
 
     if ok:
         return {
             "status": "success",
-            "message": f"🎥 Vídeo gravado ao vivo ({duration_s}s, {resolution}) entregue com sucesso no Telegram!"
+            "message": f"🎥 Vídeo gravado ao vivo da '{friendly_name}' ({duration_s}s, {resolution}) entregue com sucesso no Telegram!",
+            "camera": cam_name
         }
     else:
         raise HTTPException(status_code=500, detail="Falha ao entregar o vídeo no chat do Telegram. Verifique se o Bot Token e Chat ID estão corretos.")

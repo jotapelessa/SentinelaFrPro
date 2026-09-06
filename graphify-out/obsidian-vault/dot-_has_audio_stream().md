@@ -2,7 +2,7 @@
 source_file: "backend/app/services/frigate_bridge.py"
 type: "code"
 community: "FrigateBridgeService"
-location: "L259"
+location: "L260"
 tags:
   - graphify/code
   - graphify/EXTRACTED

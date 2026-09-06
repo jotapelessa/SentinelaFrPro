@@ -11,8 +11,8 @@ tags:
 # java
 
 ## Connections
-- [[dot-checkClientTrusted()]] - `references` [EXTRACTED]
-- [[dot-checkServerTrusted()]] - `references` [EXTRACTED]
-- [[dot-getAcceptedIssuers()]] - `references` [EXTRACTED]
+- [[dot-checkClientTrusted()_2]] - `references` [EXTRACTED]
+- [[dot-checkServerTrusted()_2]] - `references` [EXTRACTED]
+- [[dot-getAcceptedIssuers()_2]] - `references` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/Modelskt

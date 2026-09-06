@@ -1708,7 +1708,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_oncreate",
       "type": "file",
-      "file": "dot-onCreate()_2.md",
+      "file": "dot-onCreate()_1.md",
       "x": 6560,
       "y": 80,
       "width": 180,
@@ -3352,7 +3352,7 @@
       "label": "settings.py",
       "x": 12660,
       "y": 0,
-      "width": 1540,
+      "width": 1320,
       "height": 720,
       "color": "2"
     },
@@ -3375,46 +3375,10 @@
       "height": 60
     },
     {
-      "id": "n_backend_app_api_settings_rationale_625",
-      "type": "file",
-      "file": "Cleans old non-retained recordings andor snapshots from Ubuntu Server SSD\u2026.md",
-      "x": 13080,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "n_backend_app_api_settings_dndconfigupdate",
       "type": "file",
       "file": "DNDConfigUpdate.md",
-      "x": 13280,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_api_settings_rationale_544",
-      "type": "file",
-      "file": "Deletes Frigate clipssnapshots files older than cutoff (by mtime) under clips..md",
-      "x": 13480,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_api_settings_rationale_517",
-      "type": "file",
-      "file": "Deletes Frigate recording segment folders older than cutoff under\u2026.md",
-      "x": 13680,
-      "y": 80,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_api_settings_rationale_456",
-      "type": "file",
-      "file": "Dispatches the database sentinela.db directly to the configured Telegram chat..md",
-      "x": 13880,
+      "x": 13080,
       "y": 80,
       "width": 180,
       "height": 60
@@ -3423,8 +3387,8 @@
       "id": "n_backend_app_api_settings_pausealertsrequest",
       "type": "file",
       "file": "PauseAlertsRequest.md",
-      "x": 12680,
-      "y": 160,
+      "x": 13280,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -3432,35 +3396,17 @@
       "id": "n_backend_app_api_settings_py_request",
       "type": "file",
       "file": "Request_4.md",
-      "x": 12880,
-      "y": 160,
+      "x": 13480,
+      "y": 80,
       "width": 180,
       "height": 60
     },
     {
       "id": "n_backend_app_api_settings_rationale_505",
       "type": "file",
-      "file": "Returns a directory tree size in bytes, cached for ttl_seconds to avoid heavy\u2026.md",
-      "x": 13080,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_api_settings_rationale_571",
-      "type": "file",
-      "file": "Returns real-time Ubuntu Server NVMe SSD storage status, breakdown and\u2026.md",
-      "x": 13280,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_api_settings_rationale_441",
-      "type": "file",
       "file": "Returns the sentinela.db SQLite binary file directly as a download..md",
-      "x": 13480,
-      "y": 160,
+      "x": 13680,
+      "y": 80,
       "width": 180,
       "height": 60
     },
@@ -3468,16 +3414,7 @@
       "id": "n_backend_app_api_settings_storagecleanrequest",
       "type": "file",
       "file": "StorageCleanRequest.md",
-      "x": 13680,
-      "y": 160,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_api_settings_rationale_488",
-      "type": "file",
-      "file": "Sums the byte size of all files under a directory tree..md",
-      "x": 13880,
+      "x": 12680,
       "y": 160,
       "width": 180,
       "height": 60
@@ -3486,8 +3423,8 @@
       "id": "n_backend_app_db_models_systemsetting",
       "type": "file",
       "file": "SystemSetting.md",
-      "x": 12680,
-      "y": 240,
+      "x": 12880,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -3495,8 +3432,8 @@
       "id": "n_backend_app_api_settings_telegramconfigupdate",
       "type": "file",
       "file": "TelegramConfigUpdate.md",
-      "x": 12880,
-      "y": 240,
+      "x": 13080,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -3504,8 +3441,8 @@
       "id": "n_backend_app_api_settings_telegramtestpayload",
       "type": "file",
       "file": "TelegramTestPayload.md",
-      "x": 13080,
-      "y": 240,
+      "x": 13280,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -3513,8 +3450,8 @@
       "id": "n_backend_app_api_settings_telegramvideotestpayload",
       "type": "file",
       "file": "TelegramVideoTestPayload.md",
-      "x": 13280,
-      "y": 240,
+      "x": 13480,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -3522,8 +3459,8 @@
       "id": "n_backend_app_api_settings_zoneupdate",
       "type": "file",
       "file": "ZoneUpdate.md",
-      "x": 13480,
-      "y": 240,
+      "x": 13680,
+      "y": 160,
       "width": 180,
       "height": 60
     },
@@ -3531,7 +3468,7 @@
       "id": "n_backend_app_api_settings_cached_dir_size",
       "type": "file",
       "file": "_cached_dir_size().md",
-      "x": 13680,
+      "x": 12680,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3540,7 +3477,7 @@
       "id": "n_backend_app_api_settings_dir_size_bytes",
       "type": "file",
       "file": "_dir_size_bytes().md",
-      "x": 13880,
+      "x": 12880,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3549,8 +3486,8 @@
       "id": "n_backend_app_api_settings_purge_clips",
       "type": "file",
       "file": "_purge_clips().md",
-      "x": 12680,
-      "y": 320,
+      "x": 13080,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -3558,8 +3495,8 @@
       "id": "n_backend_app_api_settings_purge_recordings",
       "type": "file",
       "file": "_purge_recordings().md",
-      "x": 12880,
-      "y": 320,
+      "x": 13280,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -3567,8 +3504,8 @@
       "id": "n_backend_app_api_settings_clean_server_storage",
       "type": "file",
       "file": "clean_server_storage().md",
-      "x": 13080,
-      "y": 320,
+      "x": 13480,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -3576,8 +3513,8 @@
       "id": "n_backend_app_api_settings_dispatch_backup_to_telegram",
       "type": "file",
       "file": "dispatch_backup_to_telegram().md",
-      "x": 13280,
-      "y": 320,
+      "x": 13680,
+      "y": 240,
       "width": 180,
       "height": 60
     },
@@ -3585,7 +3522,7 @@
       "id": "n_backend_app_api_settings_download_database_file",
       "type": "file",
       "file": "download_database_file().md",
-      "x": 13480,
+      "x": 12680,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3594,7 +3531,7 @@
       "id": "n_backend_app_api_settings_export_backup",
       "type": "file",
       "file": "export_backup().md",
-      "x": 13680,
+      "x": 12880,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3603,7 +3540,7 @@
       "id": "n_backend_app_api_settings_py_get",
       "type": "file",
       "file": "get_5.md",
-      "x": 13880,
+      "x": 13080,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3612,8 +3549,8 @@
       "id": "n_backend_app_api_settings_get_dnd_settings",
       "type": "file",
       "file": "get_dnd_settings().md",
-      "x": 12680,
-      "y": 400,
+      "x": 13280,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -3621,8 +3558,8 @@
       "id": "n_backend_app_api_settings_get_settings",
       "type": "file",
       "file": "get_settings().md",
-      "x": 12880,
-      "y": 400,
+      "x": 13480,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -3630,8 +3567,8 @@
       "id": "n_backend_app_api_settings_get_storage_status",
       "type": "file",
       "file": "get_storage_status().md",
-      "x": 13080,
-      "y": 400,
+      "x": 13680,
+      "y": 320,
       "width": 180,
       "height": 60
     },
@@ -3639,7 +3576,7 @@
       "id": "n_backend_app_api_settings_pause_alerts",
       "type": "file",
       "file": "pause_alerts().md",
-      "x": 13280,
+      "x": 12680,
       "y": 400,
       "width": 180,
       "height": 60
@@ -3648,7 +3585,7 @@
       "id": "n_backend_app_api_settings_py_post",
       "type": "file",
       "file": "post_5.md",
-      "x": 13480,
+      "x": 12880,
       "y": 400,
       "width": 180,
       "height": 60
@@ -3657,7 +3594,7 @@
       "id": "n_backend_app_api_settings_resume_alerts",
       "type": "file",
       "file": "resume_alerts().md",
-      "x": 13680,
+      "x": 13080,
       "y": 400,
       "width": 180,
       "height": 60
@@ -3666,7 +3603,7 @@
       "id": "n_backend_app_api_settings",
       "type": "file",
       "file": "settings.py.md",
-      "x": 13880,
+      "x": 13280,
       "y": 400,
       "width": 180,
       "height": 60
@@ -3675,8 +3612,8 @@
       "id": "n_backend_app_api_settings_test_telegram_alert",
       "type": "file",
       "file": "test_telegram_alert().md",
-      "x": 12680,
-      "y": 480,
+      "x": 13480,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -3684,8 +3621,8 @@
       "id": "n_backend_app_api_settings_test_telegram_logs",
       "type": "file",
       "file": "test_telegram_logs().md",
-      "x": 12880,
-      "y": 480,
+      "x": 13680,
+      "y": 400,
       "width": 180,
       "height": 60
     },
@@ -3693,7 +3630,7 @@
       "id": "n_backend_app_api_settings_test_telegram_photo",
       "type": "file",
       "file": "test_telegram_photo().md",
-      "x": 13080,
+      "x": 12680,
       "y": 480,
       "width": 180,
       "height": 60
@@ -3702,7 +3639,7 @@
       "id": "n_backend_app_api_settings_test_telegram_status",
       "type": "file",
       "file": "test_telegram_status().md",
-      "x": 13280,
+      "x": 12880,
       "y": 480,
       "width": 180,
       "height": 60
@@ -3711,7 +3648,7 @@
       "id": "n_backend_app_api_settings_test_telegram_video",
       "type": "file",
       "file": "test_telegram_video().md",
-      "x": 13480,
+      "x": 13080,
       "y": 480,
       "width": 180,
       "height": 60
@@ -3720,7 +3657,7 @@
       "id": "n_backend_app_api_settings_update_dnd_settings",
       "type": "file",
       "file": "update_dnd_settings().md",
-      "x": 13680,
+      "x": 13280,
       "y": 480,
       "width": 180,
       "height": 60
@@ -3729,7 +3666,7 @@
       "id": "n_backend_app_api_settings_update_telegram_config",
       "type": "file",
       "file": "update_telegram_config().md",
-      "x": 13880,
+      "x": 13480,
       "y": 480,
       "width": 180,
       "height": 60
@@ -3738,7 +3675,7 @@
       "id": "g8",
       "type": "group",
       "label": "sentinela-pro-mobile-nvr/src/App.tsx",
-      "x": 14280,
+      "x": 14060,
       "y": 0,
       "width": 1540,
       "height": 720,
@@ -3748,7 +3685,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_types_aidetectionevent",
       "type": "file",
       "file": "AiDetectionEvent.md",
-      "x": 14300,
+      "x": 14080,
       "y": 80,
       "width": 180,
       "height": 60
@@ -3757,7 +3694,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_app_app",
       "type": "file",
       "file": "App()_1.md",
-      "x": 14500,
+      "x": 14280,
       "y": 80,
       "width": 180,
       "height": 60
@@ -3766,7 +3703,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_types_bottomnavtab",
       "type": "file",
       "file": "BottomNavTab.md",
-      "x": 14700,
+      "x": 14480,
       "y": 80,
       "width": 180,
       "height": 60
@@ -3775,7 +3712,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_types_camerafeed",
       "type": "file",
       "file": "CameraFeed.md",
-      "x": 14900,
+      "x": 14680,
       "y": 80,
       "width": 180,
       "height": 60
@@ -3784,7 +3721,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_livefeedview_camerastreamcarditem",
       "type": "file",
       "file": "CameraStreamCardItem().md",
-      "x": 15100,
+      "x": 14880,
       "y": 80,
       "width": 180,
       "height": 60
@@ -3793,7 +3730,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_livefeedview_camerastreamcarditemprops",
       "type": "file",
       "file": "CameraStreamCardItemProps.md",
-      "x": 15300,
+      "x": 15080,
       "y": 80,
       "width": 180,
       "height": 60
@@ -3802,7 +3739,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_types_captureitem",
       "type": "file",
       "file": "CaptureItem.md",
-      "x": 15500,
+      "x": 15280,
       "y": 80,
       "width": 180,
       "height": 60
@@ -3811,7 +3748,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_capturesview_capturesview",
       "type": "file",
       "file": "CapturesView().md",
-      "x": 14300,
+      "x": 14080,
       "y": 160,
       "width": 180,
       "height": 60
@@ -3820,7 +3757,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_capturesview",
       "type": "file",
       "file": "CapturesView.tsx.md",
-      "x": 14500,
+      "x": 14280,
       "y": 160,
       "width": 180,
       "height": 60
@@ -3829,7 +3766,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_capturesview_capturesviewprops",
       "type": "file",
       "file": "CapturesViewProps.md",
-      "x": 14700,
+      "x": 14480,
       "y": 160,
       "width": 180,
       "height": 60
@@ -3838,7 +3775,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_kotlincode_design_tokens_kotlin",
       "type": "file",
       "file": "DESIGN_TOKENS_KOTLIN.md",
-      "x": 14900,
+      "x": 14680,
       "y": 160,
       "width": 180,
       "height": 60
@@ -3847,7 +3784,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_designtokensdoc_designtokensdoc",
       "type": "file",
       "file": "DesignTokensDoc().md",
-      "x": 15100,
+      "x": 14880,
       "y": 160,
       "width": 180,
       "height": 60
@@ -3856,7 +3793,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_designtokensdoc",
       "type": "file",
       "file": "DesignTokensDoc.tsx.md",
-      "x": 15300,
+      "x": 15080,
       "y": 160,
       "width": 180,
       "height": 60
@@ -3865,7 +3802,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_data_mockdata_initial_cameras",
       "type": "file",
       "file": "INITIAL_CAMERAS.md",
-      "x": 15500,
+      "x": 15280,
       "y": 160,
       "width": 180,
       "height": 60
@@ -3874,7 +3811,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_data_mockdata_initial_captures",
       "type": "file",
       "file": "INITIAL_CAPTURES.md",
-      "x": 14300,
+      "x": 14080,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3883,7 +3820,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_data_mockdata_initial_tvs",
       "type": "file",
       "file": "INITIAL_TVS.md",
-      "x": 14500,
+      "x": 14280,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3892,7 +3829,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_kotlincodeviewer_kotlincodeviewer",
       "type": "file",
       "file": "KotlinCodeViewer().md",
-      "x": 14700,
+      "x": 14480,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3901,7 +3838,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_kotlincodeviewer",
       "type": "file",
       "file": "KotlinCodeViewer.tsx.md",
-      "x": 14900,
+      "x": 14680,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3910,7 +3847,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_livefeedview_livefeedview",
       "type": "file",
       "file": "LiveFeedView().md",
-      "x": 15100,
+      "x": 14880,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3919,7 +3856,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_livefeedview",
       "type": "file",
       "file": "LiveFeedView.tsx.md",
-      "x": 15300,
+      "x": 15080,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3928,7 +3865,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_livefeedview_livefeedviewprops",
       "type": "file",
       "file": "LiveFeedViewProps.md",
-      "x": 15500,
+      "x": 15280,
       "y": 240,
       "width": 180,
       "height": 60
@@ -3937,7 +3874,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_mastercentralview_mastercentralview",
       "type": "file",
       "file": "MasterCentralView().md",
-      "x": 14300,
+      "x": 14080,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3946,7 +3883,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_mastercentralview",
       "type": "file",
       "file": "MasterCentralView.tsx.md",
-      "x": 14500,
+      "x": 14280,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3955,7 +3892,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_mastercentralview_mastercentralviewprops",
       "type": "file",
       "file": "MasterCentralViewProps.md",
-      "x": 14700,
+      "x": 14480,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3964,7 +3901,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_phonesimulator_phonesimulator",
       "type": "file",
       "file": "PhoneSimulator().md",
-      "x": 14900,
+      "x": 14680,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3973,7 +3910,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_phonesimulator",
       "type": "file",
       "file": "PhoneSimulator.tsx.md",
-      "x": 15100,
+      "x": 14880,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3982,7 +3919,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_phonesimulator_phonesimulatorprops",
       "type": "file",
       "file": "PhoneSimulatorProps.md",
-      "x": 15300,
+      "x": 15080,
       "y": 320,
       "width": 180,
       "height": 60
@@ -3991,7 +3928,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_kotlincode_screen_kotlin",
       "type": "file",
       "file": "SCREEN_KOTLIN.md",
-      "x": 15500,
+      "x": 15280,
       "y": 320,
       "width": 180,
       "height": 60
@@ -4000,7 +3937,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_settingsview_settingsview",
       "type": "file",
       "file": "SettingsView().md",
-      "x": 14300,
+      "x": 14080,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4009,7 +3946,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_settingsview",
       "type": "file",
       "file": "SettingsView.tsx.md",
-      "x": 14500,
+      "x": 14280,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4018,7 +3955,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_settingsview_settingsviewprops",
       "type": "file",
       "file": "SettingsViewProps.md",
-      "x": 14700,
+      "x": 14480,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4027,7 +3964,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_types_tvdevice",
       "type": "file",
       "file": "TvDevice.md",
-      "x": 14900,
+      "x": 14680,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4036,7 +3973,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_mastercentralview_tvmastercarditem",
       "type": "file",
       "file": "TvMasterCardItem().md",
-      "x": 15100,
+      "x": 14880,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4045,7 +3982,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_components_mastercentralview_tvmastercarditemprops",
       "type": "file",
       "file": "TvMasterCardItemProps.md",
-      "x": 15300,
+      "x": 15080,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4054,7 +3991,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_kotlincode_viewmodel_kotlin",
       "type": "file",
       "file": "VIEWMODEL_KOTLIN.md",
-      "x": 15500,
+      "x": 15280,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4063,7 +4000,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_kotlincode",
       "type": "file",
       "file": "kotlinCode.ts.md",
-      "x": 14300,
+      "x": 14080,
       "y": 480,
       "width": 180,
       "height": 60
@@ -4072,7 +4009,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_app",
       "type": "file",
       "file": "sentinela-pro-mobile-nvrsrcApp.tsx.md",
-      "x": 14500,
+      "x": 14280,
       "y": 480,
       "width": 180,
       "height": 60
@@ -4081,7 +4018,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_data_mockdata",
       "type": "file",
       "file": "sentinela-pro-mobile-nvrsrcdatamockData.ts.md",
-      "x": 14700,
+      "x": 14480,
       "y": 480,
       "width": 180,
       "height": 60
@@ -4090,7 +4027,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_main",
       "type": "file",
       "file": "sentinela-pro-mobile-nvrsrcmain.tsx.md",
-      "x": 14900,
+      "x": 14680,
       "y": 480,
       "width": 180,
       "height": 60
@@ -4099,7 +4036,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_src_types",
       "type": "file",
       "file": "types.ts.md",
-      "x": 15100,
+      "x": 14880,
       "y": 480,
       "width": 180,
       "height": 60
@@ -4108,7 +4045,7 @@
       "id": "g9",
       "type": "group",
       "label": "compilerOptions",
-      "x": 15900,
+      "x": 15680,
       "y": 0,
       "width": 1540,
       "height": 720,
@@ -4118,7 +4055,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_json_ref_dom",
       "type": "file",
       "file": "DOM_2.md",
-      "x": 15920,
+      "x": 15700,
       "y": 80,
       "width": 180,
       "height": 60
@@ -4127,7 +4064,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_json_ref_dom",
       "type": "file",
       "file": "DOM_1.md",
-      "x": 16120,
+      "x": 15900,
       "y": 80,
       "width": 180,
       "height": 60
@@ -4136,7 +4073,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_json_ref_es2022",
       "type": "file",
       "file": "ES2022_1.md",
-      "x": 16320,
+      "x": 16100,
       "y": 80,
       "width": 180,
       "height": 60
@@ -4145,7 +4082,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_json_ref_es2022",
       "type": "file",
       "file": "ES2022.md",
-      "x": 16520,
+      "x": 16300,
       "y": 80,
       "width": 180,
       "height": 60
@@ -4154,7 +4091,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_allowimportingtsextensions",
       "type": "file",
       "file": "allowImportingTsExtensions_1.md",
-      "x": 16720,
+      "x": 16500,
       "y": 80,
       "width": 180,
       "height": 60
@@ -4163,7 +4100,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_allowimportingtsextensions",
       "type": "file",
       "file": "allowImportingTsExtensions.md",
-      "x": 16920,
+      "x": 16700,
       "y": 80,
       "width": 180,
       "height": 60
@@ -4172,7 +4109,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_allowjs",
       "type": "file",
       "file": "allowJs_2.md",
-      "x": 17120,
+      "x": 16900,
       "y": 80,
       "width": 180,
       "height": 60
@@ -4181,7 +4118,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_allowjs",
       "type": "file",
       "file": "allowJs_1.md",
-      "x": 15920,
+      "x": 15700,
       "y": 160,
       "width": 180,
       "height": 60
@@ -4190,7 +4127,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions",
       "type": "file",
       "file": "compilerOptions_2.md",
-      "x": 16120,
+      "x": 15900,
       "y": 160,
       "width": 180,
       "height": 60
@@ -4199,7 +4136,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions",
       "type": "file",
       "file": "compilerOptions_1.md",
-      "x": 16320,
+      "x": 16100,
       "y": 160,
       "width": 180,
       "height": 60
@@ -4208,7 +4145,7 @@
       "id": "n_frontend_tsconfig_json_ref_dom_iterable",
       "type": "file",
       "file": "dom.iterable.md",
-      "x": 16520,
+      "x": 16300,
       "y": 160,
       "width": 180,
       "height": 60
@@ -4217,7 +4154,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_experimentaldecorators",
       "type": "file",
       "file": "experimentalDecorators_1.md",
-      "x": 16720,
+      "x": 16500,
       "y": 160,
       "width": 180,
       "height": 60
@@ -4226,7 +4163,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_experimentaldecorators",
       "type": "file",
       "file": "experimentalDecorators.md",
-      "x": 16920,
+      "x": 16700,
       "y": 160,
       "width": 180,
       "height": 60
@@ -4235,7 +4172,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_isolatedmodules",
       "type": "file",
       "file": "isolatedModules_2.md",
-      "x": 17120,
+      "x": 16900,
       "y": 160,
       "width": 180,
       "height": 60
@@ -4244,7 +4181,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_isolatedmodules",
       "type": "file",
       "file": "isolatedModules_1.md",
-      "x": 15920,
+      "x": 15700,
       "y": 240,
       "width": 180,
       "height": 60
@@ -4253,7 +4190,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_jsx",
       "type": "file",
       "file": "jsx_2.md",
-      "x": 16120,
+      "x": 15900,
       "y": 240,
       "width": 180,
       "height": 60
@@ -4262,7 +4199,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_jsx",
       "type": "file",
       "file": "jsx_1.md",
-      "x": 16320,
+      "x": 16100,
       "y": 240,
       "width": 180,
       "height": 60
@@ -4271,7 +4208,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_lib",
       "type": "file",
       "file": "lib_2.md",
-      "x": 16520,
+      "x": 16300,
       "y": 240,
       "width": 180,
       "height": 60
@@ -4280,7 +4217,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_lib",
       "type": "file",
       "file": "lib_1.md",
-      "x": 16720,
+      "x": 16500,
       "y": 240,
       "width": 180,
       "height": 60
@@ -4289,7 +4226,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_module",
       "type": "file",
       "file": "module_2.md",
-      "x": 16920,
+      "x": 16700,
       "y": 240,
       "width": 180,
       "height": 60
@@ -4298,7 +4235,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_module",
       "type": "file",
       "file": "module_1.md",
-      "x": 17120,
+      "x": 16900,
       "y": 240,
       "width": 180,
       "height": 60
@@ -4307,7 +4244,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_moduledetection",
       "type": "file",
       "file": "moduleDetection_1.md",
-      "x": 15920,
+      "x": 15700,
       "y": 320,
       "width": 180,
       "height": 60
@@ -4316,7 +4253,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_moduledetection",
       "type": "file",
       "file": "moduleDetection.md",
-      "x": 16120,
+      "x": 15900,
       "y": 320,
       "width": 180,
       "height": 60
@@ -4325,7 +4262,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_moduleresolution",
       "type": "file",
       "file": "moduleResolution_2.md",
-      "x": 16320,
+      "x": 16100,
       "y": 320,
       "width": 180,
       "height": 60
@@ -4334,7 +4271,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_moduleresolution",
       "type": "file",
       "file": "moduleResolution_1.md",
-      "x": 16520,
+      "x": 16300,
       "y": 320,
       "width": 180,
       "height": 60
@@ -4343,7 +4280,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_noemit",
       "type": "file",
       "file": "noEmit_2.md",
-      "x": 16720,
+      "x": 16500,
       "y": 320,
       "width": 180,
       "height": 60
@@ -4352,7 +4289,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_noemit",
       "type": "file",
       "file": "noEmit_1.md",
-      "x": 16920,
+      "x": 16700,
       "y": 320,
       "width": 180,
       "height": 60
@@ -4361,7 +4298,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_paths",
       "type": "file",
       "file": "paths_2.md",
-      "x": 17120,
+      "x": 16900,
       "y": 320,
       "width": 180,
       "height": 60
@@ -4370,7 +4307,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_paths",
       "type": "file",
       "file": "paths_1.md",
-      "x": 15920,
+      "x": 15700,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4379,7 +4316,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig",
       "type": "file",
       "file": "sentinela-pro-mobile-nvrtsconfig.json.md",
-      "x": 16120,
+      "x": 15900,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4388,7 +4325,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig",
       "type": "file",
       "file": "sentinela-pro-tvtsconfig.json.md",
-      "x": 16320,
+      "x": 16100,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4397,7 +4334,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_skiplibcheck",
       "type": "file",
       "file": "skipLibCheck_2.md",
-      "x": 16520,
+      "x": 16300,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4406,7 +4343,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_skiplibcheck",
       "type": "file",
       "file": "skipLibCheck_1.md",
-      "x": 16720,
+      "x": 16500,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4415,7 +4352,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_target",
       "type": "file",
       "file": "target_2.md",
-      "x": 16920,
+      "x": 16700,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4424,7 +4361,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_target",
       "type": "file",
       "file": "target_1.md",
-      "x": 17120,
+      "x": 16900,
       "y": 400,
       "width": 180,
       "height": 60
@@ -4433,7 +4370,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_tsconfig_compileroptions_usedefineforclassfields",
       "type": "file",
       "file": "useDefineForClassFields_1.md",
-      "x": 15920,
+      "x": 15700,
       "y": 480,
       "width": 180,
       "height": 60
@@ -4442,7 +4379,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_tsconfig_compileroptions_usedefineforclassfields",
       "type": "file",
       "file": "useDefineForClassFields.md",
-      "x": 16120,
+      "x": 15900,
       "y": 480,
       "width": 180,
       "height": 60
@@ -6305,8 +6242,8 @@
       "label": "FrigateBridgeService",
       "x": 12660,
       "y": 1000,
-      "width": 1100,
-      "height": 620,
+      "width": 880,
+      "height": 520,
       "color": "6"
     },
     {
@@ -6349,8 +6286,8 @@
       "id": "n_backend_app_services_frigate_bridge_frigatebridgeservice_get_connectivity_logs",
       "type": "file",
       "file": "dot-get_connectivity_logs().md",
-      "x": 13480,
-      "y": 1080,
+      "x": 12680,
+      "y": 1160,
       "width": 180,
       "height": 60
     },
@@ -6358,7 +6295,7 @@
       "id": "n_backend_app_services_frigate_bridge_frigatebridgeservice_get_live_snapshot",
       "type": "file",
       "file": "dot-get_live_snapshot().md",
-      "x": 12680,
+      "x": 12880,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6367,7 +6304,7 @@
       "id": "n_backend_app_services_frigate_bridge_frigatebridgeservice_get_video_duration",
       "type": "file",
       "file": "dot-get_video_duration().md",
-      "x": 12880,
+      "x": 13080,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6376,7 +6313,7 @@
       "id": "n_backend_app_services_frigate_bridge_frigatebridgeservice_has_video_stream",
       "type": "file",
       "file": "dot-has_video_stream().md",
-      "x": 13080,
+      "x": 13280,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6385,8 +6322,8 @@
       "id": "n_backend_app_services_frigate_bridge_frigatebridgeservice_log_probe",
       "type": "file",
       "file": "dot-log_probe().md",
-      "x": 13280,
-      "y": 1160,
+      "x": 12680,
+      "y": 1240,
       "width": 180,
       "height": 60
     },
@@ -6394,8 +6331,8 @@
       "id": "n_backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
       "type": "file",
       "file": "dot-record_live_video().md",
-      "x": 13480,
-      "y": 1160,
+      "x": 12880,
+      "y": 1240,
       "width": 180,
       "height": 60
     },
@@ -6403,16 +6340,7 @@
       "id": "n_backend_app_services_frigate_bridge_frigatebridgeservice_transcode_to_30fps",
       "type": "file",
       "file": "dot-transcode_to_30fps().md",
-      "x": 12680,
-      "y": 1240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_services_frigate_bridge_rationale_392",
-      "type": "file",
-      "file": "Accurately extracts real playback duration of video_bytes using ffprobe in ~2ms..md",
-      "x": 12880,
+      "x": 13080,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6421,25 +6349,7 @@
       "id": "n_backend_app_services_frigate_bridge_py_any",
       "type": "file",
       "file": "Any_3.md",
-      "x": 13080,
-      "y": 1240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_services_frigate_bridge_rationale_427",
-      "type": "file",
-      "file": "Captures a live video clip directly from the camera stream with constant 30\u2026.md",
       "x": 13280,
-      "y": 1240,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_services_frigate_bridge_rationale_260",
-      "type": "file",
-      "file": "Checks whether the file contains an audio stream..md",
-      "x": 13480,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6463,38 +6373,11 @@
       "height": 60
     },
     {
-      "id": "n_backend_app_services_frigate_bridge_rationale_203",
-      "type": "file",
-      "file": "Probes average frame rate, duration, width and height of a video file..md",
-      "x": 13080,
-      "y": 1320,
-      "width": 180,
-      "height": 60
-    },
-    {
       "id": "n_backend_app_services_frigate_bridge_rationale_111",
       "type": "file",
       "file": "Retrieves a live JPEG frame at nativemain-stream resolution using a multi-\u2026.md",
-      "x": 13280,
+      "x": 13080,
       "y": 1320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_services_frigate_bridge_rationale_275",
-      "type": "file",
-      "file": "Robust H.264AAC constant-frame-rate preparation for Telegram & mobile\u2026.md",
-      "x": 13480,
-      "y": 1320,
-      "width": 180,
-      "height": 60
-    },
-    {
-      "id": "n_backend_app_services_frigate_bridge_rationale_172",
-      "type": "file",
-      "file": "Verifies with ffprobe that the MP4 contains at least one valid video stream and\u2026.md",
-      "x": 12680,
-      "y": 1400,
       "width": 180,
       "height": 60
     },
@@ -6502,8 +6385,8 @@
       "id": "n_backend_app_services_frigate_bridge",
       "type": "file",
       "file": "frigate_bridge.py.md",
-      "x": 12880,
-      "y": 1400,
+      "x": 13280,
+      "y": 1320,
       "width": 180,
       "height": 60
     },
@@ -6511,7 +6394,7 @@
       "id": "g18",
       "type": "group",
       "label": "Hist\u00f3rias",
-      "x": 14280,
+      "x": 14060,
       "y": 1000,
       "width": 880,
       "height": 520,
@@ -6521,7 +6404,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_deviceconfigeditdialog",
       "type": "file",
       "file": "DeviceConfigEditDialog().md",
-      "x": 14300,
+      "x": 14080,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6530,7 +6413,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonebottomnavigationbar",
       "type": "file",
       "file": "PhoneBottomNavigationBar().md",
-      "x": 14500,
+      "x": 14280,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6539,7 +6422,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecamerastreamcard",
       "type": "file",
       "file": "PhoneCameraStreamCard().md",
-      "x": 14700,
+      "x": 14480,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6548,7 +6431,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecapturestab",
       "type": "file",
       "file": "PhoneCapturesTab().md",
-      "x": 14900,
+      "x": 14680,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6557,7 +6440,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phoneclipplayerdialog",
       "type": "file",
       "file": "PhoneClipPlayerDialog().md",
-      "x": 14300,
+      "x": 14080,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6566,7 +6449,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonelivecamerastab",
       "type": "file",
       "file": "PhoneLiveCamerasTab().md",
-      "x": 14500,
+      "x": 14280,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6575,7 +6458,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonelogstab",
       "type": "file",
       "file": "PhoneLogsTab().md",
-      "x": 14700,
+      "x": 14480,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6584,7 +6467,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonemastercentraltab",
       "type": "file",
       "file": "PhoneMasterCentralTab().md",
-      "x": 14900,
+      "x": 14680,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6593,7 +6476,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonesettingstab",
       "type": "file",
       "file": "PhoneSettingsTab().md",
-      "x": 14300,
+      "x": 14080,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6602,7 +6485,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonetoolstab",
       "type": "file",
       "file": "PhoneToolsTab().md",
-      "x": 14500,
+      "x": 14280,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6611,7 +6494,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonetopbar",
       "type": "file",
       "file": "PhoneTopBar().md",
-      "x": 14700,
+      "x": 14480,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6620,7 +6503,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonezoomcameradialog",
       "type": "file",
       "file": "PhoneZoomCameraDialog().md",
-      "x": 14900,
+      "x": 14680,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6629,7 +6512,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_smartphoneyoutubescreen",
       "type": "file",
       "file": "SmartphoneYouTubeScreen().md",
-      "x": 14300,
+      "x": 14080,
       "y": 1320,
       "width": 180,
       "height": 60
@@ -6638,7 +6521,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen",
       "type": "file",
       "file": "SmartphoneYouTubeScreen.kt.md",
-      "x": 14500,
+      "x": 14280,
       "y": 1320,
       "width": 180,
       "height": 60
@@ -6647,7 +6530,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_tvdevicestatus",
       "type": "file",
       "file": "TvDeviceStatus.md",
-      "x": 14700,
+      "x": 14480,
       "y": 1320,
       "width": 180,
       "height": 60
@@ -6656,7 +6539,7 @@
       "id": "n_com",
       "type": "file",
       "file": "com.md",
-      "x": 14900,
+      "x": 14680,
       "y": 1320,
       "width": 180,
       "height": 60
@@ -6665,7 +6548,7 @@
       "id": "g19",
       "type": "group",
       "label": "PipSize",
-      "x": 15900,
+      "x": 15680,
       "y": 1000,
       "width": 1100,
       "height": 520,
@@ -6675,7 +6558,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_auditlogentry",
       "type": "file",
       "file": "AuditLogEntry.md",
-      "x": 15920,
+      "x": 15700,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6684,7 +6567,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_cinema",
       "type": "file",
       "file": "CINEMA.md",
-      "x": 16120,
+      "x": 15900,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6693,7 +6576,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_captureevent",
       "type": "file",
       "file": "CaptureEvent.md",
-      "x": 16320,
+      "x": 16100,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6702,7 +6585,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_diagnosticstatus",
       "type": "file",
       "file": "DiagnosticStatus.md",
-      "x": 16520,
+      "x": 16300,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6711,7 +6594,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_large",
       "type": "file",
       "file": "EXTRA_LARGE.md",
-      "x": 16720,
+      "x": 16500,
       "y": 1080,
       "width": 180,
       "height": 60
@@ -6720,7 +6603,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_small",
       "type": "file",
       "file": "EXTRA_SMALL.md",
-      "x": 15920,
+      "x": 15700,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6729,7 +6612,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_large",
       "type": "file",
       "file": "LARGE.md",
-      "x": 16120,
+      "x": 15900,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6738,7 +6621,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium",
       "type": "file",
       "file": "MEDIUM.md",
-      "x": 16320,
+      "x": 16100,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6747,7 +6630,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_large",
       "type": "file",
       "file": "MEDIUM_LARGE.md",
-      "x": 16520,
+      "x": 16300,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6756,7 +6639,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_small",
       "type": "file",
       "file": "MEDIUM_SMALL.md",
-      "x": 16720,
+      "x": 16500,
       "y": 1160,
       "width": 180,
       "height": 60
@@ -6765,7 +6648,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models",
       "type": "file",
       "file": "Models.kt.md",
-      "x": 15920,
+      "x": 15700,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6774,7 +6657,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_paireddeviceitem",
       "type": "file",
       "file": "PairedDeviceItem.md",
-      "x": 16120,
+      "x": 15900,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6783,7 +6666,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
       "type": "file",
       "file": "PipSize.md",
-      "x": 16320,
+      "x": 16100,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6792,7 +6675,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_small",
       "type": "file",
       "file": "SMALL.md",
-      "x": 16520,
+      "x": 16300,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6801,7 +6684,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_speedtestresult",
       "type": "file",
       "file": "SpeedTestResult.md",
-      "x": 16720,
+      "x": 16500,
       "y": 1240,
       "width": 180,
       "height": 60
@@ -6810,7 +6693,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_storagestatus",
       "type": "file",
       "file": "StorageStatus.md",
-      "x": 15920,
+      "x": 15700,
       "y": 1320,
       "width": 180,
       "height": 60
@@ -6819,7 +6702,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_data_models_telemetrydata",
       "type": "file",
       "file": "TelemetryData_1.md",
-      "x": 16120,
+      "x": 15900,
       "y": 1320,
       "width": 180,
       "height": 60
@@ -6909,7 +6792,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_components_seamlesscameraimage_kt_modifier",
       "type": "file",
-      "file": "Modifier_2.md",
+      "file": "Modifier_3.md",
       "x": 620,
       "y": 1960,
       "width": 180,
@@ -7000,7 +6883,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_newimageloader_object_x509trustmanager_l50_checkclienttrusted",
       "type": "file",
-      "file": "dot-checkClientTrusted()_1.md",
+      "file": "dot-checkClientTrusted().md",
       "x": 2080,
       "y": 1880,
       "width": 180,
@@ -7009,7 +6892,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_oncreate_object_x509trustmanager_l35_checkclienttrusted",
       "type": "file",
-      "file": "dot-checkClientTrusted()_2.md",
+      "file": "dot-checkClientTrusted()_1.md",
       "x": 2280,
       "y": 1880,
       "width": 180,
@@ -7018,7 +6901,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_newimageloader_object_x509trustmanager_l50_checkservertrusted",
       "type": "file",
-      "file": "dot-checkServerTrusted()_1.md",
+      "file": "dot-checkServerTrusted().md",
       "x": 2480,
       "y": 1880,
       "width": 180,
@@ -7027,7 +6910,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_oncreate_object_x509trustmanager_l35_checkservertrusted",
       "type": "file",
-      "file": "dot-checkServerTrusted()_2.md",
+      "file": "dot-checkServerTrusted()_1.md",
       "x": 2680,
       "y": 1880,
       "width": 180,
@@ -7036,7 +6919,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_newimageloader_object_x509trustmanager_l50_getacceptedissuers",
       "type": "file",
-      "file": "dot-getAcceptedIssuers()_1.md",
+      "file": "dot-getAcceptedIssuers().md",
       "x": 2880,
       "y": 1880,
       "width": 180,
@@ -7045,7 +6928,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_oncreate_object_x509trustmanager_l35_getacceptedissuers",
       "type": "file",
-      "file": "dot-getAcceptedIssuers()_2.md",
+      "file": "dot-getAcceptedIssuers()_1.md",
       "x": 2080,
       "y": 1960,
       "width": 180,
@@ -7063,7 +6946,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_oncreate",
       "type": "file",
-      "file": "dot-onCreate()_1.md",
+      "file": "dot-onCreate().md",
       "x": 2480,
       "y": 1960,
       "width": 180,
@@ -7126,7 +7009,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_kt_x509trustmanager",
       "type": "file",
-      "file": "X509TrustManager_5.md",
+      "file": "X509TrustManager_4.md",
       "x": 2880,
       "y": 2040,
       "width": 180,
@@ -7135,7 +7018,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_newimageloader_object_x509trustmanager_l50",
       "type": "file",
-      "file": "X509TrustManager_1.md",
+      "file": "X509TrustManager.md",
       "x": 2080,
       "y": 2120,
       "width": 180,
@@ -7144,7 +7027,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_oncreate_object_x509trustmanager_l35",
       "type": "file",
-      "file": "X509TrustManager_2.md",
+      "file": "X509TrustManager_1.md",
       "x": 2280,
       "y": 2120,
       "width": 180,
@@ -7199,7 +7082,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
       "type": "file",
-      "file": "Modifier_3.md",
+      "file": "Modifier_2.md",
       "x": 4720,
       "y": 1880,
       "width": 180,
@@ -7316,7 +7199,7 @@
     {
       "id": "g23",
       "type": "group",
-      "label": "PiPGatewayService",
+      "label": "asyncio",
       "x": 5740,
       "y": 1800,
       "width": 1100,
@@ -7326,7 +7209,7 @@
     {
       "id": "n_backend_app_services_pip_gateway_pipgatewayservice_init",
       "type": "file",
-      "file": "dot-__init__()_3.md",
+      "file": "dot-__init__()_4.md",
       "x": 5760,
       "y": 1880,
       "width": 180,
@@ -7933,7 +7816,7 @@
     {
       "id": "n_backend_app_services_telemetry_telemetryservice_init",
       "type": "file",
-      "file": "dot-__init__()_4.md",
+      "file": "dot-__init__()_5.md",
       "x": 12680,
       "y": 1880,
       "width": 180,
@@ -8060,7 +7943,7 @@
       "id": "g28",
       "type": "group",
       "label": "Hist\u00f3rias",
-      "x": 14280,
+      "x": 14060,
       "y": 1800,
       "width": 880,
       "height": 520,
@@ -8070,7 +7953,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_devdependencies_types_express",
       "type": "file",
       "file": "@typesexpress_2.md",
-      "x": 14300,
+      "x": 14080,
       "y": 1880,
       "width": 180,
       "height": 60
@@ -8079,7 +7962,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_devdependencies_types_express",
       "type": "file",
       "file": "@typesexpress.md",
-      "x": 14500,
+      "x": 14280,
       "y": 1880,
       "width": 180,
       "height": 60
@@ -8088,7 +7971,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_json_types_express",
       "type": "file",
       "file": "@typesexpress_1.md",
-      "x": 14700,
+      "x": 14480,
       "y": 1880,
       "width": 180,
       "height": 60
@@ -8097,7 +7980,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_devdependencies",
       "type": "file",
       "file": "devDependencies_2.md",
-      "x": 14900,
+      "x": 14680,
       "y": 1880,
       "width": 180,
       "height": 60
@@ -8106,7 +7989,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_devdependencies_tailwindcss",
       "type": "file",
       "file": "tailwindcss_4.md",
-      "x": 14300,
+      "x": 14080,
       "y": 1960,
       "width": 180,
       "height": 60
@@ -8115,7 +7998,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_devdependencies_tailwindcss",
       "type": "file",
       "file": "tailwindcss.md",
-      "x": 14500,
+      "x": 14280,
       "y": 1960,
       "width": 180,
       "height": 60
@@ -8124,7 +8007,7 @@
       "id": "n_frontend_package_devdependencies_tailwindcss",
       "type": "file",
       "file": "tailwindcss_2.md",
-      "x": 14700,
+      "x": 14480,
       "y": 1960,
       "width": 180,
       "height": 60
@@ -8133,7 +8016,7 @@
       "id": "n_frontend_package_json_tailwindcss",
       "type": "file",
       "file": "tailwindcss_3.md",
-      "x": 14900,
+      "x": 14680,
       "y": 1960,
       "width": 180,
       "height": 60
@@ -8142,7 +8025,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_devdependencies_tsx",
       "type": "file",
       "file": "tsx_2.md",
-      "x": 14300,
+      "x": 14080,
       "y": 2040,
       "width": 180,
       "height": 60
@@ -8151,7 +8034,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_json_tsx",
       "type": "file",
       "file": "tsx_3.md",
-      "x": 14500,
+      "x": 14280,
       "y": 2040,
       "width": 180,
       "height": 60
@@ -8160,7 +8043,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_dependencies_vite",
       "type": "file",
       "file": "vite_3.md",
-      "x": 14700,
+      "x": 14480,
       "y": 2040,
       "width": 180,
       "height": 60
@@ -8169,7 +8052,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_devdependencies_vite",
       "type": "file",
       "file": "vite_4.md",
-      "x": 14900,
+      "x": 14680,
       "y": 2040,
       "width": 180,
       "height": 60
@@ -8178,7 +8061,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_json_vite",
       "type": "file",
       "file": "vite_5.md",
-      "x": 14300,
+      "x": 14080,
       "y": 2120,
       "width": 180,
       "height": 60
@@ -8187,7 +8070,7 @@
       "id": "g29",
       "type": "group",
       "label": "Spec: Disparo de Fotos e V\u00eddeos de Intrus\u00e3o para o Telegram (Telegram Vault & Drive)",
-      "x": 15900,
+      "x": 15680,
       "y": 1800,
       "width": 880,
       "height": 520,
@@ -8197,7 +8080,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_devdependencies",
       "type": "file",
       "file": "devDependencies.md",
-      "x": 15920,
+      "x": 15700,
       "y": 1880,
       "width": 180,
       "height": 60
@@ -8206,7 +8089,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_devdependencies_esbuild",
       "type": "file",
       "file": "esbuild_2.md",
-      "x": 16120,
+      "x": 15900,
       "y": 1880,
       "width": 180,
       "height": 60
@@ -8215,7 +8098,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_devdependencies_esbuild",
       "type": "file",
       "file": "esbuild.md",
-      "x": 16320,
+      "x": 16100,
       "y": 1880,
       "width": 180,
       "height": 60
@@ -8224,7 +8107,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_json_esbuild",
       "type": "file",
       "file": "esbuild_1.md",
-      "x": 16520,
+      "x": 16300,
       "y": 1880,
       "width": 180,
       "height": 60
@@ -8233,7 +8116,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_devdependencies_tsx",
       "type": "file",
       "file": "tsx.md",
-      "x": 15920,
+      "x": 15700,
       "y": 1960,
       "width": 180,
       "height": 60
@@ -8242,7 +8125,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_json_tsx",
       "type": "file",
       "file": "tsx_1.md",
-      "x": 16120,
+      "x": 15900,
       "y": 1960,
       "width": 180,
       "height": 60
@@ -8251,7 +8134,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_mobile_nvr_package_devdependencies_typescript",
       "type": "file",
       "file": "typescript_4.md",
-      "x": 16320,
+      "x": 16100,
       "y": 1960,
       "width": 180,
       "height": 60
@@ -8260,7 +8143,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_devdependencies_typescript",
       "type": "file",
       "file": "typescript.md",
-      "x": 16520,
+      "x": 16300,
       "y": 1960,
       "width": 180,
       "height": 60
@@ -8269,7 +8152,7 @@
       "id": "n_frontend_package_devdependencies_typescript",
       "type": "file",
       "file": "typescript_2.md",
-      "x": 15920,
+      "x": 15700,
       "y": 2040,
       "width": 180,
       "height": 60
@@ -8278,7 +8161,7 @@
       "id": "n_frontend_package_json_typescript",
       "type": "file",
       "file": "typescript_3.md",
-      "x": 16120,
+      "x": 15900,
       "y": 2040,
       "width": 180,
       "height": 60
@@ -8287,7 +8170,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_dependencies_vite",
       "type": "file",
       "file": "vite.md",
-      "x": 16320,
+      "x": 16100,
       "y": 2040,
       "width": 180,
       "height": 60
@@ -8296,7 +8179,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_devdependencies_vite",
       "type": "file",
       "file": "vite_1.md",
-      "x": 16520,
+      "x": 16300,
       "y": 2040,
       "width": 180,
       "height": 60
@@ -8305,7 +8188,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_package_json_vite",
       "type": "file",
       "file": "vite_2.md",
-      "x": 15920,
+      "x": 15700,
       "y": 2120,
       "width": 180,
       "height": 60
@@ -8313,7 +8196,7 @@
     {
       "id": "g30",
       "type": "group",
-      "label": "FastAPI",
+      "label": "SeamlessCameraImage",
       "x": 0,
       "y": 2400,
       "width": 880,
@@ -8885,7 +8768,7 @@
     {
       "id": "g35",
       "type": "group",
-      "label": "ws.py",
+      "label": "SmartphoneYouTubeScreen.kt",
       "x": 9420,
       "y": 2400,
       "width": 880,
@@ -8895,7 +8778,7 @@
     {
       "id": "n_backend_app_api_ws_websocketmanager_init",
       "type": "file",
-      "file": "dot-__init__()_5.md",
+      "file": "dot-__init__()_3.md",
       "x": 9440,
       "y": 2480,
       "width": 180,
@@ -9176,8 +9059,8 @@
     {
       "id": "g38",
       "type": "group",
-      "label": "asyncio",
-      "x": 14280,
+      "label": "MainActivity.kt",
+      "x": 14060,
       "y": 2400,
       "width": 660,
       "height": 420,
@@ -9187,7 +9070,7 @@
       "id": "n_frontend_package_scripts_build",
       "type": "file",
       "file": "build_1.md",
-      "x": 14300,
+      "x": 14080,
       "y": 2480,
       "width": 180,
       "height": 60
@@ -9196,7 +9079,7 @@
       "id": "n_frontend_package_scripts_dev",
       "type": "file",
       "file": "dev_1.md",
-      "x": 14500,
+      "x": 14280,
       "y": 2480,
       "width": 180,
       "height": 60
@@ -9205,7 +9088,7 @@
       "id": "n_frontend_package",
       "type": "file",
       "file": "frontendpackage.json.md",
-      "x": 14700,
+      "x": 14480,
       "y": 2480,
       "width": 180,
       "height": 60
@@ -9214,7 +9097,7 @@
       "id": "n_frontend_package_scripts_lint",
       "type": "file",
       "file": "lint_1.md",
-      "x": 14300,
+      "x": 14080,
       "y": 2560,
       "width": 180,
       "height": 60
@@ -9223,7 +9106,7 @@
       "id": "n_frontend_package_name",
       "type": "file",
       "file": "name_1.md",
-      "x": 14500,
+      "x": 14280,
       "y": 2560,
       "width": 180,
       "height": 60
@@ -9232,7 +9115,7 @@
       "id": "n_frontend_package_private",
       "type": "file",
       "file": "private_1.md",
-      "x": 14700,
+      "x": 14480,
       "y": 2560,
       "width": 180,
       "height": 60
@@ -9241,7 +9124,7 @@
       "id": "n_frontend_package_scripts",
       "type": "file",
       "file": "scripts_1.md",
-      "x": 14300,
+      "x": 14080,
       "y": 2640,
       "width": 180,
       "height": 60
@@ -9250,7 +9133,7 @@
       "id": "n_frontend_package_scripts_start",
       "type": "file",
       "file": "start.md",
-      "x": 14500,
+      "x": 14280,
       "y": 2640,
       "width": 180,
       "height": 60
@@ -9259,7 +9142,7 @@
       "id": "n_frontend_package_version",
       "type": "file",
       "file": "version_1.md",
-      "x": 14700,
+      "x": 14480,
       "y": 2640,
       "width": 180,
       "height": 60
@@ -9268,7 +9151,7 @@
       "id": "g39",
       "type": "group",
       "label": "TvAudioManager",
-      "x": 15900,
+      "x": 15680,
       "y": 2400,
       "width": 660,
       "height": 420,
@@ -9278,7 +9161,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_constructor",
       "type": "file",
       "file": "dot-constructor().md",
-      "x": 15920,
+      "x": 15700,
       "y": 2480,
       "width": 180,
       "height": 60
@@ -9287,7 +9170,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_getcontext",
       "type": "file",
       "file": "dot-getContext().md",
-      "x": 16120,
+      "x": 15900,
       "y": 2480,
       "width": 180,
       "height": 60
@@ -9296,7 +9179,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_playalertsound",
       "type": "file",
       "file": "dot-playAlertSound().md",
-      "x": 16320,
+      "x": 16100,
       "y": 2480,
       "width": 180,
       "height": 60
@@ -9305,7 +9188,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_playbacksound",
       "type": "file",
       "file": "dot-playBackSound().md",
-      "x": 15920,
+      "x": 15700,
       "y": 2560,
       "width": 180,
       "height": 60
@@ -9314,7 +9197,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_playfocustick",
       "type": "file",
       "file": "dot-playFocusTick().md",
-      "x": 16120,
+      "x": 15900,
       "y": 2560,
       "width": 180,
       "height": 60
@@ -9323,7 +9206,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_playselectsound",
       "type": "file",
       "file": "dot-playSelectSound().md",
-      "x": 16320,
+      "x": 16100,
       "y": 2560,
       "width": 180,
       "height": 60
@@ -9332,7 +9215,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_setenabled",
       "type": "file",
       "file": "dot-setEnabled().md",
-      "x": 15920,
+      "x": 15700,
       "y": 2640,
       "width": 180,
       "height": 60
@@ -9341,7 +9224,7 @@
       "id": "n_ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager",
       "type": "file",
       "file": "TvAudioManager.md",
-      "x": 16120,
+      "x": 15900,
       "y": 2640,
       "width": 180,
       "height": 60
@@ -9377,7 +9260,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
       "type": "file",
-      "file": "dot-onCreate().md",
+      "file": "dot-onCreate()_2.md",
       "x": 420,
       "y": 2980,
       "width": 180,
@@ -9441,7 +9324,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_checkclienttrusted",
       "type": "file",
-      "file": "dot-checkClientTrusted().md",
+      "file": "dot-checkClientTrusted()_2.md",
       "x": 2080,
       "y": 2980,
       "width": 180,
@@ -9450,7 +9333,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_checkservertrusted",
       "type": "file",
-      "file": "dot-checkServerTrusted().md",
+      "file": "dot-checkServerTrusted()_2.md",
       "x": 2280,
       "y": 2980,
       "width": 180,
@@ -9459,7 +9342,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_getacceptedissuers",
       "type": "file",
-      "file": "dot-getAcceptedIssuers().md",
+      "file": "dot-getAcceptedIssuers()_2.md",
       "x": 2480,
       "y": 2980,
       "width": 180,
@@ -9468,7 +9351,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_kt_x509trustmanager",
       "type": "file",
-      "file": "X509TrustManager_4.md",
+      "file": "X509TrustManager_5.md",
       "x": 2080,
       "y": 3060,
       "width": 180,
@@ -9477,7 +9360,7 @@
     {
       "id": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50",
       "type": "file",
-      "file": "X509TrustManager.md",
+      "file": "X509TrustManager_2.md",
       "x": 2280,
       "y": 3060,
       "width": 180,
@@ -9495,7 +9378,7 @@
     {
       "id": "g42",
       "type": "group",
-      "label": "trigger_network_scan",
+      "label": "X509TrustManager",
       "x": 3900,
       "y": 2900,
       "width": 660,
@@ -9559,7 +9442,7 @@
     {
       "id": "g43",
       "type": "group",
-      "label": "MemoryRingBufferHandler",
+      "label": "Community 43",
       "x": 5740,
       "y": 2900,
       "width": 660,
@@ -9742,7 +9625,7 @@
     {
       "id": "g46",
       "type": "group",
-      "label": "run_server_benchmark",
+      "label": "Community 46",
       "x": 11040,
       "y": 2900,
       "width": 660,
@@ -9853,7 +9736,7 @@
       "id": "g48",
       "type": "group",
       "label": "opencode.json",
-      "x": 14280,
+      "x": 14060,
       "y": 2900,
       "width": 600,
       "height": 400,
@@ -9863,7 +9746,7 @@
       "id": "n_opencode_opencode_schema",
       "type": "file",
       "file": "$schema.md",
-      "x": 14300,
+      "x": 14080,
       "y": 2980,
       "width": 180,
       "height": 60
@@ -9872,7 +9755,7 @@
       "id": "n_ref_opencode_plugins_graphify_js",
       "type": "file",
       "file": "dot-opencodepluginsgraphify.js.md",
-      "x": 14500,
+      "x": 14280,
       "y": 2980,
       "width": 180,
       "height": 60
@@ -9881,7 +9764,7 @@
       "id": "n_opencode_opencode",
       "type": "file",
       "file": "opencode.json.md",
-      "x": 14300,
+      "x": 14080,
       "y": 3060,
       "width": 180,
       "height": 60
@@ -9890,7 +9773,7 @@
       "id": "n_opencode_opencode_plugin",
       "type": "file",
       "file": "plugin.md",
-      "x": 14500,
+      "x": 14280,
       "y": 3060,
       "width": 180,
       "height": 60
@@ -9899,7 +9782,7 @@
       "id": "g49",
       "type": "group",
       "label": "android-smartphone-app.spec.test.js",
-      "x": 15900,
+      "x": 15680,
       "y": 2900,
       "width": 600,
       "height": 400,
@@ -9909,7 +9792,7 @@
       "id": "n_test_android_smartphone_app_spec_test",
       "type": "file",
       "file": "android-smartphone-app.spec.test.js.md",
-      "x": 15920,
+      "x": 15700,
       "y": 2980,
       "width": 180,
       "height": 60
@@ -9918,7 +9801,7 @@
       "id": "n_test_android_smartphone_app_spec_test_prefsfile",
       "type": "file",
       "file": "prefsFile.md",
-      "x": 16120,
+      "x": 15900,
       "y": 2980,
       "width": 180,
       "height": 60
@@ -9927,7 +9810,7 @@
       "id": "n_test_android_smartphone_app_spec_test_repofile",
       "type": "file",
       "file": "repoFile.md",
-      "x": 15920,
+      "x": 15700,
       "y": 3060,
       "width": 180,
       "height": 60
@@ -9936,7 +9819,7 @@
       "id": "n_test_android_smartphone_app_spec_test_smartphonescreenfile",
       "type": "file",
       "file": "smartphoneScreenFile.md",
-      "x": 16120,
+      "x": 15900,
       "y": 3060,
       "width": 180,
       "height": 60
@@ -10241,7 +10124,7 @@
       "id": "g58",
       "type": "group",
       "label": "execution.md",
-      "x": 14280,
+      "x": 14060,
       "y": 3400,
       "width": 600,
       "height": 400,
@@ -10251,7 +10134,7 @@
       "id": "n_agents_rules_execution_diretrizes_operacionais_do_agente_antigravity_rules",
       "type": "file",
       "file": "Diretrizes Operacionais do Agente (Antigravity Rules).md",
-      "x": 14300,
+      "x": 14080,
       "y": 3480,
       "width": 180,
       "height": 60
@@ -10260,7 +10143,7 @@
       "id": "n_agents_rules_execution",
       "type": "file",
       "file": "execution.md",
-      "x": 14500,
+      "x": 14280,
       "y": 3480,
       "width": 180,
       "height": 60
@@ -10269,7 +10152,7 @@
       "id": "g59",
       "type": "group",
       "label": "build_apk.sh",
-      "x": 15900,
+      "x": 15680,
       "y": 3400,
       "width": 600,
       "height": 400,
@@ -10279,7 +10162,7 @@
       "id": "n_android_build_apk",
       "type": "file",
       "file": "build_apk.sh.md",
-      "x": 15920,
+      "x": 15700,
       "y": 3480,
       "width": 180,
       "height": 60
@@ -10288,7 +10171,7 @@
       "id": "n_android_build_apk_sh__entry",
       "type": "file",
       "file": "build_apk.sh script.md",
-      "x": 16120,
+      "x": 15900,
       "y": 3480,
       "width": 180,
       "height": 60
@@ -10521,7 +10404,7 @@
       "id": "g68",
       "type": "group",
       "label": "tailwind.config.ts",
-      "x": 14280,
+      "x": 14060,
       "y": 3880,
       "width": 600,
       "height": 400,
@@ -10531,7 +10414,7 @@
       "id": "n_frontend_tailwind_config_config",
       "type": "file",
       "file": "config_1.md",
-      "x": 14300,
+      "x": 14080,
       "y": 3960,
       "width": 180,
       "height": 60
@@ -10540,7 +10423,7 @@
       "id": "n_frontend_tailwind_config",
       "type": "file",
       "file": "tailwind.config.ts.md",
-      "x": 14500,
+      "x": 14280,
       "y": 3960,
       "width": 180,
       "height": 60
@@ -10549,7 +10432,7 @@
       "id": "g69",
       "type": "group",
       "label": "setup-autostart.sh",
-      "x": 15900,
+      "x": 15680,
       "y": 3880,
       "width": 600,
       "height": 400,
@@ -10559,7 +10442,7 @@
       "id": "n_scripts_setup_autostart",
       "type": "file",
       "file": "setup-autostart.sh.md",
-      "x": 15920,
+      "x": 15700,
       "y": 3960,
       "width": 180,
       "height": 60
@@ -10568,7 +10451,7 @@
       "id": "n_scripts_setup_autostart_sh__entry",
       "type": "file",
       "file": "setup-autostart.sh script.md",
-      "x": 16120,
+      "x": 15900,
       "y": 3960,
       "width": 180,
       "height": 60
@@ -10708,7 +10591,7 @@
     {
       "id": "g76",
       "type": "group",
-      "label": "SentinelaRepository.kt",
+      "label": "Community 76",
       "x": 11040,
       "y": 4360,
       "width": 600,
@@ -10727,7 +10610,7 @@
     {
       "id": "g77",
       "type": "group",
-      "label": "X509TrustManager",
+      "label": "Community 77",
       "x": 12660,
       "y": 4360,
       "width": 600,
@@ -10747,7 +10630,7 @@
       "id": "g78",
       "type": "group",
       "label": "PipPosition",
-      "x": 14280,
+      "x": 14060,
       "y": 4360,
       "width": 600,
       "height": 400,
@@ -10757,7 +10640,7 @@
       "id": "n_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_x509trustmanager",
       "type": "file",
       "file": "X509TrustManager_6.md",
-      "x": 14300,
+      "x": 14080,
       "y": 4440,
       "width": 180,
       "height": 60
@@ -10766,7 +10649,7 @@
       "id": "g79",
       "type": "group",
       "label": "android/build.gradle.kts",
-      "x": 15900,
+      "x": 15680,
       "y": 4360,
       "width": 600,
       "height": 400,
@@ -10776,7 +10659,7 @@
       "id": "n_android_build_gradle",
       "type": "file",
       "file": "androidbuild.gradle.kts.md",
-      "x": 15920,
+      "x": 15700,
       "y": 4440,
       "width": 180,
       "height": 60
@@ -10937,7 +10820,7 @@
       "id": "g88",
       "type": "group",
       "label": "Constitui\u00e7\u00e3o \u2014 v1.1.0",
-      "x": 14280,
+      "x": 14060,
       "y": 4840,
       "width": 600,
       "height": 400,
@@ -10947,7 +10830,7 @@
       "id": "n_backend_app_api_cameras_py_request",
       "type": "file",
       "file": "Request_3.md",
-      "x": 14300,
+      "x": 14080,
       "y": 4920,
       "width": 180,
       "height": 60
@@ -10956,7 +10839,7 @@
       "id": "g89",
       "type": "group",
       "label": "apply_bc_config.py",
-      "x": 15900,
+      "x": 15680,
       "y": 4840,
       "width": 600,
       "height": 400,
@@ -10966,7 +10849,7 @@
       "id": "n_scripts_apply_bc_config",
       "type": "file",
       "file": "apply_bc_config.py.md",
-      "x": 15920,
+      "x": 15700,
       "y": 4920,
       "width": 180,
       "height": 60
@@ -11913,322 +11796,322 @@
       "label": "method [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getcameras",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getcameras",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid_tvleanbackgrid",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid_tvleanbackgrid",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvnetflixscreen",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvnetflixscreen",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen_mobilegridscreen",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen_mobilegridscreen",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonelivecamerastab",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonelivecamerastab",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_smartphoneyoutubescreen",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_smartphoneyoutubescreen",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_mainactivity",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity",
-      "label": "imports [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens",
-      "label": "imports [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid",
-      "label": "imports [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen",
-      "label": "imports [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen",
-      "label": "imports [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid_tvcameracard",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid_tvcameracard",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid_tvfullscreencameradialog",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid_tvfullscreencameradialog",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen_cameracardmobile",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen_cameracardmobile",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen_fullscreencameradialog",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_mobilegridscreen_fullscreencameradialog",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecamerastreamcard",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecamerastreamcard",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonezoomcameradialog",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonezoomcameradialog",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem_android_app_src_main_java_com_sentinela_pro_data_models",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models",
-      "label": "contains [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvrecordingsviewport",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
+      "id": "e_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvrecordingsviewport",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem",
       "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvrecordingsviewport",
       "label": "calls [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvsettingsviewport",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvsettingsviewport",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolsviewport",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolsviewport",
-      "label": "calls [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "id": "e_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvclipplayerdialog",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvclipplayerdialog",
       "label": "references [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_data_models_pipposition",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipposition",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_data_models_pipduration",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipduration",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_sharedpreferences",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_sharedpreferences",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_registerorheartbeat",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_registerorheartbeat",
-      "label": "references [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences",
+      "id": "e_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens",
       "label": "contains [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_oncreate",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_oncreate",
-      "label": "calls [INFERRED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip",
-      "label": "calls [INFERRED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecapturestab",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecapturestab",
-      "label": "calls [INFERRED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonesettingstab",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonesettingstab",
-      "label": "calls [INFERRED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonetoolstab",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonetoolstab",
-      "label": "calls [INFERRED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_smartphoneyoutubescreen",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_smartphoneyoutubescreen",
-      "label": "calls [INFERRED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_android_app_src_main_java_com_sentinela_pro_mainactivity",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity",
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge",
       "label": "contains [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_componentactivity",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity",
-      "toNode": "n_componentactivity",
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_get_live_snapshot",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_get_live_snapshot",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_init",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_init",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_has_video_stream",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_has_video_stream",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_probe_video_info",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_probe_video_info",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_log_probe",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_log_probe",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_has_audio_stream",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_has_audio_stream",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_transcode_to_30fps",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_transcode_to_30fps",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_get_connectivity_logs",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_get_connectivity_logs",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_check_connectivity",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_check_connectivity",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_get_video_duration",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_get_video_duration",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_services_frigate_bridge_frigatebridgeservice_backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
+      "fromNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice",
+      "toNode": "n_backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
+      "label": "method [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_small",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_small",
+      "label": "case_of [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_small",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_small",
+      "label": "case_of [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_small",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_small",
+      "label": "case_of [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium",
+      "label": "case_of [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_large",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_large",
+      "label": "case_of [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_large",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_large",
+      "label": "case_of [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_large",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_large",
+      "label": "case_of [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_cinema",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_cinema",
+      "label": "case_of [EXTRACTED]"
+    },
+    {
+      "id": "e_android_app_src_main_java_com_sentinela_pro_data_models_pipsize_android_app_src_main_java_com_sentinela_pro_data_models",
+      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "toNode": "n_android_app_src_main_java_com_sentinela_pro_data_models",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_batchtestrequest_backend_app_api_devices_execute_batch_test",
+      "fromNode": "n_backend_app_api_devices_batchtestrequest",
+      "toNode": "n_backend_app_api_devices_execute_batch_test",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_batchtestrequest_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_batchtestrequest",
+      "toNode": "n_backend_app_api_devices",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_batchtestrequest_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_batchtestrequest",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
       "label": "inherits [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_istv",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_istv",
-      "label": "method [EXTRACTED]"
+      "id": "e_backend_app_api_devices_deviceallowedcamerasupdate_backend_app_api_devices_update_device_allowed_cameras",
+      "fromNode": "n_backend_app_api_devices_deviceallowedcamerasupdate",
+      "toNode": "n_backend_app_api_devices_update_device_allowed_cameras",
+      "label": "references [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_hasoverlaypermission",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_hasoverlaypermission",
-      "label": "method [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "label": "method [EXTRACTED]"
-    },
-    {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
+      "id": "e_backend_app_api_devices_deviceallowedcamerasupdate_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_deviceallowedcamerasupdate",
+      "toNode": "n_backend_app_api_devices",
       "label": "contains [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_android_app_src_main_java_com_sentinela_pro_mainactivity_kt_x509trustmanager",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_kt_x509trustmanager",
-      "label": "implements [EXTRACTED]"
+      "id": "e_backend_app_api_devices_deviceallowedcamerasupdate_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_deviceallowedcamerasupdate",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
+      "label": "inherits [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_checkclienttrusted",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_checkclienttrusted",
-      "label": "method [EXTRACTED]"
+      "id": "e_backend_app_api_devices_devicecreate_backend_app_api_devices_register_device",
+      "fromNode": "n_backend_app_api_devices_devicecreate",
+      "toNode": "n_backend_app_api_devices_register_device",
+      "label": "references [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_checkservertrusted",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_checkservertrusted",
-      "label": "method [EXTRACTED]"
+      "id": "e_backend_app_api_devices_devicecreate_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_devicecreate",
+      "toNode": "n_backend_app_api_devices",
+      "label": "contains [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_getacceptedissuers",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l50_getacceptedissuers",
-      "label": "method [EXTRACTED]"
+      "id": "e_backend_app_api_devices_devicecreate_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_devicecreate",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
+      "label": "inherits [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_network_sentinelarepository",
-      "label": "imports [EXTRACTED]"
+      "id": "e_backend_app_api_devices_deviceheartbeat_backend_app_api_devices_device_heartbeat",
+      "fromNode": "n_backend_app_api_devices_deviceheartbeat",
+      "toNode": "n_backend_app_api_devices_device_heartbeat",
+      "label": "references [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket",
-      "label": "imports [EXTRACTED]"
+      "id": "e_backend_app_api_devices_deviceheartbeat_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_deviceheartbeat",
+      "toNode": "n_backend_app_api_devices",
+      "label": "contains [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_android_app_src_main_java_com_sentinela_pro_tv_overlayservice",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_overlayservice",
-      "label": "imports [EXTRACTED]"
+      "id": "e_backend_app_api_devices_deviceheartbeat_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_deviceheartbeat",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
+      "label": "inherits [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid",
-      "label": "imports [EXTRACTED]"
+      "id": "e_backend_app_api_devices_devicepermissionsupdate_backend_app_api_devices_update_device_permissions",
+      "fromNode": "n_backend_app_api_devices_devicepermissionsupdate",
+      "toNode": "n_backend_app_api_devices_update_device_permissions",
+      "label": "references [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen",
-      "label": "imports [EXTRACTED]"
+      "id": "e_backend_app_api_devices_devicepermissionsupdate_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_devicepermissionsupdate",
+      "toNode": "n_backend_app_api_devices",
+      "label": "contains [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
-      "label": "imports [EXTRACTED]"
+      "id": "e_backend_app_api_devices_devicepermissionsupdate_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_devicepermissionsupdate",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
+      "label": "inherits [EXTRACTED]"
     },
     {
-      "id": "e_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_android_app_src_main_java_com_sentinela_pro_ui_components_seamlesscameraimage",
-      "fromNode": "n_android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
-      "toNode": "n_android_app_src_main_java_com_sentinela_pro_ui_components_seamlesscameraimage",
-      "label": "imports [EXTRACTED]"
+      "id": "e_backend_app_api_devices_devicestatusupdate_backend_app_api_devices_update_device_status",
+      "fromNode": "n_backend_app_api_devices_devicestatusupdate",
+      "toNode": "n_backend_app_api_devices_update_device_status",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_devicestatusupdate_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_devicestatusupdate",
+      "toNode": "n_backend_app_api_devices",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_devicestatusupdate_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_devicestatusupdate",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
+      "label": "inherits [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_mastertogglerequest_backend_app_api_devices_toggle_device_master",
+      "fromNode": "n_backend_app_api_devices_mastertogglerequest",
+      "toNode": "n_backend_app_api_devices_toggle_device_master",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_mastertogglerequest_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_mastertogglerequest",
+      "toNode": "n_backend_app_api_devices",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_mastertogglerequest_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_mastertogglerequest",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
+      "label": "inherits [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_pipackrequest_backend_app_api_devices_receive_pip_ack",
+      "fromNode": "n_backend_app_api_devices_pipackrequest",
+      "toNode": "n_backend_app_api_devices_receive_pip_ack",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_pipackrequest_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_pipackrequest",
+      "toNode": "n_backend_app_api_devices",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_pipackrequest_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_pipackrequest",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
+      "label": "inherits [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_restartcontainerrequest_backend_app_api_devices_remote_restart_container",
+      "fromNode": "n_backend_app_api_devices_restartcontainerrequest",
+      "toNode": "n_backend_app_api_devices_remote_restart_container",
+      "label": "references [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_restartcontainerrequest_backend_app_api_devices",
+      "fromNode": "n_backend_app_api_devices_restartcontainerrequest",
+      "toNode": "n_backend_app_api_devices",
+      "label": "contains [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_restartcontainerrequest_backend_app_api_devices_py_basemodel",
+      "fromNode": "n_backend_app_api_devices_restartcontainerrequest",
+      "toNode": "n_backend_app_api_devices_py_basemodel",
+      "label": "inherits [EXTRACTED]"
+    },
+    {
+      "id": "e_backend_app_api_devices_testpiprequest_backend_app_api_devices_test_pip",
+      "fromNode": "n_backend_app_api_devices_testpiprequest",
+      "toNode": "n_backend_app_api_devices_test_pip",
+      "label": "references [EXTRACTED]"
     }
   ]
 }

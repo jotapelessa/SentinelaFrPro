@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "PiPGatewayService"
+community: "asyncio"
 location: "L1"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/asyncio
 ---
 
 # pip_gateway.py
@@ -18,4 +18,4 @@ tags:
 - [[_cast_sync()]] - `contains` [EXTRACTED]
 - [[asyncio]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/asyncio

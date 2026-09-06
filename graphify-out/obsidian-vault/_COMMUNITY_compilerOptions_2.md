@@ -18,7 +18,7 @@ members: 17
 - [[FullScreenCameraDialog()]] - code - android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt
 - [[MobileGridScreen()]] - code - android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt
 - [[MobileGridScreen.kt]] - code - android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt
-- [[Modifier_2]] - code
+- [[Modifier_3]] - code
 - [[SeamlessCameraImage()]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt
 - [[SeamlessCameraImage.kt]] - code - android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt
 - [[SentinelaConfig]] - code - android/app/src/main/java/com/sentinela/pro/SentinelaConfig.kt

@@ -87,12 +87,24 @@ test('AC-025: Transcodificação H.264 CFR Fluida e Envio com Streaming @spec:AC
     bridgeContent.includes('transcode_to_30fps') || bridgeContent.includes('setpts=N/'),
     'Deve implementar transcodificação CFR via FFmpeg (QSV ou libx264)'
   );
+  assert.ok(
+    bridgeContent.includes('record_live_video') && bridgeContent.includes('allow_synthetic'),
+    'Deve implementar record_live_video com bloqueio a sintéticos nos testes manuais'
+  );
 
   assert.ok(fs.existsSync(tgVaultFile), 'telegram_vault.py deve existir');
   const vaultContent = fs.readFileSync(tgVaultFile, 'utf-8');
   assert.ok(
     vaultContent.includes('send_alert_video') && vaultContent.includes('supports_streaming'),
     'Deve despachar vídeo com flag supports_streaming para reprodução imediata'
+  );
+
+  const settingsFile = path.resolve(process.cwd(), 'backend/app/api/settings.py');
+  assert.ok(fs.existsSync(settingsFile), 'settings.py deve existir');
+  const settingsContent = fs.readFileSync(settingsFile, 'utf-8');
+  assert.ok(
+    settingsContent.includes('_resolve_active_test_camera') && settingsContent.includes('test-video'),
+    'Deve resolver dinamicamente a câmera ativa do banco para os testes de vídeo e foto'
   );
 });
 

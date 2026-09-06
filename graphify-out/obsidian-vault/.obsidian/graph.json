@@ -162,7 +162,7 @@
       }
     },
     {
-      "query": "tag:#community/PiPGatewayService",
+      "query": "tag:#community/asyncio",
       "color": {
         "a": 1,
         "rgb": 7780274
@@ -211,7 +211,7 @@
       }
     },
     {
-      "query": "tag:#community/FastAPI",
+      "query": "tag:#community/SeamlessCameraImage",
       "color": {
         "a": 1,
         "rgb": 5142951
@@ -246,7 +246,7 @@
       }
     },
     {
-      "query": "tag:#community/wspy",
+      "query": "tag:#community/SmartphoneYouTubeScreenkt",
       "color": {
         "a": 1,
         "rgb": 15583560
@@ -267,7 +267,7 @@
       }
     },
     {
-      "query": "tag:#community/asyncio",
+      "query": "tag:#community/MainActivitykt",
       "color": {
         "a": 1,
         "rgb": 10253663
@@ -295,17 +295,10 @@
       }
     },
     {
-      "query": "tag:#community/trigger_network_scan",
+      "query": "tag:#community/X509TrustManager",
       "color": {
         "a": 1,
         "rgb": 14767961
-      }
-    },
-    {
-      "query": "tag:#community/MemoryRingBufferHandler",
-      "color": {
-        "a": 1,
-        "rgb": 7780274
       }
     },
     {
@@ -320,13 +313,6 @@
       "color": {
         "a": 1,
         "rgb": 15583560
-      }
-    },
-    {
-      "query": "tag:#community/run_server_benchmark",
-      "color": {
-        "a": 1,
-        "rgb": 11565729
       }
     },
     {
@@ -533,20 +519,6 @@
       }
     },
     {
-      "query": "tag:#community/SentinelaRepositorykt",
-      "color": {
-        "a": 1,
-        "rgb": 11565729
-      }
-    },
-    {
-      "query": "tag:#community/X509TrustManager",
-      "color": {
-        "a": 1,
-        "rgb": 16752039
-      }
-    },
-    {
       "query": "tag:#community/PipPosition",
       "color": {
         "a": 1,
@@ -663,13 +635,6 @@
       "color": {
         "a": 1,
         "rgb": 5873999
-      }
-    },
-    {
-      "query": "tag:#community/TvLogsViewport",
-      "color": {
-        "a": 1,
-        "rgb": 15583560
       }
     },
     {

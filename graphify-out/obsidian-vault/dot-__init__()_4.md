@@ -1,17 +1,17 @@
 ---
-source_file: "backend/app/services/telemetry.py"
+source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "TelemetryService"
-location: "L11"
+community: "asyncio"
+location: "L39"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/TelemetryService
+  - community/asyncio
 ---
 
 # .__init__()
 
 ## Connections
-- [[TelemetryService]] - `method` [EXTRACTED]
+- [[PiPGatewayService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/TelemetryService
+#graphify/code #graphify/EXTRACTED #community/asyncio

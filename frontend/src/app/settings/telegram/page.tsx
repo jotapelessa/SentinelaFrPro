@@ -50,7 +50,27 @@ export default function TelegramSettingsPage() {
   const [telegramStatus, setTelegramStatus] = useState<string | null>(null);
   const [isError, setIsError] = useState(false);
 
+  // Cameras State for Dynamic Media Testing
+  const [cameras, setCameras] = useState<Array<{ id: number; name: string; friendly_name: string; enabled: boolean; ip_address?: string }>>([]);
+  const [selectedCamera, setSelectedCamera] = useState<string>("");
+
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+
+  const fetchCameras = async () => {
+    try {
+      const res = await fetch(`${apiUrl}/cameras/`);
+      if (res.ok) {
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setCameras(data);
+          const active = data.find((c: any) => c.enabled) || data[0];
+          if (active) setSelectedCamera(active.name);
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch cameras list:", e);
+    }
+  };
 
   const fetchSettings = async () => {
     try {
@@ -72,6 +92,7 @@ export default function TelegramSettingsPage() {
 
   useEffect(() => {
     fetchSettings();
+    fetchCameras();
   }, []);
 
   const handleSaveTelegram = async (e: React.FormEvent) => {
@@ -159,7 +180,11 @@ export default function TelegramSettingsPage() {
     setTelegramStatus(null);
     setIsError(false);
     try {
-      const res = await fetch(`${apiUrl}/settings/telegram/test-photo`, { method: "POST" });
+      const res = await fetch(`${apiUrl}/settings/telegram/test-photo`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ camera_name: selectedCamera || undefined })
+      });
       const data = await res.json().catch(() => ({ detail: `HTTP ${res.status}` }));
       if (res.ok) {
         setIsError(false);
@@ -185,6 +210,7 @@ export default function TelegramSettingsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
+          camera_name: selectedCamera || undefined,
           duration_seconds: clipDuration,
           resolution: snapshotResolution,
           video_quality: videoQuality,
@@ -480,21 +506,40 @@ export default function TelegramSettingsPage() {
 
       </form>
 
-      {/* 3. Central de Testes de Envio Imediato (Telegram) */}
-      <div className="p-6 rounded-2xl bg-slate-900/90 backdrop-blur-md border border-slate-800 space-y-5 shadow-xl">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
-          <div className="flex items-center gap-2.5">
-            <div className="p-2 rounded-lg bg-amber-500/10 text-amber-400 border border-amber-500/20">
-              <Sparkles className="w-5 h-5" />
+        {/* Seletor de Câmera Alvo para Teste */}
+        <div className="p-4 rounded-xl bg-slate-950/70 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+              <Camera className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Central de Testes de Envio do Telegram</h2>
-              <p className="text-xs text-slate-400">Valide instantaneamente o recebimento de mídias, vídeos com HUD, logs e relatórios no seu chat</p>
+              <label htmlFor="test-camera-select" className="text-xs font-semibold text-slate-200 block">
+                Câmera IP para Testes de Foto e Vídeo
+              </label>
+              <p className="text-[11px] text-slate-400">
+                Selecione qual câmera do ecossistema fornecerá o stream ao vivo para os envios de teste abaixo
+              </p>
             </div>
           </div>
-          <span className="px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-[11px] font-mono text-cyan-400 self-start sm:self-auto">
-            MODO TESTE ATIVO
-          </span>
+
+          <div className="flex items-center gap-2">
+            <select
+              id="test-camera-select"
+              value={selectedCamera}
+              onChange={(e) => setSelectedCamera(e.target.value)}
+              className="bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-cyan-500 transition-colors cursor-pointer min-w-[220px]"
+            >
+              {cameras.length === 0 ? (
+                <option value="">Nenhuma câmera encontrada</option>
+              ) : (
+                cameras.map((c) => (
+                  <option key={c.id} value={c.name}>
+                    {c.friendly_name || c.name} {c.enabled ? "● (Ativa)" : "○ (Pausada)"}
+                  </option>
+                ))
+              )}
+            </select>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -4,7 +4,7 @@ cohesion: 0.40
 members: 5
 ---
 
-# run_server_benchmark
+# Community 46
 
 **Cohesion:** 0.40 - moderately connected
 **Members:** 5 nodes
@@ -19,7 +19,7 @@ members: 5
 ## Live Query (requires Dataview plugin)
 
 ```dataview
-TABLE source_file, type FROM #community/run_server_benchmark
+TABLE source_file, type FROM #community/Community_46
 SORT file.name ASC
 ```
 

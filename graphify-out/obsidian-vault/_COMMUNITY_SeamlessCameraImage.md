@@ -4,7 +4,7 @@ cohesion: 0.21
 members: 12
 ---
 
-# FastAPI
+# SeamlessCameraImage
 
 **Cohesion:** 0.21 - loosely connected
 **Members:** 12 nodes
@@ -26,7 +26,7 @@ members: 12
 ## Live Query (requires Dataview plugin)
 
 ```dataview
-TABLE source_file, type FROM #community/FastAPI
+TABLE source_file, type FROM #community/SeamlessCameraImage
 SORT file.name ASC
 ```
 
@@ -36,9 +36,9 @@ SORT file.name ASC
 - 2 edges to [[_COMMUNITY_devices.py]]
 - 2 edges to [[_COMMUNITY_settings.py]]
 - 2 edges to [[_COMMUNITY_apitelemetry.py]]
-- 1 edge to [[_COMMUNITY_MemoryRingBufferHandler]]
-- 1 edge to [[_COMMUNITY_trigger_network_scan]]
-- 1 edge to [[_COMMUNITY_ws.py]]
+- 1 edge to [[_COMMUNITY_Community 43]]
+- 1 edge to [[_COMMUNITY_SmartphoneYouTubeScreen.kt]]
+- 1 edge to [[_COMMUNITY_X509TrustManager]]
 
 ## Top bridge nodes
 - [[FastAPI]] - degree 9, connects to 7 communities

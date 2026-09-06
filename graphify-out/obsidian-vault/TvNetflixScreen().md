@@ -12,7 +12,7 @@ tags:
 # TvNetflixScreen()
 
 ## Connections
-- [[dot-onCreate()]] - `calls` [EXTRACTED]
+- [[dot-onCreate()_2]] - `calls` [EXTRACTED]
 - [[CameraItem]] - `references` [EXTRACTED]
 - [[MainActivity.kt]] - `imports` [EXTRACTED]
 - [[TvNetflixScreen.kt]] - `contains` [EXTRACTED]

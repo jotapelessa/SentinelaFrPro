@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "PiPGatewayService"
+community: "asyncio"
 location: "L13"
 tags:
   - graphify/code
   - graphify/INFERRED
-  - community/PiPGatewayService
+  - community/asyncio
 ---
 
 # _cast_sync()
@@ -16,4 +16,4 @@ tags:
 - [[dot-test_single_device()]] - `indirect_call` [INFERRED]
 - [[pip_gateway.py]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/INFERRED #community/PiPGatewayService
+#graphify/code #graphify/INFERRED #community/asyncio

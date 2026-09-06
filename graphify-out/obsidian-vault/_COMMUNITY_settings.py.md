@@ -1,29 +1,22 @@
 ---
 type: community
 cohesion: 0.10
-members: 42
+members: 35
 ---
 
 # settings.py
 
 **Cohesion:** 0.10 - loosely connected
-**Members:** 42 nodes
+**Members:** 35 nodes
 
 ## Members
 - [[AsyncSession_4]] - code
 - [[BaseModel_5]] - code
-- [[Cleans old non-retained recordings andor snapshots from Ubuntu Server SSD…]] - rationale - backend/app/api/settings.py
 - [[DNDConfigUpdate]] - code - backend/app/api/settings.py
-- [[Deletes Frigate clipssnapshots files older than cutoff (by mtime) under clips.]] - rationale - backend/app/api/settings.py
-- [[Deletes Frigate recording segment folders older than cutoff under…]] - rationale - backend/app/api/settings.py
-- [[Dispatches the database sentinela.db directly to the configured Telegram chat.]] - rationale - backend/app/api/settings.py
 - [[PauseAlertsRequest]] - code - backend/app/api/settings.py
 - [[Request_4]] - code
-- [[Returns a directory tree size in bytes, cached for ttl_seconds to avoid heavy…]] - rationale - backend/app/api/settings.py
-- [[Returns real-time Ubuntu Server NVMe SSD storage status, breakdown and…]] - rationale - backend/app/api/settings.py
 - [[Returns the sentinela.db SQLite binary file directly as a download.]] - rationale - backend/app/api/settings.py
 - [[StorageCleanRequest]] - code - backend/app/api/settings.py
-- [[Sums the byte size of all files under a directory tree.]] - rationale - backend/app/api/settings.py
 - [[SystemSetting]] - code - backend/app/db/models.py
 - [[TelegramConfigUpdate]] - code - backend/app/api/settings.py
 - [[TelegramTestPayload]] - code - backend/app/api/settings.py
@@ -64,10 +57,10 @@ SORT file.name ASC
 - 8 edges to [[_COMMUNITY_events.py]]
 - 3 edges to [[_COMMUNITY_TelegramVaultService]]
 - 2 edges to [[_COMMUNITY_devices.py]]
-- 2 edges to [[_COMMUNITY_FastAPI]]
+- 2 edges to [[_COMMUNITY_SeamlessCameraImage]]
 
 ## Top bridge nodes
-- [[settings.py]] - degree 33, connects to 3 communities
+- [[settings.py]] - degree 35, connects to 3 communities
 - [[SystemSetting]] - degree 13, connects to 2 communities
 - [[export_backup()]] - degree 5, connects to 2 communities
 - [[clean_server_storage()]] - degree 9, connects to 1 community

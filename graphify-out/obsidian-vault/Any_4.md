@@ -1,11 +1,11 @@
 ---
 source_file: ""
 type: "code"
-community: "PiPGatewayService"
+community: "asyncio"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/asyncio
 ---
 
 # Any
@@ -15,4 +15,4 @@ tags:
 - [[dot-get_active_tv_devices()]] - `references` [EXTRACTED]
 - [[dot-test_single_device()]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/asyncio

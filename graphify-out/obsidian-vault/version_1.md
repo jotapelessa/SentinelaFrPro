@@ -1,12 +1,12 @@
 ---
 source_file: "frontend/package.json"
 type: "code"
-community: "asyncio"
+community: "MainActivity.kt"
 location: "L3"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/asyncio
+  - community/MainActivitykt
 ---
 
 # version
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[frontendpackage.json]] - `contains` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/asyncio
+#graphify/code #graphify/EXTRACTED #community/MainActivitykt

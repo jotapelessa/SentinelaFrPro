@@ -36,7 +36,7 @@ SORT file.name ASC
 ## Connections to other communities
 - 3 edges to [[_COMMUNITY_Spec Disparo de Fotos e Vídeos de Intrusão para o Telegram (Telegram Vault & Drive)]]
 - 3 edges to [[_COMMUNITY_Histórias_2]]
-- 1 edge to [[_COMMUNITY_asyncio]]
+- 1 edge to [[_COMMUNITY_MainActivity.kt]]
 
 ## Top bridge nodes
 - [[devDependencies_1]] - degree 8, connects to 3 communities

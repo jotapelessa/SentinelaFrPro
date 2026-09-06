@@ -12,7 +12,7 @@ tags:
 # MseCameraView()
 
 ## Connections
-- [[Modifier_3]] - `references` [EXTRACTED]
+- [[Modifier_2]] - `references` [EXTRACTED]
 - [[MseCameraView.kt]] - `contains` [EXTRACTED]
 - [[SeamlessCameraImage()]] - `calls` [INFERRED]
 - [[WebChromeClient]] - `contains` [EXTRACTED]

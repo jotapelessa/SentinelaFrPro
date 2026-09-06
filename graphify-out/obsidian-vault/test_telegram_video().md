@@ -2,7 +2,7 @@
 source_file: "backend/app/api/settings.py"
 type: "code"
 community: "settings.py"
-location: "L235"
+location: "L289"
 tags:
   - graphify/code
   - graphify/EXTRACTED
@@ -16,6 +16,7 @@ tags:
 - [[Request_4]] - `references` [EXTRACTED]
 - [[SystemSetting]] - `uses` [INFERRED]
 - [[TelegramVideoTestPayload]] - `references` [EXTRACTED]
+- [[_resolve_active_test_camera()]] - `calls` [EXTRACTED]
 - [[post_5]] - `references` [EXTRACTED]
 - [[settings.py]] - `contains` [EXTRACTED]
 

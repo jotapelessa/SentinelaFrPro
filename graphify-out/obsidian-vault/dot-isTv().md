@@ -12,7 +12,7 @@ tags:
 # .isTv()
 
 ## Connections
-- [[dot-onCreate()]] - `calls` [EXTRACTED]
+- [[dot-onCreate()_2]] - `calls` [EXTRACTED]
 - [[MainActivity]] - `method` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/onp-spec-driven__a_especificação_que_continua_verdadeira_Antigravity

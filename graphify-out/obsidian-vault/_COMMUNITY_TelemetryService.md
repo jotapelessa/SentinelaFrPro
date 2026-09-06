@@ -10,7 +10,7 @@ members: 14
 **Members:** 14 nodes
 
 ## Members
-- [[dot-__init__()_4]] - code - backend/app/services/telemetry.py
+- [[dot-__init__()_5]] - code - backend/app/services/telemetry.py
 - [[dot-get_cpu_temperature()]] - code - backend/app/services/telemetry.py
 - [[dot-get_detailed_stats()]] - code - backend/app/services/telemetry.py
 - [[dot-get_telemetry_snapshot()]] - code - backend/app/services/telemetry.py

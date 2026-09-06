@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/main.py"
 type: "code"
-community: "FastAPI"
+community: "SeamlessCameraImage"
 location: "L84"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/FastAPI
+  - community/SeamlessCameraImage
 ---
 
 # audit_http_requests()
@@ -16,4 +16,4 @@ tags:
 - [[main.py]] - `contains` [EXTRACTED]
 - [[middleware]] - `references` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/FastAPI
+#graphify/code #graphify/EXTRACTED #community/SeamlessCameraImage

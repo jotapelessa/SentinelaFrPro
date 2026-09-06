@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "code"
-community: "PiPGatewayService"
+community: "asyncio"
 location: "L46"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/asyncio
 ---
 
 # .record_ack()
@@ -15,4 +15,4 @@ tags:
 - [[PiPGatewayService]] - `method` [EXTRACTED]
 - [[Records an execution acknowledgement from a remote device overlay.]] - `rationale_for` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/code #graphify/EXTRACTED #community/asyncio

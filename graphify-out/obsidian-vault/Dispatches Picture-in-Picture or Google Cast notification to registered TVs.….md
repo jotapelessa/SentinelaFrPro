@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/pip_gateway.py"
 type: "rationale"
-community: "PiPGatewayService"
+community: "asyncio"
 location: "L119"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/PiPGatewayService
+  - community/asyncio
 ---
 
 # Dispatches Picture-in-Picture or Google Cast notification to registered TVs.…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-dispatch_pip_alert()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/PiPGatewayService
+#graphify/rationale #graphify/EXTRACTED #community/asyncio

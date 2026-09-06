@@ -1,17 +1,17 @@
 ---
 source_file: ""
 type: "code"
-community: "MseCameraView"
+community: "compilerOptions"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/MseCameraView
+  - community/compilerOptions
 ---
 
 # Modifier
 
 ## Connections
-- [[MseCameraView()]] - `references` [EXTRACTED]
-- [[MseCameraView.kt]] - `imports` [EXTRACTED]
+- [[SeamlessCameraImage()]] - `references` [EXTRACTED]
+- [[SeamlessCameraImage.kt]] - `imports` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/MseCameraView
+#graphify/code #graphify/EXTRACTED #community/compilerOptions

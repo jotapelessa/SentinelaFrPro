@@ -4,7 +4,7 @@ cohesion: 0.40
 members: 6
 ---
 
-# MemoryRingBufferHandler
+# Community 43
 
 **Cohesion:** 0.40 - moderately connected
 **Members:** 6 nodes
@@ -20,12 +20,12 @@ members: 6
 ## Live Query (requires Dataview plugin)
 
 ```dataview
-TABLE source_file, type FROM #community/MemoryRingBufferHandler
+TABLE source_file, type FROM #community/Community_43
 SORT file.name ASC
 ```
 
 ## Connections to other communities
-- 1 edge to [[_COMMUNITY_FastAPI]]
+- 1 edge to [[_COMMUNITY_SeamlessCameraImage]]
 - 1 edge to [[_COMMUNITY_apitelemetry.py]]
 
 ## Top bridge nodes

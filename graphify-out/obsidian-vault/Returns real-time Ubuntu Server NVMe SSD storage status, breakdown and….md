@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/api/settings.py"
 type: "rationale"
-community: "settings.py"
-location: "L571"
+community: "Community None"
+location: "L635"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/settingspy
+  - community/Community_None
 ---
 
 # Returns real-time Ubuntu Server NVMe SSD storage status, breakdown and…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[get_storage_status()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/settingspy
+#graphify/rationale #graphify/EXTRACTED #community/Community_None

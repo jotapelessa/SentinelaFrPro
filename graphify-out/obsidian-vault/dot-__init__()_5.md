@@ -1,17 +1,17 @@
 ---
-source_file: "backend/app/api/ws.py"
+source_file: "backend/app/services/telemetry.py"
 type: "code"
-community: "ws.py"
-location: "L14"
+community: "TelemetryService"
+location: "L11"
 tags:
   - graphify/code
   - graphify/EXTRACTED
-  - community/wspy
+  - community/TelemetryService
 ---
 
 # .__init__()
 
 ## Connections
-- [[WebSocketManager]] - `method` [EXTRACTED]
+- [[TelemetryService]] - `method` [EXTRACTED]
 
-#graphify/code #graphify/EXTRACTED #community/wspy
+#graphify/code #graphify/EXTRACTED #community/TelemetryService

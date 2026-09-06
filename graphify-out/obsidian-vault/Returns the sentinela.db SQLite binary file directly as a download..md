@@ -2,7 +2,7 @@
 source_file: "backend/app/api/settings.py"
 type: "rationale"
 community: "settings.py"
-location: "L441"
+location: "L505"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED

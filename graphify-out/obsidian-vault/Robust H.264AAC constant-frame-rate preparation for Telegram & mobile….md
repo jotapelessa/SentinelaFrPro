@@ -1,12 +1,12 @@
 ---
 source_file: "backend/app/services/frigate_bridge.py"
 type: "rationale"
-community: "FrigateBridgeService"
-location: "L275"
+community: "Community None"
+location: "L276"
 tags:
   - graphify/rationale
   - graphify/EXTRACTED
-  - community/FrigateBridgeService
+  - community/Community_None
 ---
 
 # Robust H.264/AAC constant-frame-rate preparation for Telegram & mobile…
@@ -14,4 +14,4 @@ tags:
 ## Connections
 - [[dot-transcode_to_30fps()]] - `rationale_for` [EXTRACTED]
 
-#graphify/rationale #graphify/EXTRACTED #community/FrigateBridgeService
+#graphify/rationale #graphify/EXTRACTED #community/Community_None

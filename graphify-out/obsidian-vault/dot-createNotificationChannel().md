@@ -12,7 +12,7 @@ tags:
 # .createNotificationChannel()
 
 ## Connections
-- [[dot-onCreate()_2]] - `calls` [EXTRACTED]
+- [[dot-onCreate()_1]] - `calls` [EXTRACTED]
 - [[OverlayService]] - `method` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/OverlayService

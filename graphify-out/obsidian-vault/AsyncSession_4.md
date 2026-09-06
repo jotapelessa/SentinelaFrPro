@@ -11,10 +11,12 @@ tags:
 # AsyncSession
 
 ## Connections
+- [[_resolve_active_test_camera()]] - `references` [EXTRACTED]
 - [[clean_server_storage()]] - `references` [EXTRACTED]
 - [[export_backup()]] - `references` [EXTRACTED]
 - [[get_dnd_settings()]] - `references` [EXTRACTED]
 - [[get_settings()]] - `references` [EXTRACTED]
+- [[test_telegram_photo()]] - `references` [EXTRACTED]
 - [[test_telegram_video()]] - `references` [EXTRACTED]
 - [[update_dnd_settings()]] - `references` [EXTRACTED]
 - [[update_telegram_config()]] - `references` [EXTRACTED]

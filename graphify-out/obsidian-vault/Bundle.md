@@ -11,7 +11,7 @@ tags:
 # Bundle
 
 ## Connections
-- [[dot-onCreate()]] - `references` [EXTRACTED]
+- [[dot-onCreate()_2]] - `references` [EXTRACTED]
 - [[MainActivity.kt]] - `imports` [EXTRACTED]
 
 #graphify/code #graphify/EXTRACTED #community/onp-spec-driven__a_especificação_que_continua_verdadeira_Antigravity

@@ -35,7 +35,7 @@ SORT file.name ASC
 
 ## Connections to other communities
 - 3 edges to [[_COMMUNITY_dependencies]]
-- 1 edge to [[_COMMUNITY_asyncio]]
+- 1 edge to [[_COMMUNITY_MainActivity.kt]]
 
 ## Top bridge nodes
 - [[dependencies_1]] - degree 8, connects to 2 communities
