@@ -67,7 +67,8 @@ class OverlayService : Service() {
         serviceScope.launch {
             webSocket?.events?.collect { event ->
                 val evType = event.optString("type")
-                val isMotionActive = evType == "CAMERA_DETECTION_ACTIVE" && event.optBoolean("active", false)
+                val isMotionActive = (evType == "CAMERA_DETECTION_ACTIVE" && event.optBoolean("active", false)) || 
+                                     (evType == "CAMERA_MOTION_STATUS" && event.optBoolean("motion", false))
                 if (evType == "DEVICE_CONFIG_UPDATED") {
                     val targetIdent = event.optString("device_identifier", "")
                     if (targetIdent == prefs.deviceIdentifier) {
