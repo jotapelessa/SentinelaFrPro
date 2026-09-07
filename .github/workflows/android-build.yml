@@ -55,7 +55,15 @@ jobs:
         yes | sdkmanager --licenses || true
         gradle wrapper --gradle-version 8.5 --distribution-type all
         chmod +x gradlew
-        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon 2>&1 | tee gradle_build.log || (echo "=== ERRO NA COMPILACAO GRADLE ===" && tail -n 120 gradle_build.log && exit 1)
+        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon 2>&1 | tee gradle_build.log
+        BUILD_EXIT=${PIPESTATUS[0]}
+        if [ $BUILD_EXIT -ne 0 ]; then
+          echo "=== ERRO NA COMPILACAO GRADLE ==="
+          tail -n 120 gradle_build.log
+          exit 1
+        fi
+        echo "=== APKs gerados ==="
+        find app/build/outputs -name "*.apk" -type f
 
     - name: Upload Build Log on Failure
       if: failure()
@@ -76,21 +84,26 @@ jobs:
         TV_APK=$(find android/app/build/outputs -type f -name "*tv*.apk" | head -n 1)
         PHONE_APK=$(find android/app/build/outputs -type f -name "*smartphone*.apk" | head -n 1)
         
-        if [ -n "$TV_APK" ]; then
-          cp "$TV_APK" release-apks/sentinela-android-tv-v${VER}.apk
-          cp "$TV_APK" release-apks/sentinela-android-tv-latest.apk
-          echo "✅ TV APK copiado de $TV_APK"
+        if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
+          echo "❌ ERRO: APKs não encontrados após compilação!"
+          echo "TV APK: '$TV_APK'"
+          echo "Phone APK: '$PHONE_APK'"
+          find android/app/build -name "*.apk" || echo "Nenhum APK encontrado em todo o build output"
+          exit 1
         fi
         
-        if [ -n "$PHONE_APK" ]; then
-          cp "$PHONE_APK" release-apks/sentinela-android-smartphone-v${VER}.apk
-          cp "$PHONE_APK" release-apks/sentinela-android-smartphone-latest.apk
-          echo "✅ Smartphone APK copiado de $PHONE_APK"
-        fi
+        cp "$TV_APK" release-apks/sentinela-android-tv-v${VER}.apk
+        cp "$TV_APK" release-apks/sentinela-android-tv-latest.apk
+        echo "✅ TV APK copiado de $TV_APK"
         
-        ls -la release-apks/
+        cp "$PHONE_APK" release-apks/sentinela-android-smartphone-v${VER}.apk
+        cp "$PHONE_APK" release-apks/sentinela-android-smartphone-latest.apk
+        echo "✅ Smartphone APK copiado de $PHONE_APK"
+        
+        ls -lh release-apks/
 
     - name: Upload Artifacts to Run Summary
+      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: sentinela-apks-v${{ steps.get_version.outputs.version }}
@@ -125,9 +138,11 @@ jobs:
             * Transmissão em tempo real de snapshots e eventos via WebSocket
 
           ### 🚀 Melhorias Desta Versão:
+          - ✅ **PiP em Movimento**: Trigger do PiP ativado também por eventos de movimentação pura (CAMERA_MOTION_STATUS), além de detecções de objetos.
           - ✅ **Live PiP Overlay**: Janela flutuante no Android exibindo vídeo e imagem ao vivo com indicador de status e nome da câmera.
           - ✅ **Global SSL Bypass no Coil**: Correção completa para conexões Tailscale HTTPS (`.ts.net`) e IPs locais sem restrições de certificado.
           - ✅ **WebSocket Native Dispatch**: Handshake em tempo real entre o backend e os dispositivos pareados na tela de `/screens`.
           - ✅ **Frigate 0.17 Zone Sync**: Resolução total do Modo de Segurança (*Safe Mode*) do Frigate NVR.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
