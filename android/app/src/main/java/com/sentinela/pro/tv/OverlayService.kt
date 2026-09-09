@@ -302,9 +302,12 @@ class OverlayService : Service() {
                 inner.addView(snapImageView)
 
                 // Load instant image with Coil
+                // FIX #1: use applicationContext so the singleton ImageLoader built in
+                // SentinelaApplication (with TrustAll OkHttp) is always resolved correctly
+                // even when called from a foreground Service context.
                 try {
-                    val imageLoader = coil.Coil.imageLoader(this)
-                    val req = coil.request.ImageRequest.Builder(this)
+                    val imageLoader = coil.Coil.imageLoader(applicationContext)
+                    val req = coil.request.ImageRequest.Builder(applicationContext)
                         .data(snapshotUrl)
                         .target(snapImageView)
                         .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
@@ -316,7 +319,10 @@ class OverlayService : Service() {
                 }
 
                 // 2. Hardware Video Stream Layer (Warm Reusable Instance)
+                // FIX #3: Start invisible so the snapshot ImageView shows immediately;
+                // WebView becomes visible only after onPageFinished to prevent covering the image.
                 val wv = WebView(this).apply {
+                    visibility = View.INVISIBLE
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
@@ -365,6 +371,9 @@ class OverlayService : Service() {
                                     "});" +
                                     "})();"
                             view?.evaluateJavascript(js, null)
+                            // FIX #3: Reveal WebView only after stream is ready, so the
+                            // snapshot ImageView is visible during the loading phase.
+                            view?.visibility = View.VISIBLE
                         }
                     }
                 }
@@ -409,6 +418,26 @@ class OverlayService : Service() {
                 wv.loadUrl(streamUrl)
             } else {
                 pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
+
+                // FIX #2: Reload snapshot on reuse. When overlayView already exists (2nd+
+                // PiP alert) the ImageView was never refreshed, leaving a stale or black frame.
+                pipImageView?.let { iv ->
+                    try {
+                        val imageLoader = coil.Coil.imageLoader(applicationContext)
+                        val req = coil.request.ImageRequest.Builder(applicationContext)
+                            .data(snapshotUrl)
+                            .target(iv)
+                            .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                            .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                            .build()
+                        imageLoader.enqueue(req)
+                    } catch (e: Exception) {
+                        android.util.Log.w("OverlayService", "Snapshot reload on reuse: ${e.message}")
+                    }
+                }
+
+                // FIX #3: Hide WebView again while the new stream loads
+                pipWebView?.visibility = View.INVISIBLE
                 pipWebView?.onResume()
                 if (overlayView?.parent == null) {
                     windowManager.addView(overlayView, params)
@@ -453,8 +482,9 @@ class OverlayService : Service() {
                 try {
                     pipImageView?.let { iv ->
                         val refreshSnapUrl = customSnapshotUrl ?: "${resolvedBase}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
-                        val imageLoader = coil.Coil.imageLoader(this@OverlayService)
-                        val req = coil.request.ImageRequest.Builder(this@OverlayService)
+                        // FIX #1: applicationContext garante o singleton com OkHttp/TrustAll
+                        val imageLoader = coil.Coil.imageLoader(applicationContext)
+                        val req = coil.request.ImageRequest.Builder(applicationContext)
                             .data(refreshSnapUrl)
                             .target(iv)
                             .memoryCachePolicy(coil.request.CachePolicy.DISABLED)

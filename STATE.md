@@ -1,7 +1,7 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-06 08:48 BRT
+> **Última Atualização:** 2026-09-09 18:47 BRT
 > **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0)
 
 ---
@@ -98,6 +98,13 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
     - **Logs do Frigate 100% limpos**: Nenhum erro 404 ou crash de FFmpeg ocorrendo.
 - **Validação Rigorosa onp-spec**: Auditoria executada com sucesso total (`onp-spec audit`), resultando em exit code 0 e 31/31 critérios provados.
 - **Grafo de Conhecimento e Obsidian**: Atualizado via `graphify update .` (1.334 nós, 2.061 arestas, 96 comunidades).
+- **[2026-09-09] Fix PiP Preview Android TV — Imagens não carregando** (`OverlayService.kt`):
+  - **Fix #1 (Alta)**: `coil.Coil.imageLoader(this)` dentro de Service não resolvia o singleton do `SentinelaApplication` (que possui OkHttp com TrustAll para certificados self-signed). Corrigido para `applicationContext` em todos os 3 pontos de uso (carga inicial, refresh loop e reuso de overlay).
+  - **Fix #2 (Média)**: Quando `overlayView` já existia (2º+ alerta PiP), a `pipImageView` não era recarregada no branch `else`, deixando frame preto ou desatualizado. Adicionado bloco Coil de reload para toda reutilização do overlay.
+  - **Fix #3 (Média)**: O `WebView` iniciava visível e cobria a `ImageView` antes do Coil terminar de carregar, tornando o snapshot invisível. Corrigido iniciando o WebView com `visibility = View.INVISIBLE` e tornando-o visível apenas em `onPageFinished`.
+- **[2026-09-09] Fix Compilador Codespaces** (`compile_apk.sh`, `README.md`):
+  - `compile_apk.sh` reescrito: suporte a argumento CLI (`tv` / `smartphone` / `both`), auto-instalação de JDK 17 via `apt-get`, aceite automático de licenças Android SDK, remoção de fallback de versão hardcoded (`BUILD=081`), log de erro detalhado e instruções de download ao final.
+  - `README.md` atualizado: seção Codespaces reescrita com exemplos CLI, versão corrigida `087` → `089` em todos os badges e links de release.
 
 ---
 

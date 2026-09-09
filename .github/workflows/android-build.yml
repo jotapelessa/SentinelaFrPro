@@ -53,7 +53,6 @@ jobs:
       working-directory: android
       run: |
         yes | sdkmanager --licenses || true
-        gradle wrapper --gradle-version 8.5 --distribution-type all
         chmod +x gradlew
         ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon 2>&1 | tee gradle_build.log
         BUILD_EXIT=${PIPESTATUS[0]}
