@@ -30,6 +30,7 @@ object SentinelaColors {
     val PrimaryCyan = Color(0xFF22D3EE)            // Cor primária dos ícones e títulos
     val SuccessGreen = Color(0xFF10B981)           // Status conectado e taxa de quadros (24 FPS)
     val DestructiveRed = Color(0xFFE11D48)         // Botões de reset/limpeza e alertas
+    val StandbyAmber = Color(0xFFF59E0B)           // Alerta/Standby âmbar
 
     // Master VIP Gold
     val MasterGold = Color(0xFFF59E0B)             // Dourado vibrante do selo Master

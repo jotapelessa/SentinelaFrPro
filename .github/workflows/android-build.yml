@@ -51,7 +51,13 @@ jobs:
       working-directory: android
       run: |
         chmod +x gradlew
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --info
+        if ! ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon 2>&1 | tee /tmp/gradle.log; then
+          echo "### ❌ Gradle Build Failed" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 80 /tmp/gradle.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
 
     - name: Prepare Release Artifacts
       run: |
