@@ -49,6 +49,7 @@ jobs:
     - name: Build Android TV and Smartphone APKs
       working-directory: android
       run: |
+        set -o pipefail
         chmod +x gradlew
         ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --stacktrace 2>&1 | tee build.log || {
           echo "❌ FALHA NA COMPILAÇÃO GRADLE! Exibindo log de erro:"
@@ -61,9 +62,11 @@ jobs:
         mkdir -p release-apks
         VER="${{ steps.get_version.outputs.version }}"
         
-        echo "🔍 Localizando APKs compilados..."
-        TV_APK=$(find android/app/build/outputs/apk/tv -name "*.apk" -type f | head -n 1)
-        PHONE_APK=$(find android/app/build/outputs/apk/smartphone -name "*.apk" -type f | head -n 1)
+        echo "🔍 Listando arquivos em android/app/build/:"
+        find android/ -name "*.apk" || echo "Nenhum apk encontrado"
+        
+        TV_APK=$(find android/app/build/outputs/apk -name "*tv*.apk" -type f | head -n 1)
+        PHONE_APK=$(find android/app/build/outputs/apk -name "*smartphone*.apk" -type f | head -n 1)
         
         if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
           echo "❌ Erro: Não foi possível localizar os APKs gerados!"
