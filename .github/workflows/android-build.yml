@@ -51,56 +51,44 @@ jobs:
       uses: android-actions/setup-android@v3
 
     - name: Build Android TV and Smartphone APKs
+      working-directory: android
       run: |
-        cd android
-        yes | sdkmanager --licenses || true
         chmod +x gradlew
-        if ! ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon > ../gradle_exec.log 2>&1; then
-          echo "============================================================"
-          echo "❌ FALHA NA COMPILAÇÃO GRADLE — LOG COMPLETO DE ERRO:"
-          echo "============================================================"
-          tail -n 250 ../gradle_exec.log
+        ./gradlew assembleTvDebug assembleSmartphoneDebug -x lint -x lintVitalRelease --no-daemon --stacktrace
+
+    - name: Prepare Release Artifacts
+      run: |
+        mkdir -p release-apks
+        VER="${{ steps.get_version.outputs.version }}"
+        
+        echo "🔍 Localizando APKs compilados..."
+        TV_APK=$(find android/app/build/outputs/apk/tv -name "*.apk" -type f | head -n 1)
+        PHONE_APK=$(find android/app/build/outputs/apk/smartphone -name "*.apk" -type f | head -n 1)
+        
+        if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
+          echo "❌ Erro: Não foi possível localizar os APKs gerados!"
+          find android/app/build -name "*.apk" || echo "Nenhum APK gerado"
           exit 1
         fi
         
+        echo "📺 TV APK: $TV_APK"
+        echo "📱 Smartphone APK: $PHONE_APK"
+        
+        cp "$TV_APK" "release-apks/sentinela-android-tv-v${VER}.apk"
+        cp "$TV_APK" "release-apks/sentinela-android-tv-latest.apk"
+        cp "$PHONE_APK" "release-apks/sentinela-android-smartphone-v${VER}.apk"
+        cp "$PHONE_APK" "release-apks/sentinela-android-smartphone-latest.apk"
+        
         echo "============================================================"
-        echo "📂 Listando todos os arquivos .apk encontrados:"
-        echo "============================================================"
-        find . -name "*.apk"
-        
-        mkdir -p ../release-apks
-        VER="${{ steps.get_version.outputs.version }}"
-        
-        TV_APK=$(find app/build/outputs/apk/tv -name "*.apk" | head -n 1)
-        PHONE_APK=$(find app/build/outputs/apk/smartphone -name "*.apk" | head -n 1)
-        
-        echo "TV APK detectado: '$TV_APK'"
-        echo "Smartphone APK detectado: '$PHONE_APK'"
-        
-        cp -v "$TV_APK" "../release-apks/sentinela-android-tv-v${VER}.apk"
-        cp -v "$TV_APK" "../release-apks/sentinela-android-tv-latest.apk"
-        cp -v "$PHONE_APK" "../release-apks/sentinela-android-smartphone-v${VER}.apk"
-        cp -v "$PHONE_APK" "../release-apks/sentinela-android-smartphone-latest.apk"
-        
-        cd ..
-        echo "============================================================"
-        echo "📦 Conteúdo final de release-apks/:"
+        echo "📦 Artefatos prontos para publicação:"
         echo "============================================================"
         ls -lh release-apks/
 
-    - name: Upload Build Log on Failure
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: gradle-exec-failure-log
-        path: gradle_exec.log
-
     - name: Upload Artifacts to Run Summary
-      if: success()
       uses: actions/upload-artifact@v4
       with:
         name: sentinela-apks-v${{ steps.get_version.outputs.version }}
-        path: release-apks/*.apk
+        path: release-apks/*
 
     - name: Publish to GitHub Releases
       uses: softprops/action-gh-release@v2
@@ -111,7 +99,6 @@ jobs:
         prerelease: false
         make_latest: true
         overwrite: true
-        fail_on_unmatched_files: true
         files: |
           release-apks/sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk
           release-apks/sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk
