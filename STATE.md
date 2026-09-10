@@ -1,7 +1,7 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-09 18:47 BRT
+> **Última Atualização:** 2026-09-10 17:40 BRT
 > **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0)
 
 ---
@@ -102,9 +102,11 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
   - **Fix #1 (Alta)**: `coil.Coil.imageLoader(this)` dentro de Service não resolvia o singleton do `SentinelaApplication` (que possui OkHttp com TrustAll para certificados self-signed). Corrigido para `applicationContext` em todos os 3 pontos de uso (carga inicial, refresh loop e reuso de overlay).
   - **Fix #2 (Média)**: Quando `overlayView` já existia (2º+ alerta PiP), a `pipImageView` não era recarregada no branch `else`, deixando frame preto ou desatualizado. Adicionado bloco Coil de reload para toda reutilização do overlay.
   - **Fix #3 (Média)**: O `WebView` iniciava visível e cobria a `ImageView` antes do Coil terminar de carregar, tornando o snapshot invisível. Corrigido iniciando o WebView com `visibility = View.INVISIBLE` e tornando-o visível apenas em `onPageFinished`.
-- **[2026-09-09] Fix Compilador Codespaces** (`compile_apk.sh`, `README.md`):
-  - `compile_apk.sh` reescrito: suporte a argumento CLI (`tv` / `smartphone` / `both`), auto-instalação de JDK 17 via `apt-get`, aceite automático de licenças Android SDK, remoção de fallback de versão hardcoded (`BUILD=081`), log de erro detalhado e instruções de download ao final.
-  - `README.md` atualizado: seção Codespaces reescrita com exemplos CLI, versão corrigida `087` → `089` em todos os badges e links de release.
+- **[2026-09-10] Fix Compilação APK no GitHub Actions (`v001.000.000.090`)**:
+  - `gradle-wrapper.properties`: alterada distribuição de `-all` para `-bin` para download e extração rápidos no runner do CI.
+  - `version.properties`: bump de `BUILD=089` para `BUILD=090` (`001.000.000.090`), liberando criação limpa de nova release sem colisão de tag existente no GitHub.
+  - `.github/workflows/android-build.yml`: corrigida detecção de sucesso/falha do build sem pipes frágeis e adicionada busca flexível de APKs (`tv` e `smartphone`) na pasta `android/`.
+  - `README.md`: badges e URLs atualizados para a nova versão `v001.000.000.090`.
 
 ---
 

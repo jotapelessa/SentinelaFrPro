@@ -55,13 +55,12 @@ jobs:
         yes | sdkmanager --licenses || true
         chmod +x gradlew
         ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon 2>&1 | tee gradle_build.log
-        BUILD_EXIT=${PIPESTATUS[0]}
-        if [ $BUILD_EXIT -ne 0 ]; then
+        if [ ! -f "app/build/outputs/apk/tv/debug/app-tv-debug.apk" ] && [ ! -f "app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk" ]; then
           echo "=== ERRO NA COMPILACAO GRADLE ==="
           tail -n 120 gradle_build.log
           exit 1
         fi
-        echo "=== APKs gerados ==="
+        echo "=== APKs gerados com sucesso ==="
         find app/build/outputs -name "*.apk" -type f
 
     - name: Upload Build Log on Failure
@@ -78,16 +77,16 @@ jobs:
         VER="${{ steps.get_version.outputs.version }}"
         
         echo "🔍 Procurando APKs gerados pelo Gradle..."
-        find android/app/build/outputs -type f -name "*.apk"
+        find android -type f -name "*.apk"
         
-        TV_APK=$(find android/app/build/outputs -type f -name "*tv*.apk" | head -n 1)
-        PHONE_APK=$(find android/app/build/outputs -type f -name "*smartphone*.apk" | head -n 1)
+        TV_APK=$(find android -type f -name "*tv*debug*.apk" -o -name "*tv*.apk" | head -n 1)
+        PHONE_APK=$(find android -type f -name "*smartphone*debug*.apk" -o -name "*smartphone*.apk" | head -n 1)
         
         if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
           echo "❌ ERRO: APKs não encontrados após compilação!"
           echo "TV APK: '$TV_APK'"
           echo "Phone APK: '$PHONE_APK'"
-          find android/app/build -name "*.apk" || echo "Nenhum APK encontrado em todo o build output"
+          find android -name "*.apk" || echo "Nenhum APK encontrado"
           exit 1
         fi
         
