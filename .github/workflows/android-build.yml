@@ -62,8 +62,33 @@ jobs:
           tail -n 150 gradle_build.log
           exit 1
         fi
-        echo "=== APKs gerados com sucesso ==="
-        find app/build/outputs -name "*.apk" -type f
+        
+        echo "=== Todos os APKs gerados pelo Gradle: ==="
+        find app/build/outputs -type f -name "*.apk"
+        
+        mkdir -p ../release-apks
+        VER="${{ steps.get_version.outputs.version }}"
+        
+        TV_FOUND=$(find app/build/outputs -type f -name "*tv*.apk" | head -n 1)
+        PHONE_FOUND=$(find app/build/outputs -type f -name "*smartphone*.apk" | head -n 1)
+        
+        if [ -n "$TV_FOUND" ]; then
+          cp "$TV_FOUND" ../release-apks/sentinela-android-tv-v${VER}.apk
+          cp "$TV_FOUND" ../release-apks/sentinela-android-tv-latest.apk
+          echo "✅ TV APK copiado: $TV_FOUND"
+        else
+          echo "⚠️ TV APK não encontrado diretamente em app/build/outputs"
+        fi
+        
+        if [ -n "$PHONE_FOUND" ]; then
+          cp "$PHONE_FOUND" ../release-apks/sentinela-android-smartphone-v${VER}.apk
+          cp "$PHONE_FOUND" ../release-apks/sentinela-android-smartphone-latest.apk
+          echo "✅ Smartphone APK copiado: $PHONE_FOUND"
+        else
+          echo "⚠️ Smartphone APK não encontrado diretamente em app/build/outputs"
+        fi
+        
+        ls -lh ../release-apks/
 
     - name: Upload Build Log on Failure
       if: failure()
@@ -76,33 +101,30 @@ jobs:
       if: success()
       run: |
         mkdir -p release-apks
+        echo "📂 Verificando release-apks/..."
+        ls -lh release-apks/
+        
+        # Se algum APK não foi copiado ainda, busca em todo o repositório
         VER="${{ steps.get_version.outputs.version }}"
-        
-        echo "🔍 Procurando APKs gerados pelo Gradle..."
-        find android -type f -name "*.apk"
-        
-        TV_APK=$(find android/app/build/outputs -type f \( -name "*tv*debug*.apk" -o -name "*tv*.apk" \) 2>/dev/null | head -n 1)
-        [ -z "$TV_APK" ] && [ -f "android/app/build/outputs/apk/tv/debug/app-tv-debug.apk" ] && TV_APK="android/app/build/outputs/apk/tv/debug/app-tv-debug.apk"
-        
-        PHONE_APK=$(find android/app/build/outputs -type f \( -name "*smartphone*debug*.apk" -o -name "*smartphone*.apk" \) 2>/dev/null | head -n 1)
-        [ -z "$PHONE_APK" ] && [ -f "android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk" ] && PHONE_APK="android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk"
-        
-        if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
-          echo "❌ ERRO: APKs não encontrados após compilação!"
-          echo "TV APK: '$TV_APK'"
-          echo "Phone APK: '$PHONE_APK'"
-          find android -name "*.apk" || echo "Nenhum APK encontrado"
-          exit 1
+        if [ ! -f "release-apks/sentinela-android-tv-latest.apk" ]; then
+          TV_ANY=$(find . -type f -name "*tv*.apk" ! -path "./release-apks/*" | head -n 1)
+          if [ -n "$TV_ANY" ]; then
+            cp "$TV_ANY" release-apks/sentinela-android-tv-v${VER}.apk
+            cp "$TV_ANY" release-apks/sentinela-android-tv-latest.apk
+            echo "✅ TV APK recuperado de $TV_ANY"
+          fi
         fi
         
-        cp "$TV_APK" release-apks/sentinela-android-tv-v${VER}.apk
-        cp "$TV_APK" release-apks/sentinela-android-tv-latest.apk
-        echo "✅ TV APK copiado de $TV_APK"
+        if [ ! -f "release-apks/sentinela-android-smartphone-latest.apk" ]; then
+          PHONE_ANY=$(find . -type f -name "*smartphone*.apk" ! -path "./release-apks/*" | head -n 1)
+          if [ -n "$PHONE_ANY" ]; then
+            cp "$PHONE_ANY" release-apks/sentinela-android-smartphone-v${VER}.apk
+            cp "$PHONE_ANY" release-apks/sentinela-android-smartphone-latest.apk
+            echo "✅ Smartphone APK recuperado de $PHONE_ANY"
+          fi
+        fi
         
-        cp "$PHONE_APK" release-apks/sentinela-android-smartphone-v${VER}.apk
-        cp "$PHONE_APK" release-apks/sentinela-android-smartphone-latest.apk
-        echo "✅ Smartphone APK copiado de $PHONE_APK"
-        
+        echo "=== Conteúdo Final de release-apks/: ==="
         ls -lh release-apks/
 
     - name: Upload Artifacts to Run Summary
