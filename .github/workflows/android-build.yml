@@ -81,8 +81,11 @@ jobs:
         echo "🔍 Procurando APKs gerados pelo Gradle..."
         find android -type f -name "*.apk"
         
-        TV_APK=$(find android -type f -name "*tv*debug*.apk" -o -name "*tv*.apk" | head -n 1)
-        PHONE_APK=$(find android -type f -name "*smartphone*debug*.apk" -o -name "*smartphone*.apk" | head -n 1)
+        TV_APK=$(find android/app/build/outputs -type f \( -name "*tv*debug*.apk" -o -name "*tv*.apk" \) 2>/dev/null | head -n 1)
+        [ -z "$TV_APK" ] && [ -f "android/app/build/outputs/apk/tv/debug/app-tv-debug.apk" ] && TV_APK="android/app/build/outputs/apk/tv/debug/app-tv-debug.apk"
+        
+        PHONE_APK=$(find android/app/build/outputs -type f \( -name "*smartphone*debug*.apk" -o -name "*smartphone*.apk" \) 2>/dev/null | head -n 1)
+        [ -z "$PHONE_APK" ] && [ -f "android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk" ] && PHONE_APK="android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk"
         
         if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
           echo "❌ ERRO: APKs não encontrados após compilação!"
