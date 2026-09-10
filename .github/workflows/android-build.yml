@@ -50,8 +50,8 @@ jobs:
       uses: android-actions/setup-android@v3
 
     - name: Build Android TV and Smartphone APKs
-      working-directory: android
       run: |
+        cd android
         yes | sdkmanager --licenses || true
         chmod +x gradlew
         ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon 2>&1 | tee gradle_build.log || BUILD_FAILED=1
@@ -62,33 +62,7 @@ jobs:
           tail -n 150 gradle_build.log
           exit 1
         fi
-        
-        echo "=== Todos os APKs gerados pelo Gradle: ==="
-        find app/build/outputs -type f -name "*.apk"
-        
-        mkdir -p ../release-apks
-        VER="${{ steps.get_version.outputs.version }}"
-        
-        TV_FOUND=$(find app/build/outputs -type f -name "*tv*.apk" | head -n 1)
-        PHONE_FOUND=$(find app/build/outputs -type f -name "*smartphone*.apk" | head -n 1)
-        
-        if [ -n "$TV_FOUND" ]; then
-          cp "$TV_FOUND" ../release-apks/sentinela-android-tv-v${VER}.apk
-          cp "$TV_FOUND" ../release-apks/sentinela-android-tv-latest.apk
-          echo "✅ TV APK copiado: $TV_FOUND"
-        else
-          echo "⚠️ TV APK não encontrado diretamente em app/build/outputs"
-        fi
-        
-        if [ -n "$PHONE_FOUND" ]; then
-          cp "$PHONE_FOUND" ../release-apks/sentinela-android-smartphone-v${VER}.apk
-          cp "$PHONE_FOUND" ../release-apks/sentinela-android-smartphone-latest.apk
-          echo "✅ Smartphone APK copiado: $PHONE_FOUND"
-        else
-          echo "⚠️ Smartphone APK não encontrado diretamente em app/build/outputs"
-        fi
-        
-        ls -lh ../release-apks/
+        cd ..
 
     - name: Upload Build Log on Failure
       if: failure()
@@ -101,30 +75,48 @@ jobs:
       if: success()
       run: |
         mkdir -p release-apks
-        echo "📂 Verificando release-apks/..."
-        ls -lh release-apks/
-        
-        # Se algum APK não foi copiado ainda, busca em todo o repositório
         VER="${{ steps.get_version.outputs.version }}"
-        if [ ! -f "release-apks/sentinela-android-tv-latest.apk" ]; then
-          TV_ANY=$(find . -type f -name "*tv*.apk" ! -path "./release-apks/*" | head -n 1)
-          if [ -n "$TV_ANY" ]; then
-            cp "$TV_ANY" release-apks/sentinela-android-tv-v${VER}.apk
-            cp "$TV_ANY" release-apks/sentinela-android-tv-latest.apk
-            echo "✅ TV APK recuperado de $TV_ANY"
-          fi
+        echo "🔍 Procurando APKs gerados em todo o workspace..."
+        find . -name "*.apk" -ls
+
+        TV_SRC=$(find android/app/build/outputs/apk/tv -name "*.apk" 2>/dev/null | head -n 1)
+        if [ -z "$TV_SRC" ]; then
+          TV_SRC=$(find . -path "*/tv/*" -name "*.apk" 2>/dev/null | head -n 1)
         fi
-        
-        if [ ! -f "release-apks/sentinela-android-smartphone-latest.apk" ]; then
-          PHONE_ANY=$(find . -type f -name "*smartphone*.apk" ! -path "./release-apks/*" | head -n 1)
-          if [ -n "$PHONE_ANY" ]; then
-            cp "$PHONE_ANY" release-apks/sentinela-android-smartphone-v${VER}.apk
-            cp "$PHONE_ANY" release-apks/sentinela-android-smartphone-latest.apk
-            echo "✅ Smartphone APK recuperado de $PHONE_ANY"
-          fi
+        if [ -z "$TV_SRC" ]; then
+          TV_SRC=$(find . -name "*tv*.apk" ! -path "./release-apks/*" 2>/dev/null | head -n 1)
         fi
-        
-        echo "=== Conteúdo Final de release-apks/: ==="
+
+        PHONE_SRC=$(find android/app/build/outputs/apk/smartphone -name "*.apk" 2>/dev/null | head -n 1)
+        if [ -z "$PHONE_SRC" ]; then
+          PHONE_SRC=$(find . -path "*/smartphone/*" -name "*.apk" 2>/dev/null | head -n 1)
+        fi
+        if [ -z "$PHONE_SRC" ]; then
+          PHONE_SRC=$(find . -name "*smartphone*.apk" ! -path "./release-apks/*" 2>/dev/null | head -n 1)
+        fi
+
+        echo "TV APK Origem: $TV_SRC"
+        echo "Smartphone APK Origem: $PHONE_SRC"
+
+        if [ -n "$TV_SRC" ] && [ -f "$TV_SRC" ]; then
+          cp -f "$TV_SRC" "release-apks/sentinela-android-tv-v${VER}.apk"
+          cp -f "$TV_SRC" "release-apks/sentinela-android-tv-latest.apk"
+          echo "✅ TV APK copiado com sucesso"
+        else
+          echo "❌ ERRO: TV APK não encontrado!"
+          exit 1
+        fi
+
+        if [ -n "$PHONE_SRC" ] && [ -f "$PHONE_SRC" ]; then
+          cp -f "$PHONE_SRC" "release-apks/sentinela-android-smartphone-v${VER}.apk"
+          cp -f "$PHONE_SRC" "release-apks/sentinela-android-smartphone-latest.apk"
+          echo "✅ Smartphone APK copiado com sucesso"
+        else
+          echo "❌ ERRO: Smartphone APK não encontrado!"
+          exit 1
+        fi
+
+        echo "=== Conteúdo da pasta release-apks/ ==="
         ls -lh release-apks/
 
     - name: Upload Artifacts to Run Summary
@@ -132,7 +124,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: sentinela-apks-v${{ steps.get_version.outputs.version }}
-        path: release-apks/*
+        path: release-apks/*.apk
 
     - name: Publish to GitHub Releases
       uses: softprops/action-gh-release@v2
@@ -142,6 +134,8 @@ jobs:
         draft: false
         prerelease: false
         make_latest: true
+        overwrite: true
+        fail_on_unmatched_files: true
         files: |
           release-apks/sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk
           release-apks/sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk
