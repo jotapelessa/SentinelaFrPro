@@ -51,11 +51,14 @@ jobs:
       run: |
         set -o pipefail
         chmod +x gradlew
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --stacktrace 2>&1 | tee build.log || {
-          echo "❌ FALHA NA COMPILAÇÃO GRADLE! Exibindo log de erro:"
-          tail -n 120 build.log
-          exit 1
-        }
+        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --stacktrace 2>&1 | tee build.log
+
+    - name: Upload Gradle Build Log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: gradle-build-log
+        path: android/build.log
 
     - name: Prepare Release Artifacts
       run: |
