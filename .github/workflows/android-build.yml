@@ -49,9 +49,14 @@ jobs:
     - name: Build Android TV and Smartphone APKs
       working-directory: android
       run: |
-        set -o pipefail
         chmod +x gradlew
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --stacktrace 2>&1 | tee build.log
+        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --stacktrace > build.log 2>&1 || {
+          BUILD_CODE=$?
+          echo "==================== ULTIMAS 100 LINHAS DO LOG DE ERRO ===================="
+          tail -n 100 build.log
+          echo "=========================================================================="
+          exit $BUILD_CODE
+        }
 
     - name: Upload Gradle Build Log
       if: always()
