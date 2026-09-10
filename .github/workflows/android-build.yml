@@ -64,20 +64,42 @@ jobs:
         mkdir -p release-apks
         VER="${{ steps.get_version.outputs.version }}"
         
-        echo "🔍 Listando arquivos em android/app/build/:"
-        find android/ -name "*.apk" || echo "Nenhum apk encontrado"
+        echo "🔍 Procurando APKs gerados pelo Gradle..."
+        find . -name "*.apk" -ls
         
-        TV_APK=$(find android/app/build/outputs/apk -name "*tv*.apk" -type f | head -n 1)
-        PHONE_APK=$(find android/app/build/outputs/apk -name "*smartphone*.apk" -type f | head -n 1)
+        # Procura TV APK com fallbacks
+        TV_APK=""
+        for path in \
+          "android/app/build/outputs/apk/tv/debug/app-tv-debug.apk" \
+          "app/build/outputs/apk/tv/debug/app-tv-debug.apk" \
+          $(find . -type f -name "*tv*.apk" 2>/dev/null); do
+          if [ -f "$path" ]; then
+            TV_APK="$path"
+            break
+          fi
+        done
+        
+        # Procura Smartphone APK com fallbacks
+        PHONE_APK=""
+        for path in \
+          "android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk" \
+          "app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk" \
+          $(find . -type f -name "*smartphone*.apk" 2>/dev/null); do
+          if [ -f "$path" ]; then
+            PHONE_APK="$path"
+            break
+          fi
+        done
         
         if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
           echo "❌ Erro: Não foi possível localizar os APKs gerados!"
-          find android/app/build -name "*.apk" || echo "Nenhum APK gerado"
+          echo "TV_APK='$TV_APK'"
+          echo "PHONE_APK='$PHONE_APK'"
           exit 1
         fi
         
-        echo "📺 TV APK: $TV_APK"
-        echo "📱 Smartphone APK: $PHONE_APK"
+        echo "✅ TV APK localizado: $TV_APK"
+        echo "✅ Smartphone APK localizado: $PHONE_APK"
         
         cp "$TV_APK" "release-apks/sentinela-android-tv-v${VER}.apk"
         cp "$TV_APK" "release-apks/sentinela-android-tv-latest.apk"
