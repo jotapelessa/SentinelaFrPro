@@ -55,7 +55,15 @@ jobs:
         cd android
         yes | sdkmanager --licenses || true
         chmod +x gradlew
-        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon
+        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon 2>&1 | tee ../gradle_exec.log
+        GRADLE_STATUS="${PIPESTATUS[0]}"
+        if [ "$GRADLE_STATUS" != "0" ]; then
+          echo "============================================================"
+          echo "❌ FALHA NO GRADLE (Exit Code: $GRADLE_STATUS) — ÚLTIMAS 150 LINHAS:"
+          echo "============================================================"
+          tail -n 150 ../gradle_exec.log
+          exit 1
+        fi
         
         echo "============================================================"
         echo "📂 Listando todos os arquivos .apk encontrados:"
@@ -81,6 +89,13 @@ jobs:
         echo "📦 Conteúdo final de release-apks/:"
         echo "============================================================"
         ls -lh release-apks/
+
+    - name: Upload Build Log on Failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: gradle-exec-failure-log
+        path: gradle_exec.log
 
     - name: Upload Artifacts to Run Summary
       if: success()
