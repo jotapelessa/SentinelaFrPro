@@ -1,16 +1,16 @@
-# Graph Report - SentinelaFrigate  (2026-09-06)
+# Graph Report - SentinelaFrigate  (2026-09-09)
 
 ## Corpus Check
-- 157 files · ~142,856 words
+- 158 files · ~145,958 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1334 nodes · 2061 edges · 96 communities (60 shown, 20 thin omitted)
+- 1338 nodes · 2066 edges · 96 communities (61 shown, 19 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 82 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `cec4f456`
+- Built from commit: `efc239ff`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -54,7 +54,7 @@
 - manifest.json
 - PipDuration
 - MainActivity.kt
-- TvAudioManager
+- gradlew
 - onp-spec-driven — a especificação que continua verdadeira (Antigravity)
 - Models.kt
 - X509TrustManager
@@ -111,23 +111,23 @@
 ## Surprising Connections (you probably didn't know these)
 - `SeamlessCameraImage()` --calls--> `MseCameraView()`  [INFERRED]
   android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt → android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt
-- `get_camera_diagnostics()` --uses--> `AuditLog`  [INFERRED]
+- `list_cameras()` --uses--> `Camera`  [INFERRED]
   backend/app/api/cameras.py → backend/app/db/models.py
-- `get_device_permitted_cameras()` --uses--> `Camera`  [INFERRED]
-  backend/app/api/devices.py → backend/app/db/models.py
-- `device_diagnostics()` --uses--> `AuditLog`  [INFERRED]
-  backend/app/api/devices.py → backend/app/db/models.py
-- `_resolve_active_test_camera()` --uses--> `Camera`  [INFERRED]
-  backend/app/api/settings.py → backend/app/db/models.py
+- `sync_cameras_from_frigate()` --uses--> `Camera`  [INFERRED]
+  backend/app/api/cameras.py → backend/app/db/models.py
+- `add_camera()` --uses--> `Camera`  [INFERRED]
+  backend/app/api/cameras.py → backend/app/db/models.py
+- `update_camera()` --uses--> `Camera`  [INFERRED]
+  backend/app/api/cameras.py → backend/app/db/models.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (96 total, 20 thin omitted)
+## Communities (96 total, 19 thin omitted)
 
 ### Community 0 - "events.py"
-Cohesion: 0.07
-Nodes (38): clear_audit_trail(), delete_event(), delete_events_batch(), delete_events_by_date(), EventBatchDeleteRequest, get_audit_trail(), get_event_clip(), get_events_summary() (+30 more)
+Cohesion: 0.11
+Nodes (30): clear_audit_trail(), delete_event(), delete_events_batch(), delete_events_by_date(), EventBatchDeleteRequest, get_audit_trail(), get_event_clip(), get_events_summary() (+22 more)
 
 ### Community 1 - "useSentinelaStore"
 Cohesion: 0.07
@@ -142,20 +142,20 @@ Cohesion: 0.08
 Nodes (25): BootReceiver, Context, Intent, SentinelaWebSocket, android, Context, Intent, SslErrorHandler (+17 more)
 
 ### Community 4 - "sentinela-pro-tv/src/App.tsx"
-Cohesion: 0.09
-Nodes (36): App(), KotlinCodeModal(), KotlinCodeModalProps, TvCameraCarousel(), TvCameraCarouselProps, TvHeroSpotlight(), TvHeroSpotlightProps, TvLogsView() (+28 more)
+Cohesion: 0.07
+Nodes (37): App(), KotlinCodeModal(), KotlinCodeModalProps, TvCameraCarousel(), TvCameraCarouselProps, TvHeroSpotlight(), TvHeroSpotlightProps, TvLogsView() (+29 more)
 
 ### Community 5 - "cameras.py"
-Cohesion: 0.10
-Nodes (48): add_camera(), CameraCreate, CameraUpdate, delete_camera(), FrigateZonesPayload, get_camera_diagnostics(), get_camera_stream_info(), get_frigate_camera_zones() (+40 more)
+Cohesion: 0.09
+Nodes (47): add_camera(), CameraCreate, CameraUpdate, delete_camera(), FrigateZonesPayload, get_camera_diagnostics(), get_camera_stream_info(), get_frigate_camera_zones() (+39 more)
 
 ### Community 6 - "SentinelaRepository"
 Cohesion: 0.10
 Nodes (12): DevicePolicy, Context, java, X509TrustManager, RemoteDeviceItem, SentinelaRepository, X509TrustManager, ServiceStatus (+4 more)
 
 ### Community 7 - "settings.py"
-Cohesion: 0.10
-Nodes (44): _cached_dir_size(), clean_server_storage(), _dir_size_bytes(), dispatch_backup_to_telegram(), DNDConfigUpdate, download_database_file(), export_backup(), get_dnd_settings() (+36 more)
+Cohesion: 0.07
+Nodes (53): _cached_dir_size(), clean_server_storage(), _dir_size_bytes(), dispatch_backup_to_telegram(), DNDConfigUpdate, download_database_file(), export_backup(), get_dnd_settings() (+45 more)
 
 ### Community 8 - "sentinela-pro-mobile-nvr/src/App.tsx"
 Cohesion: 0.11
@@ -255,7 +255,7 @@ Nodes (11): 1. Visão Geral da Arquitetura, 2. Mapa de Serviços e Portas de Red
 
 ### Community 32 - "🛡️ Sentinela Frigate Pro"
 Cohesion: 0.17
-Nodes (11): 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix), 📱 2. Android Smartphone (Layout Vertical Estilo YouTube), 📱 Aplicativos Nativos Android (`v001.000.000.087`), 🖥️ Como Atualizar o Servidor Ubuntu, 🚀 Como Compilar os APKs no GitHub Codespaces, 📥 Download dos APKs Oficiais (`v001.000.000.087`), 📄 Licença, 🗺️ Mapa de Portas e Serviços (+3 more)
+Nodes (11): 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix), 📱 2. Android Smartphone (Layout Vertical Estilo YouTube), 📱 Aplicativos Nativos Android (`v001.000.000.089`), 🖥️ Como Atualizar o Servidor Ubuntu, 🚀 Como Compilar os APKs no GitHub Codespaces, 📥 Download dos APKs Oficiais (`v001.000.000.089`), 📄 Licença, 🗺️ Mapa de Portas e Serviços (+3 more)
 
 ### Community 33 - "dependencies"
 Cohesion: 0.04
@@ -280,6 +280,10 @@ Nodes (9): PipDuration, D_10S, D_15S, D_20S, D_30S, D_45S, D_5S, D_60S (+1 more)
 ### Community 38 - "MainActivity.kt"
 Cohesion: 0.39
 Nodes (4): MainActivity, TvNetflixScreen(), Bundle, ComponentActivity
+
+### Community 39 - "gradlew"
+Cohesion: 0.83
+Nodes (3): gradlew script, die(), warn()
 
 ### Community 40 - "onp-spec-driven — a especificação que continua verdadeira (Antigravity)"
 Cohesion: 0.20
@@ -368,17 +372,17 @@ Nodes (5): Constituição — princípios que a máquina verifica, Níveis de ob
 ## Knowledge Gaps
 - **370 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `name`, `private`, `version` (+365 more)
   These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 590 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `update_device_permissions()` connect `devices.py` to `SentinelaRepository`?**
-  _High betweenness centrality (0.063) - this node is a cross-community bridge._
 - **Why does `update_device_status()` connect `devices.py` to `SentinelaRepository`?**
-  _High betweenness centrality (0.063) - this node is a cross-community bridge._
+  _High betweenness centrality (0.060) - this node is a cross-community bridge._
+- **Why does `update_device_permissions()` connect `devices.py` to `SentinelaRepository`?**
+  _High betweenness centrality (0.057) - this node is a cross-community bridge._
 - **Why does `SentinelaRepository` connect `SentinelaRepository` to `Models.kt`, `SmartphoneYouTubeScreen.kt`, `MainActivity.kt`?**
-  _High betweenness centrality (0.040) - this node is a cross-community bridge._
+  _High betweenness centrality (0.038) - this node is a cross-community bridge._
 - **Are the 19 inferred relationships involving `Camera` (e.g. with `add_camera()` and `delete_camera()`) actually correct?**
   _`Camera` has 19 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 20 inferred relationships involving `PairedDevice` (e.g. with `check_devices_health()` and `cleanup_all_devices()`) actually correct?**
@@ -386,4 +390,4 @@ _Questions this graph is uniquely positioned to answer:_
 - **What connects `$schema`, `.opencode/plugins/graphify.js`, `name` to the rest of the system?**
   _370 weakly-connected nodes found - possible documentation gaps or missing edges._
 - **Should `events.py` be split into smaller, more focused modules?**
-  _Cohesion score 0.07058001397624039 - nodes in this community are weakly interconnected._
+  _Cohesion score 0.10984848484848485 - nodes in this community are weakly interconnected._

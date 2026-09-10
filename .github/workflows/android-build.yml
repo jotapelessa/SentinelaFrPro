@@ -62,7 +62,49 @@ jobs:
           tail -n 150 gradle_build.log
           exit 1
         fi
+        
+        echo "============================================================"
+        echo "📂 Listando todos os arquivos gerados pelo Gradle:"
+        echo "============================================================"
+        find . -name "*.apk" -print
+        
+        mkdir -p ../release-apks
+        VER="${{ steps.get_version.outputs.version }}"
+        
+        TV_APK=$(find app/build/outputs/apk/tv -name "*.apk" 2>/dev/null | head -n 1)
+        if [ -z "$TV_APK" ]; then
+          TV_APK=$(find . -name "*tv*.apk" 2>/dev/null | head -n 1)
+        fi
+        
+        PHONE_APK=$(find app/build/outputs/apk/smartphone -name "*.apk" 2>/dev/null | head -n 1)
+        if [ -z "$PHONE_APK" ]; then
+          PHONE_APK=$(find . -name "*smartphone*.apk" 2>/dev/null | head -n 1)
+        fi
+        
+        echo "TV APK detectado: $TV_APK"
+        echo "Smartphone APK detectado: $PHONE_APK"
+        
+        if [ -n "$TV_APK" ] && [ -f "$TV_APK" ]; then
+          cp -fv "$TV_APK" "../release-apks/sentinela-android-tv-v${VER}.apk"
+          cp -fv "$TV_APK" "../release-apks/sentinela-android-tv-latest.apk"
+        else
+          echo "❌ ERRO CRÍTICO: APK de TV não encontrado após build!"
+          exit 1
+        fi
+        
+        if [ -n "$PHONE_APK" ] && [ -f "$PHONE_APK" ]; then
+          cp -fv "$PHONE_APK" "../release-apks/sentinela-android-smartphone-v${VER}.apk"
+          cp -fv "$PHONE_APK" "../release-apks/sentinela-android-smartphone-latest.apk"
+        else
+          echo "❌ ERRO CRÍTICO: APK de Smartphone não encontrado após build!"
+          exit 1
+        fi
+        
         cd ..
+        echo "============================================================"
+        echo "📦 Conteúdo validado em release-apks/:"
+        echo "============================================================"
+        ls -lh release-apks/
 
     - name: Upload Build Log on Failure
       if: failure()
@@ -70,54 +112,6 @@ jobs:
       with:
         name: gradle-build-failure-log
         path: android/gradle_build.log
-
-    - name: Prepare Release Artifacts
-      if: success()
-      run: |
-        mkdir -p release-apks
-        VER="${{ steps.get_version.outputs.version }}"
-        echo "🔍 Procurando APKs gerados em todo o workspace..."
-        find . -name "*.apk" -ls
-
-        TV_SRC=$(find android/app/build/outputs/apk/tv -name "*.apk" 2>/dev/null | head -n 1)
-        if [ -z "$TV_SRC" ]; then
-          TV_SRC=$(find . -path "*/tv/*" -name "*.apk" 2>/dev/null | head -n 1)
-        fi
-        if [ -z "$TV_SRC" ]; then
-          TV_SRC=$(find . -name "*tv*.apk" ! -path "./release-apks/*" 2>/dev/null | head -n 1)
-        fi
-
-        PHONE_SRC=$(find android/app/build/outputs/apk/smartphone -name "*.apk" 2>/dev/null | head -n 1)
-        if [ -z "$PHONE_SRC" ]; then
-          PHONE_SRC=$(find . -path "*/smartphone/*" -name "*.apk" 2>/dev/null | head -n 1)
-        fi
-        if [ -z "$PHONE_SRC" ]; then
-          PHONE_SRC=$(find . -name "*smartphone*.apk" ! -path "./release-apks/*" 2>/dev/null | head -n 1)
-        fi
-
-        echo "TV APK Origem: $TV_SRC"
-        echo "Smartphone APK Origem: $PHONE_SRC"
-
-        if [ -n "$TV_SRC" ] && [ -f "$TV_SRC" ]; then
-          cp -f "$TV_SRC" "release-apks/sentinela-android-tv-v${VER}.apk"
-          cp -f "$TV_SRC" "release-apks/sentinela-android-tv-latest.apk"
-          echo "✅ TV APK copiado com sucesso"
-        else
-          echo "❌ ERRO: TV APK não encontrado!"
-          exit 1
-        fi
-
-        if [ -n "$PHONE_SRC" ] && [ -f "$PHONE_SRC" ]; then
-          cp -f "$PHONE_SRC" "release-apks/sentinela-android-smartphone-v${VER}.apk"
-          cp -f "$PHONE_SRC" "release-apks/sentinela-android-smartphone-latest.apk"
-          echo "✅ Smartphone APK copiado com sucesso"
-        else
-          echo "❌ ERRO: Smartphone APK não encontrado!"
-          exit 1
-        fi
-
-        echo "=== Conteúdo da pasta release-apks/ ==="
-        ls -lh release-apks/
 
     - name: Upload Artifacts to Run Summary
       if: success()

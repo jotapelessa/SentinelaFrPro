@@ -294,10 +294,10 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1788554329.7946227,
-    "seen": 1788641395.5382662,
-    "ast_hash": "e9d34bdac88c924c8c75d0c03d0b5fdb",
-    "semantic_hash": "e9d34bdac88c924c8c75d0c03d0b5fdb"
+    "mtime": 1788990174.4144206,
+    "seen": 1788990183.662543,
+    "ast_hash": "95969747a5c2aa836ae9892d4312cb4b",
+    "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
     "mtime": 1788442513.814591,
@@ -492,10 +492,10 @@
     "semantic_hash": "07b66f630ab450787e401f7e866ad557"
   },
   "compile_apk.sh": {
-    "mtime": 1788616124.8275895,
-    "seen": 1788641395.5382779,
-    "ast_hash": "17e6263bbdd232a87b6c25e9df54fa04",
-    "semantic_hash": "17e6263bbdd232a87b6c25e9df54fa04"
+    "mtime": 1788990375.8195179,
+    "seen": 1788990444.1328142,
+    "ast_hash": "61af35f44f35a17593361432900c18bb",
+    "semantic_hash": ""
   },
   "frontend/next-env.d.ts": {
     "mtime": 1788122882.3091965,
@@ -714,9 +714,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/android-build.yml": {
-    "mtime": 1788474140.7546835,
-    "seen": 1788641631.658387,
-    "ast_hash": "5b374e34c160f254b737e4ca8476845d",
+    "mtime": 1788995057.5386236,
+    "seen": 1788995092.413919,
+    "ast_hash": "14cfb3a38950dcb95743ba627a5f4f03",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1788635532.0445652,
-    "seen": 1788641631.658388,
-    "ast_hash": "2c9f681f72e7c226f833d9537109295e",
+    "mtime": 1788990419.0744457,
+    "seen": 1788990444.132846,
+    "ast_hash": "abee72c2549a8ffc323c5b6f83e87199",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -990,9 +990,15 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1788720428.2762291,
-    "seen": 1788720439.639269,
-    "ast_hash": "c27a917df9e3cdfb16c02c4dea4d0ebb",
+    "mtime": 1788990435.2704527,
+    "seen": 1788990444.132847,
+    "ast_hash": "2912677c05f454d6e6ed78e757ab338e",
+    "semantic_hash": ""
+  },
+  "android/gradlew": {
+    "mtime": 1788995028.4312508,
+    "seen": 1788995092.413881,
+    "ast_hash": "a43be8432bac3ffd05b3769aa42fe996",
     "semantic_hash": ""
   }
 }
