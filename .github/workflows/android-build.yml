@@ -54,64 +54,32 @@ jobs:
         cd android
         yes | sdkmanager --licenses || true
         chmod +x gradlew
-        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon 2>&1 | tee gradle_build.log || BUILD_FAILED=1
-        if [ "${BUILD_FAILED:-0}" = "1" ]; then
-          echo "============================================================"
-          echo "❌ FALHA NA COMPILAÇÃO GRADLE — ÚLTIMAS 150 LINHAS DO LOG:"
-          echo "============================================================"
-          tail -n 150 gradle_build.log
-          exit 1
-        fi
+        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --stacktrace --no-daemon
         
         echo "============================================================"
-        echo "📂 Listando todos os arquivos gerados pelo Gradle:"
+        echo "📂 Listando todos os arquivos .apk encontrados:"
         echo "============================================================"
-        find . -name "*.apk" -print
+        find . -name "*.apk"
         
         mkdir -p ../release-apks
         VER="${{ steps.get_version.outputs.version }}"
         
-        TV_APK=$(find app/build/outputs/apk/tv -name "*.apk" 2>/dev/null | head -n 1)
-        if [ -z "$TV_APK" ]; then
-          TV_APK=$(find . -name "*tv*.apk" 2>/dev/null | head -n 1)
-        fi
+        TV_APK=$(find app/build/outputs/apk/tv -name "*.apk" | head -n 1)
+        PHONE_APK=$(find app/build/outputs/apk/smartphone -name "*.apk" | head -n 1)
         
-        PHONE_APK=$(find app/build/outputs/apk/smartphone -name "*.apk" 2>/dev/null | head -n 1)
-        if [ -z "$PHONE_APK" ]; then
-          PHONE_APK=$(find . -name "*smartphone*.apk" 2>/dev/null | head -n 1)
-        fi
+        echo "TV APK detectado: '$TV_APK'"
+        echo "Smartphone APK detectado: '$PHONE_APK'"
         
-        echo "TV APK detectado: $TV_APK"
-        echo "Smartphone APK detectado: $PHONE_APK"
-        
-        if [ -n "$TV_APK" ] && [ -f "$TV_APK" ]; then
-          cp -fv "$TV_APK" "../release-apks/sentinela-android-tv-v${VER}.apk"
-          cp -fv "$TV_APK" "../release-apks/sentinela-android-tv-latest.apk"
-        else
-          echo "❌ ERRO CRÍTICO: APK de TV não encontrado após build!"
-          exit 1
-        fi
-        
-        if [ -n "$PHONE_APK" ] && [ -f "$PHONE_APK" ]; then
-          cp -fv "$PHONE_APK" "../release-apks/sentinela-android-smartphone-v${VER}.apk"
-          cp -fv "$PHONE_APK" "../release-apks/sentinela-android-smartphone-latest.apk"
-        else
-          echo "❌ ERRO CRÍTICO: APK de Smartphone não encontrado após build!"
-          exit 1
-        fi
+        cp -v "$TV_APK" "../release-apks/sentinela-android-tv-v${VER}.apk"
+        cp -v "$TV_APK" "../release-apks/sentinela-android-tv-latest.apk"
+        cp -v "$PHONE_APK" "../release-apks/sentinela-android-smartphone-v${VER}.apk"
+        cp -v "$PHONE_APK" "../release-apks/sentinela-android-smartphone-latest.apk"
         
         cd ..
         echo "============================================================"
-        echo "📦 Conteúdo validado em release-apks/:"
+        echo "📦 Conteúdo final de release-apks/:"
         echo "============================================================"
         ls -lh release-apks/
-
-    - name: Upload Build Log on Failure
-      if: failure()
-      uses: actions/upload-artifact@v4
-      with:
-        name: gradle-build-failure-log
-        path: android/gradle_build.log
 
     - name: Upload Artifacts to Run Summary
       if: success()
