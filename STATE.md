@@ -102,11 +102,14 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
   - **Fix #1 (Alta)**: `coil.Coil.imageLoader(this)` dentro de Service não resolvia o singleton do `SentinelaApplication` (que possui OkHttp com TrustAll para certificados self-signed). Corrigido para `applicationContext` em todos os 3 pontos de uso (carga inicial, refresh loop e reuso de overlay).
   - **Fix #2 (Média)**: Quando `overlayView` já existia (2º+ alerta PiP), a `pipImageView` não era recarregada no branch `else`, deixando frame preto ou desatualizado. Adicionado bloco Coil de reload para toda reutilização do overlay.
   - **Fix #3 (Média)**: O `WebView` iniciava visível e cobria a `ImageView` antes do Coil terminar de carregar, tornando o snapshot invisível. Corrigido iniciando o WebView com `visibility = View.INVISIBLE` e tornando-o visível apenas em `onPageFinished`.
-- **[2026-09-10] Fix Compilação APK no GitHub Actions (`v001.000.000.090`)**:
-  - `gradle-wrapper.properties`: alterada distribuição de `-all` para `-bin` para download e extração rápidos no runner do CI.
-  - `version.properties`: bump de `BUILD=089` para `BUILD=090` (`001.000.000.090`), liberando criação limpa de nova release sem colisão de tag existente no GitHub.
-  - `.github/workflows/android-build.yml`: corrigida detecção de sucesso/falha do build sem pipes frágeis e adicionada busca flexível de APKs (`tv` e `smartphone`) na pasta `android/`.
-  - `README.md`: badges e URLs atualizados para a nova versão `v001.000.000.090`.
+- **[2026-09-10] Fix Compilação APK no GitHub Actions & Release Automática (`v001.000.000.091`)**:
+  - `gradle-wrapper.properties`: alterada distribuição de `-all` para `gradle-8.5-bin.zip` para download e extração rápidos e sem estouro de memória no runner do CI.
+  - `version.properties`: bump para `001.000.000.091` (`BUILD=091`), garantindo publicação limpa de nova release.
+  - `.github/workflows/android-build.yml`:
+    - Compilação via Gradle das duas variantes (`:app:assembleTvDebug` e `:app:assembleSmartphoneDebug`) com JDK 17 e Gradle 8.5.
+    - Cópia e empacotamento determinísticos e imediatos dos binários (`sentinela-android-tv-v*.apk`, `sentinela-android-tv-latest.apk`, `sentinela-android-smartphone-v*.apk` e `sentinela-android-smartphone-latest.apk`) para a pasta `release-apks/`.
+    - Upload dos artefatos com `overwrite: true` e `fail_on_unmatched_files: true` no GitHub Releases.
+  - `README.md`: badges e links de download atualizados para a versão oficial `v001.000.000.091`.
 
 ---
 
