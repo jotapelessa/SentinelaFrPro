@@ -28,7 +28,8 @@ jobs:
       uses: gradle/actions/setup-gradle@v3
       with:
         gradle-version: '8.5'
-        
+        cache-disabled: true
+
     - name: Read & Format Version
       id: get_version
       run: |
@@ -50,20 +51,7 @@ jobs:
       working-directory: android
       run: |
         chmod +x gradlew
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --stacktrace > build.log 2>&1 || {
-          BUILD_CODE=$?
-          echo "==================== ULTIMAS 100 LINHAS DO LOG DE ERRO ===================="
-          tail -n 100 build.log
-          echo "=========================================================================="
-          exit $BUILD_CODE
-        }
-
-    - name: Upload Gradle Build Log
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: gradle-build-log
-        path: android/build.log
+        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --info
 
     - name: Prepare Release Artifacts
       run: |
