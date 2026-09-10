@@ -47,59 +47,28 @@ jobs:
         echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
         echo "📦 Compilando Versão: ${FORMATTED_VERSION} (Tag: ${TAG_NAME})"
 
-    - name: Build Android TV and Smartphone APKs
-      working-directory: android
+    - name: Build and Package APKs
       run: |
+        cd android
         chmod +x gradlew
-        if ! ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon 2>&1 | tee /tmp/gradle.log; then
-          echo "### ❌ Gradle Build Failed" >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          tail -n 80 /tmp/gradle.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          exit 1
-        fi
-
-    - name: Prepare Release Artifacts
-      run: |
+        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon
+        
+        cd "$GITHUB_WORKSPACE"
         mkdir -p release-apks
         VER="${{ steps.get_version.outputs.version }}"
         
-        echo "🔍 Procurando APKs gerados pelo Gradle..."
-        find . -name "*.apk" -ls
+        echo "🔍 Localizando APKs compilados..."
+        TV_APK="android/app/build/outputs/apk/tv/debug/app-tv-debug.apk"
+        PHONE_APK="android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk"
         
-        # Procura TV APK com fallbacks
-        TV_APK=""
-        for path in \
-          "android/app/build/outputs/apk/tv/debug/app-tv-debug.apk" \
-          "app/build/outputs/apk/tv/debug/app-tv-debug.apk" \
-          $(find . -type f -name "*tv*.apk" 2>/dev/null); do
-          if [ -f "$path" ]; then
-            TV_APK="$path"
-            break
-          fi
-        done
-        
-        # Procura Smartphone APK com fallbacks
-        PHONE_APK=""
-        for path in \
-          "android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk" \
-          "app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk" \
-          $(find . -type f -name "*smartphone*.apk" 2>/dev/null); do
-          if [ -f "$path" ]; then
-            PHONE_APK="$path"
-            break
-          fi
-        done
-        
-        if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
-          echo "❌ Erro: Não foi possível localizar os APKs gerados!"
-          echo "TV_APK='$TV_APK'"
-          echo "PHONE_APK='$PHONE_APK'"
+        if [ ! -f "$TV_APK" ] || [ ! -f "$PHONE_APK" ]; then
+          echo "❌ Erro: APKs não encontrados nos caminhos esperados!"
+          find android/app/build/outputs/ -name "*.apk" || echo "Nenhum APK gerado"
           exit 1
         fi
         
-        echo "✅ TV APK localizado: $TV_APK"
-        echo "✅ Smartphone APK localizado: $PHONE_APK"
+        echo "✅ TV: $TV_APK"
+        echo "✅ Smartphone: $PHONE_APK"
         
         cp "$TV_APK" "release-apks/sentinela-android-tv-v${VER}.apk"
         cp "$TV_APK" "release-apks/sentinela-android-tv-latest.apk"
@@ -107,7 +76,7 @@ jobs:
         cp "$PHONE_APK" "release-apks/sentinela-android-smartphone-latest.apk"
         
         echo "============================================================"
-        echo "📦 Artefatos prontos para publicação:"
+        echo "📦 Artefatos prontos em release-apks/:"
         echo "============================================================"
         ls -lh release-apks/
 
