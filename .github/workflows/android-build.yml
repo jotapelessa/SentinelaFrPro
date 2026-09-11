@@ -61,24 +61,36 @@ jobs:
 
     - name: Prepare Release Artifacts
       run: |
-        set -euo pipefail
         mkdir -p release-apks
         VER="${{ steps.get_version.outputs.version }}"
         
         echo "🔍 Buscando todos os APKs gerados..."
-        find android/app/build/outputs/ -name "*.apk" -type f 2>/dev/null || true
+        find android/app/build/outputs/ -name "*.apk" -type f 2>/dev/null || echo "Nenhum APK encontrado"
         
-        TV_APK=$(find android/app/build/outputs/ -path "*/tv/debug/*.apk" -type f | head -1)
-        PHONE_APK=$(find android/app/build/outputs/ -path "*/smartphone/debug/*.apk" -type f | head -1)
+        TV_APK=""
+        PHONE_APK=""
         
-        echo "📺 TV APK encontrado: ${TV_APK:-NENHUM}"
-        echo "📱 Smartphone APK encontrado: ${PHONE_APK:-NENHUM}"
+        # Tenta caminho direto primeiro
+        if [ -f "android/app/build/outputs/apk/tv/debug/app-tv-debug.apk" ]; then
+          TV_APK="android/app/build/outputs/apk/tv/debug/app-tv-debug.apk"
+        else
+          TV_APK=$(find android/app/build/outputs/ -path "*/tv/debug/*.apk" -type f 2>/dev/null | head -1 || true)
+        fi
+        
+        if [ -f "android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk" ]; then
+          PHONE_APK="android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk"
+        else
+          PHONE_APK=$(find android/app/build/outputs/ -path "*/smartphone/debug/*.apk" -type f 2>/dev/null | head -1 || true)
+        fi
+        
+        echo "📺 TV APK: ${TV_APK:-NENHUM}"
+        echo "📱 Smartphone APK: ${PHONE_APK:-NENHUM}"
         
         if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
           echo "❌ ERRO: APKs não encontrados!"
           echo "### ❌ APKs não encontrados após build bem-sucedido" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
-          find android/ -name "*.apk" -type f 2>/dev/null || echo "Nenhum .apk em android/" >> $GITHUB_STEP_SUMMARY
+          find android/ -name "*.apk" -type f 2>/dev/null >> $GITHUB_STEP_SUMMARY || echo "Nenhum .apk em android/" >> $GITHUB_STEP_SUMMARY
           echo '```' >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
