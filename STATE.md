@@ -131,6 +131,22 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
       - `syncPolicyWithPrefs`: Sempre que a política é carregada ou atualizada via WebSocket, as preferências locais (`pipPositionIndex` e `pipSizeIndex`) são imediatamente sincronizadas, eliminando divergências de fallback.
       - `showPiP`: Resolução com trava de prioridade (`override > policy > preferences`) com gravação atômica em `prefs`.
       - **Guarda Anti-Jitter**: O `windowManager.updateViewLayout` só é invocado se `gravity`, `width` ou `height` forem estritamente diferentes dos parâmetros atuais da janela, prevenindo pulos de tela durante o ciclo de vida do overlay.
+- **[2026-09-11] Overhaul D-Pad TV, Grid de Capturas 16:9 & Correção PiP Tailscale (`v001.000.000.097`)**:
+  - **1. Navegação D-Pad Totalmente Restaurada na TV**:
+    - Fim do foco aprisionado na sidebar: criados `FocusRequester`s dedicados para cada uma das 5 abas (`heroModeFocusRequester`, `heroFullscreenFocusRequester`, `recordingsFirstItemRequester`, `toolsFirstItemRequester`, `logsFirstItemRequester`, `settingsFirstItemRequester`).
+    - Navegação bidirecional fluida: pressionar D-Pad Right na sidebar direciona o foco imediatamente para o primeiro elemento interativo da aba ativa. Pressionar D-Pad Left a partir do primeiro controle de qualquer viewport devolve o foco instantaneamente para a respectiva aba da barra lateral.
+  - **2. Seletor de Modo de Transmissão por D-Pad na Aba Câmeras (Eco / MSE / WebRTC)**:
+    - O botão de modo no Hero Spotlight foi reconstruído como controle D-Pad de primeira classe, com foco explícito, anel visual ciano e captura de eventos `Key.DirectionCenter`/`Key.Enter`.
+    - Alterna ciclicamente entre WebRTC -> MSE -> Eco, salvando atômica e imediatamente a preferência por câmera em `SentinelaPreferences` e atualizando o reprodutor ao vivo.
+  - **3. Grid Uniforme e Redesenho da Aba Capturas**:
+    - Removido o card secundário redundante que quebrava o alinhamento visual.
+    - Implementada grade vertical uniforme de 3 colunas (`GridCells.Fixed(3)`) onde todas as células possuem estritamente a proporção de aspecto 16:9 (`aspectRatio(16f / 9f)`).
+    - Design System aprimorado: badges "FOTO HD", câmera em pílula, data/hora e metadados Frigate IA, com halo de foco D-Pad e abertura direta no modal de visualização em alta definição.
+  - **4, 5 e 6. Resolução Definitiva do PiP Preview no Tailscale (Fim da Tela Preta Externa)**:
+    - **Causa Raiz no go2rtc**: No Tailscale Funnel / HTTPS (porta 443), o go2rtc recebia parâmetros duplicados `&mode=mse&mode=webrtc`, gerando dois `<video-stream>` no template HTML. O candidato WebRTC falhava fora da rede local porque a porta UDP 8555 não é exposta pelo Tailscale Funnel, congelando em tela preta e sobrepondo a imagem do snapshot.
+    - **Solução no `OverlayService.kt`**: Enforçado estritamente `mode=mse,mjpeg` (stream único MSE sobre WebSocket HTTPS 443, 100% confiável no Tailscale de qualquer local como escritório ou casa de praia).
+    - **Normalizador de URLs**: Qualquer IP local (`192.168.`, `10.`, `172.`) ou porta 8088 é reescrito automaticamente para `BASE_URL` (`https://*.ts.net`), garantindo comunicação HTTPS pura no Tailscale.
+    - **Ponte Javascript Nativa (`SentinelaNative`)**: O WebView do vídeo permanece `INVISIBLE` enquanto carrega e só é tornado `VISIBLE` quando o evento `playing`/`loadeddata` do elemento de vídeo é confirmado. Dessa forma, o snapshot HD renderizado pelo Coil permanece visível e nítido desde o primeiro milissegundo, eliminando qualquer tela preta.
 
 ---
 
@@ -142,4 +158,3 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
    - Sempre executar `graphify extract . --code-only` e `graphify export obsidian --dir graphify-out/obsidian-vault` após alterações de código.
 3. **Persistência de Sessão**:
    - Manter este `STATE.md` atualizado em cada início e fim de sessão, preservando decisões técnicas e progresso.
-

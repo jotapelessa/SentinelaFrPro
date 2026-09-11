@@ -275,15 +275,22 @@ class OverlayService : Service() {
         if (trimmed.startsWith("/")) {
             return "$base$trimmed"
         }
-        if (trimmed.contains("frigate:5000") || trimmed.contains("backend:8080") ||
-            trimmed.contains("172.") || trimmed.contains("localhost:8088") ||
-            trimmed.contains("127.0.0.1:8088")) {
+        val isBaseTailscale = base.contains(".ts.net") || base.startsWith("https://")
+        val isInternalOrLan = trimmed.contains("192.168.") || trimmed.contains("10.") ||
+            trimmed.contains("172.") || trimmed.contains("frigate:5000") ||
+            trimmed.contains("backend:8080") || trimmed.contains("localhost:8088") ||
+            trimmed.contains("127.0.0.1:8088")
+
+        if (isInternalOrLan || (isBaseTailscale && !trimmed.contains(".ts.net"))) {
             val path = trimmed.substringAfter("://").substringAfter("/", "")
             return if (path.isNotBlank()) "$base/$path" else "$base$defaultPath"
         }
         if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
             if (trimmed.contains(".ts.net:8088")) {
                 return trimmed.replace(".ts.net:8088", ".ts.net").replace("http://", "https://")
+            }
+            if (trimmed.contains(".ts.net") && trimmed.startsWith("http://")) {
+                return trimmed.replace("http://", "https://")
             }
             return trimmed
         }
@@ -417,7 +424,14 @@ class OverlayService : Service() {
         }
 
         val resolvedCamera = if (camera.isBlank() || camera == "camera_principal") "camera_secundaria" else camera
-        val streamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=mse&mode=webrtc")
+        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=mse,mjpeg")
+        val streamUrl = if (baseStreamUrl.contains("&mode=mse&mode=webrtc")) {
+            baseStreamUrl.replace("&mode=mse&mode=webrtc", "&mode=mse,mjpeg")
+        } else if (baseStreamUrl.contains("&mode=webrtc&mode=mse")) {
+            baseStreamUrl.replace("&mode=webrtc&mode=mse", "&mode=mse,mjpeg")
+        } else {
+            baseStreamUrl
+        }
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}")
 
         try {
@@ -460,8 +474,8 @@ class OverlayService : Service() {
                 loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera)
 
                 // 2. Hardware Video Stream Layer (Warm Reusable Instance)
-                // FIX #3: Start invisible so the snapshot ImageView shows immediately;
-                // WebView becomes visible only after onPageFinished to prevent covering the image.
+                // Starts invisible so the snapshot ImageView shows immediately;
+                // WebView becomes visible ONLY after frames start rendering via JavascriptInterface callback.
                 val wv = WebView(this).apply {
                     visibility = View.INVISIBLE
                     layoutParams = FrameLayout.LayoutParams(
@@ -485,6 +499,17 @@ class OverlayService : Service() {
                         cacheMode = WebSettings.LOAD_NO_CACHE
                     }
 
+                    addJavascriptInterface(object {
+                        @android.webkit.JavascriptInterface
+                        fun onVideoPlaying() {
+                            serviceScope.launch(Dispatchers.Main) {
+                                if (overlayView != null) {
+                                    pipWebView?.visibility = View.VISIBLE
+                                }
+                            }
+                        }
+                    }, "SentinelaNative")
+
                     isVerticalScrollBarEnabled = false
                     isHorizontalScrollBarEnabled = false
                     webChromeClient = object : WebChromeClient() {
@@ -506,6 +531,23 @@ class OverlayService : Service() {
                                     "video-stream, video { width:100% !important; height:100% !important; object-fit:contain !important; background:transparent !important; } " +
                                     "* { outline:none !important; }';" +
                                     "document.head.appendChild(style);" +
+                                    "var notifyPlaying = function() { " +
+                                    "  if (window.SentinelaNative && window.SentinelaNative.onVideoPlaying) { " +
+                                    "    window.SentinelaNative.onVideoPlaying(); " +
+                                    "  } " +
+                                    "};" +
+                                    "var checkVideo = function() {" +
+                                    "  var v = document.querySelector('video');" +
+                                    "  if (v) {" +
+                                    "    v.addEventListener('playing', notifyPlaying);" +
+                                    "    v.addEventListener('loadeddata', notifyPlaying);" +
+                                    "    v.addEventListener('timeupdate', function() { if (v.currentTime > 0.05) notifyPlaying(); });" +
+                                    "    if (v.currentTime > 0) notifyPlaying();" +
+                                    "    if (v.paused) { v.play().catch(function(){}); }" +
+                                    "  }" +
+                                    "};" +
+                                    "checkVideo();" +
+                                    "setInterval(checkVideo, 400);" +
                                     "document.querySelectorAll('video-stream').forEach(function(el) { " +
                                     "  el.background = true; " +
                                     "  el.visibilityCheck = false; " +
@@ -513,9 +555,6 @@ class OverlayService : Service() {
                                     "});" +
                                     "})();"
                             view?.evaluateJavascript(js, null)
-                            // FIX #3: Reveal WebView only after stream is ready, so the
-                            // snapshot ImageView is visible during the loading phase.
-                            view?.visibility = View.VISIBLE
                         }
                     }
                 }

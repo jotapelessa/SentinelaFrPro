@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1789106069.771018,
-    "seen": 1789106225.9949539,
-    "ast_hash": "49e2dd966ba9468893cdf4ae2f9af15e",
+    "mtime": 1789121520.2875805,
+    "seen": 1789121928.676468,
+    "ast_hash": "02d4f983fee1334aaade7225df593c7a",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
-    "mtime": 1789106156.7753608,
-    "seen": 1789106225.994955,
-    "ast_hash": "c1124661d9f30067b4e0bcfc50e4df31",
+    "mtime": 1789121844.2777107,
+    "seen": 1789121928.676469,
+    "ast_hash": "db25d616e4d81901f4da33145cba5eac",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
@@ -462,9 +462,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
-    "mtime": 1789105956.8091006,
-    "seen": 1789106225.9949691,
-    "ast_hash": "f8d42f7684faae32fe751db90fbfdf5c",
+    "mtime": 1789107900.6419077,
+    "seen": 1789108018.3621812,
+    "ast_hash": "1fa1a43597eeb6745884c240b03716aa",
     "semantic_hash": ""
   },
   "backend/app/services/scanner_service.py": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789105519.2300158,
-    "seen": 1789105527.948888,
-    "ast_hash": "06f3a2b5ee67bd71da779161a1746f93",
+    "mtime": 1789121922.2628274,
+    "seen": 1789121928.676518,
+    "ast_hash": "645de58879ef2bfe09afd5cf884ea769",
     "semantic_hash": ""
   },
   "android/gradlew": {
