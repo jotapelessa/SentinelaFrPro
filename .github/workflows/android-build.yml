@@ -52,7 +52,7 @@ jobs:
       run: |
         set +e
         chmod +x gradlew
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon 2>&1
+        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon > /tmp/gradle.log 2>&1
         GRADLE_EXIT=$?
         set -e
         
@@ -61,6 +61,9 @@ jobs:
         if [ $GRADLE_EXIT -ne 0 ]; then
           echo "❌ Gradle falhou com exit code $GRADLE_EXIT"
           echo "❌ Gradle falhou com exit code $GRADLE_EXIT" >> $GITHUB_STEP_SUMMARY
+          echo '```text' >> $GITHUB_STEP_SUMMARY
+          tail -n 200 /tmp/gradle.log >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
           exit 1
         fi
         
