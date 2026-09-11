@@ -440,7 +440,7 @@ class OverlayService : Service() {
             10
         }
 
-        val resolvedCamera = if (camera.isBlank() || camera == "camera_principal") "camera_secundaria" else camera
+        val resolvedCamera = if (camera.isBlank()) "camera_principal" else camera
         val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=webrtc,mse,mjpeg")
         val streamUrl = baseStreamUrl // webrtc is preferred to avoid huge buffer delays over Tailscale
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}")

@@ -800,6 +800,39 @@ object SentinelaRepository {
         }
     }
 
+    /**
+     * Pushes the TV's local PiP settings back to the server for cross-device synchronization.
+     * Called whenever the user changes duration, size, or position in the TV settings screen.
+     */
+    suspend fun pushLocalSettingsToServer(prefs: SentinelaPreferences): Boolean = withContext(Dispatchers.IO) {
+        try {
+            val deviceId = prefs.deviceIdentifier
+            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/by-identifier/$deviceId/settings")
+            val conn = openConnection(url).apply {
+                connectTimeout = 5000
+                readTimeout = 5000
+                requestMethod = "PUT"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val payload = JSONObject().apply {
+                put("pip_duration_seconds", prefs.currentPipDuration.seconds)
+                put("pip_default_size", prefs.currentPipSize.name.lowercase())
+                put("pip_position", prefs.currentPipPosition.name)
+                put("pip_player_mode", prefs.pipPlayerMode)
+            }
+            conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
+            val code = conn.responseCode
+            conn.disconnect()
+            Log.d(TAG, "pushLocalSettingsToServer: $code (dur=${prefs.currentPipDuration.seconds}s, size=${prefs.currentPipSize.name}, pos=${prefs.currentPipPosition.name})")
+            return@withContext (code in 200..299)
+        } catch (e: Exception) {
+            Log.w(TAG, "pushLocalSettingsToServer error: ${e.message}")
+            return@withContext false
+        }
+    }
+
     suspend fun pingServer(
         context: Context,
         deviceType: String = "android_tv",

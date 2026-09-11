@@ -1970,6 +1970,7 @@ fun TvSettingsViewport(
     var posIndex by remember { mutableIntStateOf(prefs.pipPositionIndex) }
     var durIndex by remember { mutableIntStateOf(prefs.pipDurationIndex) }
     var playerMode by remember { mutableStateOf(prefs.pipPlayerMode) }
+    val settingsScope = rememberCoroutineScope()
 
     var hasOverlayPerm by remember {
         mutableStateOf(
@@ -2103,6 +2104,7 @@ fun TvSettingsViewport(
                                     sizeIndex = size.ordinal
                                     prefs.pipSizeIndex = size.ordinal
                                     Toast.makeText(context, "Tamanho PiP: ${size.label}", Toast.LENGTH_SHORT).show()
+                                    settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                 }
                         ) {
                             Text(
@@ -2161,6 +2163,7 @@ fun TvSettingsViewport(
                                     posIndex = pos.ordinal
                                     prefs.pipPositionIndex = pos.ordinal
                                     Toast.makeText(context, "Posição PiP: ${pos.label}", Toast.LENGTH_SHORT).show()
+                                    settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                 }
                         ) {
                             Text(
@@ -2219,6 +2222,7 @@ fun TvSettingsViewport(
                                     durIndex = dur.ordinal
                                     prefs.pipDurationIndex = dur.ordinal
                                     Toast.makeText(context, "Duração PiP: ${dur.label}", Toast.LENGTH_SHORT).show()
+                                    settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                 }
                         ) {
                             Text(

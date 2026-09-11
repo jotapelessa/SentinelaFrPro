@@ -81,6 +81,12 @@ class DevicePermissionsUpdate(BaseModel):
     pip_duration_seconds: int = 10
     pip_position: Optional[str] = "TOP_RIGHT"
 
+class DeviceSettingsPush(BaseModel):
+    pip_duration_seconds: Optional[int] = None
+    pip_default_size: Optional[str] = None
+    pip_position: Optional[str] = None
+    pip_player_mode: Optional[str] = None
+
 class RestartContainerRequest(BaseModel):
     service_name: str = "sentinela_frigate" # all, sentinela_frigate, sentinela_backend, sentinela_frontend, sentinela_nginx, sentinela_mosquitto
 
@@ -538,6 +544,55 @@ async def update_device_permissions(
         "allow_reboot_server": dev.allow_reboot_server,
         "pip_default_size": dev.pip_default_size,
         "pip_duration_seconds": dev.pip_duration_seconds,
+        "pip_position": dev.pip_position or "TOP_RIGHT"
+    }
+
+@router.put("/by-identifier/{device_identifier}/settings")
+async def push_device_settings(
+    device_identifier: str,
+    body: DeviceSettingsPush,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Allows a TV app to push its local PiP settings back to the server for cross-device sync."""
+    stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
+    res = await db.execute(stmt)
+    dev = res.scalar_one_or_none()
+    if not dev:
+        raise HTTPException(status_code=404, detail="Dispositivo não encontrado")
+
+    changed = False
+    if body.pip_duration_seconds is not None and body.pip_duration_seconds > 0:
+        dev.pip_duration_seconds = body.pip_duration_seconds
+        changed = True
+    if body.pip_default_size is not None and body.pip_default_size.strip():
+        dev.pip_default_size = body.pip_default_size.strip()
+        changed = True
+    if body.pip_position is not None and body.pip_position.strip():
+        dev.pip_position = body.pip_position.strip().upper()
+        changed = True
+
+    if changed:
+        await db.commit()
+        try:
+            from app.api.ws import ws_manager
+            await ws_manager.broadcast_json({
+                "type": "DEVICE_CONFIG_UPDATED",
+                "device_identifier": dev.device_identifier,
+                "friendly_name": dev.friendly_name,
+                "permission_status": dev.permission_status,
+                "pip_default_size": dev.pip_default_size,
+                "pip_duration_seconds": dev.pip_duration_seconds,
+                "pip_position": dev.pip_position or "TOP_RIGHT",
+                "allow_pip_alerts": dev.allow_pip_alerts
+            })
+        except Exception as e:
+            logger.debug(f"Failed to broadcast settings push: {e}")
+
+    return {
+        "status": "updated" if changed else "no_change",
+        "pip_duration_seconds": dev.pip_duration_seconds,
+        "pip_default_size": dev.pip_default_size,
         "pip_position": dev.pip_position or "TOP_RIGHT"
     }
 
