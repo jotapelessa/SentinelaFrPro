@@ -444,7 +444,11 @@ fun PhoneCameraStreamCard(
     var scale by remember { mutableFloatStateOf(1.0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
-    var streamMode by remember { mutableStateOf("webrtc") }
+    val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
+    var streamMode by remember(camera.name) {
+        mutableStateOf(prefs.getCameraDefaultStreamMode(camera.name))
+    }
 
     val animatedBorderColor by animateColorAsState(
         targetValue = if (scale > 1.05f) SentinelaColors.BorderCyan else SentinelaColors.BorderStandard,
@@ -525,7 +529,11 @@ fun PhoneCameraStreamCard(
                         Surface(
                             shape = SentinelaShapes.PillBadge,
                             color = if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BadgeBackground,
-                            modifier = Modifier.clickable { streamMode = mKey }
+                            modifier = Modifier.clickable {
+                                streamMode = mKey
+                                prefs.setCameraDefaultStreamMode(camera.name, mKey)
+                                Toast.makeText(context, "${camera.friendlyName}: Modo padrão ${mLabel.substringBefore(' ')} salvo!", Toast.LENGTH_SHORT).show()
+                            }
                         ) {
                             Text(
                                 text = mLabel,
@@ -589,12 +597,27 @@ fun PhoneCameraStreamCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = camera.friendlyName,
-                        style = SentinelaTypography.CardTitle,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        Text(
+                            text = camera.friendlyName,
+                            style = SentinelaTypography.CardTitle,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                        Surface(
+                            shape = SentinelaShapes.PillBadge,
+                            color = SentinelaColors.PrimaryCyan.copy(alpha = 0.15f),
+                            border = BorderStroke(0.5.dp, SentinelaColors.PrimaryCyan.copy(alpha = 0.4f))
+                        ) {
+                            Text(
+                                text = "PADRÃO: ${streamMode.uppercase()}",
+                                color = SentinelaColors.PrimaryCyan,
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
+                            )
+                        }
+                    }
                     Text(
                         text = "Toque para tela cheia • Pinça para zoom 5x",
                         style = SentinelaTypography.Subtext.copy(color = SentinelaColors.TextSecondary)
@@ -646,8 +669,7 @@ fun PhoneCapturesTab() {
     val context = LocalContext.current
     val prefs = remember { SentinelaPreferences(context) }
     var captures by remember { mutableStateOf<List<CaptureEvent>>(emptyList()) }
-    var selectedClip by remember { mutableStateOf<CaptureEvent?>(null) }
-    var filter by remember { mutableStateOf("TODOS") }
+    var selectedPhoto by remember { mutableStateOf<CaptureEvent?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -660,12 +682,9 @@ fun PhoneCapturesTab() {
         }
     }
 
-    val filteredCaptures = remember(captures, filter) {
-        when (filter) {
-            "FOTOS" -> captures.filter { it.label.contains("foto", ignoreCase = true) }
-            "VÍDEOS" -> captures.filter { !it.label.contains("foto", ignoreCase = true) }
-            else -> captures
-        }
+    // Filtragem estrita: apenas fotos/snapshots registrados no NVR
+    val photos = remember(captures) {
+        captures.filter { it.isPhoto || it.hasSnapshot }
     }
 
     Column(
@@ -674,42 +693,29 @@ fun PhoneCapturesTab() {
             .padding(SentinelaDimens.screenPadding),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Header com Filtros
+        // Header com contagem de fotos
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("GALERIA DE EVIDÊNCIAS", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
-                Text("${captures.size} registros no NVR NVMe", style = SentinelaTypography.Subtext)
+                Text("FOTOS & CAPTURAS HD", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
+                Text("${photos.size} fotos registradas no NVR NVMe", style = SentinelaTypography.Subtext)
             }
 
-            // Filtros de Tipo
-            Row(
-                modifier = Modifier
-                    .background(SentinelaColors.CardBackground, SentinelaShapes.SmallButton)
-                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
-                    .padding(3.dp),
-                horizontalArrangement = Arrangement.spacedBy(2.dp)
+            Surface(
+                shape = SentinelaShapes.PillBadge,
+                color = SentinelaColors.MasterGold.copy(alpha = 0.15f),
+                border = BorderStroke(1.dp, SentinelaColors.MasterGold.copy(alpha = 0.4f))
             ) {
-                listOf("TODOS", "FOTOS", "VÍDEOS").forEach { f ->
-                    val isSelected = filter == f
-                    Box(
-                        modifier = Modifier
-                            .clip(SentinelaShapes.SmallButton)
-                            .background(if (isSelected) SentinelaColors.PrimaryCyan else Color.Transparent)
-                            .clickable { filter = f }
-                            .padding(horizontal = 8.dp, vertical = 4.dp)
-                    ) {
-                        Text(
-                            text = f,
-                            color = if (isSelected) Color.Black else SentinelaColors.TextSecondary,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
+                Text(
+                    text = "SOMENTE FOTOS",
+                    color = SentinelaColors.MasterGold,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                )
             }
         }
 
@@ -717,7 +723,7 @@ fun PhoneCapturesTab() {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = SentinelaColors.PrimaryCyan)
             }
-        } else if (filteredCaptures.isEmpty()) {
+        } else if (photos.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -731,8 +737,8 @@ fun PhoneCapturesTab() {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.PhotoLibrary, contentDescription = null, tint = SentinelaColors.TextMuted, modifier = Modifier.size(40.dp))
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Nenhuma captura registrada no filtro $filter.", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    Text("Evidências detectadas por IA aparecem automaticamente aqui.", style = SentinelaTypography.Subtext, color = SentinelaColors.TextMuted)
+                    Text("Nenhuma foto capturada no momento.", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text("Snapshots de eventos com detecção de IA aparecerão aqui.", style = SentinelaTypography.Subtext, color = SentinelaColors.TextMuted)
                 }
             }
         } else {
@@ -742,28 +748,29 @@ fun PhoneCapturesTab() {
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(filteredCaptures) { ev ->
+                items(photos) { ev ->
                     Card(
                         shape = SentinelaShapes.CameraCard,
                         colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
                         modifier = Modifier
                             .fillMaxWidth()
                             .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
-                            .clickable { selectedClip = ev }
+                            .clickable { selectedPhoto = ev }
                     ) {
                         Column {
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(110.dp)
+                                    .height(130.dp)
                                     .background(Color.Black)
                             ) {
+                                val photoUrl = ev.snapshotUrl.ifBlank {
+                                    "${SentinelaConfig.BASE_URL}/api/events/${ev.id}/snapshot.jpg"
+                                }
                                 AsyncImage(
                                     model = ImageRequest.Builder(LocalContext.current)
-                                        .data(ev.snapshotUrl)
-                                        .crossfade(false)
-                                        .memoryCachePolicy(CachePolicy.DISABLED)
-                                        .diskCachePolicy(CachePolicy.DISABLED)
+                                        .data(photoUrl)
+                                        .crossfade(true)
                                         .build(),
                                     contentDescription = ev.label,
                                     contentScale = ContentScale.Crop,
@@ -776,24 +783,12 @@ fun PhoneCapturesTab() {
                                     modifier = Modifier.align(Alignment.TopStart).padding(6.dp)
                                 ) {
                                     Text(
-                                        text = if (ev.isPhoto) "FOTO" else "VÍDEO ${ev.displayDuration}",
-                                        color = if (ev.isPhoto) SentinelaColors.MasterGold else SentinelaColors.PrimaryCyan,
+                                        text = "FOTO HD",
+                                        color = SentinelaColors.MasterGold,
                                         fontSize = 8.sp,
                                         fontWeight = FontWeight.Black,
                                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                     )
-                                }
-
-                                if (!ev.isPhoto) {
-                                    Surface(
-                                        shape = CircleShape,
-                                        color = SentinelaColors.PrimaryCyan,
-                                        modifier = Modifier.align(Alignment.Center).size(30.dp)
-                                    ) {
-                                        Box(contentAlignment = Alignment.Center) {
-                                            Icon(Icons.Default.PlayArrow, contentDescription = null, tint = Color.Black, modifier = Modifier.size(16.dp))
-                                        }
-                                    }
                                 }
                             }
 
@@ -806,9 +801,8 @@ fun PhoneCapturesTab() {
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis
                                 )
-                                val subText = if (ev.isPhoto) "${ev.timestamp} • Foto HD" else "${ev.timestamp} • ${ev.displayDuration} • Score: ${ev.score}%"
                                 Text(
-                                    text = subText,
+                                    text = "${ev.timestamp} • Foto HD",
                                     style = SentinelaTypography.Subtext.copy(fontSize = 9.sp)
                                 )
                             }
@@ -819,8 +813,8 @@ fun PhoneCapturesTab() {
         }
     }
 
-    if (selectedClip != null) {
-        PhoneClipPlayerDialog(event = selectedClip!!, onDismiss = { selectedClip = null })
+    if (selectedPhoto != null) {
+        PhonePhotoViewerDialog(event = selectedPhoto!!, onDismiss = { selectedPhoto = null })
     }
 }
 
@@ -1053,16 +1047,30 @@ fun DeviceConfigEditDialog(
 @Composable
 fun PhoneMasterCentralTab() {
     val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
     val coroutineScope = rememberCoroutineScope()
     var tvs by remember { mutableStateOf<List<com.sentinela.pro.network.RemoteDeviceItem>>(emptyList()) }
     var isBroadcasting by remember { mutableStateOf(false) }
     var editingDevice by remember { mutableStateOf<com.sentinela.pro.network.RemoteDeviceItem?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
+    var storageStatus by remember { mutableStateOf<com.sentinela.pro.data.StorageStatus?>(null) }
+    var isCleaning by remember { mutableStateOf(false) }
+    var cleanMessage by remember { mutableStateOf<String?>(null) }
+    var isCleanConfirmOpen by remember { mutableStateOf(false) }
+    var pendingCleanType by remember { mutableStateOf("snapshots") }
+    var pendingCleanDays by remember { mutableIntStateOf(3) }
+    var pendingCleanLabel by remember { mutableStateOf("") }
+
+    var isRebootConfirmOpen by remember { mutableStateOf(false) }
+    var isRebooting by remember { mutableStateOf(false) }
+    var rebootStatusMessage by remember { mutableStateOf<String?>(null) }
+
     fun refreshDevices() {
         coroutineScope.launch {
             isLoading = true
             tvs = SentinelaRepository.getPairedDevicesList()
+            storageStatus = SentinelaRepository.getStorageStatus()
             isLoading = false
         }
     }
@@ -1111,6 +1119,123 @@ fun PhoneMasterCentralTab() {
                     refreshDevices()
                 }
             }
+        )
+    }
+
+    if (isCleanConfirmOpen) {
+        AlertDialog(
+            onDismissRequest = { isCleanConfirmOpen = false },
+            title = {
+                Text(
+                    text = "Confirmar Limpeza de Disco?",
+                    color = Color.White,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                )
+            },
+            text = {
+                Text(
+                    text = "Deseja realmente $pendingCleanLabel no SSD NVMe do servidor Ubuntu? Esta ação liberará espaço físico e não pode ser desfeita.",
+                    color = SentinelaColors.TextSecondary,
+                    fontSize = 13.sp
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        isCleanConfirmOpen = false
+                        isCleaning = true
+                        cleanMessage = "Executando limpeza..."
+                        coroutineScope.launch {
+                            val res = SentinelaRepository.cleanStorage(pendingCleanType, pendingCleanDays)
+                            cleanMessage = res.second
+                            storageStatus = SentinelaRepository.getStorageStatus()
+                            isCleaning = false
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.DestructiveRed)
+                ) {
+                    Text("Confirmar e Limpar", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { isCleanConfirmOpen = false }) {
+                    Text("Cancelar", color = SentinelaColors.TextSecondary)
+                }
+            },
+            containerColor = SentinelaColors.CardBackgroundElevated,
+            shape = SentinelaShapes.CameraCard
+        )
+    }
+
+    if (isRebootConfirmOpen) {
+        AlertDialog(
+            onDismissRequest = { if (!isRebooting) isRebootConfirmOpen = false },
+            title = {
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Icon(Icons.Default.PowerSettingsNew, contentDescription = null, tint = SentinelaColors.DestructiveRed)
+                    Text(
+                        text = "Reiniciar Servidor Ubuntu?",
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = "Esta ação enviará um comando para reiniciar o sistema operacional Ubuntu Server, todos os contêineres Docker (Frigate, Backend, Frontend, Nginx, Mosquitto) e o túnel Tailscale.",
+                        color = SentinelaColors.TextSecondary,
+                        fontSize = 13.sp
+                    )
+                    Surface(
+                        color = SentinelaColors.DestructiveRed.copy(alpha = 0.15f),
+                        shape = SentinelaShapes.PillBadge,
+                        border = BorderStroke(1.dp, SentinelaColors.DestructiveRed.copy(alpha = 0.4f))
+                    ) {
+                        Text(
+                            text = "⚠️ O sistema ficará temporariamente offline por cerca de 45 a 60 segundos.",
+                            color = Color(0xFFFCA5A5),
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        isRebootConfirmOpen = false
+                        isRebooting = true
+                        rebootStatusMessage = "Comando disparado! Reiniciando Ubuntu, contêineres e Tailscale..."
+                        coroutineScope.launch {
+                            val (ok, msg) = SentinelaRepository.rebootServer(prefs.deviceIdentifier)
+                            rebootStatusMessage = msg
+                            Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                            delay(60000)
+                            isRebooting = false
+                            rebootStatusMessage = null
+                            refreshDevices()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.DestructiveRed),
+                    enabled = !isRebooting
+                ) {
+                    Text("Reiniciar Servidor", color = Color.White, fontWeight = FontWeight.Bold)
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = { isRebootConfirmOpen = false },
+                    enabled = !isRebooting
+                ) {
+                    Text("Cancelar", color = SentinelaColors.TextSecondary)
+                }
+            },
+            containerColor = SentinelaColors.CardBackgroundElevated,
+            shape = SentinelaShapes.CameraCard
         )
     }
 
@@ -1330,6 +1455,246 @@ fun PhoneMasterCentralTab() {
                                 fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
+                        }
+                    }
+                }
+            }
+        }
+
+        // 🔄 FERRAMENTA MASTER: REINICIALIZAR SERVIDOR UBUNTU (HOST + DOCKER + TAILSCALE)
+        item {
+            Text("CONTROLE DE INFRAESTRUTURA UBUNTU", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+            Spacer(modifier = Modifier.height(4.dp))
+            Card(
+                shape = SentinelaShapes.MasterCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, Color(0xFFEF4444).copy(alpha = 0.5f), SentinelaShapes.MasterCard)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(Color(0xFF450A0A), SentinelaShapes.SmallButton),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.PowerSettingsNew, contentDescription = null, tint = SentinelaColors.DestructiveRed, modifier = Modifier.size(20.dp))
+                            }
+                            Column {
+                                Text("REINICIAR SERVIDOR UBUNTU", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                                Text("Host OS + Docker Containers + Tailscale", style = SentinelaTypography.Subtext.copy(fontSize = 9.sp, color = SentinelaColors.MasterGoldLight))
+                            }
+                        }
+
+                        Surface(
+                            shape = SentinelaShapes.PillBadge,
+                            color = Color(0xFF450A0A),
+                            border = BorderStroke(1.dp, SentinelaColors.DestructiveRed.copy(alpha = 0.5f))
+                        ) {
+                            Text("MASTER ROOT", color = Color(0xFFFCA5A5), fontSize = 8.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                        }
+                    }
+
+                    Text(
+                        text = "Reinicia a máquina física Ubuntu do Sentinela Frigate Pro. Todos os contêineres (Frigate NVR, Backend, Frontend, Nginx, Mosquitto) e a VPN Tailscale serão reinicializados automaticamente.",
+                        style = SentinelaTypography.Subtext.copy(color = SentinelaColors.TextSecondary, fontSize = 10.5.sp)
+                    )
+
+                    if (rebootStatusMessage != null) {
+                        Surface(
+                            shape = SentinelaShapes.SmallButton,
+                            color = SentinelaColors.CardBackgroundElevated,
+                            border = BorderStroke(1.dp, SentinelaColors.StandbyAmber),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                CircularProgressIndicator(modifier = Modifier.size(16.dp), color = SentinelaColors.StandbyAmber, strokeWidth = 2.dp)
+                                Text(rebootStatusMessage!!, color = SentinelaColors.StandbyAmber, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+
+                    Button(
+                        onClick = { isRebootConfirmOpen = true },
+                        enabled = !isRebooting,
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.DestructiveRed),
+                        shape = SentinelaShapes.Button,
+                        contentPadding = PaddingValues(vertical = 10.dp)
+                    ) {
+                        Icon(Icons.Default.RestartAlt, contentDescription = null, tint = Color.White, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            if (isRebooting) "Reiniciando Servidor..." else "Reiniciar Servidor Ubuntu Agora",
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
+
+        // 💽 FERRAMENTA MASTER: GERENCIAMENTO & LIMPEZA DE SSD NVME
+        item {
+            Text("ARMAZENAMENTO & EXPURGO DE DISCO NVME", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+            Spacer(modifier = Modifier.height(4.dp))
+            Card(
+                shape = SentinelaShapes.MasterCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, SentinelaColors.BorderGold.copy(alpha = 0.5f), SentinelaShapes.MasterCard)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(36.dp)
+                                    .background(SentinelaColors.MasterGold.copy(alpha = 0.15f), SentinelaShapes.SmallButton),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(Icons.Default.Storage, contentDescription = null, tint = SentinelaColors.MasterGold, modifier = Modifier.size(20.dp))
+                            }
+                            Column {
+                                Text("SSD NVMe (UBUNTU SERVER)", style = SentinelaTypography.CardTitle, color = SentinelaColors.MasterGold)
+                                Text(storageStatus?.mount ?: "/media/frigate", style = SentinelaTypography.Subtext.copy(fontSize = 9.sp))
+                            }
+                        }
+
+                        Surface(
+                            shape = SentinelaShapes.PillBadge,
+                            color = SentinelaColors.SuccessGreen.copy(alpha = 0.15f),
+                            border = BorderStroke(1.dp, SentinelaColors.SuccessGreen)
+                        ) {
+                            Text("100% SAUDÁVEL", color = SentinelaColors.SuccessGreen, fontSize = 8.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                        }
+                    }
+
+                    // Métricas de Espaço
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("${storageStatus?.usedGb ?: 110.0} GB Usados", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                        Text("${storageStatus?.freeGb ?: 334.0} GB Livres (${(100.0 - (storageStatus?.percent ?: 25.0)).toInt()}%)", color = SentinelaColors.MasterGold, fontSize = 12.sp, fontWeight = FontWeight.Black)
+                    }
+
+                    // Barra de Progresso
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(8.dp)
+                            .clip(SentinelaShapes.SmallButton)
+                            .background(Color(0xFF0F172A))
+                    ) {
+                        val fraction = ((storageStatus?.percent ?: 25.0) / 100.0).toFloat().coerceIn(0.05f, 1f)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(fraction)
+                                .fillMaxHeight()
+                                .background(Brush.horizontalGradient(listOf(SentinelaColors.MasterGold, Color(0xFFF59E0B))))
+                        )
+                    }
+
+                    // Sub-detalhamento: Gravações vs Fotos
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text("Vídeos: ${storageStatus?.recordingsGb ?: 76.0} GB", style = SentinelaTypography.Subtext.copy(fontSize = 10.sp))
+                        Text("Fotos: ${storageStatus?.clipsMb ?: 543.0} MB", style = SentinelaTypography.Subtext.copy(fontSize = 10.sp))
+                        Text("Total: ${storageStatus?.totalGb ?: 468.0} GB", style = SentinelaTypography.Subtext.copy(fontSize = 10.sp))
+                    }
+
+                    if (cleanMessage != null) {
+                        Text(
+                            text = cleanMessage!!,
+                            color = SentinelaColors.PrimaryCyan,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    // Botões de Limpeza Rápida com Confirmação
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Button(
+                            onClick = {
+                                pendingCleanType = "snapshots"
+                                pendingCleanDays = 3
+                                pendingCleanLabel = "expurgar snapshots de fotos com mais de 3 dias"
+                                isCleanConfirmOpen = true
+                            },
+                            enabled = !isCleaning,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.CardBackgroundElevated),
+                            shape = SentinelaShapes.SmallButton,
+                            contentPadding = PaddingValues(vertical = 6.dp)
+                        ) {
+                            Text("Limpar Fotos", color = SentinelaColors.PrimaryCyan, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        Button(
+                            onClick = {
+                                pendingCleanType = "recordings"
+                                pendingCleanDays = 3
+                                pendingCleanLabel = "expurgar gravações de vídeos com mais de 3 dias"
+                                isCleanConfirmOpen = true
+                            },
+                            enabled = !isCleaning,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.CardBackgroundElevated),
+                            shape = SentinelaShapes.SmallButton,
+                            contentPadding = PaddingValues(vertical = 6.dp)
+                        ) {
+                            Text("Expurgar Vídeos", color = SentinelaColors.StandbyAmber, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        }
+
+                        Button(
+                            onClick = {
+                                pendingCleanType = "all"
+                                pendingCleanDays = 7
+                                pendingCleanLabel = "executar limpeza profunda de todas as fotos e vídeos (>7 dias)"
+                                isCleanConfirmOpen = true
+                            },
+                            enabled = !isCleaning,
+                            modifier = Modifier.weight(1f),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF450A0A)),
+                            shape = SentinelaShapes.SmallButton,
+                            contentPadding = PaddingValues(vertical = 6.dp)
+                        ) {
+                            Text("Limpar Tudo", color = Color(0xFFFCA5A5), fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }
@@ -2162,174 +2527,6 @@ fun PhoneSettingsTab() {
             }
         }
 
-        // 💽 NOVO CARD: ARMAZENAMENTO & SSD NVMe DO SERVIDOR UBUNTU
-        item {
-            var storageStatus by remember { mutableStateOf<com.sentinela.pro.data.StorageStatus?>(null) }
-            var isCleaning by remember { mutableStateOf(false) }
-            var cleanMessage by remember { mutableStateOf<String?>(null) }
-            val coroutineScope = rememberCoroutineScope()
-
-            LaunchedEffect(Unit) {
-                storageStatus = SentinelaRepository.getStorageStatus()
-            }
-
-            Card(
-                shape = SentinelaShapes.CameraCard,
-                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
-            ) {
-                Column(
-                    modifier = Modifier.padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .background(SentinelaColors.PrimaryCyan.copy(alpha = 0.15f), SentinelaShapes.SmallButton),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(Icons.Default.Storage, contentDescription = null, tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(18.dp))
-                            }
-                            Column {
-                                Text("SSD NVMe (UBUNTU SERVER)", style = SentinelaTypography.CardTitle, color = SentinelaColors.PrimaryCyan)
-                                Text(storageStatus?.mount ?: "/media/frigate", style = SentinelaTypography.Subtext.copy(fontSize = 9.sp))
-                            }
-                        }
-
-                        Surface(
-                            shape = SentinelaShapes.PillBadge,
-                            color = SentinelaColors.SuccessGreen.copy(alpha = 0.15f),
-                            border = BorderStroke(1.dp, SentinelaColors.SuccessGreen)
-                        ) {
-                            Text("100% SAUDÁVEL", color = SentinelaColors.SuccessGreen, fontSize = 8.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
-                        }
-                    }
-
-                    // Métricas de Espaço
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("${storageStatus?.usedGb ?: 110.0} GB Usados", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                        Text("${storageStatus?.freeGb ?: 334.0} GB Livres (${(100.0 - (storageStatus?.percent ?: 25.0)).toInt()}%)", color = SentinelaColors.PrimaryCyan, fontSize = 12.sp, fontWeight = FontWeight.Black)
-                    }
-
-                    // Barra de Progresso
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(8.dp)
-                            .clip(SentinelaShapes.SmallButton)
-                            .background(Color(0xFF0F172A))
-                    ) {
-                        val fraction = ((storageStatus?.percent ?: 25.0) / 100.0).toFloat().coerceIn(0.05f, 1f)
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth(fraction)
-                                .fillMaxHeight()
-                                .background(Brush.horizontalGradient(listOf(SentinelaColors.PrimaryCyan, Color(0xFF10B981))))
-                        )
-                    }
-
-                    // Sub-detalhamento: Gravações vs Fotos
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text("Vídeos: ${storageStatus?.recordingsGb ?: 76.0} GB", style = SentinelaTypography.Subtext.copy(fontSize = 10.sp))
-                        Text("Fotos: ${storageStatus?.clipsMb ?: 543.0} MB", style = SentinelaTypography.Subtext.copy(fontSize = 10.sp))
-                        Text("Total: ${storageStatus?.totalGb ?: 468.0} GB", style = SentinelaTypography.Subtext.copy(fontSize = 10.sp))
-                    }
-
-                    if (cleanMessage != null) {
-                        Text(
-                            text = cleanMessage!!,
-                            color = SentinelaColors.PrimaryCyan,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    // Botões de Limpeza Rápida
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Button(
-                            onClick = {
-                                isCleaning = true
-                                cleanMessage = "Limpando fotos..."
-                                coroutineScope.launch {
-                                    val res = SentinelaRepository.cleanStorage("snapshots", 3)
-                                    cleanMessage = res.second
-                                    storageStatus = SentinelaRepository.getStorageStatus()
-                                    isCleaning = false
-                                }
-                            },
-                            enabled = !isCleaning,
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.CardBackgroundElevated),
-                            shape = SentinelaShapes.SmallButton,
-                            contentPadding = PaddingValues(vertical = 6.dp)
-                        ) {
-                            Text("Limpar Fotos", color = SentinelaColors.PrimaryCyan, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        }
-
-                        Button(
-                            onClick = {
-                                isCleaning = true
-                                cleanMessage = "Expurgando vídeos antigos..."
-                                coroutineScope.launch {
-                                    val res = SentinelaRepository.cleanStorage("recordings", 3)
-                                    cleanMessage = res.second
-                                    storageStatus = SentinelaRepository.getStorageStatus()
-                                    isCleaning = false
-                                }
-                            },
-                            enabled = !isCleaning,
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.CardBackgroundElevated),
-                            shape = SentinelaShapes.SmallButton,
-                            contentPadding = PaddingValues(vertical = 6.dp)
-                        ) {
-                            Text("Expurgar Vídeos", color = SentinelaColors.StandbyAmber, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        }
-
-                        Button(
-                            onClick = {
-                                isCleaning = true
-                                cleanMessage = "Executando limpeza profunda..."
-                                coroutineScope.launch {
-                                    val res = SentinelaRepository.cleanStorage("all", 7)
-                                    cleanMessage = res.second
-                                    storageStatus = SentinelaRepository.getStorageStatus()
-                                    isCleaning = false
-                                }
-                            },
-                            enabled = !isCleaning,
-                            modifier = Modifier.weight(1f),
-                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF450A0A)),
-                            shape = SentinelaShapes.SmallButton,
-                            contentPadding = PaddingValues(vertical = 6.dp)
-                        ) {
-                            Text("Limpar Tudo", color = Color(0xFFFCA5A5), fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-                }
-            }
-        }
-
         // Identificação do Dispositivo & Pareamento em /screens
         item {
             Card(
@@ -2361,6 +2558,10 @@ fun PhoneZoomCameraDialog(
     camera: CameraItem,
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
+    val defaultMode = remember(camera.name) { prefs.getCameraDefaultStreamMode(camera.name) }
+
     var scale by remember { mutableFloatStateOf(1.0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
 
@@ -2415,9 +2616,10 @@ fun PhoneZoomCameraDialog(
                         contentDescription = camera.friendlyName,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,
-                        refreshIntervalMs = 42L,
+                        refreshIntervalMs = if (defaultMode == "eco") 100L else 42L,
                         isStreaming = true,
-                        forceSnapshotMode = false
+                        forceSnapshotMode = (defaultMode == "eco"),
+                        streamMode = defaultMode
                     )
                 }
             }
@@ -2449,15 +2651,17 @@ fun PhoneZoomCameraDialog(
 }
 
 // -------------------------------------------------------------
-// DIÁLOGO DE REPRODUÇÃO DE CLIPE DE VÍDEO GRAVADO (MP4)
+// DIÁLOGO DE VISUALIZAÇÃO DE FOTO EM ALTA RESOLUÇÃO (HD)
 // -------------------------------------------------------------
 @Composable
-fun PhoneClipPlayerDialog(
+fun PhonePhotoViewerDialog(
     event: CaptureEvent,
     onDismiss: () -> Unit
 ) {
     var scale by remember { mutableFloatStateOf(1.0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
+    var isLoadingImage by remember { mutableStateOf(true) }
+    var isImageError by remember { mutableStateOf(false) }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -2468,104 +2672,129 @@ fun PhoneClipPlayerDialog(
                 .fillMaxSize()
                 .background(Color.Black)
         ) {
-            if (event.isPhoto) {
-                // High-Resolution Photo Viewer with Pinch-to-Zoom (Contido sem esticar bordas)
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 8.dp, vertical = 56.dp)
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.Black),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(16f / 9f)
-                            .clipToBounds()
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                    onDoubleTap = {
-                                        scale = 1.0f
-                                        offset = Offset.Zero
-                                    }
-                                )
-                            }
-                            .pointerInput(Unit) {
-                                detectTransformGestures { _, pan, zoom, _ ->
-                                    scale = (scale * zoom).coerceIn(1.0f, 5.0f)
-                                    if (scale > 1.0f) {
-                                        val maxOffsetX = (this@pointerInput.size.width * (scale - 1f)) / 2
-                                        val maxOffsetY = (this@pointerInput.size.height * (scale - 1f)) / 2
-                                        offset = Offset(
-                                            x = (offset.x + pan.x).coerceIn(-maxOffsetX, maxOffsetX),
-                                            y = (offset.y + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
-                                        )
-                                    } else {
-                                        offset = Offset.Zero
-                                    }
+            // Container em tela cheia proporcional com Pinch-to-Zoom e Duplo Toque
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 4.dp, vertical = 48.dp)
+                    .clipToBounds()
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            onDoubleTap = {
+                                if (scale > 1.05f) {
+                                    scale = 1.0f
+                                    offset = Offset.Zero
+                                } else {
+                                    scale = 2.5f
                                 }
                             }
-                    ) {
-                        val highResUrl = event.snapshotUrl.ifBlank {
-                            "${SentinelaConfig.BASE_URL}/frigate/api/${event.camera}/latest.jpg?h=1080"
+                        )
+                    }
+                    .pointerInput(Unit) {
+                        detectTransformGestures { _, pan, zoom, _ ->
+                            scale = (scale * zoom).coerceIn(1.0f, 5.0f)
+                            if (scale > 1.0f) {
+                                val maxOffsetX = (size.width * (scale - 1f)) / 2
+                                val maxOffsetY = (size.height * (scale - 1f)) / 2
+                                offset = Offset(
+                                    x = (offset.x + pan.x).coerceIn(-maxOffsetX, maxOffsetX),
+                                    y = (offset.y + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
+                                )
+                            } else {
+                                offset = Offset.Zero
+                            }
                         }
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(highResUrl)
-                                .crossfade(true)
-                                .build(),
-                            contentDescription = event.label,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .graphicsLayer(
-                                    scaleX = scale,
-                                    scaleY = scale,
-                                    translationX = offset.x,
-                                    translationY = offset.y
-                                ),
-                            contentScale = ContentScale.Fit
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                val highResUrl = event.snapshotUrl.ifBlank {
+                    "${SentinelaConfig.BASE_URL}/api/events/${event.id}/snapshot.jpg"
+                }
+
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(highResUrl)
+                        .crossfade(true)
+                        .listener(
+                            onStart = { isLoadingImage = true; isImageError = false },
+                            onSuccess = { _, _ -> isLoadingImage = false; isImageError = false },
+                            onError = { _, _ -> isLoadingImage = false; isImageError = true }
+                        )
+                        .build(),
+                    contentDescription = event.label,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = scale,
+                            scaleY = scale,
+                            translationX = offset.x,
+                            translationY = offset.y
+                        ),
+                    contentScale = ContentScale.Fit
+                )
+
+                if (isLoadingImage) {
+                    CircularProgressIndicator(
+                        color = SentinelaColors.PrimaryCyan,
+                        modifier = Modifier.size(42.dp)
+                    )
+                }
+
+                if (isImageError) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(8.dp),
+                        modifier = Modifier.padding(24.dp)
+                    ) {
+                        Icon(
+                            Icons.Default.BrokenImage,
+                            contentDescription = null,
+                            tint = SentinelaColors.DestructiveRed,
+                            modifier = Modifier.size(48.dp)
+                        )
+                        Text(
+                            "Erro ao carregar foto em alta resolução",
+                            color = Color.White,
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            highResUrl,
+                            style = SentinelaTypography.Subtext.copy(fontSize = 10.sp),
+                            color = SentinelaColors.TextMuted
                         )
                     }
                 }
-            } else {
-                SeamlessCameraImage(
-                    cameraName = event.camera,
-                    contentDescription = event.label,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Fit,
-                    refreshIntervalMs = 42L,
-                    isStreaming = true
-                )
             }
 
+            // Barra Superior Transparente com Detalhes e Fechar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .statusBarsPadding()
-                    .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.8f), Color.Transparent)))
-                    .padding(16.dp),
+                    .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.85f), Color.Transparent)))
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column {
                     Text(
-                        text = if (event.isPhoto) "FOTO: ${event.label.uppercase()}" else "GRAVAÇÃO: ${event.label.uppercase()}",
+                        text = "FOTO HD: ${event.label.uppercase()}",
                         color = Color.White,
-                        fontSize = 15.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.Black
                     )
-                    val dialogDetails = if (event.isPhoto) {
-                        "${event.camera} • ${event.timestamp} • Foto HD"
-                    } else {
-                        "${event.camera} • ${event.timestamp} • Duração: ${event.displayDuration} • Score: ${event.score}%"
-                    }
-                    Text(dialogDetails, style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
+                    Text(
+                        text = "${event.camera.replace("_", " ").uppercase()} • ${event.timestamp}",
+                        style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan, fontSize = 11.sp)
+                    )
                 }
 
                 IconButton(
                     onClick = onDismiss,
-                    modifier = Modifier.size(36.dp).background(SentinelaColors.CardBackgroundElevated, CircleShape)
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(SentinelaColors.CardBackgroundElevated, CircleShape)
                 ) {
                     Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color.White)
                 }

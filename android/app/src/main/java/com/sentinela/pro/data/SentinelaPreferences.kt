@@ -66,4 +66,12 @@ class SentinelaPreferences(private val context: Context) {
 
     val currentPipDuration: PipDuration
         get() = PipDuration.values().getOrElse(pipDurationIndex) { PipDuration.D_15S }
+
+    fun getCameraDefaultStreamMode(cameraName: String): String {
+        return prefs.getString("camera_stream_mode_$cameraName", "webrtc") ?: "webrtc"
+    }
+
+    fun setCameraDefaultStreamMode(cameraName: String, mode: String) {
+        prefs.edit().putString("camera_stream_mode_$cameraName", mode).apply()
+    }
 }

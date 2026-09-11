@@ -354,7 +354,7 @@ object SentinelaRepository {
                     val label = obj.optString("label", "Movimento")
                     val score = obj.optInt("score", 0)
                     val timestamp = obj.optString("timestamp", "")
-                    val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/events/$id/snapshot.jpg"
+                    val snapshotUrl = "${SentinelaConfig.BASE_URL}/api/events/$id/snapshot.jpg"
                     val clipUrl = "${SentinelaConfig.BASE_URL}/api/events/$id/clip.mp4"
                     val hasClip = obj.optBoolean("has_clip", true)
                     val retained = obj.optBoolean("retained", false)

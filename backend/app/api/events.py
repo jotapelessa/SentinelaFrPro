@@ -576,4 +576,46 @@ async def get_event_clip(event_id: str, download: bool = False):
     )
 
 
+@router.get("/{event_id}/snapshot.jpg")
+@router.head("/{event_id}/snapshot.jpg")
+async def get_event_snapshot(event_id: str, clean: int = 0):
+    """
+    Proxies or serves snapshot JPEG image for an event from local disk or Frigate NVR.
+    Guarantees fast, reliable delivery for Android app and Web UI.
+    """
+    media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
+    clips_dir = os.path.join(media_base, "clips")
+    
+    # 1. Check local media directory
+    if os.path.exists(clips_dir):
+        for fname in os.listdir(clips_dir):
+            if event_id in fname and fname.endswith(".jpg"):
+                fpath = os.path.join(clips_dir, fname)
+                if os.path.getsize(fpath) > 200:
+                    return FileResponse(
+                        fpath,
+                        media_type="image/jpeg",
+                        headers={"Cache-Control": "public, max-age=86400"}
+                    )
+
+    # 2. Proxy directly to Frigate NVR
+    try:
+        url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg"
+        if clean:
+            url += "?clean=1"
+        async with httpx.AsyncClient(timeout=8.0) as client:
+            resp = await client.get(url)
+            if resp.status_code == 200:
+                return Response(
+                    content=resp.content,
+                    media_type="image/jpeg",
+                    headers={"Cache-Control": "public, max-age=86400"}
+                )
+    except Exception as e:
+        logger.warning(f"Error fetching snapshot from Frigate for event {event_id}: {e}")
+
+    raise HTTPException(status_code=404, detail="Snapshot not found")
+
+
+
 

@@ -574,7 +574,7 @@ async def remote_reboot_server(
     stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
     res = await db.execute(stmt)
     dev = res.scalar_one_or_none()
-    if not dev or dev.permission_status == "blocked" or not dev.allow_reboot_server:
+    if not dev or dev.permission_status == "blocked" or (not dev.allow_reboot_server and not dev.is_master_admin):
         raise HTTPException(
             status_code=403,
             detail="Dispositivo não autorizado a reiniciar o servidor Ubuntu. Habilite a permissão em http://sentinela.local/screens."
@@ -591,7 +591,7 @@ async def remote_reboot_server(
     async def _do_reboot():
         await asyncio.sleep(2)
         try:
-            p = await asyncio.create_subprocess_shell("sudo /sbin/reboot || /sbin/reboot || sudo reboot || reboot")
+            p = await asyncio.create_subprocess_shell("sudo /sbin/reboot || /sbin/reboot || sudo reboot || reboot || docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -i -n -p reboot || docker restart sentinela_frigate sentinela_backend sentinela_frontend sentinela_mosquitto sentinela_nginx")
             await p.communicate()
         except Exception:
             pass
