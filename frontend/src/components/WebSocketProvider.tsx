@@ -150,6 +150,10 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               }
             } else if (data.type === "CAMERA_OBJECTS_COUNT") {
               setObjectCount(data.camera, data.label, data.count);
+            } else if (data.type === "DEVICE_POLICY_UPDATE") {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("device_policy_update", { detail: data }));
+              }
             }
           } catch (err) {
             console.error("Failed to parse WS message", err);

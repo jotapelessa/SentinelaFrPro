@@ -136,8 +136,8 @@ export const CameraMosaic: React.FC = () => {
   return (
     <section className="w-full space-y-4">
       {/* Mosaic Header Bar & Live Counters HUD */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-1">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 px-1 w-full flex-wrap">
+        <div className="flex items-center gap-3 flex-wrap">
           <div className="flex items-center gap-2">
             <span className={`w-2.5 h-2.5 rounded-full ${activeCount > 0 ? "bg-rose-500 animate-ping shadow-lg shadow-rose-500/50" : "bg-emerald-400 animate-pulse shadow-lg shadow-emerald-500/50"}`} />
             <span className="text-xs font-mono font-bold text-slate-200">
@@ -299,7 +299,7 @@ export const CameraMosaic: React.FC = () => {
                 />
               </div>
             ) : cameras.length === 2 ? (
-              <div className="grid grid-cols-1 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {cameras.map((camera) => {
                   const camId = camera.id || camera.name;
                   const isCurrentActive = activeStreamingCameraId === camId;

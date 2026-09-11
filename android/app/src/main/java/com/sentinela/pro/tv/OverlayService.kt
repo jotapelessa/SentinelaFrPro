@@ -80,6 +80,18 @@ class OverlayService : Service() {
                 val evType = event.optString("type")
                 val isMotionActive = (evType == "CAMERA_DETECTION_ACTIVE" && event.optBoolean("active", false)) || 
                                      (evType == "CAMERA_MOTION_STATUS" && event.optBoolean("motion", false))
+                if (evType == "DEVICE_POLICY_UPDATE") {
+                    val targetIdent = event.optString("device_identifier", "")
+                    if (targetIdent == prefs.deviceIdentifier) {
+                        try {
+                            val pol = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                            syncPolicyWithPrefs(pol, prefs)
+                        } catch (e: Exception) {
+                            android.util.Log.e("OverlayService", "Policy sync failed: ${e.message}")
+                        }
+                    }
+                }
+                
                 if (evType == "DEVICE_CONFIG_UPDATED") {
                     val targetIdent = event.optString("device_identifier", "")
                     if (targetIdent == prefs.deviceIdentifier) {

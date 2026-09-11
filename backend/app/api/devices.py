@@ -382,6 +382,14 @@ async def update_device_allowed_cameras(device_id: int, payload: DeviceAllowedCa
         raise HTTPException(status_code=404, detail="Device not found")
     dev.allowed_cameras = json.dumps(payload.allowed_cameras)
     await db.commit()
+    try:
+        from app.api.ws import ws_manager
+        await ws_manager.broadcast_json({
+            "type": "DEVICE_POLICY_UPDATE",
+            "device_identifier": dev.device_identifier
+        })
+    except Exception as e:
+        logger.debug(f"Failed to broadcast device policy update: {e}")
     await audit_service.log(
         action="DEVICE_CAMERAS_UPDATED",
         module="PIP",
@@ -609,6 +617,14 @@ async def update_device_status(device_id: int, update: DeviceStatusUpdate, reque
         raise HTTPException(status_code=404, detail="Device not found")
     dev.permission_status = update.permission_status
     await db.commit()
+    try:
+        from app.api.ws import ws_manager
+        await ws_manager.broadcast_json({
+            "type": "DEVICE_POLICY_UPDATE",
+            "device_identifier": dev.device_identifier
+        })
+    except Exception as e:
+        logger.debug(f"Failed to broadcast device policy update: {e}")
     await audit_service.log(
         action="DEVICE_STATUS_CHANGED",
         module="PIP",

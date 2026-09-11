@@ -53,14 +53,14 @@ export default function DashboardPage() {
               Central de Vigilância Sentinela
             </h1>
             <p className="text-xs text-slate-500 font-mono">
-              SentinelaPro.v001.000.000.078 • Protegido por IA OpenVINO & Tailscale Encrypted
+              SentinelaPro.v001.000.000.099 • Protegido por IA OpenVINO & Tailscale Encrypted
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-cyan-400">
-            🛡️ v001.000.000.078
+            🛡️ v001.000.000.099
           </div>
           <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -70,10 +70,10 @@ export default function DashboardPage() {
       </div>
 
       {/* Main Grid: Live Mosaic (70%) + Quick Events Stream (30%) */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="flex flex-col gap-6">
         
         {/* Live Mosaic & SSD 24h Timeline */}
-        <div className="lg:col-span-2 space-y-4">
+        <div className="w-full space-y-4">
           <CameraMosaic />
         </div>
 
