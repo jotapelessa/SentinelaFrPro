@@ -269,7 +269,7 @@ class MQTTService:
             async with httpx.AsyncClient(timeout=6.0) as client:
                 try:
                     # 1. Native-resolution main-stream frame via go2rtc (highest quality, >=1080p)
-                    for src in [camera, "camera_principal"]:
+                    for src in [camera]:
                         try:
                             g_resp = await client.get(f"{settings.GO2RTC_API_URL}/api/frame.jpeg?src={src}")
                             if g_resp.status_code == 200 and len(g_resp.content) > 2000:

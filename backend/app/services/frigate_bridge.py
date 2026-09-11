@@ -157,7 +157,7 @@ class FrigateBridgeService:
                         pass
 
         # Channel 3: Frigate latest.jpg (detect stream, lower resolution fallback)
-        for cam in [camera_name, "cam_192_168_1_6", "camera_principal"]:
+        for cam in sources:
             try:
                 async with httpx.AsyncClient(timeout=3.0) as client:
                     res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
