@@ -277,8 +277,6 @@ class PiPGatewayService:
                     "label": "TESTE DE PiP",
                     "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
                     "message": "Teste de Notificação Picture-in-Picture",
-                    "snapshot_url": rel_snapshot_url,
-                    "stream_url": rel_stream_url,
                     "duration": dev.pip_duration_seconds or 10,
                     "pip_position": dev.pip_position or "BOTTOM_RIGHT",
                     "pip_size": dev.pip_default_size or "medium_small",

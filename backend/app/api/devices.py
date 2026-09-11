@@ -877,7 +877,7 @@ class BatchTestRequest(BaseModel):
     test_type: str = "pip_alert"  # "pip_alert", "ping_speed", "simulated_detection"
     camera_name: str = "camera_principal"
     label: str = "TESTE MASTER EM LOTE"
-    duration_seconds: int = 10
+    duration_seconds: Optional[int] = 0
 
 
 class MasterToggleRequest(BaseModel):

@@ -875,7 +875,7 @@ object SentinelaRepository {
                 put("test_type", testType)
                 put("camera_name", cameraName)
                 put("label", label)
-                put("duration_seconds", 10)
+                put("duration_seconds", 0)
             }
             conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
             val code = conn.responseCode
