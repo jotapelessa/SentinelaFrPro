@@ -44,6 +44,7 @@ class OverlayService : Service() {
     
     private var webSocket: SentinelaWebSocket? = null
     private var pipJob: Job? = null
+    private var cachedDevicePolicy: com.sentinela.pro.model.DevicePolicy? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -60,6 +61,15 @@ class OverlayService : Service() {
         SentinelaConfig.currentHost = host
         webSocket = SentinelaWebSocket(host)
         
+        // Asynchronously load initial device policy without blocking initialization
+        serviceScope.launch {
+            try {
+                cachedDevicePolicy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+            } catch (e: Exception) {
+                android.util.Log.d("OverlayService", "Initial policy fetch: ${e.message}")
+            }
+        }
+
         serviceScope.launch {
             webSocket?.connectAndListen()
         }
@@ -109,6 +119,14 @@ class OverlayService : Service() {
                                 android.util.Log.w("OverlayService", "Unknown pip_position: $serverPipPos")
                             }
                         }
+                        // Refresh in background
+                        serviceScope.launch {
+                            try {
+                                cachedDevicePolicy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                            } catch (e: Exception) {
+                                android.util.Log.d("OverlayService", "Policy refresh: ${e.message}")
+                            }
+                        }
                         android.util.Log.i("OverlayService", "Device config updated via WebSocket: size=$serverPipSize, dur=$serverPipDur, pos=$serverPipPos")
                     }
                     return@collect
@@ -126,11 +144,15 @@ class OverlayService : Service() {
                     val customSnap = if (event.has("snapshot_url")) event.optString("snapshot_url") else null
                     val customStream = if (event.has("stream_url")) event.optString("stream_url") else null
                     val isTestAlert = evType == "pip_alert" || label.contains("TEST", ignoreCase = true) || label.contains("ALERTA", ignoreCase = true)
-                    runCatching {
-                        val policy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+
+                    val policy = cachedDevicePolicy
+                    if (isTestAlert) {
+                        // Instant rendering for test triggers: 0ms latency, zero blocking HTTP calls
+                        showPiP(camera, label, policy, testId, customSnap, customStream)
+                    } else if (policy != null) {
                         if (policy.permissionStatus == "allowed" && policy.allowPipAlerts) {
                             val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
-                            val eventAllowed = isTestAlert || policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
+                            val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
                             if (camAllowed && eventAllowed) {
                                 showPiP(camera, label, policy, testId, customSnap, customStream)
                             } else if (testId != null) {
@@ -149,8 +171,20 @@ class OverlayService : Service() {
                                 )
                             }
                         }
-                    }.getOrElse {
-                        showPiP(camera, label, null, testId, customSnap, customStream)
+                    } else {
+                        // Immediate fallback using local preferences if policy cache is pending
+                        if (prefs.allowPipAlerts) {
+                            showPiP(camera, label, null, testId, customSnap, customStream)
+                        }
+                    }
+
+                    // Background asynchronous policy refresh (never blocks display)
+                    serviceScope.launch {
+                        try {
+                            cachedDevicePolicy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                        } catch (e: Exception) {
+                            android.util.Log.d("OverlayService", "Background policy fetch: ${e.message}")
+                        }
                     }
                 }
             }
@@ -222,8 +256,8 @@ class OverlayService : Service() {
         camera: String
     ) {
         val base = SentinelaConfig.BASE_URL.trimEnd('/')
-        val fallbackGo2rtc = "$base/go2rtc/api/frame.jpeg?src=$camera&t=${System.currentTimeMillis()}"
-        val fallbackFrigate = "$base/frigate/api/$camera/latest.jpg?h=720&t=${System.currentTimeMillis()}"
+        val fastGo2rtc = "$base/go2rtc/api/frame.jpeg?src=$camera&t=${System.currentTimeMillis()}"
+        val fallbackFrigate = "$base/frigate/api/$camera/latest.jpg?t=${System.currentTimeMillis()}"
 
         try {
             val imageLoader = coil.Coil.imageLoader(applicationContext)
@@ -244,8 +278,12 @@ class OverlayService : Service() {
                 imageLoader.enqueue(req)
             }
 
-            tryLoad(primaryUrl) {
-                tryLoad(fallbackGo2rtc) {
+            // Always try the lightning-fast Go2rtc RAM frame first (instant <30ms)
+            val firstUrl = if (primaryUrl.contains("frigate") || primaryUrl.isBlank()) fastGo2rtc else primaryUrl
+            val secondUrl = if (firstUrl == fastGo2rtc) primaryUrl else fastGo2rtc
+
+            tryLoad(firstUrl) {
+                tryLoad(secondUrl) {
                     tryLoad(fallbackFrigate, null)
                 }
             }
@@ -324,7 +362,7 @@ class OverlayService : Service() {
 
         val resolvedCamera = if (camera.isBlank() || camera == "camera_principal") "camera_secundaria" else camera
         val streamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=mse&mode=webrtc")
-        val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${resolvedCamera}/latest.jpg?h=720&t=${System.currentTimeMillis()}")
+        val snapshotUrl = normalizeUrl(customSnapshotUrl, "/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}")
 
         try {
             val params = WindowManager.LayoutParams(
@@ -351,13 +389,13 @@ class OverlayService : Service() {
                     setBackgroundColor(0xFF000000.toInt())
                 }
 
-                // 1. Instant Snapshot Base Layer (Loads in 0ms, zero lag!)
+                // 1. Instant Snapshot Base Layer (FIT_CENTER preserves 100% full FOV without zoom or cropping)
                 val snapImageView = android.widget.ImageView(this).apply {
                     layoutParams = FrameLayout.LayoutParams(
                         FrameLayout.LayoutParams.MATCH_PARENT,
                         FrameLayout.LayoutParams.MATCH_PARENT
                     )
-                    scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+                    scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
                 }
                 pipImageView = snapImageView
                 inner.addView(snapImageView)
@@ -405,10 +443,11 @@ class OverlayService : Service() {
 
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
+                            // object-fit: contain preserves full camera aspect ratio without artificial zooming
                             val js = "javascript:(function() {" +
                                     "var style = document.createElement('style');" +
                                     "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent !important; display:flex; justify-content:center; align-items:center; } " +
-                                    "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; background:transparent !important; } " +
+                                    "video-stream, video { width:100% !important; height:100% !important; object-fit:contain !important; background:transparent !important; } " +
                                     "* { outline:none !important; }';" +
                                     "document.head.appendChild(style);" +
                                     "document.querySelectorAll('video-stream').forEach(function(el) { " +
@@ -517,7 +556,7 @@ class OverlayService : Service() {
                 try {
                     pipImageView?.let { iv ->
                         val base = SentinelaConfig.BASE_URL.trimEnd('/')
-                        val refreshSnapUrl = "$base/frigate/api/${resolvedCamera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
+                        val refreshSnapUrl = "$base/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}"
                         val imageLoader = coil.Coil.imageLoader(applicationContext)
                         val req = coil.request.ImageRequest.Builder(applicationContext)
                             .data(refreshSnapUrl)

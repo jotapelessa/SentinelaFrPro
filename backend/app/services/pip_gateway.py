@@ -258,7 +258,7 @@ class PiPGatewayService:
         ack_event = asyncio.Event()
         self._ack_events[test_id] = ack_event
 
-        rel_snapshot_url = f"/frigate/api/{camera_name}/latest.jpg?h=720" if active_cams else "/icon-192.png"
+        rel_snapshot_url = f"/go2rtc/api/frame.jpeg?src={camera_name}" if active_cams else "/icon-192.png"
         rel_stream_url = f"/go2rtc/stream.html?src={camera_name}&mode=mse&mode=webrtc" if active_cams else ""
         snapshot_url = f"http://{server_ip}:8088{rel_snapshot_url}"
         stream_url = f"http://{server_ip}:8088{rel_stream_url}"
@@ -325,7 +325,7 @@ class PiPGatewayService:
         ack_message = ""
         if dispatched and protocol_used == "sentinela_app_ws":
             try:
-                await asyncio.wait_for(ack_event.wait(), timeout=2.5)
+                await asyncio.wait_for(ack_event.wait(), timeout=5.0)
                 ack_res = self._ack_results.get(test_id, {})
                 confirmed = ack_res.get("success", False)
                 ack_message = ack_res.get("message", "Renderização confirmada no display da TV")
@@ -355,6 +355,12 @@ class PiPGatewayService:
                 "target_ip": target_ip
             }
         elif dispatched:
+            await audit_service.log(
+                action="PIP_TEST_DISPATCHED",
+                module="PIP",
+                severity="INFO",
+                details=f"Alerta PiP transmitido para {dev_name} ({target_ip}), status: {ack_message}"
+            )
             return {
                 "status": "warning",
                 "confirmed": False,
