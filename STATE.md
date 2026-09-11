@@ -122,8 +122,9 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
     - **Causa Raiz 5 (Normalizador e Fallback em Cascata no Coil)**: Criado `normalizeUrl` em `OverlayService.kt` (reescreve qualquer URL com `frigate:5000`, `172.x` ou relativa para `BASE_URL`) e `loadSnapshotWithFallbacks` (tenta snapshot do evento -> frame do go2rtc -> snapshot da câmera no Frigate).
     - **Causa Raiz 6 (Transparência de WebView & Destruição Segura)**: O WebView do PiP mantém fundo transparente para não cobrir o snapshot caso a conexão de vídeo esteja em negociação ICE, e `removePiP()` executa `destroy()` e limpeza de referências.
   - **2. Configuração Específica de Modo de Streaming por Câmera na TV**:
-- **[2026-09-11] Fix Oscilação de Tamanho e Posição (Jitter) no PiP Preview (`v001.000.000.095`)**:
-  - **1. Estabilização e Bloqueio de Posição/Tamanho do PiP**:
+- **[2026-09-11] Fix Oscilação de Tamanho/Posição e Ajuste de Tipagem do DevicePolicy (`v001.000.000.096`)**:
+  - **1. Correção de Referência de Tipagem no Kotlin**: Corrigida a referência de pacote de `com.sentinela.pro.model.DevicePolicy` para `com.sentinela.pro.network.DevicePolicy` e adicionada inferência explícita de tipo para o predicado de eventos em `OverlayService.kt`, resolvendo a falha de compilação do Gradle.
+  - **2. Estabilização e Bloqueio de Posição/Tamanho do PiP**:
     - **Causa Raiz da Alternância de Canto e Tamanho**: O backend (`pip_gateway.py`) não enviava `pip_position` e `pip_size` no payload de alerta WebSocket. O app da TV recebia o evento e, quando a política ainda estava em trânsito assíncrono, renderizava inicialmente com os padrões locais de `SentinelaPreferences` (`TOP_RIGHT`, 800x450). Quando a política era finalmente lida (`BOTTOM_RIGHT`, 640x360), o `windowManager.updateViewLayout` reposicionava a janela no meio da exibição, causando um salto visual abrupto na tela.
     - **Solução no Backend**: `pip_gateway.py` agora inclui explicitamente `pip_position: dev.pip_position` e `pip_size: dev.pip_default_size` no pacote WebSocket `pip_alert`.
     - **Solução no Android TV (`OverlayService.kt`)**:

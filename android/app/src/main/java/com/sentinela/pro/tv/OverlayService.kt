@@ -44,7 +44,7 @@ class OverlayService : Service() {
     
     private var webSocket: SentinelaWebSocket? = null
     private var pipJob: Job? = null
-    private var cachedDevicePolicy: com.sentinela.pro.model.DevicePolicy? = null
+    private var cachedDevicePolicy: DevicePolicy? = null
 
     override fun onCreate() {
         super.onCreate()
@@ -157,7 +157,7 @@ class OverlayService : Service() {
                     } else if (policy != null) {
                         if (policy.permissionStatus == "allowed" && policy.allowPipAlerts) {
                             val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
-                            val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
+                            val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev: String -> ev.equals(label, ignoreCase = true) }
                             if (camAllowed && eventAllowed) {
                                 showPiP(camera, label, policy, testId, customSnap, customStream, alertPipPos, alertPipSize, alertDuration)
                             } else if (testId != null) {
@@ -197,7 +197,7 @@ class OverlayService : Service() {
         }
     }
 
-    private fun syncPolicyWithPrefs(policy: com.sentinela.pro.model.DevicePolicy, prefs: SentinelaPreferences) {
+    private fun syncPolicyWithPrefs(policy: DevicePolicy, prefs: SentinelaPreferences) {
         cachedDevicePolicy = policy
         if (policy.friendlyName.isNotBlank()) prefs.friendlyName = policy.friendlyName
         prefs.allowPipAlerts = policy.allowPipAlerts
