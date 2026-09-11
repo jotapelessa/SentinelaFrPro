@@ -61,17 +61,32 @@ jobs:
 
     - name: Prepare Release Artifacts
       run: |
+        set -euo pipefail
         mkdir -p release-apks
         VER="${{ steps.get_version.outputs.version }}"
         
-        echo "🔍 Listando APKs gerados:"
-        ls -la android/app/build/outputs/apk/tv/debug/
-        ls -la android/app/build/outputs/apk/smartphone/debug/
+        echo "🔍 Buscando todos os APKs gerados..."
+        find android/app/build/outputs/ -name "*.apk" -type f 2>/dev/null || true
         
-        cp android/app/build/outputs/apk/tv/debug/app-tv-debug.apk release-apks/sentinela-android-tv-v${VER}.apk
-        cp android/app/build/outputs/apk/tv/debug/app-tv-debug.apk release-apks/sentinela-android-tv-latest.apk
-        cp android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk release-apks/sentinela-android-smartphone-v${VER}.apk
-        cp android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk release-apks/sentinela-android-smartphone-latest.apk
+        TV_APK=$(find android/app/build/outputs/ -path "*/tv/debug/*.apk" -type f | head -1)
+        PHONE_APK=$(find android/app/build/outputs/ -path "*/smartphone/debug/*.apk" -type f | head -1)
+        
+        echo "📺 TV APK encontrado: ${TV_APK:-NENHUM}"
+        echo "📱 Smartphone APK encontrado: ${PHONE_APK:-NENHUM}"
+        
+        if [ -z "$TV_APK" ] || [ -z "$PHONE_APK" ]; then
+          echo "❌ ERRO: APKs não encontrados!"
+          echo "### ❌ APKs não encontrados após build bem-sucedido" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          find android/ -name "*.apk" -type f 2>/dev/null || echo "Nenhum .apk em android/" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+        
+        cp "$TV_APK" "release-apks/sentinela-android-tv-v${VER}.apk"
+        cp "$TV_APK" "release-apks/sentinela-android-tv-latest.apk"
+        cp "$PHONE_APK" "release-apks/sentinela-android-smartphone-v${VER}.apk"
+        cp "$PHONE_APK" "release-apks/sentinela-android-smartphone-latest.apk"
         
         echo "============================================================"
         echo "📦 Artefatos prontos em release-apks/:"
