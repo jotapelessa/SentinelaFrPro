@@ -35,7 +35,8 @@ echo ""
 
 # ── Argumento CLI ────────────────────────────────────────────
 TARGET="${1:-both}"
-case "${TARGET,,}" in
+TARGET_LOWER=$(echo "$TARGET" | tr '[:upper:]' '[:lower:]')
+case "$TARGET_LOWER" in
     tv)         BUILD_TV=true;  BUILD_PHONE=false ;;
     smartphone) BUILD_TV=false; BUILD_PHONE=true  ;;
     both|"")    BUILD_TV=true;  BUILD_PHONE=true  ;;
