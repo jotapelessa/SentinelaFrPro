@@ -47,33 +47,25 @@ jobs:
         echo "tag=${TAG_NAME}" >> $GITHUB_OUTPUT
         echo "📦 Compilando Versão: ${FORMATTED_VERSION} (Tag: ${TAG_NAME})"
 
-    - name: Build and Package APKs
+    - name: Build Android TV and Smartphone APKs
+      working-directory: android
       run: |
-        cd android
         chmod +x gradlew
         ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon
-        
-        cd "$GITHUB_WORKSPACE"
+
+    - name: Prepare Release Artifacts
+      run: |
         mkdir -p release-apks
         VER="${{ steps.get_version.outputs.version }}"
         
-        echo "🔍 Localizando APKs compilados..."
-        TV_APK="android/app/build/outputs/apk/tv/debug/app-tv-debug.apk"
-        PHONE_APK="android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk"
+        echo "🔍 Listando APKs gerados:"
+        ls -la android/app/build/outputs/apk/tv/debug/
+        ls -la android/app/build/outputs/apk/smartphone/debug/
         
-        if [ ! -f "$TV_APK" ] || [ ! -f "$PHONE_APK" ]; then
-          echo "❌ Erro: APKs não encontrados nos caminhos esperados!"
-          find android/app/build/outputs/ -name "*.apk" || echo "Nenhum APK gerado"
-          exit 1
-        fi
-        
-        echo "✅ TV: $TV_APK"
-        echo "✅ Smartphone: $PHONE_APK"
-        
-        cp "$TV_APK" "release-apks/sentinela-android-tv-v${VER}.apk"
-        cp "$TV_APK" "release-apks/sentinela-android-tv-latest.apk"
-        cp "$PHONE_APK" "release-apks/sentinela-android-smartphone-v${VER}.apk"
-        cp "$PHONE_APK" "release-apks/sentinela-android-smartphone-latest.apk"
+        cp android/app/build/outputs/apk/tv/debug/app-tv-debug.apk release-apks/sentinela-android-tv-v${VER}.apk
+        cp android/app/build/outputs/apk/tv/debug/app-tv-debug.apk release-apks/sentinela-android-tv-latest.apk
+        cp android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk release-apks/sentinela-android-smartphone-v${VER}.apk
+        cp android/app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk release-apks/sentinela-android-smartphone-latest.apk
         
         echo "============================================================"
         echo "📦 Artefatos prontos em release-apks/:"
