@@ -306,36 +306,39 @@ class OverlayService : Service() {
         val fastGo2rtc = "$base/go2rtc/api/frame.jpeg?src=$camera&t=${System.currentTimeMillis()}"
         val fallbackFrigate = "$base/frigate/api/$camera/latest.jpg?t=${System.currentTimeMillis()}"
 
-        try {
+        serviceScope.launch(Dispatchers.IO) {
+            // Prioritize fast RAM frame from go2rtc, then event snapshot, then camera latest
+            val candidateUrls = listOf(fastGo2rtc, primaryUrl, fallbackFrigate).filter { it.isNotBlank() }.distinct()
             val imageLoader = coil.Coil.imageLoader(applicationContext)
 
-            fun tryLoad(url: String, nextFallback: (() -> Unit)?) {
-                val req = coil.request.ImageRequest.Builder(applicationContext)
-                    .data(url)
-                    .target(imageView)
-                    .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
-                    .diskCachePolicy(coil.request.CachePolicy.DISABLED)
-                    .listener(
-                        onError = { _, result ->
-                            android.util.Log.w("OverlayService", "Snapshot load failed for $url: ${result.throwable.message}")
-                            nextFallback?.invoke()
+            for (url in candidateUrls) {
+                try {
+                    val req = coil.request.ImageRequest.Builder(applicationContext)
+                        .data(url)
+                        .size(coil.size.Size.ORIGINAL)
+                        .allowHardware(false)
+                        .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .build()
+
+                    val result = imageLoader.execute(req)
+                    if (result is coil.request.SuccessResult) {
+                        val bitmap = (result.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+                        withContext(Dispatchers.Main) {
+                            if (bitmap != null) {
+                                imageView.setImageBitmap(bitmap)
+                            } else {
+                                imageView.setImageDrawable(result.drawable)
+                            }
+                            imageView.visibility = View.VISIBLE
                         }
-                    )
-                    .build()
-                imageLoader.enqueue(req)
-            }
-
-            // Always try the lightning-fast Go2rtc RAM frame first (instant <30ms)
-            val firstUrl = if (primaryUrl.contains("frigate") || primaryUrl.isBlank()) fastGo2rtc else primaryUrl
-            val secondUrl = if (firstUrl == fastGo2rtc) primaryUrl else fastGo2rtc
-
-            tryLoad(firstUrl) {
-                tryLoad(secondUrl) {
-                    tryLoad(fallbackFrigate, null)
+                        android.util.Log.i("OverlayService", "✅ PiP Snapshot successfully displayed from $url")
+                        return@launch
+                    }
+                } catch (e: Exception) {
+                    android.util.Log.w("OverlayService", "Failed to fetch snapshot candidate $url: ${e.message}")
                 }
             }
-        } catch (e: Exception) {
-            android.util.Log.e("OverlayService", "Failed to setup image load: ${e.message}")
         }
     }
 
@@ -499,6 +502,9 @@ class OverlayService : Service() {
                         cacheMode = WebSettings.LOAD_NO_CACHE
                     }
 
+                    resumeTimers()
+                    onResume()
+
                     addJavascriptInterface(object {
                         @android.webkit.JavascriptInterface
                         fun onVideoPlaying() {
@@ -539,15 +545,13 @@ class OverlayService : Service() {
                                     "var checkVideo = function() {" +
                                     "  var v = document.querySelector('video');" +
                                     "  if (v) {" +
-                                    "    v.addEventListener('playing', notifyPlaying);" +
-                                    "    v.addEventListener('loadeddata', notifyPlaying);" +
-                                    "    v.addEventListener('timeupdate', function() { if (v.currentTime > 0.05) notifyPlaying(); });" +
-                                    "    if (v.currentTime > 0) notifyPlaying();" +
+                                    "    v.addEventListener('timeupdate', function() { if (v.currentTime > 0.2) notifyPlaying(); });" +
+                                    "    if (v.currentTime > 0.2) notifyPlaying();" +
                                     "    if (v.paused) { v.play().catch(function(){}); }" +
                                     "  }" +
                                     "};" +
                                     "checkVideo();" +
-                                    "setInterval(checkVideo, 400);" +
+                                    "setInterval(checkVideo, 500);" +
                                     "document.querySelectorAll('video-stream').forEach(function(el) { " +
                                     "  el.background = true; " +
                                     "  el.visibilityCheck = false; " +
@@ -649,27 +653,34 @@ class OverlayService : Service() {
             return
         }
 
-        // Continuous Snapshot Refresh Loop (Updates image every 1s so it NEVER goes black)
+        // Continuous Snapshot Refresh Loop (Updates image every 800ms directly to Bitmap so it NEVER goes black)
         snapshotRefreshJob?.cancel()
-        snapshotRefreshJob = serviceScope.launch {
+        snapshotRefreshJob = serviceScope.launch(Dispatchers.IO) {
+            val base = SentinelaConfig.BASE_URL.trimEnd('/')
+            val imageLoader = coil.Coil.imageLoader(applicationContext)
             while (isActive) {
+                delay(800L)
                 try {
-                    pipImageView?.let { iv ->
-                        val base = SentinelaConfig.BASE_URL.trimEnd('/')
-                        val refreshSnapUrl = "$base/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}"
-                        val imageLoader = coil.Coil.imageLoader(applicationContext)
-                        val req = coil.request.ImageRequest.Builder(applicationContext)
-                            .data(refreshSnapUrl)
-                            .target(iv)
-                            .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
-                            .diskCachePolicy(coil.request.CachePolicy.DISABLED)
-                            .build()
-                        imageLoader.enqueue(req)
+                    val refreshSnapUrl = "$base/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}"
+                    val req = coil.request.ImageRequest.Builder(applicationContext)
+                        .data(refreshSnapUrl)
+                        .size(coil.size.Size.ORIGINAL)
+                        .allowHardware(false)
+                        .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .build()
+                    val res = imageLoader.execute(req)
+                    if (res is coil.request.SuccessResult) {
+                        val bmp = (res.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+                        withContext(Dispatchers.Main) {
+                            pipImageView?.let { iv ->
+                                if (bmp != null) iv.setImageBitmap(bmp) else iv.setImageDrawable(res.drawable)
+                            }
+                        }
                     }
                 } catch (e: Exception) {
-                    android.util.Log.d("OverlayService", "Continuous snapshot tick: ${e.message}")
+                    // Ignore transient tick
                 }
-                delay(1000L)
             }
         }
 

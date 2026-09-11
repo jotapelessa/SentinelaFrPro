@@ -1,11 +1,11 @@
 # Graph Report - SentinelaFrigate  (2026-09-11)
 
 ## Corpus Check
-- 158 files · ~148,490 words
+- 158 files · ~149,507 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1345 nodes · 2088 edges · 94 communities (59 shown, 19 thin omitted)
+- 1347 nodes · 2093 edges · 94 communities (59 shown, 19 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 83 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
@@ -32,13 +32,13 @@
 - TvDesignTokens.kt
 - ScannerService
 - SentinelaPreferences
-- asyncio
+- FrigateBridgeService
 - Histórias
 - X509TrustManager
 - compilerOptions
 - X509Certificate
 - Models.kt
-- PiPGatewayService
+- asyncio
 - api/telemetry.py
 - dependencies
 - Histórias
@@ -103,7 +103,7 @@
 6. `OverlayService` - 24 edges
 7. `TelegramVaultService` - 20 edges
 8. `CameraItem` - 19 edges
-9. `SeamlessCameraImage()` - 19 edges
+9. `SeamlessCameraImage()` - 18 edges
 10. `compilerOptions` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
@@ -115,8 +115,8 @@
   backend/app/api/devices.py → backend/app/db/models.py
 - `device_diagnostics()` --uses--> `AuditLog`  [INFERRED]
   backend/app/api/devices.py → backend/app/db/models.py
-- `_resolve_active_test_camera()` --uses--> `Camera`  [INFERRED]
-  backend/app/api/settings.py → backend/app/db/models.py
+- `list_events()` --uses--> `EventRecord`  [INFERRED]
+  backend/app/api/events.py → backend/app/db/models.py
 
 ## Import Cycles
 - None detected.
@@ -124,8 +124,8 @@
 ## Communities (94 total, 19 thin omitted)
 
 ### Community 0 - "events.py"
-Cohesion: 0.07
-Nodes (40): clear_audit_trail(), delete_event(), delete_events_batch(), delete_events_by_date(), EventBatchDeleteRequest, get_audit_trail(), get_event_clip(), get_event_snapshot() (+32 more)
+Cohesion: 0.10
+Nodes (32): clear_audit_trail(), delete_event(), delete_events_batch(), delete_events_by_date(), EventBatchDeleteRequest, get_audit_trail(), get_event_clip(), get_event_snapshot() (+24 more)
 
 ### Community 1 - "useSentinelaStore"
 Cohesion: 0.07
@@ -152,8 +152,8 @@ Cohesion: 0.22
 Nodes (3): SentinelaRepository, ServiceStatus, put
 
 ### Community 7 - "settings.py"
-Cohesion: 0.10
-Nodes (44): _cached_dir_size(), clean_server_storage(), _dir_size_bytes(), dispatch_backup_to_telegram(), DNDConfigUpdate, download_database_file(), export_backup(), get_dnd_settings() (+36 more)
+Cohesion: 0.07
+Nodes (52): _cached_dir_size(), clean_server_storage(), _dir_size_bytes(), dispatch_backup_to_telegram(), DNDConfigUpdate, download_database_file(), export_backup(), get_dnd_settings() (+44 more)
 
 ### Community 8 - "sentinela-pro-mobile-nvr/src/App.tsx"
 Cohesion: 0.11
@@ -189,11 +189,11 @@ Nodes (12): Any, Tries to connect to a specific port on an IP address., Sends au
 
 ### Community 16 - "SentinelaPreferences"
 Cohesion: 0.07
-Nodes (55): AuditLogEntry, CameraItem, SentinelaPreferences, MainActivity, SentinelaConfig, RecordingClipItem, TvCameraCard(), TvFullScreenCameraDialog() (+47 more)
+Nodes (56): AuditLogEntry, CameraItem, SentinelaPreferences, MainActivity, SentinelaConfig, RecordingClipItem, TvCameraCard(), TvFullScreenCameraDialog() (+48 more)
 
-### Community 17 - "asyncio"
-Cohesion: 0.06
-Nodes (22): asyncio, Background loop sending hardware telemetry every 5.0 seconds to connected UI…, telemetry_broadcast_loop(), websocket_endpoint(), WebSocketManager, publish_simulated_event(), Publishes a mock Frigate security event to Mosquitto MQTT., FrigateBridgeService (+14 more)
+### Community 17 - "FrigateBridgeService"
+Cohesion: 0.13
+Nodes (10): FrigateBridgeService, Any, Retrieves a live JPEG frame at native/main-stream resolution using a multi-…, Verifies with ffprobe that the MP4 contains at least one valid video stream and…, Probes average frame rate, duration, width and height of a video file., Checks whether the file contains an audio stream., Robust H.264/AAC constant-frame-rate preparation for Telegram & mobile…, Performs deep health check of all Frigate & go2rtc communication channels with… (+2 more)
 
 ### Community 18 - "Histórias"
 Cohesion: 0.10
@@ -215,9 +215,9 @@ Nodes (8): X509TrustManager, SentinelaApplication, X509TrustManager, X509TrustMa
 Cohesion: 0.20
 Nodes (6): CaptureEvent, DiagnosticStatus, PairedDeviceItem, SpeedTestResult, StorageStatus, TelemetryData
 
-### Community 23 - "PiPGatewayService"
-Cohesion: 0.16
-Nodes (9): _cast_sync(), PiPGatewayService, Any, Dispatches Picture-in-Picture or Google Cast notification to registered TVs.…, Fast concurrent non-blocking port check to verify if Smart TV / device is…, Dispatches an interactive test PiP alert to a specific TV using real accessible…, Records an execution acknowledgement from a remote device overlay., Checks if current time falls in Do Not Disturb period. (+1 more)
+### Community 23 - "asyncio"
+Cohesion: 0.07
+Nodes (21): asyncio, Background loop sending hardware telemetry every 5.0 seconds to connected UI…, telemetry_broadcast_loop(), websocket_endpoint(), WebSocketManager, publish_simulated_event(), Publishes a mock Frigate security event to Mosquitto MQTT., _cast_sync() (+13 more)
 
 ### Community 24 - "api/telemetry.py"
 Cohesion: 0.06
@@ -361,18 +361,18 @@ Nodes (5): Constituição — princípios que a máquina verifica, Níveis de ob
 
 ## Knowledge Gaps
 - **370 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `name`, `private`, `version` (+365 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 592 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 593 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `update_device_permissions()` connect `devices.py` to `SentinelaRepository`?**
-  _High betweenness centrality (0.062) - this node is a cross-community bridge._
+  _High betweenness centrality (0.060) - this node is a cross-community bridge._
 - **Why does `update_device_status()` connect `devices.py` to `SentinelaRepository`?**
-  _High betweenness centrality (0.057) - this node is a cross-community bridge._
+  _High betweenness centrality (0.055) - this node is a cross-community bridge._
 - **Why does `SentinelaPreferences` connect `SentinelaPreferences` to `PipDuration`, `OverlayService`, `PipSize`, `SentinelaRepository.kt`, `SentinelaRepository`, `PipPosition`?**
-  _High betweenness centrality (0.046) - this node is a cross-community bridge._
+  _High betweenness centrality (0.053) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `SentinelaPreferences` (e.g. with `PhoneCameraStreamCard()` and `PhoneCapturesTab()`) actually correct?**
   _`SentinelaPreferences` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 19 inferred relationships involving `Camera` (e.g. with `add_camera()` and `delete_camera()`) actually correct?**

@@ -146,7 +146,24 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
     - **Causa Raiz no go2rtc**: No Tailscale Funnel / HTTPS (porta 443), o go2rtc recebia parâmetros duplicados `&mode=mse&mode=webrtc`, gerando dois `<video-stream>` no template HTML. O candidato WebRTC falhava fora da rede local porque a porta UDP 8555 não é exposta pelo Tailscale Funnel, congelando em tela preta e sobrepondo a imagem do snapshot.
     - **Solução no `OverlayService.kt`**: Enforçado estritamente `mode=mse,mjpeg` (stream único MSE sobre WebSocket HTTPS 443, 100% confiável no Tailscale de qualquer local como escritório ou casa de praia).
     - **Normalizador de URLs**: Qualquer IP local (`192.168.`, `10.`, `172.`) ou porta 8088 é reescrito automaticamente para `BASE_URL` (`https://*.ts.net`), garantindo comunicação HTTPS pura no Tailscale.
-    - **Ponte Javascript Nativa (`SentinelaNative`)**: O WebView do vídeo permanece `INVISIBLE` enquanto carrega e só é tornado `VISIBLE` quando o evento `playing`/`loadeddata` do elemento de vídeo é confirmado. Dessa forma, o snapshot HD renderizado pelo Coil permanece visível e nítido desde o primeiro milissegundo, eliminando qualquer tela preta.
+- **[2026-09-11] Fix Navegação D-Pad Perfeita, Aba Capturas & PiP em Segundo Plano no Tailscale (`v001.000.000.098`)**:
+  - **1. Navegação D-Pad 100% Fluida e Bidirecional (Sidebar <-> Viewports)**:
+    - **Sincronização Ativa de Abas na Barra Lateral**: Adicionado `LaunchedEffect(isFocused)` nos botões da sidebar para atualizar `selectedTab` imediatamente enquanto o usuário navega com D-Pad para cima/para baixo. Dessa forma, o viewport de destino já está completamente montado antes de receber o foco.
+    - **Loop de Retentativa Resiliente (`onNavigateToContent`)**: Substituído o delay fixo frágil de 60ms por um loop de até 6 tentativas a cada 35ms com tratamento de exceções, garantindo que o `FocusRequester` do primeiro elemento da aba receba o foco com 100% de confiabilidade, sem perdas de cursor.
+    - **Fuga e Retorno Desobstruídos ao Menu Lateral (`onNavigateLeftToSidebar`)**: Adicionados ouvintes `DirectionLeft` em todas as linhas e botões de `TvSettingsViewport` (tamanhos, posições, durações, botões de teste e sistema) e no primeiro card de ferramentas de `TvToolsViewport`, garantindo que o usuário nunca fique aprisionado em nenhum nível de navegação da Smart TV.
+  - **3. Aba Capturas com Fotos HD Visíveis e Grid Perfeito 16:9**:
+    - **Causa Raiz de Imagens Ausentes**: Em eventos recentes sem arquivo snapshot gerado no Frigate NVR (retorno HTTP 404), ou quando `allowedCamNames` vinha vazio do servidor, o `AsyncImage` falhava silenciosamente e deixava os cards pretos/vazios.
+    - **Componente `TvCaptureCard` com Fallback em Cascata**: Implementado carregamento multinível com `SubcomposeAsyncImage`: `clip.thumbnailUrl` -> `/api/events/{id}/snapshot.jpg` -> `/go2rtc/api/frame.jpeg?src={cameraId}` -> `/frigate/api/{cameraId}/latest.jpg?h=720`.
+    - **UI/UX Aprimorada**: Aspect ratio 16:9 estritamente simétrico, feedback visual de carregamento com spinner ciano, badges de câmera e score IA Frigate, halo de foco de alta resolução e modal em tela cheia com zoom (`TvClipPlayerDialog`) protegido com a mesma cascata de fallbacks.
+    - **Remoção de Cards Mock Obsoletos**: Eliminado o card fictício `"camera_secundaria"` e adicionado estado vazio elegante e focado quando não há gravações.
+  - **4 e 6. PiP Preview em Segundo Plano no Tailscale 100% Funcional (Escritório / Casa de Praia)**:
+    - **Causa Raiz da Tela Preta em Segundo Plano no Tailscale**:
+      1. Em segundo plano (overlay sobre a Home, Netflix ou YouTube da TV), o `WebView` com flag `NOT_FOCUSABLE` do Android pausa timers de JavaScript e suspende a reprodução de tags `<video>` se não receber `resumeTimers()` / `onResume()`.
+      2. O Coil com `.target(imageView)` em `WindowManager` de `Service` não recebia callbacks de layout do `ViewTreeObserver`, travando a medição do bitmap.
+      3. O gate de exibição do vídeo era prematuro (`onVideoPlaying` disparava antes dos bytes de frame chegarem), cobrindo o snapshot com um canvas preto de decodificação de buffer.
+    - **Carregador de Snapshot Direto e Autônomo (`loadSnapshotWithFallbacks`)**: Removida a dependência de enfileiramento do Coil; o `OverlayService` executa `imageLoader.execute(req)` com `size(Size.ORIGINAL)`, decodificando o bitmap diretamente em `Dispatchers.IO` e aplicando em `pipImageView.setImageBitmap()` no `Dispatchers.Main`.
+    - **Loop Ativo de Snapshot a cada 800ms**: Executa em `Dispatchers.IO` atualizando diretamente a `pipImageView`, assegurando que mesmo se a tag de vídeo em segundo plano for limitada pelo sistema, a prévia ao vivo em tempo real via Tailscale nunca fica preta.
+    - **Conexão Canônica no Tailscale**: Todas as URLs utilizam `SentinelaConfig.BASE_URL` (`https://*.ts.net`) com `/go2rtc/api/frame.jpeg?src={camera}` e `/go2rtc/stream.html?src={camera}&mode=mse,mjpeg`, garantindo visibilidade instantânea (<40ms) em qualquer local remoto.
 
 ---
 

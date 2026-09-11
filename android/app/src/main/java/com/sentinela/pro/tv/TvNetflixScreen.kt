@@ -47,6 +47,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import coil.compose.AsyncImage
+import coil.compose.SubcomposeAsyncImage
+import coil.request.ImageRequest
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.CameraItem
 import com.sentinela.pro.data.CaptureEvent
@@ -136,22 +138,18 @@ fun TvNetflixScreenCore(
                 },
                 onNavigateToContent = { tab ->
                     coroutineScope.launch {
-                        delay(60)
-                        when (tab) {
-                            TvTab.CAMERAS -> {
-                                heroModeFocusRequester.requestFocus()
-                            }
-                            TvTab.RECORDINGS -> {
-                                recordingsFirstItemRequester.requestFocus()
-                            }
-                            TvTab.TOOLS -> {
-                                toolsFirstItemRequester.requestFocus()
-                            }
-                            TvTab.LOGS -> {
-                                logsFirstItemRequester.requestFocus()
-                            }
-                            TvTab.SETTINGS -> {
-                                settingsFirstItemRequester.requestFocus()
+                        for (attempt in 0 until 6) {
+                            try {
+                                when (tab) {
+                                    TvTab.CAMERAS -> heroModeFocusRequester.requestFocus()
+                                    TvTab.RECORDINGS -> recordingsFirstItemRequester.requestFocus()
+                                    TvTab.TOOLS -> toolsFirstItemRequester.requestFocus()
+                                    TvTab.LOGS -> logsFirstItemRequester.requestFocus()
+                                    TvTab.SETTINGS -> settingsFirstItemRequester.requestFocus()
+                                }
+                                break
+                            } catch (e: Exception) {
+                                delay(35)
                             }
                         }
                     }
@@ -350,6 +348,12 @@ fun TvSidebar(
                     TvTab.TOOLS -> Icons.Default.FlashOn
                     TvTab.LOGS -> Icons.Default.Analytics
                     TvTab.SETTINGS -> Icons.Default.Settings
+                }
+
+                LaunchedEffect(isFocused) {
+                    if (isFocused && selectedTab != tab) {
+                        onTabSelected(tab)
+                    }
                 }
 
                 Row(
@@ -917,8 +921,8 @@ fun TvRecordingsViewport(
                         cameraId = event.camera,
                         cameraName = event.camera.replace("_", " ").uppercase(),
                         duration = "FOTO HD",
-                        timestamp = event.timestamp,
-                        sizeMb = "${(event.score * 0.25).toInt() + 10} MB",
+                        timestamp = if (event.timestamp.isNotBlank()) event.timestamp else "Hoje, ${14 - (i % 6)}:30",
+                        sizeMb = if (event.score > 0) "IA ${(event.score * 100).toInt()}%" else "IA 95%",
                         thumbnailUrl = event.snapshotUrl,
                         isVideo = false
                     )
@@ -934,27 +938,25 @@ fun TvRecordingsViewport(
     val mockClips = remember(cameras, realCaptures) {
         if (realCaptures.isNotEmpty()) {
             realCaptures
-        } else if (cameras.isEmpty()) {
-            listOf(
-                RecordingClipItem("rec_1", "camera_secundaria", "Câmera Secundária", "FOTO HD", "Hoje, 14:32", "12 MB", "", isVideo = false)
-            )
-        } else {
+        } else if (cameras.isNotEmpty()) {
             cameras.mapIndexed { i, c ->
                 RecordingClipItem(
-                    id = "rec_${c.id}_$i",
+                    id = "live_${c.id}_$i",
                     cameraId = c.id,
                     cameraName = c.name,
-                    duration = "FOTO HD",
-                    timestamp = "Hoje, ${14 - i}:30",
-                    sizeMb = "${10 + i * 2} MB",
-                    thumbnailUrl = c.thumbnailUrl,
+                    duration = "AO VIVO",
+                    timestamp = "Foto Recente",
+                    sizeMb = "HD",
+                    thumbnailUrl = "${SentinelaConfig.BASE_URL}/go2rtc/api/frame.jpeg?src=${c.id}",
                     isVideo = false
                 )
             }
+        } else {
+            emptyList()
         }
     }
 
-    var selectedClip by remember(mockClips) { mutableStateOf(mockClips.first()) }
+    var selectedClip by remember(mockClips) { mutableStateOf(mockClips.firstOrNull()) }
     var isClipPlayerOpen by remember { mutableStateOf(false) }
 
     Column(
@@ -998,141 +1000,96 @@ fun TvRecordingsViewport(
             }
         }
 
-        // GRID SIMÉTRICO DE GRAVAÇÕES (3 COLUNAS 16:9 COM ALTURA E LARGURA IDÊNTICAS)
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            horizontalArrangement = Arrangement.spacedBy(14.dp),
-            verticalArrangement = Arrangement.spacedBy(14.dp),
-            modifier = Modifier.fillMaxSize()
-        ) {
-            gridItemsIndexed(mockClips) { index, clip ->
-                val interactionSource = remember { MutableInteractionSource() }
-                val isFocused by interactionSource.collectIsFocusedAsState()
+        if (mockClips.isEmpty()) {
+            // Estado vazio elegante com navegação D-Pad de volta para a barra lateral
+            val emptyInteraction = remember { MutableInteractionSource() }
+            val isEmptyFocused by emptyInteraction.collectIsFocusedAsState()
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(16f / 9f)
-                        .then(if (index == 0) Modifier.focusRequester(firstItemRequester) else Modifier)
-                        .onKeyEvent { keyEvent ->
-                            if (keyEvent.type == KeyEventType.KeyDown) {
-                                when {
-                                    keyEvent.key == Key.DirectionLeft && index % 3 == 0 -> {
-                                        onNavigateLeftToSidebar()
-                                        true
-                                    }
-                                    keyEvent.key == Key.Enter || keyEvent.key == Key.DirectionCenter -> {
-                                        selectedClip = clip
-                                        isClipPlayerOpen = true
-                                        true
-                                    }
-                                    else -> false
-                                }
-                            } else false
-                        }
-                        .tvDpadFocusable(
-                            isFocused = isFocused,
-                            focusedBorderColor = TvColors.CyberCyan,
-                            unfocusedBorderColor = TvColors.BorderSubtle,
-                            shape = TvShapes.CameraCard,
-                            scaleAmount = 1.04f
-                        )
-                        .clip(TvShapes.CameraCard)
-                        .background(
-                            if (isFocused) TvColors.CardBackgroundElevated else TvColors.CardBackground
-                        )
-                        .clickable(interactionSource = interactionSource, indication = null) {
-                            selectedClip = clip
-                            isClipPlayerOpen = true
-                        }
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(260.dp)
+                    .focusRequester(firstItemRequester)
+                    .onKeyEvent { keyEvent ->
+                        if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                            onNavigateLeftToSidebar()
+                            true
+                        } else false
+                    }
+                    .tvDpadFocusable(isFocused = isEmptyFocused, focusedBorderColor = TvColors.CyberCyan, shape = TvShapes.CameraCard)
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, if (isEmptyFocused) TvColors.CyberCyan else TvColors.BorderSubtle, TvShapes.CameraCard),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    val fallbackUrl = "${SentinelaConfig.BASE_URL}/frigate/api/${clip.cameraId}/latest.jpg?h=720"
-                    val imageUrl = clip.thumbnailUrl.ifBlank { fallbackUrl }
-
-                    coil.compose.AsyncImage(
-                        model = imageUrl,
-                        contentDescription = clip.cameraName,
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
+                    Icon(Icons.Default.PhotoLibrary, contentDescription = null, tint = TvColors.TextMuted, modifier = Modifier.size(48.dp))
+                    Text(
+                        text = if (isCapturesLoading) "Carregando capturas do NVR..." else "Nenhuma captura recente encontrada no servidor.",
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
                     )
+                    Text(
+                        text = "Pressione ◄ para retornar ao menu",
+                        color = TvColors.CyberCyan,
+                        fontSize = 11.sp
+                    )
+                }
+            }
+        } else {
+            // GRID SIMÉTRICO DE GRAVAÇÕES (3 COLUNAS 16:9 COM ALTURA E LARGURA IDÊNTICAS)
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                gridItemsIndexed(mockClips) { index, clip ->
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isFocused by interactionSource.collectIsFocusedAsState()
 
-                    // Overlay Gradiente Cinematográfico
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
+                            .fillMaxWidth()
+                            .aspectRatio(16f / 9f)
+                            .then(if (index == 0) Modifier.focusRequester(firstItemRequester) else Modifier)
+                            .onKeyEvent { keyEvent ->
+                                if (keyEvent.type == KeyEventType.KeyDown) {
+                                    when {
+                                        keyEvent.key == Key.DirectionLeft && index % 3 == 0 -> {
+                                            onNavigateLeftToSidebar()
+                                            true
+                                        }
+                                        keyEvent.key == Key.Enter || keyEvent.key == Key.DirectionCenter -> {
+                                            selectedClip = clip
+                                            isClipPlayerOpen = true
+                                            true
+                                        }
+                                        else -> false
+                                    }
+                                } else false
+                            }
+                            .tvDpadFocusable(
+                                isFocused = isFocused,
+                                focusedBorderColor = TvColors.CyberCyan,
+                                unfocusedBorderColor = TvColors.BorderSubtle,
+                                shape = TvShapes.CameraCard,
+                                scaleAmount = 1.04f
+                            )
+                            .clip(TvShapes.CameraCard)
                             .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Black.copy(alpha = 0.55f),
-                                        Color.Transparent,
-                                        Color.Black.copy(alpha = 0.9f)
-                                    )
-                                )
+                                if (isFocused) TvColors.CardBackgroundElevated else TvColors.CardBackground
                             )
-                            .padding(TvDimens.sm)
+                            .clickable(interactionSource = interactionSource, indication = null) {
+                                selectedClip = clip
+                                isClipPlayerOpen = true
+                            }
                     ) {
-                        // Badge Superior Esquerdo: Nome da Câmera
-                        Surface(
-                            shape = TvShapes.Badge,
-                            color = TvColors.CardBackgroundElevated.copy(alpha = 0.85f),
-                            border = BorderStroke(0.5.dp, TvColors.BorderSubtle),
-                            modifier = Modifier.align(Alignment.TopStart)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(Icons.Default.Videocam, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(12.dp))
-                                Text(
-                                    text = clip.cameraName,
-                                    color = Color.White,
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    maxLines = 1
-                                )
-                            }
-                        }
-
-                        // Badge Superior Direito: FOTO HD / DETECÇÃO
-                        Surface(
-                            shape = TvShapes.Badge,
-                            color = TvColors.StandbyAmber.copy(alpha = 0.25f),
-                            border = BorderStroke(0.5.dp, TvColors.StandbyAmber),
-                            modifier = Modifier.align(Alignment.TopEnd)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
-                            ) {
-                                Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = TvColors.StandbyAmber, modifier = Modifier.size(12.dp))
-                                Text(
-                                    text = "FOTO HD",
-                                    color = TvColors.StandbyAmber,
-                                    fontSize = 9.sp,
-                                    fontWeight = FontWeight.ExtraBold
-                                )
-                            }
-                        }
-
-                        // Informações Inferiores: Timestamp e Tamanho
-                        Column(
-                            modifier = Modifier.align(Alignment.BottomStart)
-                        ) {
-                            Text(
-                                text = clip.timestamp,
-                                color = Color.White,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = "Captura Frigate IA • ${clip.sizeMb} • [OK] Ver",
-                                color = TvColors.TextSecondary,
-                                fontSize = 9.sp,
-                                fontFamily = FontFamily.Monospace
-                            )
-                        }
+                        TvCaptureCard(clip = clip, isFocused = isFocused)
                     }
                 }
             }
@@ -1140,10 +1097,184 @@ fun TvRecordingsViewport(
     }
 
     if (isClipPlayerOpen) {
-        TvClipPlayerDialog(
-            clip = selectedClip,
-            onDismiss = { isClipPlayerOpen = false }
+        selectedClip?.let { clip ->
+            TvClipPlayerDialog(
+                clip = clip,
+                onDismiss = { isClipPlayerOpen = false }
+            )
+        }
+    }
+}
+
+@Composable
+fun TvCaptureCard(
+    clip: RecordingClipItem,
+    isFocused: Boolean
+) {
+    val candidates = remember(clip) {
+        listOfNotNull(
+            clip.thumbnailUrl.takeIf { it.isNotBlank() },
+            "${SentinelaConfig.BASE_URL}/api/events/${clip.id}/snapshot.jpg".takeIf { !clip.id.startsWith("live_") && !clip.id.startsWith("rec_") },
+            "${SentinelaConfig.BASE_URL}/frigate/api/events/${clip.id}/snapshot.jpg".takeIf { !clip.id.startsWith("live_") && !clip.id.startsWith("rec_") },
+            "${SentinelaConfig.BASE_URL}/go2rtc/api/frame.jpeg?src=${clip.cameraId}",
+            "${SentinelaConfig.BASE_URL}/frigate/api/${clip.cameraId}/latest.jpg?h=720"
         )
+    }
+
+    var currentCandidateIndex by remember(clip) { mutableIntStateOf(0) }
+    val currentUrl = candidates.getOrNull(currentCandidateIndex)
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        if (currentUrl != null) {
+            SubcomposeAsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(currentUrl)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = clip.cameraName,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+                loading = {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color(0xFF070B14)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        CircularProgressIndicator(
+                            color = TvColors.CyberCyan,
+                            strokeWidth = 2.dp,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
+                },
+                onError = {
+                    if (currentCandidateIndex < candidates.size - 1) {
+                        currentCandidateIndex++
+                    }
+                }
+            )
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color(0xFF0A0F1D)),
+                contentAlignment = Alignment.Center
+            ) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(Icons.Default.PhotoCamera, contentDescription = null, tint = TvColors.TextMuted, modifier = Modifier.size(28.dp))
+                    Text("SEM PRÉVIA", color = TvColors.TextMuted, fontSize = 9.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+
+        // Overlay Gradiente Cinematográfico
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    Brush.verticalGradient(
+                        colors = listOf(
+                            Color.Black.copy(alpha = 0.65f),
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.9f)
+                        )
+                    )
+                )
+                .padding(8.dp)
+        ) {
+            // Badge Superior Esquerdo: Nome da Câmera
+            Surface(
+                shape = TvShapes.Badge,
+                color = TvColors.CardBackgroundElevated.copy(alpha = 0.9f),
+                border = BorderStroke(0.5.dp, if (isFocused) TvColors.CyberCyan else TvColors.BorderSubtle),
+                modifier = Modifier.align(Alignment.TopStart)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Icon(Icons.Default.Videocam, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(11.dp))
+                    Text(
+                        text = clip.cameraName,
+                        color = Color.White,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold,
+                        maxLines = 1
+                    )
+                }
+            }
+
+            // Badge Superior Direito: FOTO HD / DETECÇÃO IA
+            Surface(
+                shape = TvShapes.Badge,
+                color = if (isFocused) TvColors.NetflixRed.copy(alpha = 0.35f) else TvColors.StandbyAmber.copy(alpha = 0.25f),
+                border = BorderStroke(0.5.dp, if (isFocused) TvColors.NetflixRed else TvColors.StandbyAmber),
+                modifier = Modifier.align(Alignment.TopEnd)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(if (isFocused) TvColors.NetflixRed else TvColors.StandbyAmber, CircleShape)
+                    )
+                    Text(
+                        text = clip.sizeMb.ifBlank { "FOTO HD" },
+                        color = if (isFocused) Color.White else TvColors.StandbyAmber,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.ExtraBold
+                    )
+                }
+            }
+
+            // Informações Inferiores: Timestamp e Action
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomStart),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Bottom
+            ) {
+                Column {
+                    Text(
+                        text = clip.timestamp,
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Instantâneo NVR",
+                        color = TvColors.TextSecondary,
+                        fontSize = 9.sp,
+                        fontFamily = FontFamily.Monospace
+                    )
+                }
+
+                if (isFocused) {
+                    Surface(
+                        shape = TvShapes.Badge,
+                        color = TvColors.CyberCyan.copy(alpha = 0.25f),
+                        border = BorderStroke(1.dp, TvColors.CyberCyan)
+                    ) {
+                        Text(
+                            text = "[OK] EXPANDIR",
+                            color = TvColors.CyberCyan,
+                            fontSize = 8.sp,
+                            fontWeight = FontWeight.Black,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -1463,7 +1594,14 @@ fun TvToolsViewport(
                     actionText = if (isPinging) "ENVIANDO..." else "PING",
                     isActive = false,
                     activeColor = TvColors.CyberCyan,
-                    modifier = Modifier.weight(1f),
+                    modifier = Modifier
+                        .weight(1f)
+                        .onKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                                onNavigateLeftToSidebar()
+                                true
+                            } else false
+                        },
                     onClick = {
                         isPinging = true
                         coroutineScope.launch {
@@ -1953,7 +2091,7 @@ fun TvSettingsViewport(
                 }
 
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(com.sentinela.pro.data.PipPosition.values().toList()) { pos ->
+                    itemsIndexed(com.sentinela.pro.data.PipPosition.values().toList()) { idx, pos ->
                         val isSelected = pos.ordinal == posIndex
                         val interactionSource = remember { MutableInteractionSource() }
                         val isFocused by interactionSource.collectIsFocusedAsState()
@@ -1963,6 +2101,12 @@ fun TvSettingsViewport(
                             color = if (isSelected) TvColors.NetflixRed else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
                             border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                             modifier = Modifier
+                                .onKeyEvent { keyEvent ->
+                                    if (idx == 0 && keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                                        onNavigateLeftToSidebar()
+                                        true
+                                    } else false
+                                }
                                 .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                 .clickable(interactionSource = interactionSource, indication = null) {
                                     posIndex = pos.ordinal
@@ -2005,7 +2149,7 @@ fun TvSettingsViewport(
                 }
 
                 LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    items(com.sentinela.pro.data.PipDuration.values().toList()) { dur ->
+                    itemsIndexed(com.sentinela.pro.data.PipDuration.values().toList()) { idx, dur ->
                         val isSelected = dur.ordinal == durIndex
                         val interactionSource = remember { MutableInteractionSource() }
                         val isFocused by interactionSource.collectIsFocusedAsState()
@@ -2015,6 +2159,12 @@ fun TvSettingsViewport(
                             color = if (isSelected) TvColors.NetflixRed else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
                             border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                             modifier = Modifier
+                                .onKeyEvent { keyEvent ->
+                                    if (idx == 0 && keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                                        onNavigateLeftToSidebar()
+                                        true
+                                    } else false
+                                }
                                 .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                 .clickable(interactionSource = interactionSource, indication = null) {
                                     durIndex = dur.ordinal
@@ -2098,7 +2248,13 @@ fun TvSettingsViewport(
                                 Toast.makeText(context, "🔔 Janela PiP disparada sobre a TV!", Toast.LENGTH_SHORT).show()
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = TvColors.NetflixRed),
-                            shape = TvShapes.Badge
+                            shape = TvShapes.Badge,
+                            modifier = Modifier.onKeyEvent { keyEvent ->
+                                if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                                    onNavigateLeftToSidebar()
+                                    true
+                                } else false
+                            }
                         ) {
                             Icon(Icons.Default.PictureInPicture, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                             Spacer(modifier = Modifier.width(6.dp))
@@ -2152,7 +2308,13 @@ fun TvSettingsViewport(
                             }
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = TvColors.CardBackgroundElevated),
-                        shape = TvShapes.Badge
+                        shape = TvShapes.Badge,
+                        modifier = Modifier.onKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                                onNavigateLeftToSidebar()
+                                true
+                            } else false
+                        }
                     ) {
                         Icon(Icons.Default.Settings, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(16.dp))
                         Spacer(modifier = Modifier.width(6.dp))
@@ -2399,6 +2561,18 @@ fun TvClipPlayerDialog(
     var zoomLevel by remember { mutableFloatStateOf(1f) } // 1x, 1.5x, 2x, 3x
     val zoomOptions = listOf(1f, 1.5f, 2f, 3f)
 
+    val candidates = remember(clip) {
+        listOfNotNull(
+            clip.thumbnailUrl.takeIf { it.isNotBlank() },
+            "${SentinelaConfig.BASE_URL}/api/events/${clip.id}/snapshot.jpg".takeIf { !clip.id.startsWith("live_") && !clip.id.startsWith("rec_") },
+            "${SentinelaConfig.BASE_URL}/frigate/api/events/${clip.id}/snapshot.jpg".takeIf { !clip.id.startsWith("live_") && !clip.id.startsWith("rec_") },
+            "${SentinelaConfig.BASE_URL}/go2rtc/api/frame.jpeg?src=${clip.cameraId}",
+            "${SentinelaConfig.BASE_URL}/frigate/api/${clip.cameraId}/latest.jpg?h=1080"
+        )
+    }
+    var currentCandidateIndex by remember(clip) { mutableIntStateOf(0) }
+    val currentUrl = candidates.getOrNull(currentCandidateIndex)
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -2412,17 +2586,27 @@ fun TvClipPlayerDialog(
                     zoomLevel = zoomOptions[nextIdx]
                 }
         ) {
-            coil.compose.AsyncImage(
-                model = clip.thumbnailUrl.ifBlank { "${SentinelaConfig.BASE_URL}/frigate/api/${clip.cameraId}/latest.jpg?h=1080" },
-                contentDescription = clip.cameraName,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .graphicsLayer(
-                        scaleX = zoomLevel,
-                        scaleY = zoomLevel
-                    ),
-                contentScale = ContentScale.Fit
-            )
+            if (currentUrl != null) {
+                SubcomposeAsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(currentUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = clip.cameraName,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = zoomLevel,
+                            scaleY = zoomLevel
+                        ),
+                    contentScale = ContentScale.Fit,
+                    onError = {
+                        if (currentCandidateIndex < candidates.size - 1) {
+                            currentCandidateIndex++
+                        }
+                    }
+                )
+            }
 
             Row(
                 modifier = Modifier

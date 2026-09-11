@@ -203,9 +203,9 @@ data class LogEntryItem(
 
 // Helper para converter CameraItem do projeto em CameraEntity
 fun CameraItem.toEntity(index: Int, host: String): CameraEntity {
-    val cleanHost = host.removePrefix("http://").removePrefix("https://").trimEnd('/')
-    val snapUrl = "http://$cleanHost:5000/api/${this.name}/latest.jpg"
-    val stream = "http://$cleanHost:1984/api/stream.html?src=${this.name}&mode=webrtc"
+    val base = com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')
+    val snapUrl = "$base/go2rtc/api/frame.jpeg?src=${this.name}&t=${System.currentTimeMillis()}"
+    val stream = "$base/go2rtc/stream.html?src=${this.name}&mode=mse,mjpeg"
     return CameraEntity(
         id = this.name,
         name = this.friendlyName.ifBlank { this.name.replace("_", " ").replaceFirstChar { it.uppercase() } },

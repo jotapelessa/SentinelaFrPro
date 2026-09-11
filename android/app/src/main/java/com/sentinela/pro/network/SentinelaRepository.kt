@@ -345,8 +345,8 @@ object SentinelaRepository {
                     val obj = jsonArray.getJSONObject(i)
                     val camera = obj.optString("camera", "camera_principal")
                     
-                    // Filter captures to only permitted cameras
-                    if (allowedCamNames != null && !allowedCamNames.contains(camera)) {
+                    // Filter captures to only permitted cameras (if list is non-empty)
+                    if (allowedCamNames != null && allowedCamNames.isNotEmpty() && !allowedCamNames.contains(camera)) {
                         continue
                     }
 
