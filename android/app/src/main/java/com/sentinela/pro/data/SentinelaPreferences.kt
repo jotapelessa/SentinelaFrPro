@@ -22,6 +22,10 @@ class SentinelaPreferences(private val context: Context) {
         get() = prefs.getBoolean("allow_pip_alerts", true)
         set(value) = prefs.edit().putBoolean("allow_pip_alerts", value).apply()
 
+    var pipPlayerMode: String
+        get() = prefs.getString("pip_player_mode", "snapshot") ?: "snapshot"
+        set(value) = prefs.edit().putString("pip_player_mode", value).apply()
+
     var deviceIdentifier: String
         get() {
             val existing = prefs.getString("device_id", null)

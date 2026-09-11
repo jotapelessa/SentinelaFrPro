@@ -17,7 +17,11 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -33,6 +37,8 @@ class OverlayService : Service() {
 
     private var pipTitleView: TextView? = null
     private var pipImageView: android.widget.ImageView? = null
+    private var pipPlayerView: PlayerView? = null
+    private var pipExoPlayer: ExoPlayer? = null
     private var snapshotRefreshJob: Job? = null
     
     private val serviceJob = SupervisorJob()
@@ -464,19 +470,50 @@ class OverlayService : Service() {
                     setBackgroundColor(0xFF000000.toInt())
                 }
 
-                // 1. Instant Snapshot Base Layer (FIT_CENTER preserves 100% full FOV without zoom or cropping)
-                val snapImageView = android.widget.ImageView(this).apply {
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
-                    )
-                    scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
-                }
-                pipImageView = snapImageView
-                inner.addView(snapImageView)
+                if (prefs.pipPlayerMode == "exoplayer") {
+                    val pv = PlayerView(this).apply {
+                        layoutParams = FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT
+                        )
+                        useController = false
+                        setBackgroundColor(Color.BLACK)
+                    }
+                    pipPlayerView = pv
+                    inner.addView(pv)
 
-                // Load instant image with Coil and cascading fallbacks
-                loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera)
+                    val audioAttrs = AudioAttributes.Builder()
+                        .setUsage(C.USAGE_UNKNOWN)
+                        .setContentType(C.AUDIO_CONTENT_TYPE_UNKNOWN)
+                        .build()
+
+                    val player = ExoPlayer.Builder(this)
+                        .setAudioAttributes(audioAttrs, false)
+                        .build()
+                    pipExoPlayer = player
+                    pv.player = player
+                    player.volume = 0f
+                    player.playWhenReady = true
+                    
+                    val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
+                    val mediaItem = MediaItem.fromUri(hlsUrl)
+                    player.setMediaItem(mediaItem)
+                    player.prepare()
+                } else {
+                    // 1. Instant Snapshot Base Layer (FIT_CENTER preserves 100% full FOV without zoom or cropping)
+                    val snapImageView = android.widget.ImageView(this).apply {
+                        layoutParams = FrameLayout.LayoutParams(
+                            FrameLayout.LayoutParams.MATCH_PARENT,
+                            FrameLayout.LayoutParams.MATCH_PARENT
+                        )
+                        scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                    }
+                    pipImageView = snapImageView
+                    inner.addView(snapImageView)
+
+                    // Load instant image with Coil and cascading fallbacks
+                    loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera)
+                }
 
 
 
@@ -516,11 +553,22 @@ class OverlayService : Service() {
                 overlayView = root
                 windowManager.addView(overlayView, params)
             } else {
-                pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
+                if (prefs.pipPlayerMode == "exoplayer") {
+                    pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • AO VIVO"
+                    pipExoPlayer?.let { player ->
+                        val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
+                        val mediaItem = MediaItem.fromUri(hlsUrl)
+                        player.setMediaItem(mediaItem)
+                        player.prepare()
+                        player.playWhenReady = true
+                    }
+                } else {
+                    pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
 
-                // FIX #2: Reload snapshot on reuse with cascading fallbacks
-                pipImageView?.let { iv ->
-                    loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera)
+                    // FIX #2: Reload snapshot on reuse with cascading fallbacks
+                    pipImageView?.let { iv ->
+                        loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera)
+                    }
                 }
 
                 if (overlayView?.parent == null) {
@@ -563,35 +611,40 @@ class OverlayService : Service() {
             return
         }
 
-        // Continuous Snapshot Refresh Loop (Updates image every 250ms directly to Bitmap so it NEVER goes black)
-        snapshotRefreshJob?.cancel()
-        snapshotRefreshJob = serviceScope.launch(Dispatchers.IO) {
-            val base = SentinelaConfig.BASE_URL.trimEnd('/')
-            val imageLoader = coil.Coil.imageLoader(applicationContext)
-            while (isActive) {
-                delay(250L)
-                try {
-                    val refreshSnapUrl = "$base/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}"
-                    val req = coil.request.ImageRequest.Builder(applicationContext)
-                        .data(refreshSnapUrl)
-                        .size(coil.size.Size.ORIGINAL)
-                        .allowHardware(false)
-                        .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
-                        .diskCachePolicy(coil.request.CachePolicy.DISABLED)
-                        .build()
-                    val res = imageLoader.execute(req)
-                    if (res is coil.request.SuccessResult) {
-                        val bmp = (res.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
-                        withContext(Dispatchers.Main) {
-                            pipImageView?.let { iv ->
-                                if (bmp != null) iv.setImageBitmap(bmp) else iv.setImageDrawable(res.drawable)
+        if (prefs.pipPlayerMode == "snapshot") {
+            // Continuous Snapshot Refresh Loop (Updates image every 250ms directly to Bitmap so it NEVER goes black)
+            snapshotRefreshJob?.cancel()
+            snapshotRefreshJob = serviceScope.launch(Dispatchers.IO) {
+                val base = SentinelaConfig.BASE_URL.trimEnd('/')
+                val imageLoader = coil.Coil.imageLoader(applicationContext)
+                while (isActive) {
+                    delay(250L)
+                    try {
+                        val refreshSnapUrl = "$base/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}"
+                        val req = coil.request.ImageRequest.Builder(applicationContext)
+                            .data(refreshSnapUrl)
+                            .size(coil.size.Size.ORIGINAL)
+                            .allowHardware(false)
+                            .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                            .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                            .build()
+                        val res = imageLoader.execute(req)
+                        if (res is coil.request.SuccessResult) {
+                            val bmp = (res.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+                            withContext(Dispatchers.Main) {
+                                pipImageView?.let { iv ->
+                                    if (bmp != null) iv.setImageBitmap(bmp) else iv.setImageDrawable(res.drawable)
+                                }
                             }
                         }
+                    } catch (e: Exception) {
+                        // Ignore transient tick
                     }
-                } catch (e: Exception) {
-                    // Ignore transient tick
                 }
             }
+        } else {
+            snapshotRefreshJob?.cancel()
+            snapshotRefreshJob = null
         }
 
         val duration = durationSeconds
@@ -605,6 +658,9 @@ class OverlayService : Service() {
         try {
             snapshotRefreshJob?.cancel()
             snapshotRefreshJob = null
+            pipExoPlayer?.release()
+            pipExoPlayer = null
+            pipPlayerView = null
             overlayView?.let { v ->
                 if (v.parent != null) {
                     windowManager.removeViewImmediate(v)

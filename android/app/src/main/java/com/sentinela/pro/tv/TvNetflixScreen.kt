@@ -1969,6 +1969,7 @@ fun TvSettingsViewport(
     var sizeIndex by remember { mutableIntStateOf(prefs.pipSizeIndex) }
     var posIndex by remember { mutableIntStateOf(prefs.pipPositionIndex) }
     var durIndex by remember { mutableIntStateOf(prefs.pipDurationIndex) }
+    var playerMode by remember { mutableStateOf(prefs.pipPlayerMode) }
 
     var hasOverlayPerm by remember {
         mutableStateOf(
@@ -1990,7 +1991,73 @@ fun TvSettingsViewport(
             }
         }
 
-        // 1. TAMANHO DA JANELA PIP (8 OPÇÕES)
+        // MÓDULO DE VÍDEO DO PIP
+        item {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                    .padding(14.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
+                        Icon(Icons.Default.Videocam, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(18.dp))
+                    }
+                    Text("1. MÓDULO DE VÍDEO DO PIP", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                }
+                
+                val modes = listOf("snapshot" to "(Recomendado) Native Fast-Snapshot", "exoplayer" to "ExoPlayer Nativo")
+                LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    itemsIndexed(modes) { idx, mode ->
+                        val isSelected = playerMode == mode.first
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isFocused by interactionSource.collectIsFocusedAsState()
+
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = if (isSelected) TvColors.NetflixRed else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
+                            border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
+                            modifier = Modifier
+                                .then(if (idx == 0) Modifier.focusRequester(firstItemRequester) else Modifier)
+                                .onKeyEvent { keyEvent ->
+                                    if (idx == 0 && keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                                        onNavigateLeftToSidebar()
+                                        true
+                                    } else {
+                                        false
+                                    }
+                                }
+                                .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
+                                .clickable(interactionSource = interactionSource, indication = null) {
+                                    playerMode = mode.first
+                                    prefs.pipPlayerMode = mode.first
+                                    Toast.makeText(context, "Modo do Player: ${mode.second}", Toast.LENGTH_SHORT).show()
+                                }
+                        ) {
+                            Text(
+                                text = mode.second,
+                                color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
+                                fontSize = 11.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
+                            )
+                        }
+                    }
+                }
+                Text(
+                    text = if (playerMode == "snapshot") "Zero buffer via Tailscale, não pausa o YouTube." else "Vídeo mais fluido (20+ FPS), mas sujeito a buffer se a rede estiver lenta.",
+                    style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
+                )
+            }
+        }
+
+        // 2. TAMANHO DA JANELA PIP (8 OPÇÕES)
         item {
             Column(
                 modifier = Modifier
