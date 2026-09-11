@@ -1,21 +1,21 @@
 # Graph Report - SentinelaFrigate  (2026-09-11)
 
 ## Corpus Check
-- 158 files · ~150,087 words
+- 158 files · ~151,115 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1348 nodes · 2096 edges · 107 communities (72 shown, 19 thin omitted)
-- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 83 edges (avg confidence: 0.92)
+- 1340 nodes · 2095 edges · 97 communities (61 shown, 20 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 85 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `33849bbf`
+- Built from commit: `11ee3d8e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- delete_events_batch
+- events.py
 - useSentinelaStore
 - devices.py
 - OverlayService
@@ -32,12 +32,12 @@
 - TvDesignTokens.kt
 - ScannerService
 - SentinelaPreferences
-- asyncio
+- FrigateBridgeService
 - Histórias
 - X509TrustManager
 - compilerOptions
 - X509Certificate
-- Models.kt
+- asyncio
 - PiPGatewayService
 - api/telemetry.py
 - dependencies
@@ -45,23 +45,19 @@
 - TelemetryService
 - Histórias
 - Spec: Disparo de Fotos e Vídeos de Intrusão para o Telegram (Telegram Vault & Drive)
-- PipPosition
+- ws.py
 - 3. Catálogo de Endpoints da API REST (`/api`)
 - 🛡️ Sentinela Frigate Pro
 - dependencies
 - Spec: Sentinela Core Ecosystem (Web, Mobile & Orquestrador)
 - PipDuration
 - manifest.json
-- PipSize
-- SentinelaRepository.kt
+- TvAudioManager
 - gradlew
 - onp-spec-driven — a especificação que continua verdadeira (Antigravity)
-- X509TrustManager
 - MseCameraView
-- MQTTService
 - Resgate do Sistema: Solução Final para o Vídeo do Telegram (v060.4)
 - SentinelaMobileTokens.kt
-- SdpObserver
 - logger.ts
 - opencode.json
 - android-smartphone-app.spec.test.js
@@ -84,8 +80,6 @@
 - setup_ubuntu.sh
 - simulate_event.sh
 - FastAPI
-- WebRtcManager
-- .showPiP
 - Escrevendo especificações auditáveis
 - Lições — aprendizado com lastro mecânico
 - Passo a passo no Antigravity
@@ -96,24 +90,20 @@
 - Constituição — v1.1.0
 - STATE.md — Memória Persistente do Projeto
 - Constituição — princípios que a máquina verifica
-- events.py
 - rules/graphify.md
 - workflows/graphify.md
 - telegram-vault/tasks.md
-- BootReceiver.kt
 - trigger_network_scan
 - MemoryRingBufferHandler
-- android
 - run_server_benchmark
-- AuditLog
 
 ## God Nodes (most connected - your core abstractions)
-1. `SentinelaRepository` - 29 edges
-2. `useSentinelaStore` - 28 edges
-3. `SentinelaPreferences` - 27 edges
+1. `SentinelaRepository` - 31 edges
+2. `SentinelaPreferences` - 28 edges
+3. `useSentinelaStore` - 28 edges
 4. `Camera` - 26 edges
-5. `PairedDevice` - 25 edges
-6. `OverlayService` - 24 edges
+5. `PairedDevice` - 26 edges
+6. `OverlayService` - 25 edges
 7. `TelegramVaultService` - 20 edges
 8. `CameraItem` - 19 edges
 9. `SeamlessCameraImage()` - 18 edges
@@ -128,17 +118,17 @@
   backend/app/api/devices.py → backend/app/db/models.py
 - `device_diagnostics()` --uses--> `AuditLog`  [INFERRED]
   backend/app/api/devices.py → backend/app/db/models.py
-- `list_events()` --uses--> `EventRecord`  [INFERRED]
-  backend/app/api/events.py → backend/app/db/models.py
+- `_resolve_active_test_camera()` --uses--> `Camera`  [INFERRED]
+  backend/app/api/settings.py → backend/app/db/models.py
 
 ## Import Cycles
 - None detected.
 
-## Communities (107 total, 19 thin omitted)
+## Communities (97 total, 20 thin omitted)
 
-### Community 0 - "delete_events_batch"
-Cohesion: 0.17
-Nodes (19): clear_audit_trail(), delete_event(), delete_events_batch(), delete_events_by_date(), EventBatchDeleteRequest, list_events(), AsyncSession, BaseModel (+11 more)
+### Community 0 - "events.py"
+Cohesion: 0.07
+Nodes (40): clear_audit_trail(), delete_event(), delete_events_batch(), delete_events_by_date(), EventBatchDeleteRequest, get_audit_trail(), get_event_clip(), get_event_snapshot() (+32 more)
 
 ### Community 1 - "useSentinelaStore"
 Cohesion: 0.07
@@ -146,27 +136,27 @@ Nodes (39): CamerasPage(), EventsPage(), metadata, viewport, DashboardPage(), De
 
 ### Community 2 - "devices.py"
 Cohesion: 0.09
-Nodes (55): BatchTestRequest, check_devices_health(), cleanup_all_devices(), deduplicate_devices(), delete_device(), device_diagnostics(), device_heartbeat(), DeviceAllowedCamerasUpdate (+47 more)
+Nodes (58): BatchTestRequest, check_devices_health(), cleanup_all_devices(), deduplicate_devices(), delete_device(), device_diagnostics(), device_heartbeat(), DeviceAllowedCamerasUpdate (+50 more)
 
 ### Community 3 - "OverlayService"
-Cohesion: 0.17
-Nodes (11): DevicePolicy, Context, Intent, OverlayService, IBinder, Job, Notification, Service (+3 more)
+Cohesion: 0.10
+Nodes (20): BootReceiver, Context, Intent, DevicePolicy, SentinelaWebSocket, android, Context, Intent (+12 more)
 
 ### Community 4 - "sentinela-pro-tv/src/App.tsx"
-Cohesion: 0.07
-Nodes (37): App(), KotlinCodeModal(), KotlinCodeModalProps, TvCameraCarousel(), TvCameraCarouselProps, TvHeroSpotlight(), TvHeroSpotlightProps, TvLogsView() (+29 more)
+Cohesion: 0.09
+Nodes (36): App(), KotlinCodeModal(), KotlinCodeModalProps, TvCameraCarousel(), TvCameraCarouselProps, TvHeroSpotlight(), TvHeroSpotlightProps, TvLogsView() (+28 more)
 
 ### Community 5 - "cameras.py"
 Cohesion: 0.10
 Nodes (48): add_camera(), CameraCreate, CameraUpdate, delete_camera(), FrigateZonesPayload, get_camera_diagnostics(), get_camera_stream_info(), get_frigate_camera_zones() (+40 more)
 
 ### Community 6 - "SentinelaRepository"
-Cohesion: 0.22
-Nodes (3): SentinelaRepository, ServiceStatus, put
+Cohesion: 0.05
+Nodes (36): AuditLogEntry, CaptureEvent, DiagnosticStatus, PairedDeviceItem, PipPosition, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT (+28 more)
 
 ### Community 7 - "settings.py"
-Cohesion: 0.09
-Nodes (46): _cached_dir_size(), clean_server_storage(), _dir_size_bytes(), dispatch_backup_to_telegram(), DNDConfigUpdate, download_database_file(), export_backup(), get_dnd_settings() (+38 more)
+Cohesion: 0.10
+Nodes (44): _cached_dir_size(), clean_server_storage(), _dir_size_bytes(), dispatch_backup_to_telegram(), DNDConfigUpdate, download_database_file(), export_backup(), get_dnd_settings() (+36 more)
 
 ### Community 8 - "sentinela-pro-mobile-nvr/src/App.tsx"
 Cohesion: 0.11
@@ -177,8 +167,8 @@ Cohesion: 0.11
 Nodes (18): compilerOptions, allowImportingTsExtensions, allowJs, experimentalDecorators, isolatedModules, jsx, lib, module (+10 more)
 
 ### Community 10 - "Observer"
-Cohesion: 0.16
-Nodes (6): Observer, DataChannel, IceCandidate, MediaStream, PeerConnection, RtpReceiver
+Cohesion: 0.07
+Nodes (14): WebRtcManager, SdpObserver, Observer, SdpObserver, DataChannel, EglBase, IceCandidate, MediaStream (+6 more)
 
 ### Community 11 - "TelegramVaultService"
 Cohesion: 0.10
@@ -202,11 +192,11 @@ Nodes (12): Any, Tries to connect to a specific port on an IP address., Sends au
 
 ### Community 16 - "SentinelaPreferences"
 Cohesion: 0.07
-Nodes (57): AuditLogEntry, CameraItem, SentinelaPreferences, MainActivity, SentinelaConfig, RecordingClipItem, TvCameraCard(), TvFullScreenCameraDialog() (+49 more)
+Nodes (55): CameraItem, SentinelaPreferences, MainActivity, SentinelaConfig, RecordingClipItem, TvCameraCard(), TvFullScreenCameraDialog(), TvLeanbackGrid() (+47 more)
 
-### Community 17 - "asyncio"
-Cohesion: 0.06
-Nodes (22): asyncio, Background loop sending hardware telemetry every 5.0 seconds to connected UI…, telemetry_broadcast_loop(), websocket_endpoint(), WebSocketManager, publish_simulated_event(), Publishes a mock Frigate security event to Mosquitto MQTT., FrigateBridgeService (+14 more)
+### Community 17 - "FrigateBridgeService"
+Cohesion: 0.13
+Nodes (10): FrigateBridgeService, Any, Retrieves a live JPEG frame at native/main-stream resolution using a multi-…, Verifies with ffprobe that the MP4 contains at least one valid video stream and…, Probes average frame rate, duration, width and height of a video file., Checks whether the file contains an audio stream., Robust H.264/AAC constant-frame-rate preparation for Telegram & mobile…, Performs deep health check of all Frigate & go2rtc communication channels with… (+2 more)
 
 ### Community 18 - "Histórias"
 Cohesion: 0.10
@@ -224,9 +214,9 @@ Nodes (18): compilerOptions, allowImportingTsExtensions, allowJs, experimentalDe
 Cohesion: 0.20
 Nodes (8): X509TrustManager, SentinelaApplication, X509TrustManager, X509TrustManager, Application, ImageLoader, ImageLoaderFactory, X509Certificate
 
-### Community 22 - "Models.kt"
-Cohesion: 0.20
-Nodes (6): CaptureEvent, DiagnosticStatus, PairedDeviceItem, SpeedTestResult, StorageStatus, TelemetryData
+### Community 22 - "asyncio"
+Cohesion: 0.25
+Nodes (7): asyncio, publish_simulated_event(), Publishes a mock Frigate security event to Mosquitto MQTT., test_pip_dnd_check(), test_scanner_subnets(), test_telemetry_service(), test_watermark_generation()
 
 ### Community 23 - "PiPGatewayService"
 Cohesion: 0.16
@@ -256,9 +246,9 @@ Nodes (16): AC-011 — Sidebar Fixa com Relógio e Indicador de Foco, AC-012 —
 Cohesion: 0.12
 Nodes (15): AC-022 — Marca d'Água HUD Dinâmica e Formatação de Snapshot, AC-023 — Formatação Rica de Mensagem com Tags de Busca (Telegram Drive), AC-024 — Captura de Clipe Estendido com Pré e Pós-Captura, AC-025 — Transcodificação H.264 CFR Fluida e Envio com Streaming, AC-026 — Guarda de Idempotência em Memória e Banco de Dados, AC-027 — Trilha de Auditoria em Memória e Suporte a Pausa de Alertas, Contexto, Fora de escopo (+7 more)
 
-### Community 30 - "PipPosition"
-Cohesion: 0.22
-Nodes (9): PipPosition, BOTTOM_CENTER, BOTTOM_LEFT, BOTTOM_RIGHT, CENTER_LEFT, CENTER_RIGHT, TOP_CENTER, TOP_LEFT (+1 more)
+### Community 30 - "ws.py"
+Cohesion: 0.24
+Nodes (5): Background loop sending hardware telemetry every 5.0 seconds to connected UI…, telemetry_broadcast_loop(), websocket_endpoint(), WebSocketManager, WebSocket
 
 ### Community 31 - "3. Catálogo de Endpoints da API REST (`/api`)"
 Cohesion: 0.17
@@ -284,14 +274,6 @@ Nodes (9): PipDuration, D_10S, D_15S, D_20S, D_30S, D_45S, D_5S, D_60S (+1 more)
 Cohesion: 0.20
 Nodes (9): background_color, description, display, icons, name, orientation, short_name, start_url (+1 more)
 
-### Community 37 - "PipSize"
-Cohesion: 0.22
-Nodes (9): PipSize, CINEMA, EXTRA_LARGE, EXTRA_SMALL, LARGE, MEDIUM, MEDIUM_LARGE, MEDIUM_SMALL (+1 more)
-
-### Community 38 - "SentinelaRepository.kt"
-Cohesion: 0.29
-Nodes (4): Context, RemoteDeviceItem, HttpURLConnection, URL
-
 ### Community 39 - "gradlew"
 Cohesion: 0.83
 Nodes (3): gradlew script, die(), warn()
@@ -300,17 +282,9 @@ Nodes (3): gradlew script, die(), warn()
 Cohesion: 0.20
 Nodes (10): Auto-dimensionamento, Carregamento de contexto, Catálogo de problemas que o audit aponta, Contrato de execução — inegociável, Interação — use todo o potencial do Antigravity, O motor embarcado (zero instalação), onp-spec-driven — a especificação que continua verdadeira (Antigravity), Perguntas que o motor responde por você (+2 more)
 
-### Community 41 - "X509TrustManager"
-Cohesion: 0.47
-Nodes (3): java, X509TrustManager, X509TrustManager
-
 ### Community 42 - "MseCameraView"
-Cohesion: 0.15
-Nodes (12): android, Modifier, SslErrorHandler, WebChromeClient, WebView, WebViewClient, MseCameraView(), WebChromeClient (+4 more)
-
-### Community 43 - "MQTTService"
-Cohesion: 0.22
-Nodes (6): MQTTService, Any, Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast…, Asynchronously acquires the exact duration 30 FPS MP4 video with >= 7s pre-…, Connects to MQTT and runs consumer loop with automatic reconnection., Dynamically loads live Telegram settings with 30s in-memory cache.
+Cohesion: 0.19
+Nodes (10): android, Modifier, MseCameraView(), WebChromeClient, WebViewClient, PermissionRequest, SslErrorHandler, WebResourceError (+2 more)
 
 ### Community 44 - "Resgate do Sistema: Solução Final para o Vídeo do Telegram (v060.4)"
 Cohesion: 0.33
@@ -319,10 +293,6 @@ Nodes (5): `frigate/config/config.yml`, Proposed Changes, Resgate do Sistema: So
 ### Community 45 - "SentinelaMobileTokens.kt"
 Cohesion: 0.40
 Nodes (4): SentinelaColors, SentinelaDimens, SentinelaShapes, SentinelaTypography
-
-### Community 46 - "SdpObserver"
-Cohesion: 0.19
-Nodes (4): SdpObserver, SdpObserver, SdpObserver, SessionDescription
 
 ### Community 47 - "logger.ts"
 Cohesion: 0.40
@@ -347,14 +317,6 @@ Nodes (9): T-001 — Ingestão RTSP e Proxy WebRTC/MSE via go2rtc [concluida], T
 ### Community 76 - "FastAPI"
 Cohesion: 0.21
 Nodes (10): get_db(), init_db(), audit_http_requests(), health_check(), lifespan(), get, Request, root() (+2 more)
-
-### Community 77 - "WebRtcManager"
-Cohesion: 0.18
-Nodes (6): SentinelaWebSocket, WebRtcManager, EglBase, HttpClient, PeerConnectionFactory, SurfaceViewRenderer
-
-### Community 78 - ".showPiP"
-Cohesion: 0.22
-Nodes (6): SslErrorHandler, WebView, WebViewClient, object@L508, WebViewClient, SslError
 
 ### Community 81 - "Escrevendo especificações auditáveis"
 Cohesion: 0.25
@@ -396,14 +358,6 @@ Nodes (5): 🛡️ Matriz de Especificações e Cobertura onp-spec, 🧭 O Que F
 Cohesion: 0.40
 Nodes (5): Constituição — princípios que a máquina verifica, Níveis de obrigação, Preset LGPD + educação, Quatro formas de verificação, Rastreabilidade que dá diferencial de segurança
 
-### Community 95 - "events.py"
-Cohesion: 0.25
-Nodes (10): get_audit_trail(), get_event_clip(), get_event_snapshot(), get_events_summary(), get, Returns real-time analytics summary directly from Frigate NVR., Retrieves operational audit logs (system mutations, alerts, errors)., Streams a universally compatible H.264 MP4 video clip with HTTP Range support.… (+2 more)
-
-### Community 101 - "BootReceiver.kt"
-Cohesion: 0.53
-Nodes (4): BootReceiver, Context, Intent, BroadcastReceiver
-
 ### Community 102 - "trigger_network_scan"
 Cohesion: 0.40
 Nodes (5): BaseModel, post, Triggers concurrent ONVIF Discovery and verified CCTV port scanner., ScanPayload, trigger_network_scan()
@@ -412,37 +366,29 @@ Nodes (5): BaseModel, post, Triggers concurrent ONVIF Discovery and verified CCT
 Cohesion: 0.40
 Nodes (4): mask_sensitive_data(), MemoryRingBufferHandler, Captures all logging records in memory for real-time API streaming., LogRecord
 
-### Community 104 - "android"
-Cohesion: 0.40
-Nodes (3): android, WebChromeClient, WebChromeClient
-
 ### Community 105 - "run_server_benchmark"
 Cohesion: 0.40
 Nodes (5): BenchmarkPayload, BaseModel, post, Runs on-demand stress & performance benchmarks for 1080p, 2K, 4K, IA detection…, run_server_benchmark()
 
-### Community 106 - "AuditLog"
-Cohesion: 0.60
-Nodes (3): AuditLog, AuditService, Records an audit log entry in SQLite asynchronously.
-
 ## Knowledge Gaps
 - **370 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `name`, `private`, `version` (+365 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 593 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 591 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `update_device_permissions()` connect `devices.py` to `SentinelaRepository`?**
-  _High betweenness centrality (0.057) - this node is a cross-community bridge._
-- **Why does `update_device_status()` connect `devices.py` to `SentinelaRepository`?**
+- **Why does `SentinelaPreferences` connect `SentinelaPreferences` to `OverlayService`, `PipDuration`, `SentinelaRepository`?**
   _High betweenness centrality (0.056) - this node is a cross-community bridge._
-- **Why does `SentinelaPreferences` connect `SentinelaPreferences` to `PipDuration`, `OverlayService`, `PipSize`, `SentinelaRepository.kt`, `SentinelaRepository`, `.showPiP`, `PipPosition`?**
-  _High betweenness centrality (0.054) - this node is a cross-community bridge._
+- **Why does `update_device_permissions()` connect `devices.py` to `SentinelaRepository`?**
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+- **Why does `push_device_settings()` connect `devices.py` to `SentinelaRepository`?**
+  _High betweenness centrality (0.042) - this node is a cross-community bridge._
 - **Are the 7 inferred relationships involving `SentinelaPreferences` (e.g. with `PhoneCameraStreamCard()` and `PhoneCapturesTab()`) actually correct?**
   _`SentinelaPreferences` has 7 INFERRED edges - model-reasoned connections that need verification._
 - **Are the 19 inferred relationships involving `Camera` (e.g. with `add_camera()` and `delete_camera()`) actually correct?**
   _`Camera` has 19 INFERRED edges - model-reasoned connections that need verification._
-- **Are the 20 inferred relationships involving `PairedDevice` (e.g. with `check_devices_health()` and `cleanup_all_devices()`) actually correct?**
-  _`PairedDevice` has 20 INFERRED edges - model-reasoned connections that need verification._
+- **Are the 21 inferred relationships involving `PairedDevice` (e.g. with `check_devices_health()` and `cleanup_all_devices()`) actually correct?**
+  _`PairedDevice` has 21 INFERRED edges - model-reasoned connections that need verification._
 - **What connects `$schema`, `.opencode/plugins/graphify.js`, `name` to the rest of the system?**
   _370 weakly-connected nodes found - possible documentation gaps or missing edges._

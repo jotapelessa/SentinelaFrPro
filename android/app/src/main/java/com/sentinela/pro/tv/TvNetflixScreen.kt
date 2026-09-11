@@ -54,6 +54,7 @@ import com.sentinela.pro.data.CameraItem
 import com.sentinela.pro.data.CaptureEvent
 import com.sentinela.pro.tv.theme.*
 import com.sentinela.pro.ui.components.SeamlessCameraImage
+import com.sentinela.pro.network.SentinelaRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
