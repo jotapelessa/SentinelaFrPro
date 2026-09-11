@@ -29,6 +29,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -401,14 +402,15 @@ fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 18.dp, bottom = 18.dp)
-                .size(56.dp),
+                .size(56.dp)
+                .border(
+                    width = 1.5.dp,
+                    color = if (isAlertsSilenced) Color(0xFFFBBF24) else Color(0xFF38BDF8).copy(alpha = 0.6f),
+                    shape = CircleShape
+                ),
             shape = CircleShape,
             containerColor = if (isAlertsSilenced) Color(0xFFD97706) else Color(0xFF0F172A),
             contentColor = if (isAlertsSilenced) Color.White else Color(0xFF38BDF8),
-            border = BorderStroke(
-                width = 1.5.dp,
-                color = if (isAlertsSilenced) Color(0xFFFBBF24) else Color(0xFF38BDF8).copy(alpha = 0.6f)
-            ),
             elevation = FloatingActionButtonDefaults.elevation(8.dp)
         ) {
             if (isSilencingLoading) {
@@ -2493,8 +2495,8 @@ fun PhoneClipPlayerDialog(
                                 detectTransformGestures { _, pan, zoom, _ ->
                                     scale = (scale * zoom).coerceIn(1.0f, 5.0f)
                                     if (scale > 1.0f) {
-                                        val maxOffsetX = (size.width * (scale - 1f)) / 2
-                                        val maxOffsetY = (size.height * (scale - 1f)) / 2
+                                        val maxOffsetX = (this@pointerInput.size.width * (scale - 1f)) / 2
+                                        val maxOffsetY = (this@pointerInput.size.height * (scale - 1f)) / 2
                                         offset = Offset(
                                             x = (offset.x + pan.x).coerceIn(-maxOffsetX, maxOffsetX),
                                             y = (offset.y + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
