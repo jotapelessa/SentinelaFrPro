@@ -17,11 +17,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
-import android.webkit.SslErrorHandler
-import android.webkit.WebChromeClient
-import android.webkit.WebSettings
-import android.webkit.WebView
-import android.webkit.WebViewClient
+
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -34,7 +30,7 @@ import kotlinx.coroutines.*
 class OverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
-    private var pipWebView: WebView? = null
+
     private var pipTitleView: TextView? = null
     private var pipImageView: android.widget.ImageView? = null
     private var snapshotRefreshJob: Job? = null
@@ -482,97 +478,7 @@ class OverlayService : Service() {
                 // Load instant image with Coil and cascading fallbacks
                 loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera)
 
-                // 2. Hardware Video Stream Layer (Warm Reusable Instance)
-                // Starts invisible so the snapshot ImageView shows immediately;
-                // WebView becomes visible ONLY after frames start rendering via JavascriptInterface callback.
-                val wv = WebView(this).apply {
-                    visibility = View.INVISIBLE
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.MATCH_PARENT
-                    )
-                    setBackgroundColor(Color.TRANSPARENT)
-                    setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
-                    settings.apply {
-                        javaScriptEnabled = true
-                        domStorageEnabled = true
-                        databaseEnabled = true
-                        mediaPlaybackRequiresUserGesture = false
-                        loadsImagesAutomatically = true
-                        mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
-                        useWideViewPort = true
-                        loadWithOverviewMode = true
-                        allowContentAccess = true
-                        allowFileAccess = true
-                        cacheMode = WebSettings.LOAD_NO_CACHE
-                    }
-
-                    resumeTimers()
-                    onResume()
-
-                    addJavascriptInterface(object {
-                        @android.webkit.JavascriptInterface
-                        fun onVideoPlaying() {
-                            serviceScope.launch(Dispatchers.Main) {
-                                if (overlayView != null) {
-                                    pipWebView?.visibility = View.VISIBLE
-                                }
-                            }
-                        }
-                    }, "SentinelaNative")
-
-                    isVerticalScrollBarEnabled = false
-                    isHorizontalScrollBarEnabled = false
-                    webChromeClient = object : WebChromeClient() {
-                        override fun onPermissionRequest(request: android.webkit.PermissionRequest?) {
-                            request?.grant(request.resources)
-                        }
-                    }
-                    webViewClient = object : WebViewClient() {
-                        override fun onReceivedSslError(view: WebView?, handler: SslErrorHandler?, error: SslError?) {
-                            handler?.proceed()
-                        }
-
-                        override fun onPageFinished(view: WebView?, url: String?) {
-                            super.onPageFinished(view, url)
-                            // object-fit: contain preserves full camera aspect ratio without artificial zooming
-                            val js = "javascript:(function() {" +
-                                    "var style = document.createElement('style');" +
-                                    "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent !important; display:flex; justify-content:center; align-items:center; } " +
-                                    "video-stream, video { width:100% !important; height:100% !important; object-fit:contain !important; background:transparent !important; } " +
-                                    "* { outline:none !important; }';" +
-                                    "document.head.appendChild(style);" +
-                                    "var notifyPlaying = function() { " +
-                                    "  if (window.SentinelaNative && window.SentinelaNative.onVideoPlaying) { " +
-                                    "    window.SentinelaNative.onVideoPlaying(); " +
-                                    "  } " +
-                                    "};" +
-                                    "var checkVideo = function() {" +
-                                    "  var v = document.querySelector('video');" +
-                                    "  if (v) {" +
-                                    "    v.muted = true;" +
-                                    "    v.setAttribute('muted', 'true');" +
-                                    "    v.setAttribute('playsinline', 'true');" +
-                                    "    v.addEventListener('timeupdate', function() { if (v.currentTime > 0.2) notifyPlaying(); });" +
-                                    "    if (v.currentTime > 0.2) notifyPlaying();" +
-                                    "    if (v.paused) { v.play().catch(function(){}); }" +
-                                    "  }" +
-                                    "};" +
-                                    "checkVideo();" +
-                                    "setInterval(checkVideo, 500);" +
-                                    "document.querySelectorAll('video-stream').forEach(function(el) { " +
-                                    "  el.background = true; " +
-                                    "  el.visibilityCheck = false; " +
-                                    "  if (el.video) { el.video.muted = true; el.video.setAttribute('muted', 'true'); el.video.setAttribute('playsinline', 'true'); el.video.play().catch(function(){}); } " +
-                                    "});" +
-                                    "})();"
-                            view?.evaluateJavascript(js, null)
-                        }
-                    }
-                }
-                pipWebView = wv
-                inner.addView(wv)
 
                 // 3. Top HUD Bar (Camera name & Label badge)
                 val hudBar = LinearLayout(this).apply {
@@ -609,7 +515,6 @@ class OverlayService : Service() {
                 root.addView(inner)
                 overlayView = root
                 windowManager.addView(overlayView, params)
-                wv.loadUrl(streamUrl)
             } else {
                 pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
 
@@ -618,9 +523,6 @@ class OverlayService : Service() {
                     loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera)
                 }
 
-                // FIX #3: Hide WebView again while the new stream loads
-                pipWebView?.visibility = View.INVISIBLE
-                pipWebView?.onResume()
                 if (overlayView?.parent == null) {
                     windowManager.addView(overlayView, params)
                 } else {
@@ -631,7 +533,6 @@ class OverlayService : Service() {
                         windowManager.updateViewLayout(overlayView, params)
                     }
                 }
-                pipWebView?.loadUrl(streamUrl)
             }
 
             // Confirmação de execução física comprovada na tela
@@ -662,13 +563,13 @@ class OverlayService : Service() {
             return
         }
 
-        // Continuous Snapshot Refresh Loop (Updates image every 800ms directly to Bitmap so it NEVER goes black)
+        // Continuous Snapshot Refresh Loop (Updates image every 250ms directly to Bitmap so it NEVER goes black)
         snapshotRefreshJob?.cancel()
         snapshotRefreshJob = serviceScope.launch(Dispatchers.IO) {
             val base = SentinelaConfig.BASE_URL.trimEnd('/')
             val imageLoader = coil.Coil.imageLoader(applicationContext)
             while (isActive) {
-                delay(800L)
+                delay(250L)
                 try {
                     val refreshSnapUrl = "$base/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}"
                     val req = coil.request.ImageRequest.Builder(applicationContext)
@@ -704,15 +605,11 @@ class OverlayService : Service() {
         try {
             snapshotRefreshJob?.cancel()
             snapshotRefreshJob = null
-            pipWebView?.onPause()
-            pipWebView?.stopLoading()
             overlayView?.let { v ->
                 if (v.parent != null) {
                     windowManager.removeViewImmediate(v)
                 }
             }
-            pipWebView?.destroy()
-            pipWebView = null
             pipImageView = null
             pipTitleView = null
             overlayView = null
@@ -725,10 +622,6 @@ class OverlayService : Service() {
         super.onDestroy()
         serviceJob.cancel()
         removePiP()
-        try {
-            pipWebView?.destroy()
-        } catch (e: Exception) {}
-        pipWebView = null
         overlayView = null
     }
 
