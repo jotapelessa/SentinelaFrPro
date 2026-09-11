@@ -64,7 +64,8 @@ class OverlayService : Service() {
         // Asynchronously load initial device policy without blocking initialization
         serviceScope.launch {
             try {
-                cachedDevicePolicy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                val pol = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                syncPolicyWithPrefs(pol, prefs)
             } catch (e: Exception) {
                 android.util.Log.d("OverlayService", "Initial policy fetch: ${e.message}")
             }
@@ -119,10 +120,11 @@ class OverlayService : Service() {
                                 android.util.Log.w("OverlayService", "Unknown pip_position: $serverPipPos")
                             }
                         }
-                        // Refresh in background
+                        // Refresh in background and synchronize
                         serviceScope.launch {
                             try {
-                                cachedDevicePolicy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                                val updated = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                                syncPolicyWithPrefs(updated, prefs)
                             } catch (e: Exception) {
                                 android.util.Log.d("OverlayService", "Policy refresh: ${e.message}")
                             }
@@ -144,17 +146,20 @@ class OverlayService : Service() {
                     val customSnap = if (event.has("snapshot_url")) event.optString("snapshot_url") else null
                     val customStream = if (event.has("stream_url")) event.optString("stream_url") else null
                     val isTestAlert = evType == "pip_alert" || label.contains("TEST", ignoreCase = true) || label.contains("ALERTA", ignoreCase = true)
+                    val alertPipPos = if (event.has("pip_position")) event.optString("pip_position") else null
+                    val alertPipSize = if (event.has("pip_size")) event.optString("pip_size") else null
+                    val alertDuration = if (event.has("duration")) event.optInt("duration", 0) else 0
 
                     val policy = cachedDevicePolicy
                     if (isTestAlert) {
                         // Instant rendering for test triggers: 0ms latency, zero blocking HTTP calls
-                        showPiP(camera, label, policy, testId, customSnap, customStream)
+                        showPiP(camera, label, policy, testId, customSnap, customStream, alertPipPos, alertPipSize, alertDuration)
                     } else if (policy != null) {
                         if (policy.permissionStatus == "allowed" && policy.allowPipAlerts) {
                             val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
                             val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev -> ev.equals(label, ignoreCase = true) }
                             if (camAllowed && eventAllowed) {
-                                showPiP(camera, label, policy, testId, customSnap, customStream)
+                                showPiP(camera, label, policy, testId, customSnap, customStream, alertPipPos, alertPipSize, alertDuration)
                             } else if (testId != null) {
                                 serviceScope.launch {
                                     SentinelaRepository.sendPipAck(
@@ -174,19 +179,54 @@ class OverlayService : Service() {
                     } else {
                         // Immediate fallback using local preferences if policy cache is pending
                         if (prefs.allowPipAlerts) {
-                            showPiP(camera, label, null, testId, customSnap, customStream)
+                            showPiP(camera, label, null, testId, customSnap, customStream, alertPipPos, alertPipSize, alertDuration)
                         }
                     }
 
                     // Background asynchronous policy refresh (never blocks display)
                     serviceScope.launch {
                         try {
-                            cachedDevicePolicy = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                            val updated = SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+                            syncPolicyWithPrefs(updated, prefs)
                         } catch (e: Exception) {
                             android.util.Log.d("OverlayService", "Background policy fetch: ${e.message}")
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private fun syncPolicyWithPrefs(policy: com.sentinela.pro.model.DevicePolicy, prefs: SentinelaPreferences) {
+        cachedDevicePolicy = policy
+        if (policy.friendlyName.isNotBlank()) prefs.friendlyName = policy.friendlyName
+        prefs.allowPipAlerts = policy.allowPipAlerts
+        if (policy.pipPosition.isNotBlank()) {
+            try {
+                prefs.pipPositionIndex = PipPosition.valueOf(policy.pipPosition.uppercase()).ordinal
+            } catch (e: Exception) {}
+        }
+        if (policy.pipDefaultSize.isNotBlank()) {
+            when (policy.pipDefaultSize.lowercase()) {
+                "mini", "extra_small" -> prefs.pipSizeIndex = PipSize.EXTRA_SMALL.ordinal
+                "small" -> prefs.pipSizeIndex = PipSize.SMALL.ordinal
+                "medium_small" -> prefs.pipSizeIndex = PipSize.MEDIUM_SMALL.ordinal
+                "medium" -> prefs.pipSizeIndex = PipSize.MEDIUM.ordinal
+                "medium_large" -> prefs.pipSizeIndex = PipSize.MEDIUM_LARGE.ordinal
+                "large" -> prefs.pipSizeIndex = PipSize.LARGE.ordinal
+                "extra_large" -> prefs.pipSizeIndex = PipSize.EXTRA_LARGE.ordinal
+                "cinema" -> prefs.pipSizeIndex = PipSize.CINEMA.ordinal
+            }
+        }
+        if (policy.pipDurationSeconds > 0) {
+            when (policy.pipDurationSeconds) {
+                5 -> prefs.pipDurationIndex = PipDuration.D_5S.ordinal
+                10 -> prefs.pipDurationIndex = PipDuration.D_10S.ordinal
+                15 -> prefs.pipDurationIndex = PipDuration.D_15S.ordinal
+                20 -> prefs.pipDurationIndex = PipDuration.D_20S.ordinal
+                30 -> prefs.pipDurationIndex = PipDuration.D_30S.ordinal
+                45 -> prefs.pipDurationIndex = PipDuration.D_45S.ordinal
+                60 -> prefs.pipDurationIndex = PipDuration.D_60S.ordinal
             }
         }
     }
@@ -299,7 +339,10 @@ class OverlayService : Service() {
         policy: DevicePolicy? = null,
         testId: String? = null,
         customSnapshotUrl: String? = null,
-        customStreamUrl: String? = null
+        customStreamUrl: String? = null,
+        overridePosition: String? = null,
+        overrideSize: String? = null,
+        overrideDuration: Int? = null
     ) {
         pipJob?.cancel()
 
@@ -325,9 +368,12 @@ class OverlayService : Service() {
             return
         }
 
-        // Dynamically resolve PiP size based on policy or preferences
-        val pipSize = if (policy != null && policy.pipDefaultSize.isNotBlank()) {
-            when (policy.pipDefaultSize.lowercase()) {
+        // Dynamically resolve PiP size: override > policy > preferences, and lock into preferences
+        val rawSize = if (!overrideSize.isNullOrBlank()) overrideSize
+                      else if (policy != null && policy.pipDefaultSize.isNotBlank()) policy.pipDefaultSize
+                      else null
+        val pipSize = if (!rawSize.isNullOrBlank()) {
+            val s = when (rawSize.lowercase()) {
                 "mini", "extra_small" -> PipSize.EXTRA_SMALL
                 "small" -> PipSize.SMALL
                 "medium_small" -> PipSize.MEDIUM_SMALL
@@ -338,13 +384,21 @@ class OverlayService : Service() {
                 "cinema" -> PipSize.CINEMA
                 else -> prefs.currentPipSize
             }
+            prefs.pipSizeIndex = s.ordinal
+            s
         } else {
             prefs.currentPipSize
         }
 
-        val pipPos = if (policy != null && policy.pipPosition.isNotBlank()) {
+        // Dynamically resolve PiP position: override > policy > preferences, and lock into preferences
+        val rawPos = if (!overridePosition.isNullOrBlank()) overridePosition
+                     else if (policy != null && policy.pipPosition.isNotBlank()) policy.pipPosition
+                     else null
+        val pipPos = if (!rawPos.isNullOrBlank()) {
             try {
-                PipPosition.valueOf(policy.pipPosition.uppercase())
+                val p = PipPosition.valueOf(rawPos.uppercase())
+                prefs.pipPositionIndex = p.ordinal
+                p
             } catch (e: Exception) {
                 prefs.currentPipPosition
             }
@@ -352,7 +406,9 @@ class OverlayService : Service() {
             prefs.currentPipPosition
         }
 
-        val durationSeconds = if (policy != null && policy.pipDurationSeconds > 0) {
+        val durationSeconds = if (overrideDuration != null && overrideDuration > 0) {
+            overrideDuration
+        } else if (policy != null && policy.pipDurationSeconds > 0) {
             policy.pipDurationSeconds
         } else if (prefs.currentPipDuration.seconds > 0) {
             prefs.currentPipDuration.seconds
@@ -516,7 +572,12 @@ class OverlayService : Service() {
                 if (overlayView?.parent == null) {
                     windowManager.addView(overlayView, params)
                 } else {
-                    windowManager.updateViewLayout(overlayView, params)
+                    val currentParams = overlayView?.layoutParams as? WindowManager.LayoutParams
+                    if (currentParams?.gravity != params.gravity ||
+                        currentParams?.width != params.width ||
+                        currentParams?.height != params.height) {
+                        windowManager.updateViewLayout(overlayView, params)
+                    }
                 }
                 pipWebView?.loadUrl(streamUrl)
             }

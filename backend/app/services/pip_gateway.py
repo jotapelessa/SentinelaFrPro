@@ -279,7 +279,9 @@ class PiPGatewayService:
                     "message": "Teste de Notificação Picture-in-Picture",
                     "snapshot_url": rel_snapshot_url,
                     "stream_url": rel_stream_url,
-                    "duration": 15,
+                    "duration": dev.pip_duration_seconds or 10,
+                    "pip_position": dev.pip_position or "BOTTOM_RIGHT",
+                    "pip_size": dev.pip_default_size or "medium_small",
                     "device_id": device_id,
                     "target_device_id": device_id,
                     "target_identifier": dev.device_identifier

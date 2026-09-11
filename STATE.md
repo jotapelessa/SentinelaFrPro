@@ -122,14 +122,14 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
     - **Causa Raiz 5 (Normalizador e Fallback em Cascata no Coil)**: Criado `normalizeUrl` em `OverlayService.kt` (reescreve qualquer URL com `frigate:5000`, `172.x` ou relativa para `BASE_URL`) e `loadSnapshotWithFallbacks` (tenta snapshot do evento -> frame do go2rtc -> snapshot da câmera no Frigate).
     - **Causa Raiz 6 (Transparência de WebView & Destruição Segura)**: O WebView do PiP mantém fundo transparente para não cobrir o snapshot caso a conexão de vídeo esteja em negociação ICE, e `removePiP()` executa `destroy()` e limpeza de referências.
   - **2. Configuração Específica de Modo de Streaming por Câmera na TV**:
-- **[2026-09-11] Fix Latência de 5s e Efeito Zoom no PiP Preview da TV (`v001.000.000.094`)**:
-  - **1. Eliminação da Latência de 5s no Disparo do PiP**:
-    - **Causa Raiz 1 (Bloqueio HTTP Síncrono `getDevicePolicy`)**: Ao receber o evento WebSocket, `OverlayService.kt` realizava uma chamada REST HTTP bloqueante para obter as permissões antes de exibir o overlay. Corrigido com cache em memória `cachedDevicePolicy`, permitindo disparo instantâneo (0ms de latência) em disparos de teste e uso de cache local com atualização assíncrona em background para eventos gerais.
-    - **Causa Raiz 2 (Snapshot Frigate lento vs Go2rtc instantâneo em RAM)**: O endpoint do Frigate (`latest.jpg?h=720`) re-codifica sob demanda e atrasava a exibição, enquanto o WebView ficava invisível aguardando `onPageFinished`. Atualizado para puxar prioritariamente o frame do Go2rtc (`/go2rtc/api/frame.jpeg?src=...`) que entrega a foto direto do buffer da RAM em menos de 30ms.
-    - **Causa Raiz 3 (Timeout de ACK no Backend)**: O timeout de espera pelo retorno da TV em `pip_gateway.py` foi ampliado de 2.5s para 5.0s, e adicionado log de auditoria no dispatch para rastrear o handshake.
-  - **2. Correção Definitiva do Efeito Zoom no PiP**:
-    - **Causa Raiz (`CENTER_CROP` e `object-fit: cover`)**: A `ImageView` utilizava `CENTER_CROP` e o CSS do WebView utilizava `object-fit: cover !important;`, que cortavam as bordas superior/inferior e laterais em câmeras com aspect ratio não estritamente 16:9, simulando um zoom excessivo.
-    - **Solução**: Alterado para `ScaleType.FIT_CENTER` na `ImageView` e `object-fit: contain !important;` no player de vídeo do WebView, garantindo 100% de visão completa da lente (campo de visão total) sem distorção e sem cortes.
+- **[2026-09-11] Fix Oscilação de Tamanho e Posição (Jitter) no PiP Preview (`v001.000.000.095`)**:
+  - **1. Estabilização e Bloqueio de Posição/Tamanho do PiP**:
+    - **Causa Raiz da Alternância de Canto e Tamanho**: O backend (`pip_gateway.py`) não enviava `pip_position` e `pip_size` no payload de alerta WebSocket. O app da TV recebia o evento e, quando a política ainda estava em trânsito assíncrono, renderizava inicialmente com os padrões locais de `SentinelaPreferences` (`TOP_RIGHT`, 800x450). Quando a política era finalmente lida (`BOTTOM_RIGHT`, 640x360), o `windowManager.updateViewLayout` reposicionava a janela no meio da exibição, causando um salto visual abrupto na tela.
+    - **Solução no Backend**: `pip_gateway.py` agora inclui explicitamente `pip_position: dev.pip_position` e `pip_size: dev.pip_default_size` no pacote WebSocket `pip_alert`.
+    - **Solução no Android TV (`OverlayService.kt`)**:
+      - `syncPolicyWithPrefs`: Sempre que a política é carregada ou atualizada via WebSocket, as preferências locais (`pipPositionIndex` e `pipSizeIndex`) são imediatamente sincronizadas, eliminando divergências de fallback.
+      - `showPiP`: Resolução com trava de prioridade (`override > policy > preferences`) com gravação atômica em `prefs`.
+      - **Guarda Anti-Jitter**: O `windowManager.updateViewLayout` só é invocado se `gravity`, `width` ou `height` forem estritamente diferentes dos parâmetros atuais da janela, prevenindo pulos de tela durante o ciclo de vida do overlay.
 
 ---
 
