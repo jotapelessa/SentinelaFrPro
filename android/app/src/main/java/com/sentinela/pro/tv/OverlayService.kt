@@ -121,7 +121,7 @@ class OverlayService : Service() {
                     }
 
                     val testId = if (event.has("test_id")) event.optString("test_id") else null
-                    val camera = event.optString("camera", "camera_principal")
+                    val camera = event.optString("camera", "camera_secundaria")
                     val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
                     val customSnap = if (event.has("snapshot_url")) event.optString("snapshot_url") else null
                     val customStream = if (event.has("stream_url")) event.optString("stream_url") else null
@@ -160,7 +160,7 @@ class OverlayService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val action = intent?.action
         if (action == "ACTION_SHOW_PIP") {
-            val cam = intent.getStringExtra("camera") ?: "camera_principal"
+            val cam = intent.getStringExtra("camera") ?: "camera_secundaria"
             val label = intent.getStringExtra("label") ?: "TESTE PIP"
             val testId = intent.getStringExtra("test_id")
             val customSnap = intent.getStringExtra("snapshot_url")
@@ -171,7 +171,7 @@ class OverlayService : Service() {
     }
 
     companion object {
-        fun triggerPiP(context: Context, camera: String = "camera_principal", label: String = "TESTE PIP", testId: String? = null, snapshotUrl: String? = null, streamUrl: String? = null) {
+        fun triggerPiP(context: Context, camera: String = "camera_secundaria", label: String = "TESTE PIP", testId: String? = null, snapshotUrl: String? = null, streamUrl: String? = null) {
             try {
                 val intent = Intent(context, OverlayService::class.java).apply {
                     action = "ACTION_SHOW_PIP"
@@ -189,6 +189,68 @@ class OverlayService : Service() {
             } catch (e: Exception) {
                 android.util.Log.e("OverlayService", "Failed to trigger PiP: ${e.message}")
             }
+        }
+    }
+
+    private fun normalizeUrl(url: String?, defaultPath: String): String {
+        val base = SentinelaConfig.BASE_URL.trimEnd('/')
+        if (url.isNullOrBlank()) {
+            return "$base$defaultPath"
+        }
+        val trimmed = url.trim()
+        if (trimmed.startsWith("/")) {
+            return "$base$trimmed"
+        }
+        if (trimmed.contains("frigate:5000") || trimmed.contains("backend:8080") ||
+            trimmed.contains("172.") || trimmed.contains("localhost:8088") ||
+            trimmed.contains("127.0.0.1:8088")) {
+            val path = trimmed.substringAfter("://").substringAfter("/", "")
+            return if (path.isNotBlank()) "$base/$path" else "$base$defaultPath"
+        }
+        if (trimmed.startsWith("http://") || trimmed.startsWith("https://")) {
+            if (trimmed.contains(".ts.net:8088")) {
+                return trimmed.replace(".ts.net:8088", ".ts.net").replace("http://", "https://")
+            }
+            return trimmed
+        }
+        return "$base/$trimmed"
+    }
+
+    private fun loadSnapshotWithFallbacks(
+        imageView: android.widget.ImageView,
+        primaryUrl: String,
+        camera: String
+    ) {
+        val base = SentinelaConfig.BASE_URL.trimEnd('/')
+        val fallbackGo2rtc = "$base/go2rtc/api/frame.jpeg?src=$camera&t=${System.currentTimeMillis()}"
+        val fallbackFrigate = "$base/frigate/api/$camera/latest.jpg?h=720&t=${System.currentTimeMillis()}"
+
+        try {
+            val imageLoader = coil.Coil.imageLoader(applicationContext)
+
+            fun tryLoad(url: String, nextFallback: (() -> Unit)?) {
+                val req = coil.request.ImageRequest.Builder(applicationContext)
+                    .data(url)
+                    .target(imageView)
+                    .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                    .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                    .listener(
+                        onError = { _, result ->
+                            android.util.Log.w("OverlayService", "Snapshot load failed for $url: ${result.throwable.message}")
+                            nextFallback?.invoke()
+                        }
+                    )
+                    .build()
+                imageLoader.enqueue(req)
+            }
+
+            tryLoad(primaryUrl) {
+                tryLoad(fallbackGo2rtc) {
+                    tryLoad(fallbackFrigate, null)
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("OverlayService", "Failed to setup image load: ${e.message}")
         }
     }
 
@@ -260,10 +322,9 @@ class OverlayService : Service() {
             10
         }
 
-        val currentHost = SentinelaConfig.currentHost
-        val resolvedBase = if (currentHost.startsWith("http://") || currentHost.startsWith("https://")) currentHost else "http://${currentHost}:8088"
-        val streamUrl = customStreamUrl ?: "${resolvedBase}/go2rtc/stream.html?src=${camera}&mode=mse&mode=webrtc"
-        val snapshotUrl = customSnapshotUrl ?: "${resolvedBase}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
+        val resolvedCamera = if (camera.isBlank() || camera == "camera_principal") "camera_secundaria" else camera
+        val streamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=mse&mode=webrtc")
+        val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${resolvedCamera}/latest.jpg?h=720&t=${System.currentTimeMillis()}")
 
         try {
             val params = WindowManager.LayoutParams(
@@ -301,22 +362,8 @@ class OverlayService : Service() {
                 pipImageView = snapImageView
                 inner.addView(snapImageView)
 
-                // Load instant image with Coil
-                // FIX #1: use applicationContext so the singleton ImageLoader built in
-                // SentinelaApplication (with TrustAll OkHttp) is always resolved correctly
-                // even when called from a foreground Service context.
-                try {
-                    val imageLoader = coil.Coil.imageLoader(applicationContext)
-                    val req = coil.request.ImageRequest.Builder(applicationContext)
-                        .data(snapshotUrl)
-                        .target(snapImageView)
-                        .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
-                        .diskCachePolicy(coil.request.CachePolicy.DISABLED)
-                        .build()
-                    imageLoader.enqueue(req)
-                } catch (e: Exception) {
-                    android.util.Log.w("OverlayService", "Snapshot pre-load: ${e.message}")
-                }
+                // Load instant image with Coil and cascading fallbacks
+                loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera)
 
                 // 2. Hardware Video Stream Layer (Warm Reusable Instance)
                 // FIX #3: Start invisible so the snapshot ImageView shows immediately;
@@ -419,21 +466,9 @@ class OverlayService : Service() {
             } else {
                 pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
 
-                // FIX #2: Reload snapshot on reuse. When overlayView already exists (2nd+
-                // PiP alert) the ImageView was never refreshed, leaving a stale or black frame.
+                // FIX #2: Reload snapshot on reuse with cascading fallbacks
                 pipImageView?.let { iv ->
-                    try {
-                        val imageLoader = coil.Coil.imageLoader(applicationContext)
-                        val req = coil.request.ImageRequest.Builder(applicationContext)
-                            .data(snapshotUrl)
-                            .target(iv)
-                            .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
-                            .diskCachePolicy(coil.request.CachePolicy.DISABLED)
-                            .build()
-                        imageLoader.enqueue(req)
-                    } catch (e: Exception) {
-                        android.util.Log.w("OverlayService", "Snapshot reload on reuse: ${e.message}")
-                    }
+                    loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera)
                 }
 
                 // FIX #3: Hide WebView again while the new stream loads
@@ -481,8 +516,8 @@ class OverlayService : Service() {
             while (isActive) {
                 try {
                     pipImageView?.let { iv ->
-                        val refreshSnapUrl = customSnapshotUrl ?: "${resolvedBase}/frigate/api/${camera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
-                        // FIX #1: applicationContext garante o singleton com OkHttp/TrustAll
+                        val base = SentinelaConfig.BASE_URL.trimEnd('/')
+                        val refreshSnapUrl = "$base/frigate/api/${resolvedCamera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
                         val imageLoader = coil.Coil.imageLoader(applicationContext)
                         val req = coil.request.ImageRequest.Builder(applicationContext)
                             .data(refreshSnapUrl)
@@ -517,6 +552,11 @@ class OverlayService : Service() {
                     windowManager.removeViewImmediate(v)
                 }
             }
+            pipWebView?.destroy()
+            pipWebView = null
+            pipImageView = null
+            pipTitleView = null
+            overlayView = null
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Error removing overlay view: ${e.message}")
         }

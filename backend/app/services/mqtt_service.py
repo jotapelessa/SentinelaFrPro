@@ -161,7 +161,8 @@ class MQTTService:
                 self._cooldowns[cooldown_key] = now_ts
                 logger.info(f"🚨 Security event: {label} on {camera} (zone: {zone_name}, score: {score:.2f})")
 
-                snapshot_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg"
+                snapshot_url = f"/api/events/{event_id}/snapshot.jpg"
+                stream_url = f"/go2rtc/stream.html?src={camera}&mode=mse&mode=webrtc"
 
                 # Instant PiP Alert and New Detection messages to Android TV & Web
                 await self.broadcast_event({
@@ -171,7 +172,8 @@ class MQTTService:
                     "score": round(score * 100),
                     "zone": zone_name,
                     "event_id": event_id,
-                    "snapshot_url": snapshot_url
+                    "snapshot_url": snapshot_url,
+                    "stream_url": stream_url
                 })
 
                 await self.broadcast_event({

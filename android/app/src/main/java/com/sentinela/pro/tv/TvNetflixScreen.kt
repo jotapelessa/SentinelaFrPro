@@ -435,8 +435,12 @@ fun TvCamerasViewport(
     onSelectCamera: (CameraEntity) -> Unit,
     onNavigateLeftToSidebar: () -> Unit
 ) {
+    val context = LocalContext.current
+    val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
     var isFullscreenLiveOpen by remember { mutableStateOf(false) }
-    var streamMode by remember { mutableStateOf("mse") } // "mse" (24fps), "webrtc", "eco" (10fps)
+    var streamMode by remember(selectedCamera?.id) {
+        mutableStateOf(selectedCamera?.let { prefs.getCameraDefaultStreamMode(it.id) } ?: "webrtc")
+    }
     val heroInteractionSource = remember { MutableInteractionSource() }
     val isHeroFocused by heroInteractionSource.collectIsFocusedAsState()
 
@@ -548,6 +552,55 @@ fun TvCamerasViewport(
                         Text(
                             text = "LATÊNCIA: ${camera.telemetry.latencyMs}ms | BITRATE: ${camera.telemetry.bitrateKbps} kbps",
                             style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
+                        )
+                    }
+                }
+
+                // Seletor de Modo Padrão da Câmera no Hero Spotlight
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = TvColors.OverlayHud,
+                    border = BorderStroke(1.dp, TvColors.CyberCyan),
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(TvDimens.md)
+                        .clickable {
+                            val modes = listOf("webrtc", "mse", "eco")
+                            val nextIdx = (modes.indexOf(streamMode) + 1) % modes.size
+                            val nextMode = modes[nextIdx]
+                            streamMode = nextMode
+                            selectedCamera?.let { cam ->
+                                prefs.setCameraDefaultStreamMode(cam.id, nextMode)
+                            }
+                        }
+                ) {
+                    val modeLabel = when (streamMode) {
+                        "eco" -> "ECO 10 FPS"
+                        "mse" -> "MSE 24 FPS"
+                        else -> "WebRTC LIVE"
+                    }
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(8.dp)
+                                .background(
+                                    when (streamMode) {
+                                        "webrtc" -> TvColors.NetflixRed
+                                        "mse" -> TvColors.CyberCyan
+                                        else -> TvColors.StandbyAmber
+                                    },
+                                    CircleShape
+                                )
+                        )
+                        Text(
+                            text = "MODO: $modeLabel [OK ALTERNA]",
+                            color = Color.White,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
                         )
                     }
                 }
@@ -678,6 +731,22 @@ fun TvCamerasViewport(
                             )
                         }
 
+                        val camMode = prefs.getCameraDefaultStreamMode(camera.id)
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = TvColors.OverlayHud,
+                            border = BorderStroke(0.5.dp, TvColors.CyberCyan),
+                            modifier = Modifier.align(Alignment.TopEnd)
+                        ) {
+                            Text(
+                                text = camMode.uppercase(),
+                                color = TvColors.CyberCyan,
+                                fontSize = 8.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                            )
+                        }
+
                         Column(
                             modifier = Modifier.align(Alignment.BottomStart)
                         ) {
@@ -704,7 +773,10 @@ fun TvCamerasViewport(
         TvFullScreenLiveDialog(
             camera = selectedCamera,
             initialStreamMode = streamMode,
-            onStreamModeChanged = { newMode -> streamMode = newMode },
+            onStreamModeChanged = { newMode ->
+                streamMode = newMode
+                selectedCamera?.let { prefs.setCameraDefaultStreamMode(it.id, newMode) }
+            },
             onDismiss = { isFullscreenLiveOpen = false }
         )
     }
@@ -2052,6 +2124,8 @@ fun TvFullScreenLiveDialog(
     onStreamModeChanged: (String) -> Unit = {},
     onDismiss: () -> Unit
 ) {
+    val context = LocalContext.current
+    val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
     var currentMode by remember { mutableStateOf(initialStreamMode) }
     val modes = listOf("mse", "webrtc", "eco")
     val modeLabels = mapOf("mse" to "MSE 24 FPS", "webrtc" to "WebRTC LIVE", "eco" to "ECO 10 FPS")
@@ -2120,6 +2194,7 @@ fun TvFullScreenLiveDialog(
                                 val nextIdx = (modes.indexOf(currentMode) + 1) % modes.size
                                 val nextMode = modes[nextIdx]
                                 currentMode = nextMode
+                                prefs.setCameraDefaultStreamMode(camera.id, nextMode)
                                 onStreamModeChanged(nextMode)
                             }
                     ) {

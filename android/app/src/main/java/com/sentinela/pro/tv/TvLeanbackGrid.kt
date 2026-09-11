@@ -122,6 +122,10 @@ fun TvCameraCard(
     val borderColor = if (isFocused) Color(0xFF06B6D4) else Color(0xFF1E293B)
     val borderWidth = if (isFocused) 3.dp else 1.dp
     
+    val context = LocalContext.current
+    val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
+    val cameraMode = remember(camera.name) { prefs.getCameraDefaultStreamMode(camera.name) }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -138,7 +142,9 @@ fun TvCameraCard(
             contentDescription = camera.friendlyName,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop,
-            refreshIntervalMs = 42L // MSE 24 FPS Standard
+            refreshIntervalMs = if (cameraMode == "eco") 100L else 42L,
+            forceSnapshotMode = (cameraMode == "eco"),
+            streamMode = cameraMode
         )
 
         // Top Status Header
@@ -208,6 +214,10 @@ fun TvCameraCard(
 @OptIn(ExperimentalTvMaterial3Api::class)
 @Composable
 fun TvFullScreenCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
+    val cameraMode = remember(camera.name) { prefs.getCameraDefaultStreamMode(camera.name) }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -223,7 +233,9 @@ fun TvFullScreenCameraDialog(camera: CameraItem, onDismiss: () -> Unit) {
                 contentDescription = camera.friendlyName,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit,
-                refreshIntervalMs = 42L // MSE 24 FPS Standard
+                refreshIntervalMs = if (cameraMode == "eco") 100L else 42L,
+                forceSnapshotMode = (cameraMode == "eco"),
+                streamMode = cameraMode
             )
 
             Box(

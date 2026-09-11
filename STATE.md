@@ -113,6 +113,19 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
   - **4. Configuração Individual de Modo de Visualização por Câmera**:
     - Cada câmera na aba Câmeras agora possui persistência de preferência (`SentinelaPreferences.getCameraDefaultStreamMode` / `setCameraDefaultStreamMode`).
     - O operador pode selecionar individualmente entre Modo Eco (10 FPS), MSE (24 FPS) ou WebRTC para cada câmera. A escolha é salva imediatamente e aplicada tanto no feed quanto no modal de zoom ampliado.
+- **[2026-09-11] Fix PiP Preview Preto & Modo de Streaming por Câmera na TV (`v001.000.000.093`)**:
+  - **1. Resolução Definitiva da Imagem Preta no PiP Preview (Android TV)**:
+    - **Causa Raiz 1 (DNS Inacessível)**: O backend (`mqtt_service.py`) transmitia `snapshot_url = "http://frigate:5000/api/events/...""`, que usava o hostname interno de container do Docker, inalcançável fora da rede interna do Docker. Corrigido para URL relativa `/api/events/{event_id}/snapshot.jpg`.
+    - **Causa Raiz 2 (Porta e Protocolo Incompatíveis em Tailscale)**: `OverlayService.kt` tentava montar URLs com `http://${currentHost}:8088`. Em conexões Tailscale (`*.ts.net`), o Tailscale opera estritamente em HTTPS porta 443; a porta 8088 causava `Connection Refused` e o Android bloqueava conexões cleartext HTTP. Corrigido usando `SentinelaConfig.BASE_URL` canônico.
+    - **Causa Raiz 3 (Socket de IP Virtual de Bridge no Teste)**: Em `pip_gateway.py`, o socket interno do container retornava `172.18.0.x:8088`, inalcançável para a TV. Corrigido para caminhos relativos resolvidos pelo client.
+    - **Causa Raiz 4 (Câmera Fantasma 'camera_principal')**: No app smartphone e na TV, testes usavam hardcoded `"camera_principal"`, que não existe e gerava 404 em snapshots e streams. Atualizado para resolução dinâmica da câmera ativa real (`camera_secundaria`).
+    - **Causa Raiz 5 (Normalizador e Fallback em Cascata no Coil)**: Criado `normalizeUrl` em `OverlayService.kt` (reescreve qualquer URL com `frigate:5000`, `172.x` ou relativa para `BASE_URL`) e `loadSnapshotWithFallbacks` (tenta snapshot do evento -> frame do go2rtc -> snapshot da câmera no Frigate).
+    - **Causa Raiz 6 (Transparência de WebView & Destruição Segura)**: O WebView do PiP mantém fundo transparente para não cobrir o snapshot caso a conexão de vídeo esteja em negociação ICE, e `removePiP()` executa `destroy()` e limpeza de referências.
+  - **2. Configuração Específica de Modo de Streaming por Câmera na TV**:
+    - Em `TvNetflixScreen.kt`, o Hero Spotlight e a visualização em tela cheia (`TvFullScreenLiveDialog`) agora utilizam `SentinelaPreferences.getCameraDefaultStreamMode(camera.id)`.
+    - Adicionado no Hero Spotlight um seletor visual interativo D-Pad (`MODO: [ECO / MSE / WEBRTC] [OK ALTERNA]`). Ao clicar ou pressionar OK no controle remoto, o modo é alternado e salvo imediatamente nas preferências daquela câmera.
+    - No carrossel horizontal de câmeras, cada card agora exibe uma badge no topo direito indicando seu modo configurado (`ECO`, `MSE` ou `WEBRTC`).
+    - Atualizado também o `TvLeanbackGrid.kt` para respeitar as preferências individuais de cada câmera.
 
 ---
 

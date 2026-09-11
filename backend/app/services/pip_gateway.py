@@ -258,8 +258,10 @@ class PiPGatewayService:
         ack_event = asyncio.Event()
         self._ack_events[test_id] = ack_event
 
-        snapshot_url = f"http://{server_ip}:8088/frigate/api/{camera_name}/latest.jpg?h=720" if active_cams else f"http://{server_ip}:8088/icon-192.png"
-        stream_url = f"http://{server_ip}:8088/go2rtc/stream.html?src={camera_name}&mode=mse" if active_cams else ""
+        rel_snapshot_url = f"/frigate/api/{camera_name}/latest.jpg?h=720" if active_cams else "/icon-192.png"
+        rel_stream_url = f"/go2rtc/stream.html?src={camera_name}&mode=mse&mode=webrtc" if active_cams else ""
+        snapshot_url = f"http://{server_ip}:8088{rel_snapshot_url}"
+        stream_url = f"http://{server_ip}:8088{rel_stream_url}"
 
         dispatched = False
         protocol_used = "none"
@@ -275,8 +277,8 @@ class PiPGatewayService:
                     "label": "TESTE DE PiP",
                     "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
                     "message": "Teste de Notificação Picture-in-Picture",
-                    "snapshot_url": snapshot_url,
-                    "stream_url": stream_url,
+                    "snapshot_url": rel_snapshot_url,
+                    "stream_url": rel_stream_url,
                     "duration": 15,
                     "device_id": device_id,
                     "target_device_id": device_id,

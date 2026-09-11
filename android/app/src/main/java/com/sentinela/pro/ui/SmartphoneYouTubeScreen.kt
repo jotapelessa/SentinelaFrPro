@@ -1065,12 +1065,19 @@ fun PhoneMasterCentralTab() {
     var isRebootConfirmOpen by remember { mutableStateOf(false) }
     var isRebooting by remember { mutableStateOf(false) }
     var rebootStatusMessage by remember { mutableStateOf<String?>(null) }
+    var activeCamName by remember { mutableStateOf("camera_secundaria") }
 
     fun refreshDevices() {
         coroutineScope.launch {
             isLoading = true
             tvs = SentinelaRepository.getPairedDevicesList()
             storageStatus = SentinelaRepository.getStorageStatus()
+            runCatching {
+                val cams = SentinelaRepository.getCameras()
+                if (cams.isNotEmpty()) {
+                    activeCamName = cams.first().name
+                }
+            }
             isLoading = false
         }
     }
@@ -1289,7 +1296,7 @@ fun PhoneMasterCentralTab() {
                         coroutineScope.launch {
                             val (ok, msg) = SentinelaRepository.executeBatchTest(
                                 testType = "pip",
-                                cameraName = "camera_principal",
+                                cameraName = activeCamName,
                                 label = "ALERTA MASTER DISPARADO"
                             )
                             isBroadcasting = false
@@ -1437,7 +1444,7 @@ fun PhoneMasterCentralTab() {
                             onClick = {
                                 isTestingThisTv = true
                                 coroutineScope.launch {
-                                    val (confirmed, msg) = SentinelaRepository.testSingleTv(tv.id, "camera_principal")
+                                    val (confirmed, msg) = SentinelaRepository.testSingleTv(tv.id, activeCamName)
                                     isTestingThisTv = false
                                     Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                                 }
