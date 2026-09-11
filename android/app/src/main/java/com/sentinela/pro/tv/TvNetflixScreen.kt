@@ -935,28 +935,9 @@ fun TvRecordingsViewport(
         }
     }
 
-    val mockClips = remember(cameras, realCaptures) {
-        if (realCaptures.isNotEmpty()) {
-            realCaptures
-        } else if (cameras.isNotEmpty()) {
-            cameras.mapIndexed { i, c ->
-                RecordingClipItem(
-                    id = "live_${c.id}_$i",
-                    cameraId = c.id,
-                    cameraName = c.name,
-                    duration = "AO VIVO",
-                    timestamp = "Foto Recente",
-                    sizeMb = "HD",
-                    thumbnailUrl = "${SentinelaConfig.BASE_URL}/go2rtc/api/frame.jpeg?src=${c.id}",
-                    isVideo = false
-                )
-            }
-        } else {
-            emptyList()
-        }
-    }
+    val clips = realCaptures
 
-    var selectedClip by remember(mockClips) { mutableStateOf(mockClips.firstOrNull()) }
+    var selectedClip by remember(clips) { mutableStateOf(clips.firstOrNull()) }
     var isClipPlayerOpen by remember { mutableStateOf(false) }
 
     Column(
@@ -985,7 +966,7 @@ fun TvRecordingsViewport(
                         border = BorderStroke(1.dp, TvColors.StandbyAmber)
                     ) {
                         Text(
-                            text = "${mockClips.size} CAPTURAS IA",
+                            text = "${clips.size} CAPTURAS IA",
                             color = TvColors.StandbyAmber,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
@@ -1000,7 +981,7 @@ fun TvRecordingsViewport(
             }
         }
 
-        if (mockClips.isEmpty()) {
+        if (clips.isEmpty()) {
             // Estado vazio elegante com navegação D-Pad de volta para a barra lateral
             val emptyInteraction = remember { MutableInteractionSource() }
             val isEmptyFocused by emptyInteraction.collectIsFocusedAsState()
@@ -1048,7 +1029,7 @@ fun TvRecordingsViewport(
                 verticalArrangement = Arrangement.spacedBy(14.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                gridItemsIndexed(mockClips) { index, clip ->
+                gridItemsIndexed(clips) { index, clip ->
                     val interactionSource = remember { MutableInteractionSource() }
                     val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -1099,7 +1080,8 @@ fun TvRecordingsViewport(
     if (isClipPlayerOpen) {
         selectedClip?.let { clip ->
             TvClipPlayerDialog(
-                clip = clip,
+                initialClip = clip,
+                clips = clips,
                 onDismiss = { isClipPlayerOpen = false }
             )
         }
@@ -2555,9 +2537,15 @@ fun TvFullScreenLiveDialog(
  */
 @Composable
 fun TvClipPlayerDialog(
-    clip: RecordingClipItem,
+    initialClip: RecordingClipItem,
+    clips: List<RecordingClipItem>,
     onDismiss: () -> Unit
 ) {
+    var currentIndex by remember(clips, initialClip) { 
+        mutableIntStateOf(clips.indexOf(initialClip).takeIf { it >= 0 } ?: 0) 
+    }
+    val clip = clips.getOrNull(currentIndex) ?: initialClip
+
     var zoomLevel by remember { mutableFloatStateOf(1f) } // 1x, 1.5x, 2x, 3x
     val zoomOptions = listOf(1f, 1.5f, 2f, 3f)
 
@@ -2577,10 +2565,42 @@ fun TvClipPlayerDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
+        val interactionSource = remember { MutableInteractionSource() }
+        val isFocused by interactionSource.collectIsFocusedAsState()
+        val focusRequester = remember { FocusRequester() }
+
+        LaunchedEffect(Unit) {
+            try {
+                focusRequester.requestFocus()
+            } catch (e: Exception) {}
+        }
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
+                .focusRequester(focusRequester)
+                .focusable(interactionSource = interactionSource)
+                .onKeyEvent { keyEvent ->
+                    if (keyEvent.type == KeyEventType.KeyDown) {
+                        when (keyEvent.key) {
+                            Key.DirectionLeft -> {
+                                if (currentIndex > 0) currentIndex--
+                                true
+                            }
+                            Key.DirectionRight -> {
+                                if (currentIndex < clips.size - 1) currentIndex++
+                                true
+                            }
+                            Key.Enter, Key.DirectionCenter -> {
+                                val nextIdx = (zoomOptions.indexOf(zoomLevel) + 1) % zoomOptions.size
+                                zoomLevel = zoomOptions[nextIdx]
+                                true
+                            }
+                            else -> false
+                        }
+                    } else false
+                }
                 .clickable {
                     val nextIdx = (zoomOptions.indexOf(zoomLevel) + 1) % zoomOptions.size
                     zoomLevel = zoomOptions[nextIdx]
@@ -2627,12 +2647,19 @@ fun TvClipPlayerDialog(
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black
                     )
-                    val dialogSub = "Data: ${clip.timestamp} • Tipo: Foto HD • Zoom: ${zoomLevel}x [OK para Zoom] • Tamanho: ${clip.sizeMb}"
+                    val dialogSub = "Data: ${clip.timestamp} • Captura ${currentIndex + 1} de ${clips.size} • Zoom: ${zoomLevel}x • Tamanho: ${clip.sizeMb}"
                     Text(
                         text = dialogSub,
                         color = TvColors.CyberCyan,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace
+                    )
+                    Text(
+                        text = "Use ◄ ► para navegar pelas fotos • Pressione [OK] para Zoom",
+                        color = TvColors.TextMuted,
+                        fontSize = 11.sp,
+                        fontFamily = FontFamily.Monospace,
+                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
 

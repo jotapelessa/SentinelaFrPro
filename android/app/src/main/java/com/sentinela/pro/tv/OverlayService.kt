@@ -427,14 +427,8 @@ class OverlayService : Service() {
         }
 
         val resolvedCamera = if (camera.isBlank() || camera == "camera_principal") "camera_secundaria" else camera
-        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=mse,mjpeg")
-        val streamUrl = if (baseStreamUrl.contains("&mode=mse&mode=webrtc")) {
-            baseStreamUrl.replace("&mode=mse&mode=webrtc", "&mode=mse,mjpeg")
-        } else if (baseStreamUrl.contains("&mode=webrtc&mode=mse")) {
-            baseStreamUrl.replace("&mode=webrtc&mode=mse", "&mode=mse,mjpeg")
-        } else {
-            baseStreamUrl
-        }
+        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=webrtc,mse,mjpeg")
+        val streamUrl = baseStreamUrl // webrtc is preferred to avoid huge buffer delays over Tailscale
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}")
 
         try {
@@ -545,6 +539,9 @@ class OverlayService : Service() {
                                     "var checkVideo = function() {" +
                                     "  var v = document.querySelector('video');" +
                                     "  if (v) {" +
+                                    "    v.muted = true;" +
+                                    "    v.setAttribute('muted', 'true');" +
+                                    "    v.setAttribute('playsinline', 'true');" +
                                     "    v.addEventListener('timeupdate', function() { if (v.currentTime > 0.2) notifyPlaying(); });" +
                                     "    if (v.currentTime > 0.2) notifyPlaying();" +
                                     "    if (v.paused) { v.play().catch(function(){}); }" +
@@ -555,7 +552,7 @@ class OverlayService : Service() {
                                     "document.querySelectorAll('video-stream').forEach(function(el) { " +
                                     "  el.background = true; " +
                                     "  el.visibilityCheck = false; " +
-                                    "  if (el.video) { el.video.play().catch(function(){}); } " +
+                                    "  if (el.video) { el.video.muted = true; el.video.setAttribute('muted', 'true'); el.video.setAttribute('playsinline', 'true'); el.video.play().catch(function(){}); } " +
                                     "});" +
                                     "})();"
                             view?.evaluateJavascript(js, null)
