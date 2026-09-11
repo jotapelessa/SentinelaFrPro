@@ -50,43 +50,48 @@ jobs:
     - name: Build and Package APKs
       working-directory: android
       run: |
+        set +e
         chmod +x gradlew
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon
+        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon 2>&1
+        GRADLE_EXIT=$?
+        set -e
         
-        echo "✅ Gradle build concluído com sucesso!"
+        echo "### 🔨 Gradle Exit Code: $GRADLE_EXIT" >> $GITHUB_STEP_SUMMARY
         
-        echo "🔍 Listando TODOS os APKs gerados:"
-        find . -name "*.apk" -type f 2>/dev/null || true
-        echo ""
-        echo "🔍 Verificando caminhos esperados:"
-        ls -la app/build/outputs/apk/tv/debug/ 2>&1 || true
-        ls -la app/build/outputs/apk/smartphone/debug/ 2>&1 || true
+        if [ $GRADLE_EXIT -ne 0 ]; then
+          echo "❌ Gradle falhou com exit code $GRADLE_EXIT"
+          echo "❌ Gradle falhou com exit code $GRADLE_EXIT" >> $GITHUB_STEP_SUMMARY
+          exit 1
+        fi
+        
+        echo "✅ Gradle build concluído com sucesso (exit 0)!"
+        
+        echo "### 📋 APKs Encontrados" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        echo "CWD: $(pwd)" >> $GITHUB_STEP_SUMMARY
+        find . -name "*.apk" -type f >> $GITHUB_STEP_SUMMARY 2>&1
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        
+        echo "### 📂 Caminhos Esperados" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        ls -la app/build/outputs/apk/tv/debug/ >> $GITHUB_STEP_SUMMARY 2>&1 || echo "tv/debug/ NÃO EXISTE" >> $GITHUB_STEP_SUMMARY
+        ls -la app/build/outputs/apk/smartphone/debug/ >> $GITHUB_STEP_SUMMARY 2>&1 || echo "smartphone/debug/ NÃO EXISTE" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
         
         VER="${{ steps.get_version.outputs.version }}"
         DEST="${GITHUB_WORKSPACE}/release-apks"
         mkdir -p "$DEST"
-        
-        # Copiar APKs com diagnóstico detalhado em caso de falha
-        for FLAVOR_PATH in "tv/debug/app-tv-debug.apk" "smartphone/debug/app-smartphone-debug.apk"; do
-          SRC="app/build/outputs/apk/${FLAVOR_PATH}"
-          if [ ! -f "$SRC" ]; then
-            echo "### ❌ APK não encontrado: $SRC" >> $GITHUB_STEP_SUMMARY
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            echo "CWD: $(pwd)" >> $GITHUB_STEP_SUMMARY
-            find . -name "*.apk" -type f >> $GITHUB_STEP_SUMMARY 2>&1 || true
-            echo '```' >> $GITHUB_STEP_SUMMARY
-            exit 1
-          fi
-        done
         
         cp app/build/outputs/apk/tv/debug/app-tv-debug.apk "$DEST/sentinela-android-tv-v${VER}.apk"
         cp app/build/outputs/apk/tv/debug/app-tv-debug.apk "$DEST/sentinela-android-tv-latest.apk"
         cp app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk "$DEST/sentinela-android-smartphone-v${VER}.apk"
         cp app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk "$DEST/sentinela-android-smartphone-latest.apk"
         
-        echo "============================================================"
-        echo "📦 Artefatos prontos em release-apks/:"
-        echo "============================================================"
+        echo "### ✅ Release APKs" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        ls -lh "$DEST/" >> $GITHUB_STEP_SUMMARY
+        echo '```' >> $GITHUB_STEP_SUMMARY
+        
         ls -lh "$DEST/"
 
     - name: Upload Artifacts to Run Summary
