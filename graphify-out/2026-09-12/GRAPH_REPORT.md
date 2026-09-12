@@ -1,16 +1,16 @@
-# Graph Report - SentinelaFrigate  (2026-09-12)
+# Graph Report - SentinelaFrigate  (2026-09-11)
 
 ## Corpus Check
-- 158 files · ~151,182 words
+- 158 files · ~151,115 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1340 nodes · 2096 edges · 97 communities (61 shown, 20 thin omitted)
+- 1340 nodes · 2095 edges · 97 communities (61 shown, 20 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 85 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `a841940d`
+- Built from commit: `11ee3d8e`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

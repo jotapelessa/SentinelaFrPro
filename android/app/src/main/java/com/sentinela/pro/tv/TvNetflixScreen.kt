@@ -218,6 +218,7 @@ fun TvNetflixScreenCore(
                     TvTab.SETTINGS -> {
                         TvSettingsViewport(
                             tailscaleIp = tailscaleIp,
+                            cameras = cameras,
                             firstItemRequester = settingsFirstItemRequester,
                             onNavigateLeftToSidebar = { sidebarFocusRequesters.getOrNull(selectedTab.ordinal)?.requestFocus() }
                         )
@@ -1962,6 +1963,7 @@ fun TvTelemetryMetricCard(
 @Composable
 fun TvSettingsViewport(
     tailscaleIp: String,
+    cameras: List<CameraEntity> = emptyList(),
     firstItemRequester: FocusRequester = remember { FocusRequester() },
     onNavigateLeftToSidebar: () -> Unit = {}
 ) {
@@ -2298,8 +2300,11 @@ fun TvSettingsViewport(
 
                         Button(
                             onClick = {
-                                com.sentinela.pro.tv.OverlayService.triggerPiP(context, "camera_principal", "TESTE PIP PREVIEW")
-                                Toast.makeText(context, "🔔 Janela PiP disparada sobre a TV!", Toast.LENGTH_SHORT).show()
+                                val targetCam = cameras.firstOrNull { it.isOnline }?.name
+                                    ?: cameras.firstOrNull()?.name
+                                    ?: "camera_secundaria"
+                                com.sentinela.pro.tv.OverlayService.triggerPiP(context, targetCam, "TESTE PIP PREVIEW")
+                                Toast.makeText(context, "🔔 Janela PiP disparada sobre a TV ($targetCam)!", Toast.LENGTH_SHORT).show()
                             },
                             colors = ButtonDefaults.buttonColors(containerColor = TvColors.NetflixRed),
                             shape = TvShapes.Badge,

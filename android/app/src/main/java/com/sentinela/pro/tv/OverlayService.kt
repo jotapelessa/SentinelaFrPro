@@ -20,6 +20,7 @@ import android.view.WindowManager
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.exoplayer.DefaultLoadControl
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.ui.PlayerView
 import android.widget.FrameLayout
@@ -314,7 +315,9 @@ class OverlayService : Service() {
     private fun loadSnapshotWithFallbacks(
         imageView: android.widget.ImageView,
         primaryUrl: String,
-        camera: String
+        camera: String,
+        targetWidth: Int = 640,
+        targetHeight: Int = 360
     ) {
         val base = SentinelaConfig.BASE_URL.trimEnd('/')
         val fastGo2rtc = "$base/go2rtc/api/frame.jpeg?src=$camera&t=${System.currentTimeMillis()}"
@@ -329,21 +332,17 @@ class OverlayService : Service() {
                 try {
                     val req = coil.request.ImageRequest.Builder(applicationContext)
                         .data(url)
-                        .size(coil.size.Size.ORIGINAL)
-                        .allowHardware(false)
+                        .size(targetWidth, targetHeight)
+                        .allowHardware(true)
                         .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
                         .diskCachePolicy(coil.request.CachePolicy.DISABLED)
                         .build()
 
                     val result = imageLoader.execute(req)
                     if (result is coil.request.SuccessResult) {
-                        val bitmap = (result.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+                        val drawable = result.drawable
                         withContext(Dispatchers.Main) {
-                            if (bitmap != null) {
-                                imageView.setImageBitmap(bitmap)
-                            } else {
-                                imageView.setImageDrawable(result.drawable)
-                            }
+                            imageView.setImageDrawable(drawable)
                             imageView.visibility = View.VISIBLE
                         }
                         android.util.Log.i("OverlayService", "✅ PiP Snapshot successfully displayed from $url")
@@ -440,7 +439,7 @@ class OverlayService : Service() {
             10
         }
 
-        val resolvedCamera = if (camera.isBlank()) "camera_principal" else camera
+        val resolvedCamera = if (camera.isBlank()) "camera_secundaria" else camera
         val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=webrtc,mse,mjpeg")
         val streamUrl = baseStreamUrl // webrtc is preferred to avoid huge buffer delays over Tailscale
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}")
@@ -487,8 +486,18 @@ class OverlayService : Service() {
                         .setContentType(C.AUDIO_CONTENT_TYPE_UNKNOWN)
                         .build()
 
+                    val lowLatencyLoadControl = DefaultLoadControl.Builder()
+                        .setBufferDurationsMs(
+                            1000, // minBufferMs
+                            2500, // maxBufferMs
+                            500,  // bufferForPlaybackMs
+                            1000  // bufferForPlaybackAfterRebufferMs
+                        )
+                        .build()
+
                     val player = ExoPlayer.Builder(this)
                         .setAudioAttributes(audioAttrs, false)
+                        .setLoadControl(lowLatencyLoadControl)
                         .build()
                     pipExoPlayer = player
                     pv.player = player
@@ -511,11 +520,9 @@ class OverlayService : Service() {
                     pipImageView = snapImageView
                     inner.addView(snapImageView)
 
-                    // Load instant image with Coil and cascading fallbacks
-                    loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera)
+                    // Load instant image with Coil and downsample to exact PiP size with hardware acceleration
+                    loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                 }
-
-
 
                 // 3. Top HUD Bar (Camera name & Label badge)
                 val hudBar = LinearLayout(this).apply {
@@ -565,9 +572,9 @@ class OverlayService : Service() {
                 } else {
                     pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
 
-                    // FIX #2: Reload snapshot on reuse with cascading fallbacks
+                    // Reload snapshot on reuse with cascading fallbacks & downscaled size
                     pipImageView?.let { iv ->
-                        loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera)
+                        loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                     }
                 }
 
@@ -612,34 +619,37 @@ class OverlayService : Service() {
         }
 
         if (prefs.pipPlayerMode == "snapshot") {
-            // Continuous Snapshot Refresh Loop (Updates image every 250ms directly to Bitmap so it NEVER goes black)
+            // Sequential Adaptive Snapshot Streamer (Queue=1, Hardware Bitmaps, Downsampled to PiP dimensions)
+            // Eliminates GC pauses and prevents socket queue buildup on Wi-Fi / Tailscale
             snapshotRefreshJob?.cancel()
+            val targetW = pipSize.width
+            val targetH = pipSize.height
             snapshotRefreshJob = serviceScope.launch(Dispatchers.IO) {
                 val base = SentinelaConfig.BASE_URL.trimEnd('/')
                 val imageLoader = coil.Coil.imageLoader(applicationContext)
                 while (isActive) {
-                    delay(250L)
                     try {
                         val refreshSnapUrl = "$base/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}"
                         val req = coil.request.ImageRequest.Builder(applicationContext)
                             .data(refreshSnapUrl)
-                            .size(coil.size.Size.ORIGINAL)
-                            .allowHardware(false)
+                            .size(targetW, targetH)
+                            .allowHardware(true)
                             .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
                             .diskCachePolicy(coil.request.CachePolicy.DISABLED)
                             .build()
+
                         val res = imageLoader.execute(req)
-                        if (res is coil.request.SuccessResult) {
-                            val bmp = (res.drawable as? android.graphics.drawable.BitmapDrawable)?.bitmap
+                        if (isActive && res is coil.request.SuccessResult) {
+                            val drawable = res.drawable
                             withContext(Dispatchers.Main) {
-                                pipImageView?.let { iv ->
-                                    if (bmp != null) iv.setImageBitmap(bmp) else iv.setImageDrawable(res.drawable)
-                                }
+                                pipImageView?.setImageDrawable(drawable)
                             }
                         }
                     } catch (e: Exception) {
-                        // Ignore transient tick
+                        // Ignore transient network errors
                     }
+                    // Sequential throttle: wait 350ms AFTER previous frame completes
+                    delay(350L)
                 }
             }
         } else {
@@ -658,9 +668,11 @@ class OverlayService : Service() {
         try {
             snapshotRefreshJob?.cancel()
             snapshotRefreshJob = null
+            pipExoPlayer?.stop()
             pipExoPlayer?.release()
             pipExoPlayer = null
             pipPlayerView = null
+            pipImageView?.setImageDrawable(null)
             overlayView?.let { v ->
                 if (v.parent != null) {
                     windowManager.removeViewImmediate(v)

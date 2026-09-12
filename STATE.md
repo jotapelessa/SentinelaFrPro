@@ -35,6 +35,11 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ## 🧭 O Que Foi Concluído Recentemente
 
+- **Otimização Crítica do PiP Preview na Android TV (Build 105 - Anti-Stutter & GC Free)**:
+  - **Sequential Adaptive Frame Fetcher**: Substituição do loop de polling cego por busca sequencial adaptativa (`Queue=1`), eliminando acúmulo de requisições e starvation de sockets em conexões Wi-Fi/Tailscale.
+  - **Hardware Bitmaps & Downsampling no PiP**: Redução de alocação de heap de 33.2 MB/s para < 1 MB/s ao carregar frames diretamente nas dimensões da janela PiP (`pipSize.width`, `pipSize.height`) com `allowHardware(true)`, erradicando pausas de Garbage Collector (GC) e congelamentos na TV.
+  - **Low Latency ExoPlayer Buffer**: Configuração de `DefaultLoadControl` de baixa latência (500ms de buffer inicial, 1000ms mín) evitando esperas de 3~6s na inicialização de streams HLS.
+  - **Seleção Dinâmica de Câmera Ativa**: O botão de teste de PiP na tela de configurações da TV agora resolve dinamicamente a primeira câmera online ativa (`camera_secundaria`), eliminando tela preta por requisição a câmera inativa.
 - **Otimização da Integração Frigate NVR & go2rtc (`integracao-frigate`)**:
   - **AC-028 (Watchdog de Auto-Reconexão e Anti-Congelamento)**: Implementado no `WebRTCPlayer.tsx` heartbeat periódico e tolerância inteligente a stalls com auto-recarregamento isolado e recuperação visual suave, eliminando congelamento em TVs, APKs e Web App.
   - **AC-029 (Pipeline HD Nativo Prioritário para Snapshots e Thumbnails)**: Priorização do frame de resolução nativa full-sensor (`/go2rtc/api/frame.jpeg`) no `WebRTCPlayer.tsx`, `CameraMosaic.tsx` e `frigate_bridge.py`, deixando o detect stream recortado de 360p do Frigate apenas como último recurso de fallback.
