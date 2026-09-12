@@ -23,7 +23,14 @@ class SentinelaPreferences(private val context: Context) {
         set(value) = prefs.edit().putBoolean("allow_pip_alerts", value).apply()
 
     var pipPlayerMode: String
-        get() = prefs.getString("pip_player_mode", "snapshot") ?: "snapshot"
+        get() {
+            val hasMigrated = prefs.getBoolean("pip_mode_migrated_v107", false)
+            if (!hasMigrated) {
+                prefs.edit().putString("pip_player_mode", "mse").putBoolean("pip_mode_migrated_v107", true).apply()
+                return "mse"
+            }
+            return prefs.getString("pip_player_mode", "mse") ?: "mse"
+        }
         set(value) = prefs.edit().putString("pip_player_mode", value).apply()
 
     var deviceIdentifier: String

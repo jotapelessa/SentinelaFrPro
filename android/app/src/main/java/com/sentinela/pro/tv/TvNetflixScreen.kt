@@ -2671,8 +2671,9 @@ fun TvSettingsViewport(
                     }
 
                     val modes = listOf(
-                        Triple("snapshot", "(Recomendado) Native Fast-Snapshot", "Zero buffer via Tailscale, não pausa o YouTube e não congela a TV (Build 105 GC-Free)."),
-                        Triple("exoplayer", "ExoPlayer Nativo (HLS / fMP4)", "Vídeo mais fluido (20+ FPS), sujeito a buffer se a conexão de rede oscilar.")
+                        Triple("mse", "🌟 (Recomendado) Ao Vivo Ultra Fluido (MSE / WebRTC)", "Mesmo motor 100% fluido da aba Câmeras: aceleração por hardware GPU, 30 FPS contínuos, zero travamentos e latência mínima."),
+                        Triple("snapshot", "Modo Eco Snapshot", "Atualização por fotos periódicas sequenciais (ideal para conexões muito lentas ou economia de banda)."),
+                        Triple("exoplayer", "ExoPlayer Nativo (HLS)", "Streaming via playlist HLS no reprodutor nativo ExoPlayer.")
                     )
 
                     Row(

@@ -35,6 +35,13 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ## 🧭 O Que Foi Concluído Recentemente
 
+- **Unificação da Arquitetura do PiP Preview com Motor MSE/WebRTC de 30 FPS da Aba Câmeras (Build 107)**:
+  - **Diagnóstico da Causa-Raiz**: Identificada a disparidade de reprodução entre a aba Câmeras (que usava `WebView` acelerada por hardware na GPU rodando a 30 FPS contínuos) e o PiP Preview (que no modo padrão executava polling HTTP baixando fotos estáticas JPEG a cada 350ms, atingindo no máximo 2,8 FPS com congelamentos frequentes no Wi-Fi/Tailscale).
+  - **Implementação do PiP WebView (`OverlayService.kt`)**: Incorporada instância de `WebView` acelerada por hardware na GPU (`LAYER_TYPE_HARDWARE`) diretamente na janela flutuante `TYPE_APPLICATION_OVERLAY`.
+  - **Live-Edge Auto-Sync Watchdog**: Injetado script inteligente que audita a ponta da transmissão a cada 400ms e acelera ligeiramente (1.15x) ou salta diretamente para o live edge caso haja drift de buffer superior a 350ms, impedindo qualquer acúmulo de atraso.
+  - **Camada Base Ultrarrápida (Zero Black Screen)**: Mantido snapshot estático de carregamento imediato (~20ms) como plano de fundo enquanto o canal WebSocket/WebRTC se conecta.
+  - **Atualização de Padrão e Configurações (`SentinelaPreferences.kt` e `TvNetflixScreen.kt`)**: Adotado `"mse"` como player padrão do PiP com migração transparente para dispositivos pré-existentes. O Card 2.1 agora destaca a opção 30 FPS recomendada.
+
 - **Redesign UI/UX das Abas Ferramentas e Configurações no Android TV (Build 106 - Adaptive Leanback Edition)**:
   - **1.1 Teste de Banda Sequencial (4 Conexões)**:
     - Renomeado de "Teste de banda Tailscale" para **"TESTE DE BANDA"**.

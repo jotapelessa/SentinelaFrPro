@@ -17,6 +17,12 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.webkit.PermissionRequest
+import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
+import android.webkit.WebSettings
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
@@ -38,9 +44,11 @@ class OverlayService : Service() {
 
     private var pipTitleView: TextView? = null
     private var pipImageView: android.widget.ImageView? = null
+    private var pipWebView: WebView? = null
     private var pipPlayerView: PlayerView? = null
     private var pipExoPlayer: ExoPlayer? = null
     private var snapshotRefreshJob: Job? = null
+    private var currentOverlayPlayerMode: String? = null
     
     private val serviceJob = SupervisorJob()
     private val serviceScope = CoroutineScope(Dispatchers.Main + serviceJob)
@@ -439,9 +447,14 @@ class OverlayService : Service() {
             10
         }
 
+        if (overlayView != null && currentOverlayPlayerMode != prefs.pipPlayerMode) {
+            removePiP()
+        }
+        currentOverlayPlayerMode = prefs.pipPlayerMode
+
         val resolvedCamera = if (camera.isBlank()) "camera_secundaria" else camera
-        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=webrtc,mse,mjpeg")
-        val streamUrl = baseStreamUrl // webrtc is preferred to avoid huge buffer delays over Tailscale
+        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=webrtc&mode=mse&width=100%")
+        val streamUrl = baseStreamUrl // webrtc/mse hardware-accelerated stream
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}")
 
         try {
@@ -469,59 +482,178 @@ class OverlayService : Service() {
                     setBackgroundColor(0xFF000000.toInt())
                 }
 
-                if (prefs.pipPlayerMode == "exoplayer") {
-                    val pv = PlayerView(this).apply {
-                        layoutParams = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.MATCH_PARENT
-                        )
-                        useController = false
-                        setBackgroundColor(Color.BLACK)
+                when (prefs.pipPlayerMode) {
+                    "exoplayer" -> {
+                        val pv = PlayerView(this).apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            )
+                            useController = false
+                            setBackgroundColor(Color.BLACK)
+                        }
+                        pipPlayerView = pv
+                        inner.addView(pv)
+
+                        val audioAttrs = AudioAttributes.Builder()
+                            .setUsage(C.USAGE_UNKNOWN)
+                            .setContentType(C.AUDIO_CONTENT_TYPE_UNKNOWN)
+                            .build()
+
+                        val lowLatencyLoadControl = DefaultLoadControl.Builder()
+                            .setBufferDurationsMs(
+                                1000, // minBufferMs
+                                2500, // maxBufferMs
+                                500,  // bufferForPlaybackMs
+                                1000  // bufferForPlaybackAfterRebufferMs
+                            )
+                            .build()
+
+                        val player = ExoPlayer.Builder(this)
+                            .setAudioAttributes(audioAttrs, false)
+                            .setLoadControl(lowLatencyLoadControl)
+                            .build()
+                        pipExoPlayer = player
+                        pv.player = player
+                        player.volume = 0f
+                        player.playWhenReady = true
+
+                        val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
+                        val mediaItem = MediaItem.fromUri(hlsUrl)
+                        player.setMediaItem(mediaItem)
+                        player.prepare()
                     }
-                    pipPlayerView = pv
-                    inner.addView(pv)
+                    "snapshot" -> {
+                        // Modo Eco Snapshot: Static base image with sequential polling loop
+                        val snapImageView = android.widget.ImageView(this).apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            )
+                            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                        }
+                        pipImageView = snapImageView
+                        inner.addView(snapImageView)
 
-                    val audioAttrs = AudioAttributes.Builder()
-                        .setUsage(C.USAGE_UNKNOWN)
-                        .setContentType(C.AUDIO_CONTENT_TYPE_UNKNOWN)
-                        .build()
-
-                    val lowLatencyLoadControl = DefaultLoadControl.Builder()
-                        .setBufferDurationsMs(
-                            1000, // minBufferMs
-                            2500, // maxBufferMs
-                            500,  // bufferForPlaybackMs
-                            1000  // bufferForPlaybackAfterRebufferMs
-                        )
-                        .build()
-
-                    val player = ExoPlayer.Builder(this)
-                        .setAudioAttributes(audioAttrs, false)
-                        .setLoadControl(lowLatencyLoadControl)
-                        .build()
-                    pipExoPlayer = player
-                    pv.player = player
-                    player.volume = 0f
-                    player.playWhenReady = true
-                    
-                    val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
-                    val mediaItem = MediaItem.fromUri(hlsUrl)
-                    player.setMediaItem(mediaItem)
-                    player.prepare()
-                } else {
-                    // 1. Instant Snapshot Base Layer (FIT_CENTER preserves 100% full FOV without zoom or cropping)
-                    val snapImageView = android.widget.ImageView(this).apply {
-                        layoutParams = FrameLayout.LayoutParams(
-                            FrameLayout.LayoutParams.MATCH_PARENT,
-                            FrameLayout.LayoutParams.MATCH_PARENT
-                        )
-                        scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                        loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                     }
-                    pipImageView = snapImageView
-                    inner.addView(snapImageView)
+                    else -> {
+                        // "mse" (Padrão Recomendado): Hardware-Accelerated 30 FPS Live Stream via go2rtc WebView
+                        // 1. Instant snapshot base layer underneath (0ms black screen)
+                        val snapImageView = android.widget.ImageView(this).apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            )
+                            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                        }
+                        pipImageView = snapImageView
+                        inner.addView(snapImageView)
+                        loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
 
-                    // Load instant image with Coil and downsample to exact PiP size with hardware acceleration
-                    loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
+                        // 2. Hardware-Accelerated WebView on top with live-edge auto-sync watchdog
+                        val wv = WebView(this).apply {
+                            layoutParams = FrameLayout.LayoutParams(
+                                FrameLayout.LayoutParams.MATCH_PARENT,
+                                FrameLayout.LayoutParams.MATCH_PARENT
+                            )
+                            setBackgroundColor(Color.TRANSPARENT)
+                            setLayerType(View.LAYER_TYPE_HARDWARE, null)
+
+                            settings.apply {
+                                javaScriptEnabled = true
+                                domStorageEnabled = true
+                                databaseEnabled = true
+                                mediaPlaybackRequiresUserGesture = false
+                                loadsImagesAutomatically = true
+                                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
+                                useWideViewPort = true
+                                loadWithOverviewMode = true
+                                allowContentAccess = true
+                                allowFileAccess = true
+                                cacheMode = WebSettings.LOAD_NO_CACHE
+                            }
+
+                            isVerticalScrollBarEnabled = false
+                            isHorizontalScrollBarEnabled = false
+
+                            webChromeClient = object : WebChromeClient() {
+                                override fun onPermissionRequest(request: PermissionRequest?) {
+                                    request?.grant(request.resources)
+                                }
+                            }
+
+                            webViewClient = object : WebViewClient() {
+                                override fun onReceivedSslError(
+                                    view: WebView?,
+                                    handler: SslErrorHandler?,
+                                    error: SslError?
+                                ) {
+                                    handler?.proceed()
+                                }
+
+                                override fun onPageFinished(view: WebView?, url: String?) {
+                                    super.onPageFinished(view, url)
+                                    val js = "javascript:(function() {" +
+                                        "var style = document.createElement('style');" +
+                                        "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
+                                        "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; pointer-events:none !important; } " +
+                                        "video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel, video::-webkit-media-controls-play-button, video::-webkit-media-controls-start-playback-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-current-time-display, video::-webkit-media-controls-time-remaining-display, video::-webkit-media-controls-mute-button, video::-webkit-media-controls-toggle-closed-captions-button, video::-webkit-media-controls-volume-slider { display:none !important; -webkit-appearance:none !important; opacity:0 !important; visibility:hidden !important; } " +
+                                        "* { outline:none !important; -webkit-tap-highlight-color:transparent !important; }';" +
+                                        "document.head.appendChild(style);" +
+                                        "var initVideo = function() {" +
+                                        "  var v = document.querySelector('video');" +
+                                        "  if (v) {" +
+                                        "    v.controls = false;" +
+                                        "    v.muted = true;" +
+                                        "    v.autoplay = true;" +
+                                        "    v.playsInline = true;" +
+                                        "    v.removeAttribute('controls');" +
+                                        "    if (v.paused) { v.play().catch(function(){}); }" +
+                                        "  }" +
+                                        "};" +
+                                        "initVideo();" +
+                                        "var lastTime = 0;" +
+                                        "var stallTicks = 0;" +
+                                        "if (!window.__liveEdgeTimer) {" +
+                                        "  window.__liveEdgeTimer = setInterval(function() {" +
+                                        "    var v = document.querySelector('video');" +
+                                        "    if (v) {" +
+                                        "      if (v.currentTime > 0 && v.currentTime === lastTime && !v.paused && !v.ended) {" +
+                                        "        stallTicks++;" +
+                                        "        if (stallTicks >= 3) {" +
+                                        "          stallTicks = 0;" +
+                                        "          location.reload();" +
+                                        "        }" +
+                                        "      } else {" +
+                                        "        lastTime = v.currentTime;" +
+                                        "        stallTicks = 0;" +
+                                        "      }" +
+                                        "      if (v.buffered && v.buffered.length > 0) {" +
+                                        "        var end = v.buffered.end(v.buffered.length - 1);" +
+                                        "        var drift = end - v.currentTime;" +
+                                        "        if (drift > 1.2) {" +
+                                        "          v.currentTime = end - 0.05;" +
+                                        "          v.playbackRate = 1.0;" +
+                                        "        } else if (drift > 0.35) {" +
+                                        "          v.playbackRate = 1.15;" +
+                                        "        } else if (drift < 0.15) {" +
+                                        "          v.playbackRate = 1.0;" +
+                                        "        }" +
+                                        "      }" +
+                                        "      if (v.paused) { v.play().catch(function(){}); }" +
+                                        "    }" +
+                                        "  }, 400);" +
+                                        "}" +
+                                        "})()"
+                                    view?.loadUrl(js)
+                                }
+                            }
+                            loadUrl(streamUrl)
+                        }
+                        pipWebView = wv
+                        inner.addView(wv)
+                    }
                 }
 
                 // 3. Top HUD Bar (Camera name & Label badge)
@@ -546,11 +678,16 @@ class OverlayService : Service() {
                 }
                 hudBar.addView(dot)
 
+                val badgeText = when (prefs.pipPlayerMode) {
+                    "exoplayer" -> "AO VIVO"
+                    "snapshot" -> "ECO SNAPSHOT"
+                    else -> "AO VIVO (30 FPS)"
+                }
                 val tv = TextView(this).apply {
                     setTextColor(Color.WHITE)
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
                     typeface = Typeface.DEFAULT_BOLD
-                    text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
+                    text = "${camera.uppercase()} • ${label.uppercase()} • $badgeText"
                 }
                 pipTitleView = tv
                 hudBar.addView(tv)
@@ -560,21 +697,29 @@ class OverlayService : Service() {
                 overlayView = root
                 windowManager.addView(overlayView, params)
             } else {
-                if (prefs.pipPlayerMode == "exoplayer") {
-                    pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • AO VIVO"
-                    pipExoPlayer?.let { player ->
-                        val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
-                        val mediaItem = MediaItem.fromUri(hlsUrl)
-                        player.setMediaItem(mediaItem)
-                        player.prepare()
-                        player.playWhenReady = true
+                when (prefs.pipPlayerMode) {
+                    "exoplayer" -> {
+                        pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • AO VIVO"
+                        pipExoPlayer?.let { player ->
+                            val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
+                            val mediaItem = MediaItem.fromUri(hlsUrl)
+                            player.setMediaItem(mediaItem)
+                            player.prepare()
+                            player.playWhenReady = true
+                        }
                     }
-                } else {
-                    pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • INSTANTÂNEO"
-
-                    // Reload snapshot on reuse with cascading fallbacks & downscaled size
-                    pipImageView?.let { iv ->
-                        loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
+                    "snapshot" -> {
+                        pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • ECO SNAPSHOT"
+                        pipImageView?.let { iv ->
+                            loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
+                        }
+                    }
+                    else -> {
+                        pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • AO VIVO (30 FPS)"
+                        pipImageView?.let { iv ->
+                            loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
+                        }
+                        pipWebView?.loadUrl(streamUrl)
                     }
                 }
 
@@ -672,6 +817,19 @@ class OverlayService : Service() {
             pipExoPlayer?.release()
             pipExoPlayer = null
             pipPlayerView = null
+            pipWebView?.let { wv ->
+                try {
+                    wv.stopLoading()
+                    wv.loadUrl("about:blank")
+                    wv.onPause()
+                    wv.pauseTimers()
+                    (wv.parent as? android.view.ViewGroup)?.removeView(wv)
+                    wv.destroy()
+                } catch (e: Exception) {
+                    android.util.Log.w("OverlayService", "Error destroying WebView: ${e.message}")
+                }
+            }
+            pipWebView = null
             pipImageView?.setImageDrawable(null)
             overlayView?.let { v ->
                 if (v.parent != null) {
@@ -681,6 +839,7 @@ class OverlayService : Service() {
             pipImageView = null
             pipTitleView = null
             overlayView = null
+            currentOverlayPlayerMode = null
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Error removing overlay view: ${e.message}")
         }
