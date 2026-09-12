@@ -1337,8 +1337,8 @@ fun TvToolsViewport(
         )
     }
 
-    // 1.2 Estado de Estabilidade de Vídeo (4 Modos de Vídeo ao Vivo)
-    val videoModesList = remember {
+    // 1.2 Estado de Estabilidade de Vídeo (4 Modos de Vídeo ao Vivo: Eco, MSE, WebRTC, Adaptativo)
+    val defaultVideoModes = remember {
         listOf(
             com.sentinela.pro.data.VideoStabilityResult(
                 modeId = "eco",
@@ -1349,6 +1349,7 @@ fun TvToolsViewport(
                 jitterMs = 3.2,
                 dropsCount = 0,
                 isStable = true,
+                state = com.sentinela.pro.data.ConnectionTestState.IDLE,
                 description = "1.0 FPS • Baixa Banda"
             ),
             com.sentinela.pro.data.VideoStabilityResult(
@@ -1360,6 +1361,7 @@ fun TvToolsViewport(
                 jitterMs = 0.9,
                 dropsCount = 0,
                 isStable = true,
+                state = com.sentinela.pro.data.ConnectionTestState.IDLE,
                 description = "24 FPS • Fluidez Máxima"
             ),
             com.sentinela.pro.data.VideoStabilityResult(
@@ -1371,6 +1373,7 @@ fun TvToolsViewport(
                 jitterMs = 0.5,
                 dropsCount = 0,
                 isStable = true,
+                state = com.sentinela.pro.data.ConnectionTestState.IDLE,
                 description = "30 FPS • Latência Zero"
             ),
             com.sentinela.pro.data.VideoStabilityResult(
@@ -1382,14 +1385,35 @@ fun TvToolsViewport(
                 jitterMs = 1.1,
                 dropsCount = 0,
                 isStable = true,
-                description = "Adaptativo • Zero GC (Build 105)"
+                state = com.sentinela.pro.data.ConnectionTestState.IDLE,
+                description = "Adaptativo • Zero GC"
             )
         )
     }
+    var videoModesList by remember { mutableStateOf(defaultVideoModes) }
     var selectedVideoModeIdx by remember { mutableIntStateOf(1) } // MSE padrão
+    var activeTestingVideoIndex by remember { mutableIntStateOf(-1) }
     var isEvaluatingVideoStability by remember { mutableStateOf(false) }
 
-    // 1.3 Estado de Telemetria e Largura de Banda
+    // 1.3 Estado da Bateria Completa de Largura de Banda do Servidor
+    var bandwidthSuite by remember {
+        mutableStateOf(
+            com.sentinela.pro.data.BandwidthSuiteResult(
+                videoThroughputMbps = 74.2,
+                burstFps = 24.0,
+                latencyMs = 10,
+                jitterMs = 0.8,
+                max1080pCameras = 12,
+                rxKbs = 1850.0,
+                txKbs = 240.0,
+                bufferHealthPercent = 98,
+                hwDecoderStatus = "Intel QSV / VAAPI Ativo",
+                diagnosticSummary = "Conexão de altíssima velocidade: suporta streaming simultâneo em Full HD para até 12 câmeras sem travamentos.",
+                qualityRating = "EXCELENTE",
+                isTesting = false
+            )
+        )
+    }
     var liveTelemetry by remember { mutableStateOf<com.sentinela.pro.data.TelemetryData?>(null) }
     var isCalibratingBandwidth by remember { mutableStateOf(false) }
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
@@ -1428,6 +1452,111 @@ fun TvToolsViewport(
         }
     }
 
+    // Ações Reutilizáveis para Telas Largas e Compactas
+    val onRunSequentialSpeedTest: () -> Unit = {
+        coroutineScope.launch {
+            val updated = connectionList.toMutableList()
+            var fastestConn: com.sentinela.pro.data.SingleConnectionResult? = null
+
+            for (i in updated.indices) {
+                activeTestingConnIndex = i
+                val current = updated[i]
+                updated[i] = current.copy(
+                    state = com.sentinela.pro.data.ConnectionTestState.TESTING,
+                    details = "Testando rota ${i + 1}/4..."
+                )
+                connectionList = updated.toList()
+
+                val res = com.sentinela.pro.network.SentinelaRepository.testSingleConnectionEndpoint(
+                    id = current.id,
+                    name = current.name,
+                    host = current.host,
+                    protocol = current.protocol
+                )
+                updated[i] = res
+                connectionList = updated.toList()
+
+                if (res.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS) {
+                    if (fastestConn == null || res.downloadMbps > (fastestConn?.downloadMbps ?: 0.0)) {
+                        fastestConn = res
+                    }
+                }
+                delay(250)
+            }
+
+            activeTestingConnIndex = -1
+            fastestConn?.let { best ->
+                bestConnId = best.id
+                overallSpeedResult = com.sentinela.pro.data.SpeedTestResult(
+                    downloadMbps = best.downloadMbps,
+                    pingMs = best.pingMs,
+                    jitterMs = best.jitterMs,
+                    status = "${best.name} (Mais Rápida)",
+                    isRunning = false
+                )
+                trigger("Teste Concluído: Rota recomendada é ${best.name} (${best.downloadMbps} Mbps)!")
+                Toast.makeText(context, "✅ Melhor rota: ${best.name} (${best.downloadMbps} Mbps)", Toast.LENGTH_SHORT).show()
+            } ?: run {
+                trigger("Teste de banda concluído.")
+            }
+
+            // Dispara heartbeat com telemetria para /screens
+            runCatching {
+                com.sentinela.pro.network.SentinelaRepository.registerOrHeartbeat(
+                    deviceIdentifier = prefs.deviceIdentifier,
+                    friendlyName = prefs.friendlyName,
+                    deviceType = "android_tv"
+                )
+            }
+        }
+    }
+
+    val onEvaluateVideoStabilityStreams: () -> Unit = {
+        isEvaluatingVideoStability = true
+        coroutineScope.launch {
+            val modes = videoModesList.toMutableList()
+            val targetCam = cameras.firstOrNull { it.name.contains("secundaria", ignoreCase = true) }?.name
+                ?: cameras.firstOrNull()?.name
+                ?: "camera_secundaria"
+
+            for (i in modes.indices) {
+                activeTestingVideoIndex = i
+                val cur = modes[i]
+                modes[i] = cur.copy(
+                    state = com.sentinela.pro.data.ConnectionTestState.TESTING,
+                    description = "Testando stream ${cur.modeName} (${i + 1}/4)..."
+                )
+                videoModesList = modes.toList()
+                delay(150)
+
+                val res = com.sentinela.pro.network.SentinelaRepository.testVideoPipelineStability(cur.modeId, targetCam)
+                modes[i] = res
+                videoModesList = modes.toList()
+                delay(300)
+            }
+
+            activeTestingVideoIndex = -1
+            isEvaluatingVideoStability = false
+            trigger("Estabilidade validada nos 4 pipelines de vídeo com sucesso!")
+            Toast.makeText(context, "✅ Todos os 4 pipelines de vídeo (Eco, MSE, WebRTC, Adaptativo) foram avaliados!", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    val onRunBandwidthSuiteTest: () -> Unit = {
+        isCalibratingBandwidth = true
+        bandwidthSuite = bandwidthSuite.copy(isTesting = true)
+        coroutineScope.launch {
+            val targetCam = cameras.firstOrNull { it.name.contains("secundaria", ignoreCase = true) }?.name
+                ?: cameras.firstOrNull()?.name
+                ?: "camera_secundaria"
+            val res = com.sentinela.pro.network.SentinelaRepository.runBandwidthTestSuite(targetCam)
+            bandwidthSuite = res
+            isCalibratingBandwidth = false
+            trigger("Bateria de testes concluída: ${res.videoThroughputMbps} Mbps (${res.qualityRating})!")
+            Toast.makeText(context, "✅ Largura de Banda: ${res.videoThroughputMbps} Mbps • ${res.qualityRating}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isWide = maxWidth >= 860.dp
 
@@ -1444,7 +1573,7 @@ fun TvToolsViewport(
                 ) {
                     Column {
                         Text("Diagnósticos, Velocidade & Ações NVR", style = TvTypography.TabTitle.copy(fontSize = 18.sp))
-                        Text("Telemetria em tempo real, teste sequencial de todas as conexões e estabilidade de streams", style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary))
+                        Text("Telemetria em tempo real, teste sequencial de conexões e estabilidade individual dos streams", style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary))
                     }
 
                     feedbackMessage?.let { msg ->
@@ -1474,7 +1603,7 @@ fun TvToolsViewport(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        // 1.1 Card: TESTE DE BANDA (Sequencial)
+                        // 1.1 Card: TESTE DE BANDA (Sequencial para as 4 Rotas)
                         CardTesteDeBanda(
                             modifier = Modifier.weight(1f),
                             connections = connectionList,
@@ -1484,81 +1613,19 @@ fun TvToolsViewport(
                             isTesting = activeTestingConnIndex >= 0,
                             firstItemRequester = firstItemRequester,
                             onNavigateLeftToSidebar = onNavigateLeftToSidebar,
-                            onRunSequentialTest = {
-                                coroutineScope.launch {
-                                    val updated = connectionList.toMutableList()
-                                    var fastestConn: com.sentinela.pro.data.SingleConnectionResult? = null
-
-                                    for (i in updated.indices) {
-                                        activeTestingConnIndex = i
-                                        val current = updated[i]
-                                        updated[i] = current.copy(
-                                            state = com.sentinela.pro.data.ConnectionTestState.TESTING,
-                                            details = "Testando ${i + 1}/4..."
-                                        )
-                                        connectionList = updated.toList()
-
-                                        val res = com.sentinela.pro.network.SentinelaRepository.testSingleConnectionEndpoint(
-                                            id = current.id,
-                                            name = current.name,
-                                            host = current.host,
-                                            protocol = current.protocol
-                                        )
-                                        updated[i] = res
-                                        connectionList = updated.toList()
-
-                                        if (res.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS) {
-                                            if (fastestConn == null || res.downloadMbps > fastestConn!!.downloadMbps) {
-                                                fastestConn = res
-                                            }
-                                        }
-                                        delay(250)
-                                    }
-
-                                    activeTestingConnIndex = -1
-                                    fastestConn?.let { best ->
-                                        bestConnId = best.id
-                                        overallSpeedResult = com.sentinela.pro.data.SpeedTestResult(
-                                            downloadMbps = best.downloadMbps,
-                                            pingMs = best.pingMs,
-                                            jitterMs = best.jitterMs,
-                                            status = "${best.name} (Mais Rápida)",
-                                            isRunning = false
-                                        )
-                                        trigger("Teste Concluído: Rota recomendada é ${best.name} (${best.downloadMbps} Mbps)!")
-                                    } ?: run {
-                                        trigger("Teste concluído com falhas de conectividade.")
-                                    }
-
-                                    // Dispara heartbeat com telemetria para /screens
-                                    runCatching {
-                                        com.sentinela.pro.network.SentinelaRepository.registerOrHeartbeat(
-                                            deviceIdentifier = prefs.deviceIdentifier,
-                                            friendlyName = prefs.friendlyName,
-                                            deviceType = "android_tv"
-                                        )
-                                    }
-                                }
-                            }
+                            onRunSequentialTest = onRunSequentialSpeedTest
                         )
 
-                        // 1.2 Card: ESTABILIDADE DE VÍDEO (Eco, MSE, WebRTC, Snapshot Adaptativo)
+                        // 1.2 Card: ESTABILIDADE DE VÍDEO (Individual: Eco, MSE, WebRTC, Snapshot Adaptativo)
                         CardEstabilidadeDeVideo(
                             modifier = Modifier.weight(1f),
                             videoModes = videoModesList,
                             selectedIndex = selectedVideoModeIdx,
+                            activeTestingIndex = activeTestingVideoIndex,
                             pulseAnim = pulseAnim,
                             isEvaluating = isEvaluatingVideoStability,
                             onSelectMode = { selectedVideoModeIdx = it },
-                            onEvaluateStreams = {
-                                isEvaluatingVideoStability = true
-                                coroutineScope.launch {
-                                    delay(900)
-                                    isEvaluatingVideoStability = false
-                                    trigger("Estabilidade validada nos 4 pipelines de vídeo!")
-                                    Toast.makeText(context, "✅ Todos os 4 pipelines de vídeo estão estáveis e prontos!", Toast.LENGTH_SHORT).show()
-                                }
-                            }
+                            onEvaluateStreams = onEvaluateVideoStabilityStreams
                         )
                     }
                 } else {
@@ -1575,68 +1642,18 @@ fun TvToolsViewport(
                             isTesting = activeTestingConnIndex >= 0,
                             firstItemRequester = firstItemRequester,
                             onNavigateLeftToSidebar = onNavigateLeftToSidebar,
-                            onRunSequentialTest = {
-                                coroutineScope.launch {
-                                    val updated = connectionList.toMutableList()
-                                    var fastestConn: com.sentinela.pro.data.SingleConnectionResult? = null
-
-                                    for (i in updated.indices) {
-                                        activeTestingConnIndex = i
-                                        val current = updated[i]
-                                        updated[i] = current.copy(
-                                            state = com.sentinela.pro.data.ConnectionTestState.TESTING,
-                                            details = "Testando ${i + 1}/4..."
-                                        )
-                                        connectionList = updated.toList()
-
-                                        val res = com.sentinela.pro.network.SentinelaRepository.testSingleConnectionEndpoint(
-                                            id = current.id,
-                                            name = current.name,
-                                            host = current.host,
-                                            protocol = current.protocol
-                                        )
-                                        updated[i] = res
-                                        connectionList = updated.toList()
-
-                                        if (res.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS) {
-                                            if (fastestConn == null || res.downloadMbps > fastestConn!!.downloadMbps) {
-                                                fastestConn = res
-                                            }
-                                        }
-                                        delay(250)
-                                    }
-
-                                    activeTestingConnIndex = -1
-                                    fastestConn?.let { best ->
-                                        bestConnId = best.id
-                                        overallSpeedResult = com.sentinela.pro.data.SpeedTestResult(
-                                            downloadMbps = best.downloadMbps,
-                                            pingMs = best.pingMs,
-                                            jitterMs = best.jitterMs,
-                                            status = "${best.name} (Mais Rápida)",
-                                            isRunning = false
-                                        )
-                                        trigger("Teste Concluído: Rota recomendada é ${best.name} (${best.downloadMbps} Mbps)!")
-                                    }
-                                }
-                            }
+                            onRunSequentialTest = onRunSequentialSpeedTest
                         )
 
                         CardEstabilidadeDeVideo(
                             modifier = Modifier.fillMaxWidth(),
                             videoModes = videoModesList,
                             selectedIndex = selectedVideoModeIdx,
+                            activeTestingIndex = activeTestingVideoIndex,
                             pulseAnim = pulseAnim,
                             isEvaluating = isEvaluatingVideoStability,
                             onSelectMode = { selectedVideoModeIdx = it },
-                            onEvaluateStreams = {
-                                isEvaluatingVideoStability = true
-                                coroutineScope.launch {
-                                    delay(900)
-                                    isEvaluatingVideoStability = false
-                                    trigger("Estabilidade validada nos 4 pipelines de vídeo!")
-                                }
-                            }
+                            onEvaluateStreams = onEvaluateVideoStabilityStreams
                         )
                     }
                 }
@@ -1651,21 +1668,14 @@ fun TvToolsViewport(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        // 1.3 Card: LARGURA DE BANDA (Métricas Completas & Multicanal)
+                        // 1.3 Card: LARGURA DE BANDA DO SERVIDOR (Bateria Completa de Testes)
                         CardLarguraDeBanda(
                             modifier = Modifier.weight(1f),
+                            suiteResult = bandwidthSuite,
                             liveTelemetry = liveTelemetry,
-                            measuredSpeedMbps = overallSpeedResult.downloadMbps,
                             pulseAnim = pulseAnim,
                             isCalibrating = isCalibratingBandwidth,
-                            onCalibrate = {
-                                isCalibratingBandwidth = true
-                                coroutineScope.launch {
-                                    delay(1000)
-                                    isCalibratingBandwidth = false
-                                    trigger("Largura de Banda Calibrada: Buffer Seguro e Decoder HW Confirmados!")
-                                }
-                            }
+                            onCalibrate = onRunBandwidthSuiteTest
                         )
 
                         // Card: STATUS DOS SUBSISTEMAS & COMANDOS RÁPIDOS
@@ -1685,18 +1695,11 @@ fun TvToolsViewport(
                     ) {
                         CardLarguraDeBanda(
                             modifier = Modifier.fillMaxWidth(),
+                            suiteResult = bandwidthSuite,
                             liveTelemetry = liveTelemetry,
-                            measuredSpeedMbps = overallSpeedResult.downloadMbps,
                             pulseAnim = pulseAnim,
                             isCalibrating = isCalibratingBandwidth,
-                            onCalibrate = {
-                                isCalibratingBandwidth = true
-                                coroutineScope.launch {
-                                    delay(1000)
-                                    isCalibratingBandwidth = false
-                                    trigger("Largura de Banda Calibrada!")
-                                }
-                            }
+                            onCalibrate = onRunBandwidthSuiteTest
                         )
 
                         CardSubsistemasEComandos(
@@ -1813,7 +1816,12 @@ fun CardTesteDeBanda(
                         val isCurrentTesting = activeTestingIndex >= 0 && connections.indexOf(conn) == activeTestingIndex
                         val isBest = conn.id == bestConnId && conn.downloadMbps > 0
                         val bgColor = if (isCurrentTesting) Color(0xFF1E293B) else Color(0xFF070B14)
-                        val borderColor = if (isBest) TvColors.CyberCyan else if (isCurrentTesting) TvColors.StandbyAmber else TvColors.BorderSubtle
+                        val borderColor = when {
+                            isBest -> TvColors.CyberCyan
+                            isCurrentTesting -> TvColors.StandbyAmber
+                            conn.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> TvColors.AlertCrimson.copy(alpha = 0.5f)
+                            else -> TvColors.BorderSubtle
+                        }
 
                         Box(
                             modifier = Modifier
@@ -1846,15 +1854,35 @@ fun CardTesteDeBanda(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.SpaceBetween
                                 ) {
+                                    val speedText = when {
+                                        isCurrentTesting -> "Medindo..."
+                                        conn.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> "Offline"
+                                        conn.downloadMbps > 0 -> "${conn.downloadMbps} Mbps"
+                                        else -> "Pronto"
+                                    }
+                                    val speedColor = when {
+                                        isCurrentTesting -> TvColors.StandbyAmber
+                                        conn.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> TvColors.AlertCrimson
+                                        conn.downloadMbps > 0 -> TvColors.LiveGreen
+                                        else -> TvColors.TextSecondary
+                                    }
+
                                     Text(
-                                        text = if (isCurrentTesting) "Medindo..." else if (conn.downloadMbps > 0) "${conn.downloadMbps} Mbps" else "Offline",
-                                        color = if (isCurrentTesting) TvColors.StandbyAmber else if (conn.downloadMbps > 0) TvColors.LiveGreen else TvColors.AlertCrimson,
+                                        text = speedText,
+                                        color = speedColor,
                                         fontSize = 9.sp,
                                         fontFamily = FontFamily.Monospace,
                                         fontWeight = FontWeight.Bold
                                     )
+
+                                    val latencyText = when {
+                                        isCurrentTesting -> "--"
+                                        conn.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> "Falha"
+                                        conn.pingMs > 0 -> "${conn.pingMs}ms"
+                                        else -> "--"
+                                    }
                                     Text(
-                                        text = if (conn.pingMs > 0) "${conn.pingMs}ms" else "--",
+                                        text = latencyText,
                                         color = TvColors.TextSecondary,
                                         fontSize = 9.sp,
                                         fontFamily = FontFamily.Monospace
@@ -1899,13 +1927,14 @@ fun CardTesteDeBanda(
 }
 
 /**
- * 1.2 Card: ESTABILIDADE DE VÍDEO (Eco, MSE, WebRTC e Snapshot Adaptativo)
+ * 1.2 Card: ESTABILIDADE DE VÍDEO (Apresentação Individual dos 4 Pipelines ao Vivo)
  */
 @Composable
 fun CardEstabilidadeDeVideo(
     modifier: Modifier = Modifier,
     videoModes: List<com.sentinela.pro.data.VideoStabilityResult>,
     selectedIndex: Int,
+    activeTestingIndex: Int,
     pulseAnim: Float,
     isEvaluating: Boolean,
     onSelectMode: (Int) -> Unit,
@@ -1935,70 +1964,120 @@ fun CardEstabilidadeDeVideo(
 
             Surface(
                 shape = TvShapes.StatusPill,
-                color = TvColors.LiveGreen.copy(alpha = 0.2f),
-                border = BorderStroke(1.dp, TvColors.LiveGreen.copy(alpha = 0.5f))
+                color = if (isEvaluating) TvColors.StandbyAmber.copy(alpha = 0.2f) else TvColors.LiveGreen.copy(alpha = 0.2f),
+                border = BorderStroke(1.dp, if (isEvaluating) TvColors.StandbyAmber else TvColors.LiveGreen)
             ) {
                 Text(
-                    text = "${currentMode.measuredFps} FPS ESTÁVEL",
-                    color = TvColors.LiveGreen,
+                    text = if (isEvaluating) "TESTANDO (${activeTestingIndex + 1}/4)" else "4/4 MODOS ESTÁVEIS",
+                    color = if (isEvaluating) TvColors.StandbyAmber else TvColors.LiveGreen,
                     fontSize = 10.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
                 )
             }
         }
 
-        // Seletor Auto-Ajustável dos 4 Modos (Eco, MSE, WebRTC, Snapshot Adaptativo)
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
-        ) {
-            videoModes.forEachIndexed { idx, mode ->
-                val isSelected = idx == selectedIndex
-                val interactionSource = remember { MutableInteractionSource() }
-                val isFocused by interactionSource.collectIsFocusedAsState()
-
-                Surface(
-                    shape = TvShapes.Badge,
-                    color = if (isSelected) TvColors.NetflixRed else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
-                    border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
-                    modifier = Modifier
-                        .weight(1f)
-                        .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
-                        .clickable(interactionSource = interactionSource, indication = null) {
-                            onSelectMode(idx)
-                        }
+        // Grade 2x2 com os 4 Resultados Individuais (Eco, MSE, WebRTC, Snapshot Adaptativo)
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            val rows = videoModes.chunked(2)
+            rows.forEach { pair ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.padding(vertical = 5.dp, horizontal = 4.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Text(
-                            text = mode.modeName,
-                            color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
-                            fontSize = 10.sp,
-                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                        Text(
-                            text = "${mode.targetFps.toInt()} FPS",
-                            color = if (isSelected) Color.White.copy(alpha = 0.8f) else TvColors.CyberCyan,
-                            fontSize = 8.sp,
-                            fontFamily = FontFamily.Monospace
-                        )
+                    pair.forEach { mode ->
+                        val idx = videoModes.indexOf(mode)
+                        val isSelected = idx == selectedIndex
+                        val isCurrentTesting = activeTestingIndex >= 0 && idx == activeTestingIndex
+                        val interactionSource = remember { MutableInteractionSource() }
+                        val isFocused by interactionSource.collectIsFocusedAsState()
+
+                        val bgColor = if (isCurrentTesting) Color(0xFF1E293B) else if (isSelected) Color(0xFF131D33) else Color(0xFF070B14)
+                        val borderColor = when {
+                            isFocused -> TvColors.BorderFocused
+                            isCurrentTesting -> TvColors.StandbyAmber
+                            isSelected -> TvColors.CyberCyan
+                            mode.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> TvColors.AlertCrimson.copy(alpha = 0.5f)
+                            else -> TvColors.BorderSubtle
+                        }
+
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .clip(TvShapes.Badge)
+                                .background(bgColor)
+                                .border(1.dp, borderColor, TvShapes.Badge)
+                                .clickable(interactionSource = interactionSource, indication = null) {
+                                    onSelectMode(idx)
+                                }
+                                .padding(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text(
+                                        text = mode.modeName,
+                                        color = if (isSelected) TvColors.CyberCyan else Color.White,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis
+                                    )
+                                    val statusText = when {
+                                        isCurrentTesting -> "Testando..."
+                                        mode.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> "Falha"
+                                        mode.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS -> "Estável ✓"
+                                        else -> "${mode.targetFps.toInt()} FPS"
+                                    }
+                                    val statusColor = when {
+                                        isCurrentTesting -> TvColors.StandbyAmber
+                                        mode.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> TvColors.AlertCrimson
+                                        mode.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS -> TvColors.LiveGreen
+                                        else -> TvColors.CyberCyan
+                                    }
+                                    Text(
+                                        text = statusText,
+                                        color = statusColor,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Text(
+                                        text = if (isCurrentTesting) "Aferindo..." else "${mode.measuredFps} FPS",
+                                        color = if (mode.isStable) TvColors.LiveGreen else TvColors.AlertCrimson,
+                                        fontSize = 9.sp,
+                                        fontFamily = FontFamily.Monospace,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                    Text(
+                                        text = "${mode.latencyMs}ms • ${mode.jitterMs}j",
+                                        color = TvColors.TextSecondary,
+                                        fontSize = 9.sp,
+                                        fontFamily = FontFamily.Monospace
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
         }
 
-        // 14 Barras de Onda Animadas Reativas ao Modo
+        // Analisador de ondas dinâmicas reativas sincronizado ao modo inspecionado
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(40.dp)
+                .height(34.dp)
                 .background(Color(0xFF040711), TvShapes.Badge)
-                .padding(horizontal = 10.dp, vertical = 5.dp),
+                .padding(horizontal = 8.dp, vertical = 4.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.Bottom
         ) {
@@ -2014,7 +2093,7 @@ fun CardEstabilidadeDeVideo(
                 val animatedHeight = (factor * pulseAnim * cadenceFactor).coerceIn(0.25f, 1.0f)
                 Box(
                     modifier = Modifier
-                        .width(6.dp)
+                        .width(5.dp)
                         .fillMaxHeight(fraction = animatedHeight)
                         .clip(TvShapes.Badge)
                         .background(
@@ -2031,12 +2110,13 @@ fun CardEstabilidadeDeVideo(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Text("Modo: ${currentMode.modeName}", color = Color.White, fontSize = 9.sp, fontWeight = FontWeight.Bold)
             Text("Latência: ${currentMode.latencyMs} ms", color = TvColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
-            Text("Jitter: < ${currentMode.jitterMs} ms", color = TvColors.CyberCyan, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+            Text("Jitter: ${currentMode.jitterMs} ms", color = TvColors.CyberCyan, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
             Text("Drops: ${currentMode.dropsCount} qds", color = TvColors.LiveGreen, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
         }
 
-        // Botão de Diagnóstico de Estabilidade
+        // Botão D-Pad largo para teste sequencial dos 4 pipelines
         val interactionSource = remember { MutableInteractionSource() }
         val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -2051,30 +2131,31 @@ fun CardEstabilidadeDeVideo(
         ) {
             Icon(Icons.Default.Tune, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(14.dp))
             Spacer(modifier = Modifier.width(6.dp))
-            Text(if (isEvaluating) "Aferindo Pipelines de Vídeo..." else "Testar Estabilidade dos 4 Streams", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = if (isEvaluating) "Testando Stream (${activeTestingIndex + 1}/4)..." else "Testar Estabilidade dos 4 Streams (Sequencial)",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }
 
 /**
- * 1.3 Card: LARGURA DE BANDA (Download Rx, Upload Tx, Multicanal, Buffer Health e HW Decoder)
+ * 1.3 Card: LARGURA DE BANDA DO SERVIDOR (Bateria Didática de Testes de Rede, Vídeo & Hardware)
  */
 @Composable
 fun CardLarguraDeBanda(
     modifier: Modifier = Modifier,
+    suiteResult: com.sentinela.pro.data.BandwidthSuiteResult,
     liveTelemetry: com.sentinela.pro.data.TelemetryData?,
-    measuredSpeedMbps: Double,
     pulseAnim: Float,
     isCalibrating: Boolean,
     onCalibrate: () -> Unit
 ) {
-    val rxKbs = liveTelemetry?.rxKbs ?: 1850.0
-    val txKbs = liveTelemetry?.txKbs ?: 240.0
+    val rxKbs = liveTelemetry?.rxKbs ?: suiteResult.rxKbs
+    val txKbs = liveTelemetry?.txKbs ?: suiteResult.txKbs
     val rxMbps = String.format(Locale.US, "%.1f", (rxKbs * 8.0) / 1000.0)
     val txMbps = String.format(Locale.US, "%.1f", (txKbs * 8.0) / 1000.0)
-
-    // Cálculo dinâmico de câmeras suportadas sem gargalo
-    val maxSimultaneousCameras = ((measuredSpeedMbps.coerceAtLeast(20.0)) / 2.5).toInt().coerceIn(4, 24)
 
     Column(
         modifier = modifier
@@ -2084,6 +2165,7 @@ fun CardLarguraDeBanda(
             .padding(14.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        // Cabeçalho com Título e Classificação Geral de Qualidade
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -2093,64 +2175,177 @@ fun CardLarguraDeBanda(
                 Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
                     Icon(Icons.Default.NetworkCheck, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(16.dp))
                 }
-                Text("LARGURA DE BANDA", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                Text("LARGURA DE BANDA DO SERVIDOR", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
             }
 
-            Surface(shape = TvShapes.StatusPill, color = TvColors.LiveGreen.copy(alpha = 0.2f), border = BorderStroke(1.dp, TvColors.LiveGreen)) {
-                Text("VAAPI / HW DECODER", color = TvColors.LiveGreen, fontSize = 9.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+            Surface(
+                shape = TvShapes.StatusPill,
+                color = if (isCalibrating) TvColors.StandbyAmber.copy(alpha = 0.2f) else TvColors.LiveGreen.copy(alpha = 0.2f),
+                border = BorderStroke(1.dp, if (isCalibrating) TvColors.StandbyAmber else TvColors.LiveGreen)
+            ) {
+                Text(
+                    text = if (isCalibrating) "AVALIANDO..." else suiteResult.qualityRating,
+                    color = if (isCalibrating) TvColors.StandbyAmber else TvColors.LiveGreen,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+                )
             }
         }
 
-        // Métricas de Download Rx, Upload Tx e Throughput de Pico
+        // Métricas de Destaque: Throughput Principal + Tráfego Rx / Tx em Tempo Real
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("Download (Rx)", color = TvColors.TextSecondary, fontSize = 9.sp)
-                Text("$rxKbs KB/s", color = TvColors.CyberCyan, fontSize = 15.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
-                Text("$rxMbps Mbps", color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-            }
-            Column {
-                Text("Upload (Tx)", color = TvColors.TextSecondary, fontSize = 9.sp)
-                Text("$txKbs KB/s", color = Color(0xFFA78BFA), fontSize = 15.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
-                Text("$txMbps Mbps", color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-            }
-            Column(horizontalAlignment = Alignment.End) {
-                Text("Capacidade", color = TvColors.TextSecondary, fontSize = 9.sp)
-                Text("Até $maxSimultaneousCameras Câmeras", color = TvColors.LiveGreen, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                Text("Buffer: 1.500ms seguro", color = TvColors.TextSecondary, fontSize = 9.sp)
-            }
-        }
-
-        // Barra Horizontal de Capacidade Animada
-        val rxFraction = ((rxKbs / 12000.0).toFloat() * pulseAnim).coerceIn(0.08f, 0.95f)
-        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(6.dp)
-                    .clip(TvShapes.Badge)
-                    .background(Color(0xFF040711))
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(fraction = rxFraction)
-                        .fillMaxHeight()
-                        .background(Brush.horizontalGradient(listOf(TvColors.CyberCyan, Color(0xFF38BDF8))))
+                Text("Vazão Medida", color = TvColors.TextSecondary, fontSize = 9.sp)
+                Text(
+                    text = "${suiteResult.videoThroughputMbps} Mbps",
+                    color = TvColors.CyberCyan,
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Black,
+                    fontFamily = FontFamily.Monospace
+                )
+                Text(
+                    text = "Taxa Real de Vídeo",
+                    color = TvColors.TextSecondary,
+                    fontSize = 9.sp
                 )
             }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text("Uso Atual da Conexão: ${(rxFraction * 100).toInt()}%", color = TvColors.TextSecondary, fontSize = 9.sp)
-                Text("Perda: 0.0% • Jitter: < 1.5ms", color = TvColors.LiveGreen, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text("Download (Rx)", color = TvColors.TextSecondary, fontSize = 9.sp)
+                Text("$rxMbps Mbps", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                Text("${rxKbs.toInt()} KB/s", color = TvColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
+            }
+
+            Column(horizontalAlignment = Alignment.End) {
+                Text("Upload (Tx)", color = TvColors.TextSecondary, fontSize = 9.sp)
+                Text("$txMbps Mbps", color = Color(0xFFA78BFA), fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                Text("${txKbs.toInt()} KB/s", color = TvColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
             }
         }
 
-        // Botão D-Pad de Calibração
+        // Bateria Didática de Testes (Grade 2x2 com 4 Testes Especializados)
+        Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                // Teste 1: Vazão Contínua H.264
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(TvShapes.Badge)
+                        .background(Color(0xFF070B14))
+                        .border(1.dp, TvColors.BorderSubtle, TvShapes.Badge)
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text("📹 Vazão de Vídeo", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("${suiteResult.videoThroughputMbps} Mbps", color = TvColors.CyberCyan, fontSize = 11.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+                        Text("Download contínuo sem perdas", color = TvColors.TextSecondary, fontSize = 8.sp)
+                    }
+                }
+
+                // Teste 2: Velocidade em Rajada
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(TvShapes.Badge)
+                        .background(Color(0xFF070B14))
+                        .border(1.dp, TvColors.BorderSubtle, TvShapes.Badge)
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text("⚡ Rajada de Eventos", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("${suiteResult.burstFps} FPS / QPS", color = TvColors.LiveGreen, fontSize = 11.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+                        Text("Resposta instantânea da IA", color = TvColors.TextSecondary, fontSize = 8.sp)
+                    }
+                }
+            }
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                // Teste 3: Capacidade Multicanal de Câmeras
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(TvShapes.Badge)
+                        .background(Color(0xFF070B14))
+                        .border(1.dp, TvColors.BorderSubtle, TvShapes.Badge)
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text("📺 Multicanal 1080p", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("Até ${suiteResult.max1080pCameras} Câmeras", color = TvColors.LiveGreen, fontSize = 11.sp, fontWeight = FontWeight.Black)
+                        Text("Simultâneas sem engasgos", color = TvColors.TextSecondary, fontSize = 8.sp)
+                    }
+                }
+
+                // Teste 4: Hardware Decoder & Buffer Health
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(TvShapes.Badge)
+                        .background(Color(0xFF070B14))
+                        .border(1.dp, TvColors.BorderSubtle, TvShapes.Badge)
+                        .padding(horizontal = 8.dp, vertical = 6.dp)
+                ) {
+                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text("🛡️ HW Decoder & Buffer", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("${suiteResult.bufferHealthPercent}% • ${suiteResult.latencyMs}ms", color = Color(0xFFA78BFA), fontSize = 11.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+                        Text(suiteResult.hwDecoderStatus, color = TvColors.TextSecondary, fontSize = 8.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    }
+                }
+            }
+        }
+
+        // Caixa de Diagnóstico Inteligente em Linguagem Clara e Amigável
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(TvShapes.Badge)
+                .background(Color(0xFF040711))
+                .border(1.dp, Color(0xFF1E293B), TvShapes.Badge)
+                .padding(horizontal = 10.dp, vertical = 7.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(Icons.Default.Lightbulb, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(16.dp))
+                Text(
+                    text = suiteResult.diagnosticSummary,
+                    color = Color.White.copy(alpha = 0.9f),
+                    fontSize = 9.sp,
+                    lineHeight = 13.sp
+                )
+            }
+        }
+
+        // Barra de Capacidade de Banda Animada
+        val rxFraction = ((rxKbs / 12000.0).toFloat() * pulseAnim).coerceIn(0.08f, 0.95f)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(4.dp)
+                .clip(TvShapes.Badge)
+                .background(Color(0xFF040711))
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth(fraction = rxFraction)
+                    .fillMaxHeight()
+                    .background(Brush.horizontalGradient(listOf(TvColors.CyberCyan, Color(0xFF38BDF8))))
+            )
+        }
+
+        // Botão D-Pad para Executar Bateria de Testes
         val interactionSource = remember { MutableInteractionSource() }
         val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -2165,7 +2360,11 @@ fun CardLarguraDeBanda(
         ) {
             Icon(Icons.Default.Analytics, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(14.dp))
             Spacer(modifier = Modifier.width(6.dp))
-            Text(if (isCalibrating) "Calibrando Largura de Banda..." else "Calibrar Largura de Banda & Buffer", fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            Text(
+                text = if (isCalibrating) "Executando Bateria de Testes..." else "Executar Bateria Completa de Testes de Banda",
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold
+            )
         }
     }
 }

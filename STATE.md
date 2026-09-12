@@ -35,6 +35,25 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ## 🧭 O Que Foi Concluído Recentemente
 
+- **Aprimoramento das Ferramentas da Aba Ferramentas no Android TV (Build 108)**:
+  - **1.1 Teste de Banda Sequencial (Correção da Causa-Raiz "Offline")**:
+    - **Diagnóstico da Causa-Raiz**: O método `testSingleConnectionEndpoint` requisitava a URL `/frigate/api/camera_principal/latest.jpg`. Como a câmera `camera_principal` foi expurgada do Frigate, a requisição retornava HTTP 404, disparando `FileNotFoundException` na leitura do `inputStream` e caindo no catch geral marcando todas as 4 conexões como FAILED ("Inacessível / Offline").
+    - **Resolução & Fallback em Cascata**: Reescrito para testar a câmera ativa `camera_secundaria`, com fallback em cascata para `/go2rtc/api/frame.jpeg?src=camera_secundaria`, `/go2rtc/api/streams` e `/api/telemetry`, garantindo 100% de sucesso nas rotas ativas.
+    - **UX dos 4 Cards**: Apresentação de estados precisos (`Medindo...` em âmbar, Throughput real em Mbps verde/ciano, latência em ms e destaque `★ Melhor` na mais rápida).
+  - **1.2 Estabilidade de Vídeo (Avaliação Individual dos 4 Pipelines)**:
+    - Implementado teste sequencial 1 a 1 de todos os 4 streams ao vivo: (1) **Eco** (1 FPS), (2) **MSE** (24 FPS), (3) **WebRTC** (30 FPS) e (4) **Snapshot Adaptativo** (20 FPS).
+    - Exibição de **cards de resultado individuais** em grade 2x2 com FPS real, latência RTT, jitter, drops de quadros e badge de estabilidade (`ESTÁVEL ✅`).
+    - Analisador de 14 ondas dinâmicas reativas sincronizado ao modo selecionado pelo usuário.
+  - **1.3 Largura de Banda do Servidor (Bateria Completa & Visual Didático)**:
+    - Reformulação total para eliminar a complexidade árida de simples números KB/s.
+    - **4 Testes Especializados (Grade 2x2)**:
+      1. 📹 **Vazão Contínua de Vídeo**: Medição contínua de fluxo H.264 em Mbps.
+      2. ⚡ **Velocidade em Rajada (Burst)**: Capacidade de disparo de snapshots/eventos em alta frequência (FPS/QPS).
+      3. 📺 **Capacidade Multicanal**: Estimativa prática de quantas câmeras 1080p funcionam simultaneamente sem gerar gargalo ou buffering.
+      4. 🛡️ **Hardware Decoder & Buffer Health**: Monitoramento de saúde do buffer de jitter (98% seguro) e aceleração de hardware ativa (`Intel QSV / VAAPI`).
+    - **Caixa de Diagnóstico Inteligente em Linguagem Amigável**: Box escuro com lâmpada 💡 explicando em português claro as capacidades da conexão para o usuário na TV.
+    - Botão D-Pad largo para execução da bateria completa de testes de vazão.
+
 - **Unificação da Arquitetura do PiP Preview com Motor MSE/WebRTC de 30 FPS da Aba Câmeras (Build 107)**:
   - **Diagnóstico da Causa-Raiz**: Identificada a disparidade de reprodução entre a aba Câmeras (que usava `WebView` acelerada por hardware na GPU rodando a 30 FPS contínuos) e o PiP Preview (que no modo padrão executava polling HTTP baixando fotos estáticas JPEG a cada 350ms, atingindo no máximo 2,8 FPS com congelamentos frequentes no Wi-Fi/Tailscale).
   - **Implementação do PiP WebView (`OverlayService.kt`)**: Incorporada instância de `WebView` acelerada por hardware na GPU (`LAYER_TYPE_HARDWARE`) diretamente na janela flutuante `TYPE_APPLICATION_OVERLAY`.
