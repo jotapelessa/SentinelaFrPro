@@ -2300,7 +2300,7 @@ fun TvSettingsViewport(
 
                         Button(
                             onClick = {
-                                val targetCam = cameras.firstOrNull { it.isOnline }?.name
+                                val targetCam = cameras.firstOrNull { it.status == CameraStatus.ONLINE }?.name
                                     ?: cameras.firstOrNull()?.name
                                     ?: "camera_secundaria"
                                 com.sentinela.pro.tv.OverlayService.triggerPiP(context, targetCam, "TESTE PIP PREVIEW")

@@ -56,5 +56,7 @@ Thumbs.db
 .gradle/
 android/.gradle/
 android/app/build/
+android/local.properties
+local.properties
 *.apk
 
