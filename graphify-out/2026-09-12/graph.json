@@ -15447,7 +15447,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L170"
+      "source_location": "L175"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -35257,7 +35257,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L170",
+      "source_location": "L175",
       "weight": 1.0
     },
     {
@@ -39896,5 +39896,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a841940de392c63d13386acee09340a01e44173b"
+  "built_at_commit": "b1ba4a0c67580531251832c6c3c7c29067ab2f96"
 }

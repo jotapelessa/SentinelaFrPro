@@ -670,6 +670,7 @@ fun PhoneCapturesTab() {
     val prefs = remember { SentinelaPreferences(context) }
     var captures by remember { mutableStateOf<List<CaptureEvent>>(emptyList()) }
     var selectedPhoto by remember { mutableStateOf<CaptureEvent?>(null) }
+    var selectedClipEvent by remember { mutableStateOf<CaptureEvent?>(null) }
     var isLoading by remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
@@ -2808,6 +2809,14 @@ fun PhonePhotoViewerDialog(
             }
         }
     }
+}
+
+@Composable
+fun PhoneClipPlayerDialog(
+    event: CaptureEvent,
+    onDismiss: () -> Unit
+) {
+    PhonePhotoViewerDialog(event = event, onDismiss = onDismiss)
 }
 
 data class TvDeviceStatus(

@@ -138,3 +138,35 @@ data class PairedDeviceItem(
     val isMasterAdmin: Boolean = false,
     val lastSeen: String? = null
 )
+
+enum class ConnectionTestState {
+    IDLE,
+    TESTING,
+    SUCCESS,
+    FAILED
+}
+
+data class SingleConnectionResult(
+    val id: String,
+    val name: String,
+    val host: String,
+    val protocol: String = "http",
+    val state: ConnectionTestState = ConnectionTestState.IDLE,
+    val downloadMbps: Double = 0.0,
+    val pingMs: Long = 0,
+    val jitterMs: Long = 0,
+    val isRecommended: Boolean = false,
+    val details: String = "Aguardando teste"
+)
+
+data class VideoStabilityResult(
+    val modeId: String,
+    val modeName: String,
+    val targetFps: Double,
+    val measuredFps: Double = 0.0,
+    val latencyMs: Long = 0,
+    val jitterMs: Double = 0.0,
+    val dropsCount: Int = 0,
+    val isStable: Boolean = true,
+    val description: String = ""
+)

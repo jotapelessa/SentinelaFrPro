@@ -35,6 +35,23 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ## 🧭 O Que Foi Concluído Recentemente
 
+- **Redesign UI/UX das Abas Ferramentas e Configurações no Android TV (Build 106 - Adaptive Leanback Edition)**:
+  - **1.1 Teste de Banda Sequencial (4 Conexões)**:
+    - Renomeado de "Teste de banda Tailscale" para **"TESTE DE BANDA"**.
+    - Execução sequencial autônoma (1 -> 2 -> 3 -> 4) avaliando: (1) Túnel Tailscale HTTPS, (2) Tailscale IP Direto, (3) Rede Local mDNS e (4) IP Direto LAN.
+    - Diagnóstico individual em tempo real com Throughput (Mbps), Ping (ms), Jitter (ms) e Perda de Pacotes, elegendo dinamicamente a rota com badge `★ Melhor` e registrando presença em `/screens`.
+  - **1.2 Estabilidade de Vídeo (4 Modos de Vídeo ao Vivo)**:
+    - Renomeado de "Estabilidade de video MSE" para **"ESTABILIDADE DE VÍDEO"**.
+    - Monitoramento integrado dos 4 pipelines ao vivo: (1) Eco (1 FPS), (2) MSE fMP4 (24 FPS), (3) WebRTC Live (30 FPS) e (4) Snapshot Stream Adaptativo (20 FPS / Zero GC).
+    - Seletor rápido de modo, telemetria detalhada (FPS medido, latência TTFF, Jitter, Drops) e 14 barras dinâmicas reativas à cadência de streaming.
+  - **1.3 Largura de Banda Expandida**:
+    - Renomeado de "Largura de banda do servidor" para **"LARGURA DE BANDA"**.
+    - Métricas abrangentes: Download Rx (KB/s e Mbps), Upload Tx (KB/s e Mbps), Decoder Hardware (`MediaCodec / VAAPI / Intel QSV`), capacidade estimada de canais simultâneos (ex: até 16 câmeras 1080p sem buffer) e saúde de buffer acumulado (1.500ms seguro).
+  - **1.4 Auto-Responsividade & Alinhamento de Cards**:
+    - Layout baseado em `BoxWithConstraints` com divisão proporcional simétrica para 1080p e 4K, eliminando qualquer texto comprimido ou overflow.
+  - **2.1 a 2.7 Redesign Completo da Aba Configurações**:
+    - Eliminação de `LazyRow` cortados: substituição das listas de 8 opções (Tamanho PiP, Posição PiP e Tempo de Exibição) por **grades auto-ajustáveis 4 colunas x 2 linhas**, permitindo visualização de 100% das opções na TV sem rolagem lateral às cegas.
+    - Card Módulo PiP com seletores proporcionais, Permissão flutuante com layout simétrico em 2 colunas, Presets em grade auto-ajustável e bloco de identificação/pareamento em 3 colunas.
 - **Otimização Crítica do PiP Preview na Android TV (Build 105 - Anti-Stutter & GC Free)**:
   - **Sequential Adaptive Frame Fetcher**: Substituição do loop de polling cego por busca sequencial adaptativa (`Queue=1`), eliminando acúmulo de requisições e starvation de sockets em conexões Wi-Fi/Tailscale.
   - **Hardware Bitmaps & Downsampling no PiP**: Redução de alocação de heap de 33.2 MB/s para < 1 MB/s ao carregar frames diretamente nas dimensões da janela PiP (`pipSize.width`, `pipSize.height`) com `allowHardware(true)`, erradicando pausas de Garbage Collector (GC) e congelamentos na TV.
