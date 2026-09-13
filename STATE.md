@@ -54,9 +54,13 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
     - **Central de Telas Web (`frontend/src/app/screens/page.tsx`)**:
       - Adicionada alternância por abas no modal `managingDevice`: `[Configurações & Permissões]` e `[Telemetria & Logs ao Vivo]`.
       - Permite abrir uma Smart TV específica e inspecionar exclusivamente os seus logs em tempo real com `hideDeviceFilter={true}`.
-  - **Governança & Build**:
-    - Next.js build (`npm run build`) validado com 100% de sucesso sem avisos.
+  - **Governança, Build & Deploy via SSH**:
+    - Next.js build local e remoto validado com 100% de sucesso.
     - 31/31 testes de especificação (`node --test test/*.js`) validados (100% PASS).
+    - Deploy em produção realizado via SSH no servidor Ubuntu (`192.168.1.247`):
+      - Sincronizado via `git pull origin main`.
+      - Recompilados e reiniciados os containers: `docker compose up -d --build backend frontend`.
+      - Validado teste de ingestão com sucesso via `POST /api/telemetry/client-logs` (`{"status":"ok","ingested":1}`) e leitura persistida confirmada.
     - `graphify update .` executado.
 
 ---
