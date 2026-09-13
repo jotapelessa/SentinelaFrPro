@@ -35,7 +35,21 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ## 🧭 O Que Foi Concluído Recentemente
 
-- **Aprimoramento das Ferramentas da Aba Ferramentas no Android TV (Build 108)**:
+- **Fluidez Máxima e Eliminação Definitiva de Tela Preta no PiP Preview (Build 110)**:
+  - **Diagnóstico da Causa-Raiz**:
+    - **Parâmetros de Stream Invertidos (`mode=webrtc&mode=mse`)**: Na aba Câmeras, a query usada era `mode=mse&mode=webrtc` (MSE prioritário via WebSocket 443), rodando com 100% de fluidez. No `OverlayService.kt`, a URL padrão estava com `mode=webrtc&mode=mse`. Ao tentar WebRTC primeiro, o go2rtc buscava portas UDP 8555 e negociação ICE, que falhava com timeout de 5 a 10s em Smart TVs e conexões Tailscale Funnel / Wi-Fi local sem hairpinning UDP.
+    - **Watchdog Anti-Stall em Loop de Recargas (`location.reload()` em 1.2s)**: O script JS injetado disparava `location.reload()` ao detectar `stallTicks >= 3` (apenas 1.2 segundos). Durante a conexão inicial do stream, o WebView entrava em loop infinito de recargas, exibindo uma tela preta perpétua até a janela fechar.
+    - **Ciclo de Vida e Congelamento de Timers JS**: Janelas de overlay do WindowManager (`TYPE_APPLICATION_OVERLAY` com `FLAG_NOT_FOCUSABLE`) exigem chamada explícita a `onResume()` e `resumeTimers()`. Além disso, `removePiP()` chamava o método estático global `wv.pauseTimers()`, congelando os loops de eventos JS de todos os WebViews do app.
+    - **Base Layer de Snapshot e ScaleType**: O fallback utilizava `/go2rtc/api/frame.jpeg` (codificação sob demanda que leva centenas de ms) com `FIT_CENTER`, gerando atraso e barras pretas.
+  - **Solução Arquitetural Aplicada**:
+    - **MSE Prioritário no PiP**: URL padrão alterada para `/go2rtc/stream.html?src=${camera}&mode=mse&mode=webrtc&width=100%`, ativando WebSocket MSE na porta 443 idêntico ao player da aba Câmeras.
+    - **Ativação de Ciclo de Vida do WebView**: Adicionados `wv.onResume()` e `wv.resumeTimers()` na criação e reexibição do overlay; removida a chamada global `wv.pauseTimers()` em `removePiP()`.
+    - **Watchdog Inteligente Suave**: Substituído o reload bruto de 1.2s por tentativa de `v.play()` e avanço de buffer no tick 5 (2s). Recarga autorizada somente após 20 ticks (8s) de estagnação contínua e limitada a 2 tentativas.
+    - **Camada Snapshot Instantânea (15ms)**: Priorizado `/frigate/api/${camera}/latest.jpg?h=720` (RAM do Frigate) com `ScaleType.CENTER_CROP`, eliminando tela preta desde o frame 0.
+    - **Ajustes na UI da Android TV**: `TvNetflixScreen.kt` atualizado para passar snapshot e stream MSE explícitos no teste de PiP e configurar `streamMode = "mse"` em `TvPipFloatingWindow` e na miniatura das configurações.
+    - **Harmonização em MseCameraView.kt**: Watchdog atualizado com a mesma lógica de recuperação de buffer suave.
+
+- **Ferramentas Robustas e Janela PiP Limpa (Build 109)**:
   - **1.1 Teste de Banda Sequencial (Correção da Causa-Raiz "Offline")**:
     - **Diagnóstico da Causa-Raiz**: O método `testSingleConnectionEndpoint` requisitava a URL `/frigate/api/camera_principal/latest.jpg`. Como a câmera `camera_principal` foi expurgada do Frigate, a requisição retornava HTTP 404, disparando `FileNotFoundException` na leitura do `inputStream` e caindo no catch geral marcando todas as 4 conexões como FAILED ("Inacessível / Offline").
     - **Resolução & Fallback em Cascata**: Reescrito para testar a câmera ativa `camera_secundaria`, com fallback em cascata para `/go2rtc/api/frame.jpeg?src=camera_secundaria`, `/go2rtc/api/streams` e `/api/telemetry`, garantindo 100% de sucesso nas rotas ativas.

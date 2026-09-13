@@ -3242,7 +3242,8 @@ fun TvSettingsViewport(
                                 cameraName = targetCam,
                                 contentDescription = "Prévia PiP",
                                 modifier = Modifier.fillMaxSize(),
-                                isStreaming = true
+                                isStreaming = true,
+                                streamMode = "mse"
                             )
                         }
 
@@ -3275,7 +3276,15 @@ fun TvSettingsViewport(
 
                             Button(
                                 onClick = {
-                                    com.sentinela.pro.tv.OverlayService.triggerPiP(context, targetCam, "TESTE PIP PREVIEW")
+                                    val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/frigate/api/$targetCam/latest.jpg?h=720"
+                                    val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=$targetCam&mode=mse&mode=webrtc&width=100%"
+                                    com.sentinela.pro.tv.OverlayService.triggerPiP(
+                                        context = context,
+                                        camera = targetCam,
+                                        label = "TESTE PIP PREVIEW",
+                                        snapshotUrl = testSnap,
+                                        streamUrl = testStream
+                                    )
                                     Toast.makeText(context, "🔔 Janela PiP disparada sobre a TV ($targetCam)!", Toast.LENGTH_SHORT).show()
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = TvColors.NetflixRed),
@@ -3871,7 +3880,8 @@ fun TvPipFloatingWindow(
                 contentDescription = "Alerta PiP",
                 modifier = Modifier.fillMaxSize(),
                 isStreaming = true,
-                forceSnapshotMode = false
+                forceSnapshotMode = false,
+                streamMode = "mse"
             )
         }
     }

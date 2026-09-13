@@ -327,12 +327,12 @@ class OverlayService : Service() {
         targetHeight: Int = 360
     ) {
         val base = SentinelaConfig.BASE_URL.trimEnd('/')
+        val fastFrigate = "$base/frigate/api/$camera/latest.jpg?h=720"
         val fastGo2rtc = "$base/go2rtc/api/frame.jpeg?src=$camera&t=${System.currentTimeMillis()}"
-        val fallbackFrigate = "$base/frigate/api/$camera/latest.jpg?t=${System.currentTimeMillis()}"
 
         serviceScope.launch(Dispatchers.IO) {
-            // Prioritize fast RAM frame from go2rtc, then event snapshot, then camera latest
-            val candidateUrls = listOf(fastGo2rtc, primaryUrl, fallbackFrigate).filter { it.isNotBlank() }.distinct()
+            // Prioritize fast RAM snapshot from Frigate (15ms), then primary event snapshot, then go2rtc frame
+            val candidateUrls = listOf(fastFrigate, primaryUrl, fastGo2rtc).filter { it.isNotBlank() }.distinct()
             val imageLoader = coil.Coil.imageLoader(applicationContext)
 
             for (url in candidateUrls) {
@@ -349,6 +349,7 @@ class OverlayService : Service() {
                     if (result is coil.request.SuccessResult) {
                         val drawable = result.drawable
                         withContext(Dispatchers.Main) {
+                            imageView.scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
                             imageView.setImageDrawable(drawable)
                             imageView.visibility = View.VISIBLE
                         }
@@ -452,9 +453,10 @@ class OverlayService : Service() {
         currentOverlayPlayerMode = prefs.pipPlayerMode
 
         val resolvedCamera = if (camera.isBlank()) "camera_secundaria" else camera
-        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&mode=webrtc&mode=mse&width=100%")
-        val streamUrl = baseStreamUrl // webrtc/mse hardware-accelerated stream
-        val snapshotUrl = normalizeUrl(customSnapshotUrl, "/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}")
+        val streamModeParam = if (prefs.pipPlayerMode == "webrtc") "mode=webrtc&mode=mse" else "mode=mse&mode=webrtc"
+        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&${streamModeParam}&width=100%")
+        val streamUrl = baseStreamUrl // hardware-accelerated MSE stream
+        val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${resolvedCamera}/latest.jpg?h=720")
 
         try {
             val params = WindowManager.LayoutParams(
@@ -529,7 +531,7 @@ class OverlayService : Service() {
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT
                             )
-                            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                            scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
                         }
                         pipImageView = snapImageView
                         inner.addView(snapImageView)
@@ -537,14 +539,14 @@ class OverlayService : Service() {
                         loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                     }
                     else -> {
-                        // "mse" (Padrão Recomendado): Hardware-Accelerated 30 FPS Live Stream via go2rtc WebView
+                        // "mse" (Padrão Recomendado): Hardware-Accelerated 30 FPS Live Stream via go2rtc WebSocket WebView
                         // 1. Instant snapshot base layer underneath (0ms black screen)
                         val snapImageView = android.widget.ImageView(this).apply {
                             layoutParams = FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT
                             )
-                            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                            scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
                         }
                         pipImageView = snapImageView
                         inner.addView(snapImageView)
@@ -612,35 +614,48 @@ class OverlayService : Service() {
                                         "  }" +
                                         "};" +
                                         "initVideo();" +
-                                        "var lastTime = 0;" +
+                                        "var lastTime = -1;" +
                                         "var stallTicks = 0;" +
+                                        "var reloadAttempts = 0;" +
                                         "if (!window.__liveEdgeTimer) {" +
                                         "  window.__liveEdgeTimer = setInterval(function() {" +
                                         "    var v = document.querySelector('video');" +
                                         "    if (v) {" +
-                                        "      if (v.currentTime > 0 && v.currentTime === lastTime && !v.paused && !v.ended) {" +
+                                        "      if (v.paused) { v.play().catch(function(){}); }" +
+                                        "      if (v.currentTime > 0 && Math.abs(v.currentTime - lastTime) < 0.05 && !v.paused && !v.ended) {" +
                                         "        stallTicks++;" +
-                                        "        if (stallTicks >= 3) {" +
+                                        "        if (stallTicks === 5) {" +
+                                        "          if (v.buffered && v.buffered.length > 0) {" +
+                                        "            v.currentTime = v.buffered.end(v.buffered.length - 1) - 0.05;" +
+                                        "          }" +
+                                        "          v.play().catch(function(){});" +
+                                        "        }" +
+                                        "        if (stallTicks >= 20) {" +
                                         "          stallTicks = 0;" +
-                                        "          location.reload();" +
+                                        "          reloadAttempts++;" +
+                                        "          if (reloadAttempts <= 2) {" +
+                                        "            location.reload();" +
+                                        "          }" +
                                         "        }" +
                                         "      } else {" +
+                                        "        if (v.currentTime > 0 && Math.abs(v.currentTime - lastTime) >= 0.05) {" +
+                                        "          stallTicks = 0;" +
+                                        "          reloadAttempts = 0;" +
+                                        "        }" +
                                         "        lastTime = v.currentTime;" +
-                                        "        stallTicks = 0;" +
                                         "      }" +
                                         "      if (v.buffered && v.buffered.length > 0) {" +
                                         "        var end = v.buffered.end(v.buffered.length - 1);" +
                                         "        var drift = end - v.currentTime;" +
-                                        "        if (drift > 1.2) {" +
+                                        "        if (drift > 1.5) {" +
                                         "          v.currentTime = end - 0.05;" +
                                         "          v.playbackRate = 1.0;" +
-                                        "        } else if (drift > 0.35) {" +
-                                        "          v.playbackRate = 1.15;" +
-                                        "        } else if (drift < 0.15) {" +
+                                        "        } else if (drift > 0.4) {" +
+                                        "          v.playbackRate = 1.12;" +
+                                        "        } else if (drift < 0.1) {" +
                                         "          v.playbackRate = 1.0;" +
                                         "        }" +
                                         "      }" +
-                                        "      if (v.paused) { v.play().catch(function(){}); }" +
                                         "    }" +
                                         "  }, 400);" +
                                         "}" +
@@ -648,6 +663,8 @@ class OverlayService : Service() {
                                     view?.loadUrl(js)
                                 }
                             }
+                            onResume()
+                            resumeTimers()
                             loadUrl(streamUrl)
                         }
                         pipWebView = wv
@@ -678,7 +695,11 @@ class OverlayService : Service() {
                         pipImageView?.let { iv ->
                             loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                         }
-                        pipWebView?.loadUrl(streamUrl)
+                        pipWebView?.apply {
+                            onResume()
+                            resumeTimers()
+                            loadUrl(streamUrl)
+                        }
                     }
                 }
 
@@ -781,7 +802,6 @@ class OverlayService : Service() {
                     wv.stopLoading()
                     wv.loadUrl("about:blank")
                     wv.onPause()
-                    wv.pauseTimers()
                     (wv.parent as? android.view.ViewGroup)?.removeView(wv)
                     wv.destroy()
                 } catch (e: Exception) {
