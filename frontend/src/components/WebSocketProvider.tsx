@@ -154,6 +154,10 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               if (typeof window !== "undefined") {
                 window.dispatchEvent(new CustomEvent("device_policy_update", { detail: data }));
               }
+            } else if (data.type === "CLIENT_LOGS_INGESTED") {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("client_logs_ingested", { detail: data }));
+              }
             }
           } catch (err) {
             console.error("Failed to parse WS message", err);

@@ -552,10 +552,10 @@
     "semantic_hash": ""
   },
   "frontend/src/app/screens/page.tsx": {
-    "mtime": 1788605350.2824728,
-    "seen": 1788641395.538283,
-    "ast_hash": "55cb045c0410a60f8207d82d772d4f02",
-    "semantic_hash": "55cb045c0410a60f8207d82d772d4f02"
+    "mtime": 1789318559.904938,
+    "seen": 1789318579.7222521,
+    "ast_hash": "73e5ded83b0db603b5d51bf5fd066f13",
+    "semantic_hash": ""
   },
   "frontend/src/app/settings/backup/page.tsx": {
     "mtime": 1788140547.3042374,
@@ -576,10 +576,10 @@
     "semantic_hash": "0d48d7f55e87dc49b0f215569055de19"
   },
   "frontend/src/app/settings/logs/page.tsx": {
-    "mtime": 1788348063.5023506,
-    "seen": 1788641395.538284,
-    "ast_hash": "195168205a37be87ee2c761a815dd634",
-    "semantic_hash": "195168205a37be87ee2c761a815dd634"
+    "mtime": 1789318418.2408364,
+    "seen": 1789318579.722255,
+    "ast_hash": "a3e4c4f36c24ff1d51b55f1ae2883b8c",
+    "semantic_hash": ""
   },
   "frontend/src/app/settings/page.tsx": {
     "mtime": 1788605269.049156,
@@ -642,9 +642,9 @@
     "semantic_hash": "61a19b659126db04e4cc1d2f936637da"
   },
   "frontend/src/components/WebSocketProvider.tsx": {
-    "mtime": 1789127217.7494695,
-    "seen": 1789137038.090304,
-    "ast_hash": "f492376b19968f159235ee72f67af5f4",
+    "mtime": 1789318302.9986835,
+    "seen": 1789318579.722261,
+    "ast_hash": "8d63a9db109305802cc5c711372ac7a2",
     "semantic_hash": ""
   },
   "frontend/src/components/ZoneCanvasModal.tsx": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789310850.2897367,
-    "seen": 1789314665.468962,
-    "ast_hash": "ea8b6c5726a75d454e2219a2fbdbe520",
+    "mtime": 1789318597.095519,
+    "seen": 1789318602.00259,
+    "ast_hash": "f237d129e20d5d6e4373cccad9ab0dfd",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1005,6 +1005,12 @@
     "mtime": 1789314620.2110758,
     "seen": 1789314665.46891,
     "ast_hash": "bc2f8fa372a4ef9d3b60b51ab0908a29",
+    "semantic_hash": ""
+  },
+  "frontend/src/components/ClientDeviceLogsTerminal.tsx": {
+    "mtime": 1789318342.0625544,
+    "seen": 1789318579.722259,
+    "ast_hash": "2557c1d01e42b68d682b8be5564db4f2",
     "semantic_hash": ""
   }
 }

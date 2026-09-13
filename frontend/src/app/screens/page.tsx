@@ -8,6 +8,7 @@ import {
   Cast, Info, Sliders, Search, Copy, Cpu, Activity, Bell, BellOff,
   Sparkles, Monitor, CheckCircle2, Clock
 } from "lucide-react";
+import { ClientDeviceLogsTerminal } from "@/components/ClientDeviceLogsTerminal";
 
 interface PairedDevice {
   id: number;
@@ -81,6 +82,7 @@ export default function ScreensPage() {
 
   // Manage Device State
   const [managingDevice, setManagingDevice] = useState<PairedDevice | null>(null);
+  const [deviceModalTab, setDeviceModalTab] = useState<"config" | "telemetry">("config");
   const [deviceDiagnostics, setDeviceDiagnostics] = useState<any>(null);
   const [runningDiagnostics, setRunningDiagnostics] = useState(false);
 
@@ -459,6 +461,7 @@ export default function ScreensPage() {
       allowed_cameras: effectiveAllowedCameras,
       allowed_events: effectiveAllowedEvents
     });
+    setDeviceModalTab("config");
     setDeviceDiagnostics(null);
   };
 
@@ -1162,7 +1165,7 @@ export default function ScreensPage() {
       {/* Modal Gerenciar Tela (Avançado) */}
       {managingDevice && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fadeIn">
-          <div className="w-full max-w-3xl bg-slate-900 border border-slate-700/80 rounded-3xl p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
+          <div className="w-full max-w-4xl bg-slate-900 border border-slate-700/80 rounded-3xl p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto">
             {/* Header */}
             <div className="flex items-center justify-between border-b border-slate-800 pb-4">
               <div className="flex items-center gap-3">
@@ -1183,14 +1186,54 @@ export default function ScreensPage() {
                 </div>
               </div>
               <button
-                onClick={() => setManagingDevice(null)}
+                onClick={() => {
+                  setManagingDevice(null);
+                  setDeviceModalTab("config");
+                }}
                 className="p-2 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-all"
               >
                 <X className="w-6 h-6" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Abas do Modal */}
+            <div className="flex items-center gap-2 p-1 rounded-xl bg-slate-950 border border-slate-800/80 w-fit">
+              <button
+                type="button"
+                onClick={() => setDeviceModalTab("config")}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                  deviceModalTab === "config"
+                    ? "bg-cyan-500 text-obsidian-950 shadow-md shadow-cyan-500/20"
+                    : "text-slate-400 hover:text-white hover:bg-slate-900"
+                }`}
+              >
+                <Tv className="w-3.5 h-3.5" />
+                Configurações & Permissões
+              </button>
+              <button
+                type="button"
+                onClick={() => setDeviceModalTab("telemetry")}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 ${
+                  deviceModalTab === "telemetry"
+                    ? "bg-cyan-500 text-obsidian-950 shadow-md shadow-cyan-500/20"
+                    : "text-slate-400 hover:text-white hover:bg-slate-900"
+                }`}
+              >
+                <Activity className="w-3.5 h-3.5" />
+                Telemetria & Logs ao Vivo
+              </button>
+            </div>
+
+            {deviceModalTab === "telemetry" ? (
+              <div className="py-1">
+                <ClientDeviceLogsTerminal
+                  deviceIdentifier={managingDevice.device_identifier}
+                  hideDeviceFilter={true}
+                  maxHeight="460px"
+                />
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Left Column: Permissions & Identification */}
               <div className="space-y-4">
                 <div className="p-4 rounded-2xl bg-obsidian-950/60 border border-slate-800 space-y-3">
@@ -1448,6 +1491,7 @@ export default function ScreensPage() {
                 </div>
               </div>
             </div>
+            )}
 
             {/* Modal Actions Footer */}
             <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
@@ -1455,6 +1499,7 @@ export default function ScreensPage() {
                 onClick={() => {
                   handleDeleteDevice(managingDevice.id, managingDevice.friendly_name);
                   setManagingDevice(null);
+                  setDeviceModalTab("config");
                 }}
                 className="px-4 py-2.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 font-bold text-xs transition-all flex items-center gap-2"
               >
@@ -1464,52 +1509,58 @@ export default function ScreensPage() {
 
               <div className="flex items-center gap-2.5">
                 <button
-                  onClick={() => setManagingDevice(null)}
+                  onClick={() => {
+                    setManagingDevice(null);
+                    setDeviceModalTab("config");
+                  }}
                   className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs transition-all"
                 >
-                  Cancelar
+                  {deviceModalTab === "telemetry" ? "Fechar" : "Cancelar"}
                 </button>
-                <button
-                  disabled={isSaving}
-                  onClick={async () => {
-                    setIsSaving(true);
-                    try {
-                      const res = await fetch(`${apiUrl}/devices/${managingDevice.id}/permissions`, {
-                        method: "PUT",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                          friendly_name: managingDevice.friendly_name,
-                          permission_status: managingDevice.permission_status,
-                          allowed_cameras: managingDevice.allowed_cameras || [],
-                          allowed_events: managingDevice.allowed_events || [],
-                          allow_recordings: managingDevice.allow_recordings !== false,
-                          allow_live_stream: managingDevice.allow_live_stream !== false,
-                          allow_pip_alerts: managingDevice.allow_pip_alerts !== false,
-                          allow_restart_containers: managingDevice.allow_restart_containers === true,
-                          allow_reboot_server: managingDevice.allow_reboot_server === true,
-                          pip_default_size: managingDevice.pip_default_size || "medium",
-                          pip_duration_seconds: managingDevice.pip_duration_seconds || 10
-                        })
-                      });
-                      if (!res.ok) {
-                        const errData = await res.json().catch(() => ({}));
-                        throw new Error(errData.detail || `HTTP ${res.status}`);
+                {deviceModalTab === "config" && (
+                  <button
+                    disabled={isSaving}
+                    onClick={async () => {
+                      setIsSaving(true);
+                      try {
+                        const res = await fetch(`${apiUrl}/devices/${managingDevice.id}/permissions`, {
+                          method: "PUT",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            friendly_name: managingDevice.friendly_name,
+                            permission_status: managingDevice.permission_status,
+                            allowed_cameras: managingDevice.allowed_cameras || [],
+                            allowed_events: managingDevice.allowed_events || [],
+                            allow_recordings: managingDevice.allow_recordings !== false,
+                            allow_live_stream: managingDevice.allow_live_stream !== false,
+                            allow_pip_alerts: managingDevice.allow_pip_alerts !== false,
+                            allow_restart_containers: managingDevice.allow_restart_containers === true,
+                            allow_reboot_server: managingDevice.allow_reboot_server === true,
+                            pip_default_size: managingDevice.pip_default_size || "medium",
+                            pip_duration_seconds: managingDevice.pip_duration_seconds || 10
+                          })
+                        });
+                        if (!res.ok) {
+                          const errData = await res.json().catch(() => ({}));
+                          throw new Error(errData.detail || `HTTP ${res.status}`);
+                        }
+                        await fetchDevices(true);
+                        setManagingDevice(null);
+                        setDeviceModalTab("config");
+                        showToast(`✅ Alterações em '${managingDevice.friendly_name}' salvas com sucesso!`, "success", 4000);
+                      } catch (err: any) {
+                        console.error("Failed to save permissions:", err);
+                        showToast(`❌ Falha ao salvar: ${err.message || "Erro de rede"}`, "error", 5000);
+                      } finally {
+                        setIsSaving(false);
                       }
-                      await fetchDevices(true);
-                      setManagingDevice(null);
-                      showToast(`✅ Alterações em '${managingDevice.friendly_name}' salvas com sucesso!`, "success", 4000);
-                    } catch (err: any) {
-                      console.error("Failed to save permissions:", err);
-                      showToast(`❌ Falha ao salvar: ${err.message || "Erro de rede"}`, "error", 5000);
-                    } finally {
-                      setIsSaving(false);
-                    }
-                  }}
-                  className="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
-                >
-                  <Check className="w-4 h-4" />
-                  <span>{isSaving ? "Salvando..." : "Salvar Configurações"}</span>
-                </button>
+                    }}
+                    className="px-6 py-2.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-black text-xs shadow-lg shadow-cyan-500/20 transition-all flex items-center gap-2 disabled:opacity-50"
+                  >
+                    <Check className="w-4 h-4" />
+                    <span>{isSaving ? "Salvando..." : "Salvar Configurações"}</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

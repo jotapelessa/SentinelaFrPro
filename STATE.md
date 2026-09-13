@@ -33,6 +33,34 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
+- **Visualização Web de Logs de Clientes no Sentinela Frontend (http://sentinela.local/)**:
+  - **Motivação & Requisitos**:
+    - O usuário perguntou `"/brainstorming onde acompanhar esses logs no http://sentinela.local/?"`.
+    - Foi aprovada e executada a abordagem híbrida completa, permitindo inspecionar tanto a visão global da frota quanto a telemetria isolada de cada aparelho.
+  - **Componentes e Páginas Implementados**:
+    - **`frontend/src/components/WebSocketProvider.tsx`**:
+      - Adicionado listener para `CLIENT_LOGS_INGESTED` que despacha evento no window (`window.dispatchEvent(new CustomEvent("client_logs_ingested", { detail: data }))`), garantindo atualização em tempo real (0ms) sem criar conexões WebSocket redundantes.
+    - **`frontend/src/components/ClientDeviceLogsTerminal.tsx`**:
+      - Componente reutilizável estilo Cyber Terminal Obsidian / Cyan com:
+        - 4 cards de KPIs no topo (Total de Eventos, Dispositivos Únicos, Erros Críticos, Avisos / Warnings).
+        - Conexão WebSocket em tempo real + fallback silencioso a cada 4 segundos.
+        - Filtros reativos por Aparelho (`deviceIdentifier`), Severidade (ALL, ERROR, WARN, INFO, DEBUG) e Categoria (ALL, PIP, TOOLS, NETWORK, NAVIGATION, PLAYER, SYSTEM).
+        - Busca textual livre por mensagem ou dados do log.
+        - Controles de Play/Pause do streaming em tempo real, botão de Copiar Logs formatados e Limpar visualização local.
+        - Renderização de badges coloridos e expansão de metadados JSON inline (`metadata_json`).
+    - **Central de Logs Web (`frontend/src/app/settings/logs/page.tsx`)**:
+      - Adicionada 3ª aba principal: `📱 Dispositivos & Smart TVs` (junto a `NVR / Containers` e `Auditoria de Eventos`).
+      - Permite acompanhar a telemetria agregada de toda a frota de TVs e celulares residenciais/comerciais.
+    - **Central de Telas Web (`frontend/src/app/screens/page.tsx`)**:
+      - Adicionada alternância por abas no modal `managingDevice`: `[Configurações & Permissões]` e `[Telemetria & Logs ao Vivo]`.
+      - Permite abrir uma Smart TV específica e inspecionar exclusivamente os seus logs em tempo real com `hideDeviceFilter={true}`.
+  - **Governança & Build**:
+    - Next.js build (`npm run build`) validado com 100% de sucesso sem avisos.
+    - 31/31 testes de especificação (`node --test test/*.js`) validados (100% PASS).
+    - `graphify update .` executado.
+
+---
+
 - **Sistema Universal de Observabilidade e Telemetria Automática de Clientes (Build 113)**:
   - **Motivação & Requisitos**:
     - O usuário solicitou que o servidor Sentinela Core saiba em tempo real tudo o que se passa nos aparelhos instalados (Smart TVs TCL, Tablets, Celulares): telas navegadas, botões acionados, testes de rede executados (Mbps, FPS, ping, rota ativa), ciclo de vida do PiP (renderizado, dimensões, falhas, permissões) e saúde de conexão (Tailscale Funnel vs IP Direto vs Rede Local).

@@ -23,6 +23,7 @@ import {
   ArrowUpDown,
   Filter
 } from "lucide-react";
+import { ClientDeviceLogsTerminal } from "@/components/ClientDeviceLogsTerminal";
 
 interface AuditLogItem {
   id: number;
@@ -35,7 +36,7 @@ interface AuditLogItem {
 }
 
 export default function LogsSettingsPage() {
-  const [viewMode, setViewMode] = useState<"unified" | "containers">("unified");
+  const [viewMode, setViewMode] = useState<"unified" | "containers" | "clients">("unified");
   
   // Unified Audit Logs State
   const [auditLogs, setAuditLogs] = useState<AuditLogItem[]>([]);
@@ -289,6 +290,18 @@ export default function LogsSettingsPage() {
             <Terminal className="w-4 h-4" />
             <span>💻 Terminal de Contêineres</span>
           </button>
+
+          <button
+            onClick={() => setViewMode("clients")}
+            className={`flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+              viewMode === "clients"
+                ? "bg-cyan-500 text-obsidian-950 shadow-md shadow-cyan-500/20"
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60"
+            }`}
+          >
+            <Tv className="w-4 h-4" />
+            <span>📱 Dispositivos & Smart TVs</span>
+          </button>
         </div>
 
         {/* Global Search Input */}
@@ -508,6 +521,11 @@ export default function LogsSettingsPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* VIEW 3: CLIENT & TV DEVICE TELEMETRY LOGS */}
+      {viewMode === "clients" && (
+        <ClientDeviceLogsTerminal />
       )}
     </div>
   );
