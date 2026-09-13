@@ -1,7 +1,7 @@
-# Graph Report - SentinelaFrigate  (2026-09-13)
+# Graph Report - SentinelaFrigate  (2026-09-12)
 
 ## Corpus Check
-- 158 files · ~158,796 words
+- 158 files · ~158,347 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `7c4b3628`
+- Built from commit: `5577f558`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -331,14 +331,14 @@ Nodes (5): Constituição — princípios que a máquina verifica, Níveis de ob
 
 ## Knowledge Gaps
 - **374 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `name`, `private`, `version` (+369 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 599 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 598 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **19 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
 - **Why does `SentinelaPreferences` connect `TvNetflixScreen.kt` to `OverlayService`, `PipDuration`, `SentinelaRepository`?**
-  _High betweenness centrality (0.060) - this node is a cross-community bridge._
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
 - **Why does `PairedDevice` connect `devices.py` to `events.py`, `PiPGatewayService`, `settings.py`?**
   _High betweenness centrality (0.050) - this node is a cross-community bridge._
 - **Why does `update_device_permissions()` connect `devices.py` to `SentinelaRepository`?**

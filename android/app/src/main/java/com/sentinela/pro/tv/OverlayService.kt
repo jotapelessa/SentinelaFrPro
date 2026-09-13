@@ -267,6 +267,8 @@ class OverlayService : Service() {
     }
 
     companion object {
+        val isPipShowing = kotlinx.coroutines.flow.MutableStateFlow(false)
+
         fun triggerPiP(context: Context, camera: String = "camera_secundaria", label: String = "TESTE PIP", testId: String? = null, snapshotUrl: String? = null, streamUrl: String? = null) {
             try {
                 val intent = Intent(context, OverlayService::class.java).apply {
@@ -340,7 +342,7 @@ class OverlayService : Service() {
                     val req = coil.request.ImageRequest.Builder(applicationContext)
                         .data(url)
                         .size(targetWidth, targetHeight)
-                        .allowHardware(true)
+                        .allowHardware(false)
                         .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
                         .diskCachePolicy(coil.request.CachePolicy.DISABLED)
                         .build()
@@ -451,21 +453,37 @@ class OverlayService : Service() {
             removePiP()
         }
         currentOverlayPlayerMode = prefs.pipPlayerMode
+        isPipShowing.value = true
 
         val resolvedCamera = if (camera.isBlank()) "camera_secundaria" else camera
-        val streamModeParam = if (prefs.pipPlayerMode == "webrtc") "mode=webrtc&mode=mse" else "mode=mse&mode=webrtc"
+        val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
+            "eco" -> "mode=mjpeg"
+            "webrtc" -> "mode=webrtc"
+            else -> "mode=mse"
+        }
         val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&${streamModeParam}&width=100%")
-        val streamUrl = baseStreamUrl // hardware-accelerated MSE stream
+        val streamUrl = if (baseStreamUrl.contains("stream.html")) {
+            val uri = android.net.Uri.parse(baseStreamUrl)
+            val src = uri.getQueryParameter("src") ?: resolvedCamera
+            val baseUrlWithoutQuery = baseStreamUrl.substringBefore("?")
+            "$baseUrlWithoutQuery?src=$src&$streamModeParam&width=100%"
+        } else {
+            baseStreamUrl
+        }
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${resolvedCamera}/latest.jpg?h=720")
 
         try {
+            // Garante que nenhum timer JS do app permaneça paralisado
+            WebView(this).resumeTimers()
+
             val params = WindowManager.LayoutParams(
                 pipSize.width, pipSize.height,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                 WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED,
+                WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED or
+                WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 PixelFormat.TRANSLUCENT
             ).apply {
                 gravity = pipPos.gravity
@@ -663,9 +681,6 @@ class OverlayService : Service() {
                                     view?.loadUrl(js)
                                 }
                             }
-                            onResume()
-                            resumeTimers()
-                            loadUrl(streamUrl)
                         }
                         pipWebView = wv
                         inner.addView(wv)
@@ -675,6 +690,12 @@ class OverlayService : Service() {
                 root.addView(inner)
                 overlayView = root
                 windowManager.addView(overlayView, params)
+
+                pipWebView?.post {
+                    pipWebView?.onResume()
+                    pipWebView?.resumeTimers()
+                    pipWebView?.loadUrl(streamUrl)
+                }
             } else {
                 when (prefs.pipPlayerMode) {
                     "exoplayer" -> {
@@ -818,6 +839,7 @@ class OverlayService : Service() {
             pipImageView = null
             overlayView = null
             currentOverlayPlayerMode = null
+            isPipShowing.value = false
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Error removing overlay view: ${e.message}")
         }

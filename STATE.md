@@ -33,7 +33,20 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
-## 🧭 O Que Foi Concluído Recentemente
+- **Fluidez Absoluta (30 FPS) e Suporte a Segundo Plano no PiP Preview (Build 111)**:
+  - **Diagnóstico das Causas-Raízes Críticas**:
+    - **1. Duplicação de Vídeos no go2rtc (`mode=mse&mode=webrtc`)**:
+      Ao inspecionar o código fonte de `/go2rtc/stream.html` e `video-rtc.js` no servidor, constatou-se que quando múltiplos parâmetros `mode` eram passados, o go2rtc executava `while (modes.length > streams.length) { streams.push(streams[0]); }` e criava **dois elementos `<video-stream>` no mesmo HTML** com `display: flex; flex-wrap: wrap;` (um MSE e outro WebRTC). Isso comprovou visual e tecnicamente o relato do usuário de "dois vídeos ao vivo de conexões diferentes na mesma janela flutuante" e sobrecarregava o hardware da Smart TV decodificando 2 streams Full HD simultâneos na janelinha flutuante.
+    - **2. Concorrência do Decodificador de Hardware (`MediaCodec`)**:
+      Enquanto o PiP estava aberto, o player Hero da aba Câmeras permanecia com `isStreaming = true` rodando a 30 FPS no fundo. Somado aos 2 streams do PiP, a TV tentava decodificar 3 a 4 streams 1080p simultâneos, levando o `MediaCodec` da VPU ao colapso total (lag extremo, perda de quadros e tela preta).
+    - **3. Tela Preta em Segundo Plano (Background)**:
+      No `MseCameraView.kt`, no evento `ON_STOP` da Activity, era chamado `wv.pauseTimers()`. Como `pauseTimers()` é estático e global no Android WebView, ele congelava os timers de JavaScript de todos os WebViews do app. Quando o app ia para segundo plano e o `OverlayService` abria o PiP, os timers JS estavam congelados, impedindo a reprodução de vídeo. Além disso, o carregamento do WebView era chamado antes da view ser anexada ao `WindowManager`.
+  - **Soluções Arquiteturais Aplicadas**:
+    - **Modo MSE Único**: Padronizado para `mode=mse&width=100%` único em `MseCameraView.kt`, `OverlayService.kt`, `TvNetflixScreen.kt`, `pip_gateway.py` e `mqtt_service.py`. Adicionada sanitização defensiva no `OverlayService` para que, independentemente do payload recebido, nunca mais sejam enviados múltiplos modos para o go2rtc.
+    - **Pausa Inteligente do Hero Player**: Criado `val isPipShowing = MutableStateFlow(false)` no companion object de `OverlayService`. Na aba Câmeras (`TvCamerasViewport`), o Hero Player escuta `val isPipOverlayActive by OverlayService.isPipShowing.collectAsState()` e passa `isStreaming = !isPipOverlayActive && !isFullscreenLiveOpen`. O decodificador de hardware fica 100% dedicado ao PiP.
+    - **Seamless Snapshot no Hero Player**: No `SeamlessCameraImage.kt` e `MseCameraView.kt`, quando `isStreaming == false`, renderiza-se um snapshot nítido via Coil `AsyncImage` em vez de tela preta vazia. O usuário vê a imagem estática da câmera por baixo e o vídeo vivo suave no PiP.
+    - **Resolução do Background**: Removido `wv.pauseTimers()` do `ON_STOP`/`ON_PAUSE`. No `OverlayService`, chamado `WebView.resumeTimers()` e despachado `wv.loadUrl` via `post` após `windowManager.addView(overlayView, params)`. No Coil, configurado `allowHardware(false)` para garantir decodificação de imagem fora de uma Activity ativa.
+    - **Compilação e Artefatos**: Targets Kotlin TV e Smartphone compilados com sucesso. APK Android TV gerado: `android/app/build/outputs/apk/tv/debug/app-tv-debug.apk` (62 MB, Build 111). 31/31 testes de unidade passaram.
 
 - **Fluidez Máxima e Eliminação Definitiva de Tela Preta no PiP Preview (Build 110)**:
   - **Diagnóstico da Causa-Raiz**:

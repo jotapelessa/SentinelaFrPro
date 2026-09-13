@@ -259,7 +259,7 @@ class PiPGatewayService:
         self._ack_events[test_id] = ack_event
 
         rel_snapshot_url = f"/go2rtc/api/frame.jpeg?src={camera_name}" if active_cams else "/icon-192.png"
-        rel_stream_url = f"/go2rtc/stream.html?src={camera_name}&mode=mse&mode=webrtc" if active_cams else ""
+        rel_stream_url = f"/go2rtc/stream.html?src={camera_name}&mode=mse&width=100%" if active_cams else ""
         snapshot_url = f"http://{server_ip}:8088{rel_snapshot_url}"
         stream_url = f"http://{server_ip}:8088{rel_stream_url}"
 

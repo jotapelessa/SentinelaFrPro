@@ -46,9 +46,9 @@ fun MseCameraView(
     val streamUrl = remember(cameraName, streamMode) {
         val modeQuery = when (streamMode.lowercase()) {
             "eco" -> "mode=mjpeg"
-            "mse" -> "mode=mse&mode=webrtc"
-            "webrtc" -> "mode=webrtc&mode=mse"
-            else -> "mode=mse&mode=webrtc"
+            "mse" -> "mode=mse"
+            "webrtc" -> "mode=webrtc"
+            else -> "mode=mse"
         }
         "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&${modeQuery}&width=100%"
     }
@@ -69,7 +69,6 @@ fun MseCameraView(
                     isAppInForeground = false
                     webViewRef?.let { wv ->
                         wv.onPause()
-                        wv.pauseTimers()
                         wv.loadUrl("about:blank")
                     }
                 }
@@ -105,7 +104,12 @@ fun MseCameraView(
     }
 
     if (!isStreaming || !isAppInForeground) {
-        Box(modifier = modifier.background(Color.Black))
+        coil.compose.AsyncImage(
+            model = snapshotUrl,
+            contentDescription = contentDescription ?: cameraName,
+            modifier = modifier.fillMaxSize(),
+            contentScale = androidx.compose.ui.layout.ContentScale.Crop
+        )
         return
     }
 

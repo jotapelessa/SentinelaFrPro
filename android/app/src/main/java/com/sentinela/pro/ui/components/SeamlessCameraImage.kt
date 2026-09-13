@@ -65,8 +65,21 @@ fun SeamlessCameraImage(
         }
     }
 
-    if (!forceSnapshotMode && (!isStreaming || !isAppInForeground)) {
+    if (!isAppInForeground) {
         Box(modifier = modifier.background(Color.Black))
+        return
+    }
+
+    if (!forceSnapshotMode && !isStreaming) {
+        val snapshotUrl = remember(cameraName) {
+            "${SentinelaConfig.BASE_URL}/frigate/api/${cameraName}/latest.jpg?h=720"
+        }
+        coil.compose.AsyncImage(
+            model = snapshotUrl,
+            contentDescription = contentDescription ?: cameraName,
+            modifier = modifier.fillMaxSize(),
+            contentScale = contentScale
+        )
         return
     }
 

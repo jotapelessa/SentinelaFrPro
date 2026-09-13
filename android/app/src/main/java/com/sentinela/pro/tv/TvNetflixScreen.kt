@@ -90,6 +90,7 @@ fun TvNetflixScreenCore(
     onCameraSelected: (CameraEntity) -> Unit = {},
     onRefresh: () -> Unit = {}
 ) {
+    val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(TvTab.CAMERAS) }
     var focusedCameraIndex by remember { mutableIntStateOf(0) }
     val selectedCamera = cameras.getOrNull(focusedCameraIndex) ?: cameras.firstOrNull()
@@ -196,13 +197,14 @@ fun TvNetflixScreenCore(
                             onRefresh = onRefresh,
                             onTriggerTestPip = {
                                 selectedCamera?.let { cam ->
-                                    activePipAlert = PipAlert(
-                                        id = "pip_test_${System.currentTimeMillis()}",
-                                        camera = cam,
-                                        eventDescription = "Teste de PiP • Detecção IA Humano 98%",
-                                        snapshotUrl = cam.thumbnailUrl,
-                                        countdownSeconds = 10,
-                                        isVisible = true
+                                    val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/frigate/api/${cam.id}/latest.jpg?h=720"
+                                    val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=${cam.id}&mode=mse&width=100%"
+                                    com.sentinela.pro.tv.OverlayService.triggerPiP(
+                                        context = context,
+                                        camera = cam.id,
+                                        label = "TESTE PIP PREVIEW",
+                                        snapshotUrl = testSnap,
+                                        streamUrl = testStream
                                     )
                                 }
                             },
@@ -485,6 +487,7 @@ fun TvCamerasViewport(
     val context = LocalContext.current
     val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
     var isFullscreenLiveOpen by remember { mutableStateOf(false) }
+    val isPipOverlayActive by com.sentinela.pro.tv.OverlayService.isPipShowing.collectAsState()
     var streamMode by remember(selectedCamera?.id) {
         mutableStateOf(selectedCamera?.let { prefs.getCameraDefaultStreamMode(it.id) } ?: "webrtc")
     }
@@ -513,7 +516,7 @@ fun TvCamerasViewport(
                     cameraName = camera.id,
                     contentDescription = camera.name,
                     modifier = Modifier.fillMaxSize(),
-                    isStreaming = true,
+                    isStreaming = !isPipOverlayActive && !isFullscreenLiveOpen,
                     streamMode = streamMode
                 )
 
@@ -3277,7 +3280,7 @@ fun TvSettingsViewport(
                             Button(
                                 onClick = {
                                     val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/frigate/api/$targetCam/latest.jpg?h=720"
-                                    val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=$targetCam&mode=mse&mode=webrtc&width=100%"
+                                    val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=$targetCam&mode=mse&width=100%"
                                     com.sentinela.pro.tv.OverlayService.triggerPiP(
                                         context = context,
                                         camera = targetCam,
