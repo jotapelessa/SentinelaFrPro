@@ -99,3 +99,20 @@ class AuditLog(Base):
     client_ip = Column(String(64), nullable=True)
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
+
+class ClientDeviceLog(Base):
+    __tablename__ = "client_device_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    device_identifier = Column(String(128), index=True, nullable=False)
+    device_name = Column(String(128), nullable=False)
+    device_type = Column(String(32), default="android_tv") # android_tv, smartphone, tablet
+    category = Column(String(32), index=True, default="SYSTEM") # PIP, PLAYER, TOOLS, NETWORK, NAVIGATION, SYSTEM
+    action = Column(String(64), index=True, nullable=False)
+    severity = Column(String(16), default="INFO") # INFO, WARNING, ERROR, SUCCESS
+    message = Column(Text, nullable=False)
+    client_timestamp = Column(DateTime, nullable=True)
+    metadata_json = Column(Text, nullable=True)
+    created_at = Column(DateTime, default=datetime.datetime.utcnow, index=True)
+
+

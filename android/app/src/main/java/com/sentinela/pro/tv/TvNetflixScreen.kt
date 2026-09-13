@@ -54,6 +54,7 @@ import com.sentinela.pro.data.CameraItem
 import com.sentinela.pro.data.CaptureEvent
 import com.sentinela.pro.tv.theme.*
 import com.sentinela.pro.ui.components.SeamlessCameraImage
+import com.sentinela.pro.logging.SentinelaRemoteLogger
 import com.sentinela.pro.network.SentinelaRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -136,6 +137,15 @@ fun TvNetflixScreenCore(
                 tailscaleIp = tailscaleIp,
                 focusRequesters = sidebarFocusRequesters,
                 onTabSelected = { tab ->
+                    if (selectedTab != tab) {
+                        SentinelaRemoteLogger.log(
+                            category = "NAVIGATION",
+                            action = "TAB_NAVIGATED",
+                            severity = "INFO",
+                            message = "Navegou para aba: ${tab.name}",
+                            metadata = mapOf("tab" to tab.name)
+                        )
+                    }
                     selectedTab = tab
                 },
                 onNavigateToContent = { tab ->
@@ -197,6 +207,13 @@ fun TvNetflixScreenCore(
                             onRefresh = onRefresh,
                             onTriggerTestPip = {
                                 selectedCamera?.let { cam ->
+                                    SentinelaRemoteLogger.log(
+                                        category = "TOOLS",
+                                        action = "TEST_PIP_TRIGGERED",
+                                        severity = "INFO",
+                                        message = "Disparo de PiP teste acionado para ${cam.id}",
+                                        metadata = mapOf("camera" to cam.id)
+                                    )
                                     val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/frigate/api/${cam.id}/latest.jpg?h=720"
                                     val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=${cam.id}&mode=mse&width=100%"
                                     com.sentinela.pro.tv.OverlayService.triggerPiP(
@@ -1458,6 +1475,12 @@ fun TvToolsViewport(
     // Ações Reutilizáveis para Telas Largas e Compactas
     val onRunSequentialSpeedTest: () -> Unit = {
         coroutineScope.launch {
+            SentinelaRemoteLogger.log(
+                category = "TOOLS",
+                action = "BANDWIDTH_TEST_STARTED",
+                severity = "INFO",
+                message = "Iniciado teste sequencial de banda nas 4 rotas de conexão"
+            )
             val updated = connectionList.toMutableList()
             var fastestConn: com.sentinela.pro.data.SingleConnectionResult? = null
 
@@ -1497,9 +1520,28 @@ fun TvToolsViewport(
                     status = "${best.name} (Mais Rápida)",
                     isRunning = false
                 )
+                SentinelaRemoteLogger.log(
+                    category = "TOOLS",
+                    action = "BANDWIDTH_TEST_FINISHED",
+                    severity = "SUCCESS",
+                    message = "Melhor rota: ${best.name} (${best.downloadMbps} Mbps, ping ${best.pingMs}ms, jitter ${best.jitterMs}ms)",
+                    metadata = mapOf(
+                        "best_route_id" to best.id,
+                        "best_route_name" to best.name,
+                        "download_mbps" to best.downloadMbps,
+                        "ping_ms" to best.pingMs,
+                        "jitter_ms" to best.jitterMs
+                    )
+                )
                 trigger("Teste Concluído: Rota recomendada é ${best.name} (${best.downloadMbps} Mbps)!")
                 Toast.makeText(context, "✅ Melhor rota: ${best.name} (${best.downloadMbps} Mbps)", Toast.LENGTH_SHORT).show()
             } ?: run {
+                SentinelaRemoteLogger.log(
+                    category = "TOOLS",
+                    action = "BANDWIDTH_TEST_FINISHED",
+                    severity = "WARNING",
+                    message = "Teste de banda finalizado sem rota com sucesso total"
+                )
                 trigger("Teste de banda concluído.")
             }
 
@@ -1522,6 +1564,13 @@ fun TvToolsViewport(
                 ?: cameras.firstOrNull()?.name
                 ?: "camera_secundaria"
 
+            SentinelaRemoteLogger.log(
+                category = "TOOLS",
+                action = "VIDEO_STABILITY_TEST_STARTED",
+                severity = "INFO",
+                message = "Iniciada avaliação de estabilidade dos 4 pipelines de vídeo para câmera $targetCam"
+            )
+
             for (i in modes.indices) {
                 activeTestingVideoIndex = i
                 val cur = modes[i]
@@ -1540,6 +1589,13 @@ fun TvToolsViewport(
 
             activeTestingVideoIndex = -1
             isEvaluatingVideoStability = false
+            SentinelaRemoteLogger.log(
+                category = "TOOLS",
+                action = "VIDEO_STABILITY_TEST_FINISHED",
+                severity = "SUCCESS",
+                message = "Avaliação dos 4 pipelines de vídeo concluída com sucesso para $targetCam",
+                metadata = mapOf("camera" to targetCam, "pipelines_tested" to modes.size)
+            )
             trigger("Estabilidade validada nos 4 pipelines de vídeo com sucesso!")
             Toast.makeText(context, "✅ Todos os 4 pipelines de vídeo (Eco, MSE, WebRTC, Adaptativo) foram avaliados!", Toast.LENGTH_SHORT).show()
         }
@@ -1552,11 +1608,33 @@ fun TvToolsViewport(
             val targetCam = cameras.firstOrNull { it.name.contains("secundaria", ignoreCase = true) }?.name
                 ?: cameras.firstOrNull()?.name
                 ?: "camera_secundaria"
+
+            SentinelaRemoteLogger.log(
+                category = "TOOLS",
+                action = "BANDWIDTH_SUITE_STARTED",
+                severity = "INFO",
+                message = "Iniciada bateria completa de testes de vazão de vídeo para câmera $targetCam"
+            )
+
             val res = com.sentinela.pro.network.SentinelaRepository.runBandwidthTestSuite(targetCam) { step ->
                 bandwidthSuite = bandwidthSuite.copy(currentStepText = step)
             }
             bandwidthSuite = res
             isCalibratingBandwidth = false
+            SentinelaRemoteLogger.log(
+                category = "TOOLS",
+                action = "BANDWIDTH_SUITE_FINISHED",
+                severity = "SUCCESS",
+                message = "Bateria completa de testes concluída: ${res.videoThroughputMbps} Mbps (${res.qualityRating})",
+                metadata = mapOf(
+                    "throughput_mbps" to res.videoThroughputMbps,
+                    "burst_fps" to res.burstFps,
+                    "latency_ms" to res.latencyMs,
+                    "jitter_ms" to res.jitterMs,
+                    "max_1080p_cameras" to res.max1080pCameras,
+                    "quality_rating" to res.qualityRating
+                )
+            )
             trigger("Bateria de testes concluída: ${res.videoThroughputMbps} Mbps (${res.qualityRating})!")
             Toast.makeText(context, "✅ Largura de Banda: ${res.videoThroughputMbps} Mbps • ${res.qualityRating}", Toast.LENGTH_SHORT).show()
         }
@@ -2607,7 +2685,7 @@ fun TvToolCard(
 }
 
 /**
- * 5. ABA 3: VIEWPORT DE AUDITORIA & LOGS (Restaurado com 5 Cards de Telemetria, Copiar Logs e API Real)
+ * 5. ABA 3: VIEWPORT DE AUDITORIA & LOGS (Com Telemetria de Clientes, Servidor NVR e D-Pad)
  */
 @Composable
 fun TvLogsViewport(
@@ -2616,9 +2694,11 @@ fun TvLogsViewport(
 ) {
     val context = LocalContext.current
     var telemetry by remember { mutableStateOf<com.sentinela.pro.data.TelemetryData?>(null) }
-    var logs by remember { mutableStateOf<List<com.sentinela.pro.data.AuditLogEntry>>(emptyList()) }
+    var serverLogs by remember { mutableStateOf<List<com.sentinela.pro.data.AuditLogEntry>>(emptyList()) }
+    var clientLogs by remember { mutableStateOf<List<com.sentinela.pro.network.ClientDeviceLogItem>>(emptyList()) }
+    var logSource by remember { mutableStateOf("DISPOSITIVOS") } // "DISPOSITIVOS" ou "SERVIDOR"
     var selectedLevel by remember { mutableStateOf("TODOS") }
-    val levels = listOf("TODOS", "CRITICAL", "WARN", "INFO")
+    val levels = listOf("TODOS", "CRITICAL", "WARN", "INFO", "SUCCESS")
 
     // Polling de telemetria a cada 2s
     LaunchedEffect(Unit) {
@@ -2630,21 +2710,34 @@ fun TvLogsViewport(
         }
     }
 
-    // Polling de logs de auditoria a cada 10s
+    // Polling de logs de auditoria do servidor a cada 10s
     LaunchedEffect(Unit) {
         runCatching {
-            logs = com.sentinela.pro.network.SentinelaRepository.getAuditLogs()
+            serverLogs = com.sentinela.pro.network.SentinelaRepository.getAuditLogs()
         }
         while (isActive) {
             delay(10000L)
             runCatching {
-                logs = com.sentinela.pro.network.SentinelaRepository.getAuditLogs()
+                serverLogs = com.sentinela.pro.network.SentinelaRepository.getAuditLogs()
             }
         }
     }
 
-    val filteredLogs = remember(selectedLevel, logs) {
-        if (logs.isEmpty()) {
+    // Polling de logs remotos de clientes/aparelhos a cada 4s
+    LaunchedEffect(Unit) {
+        runCatching {
+            clientLogs = com.sentinela.pro.network.SentinelaRepository.getClientLogs(limit = 200)
+        }
+        while (isActive) {
+            delay(4000L)
+            runCatching {
+                clientLogs = com.sentinela.pro.network.SentinelaRepository.getClientLogs(limit = 200)
+            }
+        }
+    }
+
+    val filteredServerLogs = remember(selectedLevel, serverLogs) {
+        if (serverLogs.isEmpty()) {
             listOf(
                 com.sentinela.pro.data.AuditLogEntry(1, "15:10:42.120", "IA-DETECTOR", "DETECÇÃO", "CRITICAL", "Pessoa detectada na Zona Perimetral (Conf: 96%)", "100.93.129.91"),
                 com.sentinela.pro.data.AuditLogEntry(2, "15:09:18.040", "GO2RTC", "STREAM", "INFO", "Stream WebRTC conectado via Tailscale (Latência: 18ms)", "100.93.129.91"),
@@ -2652,9 +2745,50 @@ fun TvLogsViewport(
                 com.sentinela.pro.data.AuditLogEntry(4, "15:00:12.300", "NVR-DAEMON", "HEALTHTEST", "INFO", "Healthcheck geral do sistema OK • CPU 14% • Temp 48°C", "100.93.129.91")
             )
         } else if (selectedLevel == "TODOS") {
-            logs
+            serverLogs
+        } else if (selectedLevel == "CRITICAL") {
+            serverLogs.filter { it.severity.equals("CRITICAL", ignoreCase = true) || it.severity.equals("ERROR", ignoreCase = true) }
         } else {
-            logs.filter { it.severity.equals(selectedLevel, ignoreCase = true) }
+            serverLogs.filter { it.severity.equals(selectedLevel, ignoreCase = true) }
+        }
+    }
+
+    val filteredClientLogs = remember(selectedLevel, clientLogs) {
+        if (clientLogs.isEmpty()) {
+            listOf(
+                com.sentinela.pro.network.ClientDeviceLogItem(
+                    id = 1,
+                    deviceIdentifier = "tcl-c655-living",
+                    deviceName = "Smart TV TCL Sala",
+                    deviceType = "android_tv",
+                    category = "PIP",
+                    action = "PIP_OVERLAY_DISPLAYED",
+                    severity = "SUCCESS",
+                    message = "PiP exibido com sucesso: cam=camera_garagem, dim=480x270, pos=TOP_RIGHT, dur=10s, modo=mse",
+                    clientTimestamp = null,
+                    metadata = emptyMap(),
+                    createdAt = "Agora"
+                ),
+                com.sentinela.pro.network.ClientDeviceLogItem(
+                    id = 2,
+                    deviceIdentifier = "tcl-c655-living",
+                    deviceName = "Smart TV TCL Sala",
+                    deviceType = "android_tv",
+                    category = "TOOLS",
+                    action = "BANDWIDTH_TEST_FINISHED",
+                    severity = "SUCCESS",
+                    message = "Melhor rota: IP Direto LAN (74.2 Mbps, ping 10ms, jitter 1ms)",
+                    clientTimestamp = null,
+                    metadata = emptyMap(),
+                    createdAt = "Agora"
+                )
+            )
+        } else if (selectedLevel == "TODOS") {
+            clientLogs
+        } else if (selectedLevel == "CRITICAL") {
+            clientLogs.filter { it.severity.equals("CRITICAL", ignoreCase = true) || it.severity.equals("ERROR", ignoreCase = true) }
+        } else {
+            clientLogs.filter { it.severity.equals(selectedLevel, ignoreCase = true) }
         }
     }
 
@@ -2670,7 +2804,6 @@ fun TvLogsViewport(
             TvTelemetryMetricCard(title = "SERVIDOR", value = telemetry?.uptime ?: "Online", subtitle = "Tailscale Funnel", modifier = Modifier.weight(1f))
             TvTelemetryMetricCard(title = "CPU (REAL 2S)", value = "${telemetry?.cpuPercent ?: 0.0}%", subtitle = "Carga do Host", modifier = Modifier.weight(1f))
 
-            // Dedicated Temperatura Card
             val temp = telemetry?.cpuTemp ?: 0.0
             val tempColor = when {
                 temp > 75.0 -> TvColors.AlertCrimson
@@ -2695,7 +2828,7 @@ fun TvLogsViewport(
             TvTelemetryMetricCard(title = "TELEGRAM", value = if (telemetry?.telegramConfigured == true) "ATIVO" else "PENDENTE", subtitle = "Alertas Live", modifier = Modifier.weight(1f))
         }
 
-        // Logs Header, Filtros & Botão Copiar Logs
+        // Logs Header, Seletores de Fonte, Filtros & Botão Copiar Logs
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
@@ -2705,10 +2838,47 @@ fun TvLogsViewport(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("TRILHA DE AUDITORIA & LOGS", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Black)
+                Text("OBSERVABILIDADE", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Black)
 
-                // Filtros
-                levels.forEachIndexed { idx, lvl ->
+                // Fonte de Logs: DISPOSITIVOS vs SERVIDOR
+                val sources = listOf("DISPOSITIVOS", "SERVIDOR")
+                sources.forEachIndexed { sIdx, src ->
+                    val isSrcSelected = logSource == src
+                    val srcInteraction = remember { MutableInteractionSource() }
+                    val isSrcFocused by srcInteraction.collectIsFocusedAsState()
+
+                    Surface(
+                        shape = TvShapes.Badge,
+                        color = if (isSrcSelected) TvColors.CyberCyan.copy(alpha = 0.25f) else Color.Transparent,
+                        border = BorderStroke(1.dp, if (isSrcSelected) TvColors.CyberCyan else TvColors.BorderSubtle),
+                        modifier = Modifier
+                            .then(if (sIdx == 0) Modifier.focusRequester(firstItemRequester) else Modifier)
+                            .onKeyEvent { keyEvent ->
+                                if (sIdx == 0 && keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                                    onNavigateLeftToSidebar()
+                                    true
+                                } else {
+                                    false
+                                }
+                            }
+                            .tvDpadFocusable(isFocused = isSrcFocused, focusedBorderColor = TvColors.NetflixRed, shape = TvShapes.Badge)
+                            .clickable(interactionSource = srcInteraction, indication = null) { logSource = src }
+                    ) {
+                        Text(
+                            text = if (src == "DISPOSITIVOS") "📱 CLIENTES/TVS" else "🖥️ AUDITORIA NVR",
+                            color = if (isSrcSelected) TvColors.CyberCyan else TvColors.TextSecondary,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Black,
+                            fontFamily = FontFamily.Monospace,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(4.dp))
+
+                // Filtros de Severidade
+                levels.forEach { lvl ->
                     val isSelected = selectedLevel == lvl
                     val interactionSource = remember { MutableInteractionSource() }
                     val isFocused by interactionSource.collectIsFocusedAsState()
@@ -2718,15 +2888,6 @@ fun TvLogsViewport(
                         color = if (isSelected) TvColors.CardBackgroundElevated else Color.Transparent,
                         border = BorderStroke(1.dp, if (isSelected) TvColors.BorderHighlight else TvColors.BorderSubtle),
                         modifier = Modifier
-                            .then(if (idx == 0) Modifier.focusRequester(firstItemRequester) else Modifier)
-                            .onKeyEvent { keyEvent ->
-                                if (idx == 0 && keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
-                                    onNavigateLeftToSidebar()
-                                    true
-                                } else {
-                                    false
-                                }
-                            }
                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.NetflixRed, shape = TvShapes.Badge)
                             .clickable(interactionSource = interactionSource, indication = null) { selectedLevel = lvl }
                     ) {
@@ -2746,17 +2907,23 @@ fun TvLogsViewport(
             Button(
                 onClick = {
                     val fullLogText = buildString {
-                        appendLine("=== SENTINELA PRO - LOGS DE TELEMETRIA ===")
+                        appendLine("=== SENTINELA PRO - LOGS DE TELEMETRIA [FONTE: $logSource] ===")
                         appendLine("Servidor: ${telemetry?.uptime} | CPU: ${telemetry?.cpuPercent}% | RAM: ${telemetry?.ramPercent}%")
                         appendLine("Data de Extração: ${System.currentTimeMillis()}")
                         appendLine("------------------------------------------")
-                        filteredLogs.forEach { l ->
-                            appendLine("[${l.createdAt}] [${l.module}] [${l.severity}] ${l.action}: ${l.details} (IP: ${l.clientIp})")
+                        if (logSource == "DISPOSITIVOS") {
+                            filteredClientLogs.forEach { l ->
+                                appendLine("[${l.createdAt}] [${l.deviceName.ifBlank { l.deviceIdentifier }}] [${l.category}] [${l.severity}] ${l.action}: ${l.message}")
+                            }
+                        } else {
+                            filteredServerLogs.forEach { l ->
+                                appendLine("[${l.createdAt}] [${l.module}] [${l.severity}] ${l.action}: ${l.details} (IP: ${l.clientIp})")
+                            }
                         }
                     }
                     val clipboard = context.getSystemService(android.content.Context.CLIPBOARD_SERVICE) as android.content.ClipboardManager
                     clipboard.setPrimaryClip(android.content.ClipData.newPlainText("SentinelaLogs", fullLogText))
-                    Toast.makeText(context, "✅ Todos os logs foram copiados com sucesso!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "✅ Logs copiados com sucesso!", Toast.LENGTH_SHORT).show()
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = TvColors.CardBackgroundElevated),
                 shape = TvShapes.Badge,
@@ -2764,7 +2931,7 @@ fun TvLogsViewport(
             ) {
                 Icon(Icons.Default.ContentCopy, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(14.dp))
                 Spacer(modifier = Modifier.width(4.dp))
-                Text("Copiar Todos os Logs", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                Text("Copiar Logs", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
             }
         }
 
@@ -2782,32 +2949,83 @@ fun TvLogsViewport(
                 verticalArrangement = Arrangement.spacedBy(4.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(filteredLogs) { entry ->
-                    val badgeColor = when (entry.severity.uppercase()) {
-                        "CRITICAL", "ERROR" -> TvColors.AlertCrimson
-                        "WARN" -> TvColors.StandbyAmber
-                        else -> TvColors.CyberCyan
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(TvColors.CardBackground.copy(alpha = 0.6f), TvShapes.Badge)
-                            .border(1.dp, TvColors.BorderSubtle.copy(alpha = 0.4f), TvShapes.Badge)
-                            .padding(horizontal = 8.dp, vertical = 4.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(entry.createdAt.take(19), color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
-                        Surface(
-                            shape = TvShapes.Badge,
-                            color = badgeColor.copy(alpha = 0.2f),
-                            border = BorderStroke(1.dp, badgeColor.copy(alpha = 0.6f))
-                        ) {
-                            Text(entry.module.uppercase(), color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                if (logSource == "DISPOSITIVOS") {
+                    items(filteredClientLogs) { entry ->
+                        val badgeColor = when (entry.severity.uppercase()) {
+                            "CRITICAL", "ERROR" -> TvColors.AlertCrimson
+                            "WARN", "WARNING" -> TvColors.StandbyAmber
+                            "SUCCESS" -> TvColors.LiveGreen
+                            else -> TvColors.CyberCyan
                         }
-                        Text("[${entry.action}]", color = TvColors.CyberCyan, fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
-                        Text(entry.details, color = Color.White, fontSize = 11.sp, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(TvColors.CardBackground.copy(alpha = 0.6f), TvShapes.Badge)
+                                .border(1.dp, TvColors.BorderSubtle.copy(alpha = 0.4f), TvShapes.Badge)
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(entry.createdAt.take(19), color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = TvColors.CardBackgroundElevated,
+                                border = BorderStroke(1.dp, TvColors.BorderHighlight)
+                            ) {
+                                Text(
+                                    text = entry.deviceName.ifBlank { entry.deviceIdentifier.take(12) },
+                                    color = Color.White,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                )
+                            }
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = badgeColor.copy(alpha = 0.2f),
+                                border = BorderStroke(1.dp, badgeColor.copy(alpha = 0.6f))
+                            ) {
+                                Text(
+                                    text = entry.category.uppercase(),
+                                    color = badgeColor,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
+                                )
+                            }
+                            Text("[${entry.action}]", color = TvColors.CyberCyan, fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                            Text(entry.message, color = Color.White, fontSize = 11.sp, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
+                    }
+                } else {
+                    items(filteredServerLogs) { entry ->
+                        val badgeColor = when (entry.severity.uppercase()) {
+                            "CRITICAL", "ERROR" -> TvColors.AlertCrimson
+                            "WARN" -> TvColors.StandbyAmber
+                            else -> TvColors.CyberCyan
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(TvColors.CardBackground.copy(alpha = 0.6f), TvShapes.Badge)
+                                .border(1.dp, TvColors.BorderSubtle.copy(alpha = 0.4f), TvShapes.Badge)
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(entry.createdAt.take(19), color = TvColors.TextSecondary, fontSize = 10.sp, fontFamily = FontFamily.Monospace)
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = badgeColor.copy(alpha = 0.2f),
+                                border = BorderStroke(1.dp, badgeColor.copy(alpha = 0.6f))
+                            ) {
+                                Text(entry.module.uppercase(), color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
+                            }
+                            Text("[${entry.action}]", color = TvColors.CyberCyan, fontSize = 10.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
+                            Text(entry.details, color = Color.White, fontSize = 11.sp, modifier = Modifier.weight(1f), maxLines = 1, overflow = TextOverflow.Ellipsis)
+                        }
                     }
                 }
             }

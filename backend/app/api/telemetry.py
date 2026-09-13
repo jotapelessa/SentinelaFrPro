@@ -334,11 +334,13 @@ FIM DO RELATÓRIO DE DIAGNÓSTICO
         headers={"Content-Disposition": f"attachment; filename=sentinela_diagnostico_{now_file}.txt"}
     )
 
-from fastapi import Depends, Query
+from fastapi import Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, delete
 from app.db.session import get_db
-from app.db.models import AuditLog
+from app.db.models import AuditLog, ClientDeviceLog, PairedDevice
+import datetime
+import json
 
 @router.get("/audit")
 async def get_audit_logs(
@@ -378,6 +380,146 @@ async def get_audit_logs(
             for log in items
         ]
     }
+
+
+class ClientLogEventPayload(BaseModel):
+    timestamp: Optional[int] = None # epoch millis
+    category: str = "SYSTEM" # PIP, PLAYER, TOOLS, NETWORK, NAVIGATION, SYSTEM
+    action: str
+    severity: str = "INFO" # INFO, WARNING, ERROR, SUCCESS
+    message: str
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class ClientLogsBatchPayload(BaseModel):
+    device_identifier: str
+    device_name: str
+    device_type: str = "android_tv"
+    events: List[ClientLogEventPayload]
+
+
+@router.post("/client-logs")
+async def ingest_client_logs(
+    payload: ClientLogsBatchPayload,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """Receives a batch of asynchronous operational telemetry logs from client devices."""
+    from app.api.ws import ws_manager
+    from app.services.audit import audit_service
+
+    if not payload.events:
+        return {"status": "ok", "ingested": 0}
+
+    client_ip = request.client.host if request.client else "unknown"
+    now_utc = datetime.datetime.utcnow()
+
+    # 1. Update PairedDevice last seen timestamp
+    dev_stmt = select(PairedDevice).where(PairedDevice.device_identifier == payload.device_identifier)
+    dev_res = await db.execute(dev_stmt)
+    dev = dev_res.scalar_one_or_none()
+    if dev:
+        dev.last_seen = now_utc
+
+    # 2. Batch insert logs into ClientDeviceLog
+    log_records = []
+    for ev in payload.events:
+        event_time = datetime.datetime.utcfromtimestamp(ev.timestamp / 1000.0) if ev.timestamp else now_utc
+        meta_str = json.dumps(ev.metadata) if ev.metadata else None
+
+        log_records.append(ClientDeviceLog(
+            device_identifier=payload.device_identifier,
+            device_name=payload.device_name,
+            device_type=payload.device_type,
+            category=ev.category.upper(),
+            action=ev.action.upper(),
+            severity=ev.severity.upper(),
+            message=ev.message,
+            client_timestamp=event_time,
+            metadata_json=meta_str,
+            created_at=now_utc
+        ))
+
+        # Replicate high severity/audit-worthy events to system AuditLog for universal console visibility
+        if ev.severity.upper() in ["SUCCESS", "ERROR", "WARNING"] or ev.category.upper() in ["PIP", "TOOLS"]:
+            await audit_service.log(
+                action=f"{ev.category.upper()}_{ev.action.upper()}",
+                module=payload.device_type.upper(),
+                severity=ev.severity.upper(),
+                details=f"[{payload.device_name}] {ev.message}",
+                client_ip=client_ip
+            )
+
+    db.add_all(log_records)
+    await db.commit()
+
+    # 3. Realtime broadcast via WebSocket to any connected admin consoles
+    await ws_manager.broadcast_json({
+        "type": "CLIENT_LOGS_INGESTED",
+        "device_identifier": payload.device_identifier,
+        "device_name": payload.device_name,
+        "device_type": payload.device_type,
+        "count": len(payload.events)
+    })
+
+    return {"status": "ok", "ingested": len(log_records)}
+
+
+@router.get("/client-logs")
+async def get_client_device_logs(
+    device_identifier: Optional[str] = None,
+    category: Optional[str] = None,
+    severity: Optional[str] = None,
+    limit: int = Query(150, le=500),
+    db: AsyncSession = Depends(get_db)
+):
+    """Queries unified client operational telemetry logs with optional filters."""
+    stmt = select(ClientDeviceLog).order_by(desc(ClientDeviceLog.id)).limit(limit)
+
+    if device_identifier and device_identifier != "ALL":
+        stmt = stmt.where(ClientDeviceLog.device_identifier == device_identifier)
+    if category and category != "ALL":
+        stmt = stmt.where(ClientDeviceLog.category == category.upper())
+    if severity and severity != "ALL":
+        stmt = stmt.where(ClientDeviceLog.severity == severity.upper())
+
+    res = await db.execute(stmt)
+    records = res.scalars().all()
+
+    return {
+        "total": len(records),
+        "logs": [
+            {
+                "id": r.id,
+                "device_identifier": r.device_identifier,
+                "device_name": r.device_name,
+                "device_type": r.device_type,
+                "category": r.category,
+                "action": r.action,
+                "severity": r.severity,
+                "message": r.message,
+                "client_timestamp": r.client_timestamp.isoformat() if r.client_timestamp else None,
+                "metadata": json.loads(r.metadata_json) if r.metadata_json else {},
+                "created_at": r.created_at.strftime("%d/%m/%Y, %H:%M:%S") if r.created_at else ""
+            }
+            for r in records
+        ]
+    }
+
+
+@router.delete("/client-logs")
+async def clear_client_device_logs(
+    device_identifier: Optional[str] = None,
+    db: AsyncSession = Depends(get_db)
+):
+    """Deletes client device telemetry logs."""
+    stmt = delete(ClientDeviceLog)
+    if device_identifier and device_identifier != "ALL":
+        stmt = stmt.where(ClientDeviceLog.device_identifier == device_identifier)
+    await db.execute(stmt)
+    await db.commit()
+    return {"status": "cleared", "message": "Logs de clientes limpos com sucesso."}
+
 
 
 

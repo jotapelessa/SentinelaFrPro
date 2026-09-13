@@ -33,6 +33,32 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
+- **Sistema Universal de Observabilidade e Telemetria Automática de Clientes (Build 113)**:
+  - **Motivação & Requisitos**:
+    - O usuário solicitou que o servidor Sentinela Core saiba em tempo real tudo o que se passa nos aparelhos instalados (Smart TVs TCL, Tablets, Celulares): telas navegadas, botões acionados, testes de rede executados (Mbps, FPS, ping, rota ativa), ciclo de vida do PiP (renderizado, dimensões, falhas, permissões) e saúde de conexão (Tailscale Funnel vs IP Direto vs Rede Local).
+  - **Arquitetura Implementada**:
+    - **Backend & Armazenamento (`models.py` & `telemetry.py`)**:
+      - Criada tabela `client_device_logs` com retenção automática de 10.000 logs / 7 dias (`purge_old_client_logs`).
+      - Endpoints `POST /api/telemetry/client-logs` (ingestão em lote de eventos com atualização automática do `last_seen` em `PairedDevice`, broadcast WebSocket `CLIENT_LOGS_INGESTED` e replicação de alta severidade em `AuditLog`), `GET /api/telemetry/client-logs` (filtros por aparelho, severidade e categoria) e `DELETE /api/telemetry/client-logs` (limpeza de logs).
+    - **Coletor Resiliente Android (`SentinelaRemoteLogger.kt`)**:
+      - Fila FIFO thread-safe com limite de 250 eventos (`ConcurrentLinkedQueue`), com descarte automático de excessos para consumo zero de memória.
+      - Worker assíncrono em `Dispatchers.IO` a cada 3.5 segundos despachando batches de até 50 eventos em um único POST HTTP, sem jamais impactar a thread de UI ou o decodificador de vídeo (VPU) a 30 FPS.
+      - Despacho imediato (0ms) prioritário para erros críticos (`LogSeverity.ERROR`).
+      - Suporte flexível a `LogCategory` (PIP, TOOLS, NETWORK, NAVIGATION, PLAYER, SYSTEM) e sobrecargas ergonômicas por String.
+    - **Instrumentação em OverlayService & Telas**:
+      - `OverlayService.kt`: Telemetria de sucesso na renderização de PiP (`PIP_OVERLAY_DISPLAYED`), erro de permissão (`PIP_OVERLAY_FAILED`), descarte por política (`PIP_OVERLAY_SKIPPED`) e fechamento (`PIP_OVERLAY_CLOSED`).
+      - `MainActivity.kt`: Inicialização do logger no boot (`APP_LAUNCHED`).
+      - `TvNetflixScreen.kt`: Telemetria em troca de abas (`TAB_NAVIGATED`), disparo de PiP teste (`TEST_PIP_TRIGGERED`), testes de largura de banda nas 4 rotas (`BANDWIDTH_TEST_STARTED`, `BANDWIDTH_TEST_FINISHED`), testes de pipelines de vídeo (`VIDEO_STABILITY_TEST_STARTED`, `VIDEO_STABILITY_TEST_FINISHED`) e bateria completa de vazão (`BANDWIDTH_SUITE_STARTED`, `BANDWIDTH_SUITE_FINISHED`).
+    - **Interface da TV (`TvLogsViewport`)**:
+      - Adicionado seletor com suporte a D-Pad para alternar visualização entre `📱 CLIENTES/TVS` e `🖥️ AUDITORIA NVR`.
+      - Polling assíncrono de telemetria dos aparelhos a cada 4s, com badges visuais coloridos por categoria, severidade e identificador do dispositivo.
+      - Botão "Copiar Logs" atualizado para exportar a trilha selecionada.
+  - **Compilação e Governança**:
+    - `android/version.properties` atualizado para `BUILD=113`, `VERSION_NAME=001.000.000.113`.
+    - APKs gerados: `app-tv-debug.apk` e `app-smartphone-debug.apk` (62 MB cada, Build 113).
+    - 31/31 testes de especificação (`node --test test/*.js`) aprovados com 100% PASS.
+    - Grafo de conhecimento atualizado com `graphify update .`.
+
 - **Resolução de Falha de Confirmação de PiP (ACK) e Mapeamento de Dispositivos (Build 112)**:
   - **Diagnóstico da Causa-Raiz nos Logs**:
     - Nos logs do sistema, os testes para a `Android (Smart TV Pro)` (192.168.1.208) confirmavam e renderizavam o PiP com 100% de sucesso (`SUCCESS: 640x360, 60s`). Já os testes para `Tablet` (192.168.1.130) e `Android (SM-G9860)` (192.168.232.2) estouravam timeout de 5 segundos com a mensagem *"TV não confirmou a exibição do PiP (tempo limite esgotado)"*.

@@ -1529,4 +1529,139 @@ object SentinelaRepository {
             false
         }
     }
+
+    suspend fun sendClientLogsBatch(
+        deviceIdentifier: String,
+        deviceName: String,
+        deviceType: String,
+        entries: List<com.sentinela.pro.logging.ClientLogEntry>
+    ): Boolean = withContext(Dispatchers.IO) {
+        if (entries.isEmpty()) return@withContext true
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/telemetry/client-logs")
+            val conn = openConnection(url).apply {
+                connectTimeout = 3500
+                readTimeout = 3500
+                requestMethod = "POST"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+
+            val eventsArray = JSONArray()
+            for (item in entries) {
+                val evObj = JSONObject().apply {
+                    put("timestamp", item.timestamp)
+                    put("category", item.category.name)
+                    put("action", item.action)
+                    put("severity", item.severity.name)
+                    put("message", item.message)
+                    if (item.metadata.isNotEmpty()) {
+                        val metaObj = JSONObject()
+                        item.metadata.forEach { (k, v) -> metaObj.put(k, v) }
+                        put("metadata", metaObj)
+                    }
+                }
+                eventsArray.put(evObj)
+            }
+
+            val root = JSONObject().apply {
+                put("device_identifier", deviceIdentifier)
+                put("device_name", deviceName)
+                put("device_type", deviceType)
+                put("events", eventsArray)
+            }
+
+            conn.outputStream.use { it.write(root.toString().toByteArray(Charsets.UTF_8)) }
+            val ok = conn.responseCode in 200..299
+            conn.disconnect()
+            ok
+        } catch (e: Exception) {
+            Log.d(TAG, "sendClientLogsBatch error: ${e.message}")
+            false
+        }
+    }
+
+    suspend fun getClientLogs(
+        deviceIdentifier: String? = null,
+        category: String? = null,
+        severity: String? = null,
+        limit: Int = 150
+    ): List<ClientDeviceLogItem> = withContext(Dispatchers.IO) {
+        val list = mutableListOf<ClientDeviceLogItem>()
+        try {
+            val queryParams = mutableListOf("limit=$limit")
+            if (!deviceIdentifier.isNullOrBlank() && deviceIdentifier != "ALL") {
+                queryParams.add("device_identifier=${java.net.URLEncoder.encode(deviceIdentifier, "UTF-8")}")
+            }
+            if (!category.isNullOrBlank() && category != "ALL") {
+                queryParams.add("category=${java.net.URLEncoder.encode(category, "UTF-8")}")
+            }
+            if (!severity.isNullOrBlank() && severity != "ALL") {
+                queryParams.add("severity=${java.net.URLEncoder.encode(severity, "UTF-8")}")
+            }
+
+            val url = URL("${SentinelaConfig.BASE_URL}/api/telemetry/client-logs?${queryParams.joinToString("&")}")
+            val conn = openConnection(url).apply {
+                connectTimeout = 4000
+                readTimeout = 4000
+                requestMethod = "GET"
+            }
+
+            if (conn.responseCode in 200..299) {
+                val reader = BufferedReader(InputStreamReader(conn.inputStream))
+                val root = JSONObject(reader.readText())
+                reader.close()
+
+                val arr = root.optJSONArray("logs") ?: JSONArray()
+                for (i in 0 until arr.length()) {
+                    val obj = arr.getJSONObject(i)
+                    val metaObj = obj.optJSONObject("metadata")
+                    val metaMap = mutableMapOf<String, Any>()
+                    if (metaObj != null) {
+                        val keys = metaObj.keys()
+                        while (keys.hasNext()) {
+                            val k = keys.next()
+                            metaMap[k] = metaObj.get(k)
+                        }
+                    }
+
+                    list.add(
+                        ClientDeviceLogItem(
+                            id = obj.optInt("id"),
+                            deviceIdentifier = obj.optString("device_identifier"),
+                            deviceName = obj.optString("device_name"),
+                            deviceType = obj.optString("device_type"),
+                            category = obj.optString("category"),
+                            action = obj.optString("action"),
+                            severity = obj.optString("severity"),
+                            message = obj.optString("message"),
+                            clientTimestamp = if (obj.has("client_timestamp")) obj.optString("client_timestamp") else null,
+                            metadata = metaMap,
+                            createdAt = obj.optString("created_at")
+                        )
+                    )
+                }
+            }
+            conn.disconnect()
+        } catch (e: Exception) {
+            Log.w(TAG, "getClientLogs error: ${e.message}")
+        }
+        list
+    }
 }
+
+data class ClientDeviceLogItem(
+    val id: Int,
+    val deviceIdentifier: String,
+    val deviceName: String,
+    val deviceType: String,
+    val category: String,
+    val action: String,
+    val severity: String,
+    val message: String,
+    val clientTimestamp: String?,
+    val metadata: Map<String, Any>,
+    val createdAt: String
+)
+

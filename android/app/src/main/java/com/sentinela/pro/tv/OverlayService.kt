@@ -35,6 +35,7 @@ import android.widget.TextView
 import androidx.core.app.NotificationCompat
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.*
+import com.sentinela.pro.logging.SentinelaRemoteLogger
 import com.sentinela.pro.network.*
 import kotlinx.coroutines.*
 
@@ -385,6 +386,13 @@ class OverlayService : Service() {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
             android.util.Log.w("OverlayService", "Cannot display PiP overlay: Permission SYSTEM_ALERT_WINDOW not granted")
+            SentinelaRemoteLogger.log(
+                category = "PIP",
+                action = "PIP_OVERLAY_FAILED",
+                severity = "ERROR",
+                message = "Permissão SYSTEM_ALERT_WINDOW não concedida para PiP",
+                metadata = mapOf("camera" to camera, "reason" to "permission_denied")
+            )
             if (testId != null) {
                 val prefs = SentinelaPreferences(this)
                 serviceScope.launch {
@@ -397,6 +405,13 @@ class OverlayService : Service() {
         val prefs = SentinelaPreferences(this)
         if (!prefs.allowPipAlerts || (policy != null && !policy.allowPipAlerts)) {
             android.util.Log.i("OverlayService", "PiP alerts disabled by policy, skipping.")
+            SentinelaRemoteLogger.log(
+                category = "PIP",
+                action = "PIP_OVERLAY_SKIPPED",
+                severity = "WARNING",
+                message = "Alerta PiP desativado por política ou configuração do aparelho",
+                metadata = mapOf("camera" to camera)
+            )
             if (testId != null) {
                 serviceScope.launch {
                     SentinelaRepository.sendPipAck(prefs.deviceIdentifier, testId, success = false, message = "Alertas PiP desativados por política")
@@ -741,6 +756,22 @@ class OverlayService : Service() {
             }
 
             // Confirmação de execução física comprovada na tela
+            SentinelaRemoteLogger.log(
+                category = "PIP",
+                action = "PIP_OVERLAY_DISPLAYED",
+                severity = "SUCCESS",
+                message = "PiP exibido com sucesso: cam=${resolvedCamera}, dim=${pipSize.width}x${pipSize.height}, pos=${pipPos.name}, dur=${durationSeconds}s, modo=${prefs.pipPlayerMode}",
+                metadata = mapOf(
+                    "camera" to resolvedCamera,
+                    "width" to pipSize.width,
+                    "height" to pipSize.height,
+                    "position" to pipPos.name,
+                    "duration" to durationSeconds,
+                    "player_mode" to prefs.pipPlayerMode,
+                    "stream_url" to streamUrl
+                )
+            )
+
             if (testId != null) {
                 serviceScope.launch {
                     SentinelaRepository.sendPipAck(
@@ -755,6 +786,13 @@ class OverlayService : Service() {
             }
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Failed to render PiP Window: ${e.message}")
+            SentinelaRemoteLogger.log(
+                category = "PIP",
+                action = "PIP_OVERLAY_FAILED",
+                severity = "ERROR",
+                message = "Falha ao renderizar PiP Window: ${e.message}",
+                metadata = mapOf("camera" to resolvedCamera, "error" to (e.message ?: "unknown"))
+            )
             if (testId != null) {
                 serviceScope.launch {
                     SentinelaRepository.sendPipAck(
@@ -843,6 +881,14 @@ class OverlayService : Service() {
             pipImageView = null
             overlayView = null
             currentOverlayPlayerMode = null
+            if (isPipShowing.value) {
+                SentinelaRemoteLogger.log(
+                    category = "PIP",
+                    action = "PIP_OVERLAY_CLOSED",
+                    severity = "INFO",
+                    message = "Janela PiP fechada e recursos liberados"
+                )
+            }
             isPipShowing.value = false
         } catch (e: Exception) {
             android.util.Log.e("OverlayService", "Error removing overlay view: ${e.message}")

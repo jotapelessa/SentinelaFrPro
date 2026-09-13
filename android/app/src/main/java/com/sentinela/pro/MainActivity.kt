@@ -31,6 +31,20 @@ class MainActivity : ComponentActivity() {
         SentinelaConfig.currentHost = prefs.serverHost
         val deviceType = if (isTv()) "android_tv" else "smartphone"
 
+        // Inicializa observabilidade distribuída
+        com.sentinela.pro.logging.SentinelaRemoteLogger.init(this)
+        com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+            category = com.sentinela.pro.logging.LogCategory.SYSTEM,
+            action = "APP_LAUNCHED",
+            severity = com.sentinela.pro.logging.LogSeverity.INFO,
+            message = "Aplicativo iniciado no modo $deviceType (${android.os.Build.MODEL}, Android ${android.os.Build.VERSION.RELEASE})",
+            metadata = mapOf(
+                "device_model" to android.os.Build.MODEL,
+                "device_type" to deviceType,
+                "server_host" to prefs.serverHost
+            )
+        )
+
         // Start background service for PiP & WebSocket listener if on Android TV OR if overlay permission granted on mobile/tablet
         val shouldStartOverlay = isTv() || (prefs.allowPipAlerts && hasOverlayPermission())
         if (shouldStartOverlay) {
