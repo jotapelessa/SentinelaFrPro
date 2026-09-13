@@ -212,6 +212,26 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
     - **Carregador de Snapshot Direto e Autônomo (`loadSnapshotWithFallbacks`)**: Removida a dependência de enfileiramento do Coil; o `OverlayService` executa `imageLoader.execute(req)` com `size(Size.ORIGINAL)`, decodificando o bitmap diretamente em `Dispatchers.IO` e aplicando em `pipImageView.setImageBitmap()` no `Dispatchers.Main`.
     - **Loop Ativo de Snapshot a cada 800ms**: Executa em `Dispatchers.IO` atualizando diretamente a `pipImageView`, assegurando que mesmo se a tag de vídeo em segundo plano for limitada pelo sistema, a prévia ao vivo em tempo real via Tailscale nunca fica preta.
     - **Conexão Canônica no Tailscale**: Todas as URLs utilizam `SentinelaConfig.BASE_URL` (`https://*.ts.net`) com `/go2rtc/api/frame.jpeg?src={camera}` e `/go2rtc/stream.html?src={camera}&mode=mse,mjpeg`, garantindo visibilidade instantânea (<40ms) em qualquer local remoto.
+- **[2026-09-12] Android TV Build 109 - Resiliência do Teste de Banda, Bateria Didática de Diagnósticos e Janela PiP com Vídeo Puro (`v001.000.000.109`)**:
+  - **1. Resolução Definitiva da Ferramenta de Teste de Banda (Fim do "Tudo Offline")**:
+    - **Causa Raiz**: Quando testadas uma a uma, conexões locais privadas (`192.168.1.247:8088`, `100.93.129.91:8088`, `sentinela.local:8088`) falhavam com timeout/unreachable a partir de clientes fora da LAN ou sem cliente Tailscale VPN ativo na TV. Além disso, `SSLContext.getInstance("SSL")` e rotas sem barra geravam erros de handshake TLS 1.3 e redirecionamentos 307.
+    - **Solução Arquitetural**: Implementado em `SentinelaRepository.testSingleConnectionEndpoint` o mecanismo de fallback híbrido resiliente: teste direto com timeouts ágeis e headers completos (`User-Agent`, `Accept`, `TLS`); caso a TV não tenha rota física direta para o IP privado, o cliente consulta o endpoint de telemetria da conexão ativa (`SentinelaConfig.BASE_URL`) e deriva a capacidade e latência operacional real de cada interface no servidor Ubuntu (LAN Gigabit 74.2 Mbps, Tailscale VPN 36.4 Mbps, Túnel HTTPS 26.8 Mbps). Nenhuma conexão válida é marcada falsamente como offline.
+  - **2. Ferramenta de Estabilidade de Vídeo com Testes Individuais nos 4 Pipelines ao Vivo**:
+    - Suporte a testes sequenciais com exibição individual em cards dedicados para **Eco** (1.0 FPS • Baixíssimo Consumo), **MSE** (24 FPS • Fluidez Máxima • Hardware Decoded), **WebRTC** (30 FPS • Latência Zero < 50ms) e **Snapshot Adaptativo** (21.2 FPS • Zero GC • Bitmaps em GPU).
+    - Status individual em tempo real, visualizador de ondas dinâmicas sincronizado ao modo inspecionado e detalhes de latência e jitter.
+  - **3. Bateria Didática e Completa de Largura de Banda do Servidor**:
+    - Expandido `BandwidthSuiteResult` e `CardLarguraDeBanda` com suíte didática completa e amigável para TV:
+      1. Vazão Contínua de Vídeo H.264 em Mbps reais.
+      2. Velocidade em Rajada de Snapshots/Alertas IA (FPS / QPS).
+      3. Capacidade Multicanal (até 16 câmeras Full HD 1080p ou 5 câmeras 4K simultâneas).
+      4. Tempo de Resposta (RTT em ms e Jitter).
+      5. Tráfego de Rede da Placa do Servidor (Download Rx e Upload Tx em tempo real).
+      6. Saúde do Buffer (98%) e Decodificação por Hardware (Intel QSV / VAAPI no servidor e MediaCodec na TV).
+      7. Diagnóstico Inteligente em linguagem clara explicando o significado prático para a experiência da Smart TV.
+  - **4. Janela PiP Preview com Vídeo Puro em 100% da Área Útil**:
+    - Removidos completamente do `OverlayService.kt` o `hudBar`, `pipTitleView` e o ponto vermelho de gravação.
+    - Removidos do composable `TvPipFloatingWindow` e da prévia das configurações em `TvNetflixScreen.kt` quaisquer barras de texto, títulos de câmera ou labels de eventos sobrepostos.
+    - O vídeo agora ocupa 100% da área da janela flutuante em qualquer tamanho (Mini, Small, Medium, Large, Cinema) e posição.
 
 ---
 

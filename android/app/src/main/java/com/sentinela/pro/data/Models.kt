@@ -178,12 +178,14 @@ data class BandwidthSuiteResult(
     val latencyMs: Long = 12,
     val jitterMs: Double = 0.8,
     val max1080pCameras: Int = 16,
+    val max4kCameras: Int = 5,
     val rxKbs: Double = 2450.0,
     val txKbs: Double = 310.0,
     val bufferHealthPercent: Int = 98,
     val hwDecoderStatus: String = "Intel QSV / VAAPI Ativo",
     val diagnosticSummary: String = "Conexão de altíssima velocidade: suporta streaming simultâneo em 4K e até 16 câmeras Full HD sem buffer.",
     val qualityRating: String = "EXCELENTE",
-    val isTesting: Boolean = false
+    val isTesting: Boolean = false,
+    val currentStepText: String = "Pronto para teste"
 )
 

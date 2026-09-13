@@ -42,7 +42,6 @@ class OverlayService : Service() {
     private lateinit var windowManager: WindowManager
     private var overlayView: View? = null
 
-    private var pipTitleView: TextView? = null
     private var pipImageView: android.widget.ImageView? = null
     private var pipWebView: WebView? = null
     private var pipPlayerView: PlayerView? = null
@@ -656,50 +655,12 @@ class OverlayService : Service() {
                     }
                 }
 
-                // 3. Top HUD Bar (Camera name & Label badge)
-                val hudBar = LinearLayout(this).apply {
-                    orientation = LinearLayout.HORIZONTAL
-                    setBackgroundColor(0xCC050E1A.toInt()) // Dark glassy background
-                    setPadding(14, 8, 14, 8)
-                    gravity = Gravity.CENTER_VERTICAL
-                    layoutParams = FrameLayout.LayoutParams(
-                        FrameLayout.LayoutParams.MATCH_PARENT,
-                        FrameLayout.LayoutParams.WRAP_CONTENT
-                    ).apply {
-                        gravity = Gravity.TOP
-                    }
-                }
-
-                val dot = View(this).apply {
-                    layoutParams = LinearLayout.LayoutParams(14, 14).apply {
-                        marginEnd = 10
-                    }
-                    setBackgroundColor(0xFFEF4444.toInt()) // Red Live Dot
-                }
-                hudBar.addView(dot)
-
-                val badgeText = when (prefs.pipPlayerMode) {
-                    "exoplayer" -> "AO VIVO"
-                    "snapshot" -> "ECO SNAPSHOT"
-                    else -> "AO VIVO (30 FPS)"
-                }
-                val tv = TextView(this).apply {
-                    setTextColor(Color.WHITE)
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, 11f)
-                    typeface = Typeface.DEFAULT_BOLD
-                    text = "${camera.uppercase()} • ${label.uppercase()} • $badgeText"
-                }
-                pipTitleView = tv
-                hudBar.addView(tv)
-                inner.addView(hudBar)
-
                 root.addView(inner)
                 overlayView = root
                 windowManager.addView(overlayView, params)
             } else {
                 when (prefs.pipPlayerMode) {
                     "exoplayer" -> {
-                        pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • AO VIVO"
                         pipExoPlayer?.let { player ->
                             val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
                             val mediaItem = MediaItem.fromUri(hlsUrl)
@@ -709,13 +670,11 @@ class OverlayService : Service() {
                         }
                     }
                     "snapshot" -> {
-                        pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • ECO SNAPSHOT"
                         pipImageView?.let { iv ->
                             loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                         }
                     }
                     else -> {
-                        pipTitleView?.text = "${camera.uppercase()} • ${label.uppercase()} • AO VIVO (30 FPS)"
                         pipImageView?.let { iv ->
                             loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                         }
@@ -837,7 +796,6 @@ class OverlayService : Service() {
                 }
             }
             pipImageView = null
-            pipTitleView = null
             overlayView = null
             currentOverlayPlayerMode = null
         } catch (e: Exception) {

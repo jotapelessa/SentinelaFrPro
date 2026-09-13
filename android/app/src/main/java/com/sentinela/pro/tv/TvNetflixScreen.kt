@@ -1544,12 +1544,14 @@ fun TvToolsViewport(
 
     val onRunBandwidthSuiteTest: () -> Unit = {
         isCalibratingBandwidth = true
-        bandwidthSuite = bandwidthSuite.copy(isTesting = true)
+        bandwidthSuite = bandwidthSuite.copy(isTesting = true, currentStepText = "Iniciando Bateria de Testes...")
         coroutineScope.launch {
             val targetCam = cameras.firstOrNull { it.name.contains("secundaria", ignoreCase = true) }?.name
                 ?: cameras.firstOrNull()?.name
                 ?: "camera_secundaria"
-            val res = com.sentinela.pro.network.SentinelaRepository.runBandwidthTestSuite(targetCam)
+            val res = com.sentinela.pro.network.SentinelaRepository.runBandwidthTestSuite(targetCam) { step ->
+                bandwidthSuite = bandwidthSuite.copy(currentStepText = step)
+            }
             bandwidthSuite = res
             isCalibratingBandwidth = false
             trigger("Bateria de testes concluída: ${res.videoThroughputMbps} Mbps (${res.qualityRating})!")
@@ -2193,6 +2195,34 @@ fun CardLarguraDeBanda(
             }
         }
 
+        // Se estiver em calibração, exibe a etapa atual com destaque visual
+        if (isCalibrating) {
+            Surface(
+                shape = TvShapes.Badge,
+                color = TvColors.StandbyAmber.copy(alpha = 0.15f),
+                border = BorderStroke(1.dp, TvColors.StandbyAmber.copy(alpha = 0.4f)),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(12.dp),
+                        color = TvColors.StandbyAmber,
+                        strokeWidth = 2.dp
+                    )
+                    Text(
+                        text = suiteResult.currentStepText,
+                        color = TvColors.StandbyAmber,
+                        fontSize = 10.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+        }
+
         // Métricas de Destaque: Throughput Principal + Tráfego Rx / Tx em Tempo Real
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -2209,26 +2239,26 @@ fun CardLarguraDeBanda(
                     fontFamily = FontFamily.Monospace
                 )
                 Text(
-                    text = "Taxa Real de Vídeo",
+                    text = "Download Contínuo H.264",
                     color = TvColors.TextSecondary,
                     fontSize = 9.sp
                 )
             }
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text("Download (Rx)", color = TvColors.TextSecondary, fontSize = 9.sp)
+                Text("Download Servidor (Rx)", color = TvColors.TextSecondary, fontSize = 9.sp)
                 Text("$rxMbps Mbps", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("${rxKbs.toInt()} KB/s", color = TvColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
             }
 
             Column(horizontalAlignment = Alignment.End) {
-                Text("Upload (Tx)", color = TvColors.TextSecondary, fontSize = 9.sp)
+                Text("Upload Servidor (Tx)", color = TvColors.TextSecondary, fontSize = 9.sp)
                 Text("$txMbps Mbps", color = Color(0xFFA78BFA), fontSize = 13.sp, fontWeight = FontWeight.Bold, fontFamily = FontFamily.Monospace)
                 Text("${txKbs.toInt()} KB/s", color = TvColors.TextSecondary, fontSize = 9.sp, fontFamily = FontFamily.Monospace)
             }
         }
 
-        // Bateria Didática de Testes (Grade 2x2 com 4 Testes Especializados)
+        // Bateria Didática de Testes (Grade 2x2 com 4 Testes Especializados Explicados)
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -2246,7 +2276,7 @@ fun CardLarguraDeBanda(
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text("📹 Vazão de Vídeo", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         Text("${suiteResult.videoThroughputMbps} Mbps", color = TvColors.CyberCyan, fontSize = 11.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
-                        Text("Download contínuo sem perdas", color = TvColors.TextSecondary, fontSize = 8.sp)
+                        Text("Streaming contínuo em tempo real", color = TvColors.TextSecondary, fontSize = 8.sp)
                     }
                 }
 
@@ -2260,9 +2290,9 @@ fun CardLarguraDeBanda(
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text("⚡ Rajada de Eventos", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("⚡ Rajada de Alertas IA", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
                         Text("${suiteResult.burstFps} FPS / QPS", color = TvColors.LiveGreen, fontSize = 11.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
-                        Text("Resposta instantânea da IA", color = TvColors.TextSecondary, fontSize = 8.sp)
+                        Text("Resposta instantânea nas detecções", color = TvColors.TextSecondary, fontSize = 8.sp)
                     }
                 }
             }
@@ -2281,9 +2311,9 @@ fun CardLarguraDeBanda(
                         .padding(horizontal = 8.dp, vertical = 6.dp)
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Text("📺 Multicanal 1080p", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        Text("Até ${suiteResult.max1080pCameras} Câmeras", color = TvColors.LiveGreen, fontSize = 11.sp, fontWeight = FontWeight.Black)
-                        Text("Simultâneas sem engasgos", color = TvColors.TextSecondary, fontSize = 8.sp)
+                        Text("📺 Capacidade Multicanal", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                        Text("Até ${suiteResult.max1080pCameras} em 1080p (${suiteResult.max4kCameras} em 4K)", color = TvColors.LiveGreen, fontSize = 10.sp, fontWeight = FontWeight.Black)
+                        Text("Exibição simultânea sem travamentos", color = TvColors.TextSecondary, fontSize = 8.sp)
                     }
                 }
 
@@ -2298,7 +2328,7 @@ fun CardLarguraDeBanda(
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text("🛡️ HW Decoder & Buffer", color = Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                        Text("${suiteResult.bufferHealthPercent}% • ${suiteResult.latencyMs}ms", color = Color(0xFFA78BFA), fontSize = 11.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
+                        Text("${suiteResult.bufferHealthPercent}% • ${suiteResult.latencyMs}ms (${suiteResult.jitterMs}ms j)", color = Color(0xFFA78BFA), fontSize = 10.sp, fontWeight = FontWeight.Black, fontFamily = FontFamily.Monospace)
                         Text(suiteResult.hwDecoderStatus, color = TvColors.TextSecondary, fontSize = 8.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                     }
                 }
@@ -2361,7 +2391,7 @@ fun CardLarguraDeBanda(
             Icon(Icons.Default.Analytics, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.size(14.dp))
             Spacer(modifier = Modifier.width(6.dp))
             Text(
-                text = if (isCalibrating) "Executando Bateria de Testes..." else "Executar Bateria Completa de Testes de Banda",
+                text = if (isCalibrating) suiteResult.currentStepText else "Executar Bateria Completa de Testes de Banda",
                 fontSize = 11.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -3214,28 +3244,26 @@ fun TvSettingsViewport(
                                 modifier = Modifier.fillMaxSize(),
                                 isStreaming = true
                             )
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .background(TvColors.OverlayHud)
-                                    .padding(horizontal = 6.dp, vertical = 3.dp)
-                                    .align(Alignment.TopStart)
-                            ) {
-                                Text(
-                                    text = "${com.sentinela.pro.data.PipSize.values()[sizeIndex].label} • ${com.sentinela.pro.data.PipPosition.values()[posIndex].label}",
-                                    color = Color.White,
-                                    fontSize = 9.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
                         }
 
                         Column(
                             verticalArrangement = Arrangement.spacedBy(8.dp),
                             modifier = Modifier.weight(1f)
                         ) {
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = TvColors.CardBackgroundElevated,
+                                border = BorderStroke(1.dp, TvColors.BorderSubtle)
+                            ) {
+                                Text(
+                                    text = "Formato atual: ${com.sentinela.pro.data.PipSize.values()[sizeIndex].label} • ${com.sentinela.pro.data.PipPosition.values()[posIndex].label}",
+                                    color = TvColors.CyberCyan,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp)
+                                )
+                            }
+
                             Text(
                                 text = "Clique no botão abaixo para abrir a janela flutuante real sobre a TV e testar a estabilidade em primeiro plano:",
                                 color = TvColors.TextSecondary,
@@ -3819,7 +3847,7 @@ fun TvPipFloatingWindow(
 
     Surface(
         shape = TvShapes.PipWindow,
-        color = TvColors.OverlayHud,
+        color = Color.Black,
         border = BorderStroke(2.dp, if (isFocused) TvColors.BorderFocused else TvColors.BorderHighlight),
         shadowElevation = 16.dp,
         modifier = modifier
@@ -3837,100 +3865,14 @@ fun TvPipFloatingWindow(
                 onExpand()
             }
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            // CABEÇALHO DO ALERTA PIP
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(TvColors.AlertCrimson.copy(alpha = 0.25f))
-                    .padding(horizontal = TvDimens.sm, vertical = 6.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(TvColors.AlertCrimson, CircleShape)
-                    )
-                    Text(
-                        text = "ALERTA PiP • ${alert.camera.name}",
-                        color = Color.White,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-
-                Surface(
-                    shape = TvShapes.StatusPill,
-                    color = TvColors.CardBackground
-                ) {
-                    Text(
-                        text = "${remainingSeconds}s",
-                        style = TvTypography.Telemetry.copy(color = TvColors.CyberCyan),
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                    )
-                }
-            }
-
-            // SNAPSHOT LIVE DO EVENTO
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-            ) {
-                SeamlessCameraImage(
-                    cameraName = alert.camera.id,
-                    contentDescription = "Alerta PiP",
-                    modifier = Modifier.fillMaxSize(),
-                    isStreaming = true,
-                    forceSnapshotMode = false
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f))
-                            )
-                        )
-                        .padding(TvDimens.sm)
-                ) {
-                    Text(
-                        text = alert.eventDescription,
-                        color = Color.White,
-                        fontSize = 10.sp,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.align(Alignment.BottomStart)
-                    )
-                }
-            }
-
-            // AÇÕES D-PAD NO PiP
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(TvColors.CardBackgroundElevated)
-                    .padding(horizontal = TvDimens.sm, vertical = 4.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Pressione [OK] para Expandir",
-                    style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.CyberCyan)
-                )
-                Text(
-                    text = "[VOLTAR] Fechar",
-                    style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.TextMuted)
-                )
-            }
+        Box(modifier = Modifier.fillMaxSize()) {
+            SeamlessCameraImage(
+                cameraName = alert.camera.id,
+                contentDescription = "Alerta PiP",
+                modifier = Modifier.fillMaxSize(),
+                isStreaming = true,
+                forceSnapshotMode = false
+            )
         }
     }
 }
