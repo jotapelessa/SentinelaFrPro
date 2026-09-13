@@ -33,6 +33,20 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
+- **Resolução de Falha de Confirmação de PiP (ACK) e Mapeamento de Dispositivos (Build 112)**:
+  - **Diagnóstico da Causa-Raiz nos Logs**:
+    - Nos logs do sistema, os testes para a `Android (Smart TV Pro)` (192.168.1.208) confirmavam e renderizavam o PiP com 100% de sucesso (`SUCCESS: 640x360, 60s`). Já os testes para `Tablet` (192.168.1.130) e `Android (SM-G9860)` (192.168.232.2) estouravam timeout de 5 segundos com a mensagem *"TV não confirmou a exibição do PiP (tempo limite esgotado)"*.
+    - **Causa 1**: O modelo `SM-G9860` é um smartphone (Galaxy S20+). Em `MainActivity.kt`, o `OverlayService` era condicionado a `if (isTv())`, não executando em smartphones e tablets portáteis.
+    - **Causa 2**: Em `pip_gateway.py`, o gateway considerava `dispatched = True` se `ws_manager.active_connections` tivesse qualquer cliente (como a Smart TV da sala ou o navegador), mantendo o gateway bloqueado por 5s aguardando um ACK de um celular que nem possuía o serviço ativo.
+    - **Causa 3**: A mensagem de erro usava o termo fixo "TV" mesmo quando o teste era disparado para celulares e tablets.
+  - **Solução Arquitetural Aplicada**:
+    - **Mapeamento de Dispositivos no WebSocket (`backend/app/api/ws.py`)**: `WebSocketManager` atualizado para manter `device_connections: dict[str, WebSocket]` e `socket_to_device: dict[WebSocket, str]`. Dispositivos registram seu `device_identifier` no handshake de autenticação.
+    - **Roteamento Inteligente em `pip_gateway.py`**: O gateway agora valida se o dispositivo alvo está de fato conectado (`ws_manager.get_device_connection(target_ident)`). Se for celular/tablet e não estiver ativo no WebSocket, cancela imediatamente o falso despacho, evitando timeouts de 5s.
+    - **Mensagens Contextualizadas**: Mensagens de feedback e logs de auditoria agora utilizam o tipo e nome do aparelho (`Dispositivo móvel '{dev_name}'`, `Tablet '{dev_name}'` ou `Smart TV '{dev_name}'`).
+    - **Suporte a PiP em Mobile (`MainActivity.kt`)**: Permitido iniciar `OverlayService` em smartphones e tablets se o usuário ativar a preferência de PiP e conceder `Settings.canDrawOverlays(this)`.
+    - **Handshake Real nos Apps**: `SentinelaWebSocket.kt` atualizado para enviar `device_identifier` e `client_type` reais (`OverlayService.kt` envia `android_tv`, `SmartphoneYouTubeScreen.kt` envia `smartphone`).
+    - **Compilação e Artefatos**: Targets Kotlin TV e Smartphone compilados com sucesso. APKs gerados: `app-tv-debug.apk` e `app-smartphone-debug.apk` (62 MB cada, Build 112). 31/31 testes de unidade passaram.
+
 - **Fluidez Absoluta (30 FPS) e Suporte a Segundo Plano no PiP Preview (Build 111)**:
   - **Diagnóstico das Causas-Raízes Críticas**:
     - **1. Duplicação de Vídeos no go2rtc (`mode=mse&mode=webrtc`)**:

@@ -246,10 +246,10 @@
     "semantic_hash": "a24cdd43dad90a961fcd4c4b87fab6a3"
   },
   "android/app/src/main/java/com/sentinela/pro/MainActivity.kt": {
-    "mtime": 1788469019.2216601,
-    "seen": 1788641395.5382621,
-    "ast_hash": "0e734954ef1adbdb8096e48800b1dc13",
-    "semantic_hash": "0e734954ef1adbdb8096e48800b1dc13"
+    "mtime": 1789310749.2598054,
+    "seen": 1789310820.0604842,
+    "ast_hash": "47a6a5cc1d664eacc66634f2a182b87c",
+    "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt": {
     "mtime": 1788446213.8134742,
@@ -282,10 +282,10 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt": {
-    "mtime": 1788433361.7142217,
-    "seen": 1788641395.538265,
-    "ast_hash": "09d95606e588b6a3d9800c8637d2e289",
-    "semantic_hash": "09d95606e588b6a3d9800c8637d2e289"
+    "mtime": 1789310713.3600311,
+    "seen": 1789310820.0604868,
+    "ast_hash": "0122bc4a32e323683f32c59a57593b1a",
+    "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/network/WebRtcManager.kt": {
     "mtime": 1788296280.5123827,
@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1789301290.0529704,
-    "seen": 1789301393.4205692,
-    "ast_hash": "d11e265518a2a02e87d6c042eec8dfe4",
+    "mtime": 1789310721.66627,
+    "seen": 1789310820.060488,
+    "ast_hash": "3084940f783154d920a383874fe4bad0",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -324,9 +324,9 @@
     "semantic_hash": "4efbfcb2d589df5b9cb8873332c9c210"
   },
   "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt": {
-    "mtime": 1789247032.482484,
-    "seen": 1789247070.569431,
-    "ast_hash": "aaeb4b146951d16d02030cad4d73813a",
+    "mtime": 1789310738.645136,
+    "seen": 1789310820.06049,
+    "ast_hash": "90627bc9db8a5938b2b3031f371c5a9b",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt": {
@@ -402,10 +402,10 @@
     "semantic_hash": "8cff05b69254c79134f6f89c3089632b"
   },
   "backend/app/api/ws.py": {
-    "mtime": 1788521933.3000975,
-    "seen": 1788641395.538272,
-    "ast_hash": "833d59bd6a7d6463fa7b736a15681e84",
-    "semantic_hash": "833d59bd6a7d6463fa7b736a15681e84"
+    "mtime": 1789310685.0318735,
+    "seen": 1789310820.0604968,
+    "ast_hash": "4f8d139bb2dd3d4eaecf75d8d4406840",
+    "semantic_hash": ""
   },
   "backend/app/core/config.py": {
     "mtime": 1788635524.5893028,
@@ -462,9 +462,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
-    "mtime": 1789301230.6092849,
-    "seen": 1789301393.420583,
-    "ast_hash": "d2eb3b54d763696a14c2c1fb648191f4",
+    "mtime": 1789310700.5484254,
+    "seen": 1789310820.060502,
+    "ast_hash": "7904ffe9d6aefbbe8e14bebdd269d9d2",
     "semantic_hash": ""
   },
   "backend/app/services/scanner_service.py": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789266494.6263654,
-    "seen": 1789301393.420618,
-    "ast_hash": "006477ecb7cb0d718392003f5229a97f",
+    "mtime": 1789301416.643247,
+    "seen": 1789310820.060537,
+    "ast_hash": "194e88e5a3cc0c1c1cedf7b43dda5b2d",
     "semantic_hash": ""
   },
   "android/gradlew": {

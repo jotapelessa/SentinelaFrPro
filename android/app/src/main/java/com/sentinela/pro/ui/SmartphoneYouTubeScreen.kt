@@ -1086,7 +1086,11 @@ fun PhoneMasterCentralTab() {
     LaunchedEffect(Unit) {
         refreshDevices()
         try {
-            val ws = com.sentinela.pro.network.SentinelaWebSocket(com.sentinela.pro.SentinelaConfig.currentHost)
+            val ws = com.sentinela.pro.network.SentinelaWebSocket(
+                serverUrl = com.sentinela.pro.SentinelaConfig.currentHost,
+                deviceIdentifier = prefs.deviceIdentifier,
+                deviceType = "smartphone"
+            )
             launch { ws.connectAndListen() }
             launch {
                 ws.events.collect { event ->

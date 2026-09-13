@@ -69,7 +69,11 @@ class OverlayService : Service() {
         val prefs = SentinelaPreferences(this)
         val host = prefs.serverHost
         SentinelaConfig.currentHost = host
-        webSocket = SentinelaWebSocket(host)
+        webSocket = SentinelaWebSocket(
+            serverUrl = host,
+            deviceIdentifier = prefs.deviceIdentifier,
+            deviceType = "android_tv"
+        )
         
         // Asynchronously load initial device policy without blocking initialization
         serviceScope.launch {

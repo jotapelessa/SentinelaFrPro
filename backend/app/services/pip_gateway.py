@@ -269,28 +269,42 @@ class PiPGatewayService:
         # 1. Native Sentinela WebSocket Broadcast (for Sentinela Android/Tablet/Smart TV app)
         try:
             from app.api.ws import ws_manager
-            if ws_manager.active_connections:
-                await ws_manager.broadcast_json({
-                    "type": "pip_alert",
-                    "test_id": test_id,
-                    "camera": camera_name,
-                    "label": "TESTE DE PiP",
-                    "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
-                    "message": "Teste de Notificação Picture-in-Picture",
-                    "duration": dev.pip_duration_seconds or 10,
-                    "pip_position": dev.pip_position or "BOTTOM_RIGHT",
-                    "pip_size": dev.pip_default_size or "medium_small",
-                    "device_id": device_id,
-                    "target_device_id": device_id,
-                    "target_identifier": dev.device_identifier
-                })
+            target_ident = dev.device_identifier
+            target_ws = ws_manager.get_device_connection(target_ident) if target_ident else None
+            is_mobile_device = dev.device_type in ["smartphone", "mobile", "tablet"]
+
+            pip_payload = {
+                "type": "pip_alert",
+                "test_id": test_id,
+                "camera": camera_name,
+                "label": "TESTE DE PiP",
+                "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
+                "message": "Teste de Notificação Picture-in-Picture",
+                "duration": dev.pip_duration_seconds or 10,
+                "pip_position": dev.pip_position or "BOTTOM_RIGHT",
+                "pip_size": dev.pip_default_size or "medium_small",
+                "device_id": device_id,
+                "target_device_id": device_id,
+                "target_identifier": dev.device_identifier
+            }
+
+            if target_ws is not None:
+                # Dispositivo alvo específico está ativamente conectado ao WebSocket
+                await target_ws.send_text(json.dumps(pip_payload))
                 dispatched = True
                 protocol_used = "sentinela_app_ws"
+            elif not is_mobile_device and ws_manager.active_connections:
+                # Para TVs na rede, broadcast geral (caso o handshake de device_identifier ainda esteja inicializando)
+                await ws_manager.broadcast_json(pip_payload)
+                dispatched = True
+                protocol_used = "sentinela_app_ws"
+            elif is_mobile_device:
+                logger.info(f"Dispositivo móvel '{dev_name}' ({target_ip}) não possui conexão ativa no WebSocket para PiP.")
         except Exception as e:
             logger.debug(f"WS PiP broadcast error: {e}")
 
         async with httpx.AsyncClient(timeout=4.0) as client:
-            # 2. Native Cast
+            # 2. Native Cast (somente para TVs compatíveis)
             if not dispatched and dev.device_type in ["android_tv", "chromecast", "google_tv", "tcl"]:
                 try:
                     cast_ok = await asyncio.to_thread(_cast_sync, target_ip, snapshot_url, "image/jpeg")
@@ -300,8 +314,8 @@ class PiPGatewayService:
                 except Exception as e:
                     logger.debug(f"Cast fail on {target_ip}: {e}")
 
-            # 3. PiP-Up / Notifications for Android TV REST HTTP
-            if not dispatched:
+            # 3. PiP-Up / Notifications for Android TV REST HTTP (somente se não for dispositivo móvel)
+            if not dispatched and not (dev.device_type in ["smartphone", "mobile"]):
                 payload = {
                     "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
                     "message": "Teste de Notificação Picture-in-Picture",
@@ -328,13 +342,20 @@ class PiPGatewayService:
                 await asyncio.wait_for(ack_event.wait(), timeout=5.0)
                 ack_res = self._ack_results.get(test_id, {})
                 confirmed = ack_res.get("success", False)
-                ack_message = ack_res.get("message", "Renderização confirmada no display da TV")
+                ack_message = ack_res.get("message", "Renderização confirmada no display da tela")
             except asyncio.TimeoutError:
                 confirmed = False
-                ack_message = "TV não confirmou a exibição do PiP (tempo limite esgotado)"
+                if dev.device_type in ["smartphone", "mobile"]:
+                    ack_message = f"Dispositivo móvel '{dev_name}' não confirmou a exibição do PiP (verifique se a permissão de sobreposição de tela está concedida)"
+                elif dev.device_type == "tablet":
+                    ack_message = f"Tablet '{dev_name}' não confirmou a exibição do PiP (tempo limite esgotado)"
+                else:
+                    ack_message = f"Smart TV '{dev_name}' não confirmou a exibição do PiP (tempo limite esgotado)"
             finally:
                 self._ack_events.pop(test_id, None)
                 self._ack_results.pop(test_id, None)
+        elif not dispatched and dev.device_type in ["smartphone", "mobile"]:
+            ack_message = f"Dispositivo móvel '{dev_name}' não possui serviço de sobreposição PiP ativo no momento (verifique permissões de sobreposição)"
         else:
             self._ack_events.pop(test_id, None)
             self._ack_results.pop(test_id, None)

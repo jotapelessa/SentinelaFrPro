@@ -19,7 +19,11 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-class SentinelaWebSocket(private val serverUrl: String = "") {
+class SentinelaWebSocket(
+    private val serverUrl: String = "",
+    private val deviceIdentifier: String = "",
+    private val deviceType: String = ""
+) {
     private val client: HttpClient by lazy {
         val trustAll = arrayOf<TrustManager>(object : X509TrustManager {
             override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}
@@ -59,7 +63,10 @@ class SentinelaWebSocket(private val serverUrl: String = "") {
                         // Send identification
                         send(Frame.Text(JSONObject().apply {
                             put("type", "auth")
-                            put("client_type", "android_tv")
+                            put("client_type", deviceType.ifBlank { "android" })
+                            if (deviceIdentifier.isNotBlank()) {
+                                put("device_identifier", deviceIdentifier)
+                            }
                         }.toString()))
 
                         for (message in incoming) {

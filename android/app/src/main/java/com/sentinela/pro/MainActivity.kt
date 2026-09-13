@@ -27,8 +27,13 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
-        // Start background service for PiP & WebSocket listener if on Android TV
-        if (isTv()) {
+        val prefs = com.sentinela.pro.data.SentinelaPreferences(this)
+        SentinelaConfig.currentHost = prefs.serverHost
+        val deviceType = if (isTv()) "android_tv" else "smartphone"
+
+        // Start background service for PiP & WebSocket listener if on Android TV OR if overlay permission granted on mobile/tablet
+        val shouldStartOverlay = isTv() || (prefs.allowPipAlerts && hasOverlayPermission())
+        if (shouldStartOverlay) {
             try {
                 val intent = Intent(this, OverlayService::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -40,10 +45,6 @@ class MainActivity : ComponentActivity() {
                 Log.e("MainActivity", "Failed to start OverlayService: ${e.message}")
             }
         }
-
-        val prefs = com.sentinela.pro.data.SentinelaPreferences(this)
-        SentinelaConfig.currentHost = prefs.serverHost
-        val deviceType = if (isTv()) "android_tv" else "smartphone"
 
         // Setup SSL bypass for Tailscale / LAN certificates & Global Coil ImageLoader
         val globalImageLoader = try {

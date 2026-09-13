@@ -13,13 +13,35 @@ router = APIRouter(tags=["WebSocket"])
 class WebSocketManager:
     def __init__(self):
         self.active_connections: Set[WebSocket] = set()
+        self.device_connections: dict[str, WebSocket] = {}
+        self.socket_to_device: dict[WebSocket, str] = {}
 
     async def connect(self, websocket: WebSocket):
         await websocket.accept()
         self.active_connections.add(websocket)
         logger.info(f"WebSocket client connected. Active: {len(self.active_connections)}")
 
+    def register_device(self, device_identifier: str, websocket: WebSocket):
+        if not device_identifier:
+            return
+        self.device_connections[device_identifier] = websocket
+        self.socket_to_device[websocket] = device_identifier
+        logger.info(f"Dispositivo mapeado no WebSocket: '{device_identifier}' (Total dispositivos ativos: {len(self.device_connections)})")
+
+    def unregister_device(self, websocket: WebSocket):
+        dev_id = self.socket_to_device.pop(websocket, None)
+        if dev_id and dev_id in self.device_connections and self.device_connections[dev_id] == websocket:
+            self.device_connections.pop(dev_id, None)
+            logger.info(f"Dispositivo desmapeado do WebSocket: '{dev_id}'")
+
+    def get_device_connection(self, device_identifier: str):
+        return self.device_connections.get(device_identifier)
+
+    def is_device_connected(self, device_identifier: str) -> bool:
+        return device_identifier in self.device_connections
+
     def disconnect(self, websocket: WebSocket):
+        self.unregister_device(websocket)
         self.active_connections.discard(websocket)
         logger.info(f"WebSocket client disconnected. Active: {len(self.active_connections)}")
 
@@ -35,7 +57,7 @@ class WebSocketManager:
                 disconnected.add(connection)
         
         for conn in disconnected:
-            self.active_connections.discard(conn)
+            self.disconnect(conn)
 
 ws_manager = WebSocketManager()
 
@@ -62,6 +84,10 @@ async def websocket_endpoint(websocket: WebSocket):
                 msg = json.loads(data)
                 if msg.get("action") == "PING":
                     await websocket.send_text(json.dumps({"type": "PONG"}))
+                elif msg.get("type") == "auth" or msg.get("device_identifier"):
+                    ident = msg.get("device_identifier")
+                    if ident:
+                        ws_manager.register_device(ident, websocket)
             except Exception:
                 pass
     except WebSocketDisconnect:
