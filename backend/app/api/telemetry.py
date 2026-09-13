@@ -406,7 +406,7 @@ async def ingest_client_logs(
 ):
     """Receives a batch of asynchronous operational telemetry logs from client devices."""
     from app.api.ws import ws_manager
-    from app.services.audit import audit_service
+    from app.services.audit_service import audit_service
 
     if not payload.events:
         return {"status": "ok", "ingested": 0}
