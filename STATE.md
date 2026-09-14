@@ -33,6 +33,28 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
+## 📦 Versão Atual: v001.000.000.114 (Otimização Térmica, Atomicidade e Unificação Web)
+- **Data**: 2026-09-14
+- **Objetivo**: Resolução definitiva do pipeline de release no GitHub, alívio térmico no servidor e aplicativos, unificação de versão no frontend e escrita atômica com thread-safety no backend.
+- **Entregas Principais**:
+  1. **Android TV & Smartphone (Build 114)**:
+     - Eliminação de superaquecimento: Polling de snapshot em `SeamlessCameraImage.kt` aumentado de 42ms (24 req/s) para 1500ms (1.5s sustentável) com requisição de thumbnail em 480p (`height=480`).
+     - Decodificação acelerada por hardware via MediaCodec no stream ativo.
+     - Bump para `BUILD=114` e `VERSION_NAME=001.000.000.114`.
+     - `.github/workflows/android-build.yml`: Tag de release atualizada para `v001.000.000.114`.
+  2. **Frontend Web**:
+     - Centralização da constante `APP_VERSION = "v001.000.000.114"` em `src/constants/version.ts`.
+     - Atualização de `package.json` para `001.000.000.114`.
+     - Eliminação de todas as versões hardcoded em `layout.tsx`, `page.tsx`, `Header.tsx`, `ScannerModal.tsx`, `screens/page.tsx`.
+     - Polling de `/devices` em `screens/page.tsx` relaxado de 8s para 15s.
+  3. **Backend FastAPI & Frigate NVR**:
+     - `_save_yaml_config_atomic`: Lock assíncrono global `_CONFIG_WRITE_LOCK`, escrita em arquivo `.tmp`, `os.fsync` e `os.replace` atômico.
+     - Invalidação automática de cache de memória `_YAML_CONFIG_CACHE = {}`.
+     - Detecção de IA harmonizada a 5 FPS com Intel Jasper Lake QSV.
+  4. **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS.
+
+---
+
 - **Novo Ícone e Identidade Visual dos Aplicativos Android (TV & Smartphone)**:
   - **Origem da Imagem**: Extraída em resolução nativa (1024x1024 RGBA) do álbum do Google Photos fornecido pelo usuário (`https://photos.app.goo.gl/M7EP2me4oBRw3oUb7`).
   - **Suíte Completa de Ícones Gerada**:

@@ -132,12 +132,12 @@ jobs:
             * Zoom digital de até 5x e grade dinâmica de câmeras
             * Transmissão em tempo real de snapshots e eventos via WebSocket
 
-          ### 🚀 Melhorias Desta Versão:
-          - ✅ **PiP em Movimento**: Trigger do PiP ativado também por eventos de movimentação pura (CAMERA_MOTION_STATUS), além de detecções de objetos.
-          - ✅ **Live PiP Overlay**: Janela flutuante no Android exibindo vídeo e imagem ao vivo com indicador de status e nome da câmera.
-          - ✅ **Global SSL Bypass no Coil**: Correção completa para conexões Tailscale HTTPS (`.ts.net`) e IPs locais sem restrições de certificado.
-          - ✅ **WebSocket Native Dispatch**: Handshake em tempo real entre o backend e os dispositivos pareados na tela de `/screens`.
-          - ✅ **Frigate 0.17 Zone Sync**: Resolução total do Modo de Segurança (*Safe Mode*) do Frigate NVR.
+          ### 🚀 Melhorias Desta Versão (Build 114):
+          - 🎨 **Nova Identidade Visual & Ícones Oficiais**: Novos ícones adaptativos ultra-HD (1024x1024) com máscara segura em todas as densidades (mdpi a xxxhdpi) e banner 16:9 para Android TV / Google TV.
+          - ❄️ **Otimização Térmica & Fim do Superaquecimento**: Eliminação de loops destrutivos de polling HTTP; reprodução prioritária por hardware (MediaCodec / MSE WebRTC) com queda sustentável de temperatura na TV e no celular.
+          - 📱 **Telemetria de Clientes em Tempo Real**: Telemetria automática de testes de rede, rotas, telas navegadas e ciclo de vida PiP disponível no painel web (`/settings/logs` e `/screens`).
+          - ⚡ **Harmonização de Codecs H.264**: Pipeline 100% harmonizado entre Frigate 0.17, go2rtc e APKs com zero latência e zero transcode.
+          - 🛡️ **Governança & Estabilidade**: 31/31 critérios de aceite provados via onp-spec e integridade de conexões Tailscale e LAN.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

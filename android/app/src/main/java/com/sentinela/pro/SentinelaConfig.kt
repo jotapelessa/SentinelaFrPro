@@ -30,8 +30,8 @@ object SentinelaConfig {
             }
         }
 
-    fun getSnapshotUrl(cameraName: String, timestamp: Long): String {
-        return "$BASE_URL/frigate/api/$cameraName/latest.jpg?h=720&t=$timestamp"
+    fun getSnapshotUrl(cameraName: String, timestamp: Long, height: Int = 480): String {
+        return "$BASE_URL/frigate/api/$cameraName/latest.jpg?h=$height&t=$timestamp"
     }
 
     fun getGo2rtcFrameUrl(cameraName: String, timestamp: Long): String {

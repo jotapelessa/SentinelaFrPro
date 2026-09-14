@@ -5,6 +5,7 @@ import { CameraMosaic } from "@/components/CameraMosaic";
 import { useSentinelaStore, SecurityEvent } from "@/store/useSentinelaStore";
 import { ShieldCheck, Bell, Clock, ArrowRight, ShieldAlert, Film, X, Play, Eye } from "lucide-react";
 import Link from "next/link";
+import { APP_VERSION } from "@/constants/version";
 
 export default function DashboardPage() {
   const { events, setEvents } = useSentinelaStore();
@@ -53,14 +54,14 @@ export default function DashboardPage() {
               Central de Vigilância Sentinela
             </h1>
             <p className="text-xs text-slate-500 font-mono">
-              SentinelaPro.v001.000.000.099 • Protegido por IA OpenVINO & Tailscale Encrypted
+              SentinelaPro.{APP_VERSION} • Protegido por IA OpenVINO & Tailscale Encrypted
             </p>
           </div>
         </div>
 
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900 border border-slate-800 text-xs font-mono text-cyan-400">
-            🛡️ v001.000.000.099
+            🛡️ {APP_VERSION}
           </div>
           <span className="px-3 py-1.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 font-bold flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />

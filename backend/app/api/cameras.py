@@ -5,6 +5,11 @@ from pydantic import BaseModel
 from typing import List, Optional, Dict, Any
 import logging
 import datetime
+import os
+import asyncio
+import yaml
+import httpx
+from app.core.config import settings
 from app.db.session import get_db
 from app.db.models import Camera
 from app.services.audit_service import audit_service
@@ -865,15 +870,7 @@ async def toggle_camera_fallback(camera_id: str, request: Request, db: AsyncSess
         real_url = cam.rtsp_main if (cam and cam.rtsp_main) else "rtsp://192.168.1.6:8554/stream"
         cfg["go2rtc"]["streams"][cam_name] = [real_url.strip()]
 
-    cfg = sanitize_frigate_config(cfg)
-    updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
-
-    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
-        try:
-            with open(config_path, "w", encoding="utf-8") as f:
-                f.write(updated_yaml)
-        except Exception as e:
-            pass
+    await _save_yaml_config_atomic(cfg, config_path)
 
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
@@ -1301,6 +1298,46 @@ def sanitize_frigate_config(cfg: dict) -> dict:
 
     return cfg
 
+_CONFIG_WRITE_LOCK = asyncio.Lock()
+
+async def _save_yaml_config_atomic(cfg: dict, config_path: Optional[str] = None) -> bool:
+    """Safely writes YAML configuration to disk atomically across host and container paths with fsync and invalidates cache."""
+    global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
+    async with _CONFIG_WRITE_LOCK:
+        cfg_sanitized = sanitize_frigate_config(cfg)
+        updated_yaml = yaml.dump(cfg_sanitized, default_flow_style=False, allow_unicode=True, sort_keys=False)
+        
+        all_possible_paths = [
+            config_path,
+            "/config/config.yml",
+            "./frigate/config/config.yml",
+            os.path.join(os.getcwd(), "frigate/config/config.yml"),
+            os.path.expanduser("~/Documents/DEV45/SentinelaFrigate/frigate/config/config.yml"),
+            "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/config.yml"
+        ]
+        written_any = False
+        seen_paths = set()
+        for cp in all_possible_paths:
+            if not cp or cp in seen_paths:
+                continue
+            seen_paths.add(cp)
+            dir_name = os.path.dirname(cp)
+            if os.path.exists(dir_name) or os.path.exists(cp):
+                try:
+                    tmp_path = f"{cp}.tmp"
+                    with open(tmp_path, "w", encoding="utf-8") as f:
+                        f.write(updated_yaml)
+                        f.flush()
+                        os.fsync(f.fileno())
+                    os.replace(tmp_path, cp)
+                    written_any = True
+                except Exception as e:
+                    logger.warning(f"Could not write config to {cp}: {e}")
+        
+        _YAML_CONFIG_CACHE = {}
+        _YAML_CONFIG_TIME = 0.0
+        return written_any
+
 async def sync_camera_to_frigate(cam: Camera):
     import os
     import yaml
@@ -1463,41 +1500,7 @@ async def sync_camera_to_frigate(cam: Camera):
     if "live" in cam_block:
         del cam_block["live"]
 
-    cfg = sanitize_frigate_config(cfg)
-    updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
-
-    # Gravar em todos os caminhos válidos existentes para consistência completa (Docker e Host)
-    written_any = False
-    all_possible_paths = [
-        config_path,
-        "/config/config.yml",
-        "./frigate/config/config.yml",
-        os.path.join(os.getcwd(), "frigate/config/config.yml"),
-        os.path.expanduser("~/Documents/DEV45/SentinelaFrigate/frigate/config/config.yml"),
-        "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/config.yml"
-    ]
-    seen_paths = set()
-    for cp in all_possible_paths:
-        if not cp or cp in seen_paths:
-            continue
-        seen_paths.add(cp)
-        dir_name = os.path.dirname(cp)
-        if os.path.exists(dir_name) or os.path.exists(cp):
-            try:
-                tmp_path = f"{cp}.tmp"
-                with open(tmp_path, "w", encoding="utf-8") as f:
-                    f.write(updated_yaml)
-                    f.flush()
-                    os.fsync(f.fileno())
-                os.replace(tmp_path, cp)
-                written_any = True
-            except Exception as e:
-                logger.warning(f"Could not write config to {cp}: {e}")
-
-    # Invalidação imediata do cache de configuração em memória para o frontend refletir a nova câmera instantaneamente
-    global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
-    _YAML_CONFIG_CACHE = {}
-    _YAML_CONFIG_TIME = 0.0
+    await _save_yaml_config_atomic(cfg, config_path)
 
     # Registrar dinamicamente o stream no go2rtc via API PUT com parâmetros name e src para streaming imediato sem esperar restart
     if rtsp_url:
@@ -1584,22 +1587,7 @@ async def remove_camera_from_frigate(cam_name: str):
                 del cfg["cameras"][k]
                 changed = True
 
-    cfg = sanitize_frigate_config(cfg)
-    updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
-
-    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
-        try:
-            tmp_path = f"{config_path}.tmp"
-            with open(tmp_path, "w", encoding="utf-8") as f:
-                f.write(updated_yaml)
-                f.flush()
-                os.fsync(f.fileno())
-            os.replace(tmp_path, config_path)
-            global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
-            _YAML_CONFIG_CACHE = {}
-            _YAML_CONFIG_TIME = 0.0
-        except Exception as e:
-            logger.warning(f"Failed to write config file: {e}")
+    await _save_yaml_config_atomic(cfg, config_path)
 
 
     try:
@@ -1976,16 +1964,7 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
                     cam_data["objects"]["filters"][label] = {}
                 cam_data["objects"]["filters"][label]["mask"] = mask_val.strip()
 
-    cfg = sanitize_frigate_config(cfg)
-    updated_yaml = yaml.dump(cfg, default_flow_style=False, allow_unicode=True, sort_keys=False)
-
-    # 1. Direct file save on disk
-    if os.path.exists(os.path.dirname(config_path)) or os.path.exists(config_path):
-        try:
-            with open(config_path, "w", encoding="utf-8") as f:
-                f.write(updated_yaml)
-        except Exception as e:
-            logger.warning(f"File save failed in save_zones: {e}")
+    await _save_yaml_config_atomic(cfg, config_path)
 
     # 2. Trigger Frigate hot-reload
     try:

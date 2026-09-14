@@ -4,6 +4,7 @@ import { Header } from "@/components/Header";
 import { ScannerModal } from "@/components/ScannerModal";
 import { AlertToast } from "@/components/AlertToast";
 import { WebSocketProvider } from "@/components/WebSocketProvider";
+import { APP_VERSION } from "@/constants/version";
 
 export const viewport: Viewport = {
   themeColor: "#020617",
@@ -51,7 +52,7 @@ export default function RootLayout({
               </div>
               <div className="flex items-center gap-2">
                 <span className="px-2 py-0.5 rounded bg-cyan-950/80 border border-cyan-500/30 text-cyan-300 font-bold text-[11px]">
-                  v001.000.000.078
+                  {APP_VERSION}
                 </span>
                 <span className="text-slate-600">|</span>
                 <span>Intel Jasper Lake N5105 QSV</span>

@@ -42,7 +42,7 @@ fun SeamlessCameraImage(
     contentDescription: String?,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
-    refreshIntervalMs: Long = 42L, // MSE 24 FPS Standard
+    refreshIntervalMs: Long = 1500L, // Otimizado: 1.5s em modo Eco/Fallback para zero aquecimento de CPU/VPU
     isStreaming: Boolean = true,
     forceSnapshotMode: Boolean = false,
     streamMode: String = "webrtc,mse"
@@ -108,7 +108,7 @@ fun SeamlessCameraImage(
         while (isActive) {
             val loopStart = System.currentTimeMillis()
             val now = loopStart
-            val primaryUrl = SentinelaConfig.getSnapshotUrl(cameraName, now)
+            val primaryUrl = SentinelaConfig.getSnapshotUrl(cameraName, now, height = 480)
 
             val request = ImageRequest.Builder(context)
                 .data(primaryUrl)

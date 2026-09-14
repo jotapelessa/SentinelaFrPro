@@ -9,6 +9,7 @@ import {
   Sparkles, Monitor, CheckCircle2, Clock
 } from "lucide-react";
 import { ClientDeviceLogsTerminal } from "@/components/ClientDeviceLogsTerminal";
+import { APP_VERSION } from "@/constants/version";
 
 interface PairedDevice {
   id: number;
@@ -149,7 +150,7 @@ export default function ScreensPage() {
     const interval = setInterval(() => {
       fetchHealth();
       fetchDevices(true);
-    }, 8000);
+    }, 15000);
 
     return () => clearInterval(interval);
   }, [fetchDevices, fetchHealth, fetchCameras]);
@@ -576,7 +577,7 @@ export default function ScreensPage() {
                 PiP Ultra Gateway
               </span>
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20">
-                v001.000.000.078
+                {APP_VERSION}
               </span>
             </div>
             <p className="text-xs text-slate-400 mt-1">

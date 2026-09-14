@@ -396,9 +396,9 @@
     "semantic_hash": ""
   },
   "backend/app/api/telemetry.py": {
-    "mtime": 1789314304.9651084,
-    "seen": 1789314665.4689221,
-    "ast_hash": "661bb741cfe7467a64f9ed4e0f89201a",
+    "mtime": 1789318904.4288828,
+    "seen": 1789377394.514726,
+    "ast_hash": "10860653d00fb7970db116a6367de401",
     "semantic_hash": ""
   },
   "backend/app/api/ws.py": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789318597.095519,
-    "seen": 1789318602.00259,
-    "ast_hash": "f237d129e20d5d6e4373cccad9ab0dfd",
+    "mtime": 1789318951.6208994,
+    "seen": 1789377394.514768,
+    "ast_hash": "5971401cdb47a851df05a397bdddc1b9",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1011,6 +1011,96 @@
     "mtime": 1789318342.0625544,
     "seen": 1789318579.722259,
     "ast_hash": "2557c1d01e42b68d682b8be5564db4f2",
+    "semantic_hash": ""
+  },
+  "scripts/generate_android_icons.py": {
+    "mtime": 1789377333.1058114,
+    "seen": 1789377394.514751,
+    "ast_hash": "db5aae4799637aebf355737001a3415d",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/drawable-xhdpi/ic_banner.png": {
+    "mtime": 1789377337.7999027,
+    "seen": 1789377394.514773,
+    "ast_hash": "d4b5741690d75893c6fc8ff054a0958e",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/drawable-xxxhdpi/ic_launcher_foreground.png": {
+    "mtime": 1789377337.7524552,
+    "seen": 1789377394.514774,
+    "ast_hash": "8ec65a4b4293071ced0ee01bf3249d42",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/drawable/ic_banner.png": {
+    "mtime": 1789377337.7974193,
+    "seen": 1789377394.514775,
+    "ast_hash": "d4b5741690d75893c6fc8ff054a0958e",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/drawable/ic_launcher_foreground.png": {
+    "mtime": 1789377337.7463706,
+    "seen": 1789377394.514775,
+    "ast_hash": "8ec65a4b4293071ced0ee01bf3249d42",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-hdpi/ic_launcher.png": {
+    "mtime": 1789377337.717165,
+    "seen": 1789377394.514775,
+    "ast_hash": "0855e15c3adec7a44fa43821e9e8e53c",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png": {
+    "mtime": 1789377337.7180681,
+    "seen": 1789377394.514776,
+    "ast_hash": "1d52ba9b6eddd01ef8c6df968151ea52",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-mdpi/ic_launcher.png": {
+    "mtime": 1789377337.713365,
+    "seen": 1789377394.514776,
+    "ast_hash": "02359c5efbe6872def092bf2df40b018",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png": {
+    "mtime": 1789377337.7140992,
+    "seen": 1789377394.5147772,
+    "ast_hash": "3b2c6da87aee137770097cd120aa68b5",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-xhdpi/ic_launcher.png": {
+    "mtime": 1789377337.7213159,
+    "seen": 1789377394.5147772,
+    "ast_hash": "8fa2da58c2cbe02968dfed030e75dfb9",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png": {
+    "mtime": 1789377337.7222688,
+    "seen": 1789377394.5147781,
+    "ast_hash": "42ce0a51136db1d47478a6bc5c87181b",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png": {
+    "mtime": 1789377337.7262182,
+    "seen": 1789377394.5147781,
+    "ast_hash": "50c35047446558a49f2fc2edd4505a05",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png": {
+    "mtime": 1789377337.7280343,
+    "seen": 1789377394.5147781,
+    "ast_hash": "4de85785307c5331ea4d3a441f175a63",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png": {
+    "mtime": 1789377337.7332766,
+    "seen": 1789377394.5147789,
+    "ast_hash": "45f3e96c2a3ed592f51875bd241a5e96",
+    "semantic_hash": ""
+  },
+  "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png": {
+    "mtime": 1789377337.7364433,
+    "seen": 1789377394.5147789,
+    "ast_hash": "36094edaba86462bccdf52ff9f91ec28",
     "semantic_hash": ""
   }
 }

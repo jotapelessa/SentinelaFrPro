@@ -1,16 +1,16 @@
-# Graph Report - SentinelaFrigate  (2026-09-13)
+# Graph Report - SentinelaFrigate  (2026-09-14)
 
 ## Corpus Check
-- 160 files · ~165,013 words
+- 161 files · ~179,568 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1414 nodes · 2251 edges · 101 communities (65 shown, 20 thin omitted)
+- 1415 nodes · 2251 edges · 102 communities (65 shown, 20 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 91 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `0f7b4e66`
+- Built from commit: `a74b1ec7`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
@@ -128,7 +128,7 @@
 ## Import Cycles
 - None detected.
 
-## Communities (101 total, 20 thin omitted)
+## Communities (102 total, 20 thin omitted)
 
 ### Community 0 - "asyncio"
 Cohesion: 0.07
@@ -392,7 +392,7 @@ Nodes (5): Constituição — princípios que a máquina verifica, Níveis de ob
 
 ## Knowledge Gaps
 - **385 isolated node(s):** `$schema`, `.opencode/plugins/graphify.js`, `name`, `private`, `version` (+380 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 612 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 613 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
 - **20 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions

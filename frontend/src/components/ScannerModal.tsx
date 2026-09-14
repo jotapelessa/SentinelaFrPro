@@ -7,6 +7,7 @@ import {
   Camera as CameraIcon, Plus, CheckCircle2, Play, AlertCircle,
   Settings2, ChevronDown, ChevronUp, Radio
 } from "lucide-react";
+import { APP_VERSION } from "@/constants/version";
 
 export const ScannerModal: React.FC = () => {
   const { 
@@ -329,7 +330,7 @@ export const ScannerModal: React.FC = () => {
               <h3 className="font-bold text-base sm:text-lg text-white tracking-wide flex items-center gap-2">
                 Scanner Autêntico de Câmeras & ONVIF
                 <span className="text-[10px] px-2 py-0.5 rounded-full bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 font-mono font-medium">
-                  v001.000.000.087
+                  {APP_VERSION}
                 </span>
               </h3>
               <p className="text-xs text-slate-400">
