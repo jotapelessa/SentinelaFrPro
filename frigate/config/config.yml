@@ -14,7 +14,8 @@ logger:
 ffmpeg:
   hwaccel_args: preset-intel-qsv-h264
   output_args:
-    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a copy
+    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime
+      1 -c:v copy -bsf:v h264_redundant_pps -c:a copy
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
   width: 300
@@ -95,15 +96,15 @@ go2rtc:
     - stun:8555
     - stun:stun.l.google.com:19302
 cameras:
-  camera_principal:
+  camera_secundaria:
     enabled: true
     ffmpeg:
       inputs:
-      - path: rtsp://127.0.0.1:8554/camera_principal
+      - path: rtsp://127.0.0.1:8554/camera_secundaria
         input_args: preset-rtsp-restream
         roles:
         - record
-      - path: rtsp://127.0.0.1:8554/camera_principal
+      - path: rtsp://127.0.0.1:8554/camera_secundaria
         input_args: preset-rtsp-restream
         roles:
         - detect
@@ -111,13 +112,13 @@ cameras:
       enabled: true
       width: 640
       height: 360
-      fps: 5
+      fps: 10
     record:
       enabled: true
       continuous:
         days: 0
       motion:
-        days: 3
+        days: 9
       alerts:
         pre_capture: 10
         post_capture: 10
@@ -133,27 +134,6 @@ cameras:
     snapshots:
       enabled: true
       bounding_box: true
-    zones:
-      zona_monitoramento:
-        coordinates: 5,360,635,360,635,5,5,5
-        objects:
-        - person
-        - car
-        - motorcycle
-        - bus
-        - dog
-        - cat
-        - bicycle
-      zona_entrada:
-        coordinates: 100,360,540,360,540,125,100,125
-        objects:
-        - person
-        - car
-        - motorcycle
-        - bus
-        - dog
-        - cat
-        - bicycle
     review:
       alerts:
         labels:
@@ -178,18 +158,24 @@ cameras:
     objects:
       track:
       - motorcycle
-      - cat
-      - car
-      - bus
       - person
-      - bicycle
       - dog
+      - car
       filters:
         person:
-          threshold: 0.8
+          threshold: 0.7
+      mask: 0.009,0.342,0.198,0.36,0.195,0.561,0.523,0.6,0.509,0.795,0.675,0.989,0.008,0.986
     motion:
       threshold: 30
-  camera_secundaria:
+      mask: 0.539,0.335,0.523,0.792,0.694,0.997,0.98,0.988,0.991,0.023,0.009,0.006,0.004,0.323,0.204,0.344
+    zones:
+      detecgggg:
+        coordinates: 0.206,0.357,0.201,0.544,0.528,0.588,0.535,0.351
+        loitering_time: 0
+        objects:
+        - car
+        - person
+  camera_principal:
     enabled: true
     ffmpeg:
       inputs:
@@ -197,21 +183,55 @@ cameras:
         input_args: preset-rtsp-restream
         roles:
         - record
-      - path: rtsp://127.0.0.1:8554/camera_secundaria
-        input_args: preset-rtsp-restream
-        roles:
         - detect
     detect:
-      enabled: true
+      enabled: false
       width: 640
       height: 360
       fps: 5
     record:
+      enabled: false
+    snapshots:
       enabled: true
+      bounding_box: true
+  cam_192_168_1_136:
+    enabled: false
+    ffmpeg:
+      inputs:
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_136
+        input_args: preset-rtsp-restream
+        roles:
+        - record
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_136
+        input_args: preset-rtsp-restream
+        roles:
+        - detect
+    detect:
+      width: 640
+      height: 360
+      fps: 10
+      enabled: false
+    snapshots:
+      enabled: false
+      bounding_box: true
+    objects:
+      track:
+      - person
+      - car
+      - motorcycle
+      - dog
+      filters:
+        person:
+          threshold: 0.75
+    motion:
+      threshold: 40
+      mask: 6,229,626,125,633,6,13,26
+    record:
+      enabled: false
+      motion:
+        days: 14
       continuous:
         days: 0
-      motion:
-        days: 3
       alerts:
         pre_capture: 10
         post_capture: 10
@@ -224,9 +244,6 @@ cameras:
         retain:
           days: 14
           mode: active_objects
-    snapshots:
-      enabled: true
-      bounding_box: true
     review:
       alerts:
         labels:
@@ -248,4 +265,5 @@ cameras:
         - cat
         - bicycle
         required_zones: []
+    zones: {}
 version: 0.17-0
