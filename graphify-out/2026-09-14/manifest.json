@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1789405902.7158272,
-    "seen": 1789406061.415065,
-    "ast_hash": "592ffc35921881b3fdce3f4722dedcc2",
+    "mtime": 1789408116.1068027,
+    "seen": 1789408244.387531,
+    "ast_hash": "fd529002ed75ed6183890fd312993f2f",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt": {
-    "mtime": 1789395918.65549,
-    "seen": 1789396495.9616058,
-    "ast_hash": "7358d4239347b45efca598a845af5cc4",
+    "mtime": 1789408124.4427423,
+    "seen": 1789408244.3875341,
+    "ast_hash": "1bd28ef6192056ebe3e777e8b77db03e",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1789405615.0583775,
-    "seen": 1789406061.415075,
-    "ast_hash": "8ab2482d0fe3df9399e223322634cd0d",
+    "mtime": 1789410988.1264744,
+    "seen": 1789411005.330921,
+    "ast_hash": "8333dc45c606d2a4119a2fbe9fc19464",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -426,10 +426,10 @@
     "semantic_hash": ""
   },
   "backend/app/db/session.py": {
-    "mtime": 1788616062.0813105,
-    "seen": 1788641395.538274,
-    "ast_hash": "f09eb5f325f9a45fa8e705d58ea8cf29",
-    "semantic_hash": "f09eb5f325f9a45fa8e705d58ea8cf29"
+    "mtime": 1789410962.6894982,
+    "seen": 1789411005.330923,
+    "ast_hash": "9905da1b3da2f247c9be617625418ca5",
+    "semantic_hash": ""
   },
   "backend/app/main.py": {
     "mtime": 1789381685.434694,
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1789405731.001687,
-    "seen": 1789406061.415083,
-    "ast_hash": "1531f6207ce1983db2e9e3562c064d3a",
+    "mtime": 1789410985.0002015,
+    "seen": 1789411005.33093,
+    "ast_hash": "a04b6e67020eb91ae2a27a811a4ff8b9",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -714,9 +714,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/android-build.yml": {
-    "mtime": 1789397955.1024523,
-    "seen": 1789397971.233919,
-    "ast_hash": "3790233ca0246d708d70ce43c82e015c",
+    "mtime": 1789410991.905043,
+    "seen": 1789411005.330956,
+    "ast_hash": "955db4b14412ee1b9d34fbfb522a4d93",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1789405511.9781852,
-    "seen": 1789406061.41512,
-    "ast_hash": "121d73d519bb6d015d493f3c1cdddf1a",
+    "mtime": 1789408092.7182753,
+    "seen": 1789408244.387584,
+    "ast_hash": "30b5949ff1b7f4edbc55715a387ca88a",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789401172.2152107,
-    "seen": 1789401177.6539788,
-    "ast_hash": "d155803a2056deaa725a05ae39d60e54",
+    "mtime": 1789411001.4209793,
+    "seen": 1789411005.330963,
+    "ast_hash": "a010b7ca4a9f12901561c297547e057a",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1789405719.9412417,
-    "seen": 1789406061.415096,
-    "ast_hash": "627425fa428c080e3cb8a4bc60b888e0",
+    "mtime": 1789410982.5138113,
+    "seen": 1789411005.3309429,
+    "ast_hash": "44d3f6369aa1c3063a7cbb4e0f9e85b3",
     "semantic_hash": ""
   }
 }

@@ -5016,7 +5016,7 @@
       "file_type": "code",
       "norm_label": ".buildnotification()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L951"
+      "source_location": "L964"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_createnotificationchannel",
@@ -5028,7 +5028,7 @@
       "file_type": "code",
       "norm_label": ".createnotificationchannel()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L939"
+      "source_location": "L952"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_loadsnapshotwithfallbacks",
@@ -5064,7 +5064,7 @@
       "file_type": "code",
       "norm_label": ".onbind()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L937"
+      "source_location": "L950"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_oncreate",
@@ -5088,7 +5088,7 @@
       "file_type": "code",
       "norm_label": ".ondestroy()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L930"
+      "source_location": "L943"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_onstartcommand",
@@ -5112,7 +5112,7 @@
       "file_type": "code",
       "norm_label": ".removepip()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L886"
+      "source_location": "L899"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip",
@@ -5364,7 +5364,7 @@
       "file_type": "code",
       "norm_label": ".onreceivederror()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L231"
+      "source_location": "L244"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
@@ -17622,7 +17622,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L933",
+      "source_location": "L946",
       "weight": 1.0
     },
     {
@@ -27270,7 +27270,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L937",
+      "source_location": "L950",
       "weight": 1.0
     },
     {
@@ -27786,7 +27786,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L231",
+      "source_location": "L244",
       "weight": 1.0
     },
     {
@@ -27798,7 +27798,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L231",
+      "source_location": "L244",
       "weight": 1.0
     },
     {
@@ -27810,7 +27810,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L231",
+      "source_location": "L244",
       "weight": 1.0
     },
     {
@@ -29454,7 +29454,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L951",
+      "source_location": "L964",
       "weight": 1.0
     },
     {
@@ -29466,7 +29466,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L937",
+      "source_location": "L950",
       "weight": 1.0
     },
     {
@@ -39838,7 +39838,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L886",
+      "source_location": "L899",
       "weight": 1.0
     },
     {
@@ -39849,7 +39849,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L930",
+      "source_location": "L943",
       "weight": 1.0
     },
     {
@@ -39860,7 +39860,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L937",
+      "source_location": "L950",
       "weight": 1.0
     },
     {
@@ -39871,7 +39871,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L939",
+      "source_location": "L952",
       "weight": 1.0
     },
     {
@@ -39882,7 +39882,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L951",
+      "source_location": "L964",
       "weight": 1.0
     },
     {
@@ -39959,7 +39959,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L231",
+      "source_location": "L244",
       "weight": 1.0
     },
     {
@@ -43062,5 +43062,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d7516cf01562afc10d6177f01d2c054f81689f7d"
+  "built_at_commit": "7c21e472fb763106679c2365ac4ff46287c3bb65"
 }

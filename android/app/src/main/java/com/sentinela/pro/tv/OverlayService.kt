@@ -59,6 +59,24 @@ class OverlayService : Service() {
     private var activePipCamera: String? = null
     private var lastPipTriggerTimeMs: Long = 0L
 
+    // Advanced PiP Performance Telemetry (TTFF, FPS, Dropped Frames, Stalls)
+    private var pipSessionStartTimeMs: Long = 0L
+    private var pipTtffMs: Long = 0L
+    private var pipAvgFps: Double = 0.0
+    private var pipMinFps: Double = 0.0
+    private var pipDroppedFrames: Int = 0
+    private var pipStallCount: Int = 0
+    private var pipTotalFramesRendered: Int = 0
+
+    class PipMetricsBridge(
+        private val onMetrics: (ttffMs: Long, avgFps: Double, minFps: Double, dropped: Int, stalls: Int, totalFrames: Int) -> Unit
+    ) {
+        @android.webkit.JavascriptInterface
+        fun reportMetrics(ttffMs: Long, avgFps: Double, minFps: Double, dropped: Int, stalls: Int, totalFrames: Int) {
+            onMetrics(ttffMs, avgFps, minFps, dropped, stalls, totalFrames)
+        }
+    }
+
     override fun onCreate() {
         super.onCreate()
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
@@ -401,6 +419,13 @@ class OverlayService : Service() {
         overrideDuration: Int? = null
     ) {
         pipJob?.cancel()
+        pipSessionStartTimeMs = System.currentTimeMillis()
+        pipTtffMs = 0L
+        pipAvgFps = 0.0
+        pipMinFps = 0.0
+        pipDroppedFrames = 0
+        pipStallCount = 0
+        pipTotalFramesRendered = 0
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(this)) {
             android.util.Log.w("OverlayService", "Cannot display PiP overlay: Permission SYSTEM_ALERT_WINDOW not granted")
@@ -672,6 +697,18 @@ class OverlayService : Service() {
                             isVerticalScrollBarEnabled = false
                             isHorizontalScrollBarEnabled = false
 
+                            addJavascriptInterface(
+                                PipMetricsBridge { ttff, avgFps, minFps, dropped, stalls, totalFrames ->
+                                    pipTtffMs = ttff
+                                    pipAvgFps = avgFps
+                                    pipMinFps = minFps
+                                    pipDroppedFrames = dropped
+                                    pipStallCount = stalls
+                                    pipTotalFramesRendered = totalFrames
+                                },
+                                "PipBridge"
+                            )
+
                             webChromeClient = object : WebChromeClient() {
                                 override fun onPermissionRequest(request: PermissionRequest?) {
                                     request?.grant(request.resources)
@@ -696,6 +733,40 @@ class OverlayService : Service() {
                                         "video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel, video::-webkit-media-controls-play-button, video::-webkit-media-controls-start-playback-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-current-time-display, video::-webkit-media-controls-time-remaining-display, video::-webkit-media-controls-mute-button, video::-webkit-media-controls-toggle-closed-captions-button, video::-webkit-media-controls-volume-slider { display:none !important; -webkit-appearance:none !important; opacity:0 !important; visibility:hidden !important; } " +
                                         "* { outline:none !important; -webkit-tap-highlight-color:transparent !important; }';" +
                                         "document.head.appendChild(style);" +
+                                        "var tStart = performance.now();" +
+                                        "var firstFrameTime = 0;" +
+                                        "var frameCount = 0;" +
+                                        "var fpsHistory = [];" +
+                                        "var stallCount = 0;" +
+                                        "var lastFpsCheck = performance.now();" +
+                                        "var lastFrameCount = 0;" +
+                                        "var reportToNative = function() {" +
+                                        "  if (window.PipBridge && window.PipBridge.reportMetrics) {" +
+                                        "    var avgFps = fpsHistory.length > 0 ? (fpsHistory.reduce(function(a,b){return a+b;},0)/fpsHistory.length) : 0;" +
+                                        "    var minFps = fpsHistory.length > 0 ? Math.min.apply(null, fpsHistory) : 0;" +
+                                        "    var v = document.querySelector('video');" +
+                                        "    var dropped = (v && v.getVideoPlaybackQuality) ? v.getVideoPlaybackQuality().droppedVideoFrames : 0;" +
+                                        "    window.PipBridge.reportMetrics(" +
+                                        "      Math.round(firstFrameTime)," +
+                                        "      Math.round(avgFps * 10) / 10," +
+                                        "      Math.round(minFps * 10) / 10," +
+                                        "      dropped," +
+                                        "      stallCount," +
+                                        "      frameCount" +
+                                        "    );" +
+                                        "  }" +
+                                        "};" +
+                                        "var onFrame = function(now, metadata) {" +
+                                        "  frameCount++;" +
+                                        "  if (firstFrameTime === 0) {" +
+                                        "    firstFrameTime = performance.now() - tStart;" +
+                                        "    reportToNative();" +
+                                        "  }" +
+                                        "  var v = document.querySelector('video');" +
+                                        "  if (v && v.requestVideoFrameCallback) {" +
+                                        "    v.requestVideoFrameCallback(onFrame);" +
+                                        "  }" +
+                                        "};" +
                                         "var initVideo = function() {" +
                                         "  var v = document.querySelector('video');" +
                                         "  if (v) {" +
@@ -704,6 +775,17 @@ class OverlayService : Service() {
                                         "    v.autoplay = true;" +
                                         "    v.playsInline = true;" +
                                         "    v.removeAttribute('controls');" +
+                                        "    v.addEventListener('waiting', function() { stallCount++; reportToNative(); });" +
+                                        "    v.addEventListener('stalled', function() { stallCount++; reportToNative(); });" +
+                                        "    v.addEventListener('playing', function() {" +
+                                        "      if (firstFrameTime === 0) {" +
+                                        "        firstFrameTime = performance.now() - tStart;" +
+                                        "        reportToNative();" +
+                                        "      }" +
+                                        "    });" +
+                                        "    if (v.requestVideoFrameCallback) {" +
+                                        "      v.requestVideoFrameCallback(onFrame);" +
+                                        "    }" +
                                         "    v.addEventListener('error', function() {" +
                                         "      if (window.location.search.indexOf('_720p') !== -1) {" +
                                         "        window.location.href = window.location.href.replace('_720p', '');" +
@@ -721,8 +803,21 @@ class OverlayService : Service() {
                                         "    }" +
                                         "  }, 1800);" +
                                         "}" +
-                                        "if (!window.__liveEdgeTimer) {" +
-                                        "  window.__liveEdgeTimer = setInterval(function() {" +
+                                        "if (!window.__metricsTimer) {" +
+                                        "  window.__metricsTimer = setInterval(function() {" +
+                                        "    var now = performance.now();" +
+                                        "    var dt = (now - lastFpsCheck) / 1000.0;" +
+                                        "    if (dt >= 0.8) {" +
+                                        "      var dFrames = frameCount - lastFrameCount;" +
+                                        "      var currentFps = dFrames / dt;" +
+                                        "      if (firstFrameTime > 0) {" +
+                                        "        fpsHistory.push(currentFps);" +
+                                        "        if (fpsHistory.length > 60) fpsHistory.shift();" +
+                                        "      }" +
+                                        "      lastFrameCount = frameCount;" +
+                                        "      lastFpsCheck = now;" +
+                                        "      reportToNative();" +
+                                        "    }" +
                                         "    var v = document.querySelector('video');" +
                                         "    if (v) {" +
                                         "      if (v.paused) { v.play().catch(function(){}); }" +
@@ -738,7 +833,7 @@ class OverlayService : Service() {
                                         "        }" +
                                         "      }" +
                                         "    }" +
-                                        "  }, 400);" +
+                                        "  }, 500);" +
                                         "}" +
                                         "})()"
                                     view?.loadUrl(js)
@@ -925,8 +1020,30 @@ class OverlayService : Service() {
             pipImageView = null
             overlayView = null
             activePipCamera = null
-            currentOverlayPlayerMode = null
-            if (isPipShowing.value) {
+            val actualDuration = if (pipSessionStartTimeMs > 0) ((System.currentTimeMillis() - pipSessionStartTimeMs) / 1000.0) else 0.0
+            if (isPipShowing.value || pipSessionStartTimeMs > 0) {
+                val prefs = SentinelaPreferences(this)
+                val qual = prefs.streamQuality
+                val cam = activePipCamera ?: "desconhecida"
+                val isClean = pipStallCount == 0 && pipDroppedFrames <= 5
+                SentinelaRemoteLogger.log(
+                    category = "PIP",
+                    action = "PIP_SESSION_METRICS",
+                    severity = if (isClean) "SUCCESS" else "WARNING",
+                    message = "Resumo PiP [$cam | $qual]: TTFF=${pipTtffMs}ms, Dur=${String.format("%.1f", actualDuration)}s, FPS=${String.format("%.1f", pipAvgFps)} (mín ${String.format("%.1f", pipMinFps)}), Drops=${pipDroppedFrames}, Stalls=${pipStallCount}, Total=${pipTotalFramesRendered} frames",
+                    metadata = mapOf(
+                        "camera" to cam,
+                        "stream_quality" to qual,
+                        "ttff_ms" to pipTtffMs,
+                        "duration_seconds" to actualDuration,
+                        "avg_fps" to pipAvgFps,
+                        "min_fps" to pipMinFps,
+                        "dropped_frames" to pipDroppedFrames,
+                        "stall_count" to pipStallCount,
+                        "total_frames" to pipTotalFramesRendered,
+                        "decoder" to "MSE_WEBSOCKET_TCP"
+                    )
+                )
                 SentinelaRemoteLogger.log(
                     category = "PIP",
                     action = "PIP_OVERLAY_CLOSED",

@@ -3077,6 +3077,113 @@ fun TvSettingsViewport(
     var streamQuality by remember { mutableStateOf(prefs.streamQuality) }
     val settingsScope = rememberCoroutineScope()
 
+    LaunchedEffect(Unit) {
+        // 1. Initial Policy Fetch & Sync
+        try {
+            val pol = com.sentinela.pro.network.SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
+            if (pol.streamQuality.isNotBlank()) {
+                streamQuality = pol.streamQuality
+                prefs.streamQuality = pol.streamQuality
+            }
+            if (pol.pipPosition.isNotBlank()) {
+                try {
+                    val pIdx = PipPosition.valueOf(pol.pipPosition.uppercase()).ordinal
+                    posIndex = pIdx
+                    prefs.pipPositionIndex = pIdx
+                } catch (e: Exception) {}
+            }
+            if (pol.pipDefaultSize.isNotBlank()) {
+                val sIdx = when (pol.pipDefaultSize.lowercase()) {
+                    "mini", "extra_small" -> PipSize.EXTRA_SMALL.ordinal
+                    "small" -> PipSize.SMALL.ordinal
+                    "medium_small" -> PipSize.MEDIUM_SMALL.ordinal
+                    "medium" -> PipSize.MEDIUM.ordinal
+                    "medium_large" -> PipSize.MEDIUM_LARGE.ordinal
+                    "large" -> PipSize.LARGE.ordinal
+                    "extra_large" -> PipSize.EXTRA_LARGE.ordinal
+                    "cinema" -> PipSize.CINEMA.ordinal
+                    else -> prefs.pipSizeIndex
+                }
+                sizeIndex = sIdx
+                prefs.pipSizeIndex = sIdx
+            }
+            if (pol.pipDurationSeconds > 0) {
+                val dIdx = when (pol.pipDurationSeconds) {
+                    5 -> PipDuration.D_5S.ordinal
+                    10 -> PipDuration.D_10S.ordinal
+                    15 -> PipDuration.D_15S.ordinal
+                    20 -> PipDuration.D_20S.ordinal
+                    30 -> PipDuration.D_30S.ordinal
+                    45 -> PipDuration.D_45S.ordinal
+                    60 -> PipDuration.D_60S.ordinal
+                    else -> prefs.pipDurationIndex
+                }
+                durIndex = dIdx
+                prefs.pipDurationIndex = dIdx
+            }
+        } catch (e: Exception) {
+            android.util.Log.d("TvSettingsViewport", "Policy fetch failed: ${e.message}")
+        }
+
+        // 2. Realtime WebSocket listener for remote updates (from Smartphone or Web Sentinela)
+        try {
+            com.sentinela.pro.network.SentinelaWebSocket.events.collect { event ->
+                val evType = event.optString("type", "")
+                if (evType == "DEVICE_CONFIG_UPDATED" || evType == "DEVICE_POLICY_UPDATE") {
+                    val targetIdent = event.optString("device_identifier", "")
+                    if (targetIdent == prefs.deviceIdentifier) {
+                        val qual = event.optString("stream_quality", "")
+                        if (qual.isNotBlank()) {
+                            streamQuality = qual
+                            prefs.streamQuality = qual
+                        }
+                        val pos = event.optString("pip_position", "")
+                        if (pos.isNotBlank()) {
+                            try {
+                                val pIdx = PipPosition.valueOf(pos.uppercase()).ordinal
+                                posIndex = pIdx
+                                prefs.pipPositionIndex = pIdx
+                            } catch (e: Exception) {}
+                        }
+                        val sizeStr = event.optString("pip_default_size", "")
+                        if (sizeStr.isNotBlank()) {
+                            val sIdx = when (sizeStr.lowercase()) {
+                                "mini", "extra_small" -> PipSize.EXTRA_SMALL.ordinal
+                                "small" -> PipSize.SMALL.ordinal
+                                "medium_small" -> PipSize.MEDIUM_SMALL.ordinal
+                                "medium" -> PipSize.MEDIUM.ordinal
+                                "medium_large" -> PipSize.MEDIUM_LARGE.ordinal
+                                "large" -> PipSize.LARGE.ordinal
+                                "extra_large" -> PipSize.EXTRA_LARGE.ordinal
+                                "cinema" -> PipSize.CINEMA.ordinal
+                                else -> prefs.pipSizeIndex
+                            }
+                            sizeIndex = sIdx
+                            prefs.pipSizeIndex = sIdx
+                        }
+                        val durInt = event.optInt("pip_duration_seconds", 0)
+                        if (durInt > 0) {
+                            val dIdx = when (durInt) {
+                                5 -> PipDuration.D_5S.ordinal
+                                10 -> PipDuration.D_10S.ordinal
+                                15 -> PipDuration.D_15S.ordinal
+                                20 -> PipDuration.D_20S.ordinal
+                                30 -> PipDuration.D_30S.ordinal
+                                45 -> PipDuration.D_45S.ordinal
+                                60 -> PipDuration.D_60S.ordinal
+                                else -> prefs.pipDurationIndex
+                            }
+                            durIndex = dIdx
+                            prefs.pipDurationIndex = dIdx
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            android.util.Log.d("TvSettingsViewport", "WebSocket collect error: ${e.message}")
+        }
+    }
+
     var hasOverlayPerm by remember {
         mutableStateOf(
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {

@@ -71,18 +71,18 @@ class DeviceStatusUpdate(BaseModel):
 
 class DevicePermissionsUpdate(BaseModel):
     friendly_name: Optional[str] = None
-    permission_status: Optional[str] = "allowed"
+    permission_status: Optional[str] = None
     allowed_cameras: Optional[List[str]] = None
     allowed_events: Optional[List[str]] = None
-    allow_recordings: bool = True
-    allow_live_stream: bool = True
-    allow_pip_alerts: bool = True
-    allow_restart_containers: bool = False
-    allow_reboot_server: bool = False
-    pip_default_size: str = "medium"
-    pip_duration_seconds: int = 10
-    pip_position: Optional[str] = "TOP_RIGHT"
-    stream_quality: Optional[str] = "1080p"
+    allow_recordings: Optional[bool] = None
+    allow_live_stream: Optional[bool] = None
+    allow_pip_alerts: Optional[bool] = None
+    allow_restart_containers: Optional[bool] = None
+    allow_reboot_server: Optional[bool] = None
+    pip_default_size: Optional[str] = None
+    pip_duration_seconds: Optional[int] = None
+    pip_position: Optional[str] = None
+    stream_quality: Optional[str] = None
 
 class DeviceSettingsPush(BaseModel):
     pip_duration_seconds: Optional[int] = None
@@ -516,43 +516,69 @@ async def update_device_permissions(
     if not dev:
         raise HTTPException(status_code=404, detail="Dispositivo não encontrado")
 
-    if perms.friendly_name is not None:
-        dev.friendly_name = perms.friendly_name
-    if perms.permission_status is not None:
-        dev.permission_status = perms.permission_status
+    if perms.friendly_name is not None and perms.friendly_name.strip():
+        dev.friendly_name = perms.friendly_name.strip()
+    if perms.permission_status is not None and perms.permission_status.strip():
+        dev.permission_status = perms.permission_status.strip()
     if perms.allowed_cameras is not None:
         dev.allowed_cameras = json.dumps(perms.allowed_cameras)
     if perms.allowed_events is not None:
         dev.allowed_events = json.dumps(perms.allowed_events)
     
-    dev.allow_recordings = perms.allow_recordings
-    dev.allow_live_stream = perms.allow_live_stream
-    dev.allow_pip_alerts = perms.allow_pip_alerts
-    dev.allow_restart_containers = perms.allow_restart_containers
-    dev.allow_reboot_server = perms.allow_reboot_server
-    dev.pip_default_size = perms.pip_default_size
-    dev.pip_duration_seconds = perms.pip_duration_seconds
-    if perms.pip_position:
-        dev.pip_position = perms.pip_position
-    if perms.stream_quality:
-        dev.stream_quality = perms.stream_quality
+    if perms.allow_recordings is not None:
+        dev.allow_recordings = perms.allow_recordings
+    if perms.allow_live_stream is not None:
+        dev.allow_live_stream = perms.allow_live_stream
+    if perms.allow_pip_alerts is not None:
+        dev.allow_pip_alerts = perms.allow_pip_alerts
+    if perms.allow_restart_containers is not None:
+        dev.allow_restart_containers = perms.allow_restart_containers
+    if perms.allow_reboot_server is not None:
+        dev.allow_reboot_server = perms.allow_reboot_server
+    if perms.pip_default_size is not None and perms.pip_default_size.strip():
+        dev.pip_default_size = perms.pip_default_size.strip()
+    if perms.pip_duration_seconds is not None and perms.pip_duration_seconds > 0:
+        dev.pip_duration_seconds = perms.pip_duration_seconds
+    if perms.pip_position is not None and perms.pip_position.strip():
+        dev.pip_position = perms.pip_position.strip().upper()
+    if perms.stream_quality is not None and perms.stream_quality.strip():
+        dev.stream_quality = perms.stream_quality.strip().lower()
 
     await db.commit()
+    
+    update_payload = {
+        "type": "DEVICE_CONFIG_UPDATED",
+        "device_identifier": dev.device_identifier,
+        "friendly_name": dev.friendly_name,
+        "permission_status": dev.permission_status,
+        "pip_default_size": dev.pip_default_size,
+        "pip_duration_seconds": dev.pip_duration_seconds,
+        "pip_position": dev.pip_position or "TOP_RIGHT",
+        "stream_quality": dev.stream_quality or "1080p",
+        "allow_pip_alerts": dev.allow_pip_alerts,
+        "allow_recordings": dev.allow_recordings,
+        "allow_live_stream": dev.allow_live_stream,
+        "allowed_cameras": json.loads(dev.allowed_cameras) if dev.allowed_cameras else [],
+        "allowed_events": json.loads(dev.allowed_events) if dev.allowed_events else []
+    }
+
     try:
         from app.api.ws import ws_manager
-        await ws_manager.broadcast_json({
-            "type": "DEVICE_CONFIG_UPDATED",
-            "device_identifier": dev.device_identifier,
-            "friendly_name": dev.friendly_name,
-            "permission_status": dev.permission_status,
-            "pip_default_size": dev.pip_default_size,
-            "pip_duration_seconds": dev.pip_duration_seconds,
-            "pip_position": dev.pip_position or "TOP_RIGHT",
-            "stream_quality": dev.stream_quality or "1080p",
-            "allow_pip_alerts": dev.allow_pip_alerts
-        })
+        await ws_manager.broadcast_json(update_payload)
+        await ws_manager.broadcast_json({**update_payload, "type": "DEVICE_POLICY_UPDATE"})
     except Exception as e:
         logger.debug(f"Failed to broadcast device config update: {e}")
+
+    try:
+        from app.services.mqtt_service import mqtt_service
+        if mqtt_service.client and mqtt_service.client.is_connected():
+            mqtt_service.client.publish(
+                f"frigate/devices/{dev.device_identifier}/config_update",
+                json.dumps(update_payload),
+                qos=1
+            )
+    except Exception as e:
+        logger.debug(f"Failed to publish MQTT config update: {e}")
 
     await audit_service.log(
         action="DEVICE_PERMISSIONS_UPDATED",
@@ -566,8 +592,8 @@ async def update_device_permissions(
         "id": dev.id,
         "friendly_name": dev.friendly_name,
         "permission_status": dev.permission_status,
-        "allowed_cameras": perms.allowed_cameras,
-        "allowed_events": perms.allowed_events,
+        "allowed_cameras": json.loads(dev.allowed_cameras) if dev.allowed_cameras else [],
+        "allowed_events": json.loads(dev.allowed_events) if dev.allowed_events else [],
         "allow_recordings": dev.allow_recordings,
         "allow_live_stream": dev.allow_live_stream,
         "allow_pip_alerts": dev.allow_pip_alerts,
@@ -609,21 +635,36 @@ async def push_device_settings(
 
     if changed:
         await db.commit()
+        update_payload = {
+            "type": "DEVICE_CONFIG_UPDATED",
+            "device_identifier": dev.device_identifier,
+            "friendly_name": dev.friendly_name,
+            "permission_status": dev.permission_status,
+            "pip_default_size": dev.pip_default_size,
+            "pip_duration_seconds": dev.pip_duration_seconds,
+            "pip_position": dev.pip_position or "TOP_RIGHT",
+            "stream_quality": dev.stream_quality or "1080p",
+            "allow_pip_alerts": dev.allow_pip_alerts,
+            "allowed_cameras": json.loads(dev.allowed_cameras) if dev.allowed_cameras else [],
+            "allowed_events": json.loads(dev.allowed_events) if dev.allowed_events else []
+        }
         try:
             from app.api.ws import ws_manager
-            await ws_manager.broadcast_json({
-                "type": "DEVICE_CONFIG_UPDATED",
-                "device_identifier": dev.device_identifier,
-                "friendly_name": dev.friendly_name,
-                "permission_status": dev.permission_status,
-                "pip_default_size": dev.pip_default_size,
-                "pip_duration_seconds": dev.pip_duration_seconds,
-                "pip_position": dev.pip_position or "TOP_RIGHT",
-                "stream_quality": dev.stream_quality or "1080p",
-                "allow_pip_alerts": dev.allow_pip_alerts
-            })
+            await ws_manager.broadcast_json(update_payload)
+            await ws_manager.broadcast_json({**update_payload, "type": "DEVICE_POLICY_UPDATE"})
         except Exception as e:
             logger.debug(f"Failed to broadcast settings push: {e}")
+
+        try:
+            from app.services.mqtt_service import mqtt_service
+            if mqtt_service.client and mqtt_service.client.is_connected():
+                mqtt_service.client.publish(
+                    f"frigate/devices/{dev.device_identifier}/config_update",
+                    json.dumps(update_payload),
+                    qos=1
+                )
+        except Exception as e:
+            logger.debug(f"Failed to publish MQTT config update: {e}")
 
     return {
         "status": "updated" if changed else "no_change",

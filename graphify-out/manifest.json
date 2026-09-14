@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1789408116.1068027,
-    "seen": 1789408244.387531,
-    "ast_hash": "fd529002ed75ed6183890fd312993f2f",
+    "mtime": 1789420602.9325929,
+    "seen": 1789420656.71055,
+    "ast_hash": "7a0f2b4a64eeec590f9ac54122a75fa8",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
-    "mtime": 1789405934.760232,
-    "seen": 1789406061.415066,
-    "ast_hash": "df76e2cb5efcf0d0abc31f52bba9ea23",
+    "mtime": 1789420522.4526858,
+    "seen": 1789420656.710551,
+    "ast_hash": "538a860e2bf26226dd441abe897ed91b",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
@@ -324,9 +324,9 @@
     "semantic_hash": "4efbfcb2d589df5b9cb8873332c9c210"
   },
   "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt": {
-    "mtime": 1789405984.7503216,
-    "seen": 1789406061.415068,
-    "ast_hash": "b705af676a8754df51a3efa7314f2964",
+    "mtime": 1789420646.1139123,
+    "seen": 1789420656.7105532,
+    "ast_hash": "5da6a845e2fa823a40ce26085e4c956c",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt": {
@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
-    "mtime": 1789405604.8078802,
-    "seen": 1789406061.415072,
-    "ast_hash": "77a282dfdeb79d341b69d9a19a8a31d9",
+    "mtime": 1789420472.9206378,
+    "seen": 1789420656.710557,
+    "ast_hash": "febc23ae877ed0ee0ad025769b0bc8b1",
     "semantic_hash": ""
   },
   "backend/app/api/events.py": {
@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "frontend/src/app/screens/page.tsx": {
-    "mtime": 1789405709.3695643,
-    "seen": 1789406061.4150872,
-    "ast_hash": "13f10892ce5e8372bafce394e884584c",
+    "mtime": 1789420491.4447908,
+    "seen": 1789420656.710572,
+    "ast_hash": "2746584a10a74b6e26d8ad0a1921a933",
     "semantic_hash": ""
   },
   "frontend/src/app/settings/backup/page.tsx": {

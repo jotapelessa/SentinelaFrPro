@@ -1298,7 +1298,7 @@ export default function ScreensPage() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 font-mono">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-1 font-mono">
                     <div>
                       <span className="text-slate-400 block text-[10px] mb-1 font-bold">Qualidade do Vídeo:</span>
                       <select
@@ -1312,6 +1312,21 @@ export default function ScreensPage() {
                     </div>
 
                     <div>
+                      <span className="text-slate-400 block text-[10px] mb-1 font-bold">Posição do PiP:</span>
+                      <select
+                        value={managingDevice.pip_position || "TOP_RIGHT"}
+                        onChange={(e) => setManagingDevice({ ...managingDevice, pip_position: e.target.value })}
+                        className="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl p-2 text-xs focus:outline-none focus:border-cyan-500"
+                      >
+                        <option value="TOP_RIGHT">Superior Direito</option>
+                        <option value="TOP_LEFT">Superior Esquerdo</option>
+                        <option value="BOTTOM_RIGHT">Inferior Direito</option>
+                        <option value="BOTTOM_LEFT">Inferior Esquerdo</option>
+                        <option value="CENTER">Centro da Tela</option>
+                      </select>
+                    </div>
+
+                    <div>
                       <span className="text-slate-400 block text-[10px] mb-1 font-bold">Tamanho Padrão PiP:</span>
                       <select
                         value={managingDevice.pip_default_size || "medium"}
@@ -1319,7 +1334,9 @@ export default function ScreensPage() {
                         className="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl p-2 text-xs focus:outline-none focus:border-cyan-500"
                       >
                         <option value="mini">Mini (20%)</option>
-                        <option value="medium">Médio (35%)</option>
+                        <option value="small">Pequeno (28%)</option>
+                        <option value="medium_small">Médio Pequeno (32%)</option>
+                        <option value="medium">Médio Padrão (38%)</option>
                         <option value="large">Grande (50%)</option>
                         <option value="split">Split Screen (50%)</option>
                       </select>
@@ -1335,7 +1352,9 @@ export default function ScreensPage() {
                         <option value={5}>5 Segundos</option>
                         <option value={10}>10 Segundos</option>
                         <option value={15}>15 Segundos</option>
+                        <option value={20}>20 Segundos</option>
                         <option value={30}>30 Segundos</option>
+                        <option value={45}>45 Segundos</option>
                         <option value={60}>60 Segundos</option>
                       </select>
                     </div>
@@ -1560,6 +1579,7 @@ export default function ScreensPage() {
                             allow_reboot_server: managingDevice.allow_reboot_server === true,
                             pip_default_size: managingDevice.pip_default_size || "medium",
                             pip_duration_seconds: managingDevice.pip_duration_seconds || 10,
+                            pip_position: managingDevice.pip_position || "TOP_RIGHT",
                             stream_quality: managingDevice.stream_quality || "1080p"
                           })
                         });

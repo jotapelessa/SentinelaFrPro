@@ -1138,6 +1138,7 @@ fun PhoneMasterCentralTab() {
             onDismiss = { editingDevice = null },
             onSave = { updatedName, pipSize, pipDur, pipPos, allowPip, status, streamQuality ->
                 val devId = editingDevice!!.id
+                val devName = editingDevice!!.friendlyName
                 editingDevice = null
                 coroutineScope.launch {
                     val (ok, msg) = SentinelaRepository.updateDevicePermissions(
@@ -1151,6 +1152,13 @@ fun PhoneMasterCentralTab() {
                         streamQuality = streamQuality
                     )
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
+                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                        category = "MASTER",
+                        action = "DEVICE_PERMISSIONS_SAVED",
+                        severity = if (ok) "SUCCESS" else "ERROR",
+                        message = "Master salvou ajustes de $devName: qual=$streamQuality, pos=$pipPos, size=$pipSize, dur=${pipDur}s",
+                        metadata = mapOf("device_id" to devId, "device_name" to devName, "stream_quality" to streamQuality, "pip_position" to pipPos)
+                    )
                     refreshDevices()
                 }
             }
@@ -1471,10 +1479,24 @@ fun PhoneMasterCentralTab() {
                         Button(
                             onClick = {
                                 isTestingThisTv = true
+                                com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                    category = "PIP",
+                                    action = "PIP_TEST_TRIGGERED_MOBILE",
+                                    severity = "INFO",
+                                    message = "Master disparou teste de PiP para ${tv.friendlyName} (câmera: $activeCamName)",
+                                    metadata = mapOf("target_tv" to tv.friendlyName, "tv_id" to tv.id, "camera" to activeCamName)
+                                )
                                 coroutineScope.launch {
                                     val (confirmed, msg) = SentinelaRepository.testSingleTv(tv.id, activeCamName)
                                     isTestingThisTv = false
                                     Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
+                                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                        category = "PIP",
+                                        action = if (confirmed) "PIP_TEST_CONFIRMED_MOBILE" else "PIP_TEST_FAILED_MOBILE",
+                                        severity = if (confirmed) "SUCCESS" else "ERROR",
+                                        message = "Resultado do teste PiP em ${tv.friendlyName}: $msg",
+                                        metadata = mapOf("target_tv" to tv.friendlyName, "confirmed" to confirmed, "message" to msg)
+                                    )
                                 }
                             },
                             colors = ButtonDefaults.buttonColors(
