@@ -23,18 +23,18 @@ O **SentinelaFrigate PRO** é um sistema completo de videomonitoramento de níve
 
 ---
 
-## 📥 Download dos APKs Oficiais (`v001.000.000.115`)
+## 📥 Download dos APKs Oficiais (`v001.000.000.117`)
 
-Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.115):
+Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.117):
 
-* 📺 **[Download Android TV APK (v001.000.000.115)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.115/sentinela-android-tv-v001.000.000.115.apk)**  
-  *(Ou baixe a versão contínua mais recente: [`sentinela-android-tv-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.115/sentinela-android-tv-latest.apk))*
-* 📱 **[Download Smartphone / Tablet APK (v001.000.000.115)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.115/sentinela-android-smartphone-v001.000.000.115.apk)**  
-  *(Ou baixe a versão contínua mais recente: [`sentinela-android-smartphone-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.115/sentinela-android-smartphone-latest.apk))*
+* 📺 **[Download Android TV APK (v001.000.000.117)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.117/sentinela-android-tv-v001.000.000.117.apk)**  
+  *(Ou baixe a versão contínua mais recente: [`sentinela-android-tv-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.117/sentinela-android-tv-latest.apk))*
+* 📱 **[Download Smartphone / Tablet APK (v001.000.000.117)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.117/sentinela-android-smartphone-v001.000.000.117.apk)**  
+  *(Ou baixe a versão contínua mais recente: [`sentinela-android-smartphone-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.117/sentinela-android-smartphone-latest.apk))*
 
 ---
 
-## 📱 Aplicativos Nativos Android (`v001.000.000.115`)
+## 📱 Aplicativos Nativos Android (`v001.000.000.117`)
 
 ### 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix)
 * **Aba 1 • Câmeras**: Spotlight imersivo com navegação D-Pad, carrossel dinâmico e alternância para tela cheia instantânea.

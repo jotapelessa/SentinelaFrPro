@@ -98,6 +98,7 @@ class PiPGatewayService:
                 filtered_devices.append({
                     "id": d.id,
                     "name": d.friendly_name,
+                    "device_identifier": d.device_identifier,
                     "type": d.device_type,
                     "target_ip": d.tailscale_ip if d.tailscale_ip else d.ip_address,
                     "local_ip": d.ip_address,
@@ -129,11 +130,19 @@ class PiPGatewayService:
             logger.info(f"No paired TV devices found for PiP dispatch (Camera: {camera_name}, Label: {label}).")
             return {"status": "no_devices", "dispatched": 0}
 
+        from app.api.ws import ws_manager
         results = []
         async with httpx.AsyncClient(timeout=3.0) as client:
             for dev in devices:
                 target_ip = dev["target_ip"]
                 if not target_ip:
+                    continue
+
+                ident = dev.get("device_identifier")
+                if ident and ws_manager.is_device_connected(ident):
+                    # Dispositivo está ativamente conectado ao app Sentinela (overlay nativo).
+                    # Não disparamos Google Cast nem REST legado para evitar conflito de media receiver.
+                    results.append({"device": dev["name"], "ip": target_ip, "status": "delivered", "protocol": "sentinela_app_ws"})
                     continue
 
                 dispatched = False

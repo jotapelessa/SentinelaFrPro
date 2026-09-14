@@ -205,44 +205,18 @@ fun MseCameraView(
                                     "  }" +
                                     "};" +
                                     "initVideo();" +
-                                    "var lastTime = -1;" +
-                                    "var stallTicks = 0;" +
-                                    "var reloadAttempts = 0;" +
                                     "if (!window.__liveEdgeTimer) {" +
                                     "  window.__liveEdgeTimer = setInterval(function() {" +
                                     "    var v = document.querySelector('video');" +
                                     "    if (v) {" +
                                     "      if (v.paused) { v.play().catch(function(){}); }" +
-                                    "      if (v.currentTime > 0 && Math.abs(v.currentTime - lastTime) < 0.05 && !v.paused && !v.ended) {" +
-                                    "        stallTicks++;" +
-                                    "        if (stallTicks === 5) {" +
-                                    "          if (v.buffered && v.buffered.length > 0) {" +
-                                    "            v.currentTime = v.buffered.end(v.buffered.length - 1) - 0.05;" +
-                                    "          }" +
-                                    "          v.play().catch(function(){});" +
-                                    "        }" +
-                                    "        if (stallTicks >= 20) {" +
-                                    "          stallTicks = 0;" +
-                                    "          reloadAttempts++;" +
-                                    "          if (reloadAttempts <= 2) {" +
-                                    "            location.reload();" +
-                                    "          }" +
-                                    "        }" +
-                                    "      } else {" +
-                                    "        if (v.currentTime > 0 && Math.abs(v.currentTime - lastTime) >= 0.05) {" +
-                                    "          stallTicks = 0;" +
-                                    "          reloadAttempts = 0;" +
-                                    "        }" +
-                                    "        lastTime = v.currentTime;" +
-                                    "      }" +
                                     "      if (v.buffered && v.buffered.length > 0) {" +
                                     "        var end = v.buffered.end(v.buffered.length - 1);" +
                                     "        var drift = end - v.currentTime;" +
-                                    "        if (drift > 1.5) {" +
-                                    "          v.currentTime = end - 0.05;" +
-                                    "          v.playbackRate = 1.0;" +
+                                    "        if (drift > 2.0) {" +
+                                    "          v.playbackRate = 1.15;" +
                                     "        } else if (drift > 0.4) {" +
-                                    "          v.playbackRate = 1.12;" +
+                                    "          v.playbackRate = 1.08;" +
                                     "        } else if (drift < 0.1) {" +
                                     "          v.playbackRate = 1.0;" +
                                     "        }" +

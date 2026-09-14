@@ -56,6 +56,8 @@ class OverlayService : Service() {
     private var webSocket: SentinelaWebSocket? = null
     private var pipJob: Job? = null
     private var cachedDevicePolicy: DevicePolicy? = null
+    private var activePipCamera: String? = null
+    private var lastPipTriggerTimeMs: Long = 0L
 
     override fun onCreate() {
         super.onCreate()
@@ -161,7 +163,8 @@ class OverlayService : Service() {
                     return@collect
                 }
 
-                if (evType == "pip_alert" || evType == "FRIGATE_EVENT" || evType == "NEW_DETECTION" || isMotionActive) {
+                val isPipTrigger = evType == "pip_alert" || (evType == "FRIGATE_EVENT" && event.optBoolean("active", false)) || isMotionActive
+                if (isPipTrigger) {
                     val targetIdent = event.optString("target_identifier", "")
                     if (targetIdent.isNotBlank() && targetIdent != prefs.deviceIdentifier) {
                         return@collect // Directed specifically to another device
@@ -170,9 +173,17 @@ class OverlayService : Service() {
                     val testId = if (event.has("test_id")) event.optString("test_id") else null
                     val camera = event.optString("camera", "camera_secundaria")
                     val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
+                    val isTestAlert = evType == "pip_alert" || label.contains("TEST", ignoreCase = true) || label.contains("ALERTA", ignoreCase = true)
+
+                    // Debounce contra tempestades de eventos para a mesma câmera dentro de 2.5 segundos
+                    val now = System.currentTimeMillis()
+                    if (!isTestAlert && camera == activePipCamera && (now - lastPipTriggerTimeMs) < 2500L) {
+                        return@collect
+                    }
+                    lastPipTriggerTimeMs = now
+
                     val customSnap = if (event.has("snapshot_url")) event.optString("snapshot_url") else null
                     val customStream = if (event.has("stream_url")) event.optString("stream_url") else null
-                    val isTestAlert = evType == "pip_alert" || label.contains("TEST", ignoreCase = true) || label.contains("ALERTA", ignoreCase = true)
                     val alertPipPos = if (event.has("pip_position")) event.optString("pip_position") else null
                     val alertPipSize = if (event.has("pip_size")) event.optString("pip_size") else null
                     val alertDuration = if (event.has("duration")) event.optInt("duration", 0) else 0
@@ -475,6 +486,44 @@ class OverlayService : Service() {
         isPipShowing.value = true
 
         val resolvedCamera = if (camera.isBlank()) "camera_secundaria" else camera
+
+        // 1. Idempotência absoluta: se o PiP já está exibindo a MESMA câmera no MESMO modo de vídeo,
+        // JAMAIS reiniciamos o WebView nem chamamos loadUrl(), evitando tempestades de reconexão.
+        if (overlayView != null && activePipCamera == resolvedCamera) {
+            val currentParams = overlayView?.layoutParams as? WindowManager.LayoutParams
+            if (currentParams?.gravity != pipPos.gravity ||
+                currentParams?.width != pipSize.width ||
+                currentParams?.height != pipSize.height
+            ) {
+                currentParams?.gravity = pipPos.gravity
+                currentParams?.width = pipSize.width
+                currentParams?.height = pipSize.height
+                windowManager.updateViewLayout(overlayView, currentParams)
+            }
+
+            pipJob?.cancel()
+            val duration = durationSeconds
+            pipJob = serviceScope.launch {
+                delay(duration * 1000L)
+                removePiP()
+            }
+
+            if (testId != null) {
+                serviceScope.launch {
+                    SentinelaRepository.sendPipAck(
+                        prefs.deviceIdentifier,
+                        testId,
+                        success = true,
+                        message = "PiP ativo mantido na tela (${pipSize.width}x${pipSize.height}, ${durationSeconds}s)",
+                        dimensions = "${pipSize.width}x${pipSize.height}",
+                        durationSeconds = durationSeconds
+                    )
+                }
+            }
+            return
+        }
+
+        activePipCamera = resolvedCamera
         val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
             "eco" -> "mode=mjpeg"
             "webrtc" -> "mode=webrtc"
@@ -651,44 +700,18 @@ class OverlayService : Service() {
                                         "  }" +
                                         "};" +
                                         "initVideo();" +
-                                        "var lastTime = -1;" +
-                                        "var stallTicks = 0;" +
-                                        "var reloadAttempts = 0;" +
                                         "if (!window.__liveEdgeTimer) {" +
                                         "  window.__liveEdgeTimer = setInterval(function() {" +
                                         "    var v = document.querySelector('video');" +
                                         "    if (v) {" +
                                         "      if (v.paused) { v.play().catch(function(){}); }" +
-                                        "      if (v.currentTime > 0 && Math.abs(v.currentTime - lastTime) < 0.05 && !v.paused && !v.ended) {" +
-                                        "        stallTicks++;" +
-                                        "        if (stallTicks === 5) {" +
-                                        "          if (v.buffered && v.buffered.length > 0) {" +
-                                        "            v.currentTime = v.buffered.end(v.buffered.length - 1) - 0.05;" +
-                                        "          }" +
-                                        "          v.play().catch(function(){});" +
-                                        "        }" +
-                                        "        if (stallTicks >= 20) {" +
-                                        "          stallTicks = 0;" +
-                                        "          reloadAttempts++;" +
-                                        "          if (reloadAttempts <= 2) {" +
-                                        "            location.reload();" +
-                                        "          }" +
-                                        "        }" +
-                                        "      } else {" +
-                                        "        if (v.currentTime > 0 && Math.abs(v.currentTime - lastTime) >= 0.05) {" +
-                                        "          stallTicks = 0;" +
-                                        "          reloadAttempts = 0;" +
-                                        "        }" +
-                                        "        lastTime = v.currentTime;" +
-                                        "      }" +
                                         "      if (v.buffered && v.buffered.length > 0) {" +
                                         "        var end = v.buffered.end(v.buffered.length - 1);" +
                                         "        var drift = end - v.currentTime;" +
-                                        "        if (drift > 1.5) {" +
-                                        "          v.currentTime = end - 0.05;" +
-                                        "          v.playbackRate = 1.0;" +
+                                        "        if (drift > 2.0) {" +
+                                        "          v.playbackRate = 1.15;" +
                                         "        } else if (drift > 0.4) {" +
-                                        "          v.playbackRate = 1.12;" +
+                                        "          v.playbackRate = 1.08;" +
                                         "        } else if (drift < 0.1) {" +
                                         "          v.playbackRate = 1.0;" +
                                         "        }" +
@@ -880,6 +903,7 @@ class OverlayService : Service() {
             }
             pipImageView = null
             overlayView = null
+            activePipCamera = null
             currentOverlayPlayerMode = null
             if (isPipShowing.value) {
                 SentinelaRemoteLogger.log(

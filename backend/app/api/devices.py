@@ -1047,6 +1047,7 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
     res = await db.execute(stmt)
     devices = res.scalars().all()
 
+    duration = req.duration_seconds if req.duration_seconds and req.duration_seconds > 0 else 15
     results = []
     # 1. Global WebSocket broadcast for connected Android TV overlays and Smartphones
     if req.test_type in ("pip", "pip_alert"):
@@ -1057,20 +1058,28 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
             "test_id": batch_test_id,
             "camera": req.camera_name,
             "label": req.label,
-            "duration": req.duration_seconds,
+            "duration": duration,
             "target_identifier": "",
             "timestamp": datetime.datetime.utcnow().isoformat()
         })
-        # 2. Also dispatch to Google Cast / REST PiP for TV endpoints
-        snap_url = f"http://127.0.0.1:5000/api/{req.camera_name}/latest.jpg?h=720"
-        stream_url = f"http://127.0.0.1:8554/{req.camera_name}"
-        await pip_gateway_service.dispatch_pip_alert(
-            camera_name=req.camera_name,
-            label=req.label,
-            snapshot_url=snap_url,
-            stream_url=stream_url,
-            duration_seconds=req.duration_seconds
-        )
+
+        # 2. Despacho assíncrono para Cast/REST legados sem bloquear o endpoint HTTP
+        async def _dispatch_legacy_screens():
+            try:
+                server_ip = "192.168.1.247"
+                snap_url = f"http://{server_ip}:8088/frigate/api/{req.camera_name}/latest.jpg?h=720"
+                stream_url = f"http://{server_ip}:8088/go2rtc/stream.html?src={req.camera_name}&mode=mse&width=100%"
+                await pip_gateway_service.dispatch_pip_alert(
+                    camera_name=req.camera_name,
+                    label=req.label,
+                    snapshot_url=snap_url,
+                    stream_url=stream_url,
+                    duration_seconds=duration
+                )
+            except Exception as e:
+                logger.debug(f"Background Cast dispatch error: {e}")
+
+        asyncio.create_task(_dispatch_legacy_screens())
         for dev in devices:
             results.append({"device": dev.friendly_name, "id": dev.device_identifier, "status": "pip_dispatched"})
     elif req.test_type == "simulated_detection":
