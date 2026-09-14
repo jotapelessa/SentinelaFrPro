@@ -122,7 +122,8 @@ jobs:
             * Central Master VIP com controle de resolução 720p/1080p para todas as Smart TVs
             * Controle granular de taxa de quadros e silenciamento por FAB
 
-          ### 🚀 Melhorias Desta Versão (Build 119):
+          ### 🚀 Melhorias Desta Versão (Build 120):
+          - 🛠️ **Auto-Migração SQLite Paired Devices**: Inclusão de auto-migração resiliente para a coluna `stream_quality` na tabela `paired_devices`, resolvendo 100% dos erros 500 no heartbeat da Android TV, listagem de telas no Web (`/screens`) e visualização de dispositivos na Central Master do Smartphone.
           - ⚡ **Multi-Resolução 720p HD com Failover Automático**: Sub-streams transcodificados por hardware no go2rtc com parâmetros ultrafast e fallback transparente (<1.8s) para 1080p nativo em caso de latência, garantindo zero telas pretas no PiP.
           - 📺 **Controle de Resolução em Todos os Clientes**: Seletor visual na Android TV (Aba 5), no Smartphone (Central Master VIP) e no Web Sentinela (`/screens`).
           - 🔒 **Invariantes de Ouro Preservadas**: Idempotência de stream no PiP, watchdog suave de live-edge via `playbackRate`, MSE sobre WebSocket TCP e zero-cache no Nginx.

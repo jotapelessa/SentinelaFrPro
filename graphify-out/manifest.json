@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1789408160.0823553,
-    "seen": 1789408244.3875399,
-    "ast_hash": "79d32e19e6382738be23d08335713bb5",
+    "mtime": 1789410988.1264744,
+    "seen": 1789411005.330921,
+    "ast_hash": "8333dc45c606d2a4119a2fbe9fc19464",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -426,10 +426,10 @@
     "semantic_hash": ""
   },
   "backend/app/db/session.py": {
-    "mtime": 1788616062.0813105,
-    "seen": 1788641395.538274,
-    "ast_hash": "f09eb5f325f9a45fa8e705d58ea8cf29",
-    "semantic_hash": "f09eb5f325f9a45fa8e705d58ea8cf29"
+    "mtime": 1789410962.6894982,
+    "seen": 1789411005.330923,
+    "ast_hash": "9905da1b3da2f247c9be617625418ca5",
+    "semantic_hash": ""
   },
   "backend/app/main.py": {
     "mtime": 1789381685.434694,
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1789408142.3685281,
-    "seen": 1789408244.387549,
-    "ast_hash": "5c771955fe2a470e53fe9f2b02ccda6a",
+    "mtime": 1789410985.0002015,
+    "seen": 1789411005.33093,
+    "ast_hash": "a04b6e67020eb91ae2a27a811a4ff8b9",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -714,9 +714,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/android-build.yml": {
-    "mtime": 1789408175.4633052,
-    "seen": 1789408244.387573,
-    "ast_hash": "d26629a94dc73c7305a1f873d2f03935",
+    "mtime": 1789410991.905043,
+    "seen": 1789411005.330956,
+    "ast_hash": "955db4b14412ee1b9d34fbfb522a4d93",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789406068.5685637,
-    "seen": 1789408244.387579,
-    "ast_hash": "9c9c1b9142d26643659c5c67258190a0",
+    "mtime": 1789411001.4209793,
+    "seen": 1789411005.330963,
+    "ast_hash": "a010b7ca4a9f12901561c297547e057a",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1789408138.2832017,
-    "seen": 1789408244.3875608,
-    "ast_hash": "c744e9b7b65b3023cf9a146a88d7432f",
+    "mtime": 1789410982.5138113,
+    "seen": 1789411005.3309429,
+    "ast_hash": "44d3f6369aa1c3063a7cbb4e0f9e85b3",
     "semantic_hash": ""
   }
 }

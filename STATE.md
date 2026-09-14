@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-14 14:50 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.119 operacional (Build 119). Suporte a sub-streams 720p HD e 1080p FHD sob demanda com failover automático transparente em todos os clientes.
+> **Última Atualização:** 2026-09-14 15:35 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.120 operacional (Build 120). Auto-migração SQLite atômica para `paired_devices.stream_quality` ativa; listagem de TVs e smartphones pareados 100% funcional sem erros 500. Suporte a sub-streams 720p HD e 1080p FHD sob demanda com failover automático transparente em todos os clientes.
 
 ---
 
