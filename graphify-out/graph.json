@@ -576,6 +576,45 @@
       "source_location": "L19"
     },
     {
+      "id": "backend_app_db_models_auditlog",
+      "label": "AuditLog",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "api/telemetry.py",
+      "file_type": "code",
+      "norm_label": "auditlog",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L91"
+    },
+    {
+      "id": "backend_app_db_models_clientdevicelog",
+      "label": "ClientDeviceLog",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "api/telemetry.py",
+      "file_type": "code",
+      "norm_label": "clientdevicelog",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L103"
+    },
+    {
+      "id": "backend_app_services_audit_service_auditservice",
+      "label": "AuditService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "api/telemetry.py",
+      "file_type": "code",
+      "norm_label": "auditservice",
+      "source_file": "backend/app/services/audit_service.py",
+      "source_location": "L9"
+    },
+    {
       "id": "backend_app_api_devices_batchtestrequest",
       "label": "BatchTestRequest",
       "_callable": true,
@@ -732,32 +771,6 @@
       "source_location": "L97"
     },
     {
-      "id": "backend_app_db_models_auditlog",
-      "label": "AuditLog",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "auditlog",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L91"
-    },
-    {
-      "id": "backend_app_db_models_clientdevicelog",
-      "label": "ClientDeviceLog",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "clientdevicelog",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L103"
-    },
-    {
       "id": "backend_app_db_models_paireddevice",
       "label": "PairedDevice",
       "_callable": true,
@@ -769,19 +782,6 @@
       "norm_label": "paireddevice",
       "source_file": "backend/app/db/models.py",
       "source_location": "L53"
-    },
-    {
-      "id": "backend_app_services_audit_service_auditservice",
-      "label": "AuditService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "auditservice",
-      "source_file": "backend/app/services/audit_service.py",
-      "source_location": "L9"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication",
@@ -849,6 +849,32 @@
       "source_location": "L9"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration",
+      "label": "PipDuration",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "pipduration",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L110"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
+      "label": "PipSize",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "pipsize",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L88"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
       "label": "SentinelaPreferences",
       "_callable": true,
@@ -901,19 +927,6 @@
       "source_location": "L3"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem",
-      "label": "RecordingClipItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "recordingclipitem",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt",
-      "source_location": "L185"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_tvdevicestatus",
       "label": "TvDeviceStatus",
       "_callable": true,
@@ -953,17 +966,17 @@
       "source_location": "L38"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize",
-      "label": "PipSize",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem",
+      "label": "RecordingClipItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "pipsize",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L88"
+      "norm_label": "recordingclipitem",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt",
+      "source_location": "L185"
     },
     {
       "id": "backend_app_services_telemetry_telemetryservice",
@@ -1057,32 +1070,6 @@
       "source_location": "L673"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169",
-      "label": "WebChromeClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webchromeclient",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L169"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175",
-      "label": "WebViewClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webviewclient",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L175"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_clientlogentry",
       "label": "ClientLogEntry",
       "_callable": true,
@@ -1135,17 +1122,121 @@
       "source_location": "L42"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration",
-      "label": "PipDuration",
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_bandwidthsuiteresult",
+      "label": "BandwidthSuiteResult",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 35,
-      "community_name": "PipDuration",
+      "community_name": "Models.kt",
       "file_type": "code",
-      "norm_label": "pipduration",
+      "norm_label": "bandwidthsuiteresult",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L110"
+      "source_location": "L175"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate",
+      "label": "ConnectionTestState",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "connectionteststate",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L142"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_diagnosticstatus",
+      "label": "DiagnosticStatus",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "diagnosticstatus",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L72"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_paireddeviceitem",
+      "label": "PairedDeviceItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "paireddeviceitem",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L121"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_singleconnectionresult",
+      "label": "SingleConnectionResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "singleconnectionresult",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L149"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_storagestatus",
+      "label": "StorageStatus",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "storagestatus",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L50"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_telemetrydata",
+      "label": "TelemetryData",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "telemetrydata",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L31"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_videostabilityresult",
+      "label": "VideoStabilityResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "videostabilityresult",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L162"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_routetelemetry",
+      "label": "RouteTelemetry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "routetelemetry",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L62"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager",
@@ -1159,6 +1250,32 @@
       "norm_label": "tvaudiomanager",
       "source_file": "ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts",
       "source_location": "L3"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169",
+      "label": "WebChromeClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webchromeclient",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L169"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175",
+      "label": "WebViewClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webviewclient",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L175"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_src_components_tv_kotlincodemodal_kotlincodemodalprops",
@@ -1382,6 +1499,58 @@
       "source_location": "L79"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_auditlogentry",
+      "label": "AuditLogEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "auditlogentry",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L62"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_clientdevicelogitem",
+      "label": "ClientDeviceLogItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "clientdevicelogitem",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1684"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_remotedeviceitem",
+      "label": "RemoteDeviceItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "remotedeviceitem",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L34"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70",
+      "label": "X509TrustManager",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "X509TrustManager",
+      "file_type": "code",
+      "norm_label": "x509trustmanager",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L70"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_theme_sentinelamobiletokens_sentinelacolors",
       "label": "SentinelaColors",
       "_callable": true,
@@ -1525,84 +1694,6 @@
       "source_location": "L5"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_auditlogentry",
-      "label": "AuditLogEntry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "auditlogentry",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L62"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_bandwidthsuiteresult",
-      "label": "BandwidthSuiteResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "bandwidthsuiteresult",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L175"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate",
-      "label": "ConnectionTestState",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "connectionteststate",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L142"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_diagnosticstatus",
-      "label": "DiagnosticStatus",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "diagnosticstatus",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L72"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_paireddeviceitem",
-      "label": "PairedDeviceItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "paireddeviceitem",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L121"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_singleconnectionresult",
-      "label": "SingleConnectionResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "singleconnectionresult",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L149"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_speedtestresult",
       "label": "SpeedTestResult",
       "_callable": true,
@@ -1616,84 +1707,6 @@
       "source_location": "L80"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_storagestatus",
-      "label": "StorageStatus",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "storagestatus",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L50"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_telemetrydata",
-      "label": "TelemetryData",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "telemetrydata",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L31"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_videostabilityresult",
-      "label": "VideoStabilityResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "videostabilityresult",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L162"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_clientdevicelogitem",
-      "label": "ClientDeviceLogItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "clientdevicelogitem",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1684"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_remotedeviceitem",
-      "label": "RemoteDeviceItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "remotedeviceitem",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L34"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_routetelemetry",
-      "label": "RouteTelemetry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "routetelemetry",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L62"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
       "label": "SentinelaRepository",
       "_callable": true,
@@ -1705,19 +1718,6 @@
       "norm_label": "sentinelarepository",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L59"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70",
-      "label": "X509TrustManager",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "x509trustmanager",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L70"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_servicestatus",
@@ -3459,6 +3459,18 @@
       "source_location": "L21"
     },
     {
+      "id": "backend_app_services_audit_service_auditservice_log",
+      "label": ".log()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "api/telemetry.py",
+      "file_type": "code",
+      "norm_label": ".log()",
+      "source_file": "backend/app/services/audit_service.py",
+      "source_location": "L10"
+    },
+    {
       "id": "backend_app_api_devices_check_devices_health",
       "label": "check_devices_health()",
       "_callable": true,
@@ -3735,18 +3747,6 @@
       "source_location": "L688"
     },
     {
-      "id": "backend_app_services_audit_service_auditservice_log",
-      "label": ".log()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": ".log()",
-      "source_file": "backend/app/services/audit_service.py",
-      "source_location": "L10"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_newimageloader",
       "label": ".newImageLoader()",
       "_callable": true,
@@ -3939,18 +3939,6 @@
       "source_location": "L68"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
-      "label": ".pingServer()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": ".pingserver()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1295"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_getgo2rtcframeurl",
       "label": ".getGo2rtcFrameUrl()",
       "_callable": true,
@@ -3973,18 +3961,6 @@
       "norm_label": ".getsnapshoturl()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/SentinelaConfig.kt",
       "source_location": "L33"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_triggerpip",
-      "label": ".triggerPiP()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": ".triggerpip()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L288"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvleanbackgrid_tvcameracard",
@@ -4023,126 +3999,6 @@
       "source_location": "L39"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardestabilidadedevideo",
-      "label": "CardEstabilidadeDeVideo()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "cardestabilidadedevideo()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2016"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardlarguradebanda",
-      "label": "CardLarguraDeBanda()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "cardlarguradebanda()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2230"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardsubsistemasecomandos",
-      "label": "CardSubsistemasEComandos()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "cardsubsistemasecomandos()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2487"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardtestedebanda",
-      "label": "CardTesteDeBanda()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "cardtestedebanda()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L1807"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvcamerasviewport",
-      "label": "TvCamerasViewport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvcamerasviewport()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L491"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvcapturecard",
-      "label": "TvCaptureCard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvcapturecard()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L1114"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvclipplayerdialog",
-      "label": "TvClipPlayerDialog()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvclipplayerdialog()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3939"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvdiagnosticrow",
-      "label": "TvDiagnosticRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvdiagnosticrow()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2598"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvfullscreenlivedialog",
-      "label": "TvFullScreenLiveDialog()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvfullscreenlivedialog()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3827"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvlogsviewport",
-      "label": "TvLogsViewport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvlogsviewport()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2691"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvnetflixscreen",
       "label": "TvNetflixScreen()",
       "_callable": true,
@@ -4153,90 +4009,6 @@
       "norm_label": "tvnetflixscreen()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
       "source_location": "L71"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvnetflixscreencore",
-      "label": "TvNetflixScreenCore()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvnetflixscreencore()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L87"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvpipfloatingwindow",
-      "label": "TvPipFloatingWindow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvpipfloatingwindow()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L4088"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvrecordingsviewport",
-      "label": "TvRecordingsViewport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvrecordingsviewport()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L926"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvsettingsviewport",
-      "label": "TvSettingsViewport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvsettingsviewport()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3063"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvsidebar",
-      "label": "TvSidebar()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvsidebar()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L273"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtelemetrymetriccard",
-      "label": "TvTelemetryMetricCard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvtelemetrymetriccard()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3037"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolcard",
-      "label": "TvToolCard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvtoolcard()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2622"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_components_seamlesscameraimage_seamlesscameraimage",
@@ -4743,6 +4515,234 @@
       "source_location": "L9"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
+      "label": ".pingServer()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": ".pingserver()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1295"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_triggerpip",
+      "label": ".triggerPiP()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": ".triggerpip()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
+      "source_location": "L288"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardestabilidadedevideo",
+      "label": "CardEstabilidadeDeVideo()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "cardestabilidadedevideo()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2016"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardlarguradebanda",
+      "label": "CardLarguraDeBanda()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "cardlarguradebanda()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2230"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardsubsistemasecomandos",
+      "label": "CardSubsistemasEComandos()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "cardsubsistemasecomandos()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2487"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardtestedebanda",
+      "label": "CardTesteDeBanda()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "cardtestedebanda()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L1807"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvcamerasviewport",
+      "label": "TvCamerasViewport()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvcamerasviewport()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L491"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvcapturecard",
+      "label": "TvCaptureCard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvcapturecard()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L1114"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvclipplayerdialog",
+      "label": "TvClipPlayerDialog()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvclipplayerdialog()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L3939"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvdiagnosticrow",
+      "label": "TvDiagnosticRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvdiagnosticrow()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2598"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvfullscreenlivedialog",
+      "label": "TvFullScreenLiveDialog()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvfullscreenlivedialog()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L3827"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvnetflixscreencore",
+      "label": "TvNetflixScreenCore()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvnetflixscreencore()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L87"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvpipfloatingwindow",
+      "label": "TvPipFloatingWindow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvpipfloatingwindow()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L4088"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvrecordingsviewport",
+      "label": "TvRecordingsViewport()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvrecordingsviewport()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L926"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvsettingsviewport",
+      "label": "TvSettingsViewport()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvsettingsviewport()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L3063"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvsidebar",
+      "label": "TvSidebar()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvsidebar()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L273"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtelemetrymetriccard",
+      "label": "TvTelemetryMetricCard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvtelemetrymetriccard()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L3037"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolcard",
+      "label": "TvToolCard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvtoolcard()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2622"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolsviewport",
+      "label": "TvToolsViewport()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvtoolsviewport()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L1289"
+    },
+    {
       "id": "backend_app_services_telemetry_telemetryservice_get_cpu_temperature",
       "label": ".get_cpu_temperature()",
       "_callable": true,
@@ -5019,66 +5019,6 @@
       "source_location": "L238"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview",
-      "label": "MseCameraView()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "msecameraview()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L34"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169_onpermissionrequest",
-      "label": ".onPermissionRequest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".onpermissionrequest()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L170"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onpagefinished",
-      "label": ".onPageFinished()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".onpagefinished()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L185"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivederror",
-      "label": ".onReceivedError()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".onreceivederror()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L231"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
-      "label": ".onReceivedSslError()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".onreceivedsslerror()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L176"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_sentinelaremotelogger_flushbatch",
       "label": ".flushBatch()",
       "_callable": true,
@@ -5137,6 +5077,42 @@
       "norm_label": ".log()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/logging/SentinelaRemoteLogger.kt",
       "source_location": "L69"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
+      "label": ".runBandwidthTestSuite()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": ".runbandwidthtestsuite()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L986"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingleconnectionendpoint",
+      "label": ".testSingleConnectionEndpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": ".testsingleconnectionendpoint()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L672"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testvideopipelinestability",
+      "label": ".testVideoPipelineStability()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": ".testvideopipelinestability()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L861"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_src_utils_audiofeedback_tvaudiomanager_constructor",
@@ -5221,6 +5197,66 @@
       "norm_label": ".setenabled()",
       "source_file": "ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts",
       "source_location": "L25"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview",
+      "label": "MseCameraView()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "msecameraview()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L34"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169_onpermissionrequest",
+      "label": ".onPermissionRequest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": ".onpermissionrequest()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L170"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onpagefinished",
+      "label": ".onPageFinished()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": ".onpagefinished()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L185"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivederror",
+      "label": ".onReceivedError()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": ".onreceivederror()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L231"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
+      "label": ".onReceivedSslError()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": ".onreceivedsslerror()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L176"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_src_app_app",
@@ -5353,6 +5389,90 @@
       "norm_label": "tvtoolsview()",
       "source_file": "ai_studio_imports/sentinela-pro-tv/src/components/tv/TvToolsView.tsx",
       "source_location": "L5"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getauditlogs",
+      "label": ".getAuditLogs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": ".getauditlogs()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L565"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
+      "label": ".getClientLogs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": ".getclientlogs()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1615"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_gettelemetry",
+      "label": ".getTelemetry()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": ".gettelemetry()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L426"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvlogsviewport",
+      "label": "TvLogsViewport()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "tvlogsviewport()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2691"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkclienttrusted",
+      "label": ".checkClientTrusted()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "X509TrustManager",
+      "file_type": "code",
+      "norm_label": ".checkclienttrusted()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L72"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkservertrusted",
+      "label": ".checkServerTrusted()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "X509TrustManager",
+      "file_type": "code",
+      "norm_label": ".checkservertrusted()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L73"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_getacceptedissuers",
+      "label": ".getAcceptedIssuers()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "X509TrustManager",
+      "file_type": "code",
+      "norm_label": ".getacceptedissuers()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L71"
     },
     {
       "id": "frontend_src_utils_logger_formattimestamp",
@@ -5691,18 +5811,6 @@
       "source_location": "L1351"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getauditlogs",
-      "label": ".getAuditLogs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".getauditlogs()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L565"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getcameras",
       "label": ".getCameras()",
       "_callable": true,
@@ -5725,18 +5833,6 @@
       "norm_label": ".getcaptures()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L356"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
-      "label": ".getClientLogs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".getclientlogs()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1615"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicemacaddress",
@@ -5799,18 +5895,6 @@
       "source_location": "L500"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_gettelemetry",
-      "label": ".getTelemetry()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".gettelemetry()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L426"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection",
       "label": ".openConnection()",
       "_callable": true,
@@ -5821,42 +5905,6 @@
       "norm_label": ".openconnection()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L64"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkclienttrusted",
-      "label": ".checkClientTrusted()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".checkclienttrusted()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L72"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkservertrusted",
-      "label": ".checkServerTrusted()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".checkservertrusted()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L73"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_getacceptedissuers",
-      "label": ".getAcceptedIssuers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".getacceptedissuers()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L71"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pausealerts",
@@ -5931,18 +5979,6 @@
       "source_location": "L1545"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
-      "label": ".runBandwidthTestSuite()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".runbandwidthtestsuite()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L986"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runspeedandpingtest",
       "label": ".runSpeedAndPingTest()",
       "_callable": true,
@@ -5979,18 +6015,6 @@
       "source_location": "L1426"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingleconnectionendpoint",
-      "label": ".testSingleConnectionEndpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".testsingleconnectionendpoint()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L672"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingletv",
       "label": ".testSingleTv()",
       "_callable": true,
@@ -6001,18 +6025,6 @@
       "norm_label": ".testsingletv()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L1391"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testvideopipelinestability",
-      "label": ".testVideoPipelineStability()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".testvideopipelinestability()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L861"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_toggleremotemaster",
@@ -6037,18 +6049,6 @@
       "norm_label": ".updatedevicepermissions()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L1213"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolsviewport",
-      "label": "TvToolsViewport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "tvtoolsviewport()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L1289"
     },
     {
       "id": "frontend_src_app_settings_backup_page_backupsettingspage",
@@ -9128,6 +9128,39 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_app_db_models",
+      "label": "models.py",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "api/telemetry.py",
+      "file_type": "code",
+      "norm_label": "models.py",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_services_audit_service",
+      "label": "audit_service.py",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "api/telemetry.py",
+      "file_type": "code",
+      "norm_label": "audit_service.py",
+      "source_file": "backend/app/services/audit_service.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "base",
+      "label": "Base",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "api/telemetry.py",
+      "file_type": "code",
+      "norm_label": "base",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "logrecord",
       "label": "LogRecord",
       "_origin": "ast",
@@ -9271,6 +9304,17 @@
       "source_location": "L30"
     },
     {
+      "id": "backend_app_services_audit_service_rationale_18",
+      "label": "Records an audit log entry in SQLite asynchronously.",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "api/telemetry.py",
+      "file_type": "rationale",
+      "norm_label": "records an audit log entry in sqlite asynchronously.",
+      "source_file": "backend/app/services/audit_service.py",
+      "source_location": "L18"
+    },
+    {
       "id": "backend_app_api_devices",
       "label": "devices.py",
       "_origin": "ast",
@@ -9355,39 +9399,6 @@
       "community_name": "devices.py",
       "file_type": "code",
       "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_db_models",
-      "label": "models.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "models.py",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_services_audit_service",
-      "label": "audit_service.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "audit_service.py",
-      "source_file": "backend/app/services/audit_service.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "base",
-      "label": "Base",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "base",
       "source_file": "",
       "source_location": ""
     },
@@ -9555,17 +9566,6 @@
       "norm_label": "toggles master admin rights for a smartphone device with debounce and...",
       "source_file": "backend/app/api/devices.py",
       "source_location": "L971"
-    },
-    {
-      "id": "backend_app_services_audit_service_rationale_18",
-      "label": "Records an audit log entry in SQLite asynchronously.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "records an audit log entry in sqlite asynchronously.",
-      "source_file": "backend/app/services/audit_service.py",
-      "source_location": "L18"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_tsconfig",
@@ -9843,6 +9843,182 @@
       "source_location": ""
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_10s",
+      "label": "D_10S",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "d_10s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L112"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_15s",
+      "label": "D_15S",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "d_15s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L113"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_20s",
+      "label": "D_20S",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "d_20s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L114"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_30s",
+      "label": "D_30S",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "d_30s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L115"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_45s",
+      "label": "D_45S",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "d_45s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L116"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_5s",
+      "label": "D_5S",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "d_5s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L111"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_60s",
+      "label": "D_60S",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "d_60s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L117"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_infinite",
+      "label": "INFINITE",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "infinite",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L118"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_cinema",
+      "label": "CINEMA",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "cinema",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L96"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_large",
+      "label": "EXTRA_LARGE",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "extra_large",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L95"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_small",
+      "label": "EXTRA_SMALL",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "extra_small",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L89"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_large",
+      "label": "LARGE",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "large",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L94"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium",
+      "label": "MEDIUM",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "medium",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L92"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_large",
+      "label": "MEDIUM_LARGE",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "medium_large",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L93"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_small",
+      "label": "MEDIUM_SMALL",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "medium_small",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L91"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_small",
+      "label": "SMALL",
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "SentinelaPreferences",
+      "file_type": "code",
+      "norm_label": "small",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L90"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences",
       "label": "SentinelaPreferences.kt",
       "_origin": "ast",
@@ -9887,17 +10063,6 @@
       "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_context",
-      "label": "Context",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "context",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaconfig",
       "label": "SentinelaConfig.kt",
       "_origin": "ast",
@@ -9918,61 +10083,6 @@
       "norm_label": "tvleanbackgrid.kt",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt",
       "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen",
-      "label": "TvNetflixScreen.kt",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvnetflixscreen.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_android",
-      "label": "android",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "android",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_color",
-      "label": "Color",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "color",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_com",
-      "label": "com",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "com",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_modifier",
-      "label": "Modifier",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "modifier",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_components_seamlesscameraimage",
@@ -10030,17 +10140,6 @@
       "source_location": ""
     },
     {
-      "id": "androidx",
-      "label": "androidx",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "androidx",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "bundle",
       "label": "Bundle",
       "_origin": "ast",
@@ -10048,17 +10147,6 @@
       "community_name": "SentinelaPreferences",
       "file_type": "code",
       "norm_label": "bundle",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "cameraentity",
-      "label": "CameraEntity",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "cameraentity",
       "source_file": "",
       "source_location": ""
     },
@@ -10085,39 +10173,6 @@
       "source_location": ""
     },
     {
-      "id": "focusrequester",
-      "label": "FocusRequester",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "focusrequester",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "imagevector",
-      "label": "ImageVector",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "imagevector",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "pipalert",
-      "label": "PipAlert",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "pipalert",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "sharedpreferences",
       "label": "SharedPreferences",
       "_origin": "ast",
@@ -10125,17 +10180,6 @@
       "community_name": "SentinelaPreferences",
       "file_type": "code",
       "norm_label": "sharedpreferences",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "tvtab",
-      "label": "TvTab",
-      "_origin": "ast",
-      "community": 22,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "tvtab",
       "source_file": "",
       "source_location": ""
     },
@@ -10316,92 +10360,136 @@
       "source_location": "L70"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_cinema",
-      "label": "CINEMA",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_context",
+      "label": "Context",
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "cinema",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L96"
+      "norm_label": "context",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_large",
-      "label": "EXTRA_LARGE",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen",
+      "label": "TvNetflixScreen.kt",
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "extra_large",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L95"
+      "norm_label": "tvnetflixscreen.kt",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L1"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_extra_small",
-      "label": "EXTRA_SMALL",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_android",
+      "label": "android",
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "extra_small",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L89"
+      "norm_label": "android",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_large",
-      "label": "LARGE",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_color",
+      "label": "Color",
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "large",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L94"
+      "norm_label": "color",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium",
-      "label": "MEDIUM",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_com",
+      "label": "com",
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "medium",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L92"
+      "norm_label": "com",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_large",
-      "label": "MEDIUM_LARGE",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_modifier",
+      "label": "Modifier",
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "medium_large",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L93"
+      "norm_label": "modifier",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_medium_small",
-      "label": "MEDIUM_SMALL",
+      "id": "androidx",
+      "label": "androidx",
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "medium_small",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L91"
+      "norm_label": "androidx",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipsize_small",
-      "label": "SMALL",
+      "id": "cameraentity",
+      "label": "CameraEntity",
       "_origin": "ast",
       "community": 24,
-      "community_name": "PipSize",
+      "community_name": "TvNetflixScreen.kt",
       "file_type": "code",
-      "norm_label": "small",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L90"
+      "norm_label": "cameraentity",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "focusrequester",
+      "label": "FocusRequester",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "focusrequester",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "imagevector",
+      "label": "ImageVector",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "imagevector",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "pipalert",
+      "label": "PipAlert",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "pipalert",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "tvtab",
+      "label": "TvTab",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "tvtab",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "frontend_package",
@@ -11577,17 +11665,6 @@
       "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_context",
-      "label": "Context",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "context",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_intent",
       "label": "Intent",
       "_origin": "ast",
@@ -11644,94 +11721,6 @@
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_webviewclient",
-      "label": "WebViewClient",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webviewclient",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
-      "label": "MseCameraView.kt",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "msecameraview.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
-      "label": "android",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "android",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
-      "label": "Modifier",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "modifier",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_permissionrequest",
-      "label": "PermissionRequest",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "permissionrequest",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_sslerrorhandler",
-      "label": "SslErrorHandler",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "sslerrorhandler",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webchromeclient",
-      "label": "WebChromeClient",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webchromeclient",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webview",
-      "label": "WebView",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webview",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webviewclient",
       "label": "WebViewClient",
       "_origin": "ast",
       "community": 3,
@@ -11848,28 +11837,6 @@
       "community_name": "OverlayService",
       "file_type": "code",
       "norm_label": "view",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "webresourceerror",
-      "label": "WebResourceError",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webresourceerror",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "webresourcerequest",
-      "label": "WebResourceRequest",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webresourcerequest",
       "source_file": "",
       "source_location": ""
     },
@@ -13001,92 +12968,70 @@
       "source_location": "L27"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_10s",
-      "label": "D_10S",
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models",
+      "label": "Models.kt",
       "_origin": "ast",
       "community": 35,
-      "community_name": "PipDuration",
+      "community_name": "Models.kt",
       "file_type": "code",
-      "norm_label": "d_10s",
+      "norm_label": "models.kt",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L112"
+      "source_location": "L1"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_15s",
-      "label": "D_15S",
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_failed",
+      "label": "FAILED",
       "_origin": "ast",
       "community": 35,
-      "community_name": "PipDuration",
+      "community_name": "Models.kt",
       "file_type": "code",
-      "norm_label": "d_15s",
+      "norm_label": "failed",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L113"
+      "source_location": "L146"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_20s",
-      "label": "D_20S",
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_idle",
+      "label": "IDLE",
       "_origin": "ast",
       "community": 35,
-      "community_name": "PipDuration",
+      "community_name": "Models.kt",
       "file_type": "code",
-      "norm_label": "d_20s",
+      "norm_label": "idle",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L114"
+      "source_location": "L143"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_30s",
-      "label": "D_30S",
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_success",
+      "label": "SUCCESS",
       "_origin": "ast",
       "community": 35,
-      "community_name": "PipDuration",
+      "community_name": "Models.kt",
       "file_type": "code",
-      "norm_label": "d_30s",
+      "norm_label": "success",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L115"
+      "source_location": "L145"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_45s",
-      "label": "D_45S",
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_testing",
+      "label": "TESTING",
       "_origin": "ast",
       "community": 35,
-      "community_name": "PipDuration",
+      "community_name": "Models.kt",
       "file_type": "code",
-      "norm_label": "d_45s",
+      "norm_label": "testing",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L116"
+      "source_location": "L144"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_5s",
-      "label": "D_5S",
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_com",
+      "label": "com",
       "_origin": "ast",
       "community": 35,
-      "community_name": "PipDuration",
+      "community_name": "Models.kt",
       "file_type": "code",
-      "norm_label": "d_5s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L111"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_60s",
-      "label": "D_60S",
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "PipDuration",
-      "file_type": "code",
-      "norm_label": "d_60s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L117"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_infinite",
-      "label": "INFINITE",
-      "_origin": "ast",
-      "community": 35,
-      "community_name": "PipDuration",
-      "file_type": "code",
-      "norm_label": "infinite",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L118"
+      "norm_label": "com",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "frontend_public_manifest",
@@ -13197,6 +13142,116 @@
       "norm_label": "theme_color",
       "source_file": "frontend/public/manifest.json",
       "source_location": "L8"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
+      "label": "MseCameraView.kt",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "msecameraview.kt",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L1"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
+      "label": "android",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "android",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
+      "label": "Modifier",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "modifier",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_permissionrequest",
+      "label": "PermissionRequest",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "permissionrequest",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_sslerrorhandler",
+      "label": "SslErrorHandler",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "sslerrorhandler",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webchromeclient",
+      "label": "WebChromeClient",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webchromeclient",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webview",
+      "label": "WebView",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webview",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webviewclient",
+      "label": "WebViewClient",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webviewclient",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "webresourceerror",
+      "label": "WebResourceError",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webresourceerror",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "webresourcerequest",
+      "label": "WebResourceRequest",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webresourcerequest",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "android_gradlew",
@@ -13641,6 +13696,83 @@
       "norm_label": "vocabulario \u2014 fale sempre em portugues simples",
       "source_file": ".agents/skills/onp-spec-driven/SKILL.md",
       "source_location": "L25"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository",
+      "label": "SentinelaRepository.kt",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "sentinelarepository.kt",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_context",
+      "label": "Context",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "context",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "httpurlconnection",
+      "label": "HttpURLConnection",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "httpurlconnection",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "telemetrydata",
+      "label": "TelemetryData",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "telemetrydata",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "url",
+      "label": "URL",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "url",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_java",
+      "label": "java",
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "X509TrustManager",
+      "file_type": "code",
+      "norm_label": "java",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_x509trustmanager",
+      "label": "X509TrustManager",
+      "_origin": "ast",
+      "community": 42,
+      "community_name": "X509TrustManager",
+      "file_type": "code",
+      "norm_label": "x509trustmanager",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "implementation_plan",
@@ -14481,116 +14613,6 @@
       "source_location": "L1"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models",
-      "label": "Models.kt",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "models.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_failed",
-      "label": "FAILED",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "failed",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L146"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_idle",
-      "label": "IDLE",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "idle",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L143"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_success",
-      "label": "SUCCESS",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "success",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L145"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_testing",
-      "label": "TESTING",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "testing",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L144"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository",
-      "label": "SentinelaRepository.kt",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "sentinelarepository.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_com",
-      "label": "com",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "com",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_java",
-      "label": "java",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "java",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_x509trustmanager",
-      "label": "X509TrustManager",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "x509trustmanager",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "httpurlconnection",
-      "label": "HttpURLConnection",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "httpurlconnection",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "put",
       "label": "put",
       "_origin": "ast",
@@ -14598,28 +14620,6 @@
       "community_name": "SentinelaRepository",
       "file_type": "code",
       "norm_label": "put",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "telemetrydata",
-      "label": "TelemetryData",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "telemetrydata",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "url",
-      "label": "URL",
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "url",
       "source_file": "",
       "source_location": ""
     },
@@ -16420,7 +16420,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L413"
+      "source_location": "L432"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -16444,7 +16444,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.114 (otimizacao termica, atomicidade e unificacao web)",
       "source_file": "STATE.md",
-      "source_location": "L72"
+      "source_location": "L91"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
@@ -16456,17 +16456,29 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.115 (correcao da aba cameras nos apks, harmonizacao mse e cache-busting web)",
       "source_file": "STATE.md",
-      "source_location": "L49"
+      "source_location": "L68"
     },
     {
-      "id": "state_vers\u00e3o_atual_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
-      "label": "\ud83d\udce6 Vers\u00e3o Atual: v001.000.000.116 (Resolu\u00e7\u00e3o de PiP na TV, Reconcilia\u00e7\u00e3o Master, Capturas HD e Desduplica\u00e7\u00e3o de C\u00e2meras)",
+      "id": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
+      "label": "\ud83d\udce6 Vers\u00e3o Anterior: v001.000.000.116 (Resolu\u00e7\u00e3o de PiP na TV, Reconcilia\u00e7\u00e3o Master, Capturas HD e Desduplica\u00e7\u00e3o de C\u00e2meras)",
       "_origin": "ast",
       "community": 93,
       "community_name": "STATE.md \u2014 Mem\u00f3ria Persistente do Projeto",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce6 versao atual: v001.000.000.116 (resolucao de pip na tv, reconciliacao master, capturas hd e desduplicacao de cameras)",
+      "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.116 (resolucao de pip na tv, reconciliacao master, capturas hd e desduplicacao de cameras)",
+      "source_file": "STATE.md",
+      "source_location": "L55"
+    },
+    {
+      "id": "state_vers\u00e3o_atual_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
+      "label": "\ud83d\udce6 Vers\u00e3o Atual: v001.000.000.117 (Estabilidade Multi-Dispositivo de PiP, Zero-Cache Nginx Host & App Web)",
+      "_origin": "ast",
+      "community": 93,
+      "community_name": "STATE.md \u2014 Mem\u00f3ria Persistente do Projeto",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\udce6 versao atual: v001.000.000.117 (estabilidade multi-dispositivo de pip, zero-cache nginx host & app web)",
       "source_file": "STATE.md",
       "source_location": "L36"
     },
@@ -37983,7 +37995,7 @@
     },
     {
       "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_atual_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
+      "target": "state_vers\u00e3o_atual_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -38000,7 +38012,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L413",
+      "source_location": "L432",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L55",
       "weight": 1.0
     },
     {
@@ -38011,18 +38034,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L49",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L72",
+      "source_location": "L68",
       "weight": 1.0
     },
     {
@@ -38034,6 +38046,17 @@
       "confidence_score": 1.0,
       "source_file": "STATE.md",
       "source_location": "L9",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -42993,5 +43016,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "3c8caa580aa3069ae18255534a7b6c994a6614ad"
+  "built_at_commit": "1beca28d7ab60a17b26660b68b9186ce96af1109"
 }

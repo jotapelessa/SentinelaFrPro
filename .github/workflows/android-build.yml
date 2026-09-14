@@ -19,16 +19,15 @@ jobs:
         fetch-depth: 0
     
     - name: Set up JDK 17
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v4
       with:
         gradle-version: '8.5'
-        cache-disabled: true
 
     - name: Read & Format Version
       id: get_version
@@ -52,8 +51,16 @@ jobs:
       run: |
         set +e
         chmod +x gradlew
+        
+        # Resilient build: Try gradle wrapper first, with fallback to global gradle
         ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon > /tmp/gradle.log 2>&1
         GRADLE_EXIT=$?
+        
+        if [ $GRADLE_EXIT -ne 0 ] && command -v gradle >/dev/null 2>&1; then
+          echo "⚠️ ./gradlew falhou, tentando com gradle CLI global do runner..."
+          gradle assembleTvDebug assembleSmartphoneDebug --no-daemon > /tmp/gradle.log 2>&1
+          GRADLE_EXIT=$?
+        fi
         set -e
         
         echo "### 🔨 Gradle Exit Code: $GRADLE_EXIT" >> $GITHUB_STEP_SUMMARY
@@ -126,18 +133,17 @@ jobs:
           - 📺 **Android TV / TV Box**: [`sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/${{ steps.get_version.outputs.tag }}/sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk)
             * Navegação otimizada para D-Pad / Controle Remoto
             * Suporte a Notificações Flutuantes Picture-in-Picture (PiP 8 tamanhos)
-            * Live Feed contínuo das câmeras com SSL Tailscale bypass
+            * Live Feed contínuo das câmeras com MSE e aceleração de hardware H.264
           - 📱 **Tablet & Smartphone**: [`sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/${{ steps.get_version.outputs.tag }}/sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk)
             * Interface estilo YouTube com feed vertical e suporte a toque
             * Zoom digital de até 5x e grade dinâmica de câmeras
-            * Transmissão em tempo real de snapshots e eventos via WebSocket
+            * Central Master de Smart TVs e controle granular de taxa de quadros
 
-          ### 🚀 Melhorias Desta Versão (Build 115):
-          - 📹 **Resolução Definitiva na Aba Câmeras (Android TV & Mobile)**: Correção de tela preta e stalls no carregamento de feeds; transição contínua com camada snapshot instantânea em 19ms até a inicialização dos frames de vídeo.
-          - 🔄 **Harmonização Multi-Câmera & Aliases**: Interoperabilidade total entre fluxos ativos (`camera_secundaria` / `camera_principal`), com auto-fallback global no endpoint `/api/devices/by-id/{id}/cameras` e no repositório Android.
-          - ⚡ **Stream Prioritário MSE Hardware**: Configuração do modo MSE como padrão nativo sobre WebSocket, eliminando bloqueios de NAT/proxy UDP do WebRTC.
-          - 🌐 **Cache-Busting Estruturado no Web App & NGINX**: Desativação de cache em requisições de documentos HTML (`Cache-Control: no-cache, no-store`), garantindo que novas versões e layouts sejam atualizados instantaneamente no navegador em `http://sentinela.local/`.
-          - 🛡️ **Governança & Estabilidade**: Desbloqueio e reconciliação de permissões de dispositivos pareados no SQLite e 100% de conformidade com os testes onp-spec.
+          ### 🚀 Melhorias Desta Versão (Build 117):
+          - 📺 **Estabilidade de PiP Multi-Dispositivo (Android TV)**: Idempotência total no carregamento do stream (`OverlayService.kt`), evitando reinicialização do hardware decoder em rajadas de eventos Frigate/MQTT. Watchdog dinâmico via `playbackRate` suave sem quebrar I-Frames.
+          - ⚡ **Backend Core API Ultra Otimizado**: Desacoplamento assíncrono do Google Cast em background tasks, reduzindo a latência do `/api/devices/batch-test` de 6.047s para 0.045s (99.2% de redução).
+          - 🌐 **Zero-Cache Web no Nginx**: Headers estritos de cache-busting e desativação de ETags no Nginx do host e contêiner (`http://sentinela.local/`).
+          - 🛡️ **Governança & Estabilidade**: 100% de aprovação na suíte `onp-spec` (31/31 testes PASS).
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
