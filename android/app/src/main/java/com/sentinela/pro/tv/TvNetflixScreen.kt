@@ -3448,9 +3448,12 @@ fun TvSettingsViewport(
                         horizontalArrangement = Arrangement.spacedBy(16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        val targetCam = cameras.firstOrNull { it.status == CameraStatus.ONLINE }?.name
-                            ?: cameras.firstOrNull()?.name
+                        val targetCam = cameras.firstOrNull { it.status == CameraStatus.ONLINE }?.id
+                            ?: cameras.firstOrNull()?.id
                             ?: "camera_secundaria"
+                        val targetCamLabel = cameras.firstOrNull { it.id == targetCam }?.name
+                            ?: cameras.firstOrNull()?.name
+                            ?: "Câmera Principal"
 
                         Box(
                             modifier = Modifier
@@ -3499,14 +3502,36 @@ fun TvSettingsViewport(
                                 onClick = {
                                     val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/frigate/api/$targetCam/latest.jpg?h=720"
                                     val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=$targetCam&mode=mse&width=100%"
-                                    com.sentinela.pro.tv.OverlayService.triggerPiP(
-                                        context = context,
-                                        camera = targetCam,
-                                        label = "TESTE PIP PREVIEW",
-                                        snapshotUrl = testSnap,
-                                        streamUrl = testStream
-                                    )
-                                    Toast.makeText(context, "🔔 Janela PiP disparada sobre a TV ($targetCam)!", Toast.LENGTH_SHORT).show()
+                                    
+                                    val hasOverlayPerm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                        android.provider.Settings.canDrawOverlays(context)
+                                    } else true
+
+                                    if (hasOverlayPerm) {
+                                        com.sentinela.pro.tv.OverlayService.triggerPiP(
+                                            context = context,
+                                            camera = targetCam,
+                                            label = "TESTE PIP PREVIEW",
+                                            snapshotUrl = testSnap,
+                                            streamUrl = testStream
+                                        )
+                                        Toast.makeText(context, "🔔 Janela PiP disparada sobre a TV ($targetCam)!", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        val selectedCamEntity = cameras.firstOrNull { it.id == targetCam } ?: CameraEntity(
+                                            id = targetCam,
+                                            name = targetCamLabel,
+                                            thumbnailUrl = testSnap,
+                                            streamUrl = testStream
+                                        )
+                                        activePipAlert = PipAlert(
+                                            id = "pip_test_${System.currentTimeMillis()}",
+                                            camera = selectedCamEntity,
+                                            eventDescription = "Prévia PiP Real Disparada",
+                                            snapshotUrl = testSnap,
+                                            countdownSeconds = com.sentinela.pro.data.PipDuration.values()[durIndex].seconds
+                                        )
+                                        Toast.makeText(context, "🔔 Janela PiP In-App aberta na TV! ($targetCam)", Toast.LENGTH_SHORT).show()
+                                    }
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = TvColors.NetflixRed),
                                 shape = TvShapes.Badge,

@@ -33,7 +33,20 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
-## 📦 Versão Atual: v001.000.000.115 (Correção da Aba Câmeras nos APKs, Harmonização MSE e Cache-Busting Web)
+## 📦 Versão Atual: v001.000.000.116 (Resolução de PiP na TV, Reconciliação Master, Capturas HD e Desduplicação de Câmeras)
+- **Data**: 2026-09-14
+- **Objetivo**: Resolução definitiva dos 5 problemas críticos relatados pelo usuário:
+  1. **Item 1.1 (Android TV)**: Corrigido o seletor da prévia PiP em `TvNetflixScreen.kt` para usar `it.id` (slug do stream) eliminando 404 de URLs com friendly name. Adicionado fallback in-app garantido com `activePipAlert` quando a TV não possui permissão `SYSTEM_ALERT_WINDOW`.
+  2. **Item 2.1 (Smartphone)**: Otimização do streaming sob Tailscale Funnel com modo `mse` (WebSocket TCP) prioritário e `webrtc,mse` tolerante a falhas ICE UDP, com injeção explícita de `ImageLoader` SSL confiável.
+  3. **Item 2.2 (Smartphone)**: Reconciliação agnóstica de IP por `device_model` e `device_type` em `backend/app/api/devices.py`, herdando atômica e automaticamente a flag `is_master_admin` e purgando duplicatas órfãs do banco SQLite.
+  4. **Item 2.3 (Smartphone)**: Desabilitação da câmera redundante clone no Frigate NVR (`camera_principal: enabled: false`), mantendo apenas a câmera física real ativa (`camera_secundaria`), reduzindo pela metade o consumo de CPU e tráfego de rede.
+  5. **Item 2.4 (Smartphone)**: Bypass de restrições de câmeras em `SentinelaRepository.getCaptures` para Master Admin e fornecimento de snapshots em resolução máxima Full HD (`?clean=1&h=1080`) tanto na galeria quanto no visualizador em tela cheia com zoom até 5x.
+  6. **Item 3.1 (Web Sentinela)**: Atualização semântica global para `v001.000.000.116`, com headers estritos de cache-busting no Nginx.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.115 (Correção da Aba Câmeras nos APKs, Harmonização MSE e Cache-Busting Web)
 - **Data**: 2026-09-14
 - **Objetivo**: Resolução definitiva da exibição das câmeras nos APKs Android TV e Smartphone (Item 1.1 e 2.1), erradicação de tela preta com MSE prioritário e snapshot contínuo, eliminação de cache HTTP desatualizado no web app (`http://sentinela.local/`), reconciliação de permissões de dispositivos pareados no SQLite e harmonização de fluxos ativos no Frigate e go2rtc.
 - **Entregas Principais**:

@@ -766,13 +766,15 @@ fun PhoneCapturesTab() {
                                     .background(Color.Black)
                             ) {
                                 val photoUrl = ev.snapshotUrl.ifBlank {
-                                    "${SentinelaConfig.BASE_URL}/api/events/${ev.id}/snapshot.jpg"
+                                    "${SentinelaConfig.BASE_URL}/frigate/api/events/${ev.id}/snapshot.jpg?clean=1&h=1080"
                                 }
+                                val imageLoader = remember { coil.Coil.imageLoader(context) }
                                 AsyncImage(
-                                    model = ImageRequest.Builder(LocalContext.current)
+                                    model = ImageRequest.Builder(context)
                                         .data(photoUrl)
                                         .crossfade(true)
                                         .build(),
+                                    imageLoader = imageLoader,
                                     contentDescription = ev.label,
                                     contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
@@ -2720,11 +2722,13 @@ fun PhonePhotoViewerDialog(
                 contentAlignment = Alignment.Center
             ) {
                 val highResUrl = event.snapshotUrl.ifBlank {
-                    "${SentinelaConfig.BASE_URL}/api/events/${event.id}/snapshot.jpg"
+                    "${SentinelaConfig.BASE_URL}/frigate/api/events/${event.id}/snapshot.jpg?clean=1&h=1080"
                 }
+                val context = LocalContext.current
+                val imageLoader = remember { coil.Coil.imageLoader(context) }
 
                 AsyncImage(
-                    model = ImageRequest.Builder(LocalContext.current)
+                    model = ImageRequest.Builder(context)
                         .data(highResUrl)
                         .crossfade(true)
                         .listener(
@@ -2733,6 +2737,7 @@ fun PhonePhotoViewerDialog(
                             onError = { _, _ -> isLoadingImage = false; isImageError = true }
                         )
                         .build(),
+                    imageLoader = imageLoader,
                     contentDescription = event.label,
                     modifier = Modifier
                         .fillMaxSize()

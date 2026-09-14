@@ -348,21 +348,21 @@ object SentinelaRepository {
         }
 
         if (list.isEmpty()) {
-            list.add(CameraItem("camera_secundaria", "Câmera Secundária (Entrada)", true))
-            list.add(CameraItem("camera_principal", "Câmera Principal", true))
+            list.add(CameraItem("camera_secundaria", "Câmera IP ONVIF (192.168.1.6)", true))
         }
         list
     }
 
     suspend fun getCaptures(deviceIdentifier: String? = null): List<CaptureEvent> = withContext(Dispatchers.IO) {
         val list = mutableListOf<CaptureEvent>()
-        // First get allowed camera names for this device if provided
-        val allowedCamNames = if (!deviceIdentifier.isNullOrBlank()) {
-            getCameras(deviceIdentifier).map { it.name }.toSet()
+        // First get allowed camera names for this device if provided (Master Admin always has access to all cameras)
+        val allowedCamNames = if (!deviceIdentifier.isNullOrBlank() && !isMasterAdmin) {
+            val fetched = getCameras(deviceIdentifier).map { it.name }.toSet()
+            if (fetched.isNotEmpty()) fetched else null
         } else null
 
         try {
-            val url = URL("${SentinelaConfig.BASE_URL}/api/events?limit=50")
+            val url = URL("${SentinelaConfig.BASE_URL}/api/events?limit=60")
             val conn = openConnection(url).apply {
                 connectTimeout = 5000
                 readTimeout = 5000
@@ -377,9 +377,9 @@ object SentinelaRepository {
 
                 for (i in 0 until jsonArray.length()) {
                     val obj = jsonArray.getJSONObject(i)
-                    val camera = obj.optString("camera", "camera_principal")
+                    val camera = obj.optString("camera", "camera_secundaria")
                     
-                    // Filter captures to only permitted cameras (if list is non-empty)
+                    // Filter captures to only permitted cameras (if restriction exists and device is not master)
                     if (allowedCamNames != null && allowedCamNames.isNotEmpty() && !allowedCamNames.contains(camera)) {
                         continue
                     }
@@ -388,8 +388,8 @@ object SentinelaRepository {
                     val label = obj.optString("label", "Movimento")
                     val score = obj.optInt("score", 0)
                     val timestamp = obj.optString("timestamp", "")
-                    val snapshotUrl = "${SentinelaConfig.BASE_URL}/api/events/$id/snapshot.jpg"
-                    val clipUrl = "${SentinelaConfig.BASE_URL}/api/events/$id/clip.mp4"
+                    val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/events/$id/snapshot.jpg?clean=1&h=1080"
+                    val clipUrl = "${SentinelaConfig.BASE_URL}/frigate/api/events/$id/clip.mp4"
                     val hasClip = obj.optBoolean("has_clip", true)
                     val retained = obj.optBoolean("retained", false)
                     val duration = if (obj.has("duration") && !obj.isNull("duration")) obj.optDouble("duration") else null

@@ -47,7 +47,7 @@ fun MseCameraView(
         val modeQuery = when (streamMode.lowercase()) {
             "eco" -> "mode=mjpeg"
             "mse" -> "mode=mse"
-            "webrtc" -> "mode=webrtc"
+            "webrtc" -> "mode=webrtc,mse"
             else -> "mode=mse"
         }
         "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&${modeQuery}&width=100%"
@@ -60,6 +60,8 @@ fun MseCameraView(
     var hasError by remember(cameraName) { mutableStateOf(false) }
 
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val imageLoader = remember { coil.Coil.imageLoader(context) }
 
     DisposableEffect(lifecycleOwner, cameraName) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
@@ -105,7 +107,11 @@ fun MseCameraView(
 
     if (!isStreaming || !isAppInForeground) {
         coil.compose.AsyncImage(
-            model = snapshotUrl,
+            model = coil.request.ImageRequest.Builder(context)
+                .data(snapshotUrl)
+                .crossfade(true)
+                .build(),
+            imageLoader = imageLoader,
             contentDescription = contentDescription ?: cameraName,
             modifier = modifier.fillMaxSize(),
             contentScale = androidx.compose.ui.layout.ContentScale.Crop
@@ -121,7 +127,11 @@ fun MseCameraView(
     ) {
         // Instant Snapshot Base Layer (Loads in 19ms, 0 delay)
         coil.compose.AsyncImage(
-            model = snapshotUrl,
+            model = coil.request.ImageRequest.Builder(context)
+                .data(snapshotUrl)
+                .crossfade(true)
+                .build(),
+            imageLoader = imageLoader,
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = androidx.compose.ui.layout.ContentScale.Crop

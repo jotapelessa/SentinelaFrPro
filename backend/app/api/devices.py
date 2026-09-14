@@ -170,22 +170,20 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         if dev:
             dev.device_identifier = hb.device_identifier
 
-    # Reconcile by IP and Model if reinstalled (e.g. moto g54, TCL TV)
-    if not dev:
-        target_ip = hb.ip_address or client_ip
-        if target_ip not in ["127.0.0.1", "localhost"] and hb.device_model:
-            clean_model = hb.device_model.lower().replace(" ", "").replace("_", "").replace("-", "")
-            stmt_model = select(PairedDevice).where(
-                ((PairedDevice.ip_address == target_ip) | (PairedDevice.tailscale_ip == target_ip))
-            ).order_by(desc(PairedDevice.last_seen))
-            res_model = await db.execute(stmt_model)
-            candidates = res_model.scalars().all()
-            for cand in candidates:
-                cand_clean = (cand.device_model or "").lower().replace(" ", "").replace("_", "").replace("-", "")
-                if cand_clean == clean_model or clean_model in cand_clean or cand_clean in clean_model:
-                    dev = cand
-                    dev.device_identifier = hb.device_identifier
-                    break
+    # Reconcile by Model & Type regardless of IP change (e.g. mobile switching between LAN and Tailscale/4G)
+    if not dev and hb.device_model:
+        clean_model = hb.device_model.lower().replace(" ", "").replace("_", "").replace("-", "")
+        stmt_model = select(PairedDevice).where(
+            PairedDevice.device_type == hb.device_type
+        ).order_by(desc(PairedDevice.last_seen))
+        res_model = await db.execute(stmt_model)
+        candidates = res_model.scalars().all()
+        for cand in candidates:
+            cand_clean = (cand.device_model or "").lower().replace(" ", "").replace("_", "").replace("-", "")
+            if cand_clean and (cand_clean == clean_model or clean_model in cand_clean or cand_clean in clean_model):
+                dev = cand
+                dev.device_identifier = hb.device_identifier
+                break
 
     if not dev:
         target_ip = hb.ip_address or client_ip
@@ -200,6 +198,25 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
                     dev = cand
                     dev.device_identifier = hb.device_identifier
                     break
+
+    # Cleanup any orphan duplicate records for this same device model & type, inheriting master rights
+    if dev and hb.device_model:
+        clean_model = hb.device_model.lower().replace(" ", "").replace("_", "").replace("-", "")
+        stmt_dupes = select(PairedDevice).where(
+            (PairedDevice.id != dev.id) & (PairedDevice.device_type == hb.device_type)
+        )
+        res_dupes = await db.execute(stmt_dupes)
+        dupes = res_dupes.scalars().all()
+        for dupe in dupes:
+            dupe_clean = (dupe.device_model or "").lower().replace(" ", "").replace("_", "").replace("-", "")
+            if dupe_clean and (dupe_clean == clean_model or clean_model in dupe_clean or dupe_clean in clean_model):
+                if dupe.is_master_admin:
+                    dev.is_master_admin = 1
+                if dupe.allowed_cameras and not dev.allowed_cameras:
+                    dev.allowed_cameras = dupe.allowed_cameras
+                if dupe.friendly_name and (not dev.friendly_name or dev.friendly_name.startswith("Android (")):
+                    dev.friendly_name = dupe.friendly_name
+                await db.delete(dupe)
 
     logs_json = json.dumps(hb.diagnostic_logs) if hb.diagnostic_logs else None
 

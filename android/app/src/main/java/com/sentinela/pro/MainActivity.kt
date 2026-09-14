@@ -97,8 +97,7 @@ class MainActivity : ComponentActivity() {
             val coroutineScope = rememberCoroutineScope()
             var cameras by remember { 
                 mutableStateOf(listOf(
-                    CameraItem("camera_secundaria", "Câmera Secundária (Entrada)"),
-                    CameraItem("camera_principal", "Câmera Principal")
+                    CameraItem("camera_secundaria", "Câmera IP ONVIF (192.168.1.6)")
                 )) 
             }
 
