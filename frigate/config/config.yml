@@ -86,11 +86,13 @@ go2rtc:
     camera_secundaria:
     - rtsp://192.168.1.6:8554/live
     camera_secundaria_720p:
-    - ffmpeg:camera_secundaria#video=h264#scale=1280:720#hardware
+    - ffmpeg:rtsp://192.168.1.6:8554/live#video=h264#raw=-vf scale=1280:720 -c:v libx264 -preset ultrafast -tune zerolatency
+    - rtsp://192.168.1.6:8554/live
     camera_principal:
     - rtsp://127.0.0.1:8554/camera_secundaria
     camera_principal_720p:
-    - ffmpeg:camera_secundaria#video=h264#scale=1280:720#hardware
+    - ffmpeg:rtsp://192.168.1.6:8554/live#video=h264#raw=-vf scale=1280:720 -c:v libx264 -preset ultrafast -tune zerolatency
+    - rtsp://192.168.1.6:8554/live
     cam_192_168_1_136:
     - rtsp://192.168.1.136:8554/live
   webrtc:

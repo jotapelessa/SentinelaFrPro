@@ -122,8 +122,8 @@ jobs:
             * Central Master VIP com controle de resolução 720p/1080p para todas as Smart TVs
             * Controle granular de taxa de quadros e silenciamento por FAB
 
-          ### 🚀 Melhorias Desta Versão (Build 118):
-          - ⚡ **Multi-Resolução Sob Demanda (720p HD / 1080p FHD)**: Sub-streams transcodificados por hardware Intel QSV no go2rtc (`camera_secundaria_720p` e `camera_principal_720p`), reduzindo o consumo de banda de rede em até 56.5% e uso de RAM em Smart TVs.
+          ### 🚀 Melhorias Desta Versão (Build 119):
+          - ⚡ **Multi-Resolução 720p HD com Failover Automático**: Sub-streams transcodificados por hardware no go2rtc com parâmetros ultrafast e fallback transparente (<1.8s) para 1080p nativo em caso de latência, garantindo zero telas pretas no PiP.
           - 📺 **Controle de Resolução em Todos os Clientes**: Seletor visual na Android TV (Aba 5), no Smartphone (Central Master VIP) e no Web Sentinela (`/screens`).
           - 🔒 **Invariantes de Ouro Preservadas**: Idempotência de stream no PiP, watchdog suave de live-edge via `playbackRate`, MSE sobre WebSocket TCP e zero-cache no Nginx.
           - 🛡️ **Governança & Estabilidade**: 100% de aprovação na suíte `onp-spec` (31/31 testes PASS).
