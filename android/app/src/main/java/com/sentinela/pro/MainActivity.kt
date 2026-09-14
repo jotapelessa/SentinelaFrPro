@@ -96,7 +96,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             val coroutineScope = rememberCoroutineScope()
             var cameras by remember { 
-                mutableStateOf(listOf(CameraItem("camera_principal", "Câmera Principal"))) 
+                mutableStateOf(listOf(
+                    CameraItem("camera_secundaria", "Câmera Secundária (Entrada)"),
+                    CameraItem("camera_principal", "Câmera Principal")
+                )) 
             }
 
             fun loadCameras() {

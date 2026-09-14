@@ -82,10 +82,12 @@ snapshots:
   bounding_box: true
 go2rtc:
   streams:
-    camera_principal:
-    - rtsp://admin:admin@192.168.1.6:1935
     camera_secundaria:
-    - rtsp://admin:admin@192.168.1.136:1935
+    - rtsp://192.168.1.6:8554/live
+    camera_principal:
+    - rtsp://127.0.0.1:8554/camera_secundaria
+    cam_192_168_1_136:
+    - rtsp://192.168.1.136:8554/live
   webrtc:
     candidates:
     - 100.93.129.91:8555

@@ -322,9 +322,13 @@ async def get_device_permitted_cameras(device_identifier: str, db: AsyncSession 
             return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
         filtered = [
             {"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled}
-            for c in all_cams if c.name in allowed_list
+            for c in all_cams if (
+                c.name in allowed_list or
+                (c.name == "camera_secundaria" and "camera_principal" in allowed_list) or
+                (c.name == "camera_principal" and "camera_secundaria" in allowed_list)
+            )
         ]
-        return filtered
+        return filtered if filtered else [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
     except Exception:
         return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
 

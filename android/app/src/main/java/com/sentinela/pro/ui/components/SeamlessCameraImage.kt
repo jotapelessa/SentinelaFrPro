@@ -45,7 +45,7 @@ fun SeamlessCameraImage(
     refreshIntervalMs: Long = 1500L, // Otimizado: 1.5s em modo Eco/Fallback para zero aquecimento de CPU/VPU
     isStreaming: Boolean = true,
     forceSnapshotMode: Boolean = false,
-    streamMode: String = "webrtc,mse"
+    streamMode: String = "mse"
 ) {
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
     var isAppInForeground by remember { mutableStateOf(true) }

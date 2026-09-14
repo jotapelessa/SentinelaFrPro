@@ -4,19 +4,6 @@
   "graph": {},
   "nodes": [
     {
-      "id": "backend_app_api_ws_websocketmanager",
-      "label": "WebSocketManager",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": "websocketmanager",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L13"
-    },
-    {
       "id": "backend_app_services_mqtt_service_mqttservice",
       "label": "MQTTService",
       "_callable": true,
@@ -511,6 +498,45 @@
       "source_location": "L16"
     },
     {
+      "id": "backend_app_api_scanner_scanpayload",
+      "label": "ScanPayload",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "scanpayload",
+      "source_file": "backend/app/api/scanner.py",
+      "source_location": "L8"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager",
+      "label": "WebSocketManager",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "websocketmanager",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L13"
+    },
+    {
+      "id": "backend_app_core_logging_handler_memoryringbufferhandler",
+      "label": "MemoryRingBufferHandler",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "memoryringbufferhandler",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L19"
+    },
+    {
       "id": "backend_app_api_devices_batchtestrequest",
       "label": "BatchTestRequest",
       "_callable": true,
@@ -521,7 +547,7 @@
       "file_type": "code",
       "norm_label": "batchtestrequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L929"
+      "source_location": "L933"
     },
     {
       "id": "backend_app_api_devices_deviceallowedcamerasupdate",
@@ -612,7 +638,7 @@
       "file_type": "code",
       "norm_label": "mastertogglerequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L938"
+      "source_location": "L942"
     },
     {
       "id": "backend_app_api_devices_pipackrequest",
@@ -625,7 +651,7 @@
       "file_type": "code",
       "norm_label": "pipackrequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L803"
+      "source_location": "L807"
     },
     {
       "id": "backend_app_api_devices_restartcontainerrequest",
@@ -1600,7 +1626,7 @@
       "file_type": "code",
       "norm_label": "clientdevicelogitem",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1654"
+      "source_location": "L1684"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_remotedeviceitem",
@@ -1665,20 +1691,7 @@
       "file_type": "code",
       "norm_label": "servicestatus",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1431"
-    },
-    {
-      "id": "backend_app_api_scanner_scanpayload",
-      "label": "ScanPayload",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "scanpayload",
-      "source_file": "backend/app/api/scanner.py",
-      "source_location": "L8"
+      "source_location": "L1461"
     },
     {
       "id": "backend_app_api_settings_dndconfigupdate",
@@ -1783,19 +1796,6 @@
       "norm_label": "zoneupdate",
       "source_file": "backend/app/api/settings.py",
       "source_location": "L36"
-    },
-    {
-      "id": "backend_app_core_logging_handler_memoryringbufferhandler",
-      "label": "MemoryRingBufferHandler",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "memoryringbufferhandler",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L19"
     },
     {
       "id": "backend_app_db_models_systemsetting",
@@ -2017,126 +2017,6 @@
       "norm_label": "tvdevice",
       "source_file": "ai_studio_imports/sentinela-pro-mobile-nvr/src/types.ts",
       "source_location": "L18"
-    },
-    {
-      "id": "backend_app_api_ws_telemetry_broadcast_loop",
-      "label": "telemetry_broadcast_loop()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": "telemetry_broadcast_loop()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L99"
-    },
-    {
-      "id": "backend_app_api_ws_websocket_endpoint",
-      "label": "websocket_endpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": "websocket_endpoint()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L68"
-    },
-    {
-      "id": "backend_app_api_ws_websocketmanager_broadcast_json",
-      "label": ".broadcast_json()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".broadcast_json()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L48"
-    },
-    {
-      "id": "backend_app_api_ws_websocketmanager_connect",
-      "label": ".connect()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".connect()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L19"
-    },
-    {
-      "id": "backend_app_api_ws_websocketmanager_disconnect",
-      "label": ".disconnect()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".disconnect()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L43"
-    },
-    {
-      "id": "backend_app_api_ws_websocketmanager_get_device_connection",
-      "label": ".get_device_connection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".get_device_connection()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L37"
-    },
-    {
-      "id": "backend_app_api_ws_websocketmanager_init",
-      "label": ".__init__()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L14"
-    },
-    {
-      "id": "backend_app_api_ws_websocketmanager_is_device_connected",
-      "label": ".is_device_connected()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".is_device_connected()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L40"
-    },
-    {
-      "id": "backend_app_api_ws_websocketmanager_register_device",
-      "label": ".register_device()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".register_device()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L24"
-    },
-    {
-      "id": "backend_app_api_ws_websocketmanager_unregister_device",
-      "label": ".unregister_device()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".unregister_device()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L31"
     },
     {
       "id": "backend_app_mocks_mock_publisher_publish_simulated_event",
@@ -3435,6 +3315,222 @@
       "source_location": "L275"
     },
     {
+      "id": "backend_app_api_scanner_trigger_network_scan",
+      "label": "trigger_network_scan()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "trigger_network_scan()",
+      "source_file": "backend/app/api/scanner.py",
+      "source_location": "L12"
+    },
+    {
+      "id": "backend_app_api_ws_telemetry_broadcast_loop",
+      "label": "telemetry_broadcast_loop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "telemetry_broadcast_loop()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L99"
+    },
+    {
+      "id": "backend_app_api_ws_websocket_endpoint",
+      "label": "websocket_endpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "websocket_endpoint()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L68"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager_broadcast_json",
+      "label": ".broadcast_json()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".broadcast_json()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L48"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager_connect",
+      "label": ".connect()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".connect()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L19"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager_disconnect",
+      "label": ".disconnect()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".disconnect()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L43"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager_get_device_connection",
+      "label": ".get_device_connection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".get_device_connection()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L37"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager_is_device_connected",
+      "label": ".is_device_connected()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".is_device_connected()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L40"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager_register_device",
+      "label": ".register_device()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".register_device()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L24"
+    },
+    {
+      "id": "backend_app_api_ws_websocketmanager_unregister_device",
+      "label": ".unregister_device()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".unregister_device()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L31"
+    },
+    {
+      "id": "backend_app_core_logging_handler_mask_sensitive_data",
+      "label": "mask_sensitive_data()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "mask_sensitive_data()",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "backend_app_core_logging_handler_memoryringbufferhandler_emit",
+      "label": ".emit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": ".emit()",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L21"
+    },
+    {
+      "id": "backend_app_db_session_init_db",
+      "label": "init_db()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "init_db()",
+      "source_file": "backend/app/db/session.py",
+      "source_location": "L35"
+    },
+    {
+      "id": "backend_app_main_audit_http_requests",
+      "label": "audit_http_requests()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "audit_http_requests()",
+      "source_file": "backend/app/main.py",
+      "source_location": "L84"
+    },
+    {
+      "id": "backend_app_main_health_check",
+      "label": "health_check()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "health_check()",
+      "source_file": "backend/app/main.py",
+      "source_location": "L114"
+    },
+    {
+      "id": "backend_app_main_lifespan",
+      "label": "lifespan()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "lifespan()",
+      "source_file": "backend/app/main.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "backend_app_main_root",
+      "label": "root()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "root()",
+      "source_file": "backend/app/main.py",
+      "source_location": "L122"
+    },
+    {
       "id": "backend_app_api_devices_check_devices_health",
       "label": "check_devices_health()",
       "_callable": true,
@@ -3444,7 +3540,7 @@
       "file_type": "code",
       "norm_label": "check_devices_health()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L409"
+      "source_location": "L413"
     },
     {
       "id": "backend_app_api_devices_cleanup_all_devices",
@@ -3456,7 +3552,7 @@
       "file_type": "code",
       "norm_label": "cleanup_all_devices()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L785"
+      "source_location": "L789"
     },
     {
       "id": "backend_app_api_devices_deduplicate_devices",
@@ -3468,7 +3564,7 @@
       "file_type": "code",
       "norm_label": "deduplicate_devices()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L742"
+      "source_location": "L746"
     },
     {
       "id": "backend_app_api_devices_delete_device",
@@ -3480,7 +3576,7 @@
       "file_type": "code",
       "norm_label": "delete_device()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L723"
+      "source_location": "L727"
     },
     {
       "id": "backend_app_api_devices_device_diagnostics",
@@ -3492,7 +3588,7 @@
       "file_type": "code",
       "norm_label": "device_diagnostics()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L855"
+      "source_location": "L859"
     },
     {
       "id": "backend_app_api_devices_device_heartbeat",
@@ -3528,7 +3624,7 @@
       "file_type": "code",
       "norm_label": "execute_batch_test()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1017"
+      "source_location": "L1021"
     },
     {
       "id": "backend_app_api_devices_get_device_permitted_cameras",
@@ -3552,7 +3648,7 @@
       "file_type": "code",
       "norm_label": "get_device_policy()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L332"
+      "source_location": "L336"
     },
     {
       "id": "backend_app_api_devices_list_devices",
@@ -3576,7 +3672,7 @@
       "file_type": "code",
       "norm_label": "push_device_settings()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L551"
+      "source_location": "L555"
     },
     {
       "id": "backend_app_api_devices_receive_pip_ack",
@@ -3588,7 +3684,7 @@
       "file_type": "code",
       "norm_label": "receive_pip_ack()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L811"
+      "source_location": "L815"
     },
     {
       "id": "backend_app_api_devices_register_device",
@@ -3600,7 +3696,7 @@
       "file_type": "code",
       "norm_label": "register_device()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L445"
+      "source_location": "L449"
     },
     {
       "id": "backend_app_api_devices_remote_reboot_server",
@@ -3612,7 +3708,7 @@
       "file_type": "code",
       "norm_label": "remote_reboot_server()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L632"
+      "source_location": "L636"
     },
     {
       "id": "backend_app_api_devices_remote_restart_container",
@@ -3624,7 +3720,7 @@
       "file_type": "code",
       "norm_label": "remote_restart_container()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L600"
+      "source_location": "L604"
     },
     {
       "id": "backend_app_api_devices_test_pip",
@@ -3636,7 +3732,7 @@
       "file_type": "code",
       "norm_label": "test_pip()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L840"
+      "source_location": "L844"
     },
     {
       "id": "backend_app_api_devices_test_single_device",
@@ -3648,7 +3744,7 @@
       "file_type": "code",
       "norm_label": "test_single_device()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L834"
+      "source_location": "L838"
     },
     {
       "id": "backend_app_api_devices_toggle_device_master",
@@ -3660,7 +3756,7 @@
       "file_type": "code",
       "norm_label": "toggle_device_master()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L944"
+      "source_location": "L948"
     },
     {
       "id": "backend_app_api_devices_toggle_device_pip",
@@ -3672,7 +3768,7 @@
       "file_type": "code",
       "norm_label": "toggle_device_pip()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L693"
+      "source_location": "L697"
     },
     {
       "id": "backend_app_api_devices_update_device_allowed_cameras",
@@ -3684,7 +3780,7 @@
       "file_type": "code",
       "norm_label": "update_device_allowed_cameras()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L383"
+      "source_location": "L387"
     },
     {
       "id": "backend_app_api_devices_update_device_permissions",
@@ -3696,7 +3792,7 @@
       "file_type": "code",
       "norm_label": "update_device_permissions()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L478"
+      "source_location": "L482"
     },
     {
       "id": "backend_app_api_devices_update_device_status",
@@ -3708,7 +3804,7 @@
       "file_type": "code",
       "norm_label": "update_device_status()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L667"
+      "source_location": "L671"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_newimageloader",
@@ -3840,7 +3936,7 @@
       "file_type": "code",
       "norm_label": ".hasoverlaypermission()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L157"
+      "source_location": "L160"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_istv",
@@ -3852,7 +3948,7 @@
       "file_type": "code",
       "norm_label": ".istv()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L150"
+      "source_location": "L153"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
@@ -5544,7 +5640,7 @@
       "file_type": "code",
       "norm_label": ".checkserviceshealth()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1433"
+      "source_location": "L1463"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_cleanstorage",
@@ -5556,7 +5652,7 @@
       "file_type": "code",
       "norm_label": ".cleanstorage()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L500"
+      "source_location": "L530"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_discovernetworkdevices",
@@ -5568,7 +5664,7 @@
       "file_type": "code",
       "norm_label": ".discovernetworkdevices()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1465"
+      "source_location": "L1495"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_executebatchtest",
@@ -5580,7 +5676,7 @@
       "file_type": "code",
       "norm_label": ".executebatchtest()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1321"
+      "source_location": "L1351"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getauditlogs",
@@ -5592,7 +5688,7 @@
       "file_type": "code",
       "norm_label": ".getauditlogs()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L535"
+      "source_location": "L565"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getcameras",
@@ -5616,7 +5712,7 @@
       "file_type": "code",
       "norm_label": ".getcaptures()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L327"
+      "source_location": "L357"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
@@ -5628,7 +5724,7 @@
       "file_type": "code",
       "norm_label": ".getclientlogs()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1585"
+      "source_location": "L1615"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicemacaddress",
@@ -5676,7 +5772,7 @@
       "file_type": "code",
       "norm_label": ".getpaireddeviceslist()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1130"
+      "source_location": "L1160"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getstoragestatus",
@@ -5688,7 +5784,7 @@
       "file_type": "code",
       "norm_label": ".getstoragestatus()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L470"
+      "source_location": "L500"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_gettelemetry",
@@ -5700,7 +5796,7 @@
       "file_type": "code",
       "norm_label": ".gettelemetry()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L396"
+      "source_location": "L426"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection",
@@ -5760,7 +5856,7 @@
       "file_type": "code",
       "norm_label": ".pausealerts()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1493"
+      "source_location": "L1523"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
@@ -5772,7 +5868,7 @@
       "file_type": "code",
       "norm_label": ".pingserver()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1265"
+      "source_location": "L1295"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pushlocalsettingstoserver",
@@ -5784,7 +5880,7 @@
       "file_type": "code",
       "norm_label": ".pushlocalsettingstoserver()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1236"
+      "source_location": "L1266"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_rebootserver",
@@ -5796,7 +5892,7 @@
       "file_type": "code",
       "norm_label": ".rebootserver()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1102"
+      "source_location": "L1132"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_registerorheartbeat",
@@ -5820,7 +5916,7 @@
       "file_type": "code",
       "norm_label": ".restartcontainers()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1067"
+      "source_location": "L1097"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_resumealerts",
@@ -5832,7 +5928,7 @@
       "file_type": "code",
       "norm_label": ".resumealerts()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1515"
+      "source_location": "L1545"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
@@ -5844,7 +5940,7 @@
       "file_type": "code",
       "norm_label": ".runbandwidthtestsuite()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L956"
+      "source_location": "L986"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runspeedandpingtest",
@@ -5856,7 +5952,7 @@
       "file_type": "code",
       "norm_label": ".runspeedandpingtest()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L584"
+      "source_location": "L614"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendclientlogsbatch",
@@ -5868,7 +5964,7 @@
       "file_type": "code",
       "norm_label": ".sendclientlogsbatch()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1533"
+      "source_location": "L1563"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendpipack",
@@ -5880,7 +5976,7 @@
       "file_type": "code",
       "norm_label": ".sendpipack()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1396"
+      "source_location": "L1426"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingleconnectionendpoint",
@@ -5892,7 +5988,7 @@
       "file_type": "code",
       "norm_label": ".testsingleconnectionendpoint()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L642"
+      "source_location": "L672"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingletv",
@@ -5904,7 +6000,7 @@
       "file_type": "code",
       "norm_label": ".testsingletv()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1361"
+      "source_location": "L1391"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testvideopipelinestability",
@@ -5916,7 +6012,7 @@
       "file_type": "code",
       "norm_label": ".testvideopipelinestability()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L831"
+      "source_location": "L861"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_toggleremotemaster",
@@ -5928,7 +6024,7 @@
       "file_type": "code",
       "norm_label": ".toggleremotemaster()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1302"
+      "source_location": "L1332"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_updatedevicepermissions",
@@ -5940,7 +6036,7 @@
       "file_type": "code",
       "norm_label": ".updatedevicepermissions()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1183"
+      "source_location": "L1213"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolsviewport",
@@ -6001,18 +6097,6 @@
       "norm_label": "telegramsettingspage()",
       "source_file": "frontend/src/app/settings/telegram/page.tsx",
       "source_location": "L30"
-    },
-    {
-      "id": "backend_app_api_scanner_trigger_network_scan",
-      "label": "trigger_network_scan()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "trigger_network_scan()",
-      "source_file": "backend/app/api/scanner.py",
-      "source_location": "L12"
     },
     {
       "id": "backend_app_api_settings_cached_dir_size",
@@ -6267,90 +6351,6 @@
       "source_location": "L94"
     },
     {
-      "id": "backend_app_core_logging_handler_mask_sensitive_data",
-      "label": "mask_sensitive_data()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "mask_sensitive_data()",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L14"
-    },
-    {
-      "id": "backend_app_core_logging_handler_memoryringbufferhandler_emit",
-      "label": ".emit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": ".emit()",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L21"
-    },
-    {
-      "id": "backend_app_db_session_init_db",
-      "label": "init_db()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "init_db()",
-      "source_file": "backend/app/db/session.py",
-      "source_location": "L35"
-    },
-    {
-      "id": "backend_app_main_audit_http_requests",
-      "label": "audit_http_requests()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "audit_http_requests()",
-      "source_file": "backend/app/main.py",
-      "source_location": "L84"
-    },
-    {
-      "id": "backend_app_main_health_check",
-      "label": "health_check()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "health_check()",
-      "source_file": "backend/app/main.py",
-      "source_location": "L114"
-    },
-    {
-      "id": "backend_app_main_lifespan",
-      "label": "lifespan()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "lifespan()",
-      "source_file": "backend/app/main.py",
-      "source_location": "L36"
-    },
-    {
-      "id": "backend_app_main_root",
-      "label": "root()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "root()",
-      "source_file": "backend/app/main.py",
-      "source_location": "L122"
-    },
-    {
       "id": "backend_app_api_telemetry_clear_client_device_logs",
       "label": "clear_client_device_logs()",
       "_callable": true,
@@ -6566,17 +6566,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_api_ws",
-      "label": "ws.py",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": "ws.py",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_app_mocks_mock_publisher",
       "label": "mock_publisher.py",
       "_origin": "ast",
@@ -6630,28 +6619,6 @@
       "norm_label": "verify_system.py",
       "source_file": "verify_system.py",
       "source_location": "L1"
-    },
-    {
-      "id": "websocket",
-      "label": "WebSocket",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": "websocket",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_ws_rationale_100",
-      "label": "Background loop sending hardware telemetry every 5.0 seconds to connected UI\u2026",
-      "_origin": "ast",
-      "community": 0,
-      "community_name": "asyncio",
-      "file_type": "rationale",
-      "norm_label": "background loop sending hardware telemetry every 5.0 seconds to connected ui...",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L100"
     },
     {
       "id": "backend_app_mocks_mock_publisher_rationale_14",
@@ -6937,7 +6904,7 @@
       "file_type": "code",
       "norm_label": "webrtcplayer",
       "source_file": "frontend/src/components/WebRTCPlayer.tsx",
-      "source_location": "L562"
+      "source_location": "L564"
     },
     {
       "id": "frontend_src_components_websocketprovider",
@@ -8952,6 +8919,182 @@
       "source_location": "L72"
     },
     {
+      "id": "backend_app_api_scanner",
+      "label": "scanner.py",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "scanner.py",
+      "source_file": "backend/app/api/scanner.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_api_scanner_py_basemodel",
+      "label": "BaseModel",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "basemodel",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_api_scanner_py_post",
+      "label": "post",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "post",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_api_ws",
+      "label": "ws.py",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "ws.py",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_core_logging_handler",
+      "label": "logging_handler.py",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "logging_handler.py",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_db_session",
+      "label": "session.py",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "session.py",
+      "source_file": "backend/app/db/session.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_main",
+      "label": "main.py",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "main.py",
+      "source_file": "backend/app/main.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_main_py_get",
+      "label": "get",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "get",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_main_py_request",
+      "label": "Request",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "request",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "fastapi",
+      "label": "FastAPI",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "fastapi",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "logrecord",
+      "label": "LogRecord",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "logrecord",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "middleware",
+      "label": "middleware",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "middleware",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "websocket",
+      "label": "WebSocket",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "websocket",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_api_scanner_rationale_13",
+      "label": "Triggers concurrent ONVIF Discovery and verified CCTV port scanner.",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "rationale",
+      "norm_label": "triggers concurrent onvif discovery and verified cctv port scanner.",
+      "source_file": "backend/app/api/scanner.py",
+      "source_location": "L13"
+    },
+    {
+      "id": "backend_app_api_ws_rationale_100",
+      "label": "Background loop sending hardware telemetry every 5.0 seconds to connected UI\u2026",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "rationale",
+      "norm_label": "background loop sending hardware telemetry every 5.0 seconds to connected ui...",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L100"
+    },
+    {
+      "id": "backend_app_core_logging_handler_rationale_20",
+      "label": "Captures all logging records in memory for real-time API streaming.",
+      "_origin": "ast",
+      "community": 19,
+      "community_name": "WebSocketManager",
+      "file_type": "rationale",
+      "norm_label": "captures all logging records in memory for real-time api streaming.",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L20"
+    },
+    {
       "id": "backend_app_api_devices",
       "label": "devices.py",
       "_origin": "ast",
@@ -9040,7 +9183,7 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_api_devices_rationale_1018",
+      "id": "backend_app_api_devices_rationale_1022",
       "label": "Executes batch tests across multiple or all devices simultaneously.",
       "_origin": "ast",
       "community": 2,
@@ -9048,7 +9191,7 @@
       "file_type": "rationale",
       "norm_label": "executes batch tests across multiple or all devices simultaneously.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1018"
+      "source_location": "L1022"
     },
     {
       "id": "backend_app_api_devices_rationale_159",
@@ -9084,7 +9227,7 @@
       "source_location": "L293"
     },
     {
-      "id": "backend_app_api_devices_rationale_333",
+      "id": "backend_app_api_devices_rationale_337",
       "label": "Returns the full granular policy and permissions for a specific device.",
       "_origin": "ast",
       "community": 2,
@@ -9092,10 +9235,10 @@
       "file_type": "rationale",
       "norm_label": "returns the full granular policy and permissions for a specific device.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L333"
+      "source_location": "L337"
     },
     {
-      "id": "backend_app_api_devices_rationale_410",
+      "id": "backend_app_api_devices_rationale_414",
       "label": "Checks real-time online/reachable status for all paired screens. Optimized O(1)\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9103,10 +9246,10 @@
       "file_type": "rationale",
       "norm_label": "checks real-time online/reachable status for all paired screens. optimized o(1)...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L410"
+      "source_location": "L414"
     },
     {
-      "id": "backend_app_api_devices_rationale_484",
+      "id": "backend_app_api_devices_rationale_488",
       "label": "Updates complete granular permissions for a paired screen/device.",
       "_origin": "ast",
       "community": 2,
@@ -9114,10 +9257,10 @@
       "file_type": "rationale",
       "norm_label": "updates complete granular permissions for a paired screen/device.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L484"
+      "source_location": "L488"
     },
     {
-      "id": "backend_app_api_devices_rationale_557",
+      "id": "backend_app_api_devices_rationale_561",
       "label": "Allows a TV app to push its local PiP settings back to the server for cross-\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9125,10 +9268,10 @@
       "file_type": "rationale",
       "norm_label": "allows a tv app to push its local pip settings back to the server for cross-...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L557"
+      "source_location": "L561"
     },
     {
-      "id": "backend_app_api_devices_rationale_694",
+      "id": "backend_app_api_devices_rationale_698",
       "label": "Quickly toggle PiP alerts state for a single device with 1-click.",
       "_origin": "ast",
       "community": 2,
@@ -9136,10 +9279,10 @@
       "file_type": "rationale",
       "norm_label": "quickly toggle pip alerts state for a single device with 1-click.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L694"
+      "source_location": "L698"
     },
     {
-      "id": "backend_app_api_devices_rationale_743",
+      "id": "backend_app_api_devices_rationale_747",
       "label": "Consolidates duplicate devices with identical IP or Model, retaining the most\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9147,10 +9290,10 @@
       "file_type": "rationale",
       "norm_label": "consolidates duplicate devices with identical ip or model, retaining the most...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L743"
+      "source_location": "L747"
     },
     {
-      "id": "backend_app_api_devices_rationale_786",
+      "id": "backend_app_api_devices_rationale_790",
       "label": "Removes all paired devices so fresh real devices can register via heartbeat.",
       "_origin": "ast",
       "community": 2,
@@ -9158,10 +9301,10 @@
       "file_type": "rationale",
       "norm_label": "removes all paired devices so fresh real devices can register via heartbeat.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L786"
+      "source_location": "L790"
     },
     {
-      "id": "backend_app_api_devices_rationale_812",
+      "id": "backend_app_api_devices_rationale_816",
       "label": "Receives physical execution confirmation from the Android TV overlay service.",
       "_origin": "ast",
       "community": 2,
@@ -9169,10 +9312,10 @@
       "file_type": "rationale",
       "norm_label": "receives physical execution confirmation from the android tv overlay service.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L812"
+      "source_location": "L816"
     },
     {
-      "id": "backend_app_api_devices_rationale_835",
+      "id": "backend_app_api_devices_rationale_839",
       "label": "Triggers an interactive PiP test to this single TV with the selected camera.",
       "_origin": "ast",
       "community": 2,
@@ -9180,10 +9323,10 @@
       "file_type": "rationale",
       "norm_label": "triggers an interactive pip test to this single tv with the selected camera.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L835"
+      "source_location": "L839"
     },
     {
-      "id": "backend_app_api_devices_rationale_841",
+      "id": "backend_app_api_devices_rationale_845",
       "label": "Triggers a broadcast PiP test to all active TVs.",
       "_origin": "ast",
       "community": 2,
@@ -9191,10 +9334,10 @@
       "file_type": "rationale",
       "norm_label": "triggers a broadcast pip test to all active tvs.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L841"
+      "source_location": "L845"
     },
     {
-      "id": "backend_app_api_devices_rationale_950",
+      "id": "backend_app_api_devices_rationale_954",
       "label": "Toggles Master Admin rights for a smartphone device with debounce and\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9202,7 +9345,7 @@
       "file_type": "rationale",
       "norm_label": "toggles master admin rights for a smartphone device with debounce and...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L950"
+      "source_location": "L954"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_tsconfig",
@@ -11757,14 +11900,14 @@
       "source_location": "L49"
     },
     {
-      "id": "readme_aplicativos_nativos_android_v001_000_000_114",
-      "label": "\ud83d\udcf1 Aplicativos Nativos Android (`v001.000.000.114`)",
+      "id": "readme_aplicativos_nativos_android_v001_000_000_115",
+      "label": "\ud83d\udcf1 Aplicativos Nativos Android (`v001.000.000.115`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udcf1 aplicativos nativos android (`v001.000.000.114`)",
+      "norm_label": "\ud83d\udcf1 aplicativos nativos android (`v001.000.000.115`)",
       "source_file": "README.md",
       "source_location": "L37"
     },
@@ -11793,14 +11936,14 @@
       "source_location": "L79"
     },
     {
-      "id": "readme_download_dos_apks_oficiais_v001_000_000_114",
-      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.114`)",
+      "id": "readme_download_dos_apks_oficiais_v001_000_000_115",
+      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.115`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.114`)",
+      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.115`)",
       "source_file": "README.md",
       "source_location": "L26"
     },
@@ -14640,39 +14783,6 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_app_api_scanner",
-      "label": "scanner.py",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "scanner.py",
-      "source_file": "backend/app/api/scanner.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_api_scanner_py_basemodel",
-      "label": "BaseModel",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "basemodel",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_scanner_py_post",
-      "label": "post",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "post",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "backend_app_api_settings",
       "label": "settings.py",
       "_origin": "ast",
@@ -14737,105 +14847,6 @@
       "norm_label": "request",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_app_core_logging_handler",
-      "label": "logging_handler.py",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "logging_handler.py",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_db_session",
-      "label": "session.py",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "session.py",
-      "source_file": "backend/app/db/session.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_main",
-      "label": "main.py",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "main.py",
-      "source_file": "backend/app/main.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_main_py_get",
-      "label": "get",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "get",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_main_py_request",
-      "label": "Request",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "fastapi",
-      "label": "FastAPI",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "fastapi",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "logrecord",
-      "label": "LogRecord",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "logrecord",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "middleware",
-      "label": "middleware",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "middleware",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_scanner_rationale_13",
-      "label": "Triggers concurrent ONVIF Discovery and verified CCTV port scanner.",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "rationale",
-      "norm_label": "triggers concurrent onvif discovery and verified cctv port scanner.",
-      "source_file": "backend/app/api/scanner.py",
-      "source_location": "L13"
     },
     {
       "id": "backend_app_api_settings_rationale_197",
@@ -14935,17 +14946,6 @@
       "norm_label": "cleans old non-retained recordings and/or snapshots from ubuntu server ssd...",
       "source_file": "backend/app/api/settings.py",
       "source_location": "L689"
-    },
-    {
-      "id": "backend_app_core_logging_handler_rationale_20",
-      "label": "Captures all logging records in memory for real-time API streaming.",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "rationale",
-      "norm_label": "captures all logging records in memory for real-time api streaming.",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L20"
     },
     {
       "id": "scripts_setup_ubuntu",
@@ -16398,7 +16398,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L377"
+      "source_location": "L400"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -16413,14 +16413,26 @@
       "source_location": "L1"
     },
     {
-      "id": "state_vers\u00e3o_atual_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
-      "label": "\ud83d\udce6 Vers\u00e3o Atual: v001.000.000.114 (Otimiza\u00e7\u00e3o T\u00e9rmica, Atomicidade e Unifica\u00e7\u00e3o Web)",
+      "id": "state_vers\u00e3o_anterior_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
+      "label": "\ud83d\udce6 Vers\u00e3o Anterior: v001.000.000.114 (Otimiza\u00e7\u00e3o T\u00e9rmica, Atomicidade e Unifica\u00e7\u00e3o Web)",
       "_origin": "ast",
       "community": 93,
       "community_name": "STATE.md \u2014 Mem\u00f3ria Persistente do Projeto",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce6 versao atual: v001.000.000.114 (otimizacao termica, atomicidade e unificacao web)",
+      "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.114 (otimizacao termica, atomicidade e unificacao web)",
+      "source_file": "STATE.md",
+      "source_location": "L59"
+    },
+    {
+      "id": "state_vers\u00e3o_atual_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
+      "label": "\ud83d\udce6 Vers\u00e3o Atual: v001.000.000.115 (Corre\u00e7\u00e3o da Aba C\u00e2meras nos APKs, Harmoniza\u00e7\u00e3o MSE e Cache-Busting Web)",
+      "_origin": "ast",
+      "community": 93,
+      "community_name": "STATE.md \u2014 Mem\u00f3ria Persistente do Projeto",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\udce6 versao atual: v001.000.000.115 (correcao da aba cameras nos apks, harmonizacao mse e cache-busting web)",
       "source_file": "STATE.md",
       "source_location": "L36"
     },
@@ -16765,6 +16777,18 @@
     },
     {
       "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
+      "target": "android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
+      "source_location": "L100",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
       "target": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvnetflixscreen",
       "relation": "calls",
       "_origin": "ast",
@@ -16772,7 +16796,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L135",
+      "source_location": "L138",
       "weight": 1.0
     },
     {
@@ -16784,7 +16808,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L140",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -16836,18 +16860,6 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "target": "android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L99",
-      "weight": 1.0
-    },
-    {
       "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_checkserviceshealth",
       "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection",
       "relation": "calls",
@@ -16856,7 +16868,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1446",
+      "source_location": "L1476",
       "weight": 1.0
     },
     {
@@ -16868,7 +16880,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1460",
+      "source_location": "L1490",
       "weight": 1.0
     },
     {
@@ -16880,7 +16892,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L503",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -16892,7 +16904,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1469",
+      "source_location": "L1499",
       "weight": 1.0
     },
     {
@@ -16904,7 +16916,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1328",
+      "source_location": "L1358",
       "weight": 1.0
     },
     {
@@ -16916,7 +16928,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L539",
+      "source_location": "L569",
       "weight": 1.0
     },
     {
@@ -16928,7 +16940,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L560",
+      "source_location": "L590",
       "weight": 1.0
     },
     {
@@ -16964,7 +16976,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L331",
+      "source_location": "L361",
       "weight": 1.0
     },
     {
@@ -16976,7 +16988,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L336",
+      "source_location": "L366",
       "weight": 1.0
     },
     {
@@ -16988,7 +17000,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L371",
+      "source_location": "L401",
       "weight": 1.0
     },
     {
@@ -17000,7 +17012,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1605",
+      "source_location": "L1635",
       "weight": 1.0
     },
     {
@@ -17012,7 +17024,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1630",
+      "source_location": "L1660",
       "weight": 1.0
     },
     {
@@ -17048,7 +17060,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1134",
+      "source_location": "L1164",
       "weight": 1.0
     },
     {
@@ -17060,7 +17072,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1152",
+      "source_location": "L1182",
       "weight": 1.0
     },
     {
@@ -17072,7 +17084,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L473",
+      "source_location": "L503",
       "weight": 1.0
     },
     {
@@ -17084,7 +17096,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L482",
+      "source_location": "L512",
       "weight": 1.0
     },
     {
@@ -17096,7 +17108,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L399",
+      "source_location": "L429",
       "weight": 1.0
     },
     {
@@ -17108,7 +17120,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L427",
+      "source_location": "L457",
       "weight": 1.0
     },
     {
@@ -17120,7 +17132,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1496",
+      "source_location": "L1526",
       "weight": 1.0
     },
     {
@@ -17132,7 +17144,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1270",
+      "source_location": "L1300",
       "weight": 1.0
     },
     {
@@ -17144,7 +17156,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1284",
+      "source_location": "L1314",
       "weight": 1.0
     },
     {
@@ -17156,7 +17168,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1240",
+      "source_location": "L1270",
       "weight": 1.0
     },
     {
@@ -17168,7 +17180,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1105",
+      "source_location": "L1135",
       "weight": 1.0
     },
     {
@@ -17216,7 +17228,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1070",
+      "source_location": "L1100",
       "weight": 1.0
     },
     {
@@ -17228,7 +17240,19 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1518",
+      "source_location": "L1548",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1002",
       "weight": 1.0
     },
     {
@@ -17240,7 +17264,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1019",
+      "source_location": "L1049",
       "weight": 1.0
     },
     {
@@ -17252,19 +17276,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1049",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection",
-      "relation": "calls",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "call",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L972",
+      "source_location": "L1079",
       "weight": 1.0
     },
     {
@@ -17276,7 +17288,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L594",
+      "source_location": "L624",
       "weight": 1.0
     },
     {
@@ -17288,7 +17300,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L598",
+      "source_location": "L628",
       "weight": 1.0
     },
     {
@@ -17300,7 +17312,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L623",
+      "source_location": "L653",
       "weight": 1.0
     },
     {
@@ -17312,7 +17324,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1542",
+      "source_location": "L1572",
       "weight": 1.0
     },
     {
@@ -17324,7 +17336,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1406",
+      "source_location": "L1436",
       "weight": 1.0
     },
     {
@@ -17336,7 +17348,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L666",
+      "source_location": "L696",
       "weight": 1.0
     },
     {
@@ -17348,7 +17360,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L743",
+      "source_location": "L773",
       "weight": 1.0
     },
     {
@@ -17360,7 +17372,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L775",
+      "source_location": "L805",
       "weight": 1.0
     },
     {
@@ -17372,7 +17384,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1364",
+      "source_location": "L1394",
       "weight": 1.0
     },
     {
@@ -17384,7 +17396,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L841",
+      "source_location": "L871",
       "weight": 1.0
     },
     {
@@ -17396,7 +17408,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L850",
+      "source_location": "L880",
       "weight": 1.0
     },
     {
@@ -17408,7 +17420,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1305",
+      "source_location": "L1335",
       "weight": 1.0
     },
     {
@@ -17420,7 +17432,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1195",
+      "source_location": "L1225",
       "weight": 1.0
     },
     {
@@ -20096,7 +20108,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L408",
+      "source_location": "L412",
       "weight": 1.0
     },
     {
@@ -20108,7 +20120,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L784",
+      "source_location": "L788",
       "weight": 1.0
     },
     {
@@ -20120,7 +20132,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L741",
+      "source_location": "L745",
       "weight": 1.0
     },
     {
@@ -20132,7 +20144,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L722",
+      "source_location": "L726",
       "weight": 1.0
     },
     {
@@ -20144,7 +20156,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L854",
+      "source_location": "L858",
       "weight": 1.0
     },
     {
@@ -20180,7 +20192,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1016",
+      "source_location": "L1020",
       "weight": 1.0
     },
     {
@@ -20204,7 +20216,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L331",
+      "source_location": "L335",
       "weight": 1.0
     },
     {
@@ -20228,7 +20240,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L550",
+      "source_location": "L554",
       "weight": 1.0
     },
     {
@@ -20240,7 +20252,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L810",
+      "source_location": "L814",
       "weight": 1.0
     },
     {
@@ -20252,7 +20264,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L444",
+      "source_location": "L448",
       "weight": 1.0
     },
     {
@@ -20264,7 +20276,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L631",
+      "source_location": "L635",
       "weight": 1.0
     },
     {
@@ -20276,7 +20288,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L599",
+      "source_location": "L603",
       "weight": 1.0
     },
     {
@@ -20288,7 +20300,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L839",
+      "source_location": "L843",
       "weight": 1.0
     },
     {
@@ -20300,7 +20312,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L833",
+      "source_location": "L837",
       "weight": 1.0
     },
     {
@@ -20312,7 +20324,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L943",
+      "source_location": "L947",
       "weight": 1.0
     },
     {
@@ -20324,7 +20336,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L692",
+      "source_location": "L696",
       "weight": 1.0
     },
     {
@@ -20336,7 +20348,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L382",
+      "source_location": "L386",
       "weight": 1.0
     },
     {
@@ -20348,7 +20360,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L477",
+      "source_location": "L481",
       "weight": 1.0
     },
     {
@@ -20360,7 +20372,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L665",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -20372,7 +20384,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L666",
+      "source_location": "L670",
       "weight": 1.0
     },
     {
@@ -21428,7 +21440,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1533",
+      "source_location": "L1563",
       "weight": 1.0
     },
     {
@@ -21680,7 +21692,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L834",
+      "source_location": "L838",
       "weight": 1.0
     },
     {
@@ -21692,7 +21704,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L944",
+      "source_location": "L948",
       "weight": 1.0
     },
     {
@@ -26996,7 +27008,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1265",
+      "source_location": "L1295",
       "weight": 1.0
     },
     {
@@ -27008,7 +27020,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1236",
+      "source_location": "L1266",
       "weight": 1.0
     },
     {
@@ -28184,7 +28196,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L409",
+      "source_location": "L413",
       "weight": 1.0
     },
     {
@@ -28196,7 +28208,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L785",
+      "source_location": "L789",
       "weight": 1.0
     },
     {
@@ -28208,7 +28220,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L785",
+      "source_location": "L789",
       "weight": 1.0
     },
     {
@@ -28220,7 +28232,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L742",
+      "source_location": "L746",
       "weight": 1.0
     },
     {
@@ -28232,7 +28244,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L742",
+      "source_location": "L746",
       "weight": 1.0
     },
     {
@@ -28244,7 +28256,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L723",
+      "source_location": "L727",
       "weight": 1.0
     },
     {
@@ -28256,7 +28268,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L723",
+      "source_location": "L727",
       "weight": 1.0
     },
     {
@@ -28268,7 +28280,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L855",
+      "source_location": "L859",
       "weight": 1.0
     },
     {
@@ -28328,7 +28340,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1017",
+      "source_location": "L1021",
       "weight": 1.0
     },
     {
@@ -28340,7 +28352,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1017",
+      "source_location": "L1021",
       "weight": 1.0
     },
     {
@@ -28352,7 +28364,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1017",
+      "source_location": "L1021",
       "weight": 1.0
     },
     {
@@ -28376,7 +28388,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L332",
+      "source_location": "L336",
       "weight": 1.0
     },
     {
@@ -28400,7 +28412,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L551",
+      "source_location": "L555",
       "weight": 1.0
     },
     {
@@ -28412,7 +28424,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L551",
+      "source_location": "L555",
       "weight": 1.0
     },
     {
@@ -28424,7 +28436,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L551",
+      "source_location": "L555",
       "weight": 1.0
     },
     {
@@ -28436,7 +28448,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L811",
+      "source_location": "L815",
       "weight": 1.0
     },
     {
@@ -28448,7 +28460,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L445",
+      "source_location": "L449",
       "weight": 1.0
     },
     {
@@ -28460,7 +28472,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L445",
+      "source_location": "L449",
       "weight": 1.0
     },
     {
@@ -28472,7 +28484,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L445",
+      "source_location": "L449",
       "weight": 1.0
     },
     {
@@ -28484,7 +28496,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L632",
+      "source_location": "L636",
       "weight": 1.0
     },
     {
@@ -28496,7 +28508,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L632",
+      "source_location": "L636",
       "weight": 1.0
     },
     {
@@ -28508,7 +28520,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L600",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -28520,7 +28532,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L600",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -28532,7 +28544,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L600",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -28544,7 +28556,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L840",
+      "source_location": "L844",
       "weight": 1.0
     },
     {
@@ -28556,7 +28568,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L944",
+      "source_location": "L948",
       "weight": 1.0
     },
     {
@@ -28568,7 +28580,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L944",
+      "source_location": "L948",
       "weight": 1.0
     },
     {
@@ -28580,7 +28592,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L693",
+      "source_location": "L697",
       "weight": 1.0
     },
     {
@@ -28592,7 +28604,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L693",
+      "source_location": "L697",
       "weight": 1.0
     },
     {
@@ -28604,7 +28616,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L383",
+      "source_location": "L387",
       "weight": 1.0
     },
     {
@@ -28616,7 +28628,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L383",
+      "source_location": "L387",
       "weight": 1.0
     },
     {
@@ -28628,7 +28640,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L383",
+      "source_location": "L387",
       "weight": 1.0
     },
     {
@@ -28640,7 +28652,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L478",
+      "source_location": "L482",
       "weight": 1.0
     },
     {
@@ -28652,7 +28664,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L478",
+      "source_location": "L482",
       "weight": 1.0
     },
     {
@@ -28664,7 +28676,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L478",
+      "source_location": "L482",
       "weight": 1.0
     },
     {
@@ -28676,7 +28688,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L667",
+      "source_location": "L671",
       "weight": 1.0
     },
     {
@@ -28688,7 +28700,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L667",
+      "source_location": "L671",
       "weight": 1.0
     },
     {
@@ -28700,7 +28712,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L667",
+      "source_location": "L671",
       "weight": 1.0
     },
     {
@@ -29312,7 +29324,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L956",
+      "source_location": "L986",
       "weight": 1.0
     },
     {
@@ -29324,7 +29336,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L642",
+      "source_location": "L672",
       "weight": 1.0
     },
     {
@@ -29336,7 +29348,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L831",
+      "source_location": "L861",
       "weight": 1.0
     },
     {
@@ -32464,7 +32476,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1654",
+      "source_location": "L1684",
       "weight": 1.0
     },
     {
@@ -32508,7 +32520,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1431",
+      "source_location": "L1461",
       "weight": 1.0
     },
     {
@@ -33657,17 +33669,6 @@
     },
     {
       "source": "backend_app_api_devices",
-      "target": "backend_app_api_devices_execute_batch_test",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L1017",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_app_api_devices",
       "target": "backend_app_api_devices_list_devices",
       "relation": "contains",
       "_origin": "ast",
@@ -33675,6 +33676,17 @@
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
       "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_api_devices",
+      "target": "backend_app_api_devices_execute_batch_test",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L1021",
       "weight": 1.0
     },
     {
@@ -33718,7 +33730,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L332",
+      "source_location": "L336",
       "weight": 1.0
     },
     {
@@ -33740,7 +33752,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L383",
+      "source_location": "L387",
       "weight": 1.0
     },
     {
@@ -33751,7 +33763,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L409",
+      "source_location": "L413",
       "weight": 1.0
     },
     {
@@ -33762,7 +33774,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L445",
+      "source_location": "L449",
       "weight": 1.0
     },
     {
@@ -33773,7 +33785,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L478",
+      "source_location": "L482",
       "weight": 1.0
     },
     {
@@ -33795,7 +33807,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L551",
+      "source_location": "L555",
       "weight": 1.0
     },
     {
@@ -33806,7 +33818,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L600",
+      "source_location": "L604",
       "weight": 1.0
     },
     {
@@ -33817,7 +33829,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L632",
+      "source_location": "L636",
       "weight": 1.0
     },
     {
@@ -33833,17 +33845,6 @@
     },
     {
       "source": "backend_app_api_devices",
-      "target": "backend_app_api_devices_update_device_status",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L667",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_app_api_devices",
       "target": "backend_app_api_devices_devicestatusupdate",
       "relation": "contains",
       "_origin": "ast",
@@ -33855,13 +33856,24 @@
     },
     {
       "source": "backend_app_api_devices",
+      "target": "backend_app_api_devices_update_device_status",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L671",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_api_devices",
       "target": "backend_app_api_devices_toggle_device_pip",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L693",
+      "source_location": "L697",
       "weight": 1.0
     },
     {
@@ -33883,7 +33895,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L723",
+      "source_location": "L727",
       "weight": 1.0
     },
     {
@@ -33894,7 +33906,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L742",
+      "source_location": "L746",
       "weight": 1.0
     },
     {
@@ -33905,7 +33917,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L785",
+      "source_location": "L789",
       "weight": 1.0
     },
     {
@@ -33916,7 +33928,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L803",
+      "source_location": "L807",
       "weight": 1.0
     },
     {
@@ -33927,7 +33939,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L811",
+      "source_location": "L815",
       "weight": 1.0
     },
     {
@@ -33938,7 +33950,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L834",
+      "source_location": "L838",
       "weight": 1.0
     },
     {
@@ -33960,7 +33972,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L840",
+      "source_location": "L844",
       "weight": 1.0
     },
     {
@@ -33971,7 +33983,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L855",
+      "source_location": "L859",
       "weight": 1.0
     },
     {
@@ -33987,17 +33999,6 @@
     },
     {
       "source": "backend_app_api_devices",
-      "target": "backend_app_api_devices_batchtestrequest",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L929",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_app_api_devices",
       "target": "backend_app_api_devices_testpiprequest",
       "relation": "contains",
       "_origin": "ast",
@@ -34009,13 +34010,24 @@
     },
     {
       "source": "backend_app_api_devices",
+      "target": "backend_app_api_devices_batchtestrequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L933",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_api_devices",
       "target": "backend_app_api_devices_mastertogglerequest",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L938",
+      "source_location": "L942",
       "weight": 1.0
     },
     {
@@ -34026,7 +34038,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L944",
+      "source_location": "L948",
       "weight": 1.0
     },
     {
@@ -35885,7 +35897,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/components/WebRTCPlayer.tsx",
-      "source_location": "L562",
+      "source_location": "L564",
       "weight": 1.0
     },
     {
@@ -36472,7 +36484,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_aplicativos_nativos_android_v001_000_000_114",
+      "source": "readme_aplicativos_nativos_android_v001_000_000_115",
       "target": "readme_1_android_tv_55_layout_horizontal_estilo_netflix",
       "relation": "contains",
       "_origin": "ast",
@@ -36483,7 +36495,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_aplicativos_nativos_android_v001_000_000_114",
+      "source": "readme_aplicativos_nativos_android_v001_000_000_115",
       "target": "readme_2_android_smartphone_layout_vertical_estilo_youtube",
       "relation": "contains",
       "_origin": "ast",
@@ -36539,7 +36551,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_download_dos_apks_oficiais_v001_000_000_114",
+      "target": "readme_download_dos_apks_oficiais_v001_000_000_115",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -36550,7 +36562,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_aplicativos_nativos_android_v001_000_000_114",
+      "target": "readme_aplicativos_nativos_android_v001_000_000_115",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37903,7 +37915,7 @@
     },
     {
       "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_atual_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
+      "target": "state_vers\u00e3o_atual_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -37920,7 +37932,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L377",
+      "source_location": "L400",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L59",
       "weight": 1.0
     },
     {
@@ -38270,7 +38293,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L929",
+      "source_location": "L933",
       "weight": 1.0
     },
     {
@@ -38347,7 +38370,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L938",
+      "source_location": "L942",
       "weight": 1.0
     },
     {
@@ -38358,7 +38381,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L803",
+      "source_location": "L807",
       "weight": 1.0
     },
     {
@@ -38787,7 +38810,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L150",
+      "source_location": "L153",
       "weight": 1.0
     },
     {
@@ -38798,7 +38821,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L157",
+      "source_location": "L160",
       "weight": 1.0
     },
     {
@@ -38853,7 +38876,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1067",
+      "source_location": "L1097",
       "weight": 1.0
     },
     {
@@ -38864,7 +38887,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1102",
+      "source_location": "L1132",
       "weight": 1.0
     },
     {
@@ -38875,7 +38898,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1130",
+      "source_location": "L1160",
       "weight": 1.0
     },
     {
@@ -38886,7 +38909,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1183",
+      "source_location": "L1213",
       "weight": 1.0
     },
     {
@@ -38897,7 +38920,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1236",
+      "source_location": "L1266",
       "weight": 1.0
     },
     {
@@ -38908,7 +38931,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1265",
+      "source_location": "L1295",
       "weight": 1.0
     },
     {
@@ -38919,7 +38942,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1302",
+      "source_location": "L1332",
       "weight": 1.0
     },
     {
@@ -38930,7 +38953,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1321",
+      "source_location": "L1351",
       "weight": 1.0
     },
     {
@@ -38941,18 +38964,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1361",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendpipack",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1396",
+      "source_location": "L1391",
       "weight": 1.0
     },
     {
@@ -38968,13 +38980,24 @@
     },
     {
       "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendpipack",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1426",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
       "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_checkserviceshealth",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1433",
+      "source_location": "L1463",
       "weight": 1.0
     },
     {
@@ -38985,7 +39008,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1465",
+      "source_location": "L1495",
       "weight": 1.0
     },
     {
@@ -38996,7 +39019,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1493",
+      "source_location": "L1523",
       "weight": 1.0
     },
     {
@@ -39007,7 +39030,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1515",
+      "source_location": "L1545",
       "weight": 1.0
     },
     {
@@ -39018,18 +39041,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1533",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1585",
+      "source_location": "L1563",
       "weight": 1.0
     },
     {
@@ -39041,6 +39053,17 @@
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L160",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1615",
       "weight": 1.0
     },
     {
@@ -39073,7 +39096,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L327",
+      "source_location": "L357",
       "weight": 1.0
     },
     {
@@ -39084,7 +39107,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L396",
+      "source_location": "L426",
       "weight": 1.0
     },
     {
@@ -39095,7 +39118,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L470",
+      "source_location": "L500",
       "weight": 1.0
     },
     {
@@ -39106,7 +39129,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L500",
+      "source_location": "L530",
       "weight": 1.0
     },
     {
@@ -39117,7 +39140,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L535",
+      "source_location": "L565",
       "weight": 1.0
     },
     {
@@ -39128,7 +39151,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L584",
+      "source_location": "L614",
       "weight": 1.0
     },
     {
@@ -39150,18 +39173,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L642",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testvideopipelinestability",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L831",
+      "source_location": "L672",
       "weight": 1.0
     },
     {
@@ -39177,13 +39189,24 @@
     },
     {
       "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testvideopipelinestability",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L861",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
       "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L956",
+      "source_location": "L986",
       "weight": 1.0
     },
     {
@@ -40760,14 +40783,14 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_1018",
+      "source": "backend_app_api_devices_rationale_1022",
       "target": "backend_app_api_devices_execute_batch_test",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1018",
+      "source_location": "L1022",
       "weight": 1.0
     },
     {
@@ -40804,124 +40827,124 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_333",
+      "source": "backend_app_api_devices_rationale_337",
       "target": "backend_app_api_devices_get_device_policy",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L333",
+      "source_location": "L337",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_410",
+      "source": "backend_app_api_devices_rationale_414",
       "target": "backend_app_api_devices_check_devices_health",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L410",
+      "source_location": "L414",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_484",
+      "source": "backend_app_api_devices_rationale_488",
       "target": "backend_app_api_devices_update_device_permissions",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L484",
+      "source_location": "L488",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_557",
+      "source": "backend_app_api_devices_rationale_561",
       "target": "backend_app_api_devices_push_device_settings",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L557",
+      "source_location": "L561",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_694",
+      "source": "backend_app_api_devices_rationale_698",
       "target": "backend_app_api_devices_toggle_device_pip",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L694",
+      "source_location": "L698",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_743",
+      "source": "backend_app_api_devices_rationale_747",
       "target": "backend_app_api_devices_deduplicate_devices",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L743",
+      "source_location": "L747",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_786",
+      "source": "backend_app_api_devices_rationale_790",
       "target": "backend_app_api_devices_cleanup_all_devices",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L786",
+      "source_location": "L790",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_812",
+      "source": "backend_app_api_devices_rationale_816",
       "target": "backend_app_api_devices_receive_pip_ack",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L812",
+      "source_location": "L816",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_835",
+      "source": "backend_app_api_devices_rationale_839",
       "target": "backend_app_api_devices_test_single_device",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L835",
+      "source_location": "L839",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_841",
+      "source": "backend_app_api_devices_rationale_845",
       "target": "backend_app_api_devices_test_pip",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L841",
+      "source_location": "L845",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_950",
+      "source": "backend_app_api_devices_rationale_954",
       "target": "backend_app_api_devices_toggle_device_master",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L950",
+      "source_location": "L954",
       "weight": 1.0
     },
     {
@@ -41940,7 +41963,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "frontend/src/components/WebRTCPlayer.tsx",
-      "source_location": "L562",
+      "source_location": "L564",
       "weight": 1.0
     },
     {
@@ -41952,7 +41975,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L511",
+      "source_location": "L541",
       "weight": 1.0
     },
     {
@@ -41964,7 +41987,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1337",
+      "source_location": "L1367",
       "weight": 1.0
     },
     {
@@ -41976,7 +41999,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1504",
+      "source_location": "L1534",
       "weight": 1.0
     },
     {
@@ -41988,7 +42011,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1249",
+      "source_location": "L1279",
       "weight": 1.0
     },
     {
@@ -42012,7 +42035,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1079",
+      "source_location": "L1109",
       "weight": 1.0
     },
     {
@@ -42024,7 +42047,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1554",
+      "source_location": "L1584",
       "weight": 1.0
     },
     {
@@ -42036,7 +42059,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1415",
+      "source_location": "L1445",
       "weight": 1.0
     },
     {
@@ -42048,7 +42071,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1373",
+      "source_location": "L1403",
       "weight": 1.0
     },
     {
@@ -42060,7 +42083,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1206",
+      "source_location": "L1236",
       "weight": 1.0
     },
     {
@@ -42369,7 +42392,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L415",
+      "source_location": "L419",
       "weight": 0.8
     },
     {
@@ -42380,7 +42403,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L787",
+      "source_location": "L791",
       "weight": 0.8
     },
     {
@@ -42391,7 +42414,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L744",
+      "source_location": "L748",
       "weight": 0.8
     },
     {
@@ -42402,7 +42425,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L724",
+      "source_location": "L728",
       "weight": 0.8
     },
     {
@@ -42413,7 +42436,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L857",
+      "source_location": "L861",
       "weight": 0.8
     },
     {
@@ -42424,7 +42447,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L904",
+      "source_location": "L908",
       "weight": 0.8
     },
     {
@@ -42446,7 +42469,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1020",
+      "source_location": "L1024",
       "weight": 0.8
     },
     {
@@ -42479,7 +42502,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L334",
+      "source_location": "L338",
       "weight": 0.8
     },
     {
@@ -42501,7 +42524,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L558",
+      "source_location": "L562",
       "weight": 0.8
     },
     {
@@ -42512,7 +42535,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L446",
+      "source_location": "L450",
       "weight": 0.8
     },
     {
@@ -42523,7 +42546,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L637",
+      "source_location": "L641",
       "weight": 0.8
     },
     {
@@ -42534,7 +42557,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L606",
+      "source_location": "L610",
       "weight": 0.8
     },
     {
@@ -42545,7 +42568,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L960",
+      "source_location": "L964",
       "weight": 0.8
     },
     {
@@ -42556,7 +42579,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L695",
+      "source_location": "L699",
       "weight": 0.8
     },
     {
@@ -42567,7 +42590,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L384",
+      "source_location": "L388",
       "weight": 0.8
     },
     {
@@ -42578,7 +42601,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L485",
+      "source_location": "L489",
       "weight": 0.8
     },
     {
@@ -42589,7 +42612,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L668",
+      "source_location": "L672",
       "weight": 0.8
     },
     {
@@ -42891,5 +42914,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "422948bd6bee3eaf97f8bd73b9141bbd02f3aff4"
+  "built_at_commit": "b016ebd96d14ea7e986633548d84b7dd2a65eb5d"
 }

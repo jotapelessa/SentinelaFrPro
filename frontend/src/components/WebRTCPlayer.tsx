@@ -220,7 +220,9 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   onToggleSpotlight,
   onCameraUpdated
 }) => {
-  const initialMode = (camera.stream_mode === "eco" || camera.stream_mode === "monitor") ? "monitor" : "webrtc";
+  const initialMode = (camera.stream_mode === "eco" || camera.stream_mode === "monitor") 
+    ? "monitor" 
+    : (camera.stream_mode === "webrtc" ? "webrtc" : "mse");
   const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">(initialMode);
   const [ecoFps, setEcoFps] = useState<number>(camera.eco_fps || 2);
   const [key, setKey] = useState(0);
@@ -382,11 +384,11 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 
   const getStreamUrl = () => {
     switch (streamMode) {
-      case "mse":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=mse`;
       case "webrtc":
+        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=webrtc,mse`;
+      case "mse":
       default:
-        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=webrtc`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=mse`;
     }
   };
 

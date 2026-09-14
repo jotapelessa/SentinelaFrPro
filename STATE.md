@@ -33,7 +33,30 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
-## 📦 Versão Atual: v001.000.000.114 (Otimização Térmica, Atomicidade e Unificação Web)
+## 📦 Versão Atual: v001.000.000.115 (Correção da Aba Câmeras nos APKs, Harmonização MSE e Cache-Busting Web)
+- **Data**: 2026-09-14
+- **Objetivo**: Resolução definitiva da exibição das câmeras nos APKs Android TV e Smartphone (Item 1.1 e 2.1), erradicação de tela preta com MSE prioritário e snapshot contínuo, eliminação de cache HTTP desatualizado no web app (`http://sentinela.local/`), reconciliação de permissões de dispositivos pareados no SQLite e harmonização de fluxos ativos no Frigate e go2rtc.
+- **Entregas Principais**:
+  1. **Android TV & Smartphone (Build 115)**:
+     - **Câmeras Operacionais**: Corrigido fallback no `SentinelaRepository.kt` com auto-fallback global para `/api/cameras` quando `/by-id/{deviceIdentifier}/cameras` for vazio, garantindo que `camera_secundaria` e `camera_principal` estejam sempre acessíveis.
+     - **MSE Hardware Default**: Configuração padrão de stream alterada para `mse` (Media Source Extensions via WebSocket TCP), eliminando stalls de UDP 8555 do WebRTC sob proxy reverso.
+     - **Fundo Transparente & Zero Tela Preta**: WebView em `MseCameraView.kt` configurado com `background: transparent !important;`, mantendo a camada de snapshot Coil perfeitamente visível em 19ms até a renderização do primeiro quadro de vídeo.
+     - **Initial State de Câmeras**: `MainActivity.kt` inicializa com `camera_secundaria` e `camera_principal` pré-carregadas.
+     - Bump para `BUILD=115` e `VERSION_NAME=001.000.000.115`.
+  2. **Frontend Web & NGINX**:
+     - Atualização para `v001.000.000.115` em `src/constants/version.ts` e `package.json`.
+     - `nginx/default.conf`: Adicionados cabeçalhos de cache-busting estrito na rota `/` (`Cache-Control: "no-cache, no-store, must-revalidate"`, `Pragma: "no-cache"`), com cache imutável preservado para assets versionados `/_next/static/`.
+     - `WebRTCPlayer.tsx`: Modo MSE prioritário com fallback `mode=webrtc,mse`.
+  3. **Backend Core & Frigate/go2rtc**:
+     - `backend/app/api/devices.py`: Endpoint `/by-id/{device_identifier}/cameras` tolerante a aliases cruzados e com fallback automático para câmeras ativas.
+     - `frigate/config/config.yml`: Adicionado alias transparente `camera_principal: - rtsp://127.0.0.1:8554/camera_secundaria` no `go2rtc.streams`.
+     - `nginx/default.conf`: Location de alias legada `^/frigate/api/camera_principal/(.*)$` direcionando para `camera_secundaria`.
+     - `sentinela.db` (Remoto): Dispositivo `dev_smart_tv_pro_0342836f` desbloqueado (`permission_status = 'allowed'`, `allow_live_stream = 1`).
+  4. **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.114 (Otimização Térmica, Atomicidade e Unificação Web)
 - **Data**: 2026-09-14
 - **Objetivo**: Resolução definitiva do pipeline de release no GitHub, alívio térmico no servidor e aplicativos, unificação de versão no frontend e escrita atômica com thread-safety no backend.
 - **Entregas Principais**:

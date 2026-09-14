@@ -318,7 +318,37 @@ object SentinelaRepository {
             Log.w(TAG, "Error fetching cameras: ${e.message}")
         }
 
+        // Auto-fallback: se o endpoint por dispositivo retornar vazio ou falhar, consulta a lista global do servidor
+        if (list.isEmpty() && !deviceIdentifier.isNullOrBlank()) {
+            try {
+                val url = URL("${SentinelaConfig.BASE_URL}/api/cameras")
+                val conn = openConnection(url).apply {
+                    connectTimeout = 4000
+                    readTimeout = 4000
+                    requestMethod = "GET"
+                    setRequestProperty("Accept", "application/json")
+                }
+                if (conn.responseCode == 200) {
+                    val reader = BufferedReader(InputStreamReader(conn.inputStream))
+                    val jsonArray = JSONArray(reader.readText())
+                    reader.close()
+
+                    for (i in 0 until jsonArray.length()) {
+                        val obj = jsonArray.getJSONObject(i)
+                        val name = obj.optString("name", "camera_$i")
+                        val friendlyName = obj.optString("friendly_name", name)
+                        val enabled = obj.optBoolean("enabled", true)
+                        list.add(CameraItem(name = name, friendlyName = friendlyName, enabled = enabled))
+                    }
+                }
+                conn.disconnect()
+            } catch (e: Exception) {
+                Log.w(TAG, "Error fetching fallback global cameras: ${e.message}")
+            }
+        }
+
         if (list.isEmpty()) {
+            list.add(CameraItem("camera_secundaria", "Câmera Secundária (Entrada)", true))
             list.add(CameraItem("camera_principal", "Câmera Principal", true))
         }
         list

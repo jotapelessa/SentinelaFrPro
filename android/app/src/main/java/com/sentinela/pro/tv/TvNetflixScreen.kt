@@ -506,7 +506,7 @@ fun TvCamerasViewport(
     var isFullscreenLiveOpen by remember { mutableStateOf(false) }
     val isPipOverlayActive by com.sentinela.pro.tv.OverlayService.isPipShowing.collectAsState()
     var streamMode by remember(selectedCamera?.id) {
-        mutableStateOf(selectedCamera?.let { prefs.getCameraDefaultStreamMode(it.id) } ?: "webrtc")
+        mutableStateOf(selectedCamera?.let { prefs.getCameraDefaultStreamMode(it.id) } ?: "mse")
     }
     val heroInteractionSource = remember { MutableInteractionSource() }
     val isHeroFocused by heroInteractionSource.collectIsFocusedAsState()
@@ -635,7 +635,7 @@ fun TvCamerasViewport(
                             if (keyEvent.type == KeyEventType.KeyDown) {
                                 when (keyEvent.key) {
                                     Key.Enter, Key.DirectionCenter -> {
-                                        val modes = listOf("webrtc", "mse", "eco")
+                                        val modes = listOf("mse", "webrtc", "eco")
                                         val nextIdx = (modes.indexOf(streamMode) + 1) % modes.size
                                         val nextMode = modes[nextIdx]
                                         streamMode = nextMode
@@ -662,7 +662,7 @@ fun TvCamerasViewport(
                             } else false
                         }
                         .clickable(interactionSource = modeInteractionSource, indication = null) {
-                            val modes = listOf("webrtc", "mse", "eco")
+                            val modes = listOf("mse", "webrtc", "eco")
                             val nextIdx = (modes.indexOf(streamMode) + 1) % modes.size
                             val nextMode = modes[nextIdx]
                             streamMode = nextMode

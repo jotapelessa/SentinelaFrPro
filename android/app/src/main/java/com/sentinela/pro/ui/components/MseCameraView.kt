@@ -178,8 +178,8 @@ fun MseCameraView(
                             // Inject CSS and intelligent WebRTC/MSE stall recovery watchdog
                             val js = "javascript:(function() {" +
                                     "var style = document.createElement('style');" +
-                                    "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:black; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
-                                    "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; pointer-events:none !important; } " +
+                                    "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent !important; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
+                                    "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; pointer-events:none !important; background:transparent !important; } " +
                                     "video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel, video::-webkit-media-controls-play-button, video::-webkit-media-controls-start-playback-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-current-time-display, video::-webkit-media-controls-time-remaining-display, video::-webkit-media-controls-mute-button, video::-webkit-media-controls-toggle-closed-captions-button, video::-webkit-media-controls-volume-slider { display:none !important; -webkit-appearance:none !important; opacity:0 !important; visibility:hidden !important; } " +
                                     "* { outline:none !important; -webkit-tap-highlight-color:transparent !important; }';" +
                                     "document.head.appendChild(style);" +

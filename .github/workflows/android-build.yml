@@ -132,12 +132,12 @@ jobs:
             * Zoom digital de até 5x e grade dinâmica de câmeras
             * Transmissão em tempo real de snapshots e eventos via WebSocket
 
-          ### 🚀 Melhorias Desta Versão (Build 114):
-          - 🎨 **Nova Identidade Visual & Ícones Oficiais**: Novos ícones adaptativos ultra-HD (1024x1024) com máscara segura em todas as densidades (mdpi a xxxhdpi) e banner 16:9 para Android TV / Google TV.
-          - ❄️ **Otimização Térmica & Fim do Superaquecimento**: Eliminação de loops destrutivos de polling HTTP; reprodução prioritária por hardware (MediaCodec / MSE WebRTC) com queda sustentável de temperatura na TV e no celular.
-          - 📱 **Telemetria de Clientes em Tempo Real**: Telemetria automática de testes de rede, rotas, telas navegadas e ciclo de vida PiP disponível no painel web (`/settings/logs` e `/screens`).
-          - ⚡ **Harmonização de Codecs H.264**: Pipeline 100% harmonizado entre Frigate 0.17, go2rtc e APKs com zero latência e zero transcode.
-          - 🛡️ **Governança & Estabilidade**: 31/31 critérios de aceite provados via onp-spec e integridade de conexões Tailscale e LAN.
+          ### 🚀 Melhorias Desta Versão (Build 115):
+          - 📹 **Resolução Definitiva na Aba Câmeras (Android TV & Mobile)**: Correção de tela preta e stalls no carregamento de feeds; transição contínua com camada snapshot instantânea em 19ms até a inicialização dos frames de vídeo.
+          - 🔄 **Harmonização Multi-Câmera & Aliases**: Interoperabilidade total entre fluxos ativos (`camera_secundaria` / `camera_principal`), com auto-fallback global no endpoint `/api/devices/by-id/{id}/cameras` e no repositório Android.
+          - ⚡ **Stream Prioritário MSE Hardware**: Configuração do modo MSE como padrão nativo sobre WebSocket, eliminando bloqueios de NAT/proxy UDP do WebRTC.
+          - 🌐 **Cache-Busting Estruturado no Web App & NGINX**: Desativação de cache em requisições de documentos HTML (`Cache-Control: no-cache, no-store`), garantindo que novas versões e layouts sejam atualizados instantaneamente no navegador em `http://sentinela.local/`.
+          - 🛡️ **Governança & Estabilidade**: Desbloqueio e reconciliação de permissões de dispositivos pareados no SQLite e 100% de conformidade com os testes onp-spec.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
