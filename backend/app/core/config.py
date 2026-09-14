@@ -6,7 +6,9 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="allow")
 
     PROJECT_NAME: str = "Sentinela Frigate Core API"
+    APP_TITLE: str = "Sentinela NVR Core"
     APP_NAME: str = "Sentinela NVR Core"
+    VERSION: str = "001.000.000.119"
     APP_VERSION: str = "001.000.000.119"
     API_V1_STR: str = "/api"
     ENVIRONMENT: str = "production"
