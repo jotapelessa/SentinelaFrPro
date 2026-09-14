@@ -33,6 +33,36 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
+## 🔒 Invariantes de Ouro de Transmissão & Streaming (Configuração Perfeita — NUNCA ALTERAR)
+
+Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo real entre Frigate, go2rtc, Backend Core, Nginx, Android TV e Mobile. Qualquer agente de IA ou desenvolvedor que for modificar o sistema DEVE respeitar rigorosamente estas 6 diretrizes:
+
+1. **Idempotência de Stream no PiP (`OverlayService.kt`)**:
+   - **Regra**: Nunca chamar `pipWebView.loadUrl(streamUrl)` se o PiP já estiver aberto exibindo a mesma câmera (`activePipCamera == cameraId`).
+   - **Motivo**: O Frigate dispara até 16 eventos de detecção/bounding box por segundo no MQTT. Recarregar o WebView a cada frame recebido reinicializa o WebSocket e derruba o decodificador de hardware MediaCodec, causando travamento e congelamento nas TVs. Apenas renove o temporizador de auto-dismiss.
+
+2. **Watchdog de Live-Edge Suave (Zero Seek Destrutivo)**:
+   - **Regra**: Nunca executar `video.currentTime = end - 0.05` ou seeks agressivos em transmissões ao vivo.
+   - **Motivo**: Streams de vídeo H.264 ao vivo dependem de Keyframes (I-Frames) periódicos. Um salto manual arbitrário quebra o fluxo de decodificação e congela o player. O watchdog DEVE usar aceleração suave de `playbackRate` (1.08x a 1.15x) para drenar buffers e retornar à borda ao vivo de forma transparente.
+
+3. **Modo MSE sobre WebSocket TCP como Padrão de Fábrica**:
+   - **Regra**: O modo padrão de streaming nos clientes Android TV e Smartphone DEVE ser `mse` (Media Source Extensions via WebSocket TCP).
+   - **Motivo**: O protocolo WebRTC (UDP porta 8555) sofre bloqueios de NAT restritivo e falhas de handshake ICE quando os dispositivos operam sob proxies reversos ou túneis remotos (como Tailscale Funnel). O MSE sobre WebSocket TCP trafega pela porta padrão HTTP (80/8088/443), garantindo 100% de conectividade contínua.
+
+4. **Zero-Cache em Documentos Web (`nginx/default.conf` & Host Nginx)**:
+   - **Regra**: As rotas HTML de nível raiz (`/`) NUNCA devem ter cache público ou ETags. Devem conter expressamente `Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0` e `etag off;`. Os assets estáticos com hash (`/_next/static/`) mantêm cache `immutable`.
+   - **Motivo**: Evita que o navegador sirva versões desatualizadas com `304 Not Modified` após novos deploys ou atualizações de layout.
+
+5. **Desacoplamento Assíncrono de Google Cast no Backend**:
+   - **Regra**: Qualquer tentativa de inicializar Google Cast (porta 8009) em endpoints como `/api/devices/batch-test` DEVE ser executada em background assíncrono (`asyncio.create_task`) e NUNCA ser disparada se o dispositivo já estiver com o app Sentinela conectado via WebSocket.
+   - **Motivo**: Reduz o tempo de resposta da API de 6 segundos para 45 milissegundos e evita que o Cast sobrescreva ou feche o overlay nativo na TV.
+
+6. **Harmonização do Codec H.264 CFR em Todo o Ecossistema**:
+   - **Regra**: Todas as fontes de vídeo, feeds go2rtc, clipes Telegram e overlays de visualização devem operar em codec H.264 constante (CFR).
+   - **Motivo**: Previne incompatibilidades com decodificadores SoC legados e garante reprodução instantânea com menos de 120ms de latência.
+
+---
+
 ## 📦 Versão Atual: v001.000.000.117 (Estabilidade Multi-Dispositivo de PiP, Zero-Cache Nginx Host & App Web)
 - **Data**: 2026-09-14
 - **Objetivo**: Resolução definitiva dos problemas relatados pelo usuário:

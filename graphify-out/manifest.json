@@ -720,9 +720,9 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1788689813.426915,
-    "seen": 1788699727.529417,
-    "ast_hash": "3823a4fbc21744305ed10c669b557229",
+    "mtime": 1789401159.6611495,
+    "seen": 1789401177.653978,
+    "ast_hash": "a6e273a0239b406adbf0487f1392cf66",
     "semantic_hash": ""
   },
   "README.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789396515.5597315,
-    "seen": 1789397971.2339258,
-    "ast_hash": "41982c08ca2287d4d76cd33a8c813d67",
+    "mtime": 1789401172.2152107,
+    "seen": 1789401177.6539788,
+    "ast_hash": "d155803a2056deaa725a05ae39d60e54",
     "semantic_hash": ""
   },
   "android/gradlew": {
