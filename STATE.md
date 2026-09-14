@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-10 17:40 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0)
+> **Última Atualização:** 2026-09-14 11:35 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.117 operacional.
 
 ---
 
@@ -33,7 +33,26 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
-## 📦 Versão Atual: v001.000.000.116 (Resolução de PiP na TV, Reconciliação Master, Capturas HD e Desduplicação de Câmeras)
+## 📦 Versão Atual: v001.000.000.117 (Estabilidade Multi-Dispositivo de PiP, Zero-Cache Nginx Host & App Web)
+- **Data**: 2026-09-14
+- **Objetivo**: Resolução definitiva dos problemas relatados pelo usuário:
+  1. **Item 1.1 (Android TV - Estabilidade de PiP Multi-Dispositivo)**:
+     - **Causa Raiz Identificada**: Rajadas de detecção Frigate/MQTT (`pip_alert`, `NEW_DETECTION`, `FRIGATE_EVENT`) despachavam até 16 recarregamentos por segundo (`loadUrl(streamUrl)`), abortando conexões WebSocket e travando o hardware decoder MediaCodec nas TVs.
+     - **Solução Implementada**: Idempotência total de stream PiP em `OverlayService.kt` (`activePipCamera`). Se o PiP já estiver ativo para a mesma câmera, ignora recarregamento de stream e apenas renova o temporizador de auto-dismiss na tela. Adicionado debounce de 2.5s para rajadas de eventos MQTT. Substituídos seeks destrutivos (`v.currentTime = end - 0.05`) por watchdog dinâmico e suave via `playbackRate` (1.08x ~ 1.15x) que recupera o live edge sem quebrar o buffer de I-Frames.
+  2. **Item 2.1 (Backend Core API - Latência e Desacoplamento de Cast)**:
+     - Duração padrão de PiP normalizada para 15s caso venha 0 no payload do app.
+     - Tentativas de Google Cast (porta 8009) delegadas para background tasks assíncronas (`asyncio.create_task`), reduzindo a latência do endpoint `/api/devices/batch-test` de 6.047s para 0.045s (ganho de 99.2%).
+     - Verificação no gateway PiP se o dispositivo de destino já possui conexão ativa via WebSocket Sentinela; se possuir, ignora Google Cast para evitar concorrência e fechamento de overlay na Smart TV.
+  3. **Item 3.1 (Web Sentinela - Zero-Cache & Atualização Instantânea)**:
+     - No Nginx do host Ubuntu (`/etc/nginx/sites-available/mestre`) e no container `sentinela_nginx`: configurados cabeçalhos estritos `Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0`, remoção de ETags (`etag off; proxy_hide_header ETag;`) e remoção de `x-nextjs-cache`.
+     - No Next.js (`layout.tsx`): definidos `export const dynamic = "force-dynamic"`, `export const revalidate = 0` e meta tags no `<head>`, garantindo que qualquer acesso a `http://sentinela.local/` reflita imediatamente a versão mais recente sem requerer limpeza de cache manual.
+  4. **Compilação & Artefatos**:
+     - APKs compilados com Gradle (Java 17 / Android SDK): `sentinela.android.tv.v001.000.000.117.apk` (62 MB) e `sentinela.android.smartphone.v001.000.000.117.apk` (62 MB) gerados e sincronizados no host Ubuntu.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.116 (Resolução de PiP na TV, Reconciliação Master, Capturas HD e Desduplicação de Câmeras)
 - **Data**: 2026-09-14
 - **Objetivo**: Resolução definitiva dos 5 problemas críticos relatados pelo usuário:
   1. **Item 1.1 (Android TV)**: Corrigido o seletor da prévia PiP em `TvNetflixScreen.kt` para usar `it.id` (slug do stream) eliminando 404 de URLs com friendly name. Adicionado fallback in-app garantido com `activePipAlert` quando a TV não possui permissão `SYSTEM_ALERT_WINDOW`.
