@@ -7126,17 +7126,6 @@
       "source_file": "next"
     },
     {
-      "id": "scripts_generate_android_icons",
-      "label": "generate_android_icons.py",
-      "_origin": "ast",
-      "community": 101,
-      "community_name": "generate_android_icons.py",
-      "file_type": "code",
-      "norm_label": "generate_android_icons.py",
-      "source_file": "scripts/generate_android_icons.py",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_app_services_telegram_vault",
       "label": "telegram_vault.py",
       "_origin": "ast",
@@ -16320,7 +16309,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L337"
+      "source_location": "L333"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -37642,7 +37631,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L337",
+      "source_location": "L333",
       "weight": 1.0
     },
     {
@@ -42602,5 +42591,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "a74b1ec7e5050e7ca06ef4f73fe3ec8865065c46"
+  "built_at_commit": "0f7b4e6658d8a2ea62071b4ec8642a89a9a1e841"
 }

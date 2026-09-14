@@ -33,6 +33,24 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
+- **Novo Ícone e Identidade Visual dos Aplicativos Android (TV & Smartphone)**:
+  - **Origem da Imagem**: Extraída em resolução nativa (1024x1024 RGBA) do álbum do Google Photos fornecido pelo usuário (`https://photos.app.goo.gl/M7EP2me4oBRw3oUb7`).
+  - **Suíte Completa de Ícones Gerada**:
+    - **Adaptive Icons (API 26+)**: `mipmap-anydpi-v26/ic_launcher.xml` e `ic_launcher_round.xml`, utilizando `ic_launcher_foreground.png` (432x432 px com margem de segurança de 68% evitando cortes em máscaras circulares/squircle) e `ic_launcher_background.xml` com cor Obsidian `#060814`.
+    - **Densidades Mipmap Tradicionais**:
+      - `mipmap-mdpi`: 48x48 px (`ic_launcher.png` e `ic_launcher_round.png`)
+      - `mipmap-hdpi`: 72x72 px (`ic_launcher.png` e `ic_launcher_round.png`)
+      - `mipmap-xhdpi`: 96x96 px (`ic_launcher.png` e `ic_launcher_round.png`)
+      - `mipmap-xxhdpi`: 144x144 px (`ic_launcher.png` e `ic_launcher_round.png`)
+      - `mipmap-xxxhdpi`: 192x192 px (`ic_launcher.png` e `ic_launcher_round.png`)
+    - **Banner Android TV Leanback (16:9)**: `drawable/ic_banner.png` e `drawable-xhdpi/ic_banner.png` (320x180 px) com o emblema estilizado sobre vinheta obsidian dark.
+  - **Compilação e Validação**:
+    - `assembleTvDebug` e `assembleSmartphoneDebug` compilados com sucesso (BUILD SUCCESSFUL).
+    - APKs gerados: `app-tv-debug.apk` (62 MB) e `app-smartphone-debug.apk` (62 MB).
+    - 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS.
+
+---
+
 - **Visualização Web de Logs de Clientes no Sentinela Frontend (http://sentinela.local/)**:
   - **Motivação & Requisitos**:
     - O usuário perguntou `"/brainstorming onde acompanhar esses logs no http://sentinela.local/?"`.
