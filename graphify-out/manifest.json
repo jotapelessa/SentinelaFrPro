@@ -408,10 +408,10 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1788635524.5893028,
-    "seen": 1788641395.538273,
-    "ast_hash": "074f92e3a598ae818b59966e262df361",
-    "semantic_hash": "074f92e3a598ae818b59966e262df361"
+    "mtime": 1789381680.2542596,
+    "seen": 1789381708.339116,
+    "ast_hash": "68acd7e6771877f0340b34ff90262a08",
+    "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
     "mtime": 1788141238.8786209,
@@ -432,10 +432,10 @@
     "semantic_hash": "f09eb5f325f9a45fa8e705d58ea8cf29"
   },
   "backend/app/main.py": {
-    "mtime": 1788635525.285693,
-    "seen": 1788641395.538274,
-    "ast_hash": "a9895f498c1f008ec6b50e9cb33ecc7c",
-    "semantic_hash": "a9895f498c1f008ec6b50e9cb33ecc7c"
+    "mtime": 1789381685.434694,
+    "seen": 1789381708.3391192,
+    "ast_hash": "baf8c77da92b831889c4e043a7d75790",
+    "semantic_hash": ""
   },
   "backend/app/mocks/mock_publisher.py": {
     "mtime": 1788121414.7797306,
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789075269.9949048,
-    "seen": 1789105527.948888,
-    "ast_hash": "ff05de82570a9ef531836166b0e79ed7",
+    "mtime": 1789381698.966659,
+    "seen": 1789381708.339157,
+    "ast_hash": "6c07e59f15ff5789e53a3472765b1b2d",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
