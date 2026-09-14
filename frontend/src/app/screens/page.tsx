@@ -28,6 +28,7 @@ interface PairedDevice {
   allow_reboot_server?: boolean;
   pip_default_size?: string;
   pip_duration_seconds?: number;
+  pip_position?: string;
   stream_quality?: string;
   is_master_admin?: boolean;
   mac_address?: string;
