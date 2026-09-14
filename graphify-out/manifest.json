@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
-    "mtime": 1789392627.9022026,
-    "seen": 1789392868.776309,
-    "ast_hash": "dd788dfdf8b7e99c269606afa67dec3b",
+    "mtime": 1789393469.71588,
+    "seen": 1789393482.2912772,
+    "ast_hash": "dbe3ed4f3197648ba3becb022d2167ee",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {

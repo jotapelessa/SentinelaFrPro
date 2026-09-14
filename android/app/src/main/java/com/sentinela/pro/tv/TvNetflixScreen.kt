@@ -239,7 +239,8 @@ fun TvNetflixScreenCore(
                             tailscaleIp = tailscaleIp,
                             cameras = cameras,
                             firstItemRequester = settingsFirstItemRequester,
-                            onNavigateLeftToSidebar = { sidebarFocusRequesters.getOrNull(selectedTab.ordinal)?.requestFocus() }
+                            onNavigateLeftToSidebar = { sidebarFocusRequesters.getOrNull(selectedTab.ordinal)?.requestFocus() },
+                            onTriggerInAppPip = { activePipAlert = it }
                         )
                     }
                 }
@@ -3064,7 +3065,8 @@ fun TvSettingsViewport(
     tailscaleIp: String,
     cameras: List<CameraEntity> = emptyList(),
     firstItemRequester: FocusRequester = remember { FocusRequester() },
-    onNavigateLeftToSidebar: () -> Unit = {}
+    onNavigateLeftToSidebar: () -> Unit = {},
+    onTriggerInAppPip: ((PipAlert) -> Unit)? = null
 ) {
     val context = LocalContext.current
     val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
@@ -3503,7 +3505,7 @@ fun TvSettingsViewport(
                                     val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/frigate/api/$targetCam/latest.jpg?h=720"
                                     val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=$targetCam&mode=mse&width=100%"
                                     
-                                    val hasOverlayPerm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                                    val hasOverlayPerm = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                                         android.provider.Settings.canDrawOverlays(context)
                                     } else true
 
@@ -3516,21 +3518,25 @@ fun TvSettingsViewport(
                                             streamUrl = testStream
                                         )
                                         Toast.makeText(context, "🔔 Janela PiP disparada sobre a TV ($targetCam)!", Toast.LENGTH_SHORT).show()
-                                    } else {
+                                    } else if (onTriggerInAppPip != null) {
                                         val selectedCamEntity = cameras.firstOrNull { it.id == targetCam } ?: CameraEntity(
                                             id = targetCam,
                                             name = targetCamLabel,
                                             thumbnailUrl = testSnap,
                                             streamUrl = testStream
                                         )
-                                        activePipAlert = PipAlert(
-                                            id = "pip_test_${System.currentTimeMillis()}",
-                                            camera = selectedCamEntity,
-                                            eventDescription = "Prévia PiP Real Disparada",
-                                            snapshotUrl = testSnap,
-                                            countdownSeconds = com.sentinela.pro.data.PipDuration.values()[durIndex].seconds
+                                        onTriggerInAppPip(
+                                            PipAlert(
+                                                id = "pip_test_${System.currentTimeMillis()}",
+                                                camera = selectedCamEntity,
+                                                eventDescription = "Prévia PiP Real Disparada",
+                                                snapshotUrl = testSnap,
+                                                countdownSeconds = com.sentinela.pro.data.PipDuration.values()[durIndex].seconds
+                                            )
                                         )
                                         Toast.makeText(context, "🔔 Janela PiP In-App aberta na TV! ($targetCam)", Toast.LENGTH_SHORT).show()
+                                    } else {
+                                        Toast.makeText(context, "⚠️ Permissão SYSTEM_ALERT_WINDOW necessária na TV", Toast.LENGTH_SHORT).show()
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = TvColors.NetflixRed),
