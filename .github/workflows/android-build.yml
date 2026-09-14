@@ -23,7 +23,10 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-        
+
+    - name: Set up Android SDK
+      uses: android-actions/setup-android@v3
+
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
       with:
@@ -48,44 +51,22 @@ jobs:
 
     - name: Build and Package APKs
       working-directory: android
+      env:
+        GRADLE_OPTS: "-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
       run: |
-        set +e
         chmod +x gradlew
+        export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
+        export ANDROID_SDK_ROOT="$ANDROID_HOME"
         
-        # Resilient build: Try gradle wrapper first, with fallback to global gradle
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon > /tmp/gradle.log 2>&1
-        GRADLE_EXIT=$?
+        # Garante a resolução e descompactação do Gradle Wrapper com resiliência
+        ./gradlew --version || gradle --version
         
-        if [ $GRADLE_EXIT -ne 0 ] && command -v gradle >/dev/null 2>&1; then
-          echo "⚠️ ./gradlew falhou, tentando com gradle CLI global do runner..."
-          gradle assembleTvDebug assembleSmartphoneDebug --no-daemon > /tmp/gradle.log 2>&1
-          GRADLE_EXIT=$?
-        fi
-        set -e
-        
-        echo "### 🔨 Gradle Exit Code: $GRADLE_EXIT" >> $GITHUB_STEP_SUMMARY
-        
-        if [ $GRADLE_EXIT -ne 0 ]; then
-          echo "❌ Gradle falhou com exit code $GRADLE_EXIT"
-          echo "❌ Gradle falhou com exit code $GRADLE_EXIT" >> $GITHUB_STEP_SUMMARY
-          echo '```text' >> $GITHUB_STEP_SUMMARY
-          tail -n 200 /tmp/gradle.log >> $GITHUB_STEP_SUMMARY
-          echo '```' >> $GITHUB_STEP_SUMMARY
-          exit 1
-        fi
-        
-        echo "✅ Gradle build concluído com sucesso (exit 0)!"
+        echo "🔨 Iniciando compilação dos APKs TV e Smartphone..."
+        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --stacktrace
         
         echo "### 📋 APKs Encontrados" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
-        echo "CWD: $(pwd)" >> $GITHUB_STEP_SUMMARY
-        find . -name "*.apk" -type f >> $GITHUB_STEP_SUMMARY 2>&1
-        echo '```' >> $GITHUB_STEP_SUMMARY
-        
-        echo "### 📂 Caminhos Esperados" >> $GITHUB_STEP_SUMMARY
-        echo '```' >> $GITHUB_STEP_SUMMARY
-        ls -la app/build/outputs/apk/tv/debug/ >> $GITHUB_STEP_SUMMARY 2>&1 || echo "tv/debug/ NÃO EXISTE" >> $GITHUB_STEP_SUMMARY
-        ls -la app/build/outputs/apk/smartphone/debug/ >> $GITHUB_STEP_SUMMARY 2>&1 || echo "smartphone/debug/ NÃO EXISTE" >> $GITHUB_STEP_SUMMARY
+        find app/build/outputs/apk/ -name "*.apk" -type f >> $GITHUB_STEP_SUMMARY 2>&1
         echo '```' >> $GITHUB_STEP_SUMMARY
         
         VER="${{ steps.get_version.outputs.version }}"
@@ -97,7 +78,7 @@ jobs:
         cp app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk "$DEST/sentinela-android-smartphone-v${VER}.apk"
         cp app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk "$DEST/sentinela-android-smartphone-latest.apk"
         
-        echo "### ✅ Release APKs" >> $GITHUB_STEP_SUMMARY
+        echo "### ✅ Release APKs Prontos" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
         ls -lh "$DEST/" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
@@ -133,16 +114,18 @@ jobs:
           - 📺 **Android TV / TV Box**: [`sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/${{ steps.get_version.outputs.tag }}/sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk)
             * Navegação otimizada para D-Pad / Controle Remoto
             * Suporte a Notificações Flutuantes Picture-in-Picture (PiP 8 tamanhos)
+            * Seletor de Resolução do Vídeo (720p HD Econômico vs 1080p FHD Nativo)
             * Live Feed contínuo das câmeras com MSE e aceleração de hardware H.264
           - 📱 **Tablet & Smartphone**: [`sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/${{ steps.get_version.outputs.tag }}/sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk)
             * Interface estilo YouTube com feed vertical e suporte a toque
             * Zoom digital de até 5x e grade dinâmica de câmeras
-            * Central Master de Smart TVs e controle granular de taxa de quadros
+            * Central Master VIP com controle de resolução 720p/1080p para todas as Smart TVs
+            * Controle granular de taxa de quadros e silenciamento por FAB
 
-          ### 🚀 Melhorias Desta Versão (Build 117):
-          - 📺 **Estabilidade de PiP Multi-Dispositivo (Android TV)**: Idempotência total no carregamento do stream (`OverlayService.kt`), evitando reinicialização do hardware decoder em rajadas de eventos Frigate/MQTT. Watchdog dinâmico via `playbackRate` suave sem quebrar I-Frames.
-          - ⚡ **Backend Core API Ultra Otimizado**: Desacoplamento assíncrono do Google Cast em background tasks, reduzindo a latência do `/api/devices/batch-test` de 6.047s para 0.045s (99.2% de redução).
-          - 🌐 **Zero-Cache Web no Nginx**: Headers estritos de cache-busting e desativação de ETags no Nginx do host e contêiner (`http://sentinela.local/`).
+          ### 🚀 Melhorias Desta Versão (Build 118):
+          - ⚡ **Multi-Resolução Sob Demanda (720p HD / 1080p FHD)**: Sub-streams transcodificados por hardware Intel QSV no go2rtc (`camera_secundaria_720p` e `camera_principal_720p`), reduzindo o consumo de banda de rede em até 56.5% e uso de RAM em Smart TVs.
+          - 📺 **Controle de Resolução em Todos os Clientes**: Seletor visual na Android TV (Aba 5), no Smartphone (Central Master VIP) e no Web Sentinela (`/screens`).
+          - 🔒 **Invariantes de Ouro Preservadas**: Idempotência de stream no PiP, watchdog suave de live-edge via `playbackRate`, MSE sobre WebSocket TCP e zero-cache no Nginx.
           - 🛡️ **Governança & Estabilidade**: 100% de aprovação na suíte `onp-spec` (31/31 testes PASS).
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

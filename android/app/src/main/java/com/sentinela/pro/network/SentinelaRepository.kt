@@ -28,6 +28,7 @@ data class DevicePolicy(
     val pipDefaultSize: String = "medium",
     val pipDurationSeconds: Int = 10,
     val pipPosition: String = "TOP_RIGHT",
+    val streamQuality: String = "1080p",
     val isMasterAdmin: Boolean = false
 )
 
@@ -49,6 +50,7 @@ data class RemoteDeviceItem(
     val pipDefaultSize: String = "medium",
     val pipDurationSeconds: Int = 10,
     val pipPosition: String = "TOP_RIGHT",
+    val streamQuality: String = "1080p",
     val allowedCameras: List<String> = emptyList(),
     val lastSeen: String? = null
 ) {
@@ -128,6 +130,7 @@ object SentinelaRepository {
                     pipDefaultSize = obj.optString("pip_default_size", "medium"),
                     pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
                     pipPosition = obj.optString("pip_position", "TOP_RIGHT"),
+                    streamQuality = obj.optString("stream_quality", "1080p"),
                     isMasterAdmin = obj.optBoolean("is_master_admin", false)
                 )
             }
@@ -1197,6 +1200,7 @@ object SentinelaRepository {
                             pipDefaultSize = obj.optString("pip_default_size", "medium"),
                             pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
                             pipPosition = obj.optString("pip_position", "TOP_RIGHT"),
+                            streamQuality = obj.optString("stream_quality", "1080p"),
                             allowedCameras = camsList,
                             lastSeen = obj.optString("last_seen").takeIf { it.isNotBlank() }
                         )
@@ -1216,6 +1220,7 @@ object SentinelaRepository {
         pipSize: String = "medium",
         pipDuration: Int = 10,
         pipPosition: String = "TOP_RIGHT",
+        streamQuality: String = "1080p",
         allowedCameras: List<String> = emptyList(),
         allowPip: Boolean = true,
         permissionStatus: String = "allowed"
@@ -1238,6 +1243,7 @@ object SentinelaRepository {
                 put("pip_default_size", pipSize)
                 put("pip_duration_seconds", pipDuration)
                 put("pip_position", pipPosition)
+                put("stream_quality", streamQuality)
                 put("allow_pip_alerts", allowPip)
                 put("allowed_cameras", camsArr)
             }
@@ -1280,11 +1286,12 @@ object SentinelaRepository {
                 put("pip_default_size", prefs.currentPipSize.name.lowercase())
                 put("pip_position", prefs.currentPipPosition.name)
                 put("pip_player_mode", prefs.pipPlayerMode)
+                put("stream_quality", prefs.streamQuality)
             }
             conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
             val code = conn.responseCode
             conn.disconnect()
-            Log.d(TAG, "pushLocalSettingsToServer: $code (dur=${prefs.currentPipDuration.seconds}s, size=${prefs.currentPipSize.name}, pos=${prefs.currentPipPosition.name})")
+            Log.d(TAG, "pushLocalSettingsToServer: $code (dur=${prefs.currentPipDuration.seconds}s, size=${prefs.currentPipSize.name}, pos=${prefs.currentPipPosition.name}, qual=${prefs.streamQuality})")
             return@withContext (code in 200..299)
         } catch (e: Exception) {
             Log.w(TAG, "pushLocalSettingsToServer error: ${e.message}")

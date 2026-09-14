@@ -135,6 +135,7 @@ data class PairedDeviceItem(
     val allowPipAlerts: Boolean = true,
     val pipDefaultSize: String = "medium",
     val pipDurationSeconds: Int = 10,
+    val streamQuality: String = "1080p",
     val isMasterAdmin: Boolean = false,
     val lastSeen: String? = null
 )

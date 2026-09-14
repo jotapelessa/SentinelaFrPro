@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-14 11:35 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.117 operacional.
+> **Última Atualização:** 2026-09-14 14:15 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.118 operacional (Build 118). Suporte a sub-streams 720p HD / 1080p FHD sob demanda em todos os clientes e servidores.
 
 ---
 

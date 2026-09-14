@@ -28,6 +28,7 @@ interface PairedDevice {
   allow_reboot_server?: boolean;
   pip_default_size?: string;
   pip_duration_seconds?: number;
+  stream_quality?: string;
   is_master_admin?: boolean;
   mac_address?: string;
   connection_type?: string;
@@ -1022,6 +1023,13 @@ export default function ScreensPage() {
                         📶 {device.connection_type.toUpperCase()} {device.network_speed_mbps ? `(${Math.round(device.network_speed_mbps)} Mbps)` : ""}
                       </span>
                     )}
+                    <span className={`px-2 py-0.5 rounded-lg border text-[10px] font-mono font-bold ${
+                      device.stream_quality === "720p"
+                        ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
+                        : "bg-cyan-500/10 border-cyan-500/30 text-cyan-300"
+                    }`}>
+                      📺 {device.stream_quality === "720p" ? "720p HD" : "1080p FHD"}
+                    </span>
                     {device.app_version && (
                       <span className="px-2 py-0.5 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-[10px] font-mono text-indigo-300 font-bold">
                         {device.app_version}
@@ -1290,7 +1298,19 @@ export default function ScreensPage() {
                     </button>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 pt-1 font-mono">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1 font-mono">
+                    <div>
+                      <span className="text-slate-400 block text-[10px] mb-1 font-bold">Qualidade do Vídeo:</span>
+                      <select
+                        value={managingDevice.stream_quality || "1080p"}
+                        onChange={(e) => setManagingDevice({ ...managingDevice, stream_quality: e.target.value })}
+                        className="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl p-2 text-xs focus:outline-none focus:border-cyan-500"
+                      >
+                        <option value="1080p">1080p (Full HD)</option>
+                        <option value="720p">720p (HD Eco)</option>
+                      </select>
+                    </div>
+
                     <div>
                       <span className="text-slate-400 block text-[10px] mb-1 font-bold">Tamanho Padrão PiP:</span>
                       <select
@@ -1316,6 +1336,7 @@ export default function ScreensPage() {
                         <option value={10}>10 Segundos</option>
                         <option value={15}>15 Segundos</option>
                         <option value={30}>30 Segundos</option>
+                        <option value={60}>60 Segundos</option>
                       </select>
                     </div>
                   </div>
@@ -1538,7 +1559,8 @@ export default function ScreensPage() {
                             allow_restart_containers: managingDevice.allow_restart_containers === true,
                             allow_reboot_server: managingDevice.allow_reboot_server === true,
                             pip_default_size: managingDevice.pip_default_size || "medium",
-                            pip_duration_seconds: managingDevice.pip_duration_seconds || 10
+                            pip_duration_seconds: managingDevice.pip_duration_seconds || 10,
+                            stream_quality: managingDevice.stream_quality || "1080p"
                           })
                         });
                         if (!res.ok) {

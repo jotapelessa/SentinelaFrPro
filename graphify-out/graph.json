@@ -40,7 +40,7 @@
       "file_type": "code",
       "norm_label": "devicehealth",
       "source_file": "frontend/src/app/screens/page.tsx",
-      "source_location": "L41"
+      "source_location": "L42"
     },
     {
       "id": "frontend_src_app_screens_page_paireddevice",
@@ -573,7 +573,7 @@
       "file_type": "code",
       "norm_label": "batchtestrequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L950"
+      "source_location": "L966"
     },
     {
       "id": "backend_app_api_devices_deviceallowedcamerasupdate",
@@ -586,7 +586,7 @@
       "file_type": "code",
       "norm_label": "deviceallowedcamerasupdate",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L64"
+      "source_location": "L66"
     },
     {
       "id": "backend_app_api_devices_devicecreate",
@@ -612,7 +612,7 @@
       "file_type": "code",
       "norm_label": "deviceheartbeat",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L51"
+      "source_location": "L52"
     },
     {
       "id": "backend_app_api_devices_devicepermissionsupdate",
@@ -625,7 +625,7 @@
       "file_type": "code",
       "norm_label": "devicepermissionsupdate",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L70"
+      "source_location": "L72"
     },
     {
       "id": "backend_app_api_devices_devicesettingspush",
@@ -638,7 +638,7 @@
       "file_type": "code",
       "norm_label": "devicesettingspush",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L84"
+      "source_location": "L87"
     },
     {
       "id": "backend_app_api_devices_devicestatusupdate",
@@ -651,7 +651,7 @@
       "file_type": "code",
       "norm_label": "devicestatusupdate",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L67"
+      "source_location": "L69"
     },
     {
       "id": "backend_app_api_devices_mastertogglerequest",
@@ -664,7 +664,7 @@
       "file_type": "code",
       "norm_label": "mastertogglerequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L959"
+      "source_location": "L975"
     },
     {
       "id": "backend_app_api_devices_pipackrequest",
@@ -677,7 +677,7 @@
       "file_type": "code",
       "norm_label": "pipackrequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L824"
+      "source_location": "L840"
     },
     {
       "id": "backend_app_api_devices_restartcontainerrequest",
@@ -690,7 +690,7 @@
       "file_type": "code",
       "norm_label": "restartcontainerrequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L90"
+      "source_location": "L94"
     },
     {
       "id": "backend_app_api_devices_testpiprequest",
@@ -703,7 +703,7 @@
       "file_type": "code",
       "norm_label": "testpiprequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L93"
+      "source_location": "L97"
     },
     {
       "id": "backend_app_api_devices_testsingledevicerequest",
@@ -716,7 +716,7 @@
       "file_type": "code",
       "norm_label": "testsingledevicerequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L97"
+      "source_location": "L101"
     },
     {
       "id": "backend_app_db_models_paireddevice",
@@ -872,7 +872,7 @@
       "file_type": "code",
       "norm_label": "tvdevicestatus",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2831"
+      "source_location": "L2852"
     },
     {
       "id": "backend_app_api_ws_websocketmanager",
@@ -924,7 +924,7 @@
       "file_type": "code",
       "norm_label": "bandwidthsuiteresult",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L175"
+      "source_location": "L176"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate",
@@ -937,7 +937,7 @@
       "file_type": "code",
       "norm_label": "connectionteststate",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L142"
+      "source_location": "L143"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_diagnosticstatus",
@@ -976,7 +976,7 @@
       "file_type": "code",
       "norm_label": "singleconnectionresult",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L149"
+      "source_location": "L150"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_speedtestresult",
@@ -1028,7 +1028,7 @@
       "file_type": "code",
       "norm_label": "videostabilityresult",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L162"
+      "source_location": "L163"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_clientdevicelogitem",
@@ -1041,7 +1041,7 @@
       "file_type": "code",
       "norm_label": "clientdevicelogitem",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1684"
+      "source_location": "L1691"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_remotedeviceitem",
@@ -1054,7 +1054,7 @@
       "file_type": "code",
       "norm_label": "remotedeviceitem",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L34"
+      "source_location": "L35"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_routetelemetry",
@@ -1067,7 +1067,7 @@
       "file_type": "code",
       "norm_label": "routetelemetry",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L62"
+      "source_location": "L64"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
@@ -1080,7 +1080,7 @@
       "file_type": "code",
       "norm_label": "sentinelarepository",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L59"
+      "source_location": "L61"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_servicestatus",
@@ -1093,7 +1093,7 @@
       "file_type": "code",
       "norm_label": "servicestatus",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1461"
+      "source_location": "L1468"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem",
@@ -1174,7 +1174,7 @@
       "source_location": "L42"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l667",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l675",
       "label": "WebChromeClient",
       "_callable": true,
       "_callable_class": true,
@@ -1184,10 +1184,10 @@
       "file_type": "code",
       "norm_label": "webchromeclient",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L667"
+      "source_location": "L675"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681",
       "label": "WebViewClient",
       "_callable": true,
       "_callable_class": true,
@@ -1197,7 +1197,7 @@
       "file_type": "code",
       "norm_label": "webviewclient",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L673"
+      "source_location": "L681"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_clientlogentry",
@@ -1522,7 +1522,7 @@
       "file_type": "code",
       "norm_label": "auditlog",
       "source_file": "backend/app/db/models.py",
-      "source_location": "L91"
+      "source_location": "L92"
     },
     {
       "id": "backend_app_db_models_clientdevicelog",
@@ -1535,7 +1535,7 @@
       "file_type": "code",
       "norm_label": "clientdevicelog",
       "source_file": "backend/app/db/models.py",
-      "source_location": "L103"
+      "source_location": "L104"
     },
     {
       "id": "backend_app_services_audit_service_auditservice",
@@ -1551,7 +1551,7 @@
       "source_location": "L9"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70",
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72",
       "label": "X509TrustManager",
       "_callable": true,
       "_callable_class": true,
@@ -1561,7 +1561,7 @@
       "file_type": "code",
       "norm_label": "x509trustmanager",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L70"
+      "source_location": "L72"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_theme_sentinelamobiletokens_sentinelacolors",
@@ -1860,7 +1860,7 @@
       "file_type": "code",
       "norm_label": "systemsetting",
       "source_file": "backend/app/db/models.py",
-      "source_location": "L84"
+      "source_location": "L85"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_mobile_nvr_src_components_capturesview_capturesviewprops",
@@ -2076,7 +2076,7 @@
       "file_type": "code",
       "norm_label": "screenspage()",
       "source_file": "frontend/src/app/screens/page.tsx",
-      "source_location": "L49"
+      "source_location": "L50"
     },
     {
       "id": "frontend_src_app_settings_diagnostics_page_diagnosticssettingspage",
@@ -3228,7 +3228,7 @@
       "file_type": "code",
       "norm_label": "check_devices_health()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L430"
+      "source_location": "L437"
     },
     {
       "id": "backend_app_api_devices_cleanup_all_devices",
@@ -3240,7 +3240,7 @@
       "file_type": "code",
       "norm_label": "cleanup_all_devices()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L806"
+      "source_location": "L822"
     },
     {
       "id": "backend_app_api_devices_deduplicate_devices",
@@ -3252,7 +3252,7 @@
       "file_type": "code",
       "norm_label": "deduplicate_devices()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L763"
+      "source_location": "L779"
     },
     {
       "id": "backend_app_api_devices_delete_device",
@@ -3264,7 +3264,7 @@
       "file_type": "code",
       "norm_label": "delete_device()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L744"
+      "source_location": "L760"
     },
     {
       "id": "backend_app_api_devices_device_diagnostics",
@@ -3276,7 +3276,7 @@
       "file_type": "code",
       "norm_label": "device_diagnostics()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L876"
+      "source_location": "L892"
     },
     {
       "id": "backend_app_api_devices_device_heartbeat",
@@ -3288,7 +3288,7 @@
       "file_type": "code",
       "norm_label": "device_heartbeat()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L158"
+      "source_location": "L163"
     },
     {
       "id": "backend_app_api_devices_discover_tvs",
@@ -3312,7 +3312,7 @@
       "file_type": "code",
       "norm_label": "execute_batch_test()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1038"
+      "source_location": "L1054"
     },
     {
       "id": "backend_app_api_devices_get_device_permitted_cameras",
@@ -3324,7 +3324,7 @@
       "file_type": "code",
       "norm_label": "get_device_permitted_cameras()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L309"
+      "source_location": "L314"
     },
     {
       "id": "backend_app_api_devices_get_device_policy",
@@ -3336,7 +3336,7 @@
       "file_type": "code",
       "norm_label": "get_device_policy()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L353"
+      "source_location": "L358"
     },
     {
       "id": "backend_app_api_devices_list_devices",
@@ -3348,7 +3348,7 @@
       "file_type": "code",
       "norm_label": "list_devices()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L102"
+      "source_location": "L106"
     },
     {
       "id": "backend_app_api_devices_push_device_settings",
@@ -3360,7 +3360,7 @@
       "file_type": "code",
       "norm_label": "push_device_settings()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L572"
+      "source_location": "L583"
     },
     {
       "id": "backend_app_api_devices_receive_pip_ack",
@@ -3372,7 +3372,7 @@
       "file_type": "code",
       "norm_label": "receive_pip_ack()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L832"
+      "source_location": "L848"
     },
     {
       "id": "backend_app_api_devices_register_device",
@@ -3384,7 +3384,7 @@
       "file_type": "code",
       "norm_label": "register_device()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L466"
+      "source_location": "L473"
     },
     {
       "id": "backend_app_api_devices_remote_reboot_server",
@@ -3396,7 +3396,7 @@
       "file_type": "code",
       "norm_label": "remote_reboot_server()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L653"
+      "source_location": "L669"
     },
     {
       "id": "backend_app_api_devices_remote_restart_container",
@@ -3408,7 +3408,7 @@
       "file_type": "code",
       "norm_label": "remote_restart_container()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L621"
+      "source_location": "L637"
     },
     {
       "id": "backend_app_api_devices_test_pip",
@@ -3420,7 +3420,7 @@
       "file_type": "code",
       "norm_label": "test_pip()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L861"
+      "source_location": "L877"
     },
     {
       "id": "backend_app_api_devices_test_single_device",
@@ -3432,7 +3432,7 @@
       "file_type": "code",
       "norm_label": "test_single_device()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L855"
+      "source_location": "L871"
     },
     {
       "id": "backend_app_api_devices_toggle_device_master",
@@ -3444,7 +3444,7 @@
       "file_type": "code",
       "norm_label": "toggle_device_master()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L965"
+      "source_location": "L981"
     },
     {
       "id": "backend_app_api_devices_toggle_device_pip",
@@ -3456,7 +3456,7 @@
       "file_type": "code",
       "norm_label": "toggle_device_pip()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L714"
+      "source_location": "L730"
     },
     {
       "id": "backend_app_api_devices_update_device_allowed_cameras",
@@ -3468,7 +3468,7 @@
       "file_type": "code",
       "norm_label": "update_device_allowed_cameras()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L404"
+      "source_location": "L411"
     },
     {
       "id": "backend_app_api_devices_update_device_permissions",
@@ -3480,7 +3480,7 @@
       "file_type": "code",
       "norm_label": "update_device_permissions()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L499"
+      "source_location": "L506"
     },
     {
       "id": "backend_app_api_devices_update_device_status",
@@ -3492,7 +3492,7 @@
       "file_type": "code",
       "norm_label": "update_device_status()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L688"
+      "source_location": "L704"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaapplication_sentinelaapplication_newimageloader",
@@ -3864,7 +3864,7 @@
       "file_type": "code",
       "norm_label": "phoneclipplayerdialog()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2823"
+      "source_location": "L2844"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonelivecamerastab",
@@ -3888,7 +3888,7 @@
       "file_type": "code",
       "norm_label": "phonelogstab()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2140"
+      "source_location": "L2161"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonemastercentraltab",
@@ -3900,7 +3900,7 @@
       "file_type": "code",
       "norm_label": "phonemastercentraltab()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1050"
+      "source_location": "L1070"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonephotoviewerdialog",
@@ -3912,7 +3912,7 @@
       "file_type": "code",
       "norm_label": "phonephotoviewerdialog()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2670"
+      "source_location": "L2691"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonesettingstab",
@@ -3924,7 +3924,7 @@
       "file_type": "code",
       "norm_label": "phonesettingstab()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2387"
+      "source_location": "L2408"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonetoolstab",
@@ -3936,7 +3936,7 @@
       "file_type": "code",
       "norm_label": "phonetoolstab()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1723"
+      "source_location": "L1744"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonetopbar",
@@ -3960,7 +3960,7 @@
       "file_type": "code",
       "norm_label": "phonezoomcameradialog()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2570"
+      "source_location": "L2591"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_smartphoneyoutubescreen",
@@ -4308,7 +4308,7 @@
       "file_type": "code",
       "norm_label": ".checkserviceshealth()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1463"
+      "source_location": "L1470"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_cleanstorage",
@@ -4320,7 +4320,7 @@
       "file_type": "code",
       "norm_label": ".cleanstorage()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L530"
+      "source_location": "L533"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_discovernetworkdevices",
@@ -4332,7 +4332,7 @@
       "file_type": "code",
       "norm_label": ".discovernetworkdevices()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1495"
+      "source_location": "L1502"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_executebatchtest",
@@ -4344,7 +4344,7 @@
       "file_type": "code",
       "norm_label": ".executebatchtest()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1351"
+      "source_location": "L1358"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getauditlogs",
@@ -4356,7 +4356,7 @@
       "file_type": "code",
       "norm_label": ".getauditlogs()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L565"
+      "source_location": "L568"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getcameras",
@@ -4368,7 +4368,7 @@
       "file_type": "code",
       "norm_label": ".getcameras()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L286"
+      "source_location": "L289"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getcaptures",
@@ -4380,7 +4380,7 @@
       "file_type": "code",
       "norm_label": ".getcaptures()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L356"
+      "source_location": "L359"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
@@ -4392,7 +4392,7 @@
       "file_type": "code",
       "norm_label": ".getclientlogs()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1615"
+      "source_location": "L1622"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicemacaddress",
@@ -4404,7 +4404,7 @@
       "file_type": "code",
       "norm_label": ".getdevicemacaddress()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L160"
+      "source_location": "L163"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicepolicy",
@@ -4416,7 +4416,7 @@
       "file_type": "code",
       "norm_label": ".getdevicepolicy()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L86"
+      "source_location": "L88"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getlocalipaddress",
@@ -4428,7 +4428,7 @@
       "file_type": "code",
       "norm_label": ".getlocalipaddress()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L141"
+      "source_location": "L144"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getpaireddeviceslist",
@@ -4440,7 +4440,7 @@
       "file_type": "code",
       "norm_label": ".getpaireddeviceslist()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1160"
+      "source_location": "L1163"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getstoragestatus",
@@ -4452,7 +4452,7 @@
       "file_type": "code",
       "norm_label": ".getstoragestatus()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L500"
+      "source_location": "L503"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_gettelemetry",
@@ -4464,7 +4464,7 @@
       "file_type": "code",
       "norm_label": ".gettelemetry()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L426"
+      "source_location": "L429"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection",
@@ -4476,7 +4476,7 @@
       "file_type": "code",
       "norm_label": ".openconnection()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L64"
+      "source_location": "L66"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pausealerts",
@@ -4488,7 +4488,7 @@
       "file_type": "code",
       "norm_label": ".pausealerts()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1523"
+      "source_location": "L1530"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
@@ -4500,7 +4500,7 @@
       "file_type": "code",
       "norm_label": ".pingserver()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1295"
+      "source_location": "L1302"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pushlocalsettingstoserver",
@@ -4512,7 +4512,7 @@
       "file_type": "code",
       "norm_label": ".pushlocalsettingstoserver()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1266"
+      "source_location": "L1272"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_rebootserver",
@@ -4524,7 +4524,7 @@
       "file_type": "code",
       "norm_label": ".rebootserver()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1132"
+      "source_location": "L1135"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_registerorheartbeat",
@@ -4536,7 +4536,7 @@
       "file_type": "code",
       "norm_label": ".registerorheartbeat()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L181"
+      "source_location": "L184"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_restartcontainers",
@@ -4548,7 +4548,7 @@
       "file_type": "code",
       "norm_label": ".restartcontainers()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1097"
+      "source_location": "L1100"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_resumealerts",
@@ -4560,7 +4560,7 @@
       "file_type": "code",
       "norm_label": ".resumealerts()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1545"
+      "source_location": "L1552"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
@@ -4572,7 +4572,7 @@
       "file_type": "code",
       "norm_label": ".runbandwidthtestsuite()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L986"
+      "source_location": "L989"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runspeedandpingtest",
@@ -4584,7 +4584,7 @@
       "file_type": "code",
       "norm_label": ".runspeedandpingtest()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L614"
+      "source_location": "L617"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendclientlogsbatch",
@@ -4596,7 +4596,7 @@
       "file_type": "code",
       "norm_label": ".sendclientlogsbatch()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1563"
+      "source_location": "L1570"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendpipack",
@@ -4608,7 +4608,7 @@
       "file_type": "code",
       "norm_label": ".sendpipack()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1426"
+      "source_location": "L1433"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingleconnectionendpoint",
@@ -4620,7 +4620,7 @@
       "file_type": "code",
       "norm_label": ".testsingleconnectionendpoint()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L672"
+      "source_location": "L675"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingletv",
@@ -4632,7 +4632,7 @@
       "file_type": "code",
       "norm_label": ".testsingletv()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1391"
+      "source_location": "L1398"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testvideopipelinestability",
@@ -4644,7 +4644,7 @@
       "file_type": "code",
       "norm_label": ".testvideopipelinestability()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L861"
+      "source_location": "L864"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_toggleremotemaster",
@@ -4656,7 +4656,7 @@
       "file_type": "code",
       "norm_label": ".toggleremotemaster()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1332"
+      "source_location": "L1339"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_updatedevicepermissions",
@@ -4668,7 +4668,7 @@
       "file_type": "code",
       "norm_label": ".updatedevicepermissions()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1213"
+      "source_location": "L1217"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_triggerpip",
@@ -4680,7 +4680,7 @@
       "file_type": "code",
       "norm_label": ".triggerpip()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L288"
+      "source_location": "L295"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardestabilidadedevideo",
@@ -4764,7 +4764,7 @@
       "file_type": "code",
       "norm_label": "tvclipplayerdialog()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3939"
+      "source_location": "L4031"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvdiagnosticrow",
@@ -4788,7 +4788,7 @@
       "file_type": "code",
       "norm_label": "tvfullscreenlivedialog()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3827"
+      "source_location": "L3919"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvlogsviewport",
@@ -4824,7 +4824,7 @@
       "file_type": "code",
       "norm_label": "tvpipfloatingwindow()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L4088"
+      "source_location": "L4180"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvrecordingsviewport",
@@ -5016,7 +5016,7 @@
       "file_type": "code",
       "norm_label": ".buildnotification()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L943"
+      "source_location": "L951"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_createnotificationchannel",
@@ -5028,7 +5028,7 @@
       "file_type": "code",
       "norm_label": ".createnotificationchannel()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L931"
+      "source_location": "L939"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_loadsnapshotwithfallbacks",
@@ -5040,7 +5040,7 @@
       "file_type": "code",
       "norm_label": ".loadsnapshotwithfallbacks()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L340"
+      "source_location": "L347"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_normalizeurl",
@@ -5052,7 +5052,7 @@
       "file_type": "code",
       "norm_label": ".normalizeurl()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L309"
+      "source_location": "L316"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_onbind",
@@ -5064,7 +5064,7 @@
       "file_type": "code",
       "norm_label": ".onbind()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L929"
+      "source_location": "L937"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_oncreate",
@@ -5088,7 +5088,7 @@
       "file_type": "code",
       "norm_label": ".ondestroy()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L922"
+      "source_location": "L930"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_onstartcommand",
@@ -5100,7 +5100,7 @@
       "file_type": "code",
       "norm_label": ".onstartcommand()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L272"
+      "source_location": "L279"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_removepip",
@@ -5112,7 +5112,7 @@
       "file_type": "code",
       "norm_label": ".removepip()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L878"
+      "source_location": "L886"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip",
@@ -5124,10 +5124,10 @@
       "file_type": "code",
       "norm_label": ".showpip()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L384"
+      "source_location": "L391"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l667_onpermissionrequest",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l675_onpermissionrequest",
       "label": ".onPermissionRequest()",
       "_callable": true,
       "_origin": "ast",
@@ -5136,10 +5136,10 @@
       "file_type": "code",
       "norm_label": ".onpermissionrequest()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L668"
+      "source_location": "L676"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673_onpagefinished",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681_onpagefinished",
       "label": ".onPageFinished()",
       "_callable": true,
       "_origin": "ast",
@@ -5148,10 +5148,10 @@
       "file_type": "code",
       "norm_label": ".onpagefinished()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L682"
+      "source_location": "L690"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673_onreceivedsslerror",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681_onreceivedsslerror",
       "label": ".onReceivedSslError()",
       "_callable": true,
       "_origin": "ast",
@@ -5160,7 +5160,7 @@
       "file_type": "code",
       "norm_label": ".onreceivedsslerror()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L674"
+      "source_location": "L682"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_syncpolicywithprefs",
@@ -5172,7 +5172,7 @@
       "file_type": "code",
       "norm_label": ".syncpolicywithprefs()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L238"
+      "source_location": "L242"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_sentinelaremotelogger_flushbatch",
@@ -5607,7 +5607,7 @@
       "source_location": "L10"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkclienttrusted",
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_checkclienttrusted",
       "label": ".checkClientTrusted()",
       "_callable": true,
       "_origin": "ast",
@@ -5616,10 +5616,10 @@
       "file_type": "code",
       "norm_label": ".checkclienttrusted()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L72"
+      "source_location": "L74"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkservertrusted",
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_checkservertrusted",
       "label": ".checkServerTrusted()",
       "_callable": true,
       "_origin": "ast",
@@ -5628,10 +5628,10 @@
       "file_type": "code",
       "norm_label": ".checkservertrusted()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L73"
+      "source_location": "L75"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_getacceptedissuers",
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_getacceptedissuers",
       "label": ".getAcceptedIssuers()",
       "_callable": true,
       "_origin": "ast",
@@ -5640,7 +5640,7 @@
       "file_type": "code",
       "norm_label": ".getacceptedissuers()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L71"
+      "source_location": "L73"
     },
     {
       "id": "frontend_src_utils_logger_formattimestamp",
@@ -9227,7 +9227,7 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_api_devices_rationale_1039",
+      "id": "backend_app_api_devices_rationale_1055",
       "label": "Executes batch tests across multiple or all devices simultaneously.",
       "_origin": "ast",
       "community": 2,
@@ -9235,10 +9235,10 @@
       "file_type": "rationale",
       "norm_label": "executes batch tests across multiple or all devices simultaneously.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1039"
+      "source_location": "L1055"
     },
     {
-      "id": "backend_app_api_devices_rationale_159",
+      "id": "backend_app_api_devices_rationale_164",
       "label": "Automatic heartbeat & registration from Android TV and Smartphone apps.",
       "_origin": "ast",
       "community": 2,
@@ -9246,7 +9246,7 @@
       "file_type": "rationale",
       "norm_label": "automatic heartbeat & registration from android tv and smartphone apps.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L159"
+      "source_location": "L164"
     },
     {
       "id": "backend_app_api_devices_rationale_23",
@@ -9260,7 +9260,7 @@
       "source_location": "L23"
     },
     {
-      "id": "backend_app_api_devices_rationale_310",
+      "id": "backend_app_api_devices_rationale_315",
       "label": "Returns the list of cameras permitted for a specific screen/device.",
       "_origin": "ast",
       "community": 2,
@@ -9268,10 +9268,10 @@
       "file_type": "rationale",
       "norm_label": "returns the list of cameras permitted for a specific screen/device.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L310"
+      "source_location": "L315"
     },
     {
-      "id": "backend_app_api_devices_rationale_354",
+      "id": "backend_app_api_devices_rationale_359",
       "label": "Returns the full granular policy and permissions for a specific device.",
       "_origin": "ast",
       "community": 2,
@@ -9279,10 +9279,10 @@
       "file_type": "rationale",
       "norm_label": "returns the full granular policy and permissions for a specific device.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L354"
+      "source_location": "L359"
     },
     {
-      "id": "backend_app_api_devices_rationale_431",
+      "id": "backend_app_api_devices_rationale_438",
       "label": "Checks real-time online/reachable status for all paired screens. Optimized O(1)\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9290,10 +9290,10 @@
       "file_type": "rationale",
       "norm_label": "checks real-time online/reachable status for all paired screens. optimized o(1)...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L431"
+      "source_location": "L438"
     },
     {
-      "id": "backend_app_api_devices_rationale_505",
+      "id": "backend_app_api_devices_rationale_512",
       "label": "Updates complete granular permissions for a paired screen/device.",
       "_origin": "ast",
       "community": 2,
@@ -9301,10 +9301,10 @@
       "file_type": "rationale",
       "norm_label": "updates complete granular permissions for a paired screen/device.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L505"
+      "source_location": "L512"
     },
     {
-      "id": "backend_app_api_devices_rationale_578",
+      "id": "backend_app_api_devices_rationale_589",
       "label": "Allows a TV app to push its local PiP settings back to the server for cross-\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9312,10 +9312,10 @@
       "file_type": "rationale",
       "norm_label": "allows a tv app to push its local pip settings back to the server for cross-...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L578"
+      "source_location": "L589"
     },
     {
-      "id": "backend_app_api_devices_rationale_715",
+      "id": "backend_app_api_devices_rationale_731",
       "label": "Quickly toggle PiP alerts state for a single device with 1-click.",
       "_origin": "ast",
       "community": 2,
@@ -9323,10 +9323,10 @@
       "file_type": "rationale",
       "norm_label": "quickly toggle pip alerts state for a single device with 1-click.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L715"
+      "source_location": "L731"
     },
     {
-      "id": "backend_app_api_devices_rationale_764",
+      "id": "backend_app_api_devices_rationale_780",
       "label": "Consolidates duplicate devices with identical IP or Model, retaining the most\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9334,10 +9334,10 @@
       "file_type": "rationale",
       "norm_label": "consolidates duplicate devices with identical ip or model, retaining the most...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L764"
+      "source_location": "L780"
     },
     {
-      "id": "backend_app_api_devices_rationale_807",
+      "id": "backend_app_api_devices_rationale_823",
       "label": "Removes all paired devices so fresh real devices can register via heartbeat.",
       "_origin": "ast",
       "community": 2,
@@ -9345,10 +9345,10 @@
       "file_type": "rationale",
       "norm_label": "removes all paired devices so fresh real devices can register via heartbeat.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L807"
+      "source_location": "L823"
     },
     {
-      "id": "backend_app_api_devices_rationale_833",
+      "id": "backend_app_api_devices_rationale_849",
       "label": "Receives physical execution confirmation from the Android TV overlay service.",
       "_origin": "ast",
       "community": 2,
@@ -9356,10 +9356,10 @@
       "file_type": "rationale",
       "norm_label": "receives physical execution confirmation from the android tv overlay service.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L833"
+      "source_location": "L849"
     },
     {
-      "id": "backend_app_api_devices_rationale_856",
+      "id": "backend_app_api_devices_rationale_872",
       "label": "Triggers an interactive PiP test to this single TV with the selected camera.",
       "_origin": "ast",
       "community": 2,
@@ -9367,10 +9367,10 @@
       "file_type": "rationale",
       "norm_label": "triggers an interactive pip test to this single tv with the selected camera.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L856"
+      "source_location": "L872"
     },
     {
-      "id": "backend_app_api_devices_rationale_862",
+      "id": "backend_app_api_devices_rationale_878",
       "label": "Triggers a broadcast PiP test to all active TVs.",
       "_origin": "ast",
       "community": 2,
@@ -9378,10 +9378,10 @@
       "file_type": "rationale",
       "norm_label": "triggers a broadcast pip test to all active tvs.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L862"
+      "source_location": "L878"
     },
     {
-      "id": "backend_app_api_devices_rationale_971",
+      "id": "backend_app_api_devices_rationale_987",
       "label": "Toggles Master Admin rights for a smartphone device with debounce and\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9389,7 +9389,7 @@
       "file_type": "rationale",
       "norm_label": "toggles master admin rights for a smartphone device with debounce and...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L971"
+      "source_location": "L987"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_tsconfig",
@@ -10093,7 +10093,7 @@
       "file_type": "code",
       "norm_label": "failed",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L146"
+      "source_location": "L147"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_idle",
@@ -10104,7 +10104,7 @@
       "file_type": "code",
       "norm_label": "idle",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L143"
+      "source_location": "L144"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_success",
@@ -10115,7 +10115,7 @@
       "file_type": "code",
       "norm_label": "success",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L145"
+      "source_location": "L146"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate_testing",
@@ -10126,7 +10126,7 @@
       "file_type": "code",
       "norm_label": "testing",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L144"
+      "source_location": "L145"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository",
@@ -16938,7 +16938,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1476",
+      "source_location": "L1483",
       "weight": 1.0
     },
     {
@@ -16950,7 +16950,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1490",
+      "source_location": "L1497",
       "weight": 1.0
     },
     {
@@ -16962,7 +16962,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L533",
+      "source_location": "L536",
       "weight": 1.0
     },
     {
@@ -16974,7 +16974,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1499",
+      "source_location": "L1506",
       "weight": 1.0
     },
     {
@@ -16986,7 +16986,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1358",
+      "source_location": "L1365",
       "weight": 1.0
     },
     {
@@ -16998,7 +16998,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L569",
+      "source_location": "L572",
       "weight": 1.0
     },
     {
@@ -17010,7 +17010,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L590",
+      "source_location": "L593",
       "weight": 1.0
     },
     {
@@ -17022,7 +17022,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L296",
+      "source_location": "L299",
       "weight": 1.0
     },
     {
@@ -17034,7 +17034,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L313",
+      "source_location": "L316",
       "weight": 1.0
     },
     {
@@ -17046,7 +17046,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L360",
+      "source_location": "L363",
       "weight": 1.0
     },
     {
@@ -17058,7 +17058,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L366",
+      "source_location": "L369",
       "weight": 1.0
     },
     {
@@ -17070,7 +17070,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L401",
+      "source_location": "L404",
       "weight": 1.0
     },
     {
@@ -17082,7 +17082,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1635",
+      "source_location": "L1642",
       "weight": 1.0
     },
     {
@@ -17094,7 +17094,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1660",
+      "source_location": "L1667",
       "weight": 1.0
     },
     {
@@ -17106,7 +17106,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L117",
+      "source_location": "L119",
       "weight": 1.0
     },
     {
@@ -17118,7 +17118,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L89",
+      "source_location": "L91",
       "weight": 1.0
     },
     {
@@ -17130,7 +17130,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1164",
+      "source_location": "L1167",
       "weight": 1.0
     },
     {
@@ -17142,7 +17142,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1182",
+      "source_location": "L1185",
       "weight": 1.0
     },
     {
@@ -17154,7 +17154,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L503",
+      "source_location": "L506",
       "weight": 1.0
     },
     {
@@ -17166,7 +17166,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L512",
+      "source_location": "L515",
       "weight": 1.0
     },
     {
@@ -17178,7 +17178,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L429",
+      "source_location": "L432",
       "weight": 1.0
     },
     {
@@ -17190,7 +17190,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L457",
+      "source_location": "L460",
       "weight": 1.0
     },
     {
@@ -17202,7 +17202,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1526",
+      "source_location": "L1533",
       "weight": 1.0
     },
     {
@@ -17214,7 +17214,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1300",
+      "source_location": "L1307",
       "weight": 1.0
     },
     {
@@ -17226,7 +17226,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1314",
+      "source_location": "L1321",
       "weight": 1.0
     },
     {
@@ -17238,7 +17238,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1270",
+      "source_location": "L1276",
       "weight": 1.0
     },
     {
@@ -17250,7 +17250,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1135",
+      "source_location": "L1138",
       "weight": 1.0
     },
     {
@@ -17262,7 +17262,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L197",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -17274,7 +17274,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L206",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -17286,7 +17286,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L207",
+      "source_location": "L210",
       "weight": 1.0
     },
     {
@@ -17298,7 +17298,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1100",
+      "source_location": "L1103",
       "weight": 1.0
     },
     {
@@ -17310,7 +17310,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1548",
+      "source_location": "L1555",
       "weight": 1.0
     },
     {
@@ -17322,7 +17322,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1002",
+      "source_location": "L1005",
       "weight": 1.0
     },
     {
@@ -17334,7 +17334,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1049",
+      "source_location": "L1052",
       "weight": 1.0
     },
     {
@@ -17346,7 +17346,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1079",
+      "source_location": "L1082",
       "weight": 1.0
     },
     {
@@ -17358,7 +17358,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L624",
+      "source_location": "L627",
       "weight": 1.0
     },
     {
@@ -17370,7 +17370,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L628",
+      "source_location": "L631",
       "weight": 1.0
     },
     {
@@ -17382,7 +17382,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L653",
+      "source_location": "L656",
       "weight": 1.0
     },
     {
@@ -17394,7 +17394,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1572",
+      "source_location": "L1579",
       "weight": 1.0
     },
     {
@@ -17406,7 +17406,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1436",
+      "source_location": "L1443",
       "weight": 1.0
     },
     {
@@ -17418,7 +17418,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L696",
+      "source_location": "L699",
       "weight": 1.0
     },
     {
@@ -17430,7 +17430,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L773",
+      "source_location": "L776",
       "weight": 1.0
     },
     {
@@ -17442,7 +17442,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L805",
+      "source_location": "L808",
       "weight": 1.0
     },
     {
@@ -17454,7 +17454,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1394",
+      "source_location": "L1401",
       "weight": 1.0
     },
     {
@@ -17466,7 +17466,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L871",
+      "source_location": "L874",
       "weight": 1.0
     },
     {
@@ -17478,7 +17478,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L880",
+      "source_location": "L883",
       "weight": 1.0
     },
     {
@@ -17490,7 +17490,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1335",
+      "source_location": "L1342",
       "weight": 1.0
     },
     {
@@ -17502,7 +17502,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1225",
+      "source_location": "L1230",
       "weight": 1.0
     },
     {
@@ -17550,7 +17550,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L194",
+      "source_location": "L198",
       "weight": 1.0
     },
     {
@@ -17622,7 +17622,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L925",
+      "source_location": "L933",
       "weight": 1.0
     },
     {
@@ -17634,7 +17634,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L280",
+      "source_location": "L287",
       "weight": 1.0
     },
     {
@@ -17646,7 +17646,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L408",
+      "source_location": "L415",
       "weight": 1.0
     },
     {
@@ -17658,7 +17658,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L483",
+      "source_location": "L490",
       "weight": 1.0
     },
     {
@@ -17670,7 +17670,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L532",
+      "source_location": "L540",
       "weight": 1.0
     },
     {
@@ -17682,7 +17682,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L545",
+      "source_location": "L553",
       "weight": 1.0
     },
     {
@@ -17694,7 +17694,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L574",
+      "source_location": "L582",
       "weight": 1.0
     },
     {
@@ -17706,7 +17706,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L625",
+      "source_location": "L633",
       "weight": 1.0
     },
     {
@@ -17718,7 +17718,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L290",
+      "source_location": "L297",
       "weight": 1.0
     },
     {
@@ -17910,7 +17910,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3971",
+      "source_location": "L4063",
       "weight": 1.0
     },
     {
@@ -17922,7 +17922,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3835",
+      "source_location": "L3927",
       "weight": 1.0
     },
     {
@@ -17934,7 +17934,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3850",
+      "source_location": "L3942",
       "weight": 1.0
     },
     {
@@ -18138,7 +18138,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L4130",
+      "source_location": "L4222",
       "weight": 1.0
     },
     {
@@ -18222,7 +18222,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3467",
+      "source_location": "L3559",
       "weight": 1.0
     },
     {
@@ -18234,7 +18234,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3513",
+      "source_location": "L3605",
       "weight": 1.0
     },
     {
@@ -18246,7 +18246,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3522",
+      "source_location": "L3614",
       "weight": 1.0
     },
     {
@@ -18258,7 +18258,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3529",
+      "source_location": "L3621",
       "weight": 1.0
     },
     {
@@ -18534,7 +18534,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2828",
+      "source_location": "L2849",
       "weight": 1.0
     },
     {
@@ -18570,7 +18570,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1091",
+      "source_location": "L1111",
       "weight": 1.0
     },
     {
@@ -18582,7 +18582,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1116",
+      "source_location": "L1136",
       "weight": 1.0
     },
     {
@@ -18594,7 +18594,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2628",
+      "source_location": "L2649",
       "weight": 1.0
     },
     {
@@ -19878,7 +19878,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "frontend/src/app/screens/page.tsx",
-      "source_location": "L50",
+      "source_location": "L51",
       "weight": 1.0
     },
     {
@@ -20202,7 +20202,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L429",
+      "source_location": "L436",
       "weight": 1.0
     },
     {
@@ -20214,7 +20214,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L805",
+      "source_location": "L821",
       "weight": 1.0
     },
     {
@@ -20226,7 +20226,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L762",
+      "source_location": "L778",
       "weight": 1.0
     },
     {
@@ -20238,7 +20238,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L743",
+      "source_location": "L759",
       "weight": 1.0
     },
     {
@@ -20250,7 +20250,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L875",
+      "source_location": "L891",
       "weight": 1.0
     },
     {
@@ -20262,7 +20262,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L157",
+      "source_location": "L162",
       "weight": 1.0
     },
     {
@@ -20286,7 +20286,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1037",
+      "source_location": "L1053",
       "weight": 1.0
     },
     {
@@ -20298,7 +20298,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L308",
+      "source_location": "L313",
       "weight": 1.0
     },
     {
@@ -20310,7 +20310,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L352",
+      "source_location": "L357",
       "weight": 1.0
     },
     {
@@ -20322,7 +20322,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L101",
+      "source_location": "L105",
       "weight": 1.0
     },
     {
@@ -20334,7 +20334,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L571",
+      "source_location": "L582",
       "weight": 1.0
     },
     {
@@ -20346,7 +20346,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L831",
+      "source_location": "L847",
       "weight": 1.0
     },
     {
@@ -20358,7 +20358,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L465",
+      "source_location": "L472",
       "weight": 1.0
     },
     {
@@ -20370,7 +20370,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L652",
+      "source_location": "L668",
       "weight": 1.0
     },
     {
@@ -20382,7 +20382,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L620",
+      "source_location": "L636",
       "weight": 1.0
     },
     {
@@ -20394,7 +20394,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L860",
+      "source_location": "L876",
       "weight": 1.0
     },
     {
@@ -20406,7 +20406,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L854",
+      "source_location": "L870",
       "weight": 1.0
     },
     {
@@ -20418,7 +20418,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L964",
+      "source_location": "L980",
       "weight": 1.0
     },
     {
@@ -20430,7 +20430,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L713",
+      "source_location": "L729",
       "weight": 1.0
     },
     {
@@ -20442,7 +20442,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L403",
+      "source_location": "L410",
       "weight": 1.0
     },
     {
@@ -20454,7 +20454,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L498",
+      "source_location": "L505",
       "weight": 1.0
     },
     {
@@ -20466,7 +20466,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L686",
+      "source_location": "L702",
       "weight": 1.0
     },
     {
@@ -20478,7 +20478,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L687",
+      "source_location": "L703",
       "weight": 1.0
     },
     {
@@ -21490,7 +21490,7 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkclienttrusted",
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_checkclienttrusted",
       "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_java",
       "relation": "references",
       "_origin": "ast",
@@ -21498,11 +21498,23 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L72",
+      "source_location": "L74",
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkservertrusted",
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_checkservertrusted",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_java",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_getacceptedissuers",
       "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_java",
       "relation": "references",
       "_origin": "ast",
@@ -21514,18 +21526,6 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_getacceptedissuers",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_java",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "generic_arg",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L71",
-      "weight": 1.0
-    },
-    {
       "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendclientlogsbatch",
       "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_com",
       "relation": "references",
@@ -21534,7 +21534,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1563",
+      "source_location": "L1570",
       "weight": 1.0
     },
     {
@@ -21666,7 +21666,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3939",
+      "source_location": "L4031",
       "weight": 1.0
     },
     {
@@ -21774,7 +21774,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L855",
+      "source_location": "L871",
       "weight": 1.0
     },
     {
@@ -21786,7 +21786,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L965",
+      "source_location": "L981",
       "weight": 1.0
     },
     {
@@ -27078,7 +27078,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L64",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -27090,7 +27090,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1295",
+      "source_location": "L1302",
       "weight": 1.0
     },
     {
@@ -27102,7 +27102,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1266",
+      "source_location": "L1272",
       "weight": 1.0
     },
     {
@@ -27114,7 +27114,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L181",
+      "source_location": "L184",
       "weight": 1.0
     },
     {
@@ -27258,7 +27258,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L340",
+      "source_location": "L347",
       "weight": 1.0
     },
     {
@@ -27270,7 +27270,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L929",
+      "source_location": "L937",
       "weight": 1.0
     },
     {
@@ -27282,7 +27282,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L272",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -27294,11 +27294,11 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L384",
+      "source_location": "L391",
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l667_onpermissionrequest",
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l675_onpermissionrequest",
       "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_permissionrequest",
       "relation": "references",
       "_origin": "ast",
@@ -27306,11 +27306,35 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L668",
+      "source_location": "L676",
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673_onpagefinished",
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681_onpagefinished",
+      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_webview",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
+      "source_location": "L690",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681_onreceivedsslerror",
+      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_sslerrorhandler",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "parameter_type",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
+      "source_location": "L682",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681_onreceivedsslerror",
       "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_webview",
       "relation": "references",
       "_origin": "ast",
@@ -27322,31 +27346,7 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673_onreceivedsslerror",
-      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_sslerrorhandler",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "parameter_type",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L674",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673_onreceivedsslerror",
-      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_webview",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "parameter_type",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L674",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673_onreceivedsslerror",
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681_onreceivedsslerror",
       "target": "sslerror",
       "relation": "references",
       "_origin": "ast",
@@ -27354,7 +27354,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L674",
+      "source_location": "L682",
       "weight": 1.0
     },
     {
@@ -27366,7 +27366,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L238",
+      "source_location": "L242",
       "weight": 1.0
     },
     {
@@ -27378,7 +27378,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L238",
+      "source_location": "L242",
       "weight": 1.0
     },
     {
@@ -27390,7 +27390,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L288",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -27582,7 +27582,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3827",
+      "source_location": "L3919",
       "weight": 1.0
     },
     {
@@ -27606,7 +27606,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L4088",
+      "source_location": "L4180",
       "weight": 1.0
     },
     {
@@ -27618,7 +27618,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L4088",
+      "source_location": "L4180",
       "weight": 1.0
     },
     {
@@ -27630,7 +27630,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L4088",
+      "source_location": "L4180",
       "weight": 1.0
     },
     {
@@ -27930,7 +27930,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2823",
+      "source_location": "L2844",
       "weight": 1.0
     },
     {
@@ -27942,7 +27942,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2670",
+      "source_location": "L2691",
       "weight": 1.0
     },
     {
@@ -27954,7 +27954,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2570",
+      "source_location": "L2591",
       "weight": 1.0
     },
     {
@@ -28278,7 +28278,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L430",
+      "source_location": "L437",
       "weight": 1.0
     },
     {
@@ -28290,7 +28290,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L806",
+      "source_location": "L822",
       "weight": 1.0
     },
     {
@@ -28302,7 +28302,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L806",
+      "source_location": "L822",
       "weight": 1.0
     },
     {
@@ -28314,7 +28314,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L763",
+      "source_location": "L779",
       "weight": 1.0
     },
     {
@@ -28326,7 +28326,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L763",
+      "source_location": "L779",
       "weight": 1.0
     },
     {
@@ -28338,7 +28338,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L744",
+      "source_location": "L760",
       "weight": 1.0
     },
     {
@@ -28350,7 +28350,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L744",
+      "source_location": "L760",
       "weight": 1.0
     },
     {
@@ -28362,7 +28362,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L876",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -28374,7 +28374,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L158",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -28386,7 +28386,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L158",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -28398,7 +28398,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L158",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -28422,7 +28422,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1038",
+      "source_location": "L1054",
       "weight": 1.0
     },
     {
@@ -28434,7 +28434,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1038",
+      "source_location": "L1054",
       "weight": 1.0
     },
     {
@@ -28446,7 +28446,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1038",
+      "source_location": "L1054",
       "weight": 1.0
     },
     {
@@ -28458,7 +28458,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L309",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -28470,7 +28470,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L353",
+      "source_location": "L358",
       "weight": 1.0
     },
     {
@@ -28482,7 +28482,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L102",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -28494,7 +28494,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L572",
+      "source_location": "L583",
       "weight": 1.0
     },
     {
@@ -28506,7 +28506,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L572",
+      "source_location": "L583",
       "weight": 1.0
     },
     {
@@ -28518,7 +28518,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L572",
+      "source_location": "L583",
       "weight": 1.0
     },
     {
@@ -28530,7 +28530,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L832",
+      "source_location": "L848",
       "weight": 1.0
     },
     {
@@ -28542,7 +28542,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L466",
+      "source_location": "L473",
       "weight": 1.0
     },
     {
@@ -28554,7 +28554,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L466",
+      "source_location": "L473",
       "weight": 1.0
     },
     {
@@ -28566,7 +28566,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L466",
+      "source_location": "L473",
       "weight": 1.0
     },
     {
@@ -28578,7 +28578,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L653",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -28590,7 +28590,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L653",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -28602,7 +28602,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L621",
+      "source_location": "L637",
       "weight": 1.0
     },
     {
@@ -28614,7 +28614,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L621",
+      "source_location": "L637",
       "weight": 1.0
     },
     {
@@ -28626,7 +28626,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L621",
+      "source_location": "L637",
       "weight": 1.0
     },
     {
@@ -28638,7 +28638,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L861",
+      "source_location": "L877",
       "weight": 1.0
     },
     {
@@ -28650,7 +28650,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L965",
+      "source_location": "L981",
       "weight": 1.0
     },
     {
@@ -28662,7 +28662,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L965",
+      "source_location": "L981",
       "weight": 1.0
     },
     {
@@ -28674,7 +28674,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L714",
+      "source_location": "L730",
       "weight": 1.0
     },
     {
@@ -28686,7 +28686,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L714",
+      "source_location": "L730",
       "weight": 1.0
     },
     {
@@ -28698,7 +28698,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L404",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -28710,7 +28710,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L404",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -28722,7 +28722,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L404",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -28734,7 +28734,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L499",
+      "source_location": "L506",
       "weight": 1.0
     },
     {
@@ -28746,7 +28746,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L499",
+      "source_location": "L506",
       "weight": 1.0
     },
     {
@@ -28758,7 +28758,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L499",
+      "source_location": "L506",
       "weight": 1.0
     },
     {
@@ -28770,7 +28770,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L688",
+      "source_location": "L704",
       "weight": 1.0
     },
     {
@@ -28782,7 +28782,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L688",
+      "source_location": "L704",
       "weight": 1.0
     },
     {
@@ -28794,7 +28794,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L688",
+      "source_location": "L704",
       "weight": 1.0
     },
     {
@@ -29394,7 +29394,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L64",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -29406,7 +29406,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L986",
+      "source_location": "L989",
       "weight": 1.0
     },
     {
@@ -29418,7 +29418,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L672",
+      "source_location": "L675",
       "weight": 1.0
     },
     {
@@ -29430,7 +29430,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L861",
+      "source_location": "L864",
       "weight": 1.0
     },
     {
@@ -29454,7 +29454,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L943",
+      "source_location": "L951",
       "weight": 1.0
     },
     {
@@ -29466,7 +29466,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L929",
+      "source_location": "L937",
       "weight": 1.0
     },
     {
@@ -29489,7 +29489,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L143",
+      "source_location": "L144",
       "weight": 1.0
     },
     {
@@ -29500,7 +29500,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L144",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -29511,7 +29511,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L145",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -29522,7 +29522,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L146",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -32349,7 +32349,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L142",
+      "source_location": "L143",
       "weight": 1.0
     },
     {
@@ -32360,7 +32360,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L149",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -32371,7 +32371,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L162",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -32382,7 +32382,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L175",
+      "source_location": "L176",
       "weight": 1.0
     },
     {
@@ -32569,7 +32569,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1684",
+      "source_location": "L1691",
       "weight": 1.0
     },
     {
@@ -32591,7 +32591,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L34",
+      "source_location": "L35",
       "weight": 1.0
     },
     {
@@ -32602,7 +32602,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L59",
+      "source_location": "L61",
       "weight": 1.0
     },
     {
@@ -32613,7 +32613,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1461",
+      "source_location": "L1468",
       "weight": 1.0
     },
     {
@@ -32624,18 +32624,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L62",
+      "source_location": "L64",
       "weight": 1.0
     },
     {
       "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L70",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -32750,24 +32750,24 @@
     },
     {
       "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip",
-      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l667",
+      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l675",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L667",
+      "source_location": "L675",
       "weight": 1.0
     },
     {
       "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip",
-      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673",
+      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L673",
+      "source_location": "L681",
       "weight": 1.0
     },
     {
@@ -33097,7 +33097,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3827",
+      "source_location": "L3919",
       "weight": 1.0
     },
     {
@@ -33108,7 +33108,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L3939",
+      "source_location": "L4031",
       "weight": 1.0
     },
     {
@@ -33119,7 +33119,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L4088",
+      "source_location": "L4180",
       "weight": 1.0
     },
     {
@@ -33251,7 +33251,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1050",
+      "source_location": "L1070",
       "weight": 1.0
     },
     {
@@ -33273,7 +33273,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1723",
+      "source_location": "L1744",
       "weight": 1.0
     },
     {
@@ -33284,7 +33284,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2140",
+      "source_location": "L2161",
       "weight": 1.0
     },
     {
@@ -33295,7 +33295,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2387",
+      "source_location": "L2408",
       "weight": 1.0
     },
     {
@@ -33317,7 +33317,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2570",
+      "source_location": "L2591",
       "weight": 1.0
     },
     {
@@ -33328,7 +33328,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2670",
+      "source_location": "L2691",
       "weight": 1.0
     },
     {
@@ -33339,7 +33339,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2823",
+      "source_location": "L2844",
       "weight": 1.0
     },
     {
@@ -33350,7 +33350,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2831",
+      "source_location": "L2852",
       "weight": 1.0
     },
     {
@@ -33762,13 +33762,13 @@
     },
     {
       "source": "backend_app_api_devices",
-      "target": "backend_app_api_devices_list_devices",
+      "target": "backend_app_api_devices_testsingledevicerequest",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L102",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -33779,7 +33779,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1038",
+      "source_location": "L1054",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_api_devices",
+      "target": "backend_app_api_devices_list_devices",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L106",
       "weight": 1.0
     },
     {
@@ -33790,7 +33801,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L158",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -33812,7 +33823,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L309",
+      "source_location": "L314",
       "weight": 1.0
     },
     {
@@ -33834,7 +33845,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L353",
+      "source_location": "L358",
       "weight": 1.0
     },
     {
@@ -33845,7 +33856,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L404",
+      "source_location": "L411",
       "weight": 1.0
     },
     {
@@ -33856,7 +33867,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L430",
+      "source_location": "L437",
       "weight": 1.0
     },
     {
@@ -33867,7 +33878,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L466",
+      "source_location": "L473",
       "weight": 1.0
     },
     {
@@ -33878,7 +33889,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L499",
+      "source_location": "L506",
       "weight": 1.0
     },
     {
@@ -33889,7 +33900,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -33900,7 +33911,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L572",
+      "source_location": "L583",
       "weight": 1.0
     },
     {
@@ -33911,7 +33922,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L621",
+      "source_location": "L637",
       "weight": 1.0
     },
     {
@@ -33922,7 +33933,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L64",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -33933,7 +33944,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L653",
+      "source_location": "L669",
       "weight": 1.0
     },
     {
@@ -33944,7 +33955,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L67",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -33955,7 +33966,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L688",
+      "source_location": "L704",
       "weight": 1.0
     },
     {
@@ -33966,7 +33977,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L70",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -33977,7 +33988,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L714",
+      "source_location": "L730",
       "weight": 1.0
     },
     {
@@ -33988,7 +33999,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L744",
+      "source_location": "L760",
       "weight": 1.0
     },
     {
@@ -33999,7 +34010,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L763",
+      "source_location": "L779",
       "weight": 1.0
     },
     {
@@ -34010,7 +34021,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L806",
+      "source_location": "L822",
       "weight": 1.0
     },
     {
@@ -34021,7 +34032,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L824",
+      "source_location": "L840",
       "weight": 1.0
     },
     {
@@ -34032,7 +34043,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L832",
+      "source_location": "L848",
       "weight": 1.0
     },
     {
@@ -34043,7 +34054,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L84",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -34054,7 +34065,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L855",
+      "source_location": "L871",
       "weight": 1.0
     },
     {
@@ -34065,7 +34076,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L861",
+      "source_location": "L877",
       "weight": 1.0
     },
     {
@@ -34076,7 +34087,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L876",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -34087,18 +34098,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L90",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_app_api_devices",
-      "target": "backend_app_api_devices_testpiprequest",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L93",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -34109,7 +34109,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L950",
+      "source_location": "L966",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_api_devices",
+      "target": "backend_app_api_devices_testpiprequest",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -34120,7 +34131,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L959",
+      "source_location": "L975",
       "weight": 1.0
     },
     {
@@ -34131,18 +34142,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L965",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_app_api_devices",
-      "target": "backend_app_api_devices_testsingledevicerequest",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L97",
+      "source_location": "L981",
       "weight": 1.0
     },
     {
@@ -34868,7 +34868,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/db/models.py",
-      "source_location": "L103",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -34912,7 +34912,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/db/models.py",
-      "source_location": "L84",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -34923,7 +34923,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/db/models.py",
-      "source_location": "L91",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -35759,7 +35759,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/app/screens/page.tsx",
-      "source_location": "L41",
+      "source_location": "L42",
       "weight": 1.0
     },
     {
@@ -35770,7 +35770,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/app/screens/page.tsx",
-      "source_location": "L49",
+      "source_location": "L50",
       "weight": 1.0
     },
     {
@@ -38225,14 +38225,14 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70",
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72",
       "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_x509trustmanager",
       "relation": "implements",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L70",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -38346,25 +38346,25 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l667",
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l675",
       "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_webchromeclient",
       "relation": "inherits",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L667",
+      "source_location": "L675",
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673",
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681",
       "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_webviewclient",
       "relation": "inherits",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L673",
+      "source_location": "L681",
       "weight": 1.0
     },
     {
@@ -38441,7 +38441,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L950",
+      "source_location": "L966",
       "weight": 1.0
     },
     {
@@ -38452,7 +38452,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L64",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -38474,7 +38474,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L51",
+      "source_location": "L52",
       "weight": 1.0
     },
     {
@@ -38485,7 +38485,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L70",
+      "source_location": "L72",
       "weight": 1.0
     },
     {
@@ -38496,7 +38496,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L84",
+      "source_location": "L87",
       "weight": 1.0
     },
     {
@@ -38507,7 +38507,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L67",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -38518,7 +38518,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L959",
+      "source_location": "L975",
       "weight": 1.0
     },
     {
@@ -38529,7 +38529,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L824",
+      "source_location": "L840",
       "weight": 1.0
     },
     {
@@ -38540,7 +38540,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L90",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -38551,7 +38551,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L93",
+      "source_location": "L97",
       "weight": 1.0
     },
     {
@@ -38562,7 +38562,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L97",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -38727,7 +38727,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/db/models.py",
-      "source_location": "L91",
+      "source_location": "L92",
       "weight": 1.0
     },
     {
@@ -38749,7 +38749,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/db/models.py",
-      "source_location": "L103",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -38782,7 +38782,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/db/models.py",
-      "source_location": "L84",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -39024,7 +39024,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1097",
+      "source_location": "L1100",
       "weight": 1.0
     },
     {
@@ -39035,7 +39035,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1132",
+      "source_location": "L1135",
       "weight": 1.0
     },
     {
@@ -39046,7 +39046,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1160",
+      "source_location": "L1163",
       "weight": 1.0
     },
     {
@@ -39057,7 +39057,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1213",
+      "source_location": "L1217",
       "weight": 1.0
     },
     {
@@ -39068,7 +39068,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1266",
+      "source_location": "L1272",
       "weight": 1.0
     },
     {
@@ -39079,7 +39079,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1295",
+      "source_location": "L1302",
       "weight": 1.0
     },
     {
@@ -39090,7 +39090,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1332",
+      "source_location": "L1339",
       "weight": 1.0
     },
     {
@@ -39101,7 +39101,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1351",
+      "source_location": "L1358",
       "weight": 1.0
     },
     {
@@ -39112,18 +39112,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1391",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getlocalipaddress",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L141",
+      "source_location": "L1398",
       "weight": 1.0
     },
     {
@@ -39134,7 +39123,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1426",
+      "source_location": "L1433",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getlocalipaddress",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L144",
       "weight": 1.0
     },
     {
@@ -39145,7 +39145,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1463",
+      "source_location": "L1470",
       "weight": 1.0
     },
     {
@@ -39156,7 +39156,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1495",
+      "source_location": "L1502",
       "weight": 1.0
     },
     {
@@ -39167,7 +39167,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1523",
+      "source_location": "L1530",
       "weight": 1.0
     },
     {
@@ -39178,7 +39178,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1545",
+      "source_location": "L1552",
       "weight": 1.0
     },
     {
@@ -39189,18 +39189,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1563",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicemacaddress",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L160",
+      "source_location": "L1570",
       "weight": 1.0
     },
     {
@@ -39211,7 +39200,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1615",
+      "source_location": "L1622",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicemacaddress",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -39222,7 +39222,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L181",
+      "source_location": "L184",
       "weight": 1.0
     },
     {
@@ -39233,7 +39233,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L286",
+      "source_location": "L289",
       "weight": 1.0
     },
     {
@@ -39244,7 +39244,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L356",
+      "source_location": "L359",
       "weight": 1.0
     },
     {
@@ -39255,7 +39255,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L426",
+      "source_location": "L429",
       "weight": 1.0
     },
     {
@@ -39266,7 +39266,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L500",
+      "source_location": "L503",
       "weight": 1.0
     },
     {
@@ -39277,7 +39277,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L530",
+      "source_location": "L533",
       "weight": 1.0
     },
     {
@@ -39288,7 +39288,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L565",
+      "source_location": "L568",
       "weight": 1.0
     },
     {
@@ -39299,7 +39299,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L614",
+      "source_location": "L617",
       "weight": 1.0
     },
     {
@@ -39310,7 +39310,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L64",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -39321,18 +39321,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L672",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicepolicy",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L86",
+      "source_location": "L675",
       "weight": 1.0
     },
     {
@@ -39343,7 +39332,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L861",
+      "source_location": "L864",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicepolicy",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L88",
       "weight": 1.0
     },
     {
@@ -39354,40 +39354,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L986",
+      "source_location": "L989",
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_getacceptedissuers",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L71",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkclienttrusted",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L72",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70",
-      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l70_checkservertrusted",
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_getacceptedissuers",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_checkclienttrusted",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L74",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72",
+      "target": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72_checkservertrusted",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L75",
       "weight": 1.0
     },
     {
@@ -39761,7 +39761,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L238",
+      "source_location": "L242",
       "weight": 1.0
     },
     {
@@ -39772,7 +39772,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L272",
+      "source_location": "L279",
       "weight": 1.0
     },
     {
@@ -39783,7 +39783,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L288",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -39794,7 +39794,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L309",
+      "source_location": "L316",
       "weight": 1.0
     },
     {
@@ -39805,7 +39805,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L340",
+      "source_location": "L347",
       "weight": 1.0
     },
     {
@@ -39816,7 +39816,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L384",
+      "source_location": "L391",
       "weight": 1.0
     },
     {
@@ -39838,7 +39838,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L878",
+      "source_location": "L886",
       "weight": 1.0
     },
     {
@@ -39849,7 +39849,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L922",
+      "source_location": "L930",
       "weight": 1.0
     },
     {
@@ -39860,7 +39860,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L929",
+      "source_location": "L937",
       "weight": 1.0
     },
     {
@@ -39871,7 +39871,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L931",
+      "source_location": "L939",
       "weight": 1.0
     },
     {
@@ -39882,40 +39882,40 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L943",
+      "source_location": "L951",
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l667",
-      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l667_onpermissionrequest",
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l675",
+      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webchromeclient_l675_onpermissionrequest",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L668",
+      "source_location": "L676",
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673",
-      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673_onreceivedsslerror",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L674",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673",
-      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l673_onpagefinished",
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681",
+      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681_onreceivedsslerror",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
       "source_location": "L682",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681",
+      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip_object_webviewclient_l681_onpagefinished",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
+      "source_location": "L690",
       "weight": 1.0
     },
     {
@@ -40931,25 +40931,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_1039",
+      "source": "backend_app_api_devices_rationale_1055",
       "target": "backend_app_api_devices_execute_batch_test",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1039",
+      "source_location": "L1055",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_159",
+      "source": "backend_app_api_devices_rationale_164",
       "target": "backend_app_api_devices_device_heartbeat",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L159",
+      "source_location": "L164",
       "weight": 1.0
     },
     {
@@ -40964,135 +40964,135 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_310",
+      "source": "backend_app_api_devices_rationale_315",
       "target": "backend_app_api_devices_get_device_permitted_cameras",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L310",
+      "source_location": "L315",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_354",
+      "source": "backend_app_api_devices_rationale_359",
       "target": "backend_app_api_devices_get_device_policy",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L354",
+      "source_location": "L359",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_431",
+      "source": "backend_app_api_devices_rationale_438",
       "target": "backend_app_api_devices_check_devices_health",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L431",
+      "source_location": "L438",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_505",
+      "source": "backend_app_api_devices_rationale_512",
       "target": "backend_app_api_devices_update_device_permissions",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L505",
+      "source_location": "L512",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_578",
+      "source": "backend_app_api_devices_rationale_589",
       "target": "backend_app_api_devices_push_device_settings",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L578",
+      "source_location": "L589",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_715",
+      "source": "backend_app_api_devices_rationale_731",
       "target": "backend_app_api_devices_toggle_device_pip",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L715",
+      "source_location": "L731",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_764",
+      "source": "backend_app_api_devices_rationale_780",
       "target": "backend_app_api_devices_deduplicate_devices",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L764",
+      "source_location": "L780",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_807",
+      "source": "backend_app_api_devices_rationale_823",
       "target": "backend_app_api_devices_cleanup_all_devices",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L807",
+      "source_location": "L823",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_833",
+      "source": "backend_app_api_devices_rationale_849",
       "target": "backend_app_api_devices_receive_pip_ack",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L833",
+      "source_location": "L849",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_856",
+      "source": "backend_app_api_devices_rationale_872",
       "target": "backend_app_api_devices_test_single_device",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L856",
+      "source_location": "L872",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_862",
+      "source": "backend_app_api_devices_rationale_878",
       "target": "backend_app_api_devices_test_pip",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L862",
+      "source_location": "L878",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_971",
+      "source": "backend_app_api_devices_rationale_987",
       "target": "backend_app_api_devices_toggle_device_master",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L971",
+      "source_location": "L987",
       "weight": 1.0
     },
     {
@@ -42123,7 +42123,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L541",
+      "source_location": "L544",
       "weight": 1.0
     },
     {
@@ -42135,7 +42135,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1367",
+      "source_location": "L1374",
       "weight": 1.0
     },
     {
@@ -42147,7 +42147,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1534",
+      "source_location": "L1541",
       "weight": 1.0
     },
     {
@@ -42159,7 +42159,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1279",
+      "source_location": "L1285",
       "weight": 1.0
     },
     {
@@ -42171,7 +42171,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L212",
+      "source_location": "L215",
       "weight": 1.0
     },
     {
@@ -42183,7 +42183,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1109",
+      "source_location": "L1112",
       "weight": 1.0
     },
     {
@@ -42195,7 +42195,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1584",
+      "source_location": "L1591",
       "weight": 1.0
     },
     {
@@ -42207,7 +42207,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1445",
+      "source_location": "L1452",
       "weight": 1.0
     },
     {
@@ -42219,7 +42219,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1403",
+      "source_location": "L1410",
       "weight": 1.0
     },
     {
@@ -42231,7 +42231,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1236",
+      "source_location": "L1241",
       "weight": 1.0
     },
     {
@@ -42315,7 +42315,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1053",
+      "source_location": "L1073",
       "weight": 1.0
     },
     {
@@ -42327,7 +42327,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2390",
+      "source_location": "L2411",
       "weight": 1.0
     },
     {
@@ -42339,7 +42339,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1726",
+      "source_location": "L1747",
       "weight": 1.0
     },
     {
@@ -42351,7 +42351,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2576",
+      "source_location": "L2597",
       "weight": 1.0
     },
     {
@@ -42540,7 +42540,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L436",
+      "source_location": "L443",
       "weight": 0.8
     },
     {
@@ -42551,7 +42551,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L808",
+      "source_location": "L824",
       "weight": 0.8
     },
     {
@@ -42562,7 +42562,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L765",
+      "source_location": "L781",
       "weight": 0.8
     },
     {
@@ -42573,7 +42573,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L745",
+      "source_location": "L761",
       "weight": 0.8
     },
     {
@@ -42584,7 +42584,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L878",
+      "source_location": "L894",
       "weight": 0.8
     },
     {
@@ -42595,7 +42595,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L925",
+      "source_location": "L941",
       "weight": 0.8
     },
     {
@@ -42606,7 +42606,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L161",
+      "source_location": "L166",
       "weight": 0.8
     },
     {
@@ -42617,7 +42617,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1041",
+      "source_location": "L1057",
       "weight": 0.8
     },
     {
@@ -42628,7 +42628,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L311",
+      "source_location": "L316",
       "weight": 0.8
     },
     {
@@ -42639,7 +42639,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L324",
+      "source_location": "L329",
       "weight": 0.8
     },
     {
@@ -42650,7 +42650,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L355",
+      "source_location": "L360",
       "weight": 0.8
     },
     {
@@ -42661,7 +42661,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L103",
+      "source_location": "L107",
       "weight": 0.8
     },
     {
@@ -42672,7 +42672,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L579",
+      "source_location": "L590",
       "weight": 0.8
     },
     {
@@ -42683,7 +42683,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L467",
+      "source_location": "L474",
       "weight": 0.8
     },
     {
@@ -42694,7 +42694,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L658",
+      "source_location": "L674",
       "weight": 0.8
     },
     {
@@ -42705,7 +42705,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L627",
+      "source_location": "L643",
       "weight": 0.8
     },
     {
@@ -42716,7 +42716,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L981",
+      "source_location": "L997",
       "weight": 0.8
     },
     {
@@ -42727,7 +42727,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L716",
+      "source_location": "L732",
       "weight": 0.8
     },
     {
@@ -42738,7 +42738,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L405",
+      "source_location": "L412",
       "weight": 0.8
     },
     {
@@ -42749,7 +42749,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L506",
+      "source_location": "L513",
       "weight": 0.8
     },
     {
@@ -42760,7 +42760,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L689",
+      "source_location": "L705",
       "weight": 0.8
     },
     {
@@ -43062,5 +43062,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "f6fe496c956857e3823af4309dc149149ab0509a"
+  "built_at_commit": "d7516cf01562afc10d6177f01d2c054f81689f7d"
 }

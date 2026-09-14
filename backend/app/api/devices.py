@@ -47,6 +47,7 @@ class DeviceCreate(BaseModel):
     allow_reboot_server: bool = False
     pip_default_size: str = "medium"
     pip_duration_seconds: int = 10
+    stream_quality: Optional[str] = "1080p"
 
 class DeviceHeartbeat(BaseModel):
     device_identifier: str
@@ -59,6 +60,7 @@ class DeviceHeartbeat(BaseModel):
     network_speed_mbps: Optional[float] = None
     app_version: Optional[str] = None
     device_model: Optional[str] = None
+    stream_quality: Optional[str] = None
     diagnostic_logs: Optional[List[str]] = None
 
 class DeviceAllowedCamerasUpdate(BaseModel):
@@ -80,12 +82,14 @@ class DevicePermissionsUpdate(BaseModel):
     pip_default_size: str = "medium"
     pip_duration_seconds: int = 10
     pip_position: Optional[str] = "TOP_RIGHT"
+    stream_quality: Optional[str] = "1080p"
 
 class DeviceSettingsPush(BaseModel):
     pip_duration_seconds: Optional[int] = None
     pip_default_size: Optional[str] = None
     pip_position: Optional[str] = None
     pip_player_mode: Optional[str] = None
+    stream_quality: Optional[str] = None
 
 class RestartContainerRequest(BaseModel):
     service_name: str = "sentinela_frigate" # all, sentinela_frigate, sentinela_backend, sentinela_frontend, sentinela_nginx, sentinela_mosquitto
@@ -147,6 +151,7 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
             "pip_default_size": d.pip_default_size or "medium",
             "pip_duration_seconds": d.pip_duration_seconds or 10,
             "pip_position": d.pip_position or "TOP_RIGHT",
+            "stream_quality": d.stream_quality or "1080p",
             "is_master_admin": bool(d.is_master_admin),
             "last_seen": d.last_seen.isoformat() if d.last_seen else None,
             "created_at": d.created_at.isoformat() if d.created_at else None
@@ -367,7 +372,8 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
             "allowed_events": ["person", "car", "motorcycle", "dog", "cat", "bus"],
             "pip_default_size": "medium",
             "pip_duration_seconds": 10,
-            "pip_position": "TOP_RIGHT"
+            "pip_position": "TOP_RIGHT",
+            "stream_quality": "1080p"
         }
 
     cams = []
@@ -397,7 +403,8 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
         "allowed_events": events,
         "pip_default_size": dev.pip_default_size or "medium",
         "pip_duration_seconds": dev.pip_duration_seconds or 10,
-        "pip_position": dev.pip_position or "TOP_RIGHT"
+        "pip_position": dev.pip_position or "TOP_RIGHT",
+        "stream_quality": dev.stream_quality or "1080p"
     }
 
 @router.patch("/{device_id}/cameras")
@@ -527,6 +534,8 @@ async def update_device_permissions(
     dev.pip_duration_seconds = perms.pip_duration_seconds
     if perms.pip_position:
         dev.pip_position = perms.pip_position
+    if perms.stream_quality:
+        dev.stream_quality = perms.stream_quality
 
     await db.commit()
     try:
@@ -539,6 +548,7 @@ async def update_device_permissions(
             "pip_default_size": dev.pip_default_size,
             "pip_duration_seconds": dev.pip_duration_seconds,
             "pip_position": dev.pip_position or "TOP_RIGHT",
+            "stream_quality": dev.stream_quality or "1080p",
             "allow_pip_alerts": dev.allow_pip_alerts
         })
     except Exception as e:
@@ -548,7 +558,7 @@ async def update_device_permissions(
         action="DEVICE_PERMISSIONS_UPDATED",
         module="PIP",
         severity="SUCCESS",
-        details=f"Permissões granulares atualizadas para '{dev.friendly_name}' (Status: {dev.permission_status}, Câmeras: {dev.allowed_cameras}, Gravações: {dev.allow_recordings}, PiP: {dev.allow_pip_alerts}, Posição: {dev.pip_position}, Reiniciar Docker: {dev.allow_restart_containers}, Reboot Host: {dev.allow_reboot_server})",
+        details=f"Permissões granulares atualizadas para '{dev.friendly_name}' (Status: {dev.permission_status}, Câmeras: {dev.allowed_cameras}, Gravações: {dev.allow_recordings}, PiP: {dev.allow_pip_alerts}, Resolução: {dev.stream_quality}, Posição: {dev.pip_position}, Reiniciar Docker: {dev.allow_restart_containers}, Reboot Host: {dev.allow_reboot_server})",
         client_ip=request.client.host if request.client else "unknown"
     )
     return {
@@ -565,7 +575,8 @@ async def update_device_permissions(
         "allow_reboot_server": dev.allow_reboot_server,
         "pip_default_size": dev.pip_default_size,
         "pip_duration_seconds": dev.pip_duration_seconds,
-        "pip_position": dev.pip_position or "TOP_RIGHT"
+        "pip_position": dev.pip_position or "TOP_RIGHT",
+        "stream_quality": dev.stream_quality or "1080p"
     }
 
 @router.put("/by-identifier/{device_identifier}/settings")
@@ -592,6 +603,9 @@ async def push_device_settings(
     if body.pip_position is not None and body.pip_position.strip():
         dev.pip_position = body.pip_position.strip().upper()
         changed = True
+    if body.stream_quality is not None and body.stream_quality.strip():
+        dev.stream_quality = body.stream_quality.strip().lower()
+        changed = True
 
     if changed:
         await db.commit()
@@ -605,6 +619,7 @@ async def push_device_settings(
                 "pip_default_size": dev.pip_default_size,
                 "pip_duration_seconds": dev.pip_duration_seconds,
                 "pip_position": dev.pip_position or "TOP_RIGHT",
+                "stream_quality": dev.stream_quality or "1080p",
                 "allow_pip_alerts": dev.allow_pip_alerts
             })
         except Exception as e:
@@ -614,7 +629,8 @@ async def push_device_settings(
         "status": "updated" if changed else "no_change",
         "pip_duration_seconds": dev.pip_duration_seconds,
         "pip_default_size": dev.pip_default_size,
-        "pip_position": dev.pip_position or "TOP_RIGHT"
+        "pip_position": dev.pip_position or "TOP_RIGHT",
+        "stream_quality": dev.stream_quality or "1080p"
     }
 
 @router.post("/by-id/{device_identifier}/restart-containers")

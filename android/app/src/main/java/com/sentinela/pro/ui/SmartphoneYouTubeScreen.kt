@@ -829,7 +829,7 @@ fun PhoneCapturesTab() {
 fun DeviceConfigEditDialog(
     device: com.sentinela.pro.network.RemoteDeviceItem,
     onDismiss: () -> Unit,
-    onSave: (name: String, pipSize: String, pipDuration: Int, pipPosition: String, allowPip: Boolean, status: String) -> Unit
+    onSave: (name: String, pipSize: String, pipDuration: Int, pipPosition: String, allowPip: Boolean, status: String, streamQuality: String) -> Unit
 ) {
     var name by remember { mutableStateOf(device.friendlyName) }
     var pipSize by remember { mutableStateOf(device.pipDefaultSize) }
@@ -837,6 +837,7 @@ fun DeviceConfigEditDialog(
     var pipPosition by remember { mutableStateOf(device.pipPosition) }
     var allowPip by remember { mutableStateOf(device.allowPipAlerts) }
     var status by remember { mutableStateOf(device.permissionStatus) }
+    var streamQuality by remember { mutableStateOf(device.streamQuality) }
 
     val allSizes = listOf(
         "extra_small" to "15% (Mini)",
@@ -1009,6 +1010,25 @@ fun DeviceConfigEditDialog(
                 }
 
                 item {
+                    Text("Resolução da Transmissão (Servidor):", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf("720p" to "⚡ 720p HD", "1080p" to "📺 1080p FHD").forEach { (qualKey, qualLabel) ->
+                            val isSel = streamQuality.lowercase() == qualKey
+                            Surface(
+                                shape = SentinelaShapes.SmallButton,
+                                color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.25f) else SentinelaColors.CardBackgroundElevated,
+                                border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                modifier = Modifier.weight(1f).clickable { streamQuality = qualKey }
+                            ) {
+                                Box(modifier = Modifier.padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
+                                    Text(qualLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                item {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -1032,7 +1052,7 @@ fun DeviceConfigEditDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onSave(name, pipSize, pipDuration, pipPosition, allowPip, status) },
+                onClick = { onSave(name, pipSize, pipDuration, pipPosition, allowPip, status, streamQuality) },
                 colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan)
             ) {
                 Text("Salvar & Sincronizar", color = Color.Black, fontWeight = FontWeight.Bold)
@@ -1116,7 +1136,7 @@ fun PhoneMasterCentralTab() {
         DeviceConfigEditDialog(
             device = editingDevice!!,
             onDismiss = { editingDevice = null },
-            onSave = { updatedName, pipSize, pipDur, pipPos, allowPip, status ->
+            onSave = { updatedName, pipSize, pipDur, pipPos, allowPip, status, streamQuality ->
                 val devId = editingDevice!!.id
                 editingDevice = null
                 coroutineScope.launch {
@@ -1127,7 +1147,8 @@ fun PhoneMasterCentralTab() {
                         pipDuration = pipDur,
                         pipPosition = pipPos,
                         allowPip = allowPip,
-                        permissionStatus = status
+                        permissionStatus = status,
+                        streamQuality = streamQuality
                     )
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     refreshDevices()

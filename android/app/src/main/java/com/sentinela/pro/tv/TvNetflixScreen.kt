@@ -3074,6 +3074,7 @@ fun TvSettingsViewport(
     var posIndex by remember { mutableIntStateOf(prefs.pipPositionIndex) }
     var durIndex by remember { mutableIntStateOf(prefs.pipDurationIndex) }
     var playerMode by remember { mutableStateOf(prefs.pipPlayerMode) }
+    var streamQuality by remember { mutableStateOf(prefs.streamQuality) }
     val settingsScope = rememberCoroutineScope()
 
     var hasOverlayPerm by remember {
@@ -3423,6 +3424,97 @@ fun TvSettingsViewport(
                                             overflow = TextOverflow.Ellipsis
                                         )
                                     }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // ====================================================================
+            // 2.5 RESOLUÇÃO DA TRANSMISSÃO (SERVIDOR)
+            // ====================================================================
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(TvShapes.CameraCard)
+                        .background(TvColors.CardBackground)
+                        .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
+                        .padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
+                                Icon(Icons.Default.SettingsSuggest, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(18.dp))
+                            }
+                            Text("5. RESOLUÇÃO DA TRANSMISSÃO (SERVIDOR)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                        }
+                        Text(
+                            text = "Selecionado: ${if (streamQuality == "720p") "720p HD" else "1080p FHD"}",
+                            color = TvColors.TextSecondary,
+                            fontSize = 11.sp
+                        )
+                    }
+
+                    val qualityOptions = listOf(
+                        Triple("720p", "⚡ 720p HD (Econômico / Alta Fluidez)", "Transcodificação acelerada por hardware Intel QSV. Economiza ~60% de banda de rede e reduz drasticamente o consumo de memória na Smart TV."),
+                        Triple("1080p", "📺 1080p FHD (Alta Fidelidade)", "Resolução nativa Full HD original das câmeras sem re-escalonamento (maior nitidez, maior uso de banda).")
+                    )
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        qualityOptions.forEach { (qualKey, qualTitle, qualDesc) ->
+                            val isSelected = streamQuality == qualKey
+                            val interactionSource = remember { MutableInteractionSource() }
+                            val isFocused by interactionSource.collectIsFocusedAsState()
+
+                            Surface(
+                                shape = TvShapes.CameraCard,
+                                color = if (isSelected) TvColors.NetflixRed.copy(alpha = 0.15f) else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
+                                border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.CameraCard)
+                                    .clickable(interactionSource = interactionSource, indication = null) {
+                                        streamQuality = qualKey
+                                        prefs.streamQuality = qualKey
+                                        Toast.makeText(context, "Qualidade de Stream: $qualTitle", Toast.LENGTH_SHORT).show()
+                                        settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
+                                    }
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp),
+                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = qualTitle,
+                                            color = if (isSelected) TvColors.NetflixRed else if (isFocused) Color.White else TvColors.TextPrimary,
+                                            fontSize = 11.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                        if (isSelected) {
+                                            Surface(shape = TvShapes.StatusPill, color = TvColors.NetflixRed) {
+                                                Text("ATIVO", color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                                            }
+                                        }
+                                    }
+                                    Text(
+                                        text = qualDesc,
+                                        style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
+                                    )
                                 }
                             }
                         }

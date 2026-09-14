@@ -128,6 +128,10 @@ class OverlayService : Service() {
                                 "cinema" -> prefs.pipSizeIndex = PipSize.CINEMA.ordinal
                             }
                         }
+                        val serverStreamQual = event.optString("stream_quality", "")
+                        if (serverStreamQual.isNotBlank()) {
+                            prefs.streamQuality = serverStreamQual
+                        }
                         val serverPipDur = event.optInt("pip_duration_seconds", 0)
                         if (serverPipDur > 0) {
                             when (serverPipDur) {
@@ -255,6 +259,9 @@ class OverlayService : Service() {
                 "extra_large" -> prefs.pipSizeIndex = PipSize.EXTRA_LARGE.ordinal
                 "cinema" -> prefs.pipSizeIndex = PipSize.CINEMA.ordinal
             }
+        }
+        if (policy.streamQuality.isNotBlank()) {
+            prefs.streamQuality = policy.streamQuality
         }
         if (policy.pipDurationSeconds > 0) {
             when (policy.pipDurationSeconds) {
@@ -524,15 +531,16 @@ class OverlayService : Service() {
         }
 
         activePipCamera = resolvedCamera
+        val streamCamera = if (prefs.streamQuality == "720p" && !resolvedCamera.endsWith("_720p")) "${resolvedCamera}_720p" else resolvedCamera
         val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
             "eco" -> "mode=mjpeg"
             "webrtc" -> "mode=webrtc"
             else -> "mode=mse"
         }
-        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${resolvedCamera}&${streamModeParam}&width=100%")
+        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${streamCamera}&${streamModeParam}&width=100%")
         val streamUrl = if (baseStreamUrl.contains("stream.html")) {
             val uri = android.net.Uri.parse(baseStreamUrl)
-            val src = uri.getQueryParameter("src") ?: resolvedCamera
+            val src = uri.getQueryParameter("src") ?: streamCamera
             val baseUrlWithoutQuery = baseStreamUrl.substringBefore("?")
             "$baseUrlWithoutQuery?src=$src&$streamModeParam&width=100%"
         } else {
@@ -605,7 +613,7 @@ class OverlayService : Service() {
                         player.volume = 0f
                         player.playWhenReady = true
 
-                        val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
+                        val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${streamCamera}")
                         val mediaItem = MediaItem.fromUri(hlsUrl)
                         player.setMediaItem(mediaItem)
                         player.prepare()
@@ -742,7 +750,7 @@ class OverlayService : Service() {
                 when (prefs.pipPlayerMode) {
                     "exoplayer" -> {
                         pipExoPlayer?.let { player ->
-                            val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${resolvedCamera}")
+                            val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${streamCamera}")
                             val mediaItem = MediaItem.fromUri(hlsUrl)
                             player.setMediaItem(mediaItem)
                             player.prepare()
