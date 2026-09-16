@@ -524,6 +524,14 @@ class OverlayService : Service() {
         currentOverlayPlayerMode = prefs.pipPlayerMode
         isPipShowing.value = true
 
+        SentinelaRemoteLogger.log(
+            category = "PIP",
+            action = "STANDBY_MONITORING_ENFORCED",
+            severity = "INFO",
+            message = "Player de tela principal suspenso. Modo de espera de detecção ativo para PiP ($camera)",
+            metadata = mapOf("camera" to camera, "pip_size" to pipSize.name)
+        )
+
         val resolvedCamera = if (camera.isBlank()) "camera_secundaria" else camera
 
         // 1. Idempotência absoluta: se o PiP já está exibindo a MESMA câmera no MESMO modo de vídeo,

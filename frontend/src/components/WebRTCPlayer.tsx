@@ -261,6 +261,20 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   const [isTogglingPause, setIsTogglingPause] = useState(false);
   const [streamStallCount, setStreamStallCount] = useState(0);
   const [isWatchdogRecovering, setIsWatchdogRecovering] = useState(false);
+  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
+
+  // Global Page Visibility API: Suspend video stream when tab/window is hidden
+  useEffect(() => {
+    if (typeof document === "undefined") return;
+    const handleVisibility = () => {
+      setIsDocumentVisible(!document.hidden);
+    };
+    setIsDocumentVisible(!document.hidden);
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibility);
+    };
+  }, []);
 
   useEffect(() => {
     setIsPaused(camera.enabled === false);
@@ -483,6 +497,23 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
               <span className="px-2.5 py-1 rounded-md bg-black/70 backdrop-blur text-cyan-300 text-xs font-mono font-bold border border-cyan-500/30">
                 Assistir Ao Vivo (Ativar Player)
               </span>
+            </div>
+          </div>
+        ) : !isDocumentVisible ? (
+          <div className="w-full h-full relative bg-black flex items-center justify-center overflow-hidden select-none">
+            <img
+              src={`/go2rtc/api/frame.jpeg?src=${cameraSrc}`}
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).src = `/frigate/api/${cameraSrc}/latest.jpg?h=720`;
+              }}
+              alt={camera.friendly_name || camera.name}
+              className="w-full h-full object-contain opacity-60"
+            />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2 text-slate-300 z-10">
+              <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono font-bold text-xs tracking-wider">
+                MODO DE ESPERA · MONITORANDO DETECÇÃO
+              </span>
+              <span className="text-[11px] text-slate-400 font-mono">Transmissão suspensa em segundo plano (Zero CPU/GPU)</span>
             </div>
           </div>
         ) : streamMode === "monitor" ? (

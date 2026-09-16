@@ -185,7 +185,9 @@ class MQTTService:
                     "zone": zone_name,
                     "event_id": event_id,
                     "snapshot_url": snapshot_url,
-                    "stream_url": stream_url
+                    "stream_url": stream_url,
+                    "pause_background_player": True,
+                    "standby_monitoring": True
                 })
 
                 await self.broadcast_event({

@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-16 20:05 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.126 operacional (Build 126). Sistema unificado de observabilidade e logs operacionais distribuídos em tempo real em todas as abas, cards, botões, testes e funções no Android TV, Android Smartphone e Web Dashboard (`POST /api/telemetry/client-logs`). Resolução definitiva do pisca duplo/duas telas de loading no PiP da Android TV via priorização de snapshot em RAM do go2rtc (< 5ms) e transição GPU sincronizada sem crossfade artificial.
+> **Última Atualização:** 2026-09-16 20:30 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.127 operacional (Build 127). Modo de espera / monitoramento de detecção inteligente com suspensão imediata de players de vídeo em segundo plano para eliminação total de concorrência de decodificadores MediaCodec no PiP (Android TV, Smartphone, Web Dashboard e PiP Gateway).
 
 ---
 
@@ -63,7 +63,26 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
 
 ---
 
-## 📦 Versão Atual: v001.000.000.126 (Observabilidade e Logs Distribuídos em Todas as Abas/Cards/Botões & PiP Zero Loading Flash)
+## 📦 Versão Atual: v001.000.000.127 (Modo de Espera / Monitoramento de Detecção & Suspensão de Players em Background para PiP)
+- **Data**: 2026-09-16
+- **Objetivo**: Implementação integral dos requisitos 1.1, 2.1, 3.1 e 4:
+  1. **Item 1.1 (Android TV - Suspensão do Player em Segundo Plano & Modo de Espera para PiP)**:
+     - `SentinelaApplication.kt`: Adicionado rastreador de ciclo de vida global `isAppInForeground` via `ActivityLifecycleCallbacks`.
+     - `TvNetflixScreen.kt`: Hero Spotlight agora condiciona o streaming a `isHeroStreaming = isAppInForeground && !isPipOverlayActive && !isFullscreenLiveOpen`. Quando o app está em segundo plano ou o PiP overlay está ativo, o player da tela principal é imediatamente suspenso, exibindo o HUD `MODO DE ESPERA · MONITORANDO DETECÇÃO` e liberando 100% da VPU `MediaCodec` da TV para a janela de PiP.
+     - `OverlayService.kt`: Registra e aplica telemetria `STANDBY_MONITORING_ENFORCED` ao exibir o PiP flutuante.
+  2. **Item 2.1 (Android Smartphone - Suspensão do Player fora da Aba Câmeras & Segundo Plano)**:
+     - `SmartphoneYouTubeScreen.kt`: Condiciona o streaming em `PhoneCameraStreamCard` a `isCameraStreaming = isAppInForeground && !isPipOverlayActive`.
+     - Ao alternar para a Central Master (para acionar PiP na TV) ou qualquer outra aba, ou ao minimizar o app, o streaming do feed de câmeras é pausado no mesmo instante, zerando o consumo de CPU/GPU e dados de rede móvel/Wi-Fi.
+  3. **Item 3.1 (Web Dashboard - Page Visibility API Universal & Status na Central de Telas)**:
+     - `WebRTCPlayer.tsx`: Implementado listener do Page Visibility API (`document.visibilitychange`) para todos os modos (`mse`, `webrtc`, `eco`). Ao ocultar a aba ou minimizar o navegador, desmonta o iframe de streaming e exibe frame estático em `MODO DE ESPERA · MONITORANDO DETECÇÃO (Zero CPU/GPU)`, reconectando sem recarga destrutiva ao retornar o foco.
+     - `screens/page.tsx`: Status reativo do card exibe `Online (Espera PiP)`.
+  4. **Item 4 (Servidor Ubuntu & Backend Core - Flags de Suspensão no PiP Gateway)**:
+     - `pip_gateway.py` e `mqtt_service.py`: Payloads do evento `pip_alert` enriquecidos com `"pause_background_player": true` e `"standby_monitoring": true`.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS. TypeScript compilação 100% limpa (`npx tsc --noEmit` exit 0). Build incrementado para `127`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.126 (Observabilidade e Logs Distribuídos em Todas as Abas/Cards/Botões & PiP Zero Loading Flash)
 - **Data**: 2026-09-16
 - **Objetivo**: Implementação integral dos requisitos 1.1, 2.1, 3.4, 4.1 e 4.2:
   1. **Item 1.1 (Android TV - Telemetria e Logs em Todas as Abas, Cards e Botões)**:

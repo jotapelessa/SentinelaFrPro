@@ -503,6 +503,10 @@ fun PhoneCameraStreamCard(
         label = "borderAnim"
     )
 
+    val isAppInForeground by com.sentinela.pro.SentinelaApplication.isAppInForeground.collectAsState()
+    val isPipOverlayActive by com.sentinela.pro.tv.OverlayService.isPipShowing.collectAsState()
+    val isCameraStreaming = isAppInForeground && !isPipOverlayActive
+
     Card(
         shape = SentinelaShapes.CameraCard,
         colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
@@ -559,10 +563,44 @@ fun PhoneCameraStreamCard(
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
                         refreshIntervalMs = if (streamMode == "eco") 100L else 42L,
-                        isStreaming = true,
+                        isStreaming = isCameraStreaming,
                         forceSnapshotMode = streamMode == "eco",
                         streamMode = streamMode
                     )
+
+                    if (!isCameraStreaming) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.7f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Surface(
+                                shape = SentinelaShapes.PillBadge,
+                                color = SentinelaColors.BadgeBackground,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, SentinelaColors.BorderStandard)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(8.dp)
+                                            .clip(androidx.compose.foundation.shape.CircleShape)
+                                            .background(if (isPipOverlayActive) SentinelaColors.PrimaryCyan else SentinelaColors.StandbyAmber)
+                                    )
+                                    Text(
+                                        text = if (isPipOverlayActive) "MODO DE ESPERA · PiP ATIVO" else "MODO DE ESPERA · DETECÇÃO ATIVA",
+                                        color = Color.White,
+                                        fontSize = 10.sp,
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
                 }
 
                 // Badge Topo Esquerda: Seletor de Modo de Conexão (Eco, MSE, WebRTC)

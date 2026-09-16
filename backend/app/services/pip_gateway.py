@@ -295,7 +295,9 @@ class PiPGatewayService:
                 "pip_size": dev.pip_default_size or "medium_small",
                 "device_id": device_id,
                 "target_device_id": device_id,
-                "target_identifier": dev.device_identifier
+                "target_identifier": dev.device_identifier,
+                "pause_background_player": True,
+                "standby_monitoring": True
             }
 
             if target_ws is not None:

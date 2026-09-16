@@ -19,8 +19,54 @@ import javax.net.ssl.X509TrustManager
  */
 class SentinelaApplication : Application(), ImageLoaderFactory {
 
+    companion object {
+        val isAppInForeground = kotlinx.coroutines.flow.MutableStateFlow(true)
+        private var resumedActivities = 0
+    }
+
     override fun onCreate() {
         super.onCreate()
+
+        // Track foreground / background status across the entire application lifecycle
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityStarted(activity: android.app.Activity) {
+                resumedActivities++
+                if (resumedActivities > 0 && !isAppInForeground.value) {
+                    isAppInForeground.value = true
+                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                        category = com.sentinela.pro.logging.LogCategory.SYSTEM,
+                        action = "APP_FOREGROUND_ENTERED",
+                        severity = com.sentinela.pro.logging.LogSeverity.INFO,
+                        message = "Aplicativo entrou em primeiro plano (${activity.javaClass.simpleName})"
+                    )
+                }
+            }
+
+            override fun onActivityResumed(activity: android.app.Activity) {
+                if (!isAppInForeground.value) {
+                    isAppInForeground.value = true
+                }
+            }
+
+            override fun onActivityPaused(activity: android.app.Activity) {}
+
+            override fun onActivityStopped(activity: android.app.Activity) {
+                resumedActivities = (resumedActivities - 1).coerceAtLeast(0)
+                if (resumedActivities == 0 && isAppInForeground.value) {
+                    isAppInForeground.value = false
+                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                        category = com.sentinela.pro.logging.LogCategory.SYSTEM,
+                        action = "APP_BACKGROUND_STANDBY",
+                        severity = com.sentinela.pro.logging.LogSeverity.INFO,
+                        message = "Aplicativo entrou em segundo plano: Modo de Espera / Monitoramento de Detecção ativo"
+                    )
+                }
+            }
+
+            override fun onActivitySaveInstanceState(activity: android.app.Activity, outState: android.os.Bundle) {}
+            override fun onActivityDestroyed(activity: android.app.Activity) {}
+            override fun onActivityCreated(activity: android.app.Activity, savedInstanceState: android.os.Bundle?) {}
+        })
 
         // 1. Initialize Distributed Operational Logger early for all activities & background services
         com.sentinela.pro.logging.SentinelaRemoteLogger.init(this)

@@ -1061,7 +1061,7 @@ export default function ScreensPage() {
                         }`}
                       >
                         <span className={`w-2 h-2 rounded-full ${isOnline ? "bg-emerald-400 animate-pulse" : "bg-rose-400"}`} />
-                        <span className="font-bold">{isOnline ? "Online" : "Sem Resposta"}</span>
+                        <span className="font-bold">{isOnline ? (device.allow_pip_alerts ? "Online (Espera PiP)" : "Online") : "Sem Resposta"}</span>
                       </div>
                       <span className="text-[10px] text-slate-500 font-mono flex items-center gap-1">
                         <Clock className="w-2.5 h-2.5" />

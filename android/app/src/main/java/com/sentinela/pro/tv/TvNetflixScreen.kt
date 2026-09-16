@@ -514,6 +514,9 @@ fun TvCamerasViewport(
     val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
     var isFullscreenLiveOpen by remember { mutableStateOf(false) }
     val isPipOverlayActive by com.sentinela.pro.tv.OverlayService.isPipShowing.collectAsState()
+    val isAppInForeground by com.sentinela.pro.SentinelaApplication.isAppInForeground.collectAsState()
+    val isHeroStreaming = isAppInForeground && !isPipOverlayActive && !isFullscreenLiveOpen
+
     var streamMode by remember(selectedCamera?.id) {
         mutableStateOf(selectedCamera?.let { prefs.getCameraDefaultStreamMode(it.id) } ?: "mse")
     }
@@ -542,9 +545,44 @@ fun TvCamerasViewport(
                     cameraName = camera.id,
                     contentDescription = camera.name,
                     modifier = Modifier.fillMaxSize(),
-                    isStreaming = !isPipOverlayActive && !isFullscreenLiveOpen,
+                    isStreaming = isHeroStreaming,
                     streamMode = streamMode
                 )
+
+                // Standby / Detection Monitoring HUD Overlay when streaming is suspended
+                if (!isHeroStreaming) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black.copy(alpha = 0.65f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Surface(
+                            shape = TvShapes.Badge,
+                            color = TvColors.CardBackgroundElevated,
+                            border = androidx.compose.foundation.BorderStroke(1.dp, TvColors.BorderHighlight)
+                        ) {
+                            Row(
+                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(10.dp)
+                                        .clip(androidx.compose.foundation.shape.CircleShape)
+                                        .background(if (isPipOverlayActive) TvColors.CyberCyan else TvColors.StandbyAmber)
+                                )
+                                Text(
+                                    text = if (isPipOverlayActive) "MODO DE ESPERA · PiP PREVIEW ATIVO NA TELA" else "MODO DE ESPERA · MONITORANDO DETECÇÃO",
+                                    color = Color.White,
+                                    fontSize = 11.sp,
+                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
 
                 // Overlay Gradiente Cinematográfico
                 Box(
