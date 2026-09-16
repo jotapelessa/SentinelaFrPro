@@ -19,13 +19,15 @@ jobs:
         fetch-depth: 0
     
     - name: Set up JDK 17
-      uses: actions/setup-java@v4
+      uses: actions/setup-java@v5
       with:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Set up Android SDK
-      uses: android-actions/setup-android@v3
+    - name: Configure Android SDK
+      run: |
+        echo "sdk.dir=${ANDROID_HOME:-/usr/local/lib/android/sdk}" > android/local.properties
+        cat android/local.properties
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
@@ -122,11 +124,12 @@ jobs:
             * Central Master VIP com controle de resolução 720p/1080p para todas as Smart TVs
             * Controle granular de taxa de quadros e silenciamento por FAB
 
-          ### 🚀 Melhorias Desta Versão (Build 120):
-          - 🛠️ **Auto-Migração SQLite Paired Devices**: Inclusão de auto-migração resiliente para a coluna `stream_quality` na tabela `paired_devices`, resolvendo 100% dos erros 500 no heartbeat da Android TV, listagem de telas no Web (`/screens`) e visualização de dispositivos na Central Master do Smartphone.
-          - ⚡ **Multi-Resolução 720p HD com Failover Automático**: Sub-streams transcodificados por hardware no go2rtc com parâmetros ultrafast e fallback transparente (<1.8s) para 1080p nativo em caso de latência, garantindo zero telas pretas no PiP.
-          - 📺 **Controle de Resolução em Todos os Clientes**: Seletor visual na Android TV (Aba 5), no Smartphone (Central Master VIP) e no Web Sentinela (`/screens`).
-          - 🔒 **Invariantes de Ouro Preservadas**: Idempotência de stream no PiP, watchdog suave de live-edge via `playbackRate`, MSE sobre WebSocket TCP e zero-cache no Nginx.
+          ### 🚀 Melhorias Desta Versão (Build 121):
+          - 🔄 **Sincronização Bidirecional Contínua (Web, Master & TV)**: Aplicação e persistência imediata em SharedPreferences e banco SQLite das configurações de resolução e PiP propagadas entre Web, Smartphone Master e Android TV.
+          - 📊 **Telemetria Enriquecida de PiP Preview**: Métricas em tempo real de TTFF (Time-To-First-Frame em ms), FPS médio/mínimo, contagem de travamentos (stalls) e decodificador ativo reportadas em banco e Toast.
+          - 🌐 **Reatividade Web Zero-Delay**: Atualização em 0ms da aba Telas (`/screens`) eliminando o badge incorreto de "Sem Resposta há 1d".
+          - ⚡ **Multi-Resolução 720p HD por Hardware**: Sub-streams ultrafast otimizados no go2rtc para alívio de memória e rede em redes locais e Wi-Fi.
+          - 🔒 **Invariantes de Ouro Preservadas**: Idempotência total no PiP, watchdog suave via `playbackRate`, MSE TCP e zero-cache no Nginx.
           - 🛡️ **Governança & Estabilidade**: 100% de aprovação na suíte `onp-spec` (31/31 testes PASS).
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
