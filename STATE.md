@@ -80,7 +80,11 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
      - Removido o `crossfade(150)` artificial do Coil, tornando a exibição do primeiro quadro instantânea e sólida, seguida da transição suave com `withEndAction { visibility = GONE }` quando o decoder de hardware da GPU inicia a reprodução do vídeo ao vivo.
   5. **Inicialização Global e Proteção de Crash**:
      - `SentinelaRemoteLogger.init(this)` adicionado a [SentinelaApplication.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt) e [OverlayService.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt), com captura de exceções fatais despachando relatório para o servidor antes da saída do app.
-- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS. TypeScript compilação 100% limpa (`npx tsc --noEmit` exit 0). Build incrementado para `126`.
+  6. **Deploy em Produção via SSH (`sentinela` / `100.93.129.91`)**:
+     - Sincronização via `git pull origin main` em `/home/jotape/ServONVIF2/SentinelaFrPro`.
+     - Recompilação e recriação dos containers via `docker compose up -d --build backend frontend`.
+     - Validação de saúde e de endpoint: ingestão de telemetria `POST /api/telemetry/client-logs` (`status: ok`) e leitura filtrada por `device_type=web_browser` 100% verificadas.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS. TypeScript compilação 100% limpa (`npx tsc --noEmit` exit 0). Build incrementado para `126`. Deploy em produção ativo e saudável.
 - **Data**: 2026-09-16
 - **Objetivo**: Resolução definitiva dos 4 grupos de melhorias solicitados (Transcodificação 720p, Sincronização Bidirecional de Configurações, Telemetria Forense de PiP Preview e Correção de Status da Aba Telas na Web).
 - **Entregas Principais**:
