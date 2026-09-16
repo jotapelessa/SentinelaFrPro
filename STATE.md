@@ -63,7 +63,30 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
 
 ---
 
-## 📦 Versão Atual: v001.000.000.117 (Estabilidade Multi-Dispositivo de PiP, Zero-Cache Nginx Host & App Web)
+## 📦 Versão Atual: v001.000.000.121 (Sincronização Bidirecional Total, Telemetria Forense PiP & 720p/1080p Dinâmico)
+- **Data**: 2026-09-16
+- **Objetivo**: Resolução definitiva dos 4 grupos de melhorias solicitados (Transcodificação 720p, Sincronização Bidirecional de Configurações, Telemetria Forense de PiP Preview e Correção de Status da Aba Telas na Web).
+- **Entregas Principais**:
+  1. **Redução de Resolução (720p vs 1080p Transcoding Profile)**:
+     - Criação de pipeline dinâmico de transcodificação go2rtc com aceleração gráfica (`scale=1280:720`, `preset=ultrafast`, `tune=zerolatency`, GOP 2s alinhado) em [backend/app/api/cameras.py](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/backend/app/api/cameras.py).
+     - Clientes Android TV e Smartphone agora podem alternar entre stream nativo Full HD (1080p) e 720p de baixa largura de banda sem travar conexões ativas.
+  2. **Sincronização Bidirecional Contínua (Web, Master & TV)**:
+     - Endpoints `/api/v1/devices/{id}/heartbeat` e `/api/v1/devices/{id}/config` unificados para convergência imediata.
+     - Persistência e restauração em `SentinelaPreferences` no Android TV e Smartphone, aplicando `stream_quality`, `pip_position` e `pip_duration` em 0ms via WebSocket e reconciliando via Heartbeat.
+  3. **Telemetria Forense Enriquecida de PiP Preview**:
+     - `OverlayService.kt` e `SentinelaRepository.kt` agora coletam e enviam no `PipAckRequest`: TTFF (Time-to-First-Frame em ms), duração real, FPS médio e mínimo, quadros descartados (`dropped_frames`), congelamentos de buffer (`stall_count`) e decodificador ativo (`hardware_mediacodec`).
+     - Backend persiste métricas no `AuditLog` (`PIP_PREVIEW_METRICS`) e faz broadcast WebSocket instantâneo com Toast em tempo real no app Smartphone Master.
+  4. **Correção de Status e Reatividade na Aba Telas (Web `sentinela.local`)**:
+     - Expansão do health check de dispositivos para tolerância de 90s, eliminando o falso aviso "Sem Resposta há 1d".
+     - Web UI atualizada com listeners em [WebSocketProvider.tsx](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/frontend/src/components/WebSocketProvider.tsx) e [screens/page.tsx](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/frontend/src/app/screens/page.tsx), reagindo a pulsos de heartbeat e confirmações de PiP em 0ms sem necessidade de refresh manual.
+  5. **Compilação e Releases GitHub**:
+     - Pipeline CI/CD em `.github/workflows/android-build.yml` atualizado para JDK 17, `actions/setup-java@v5` e configuração automática do Android SDK no runner Node 24.
+     - Publicada release oficial `v001.000.000.121` com APKs compilados e versionados para TV e Smartphone.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.117 (Estabilidade Multi-Dispositivo de PiP, Zero-Cache Nginx Host & App Web)
 - **Data**: 2026-09-14
 - **Objetivo**: Resolução definitiva dos problemas relatados pelo usuário:
   1. **Item 1.1 (Android TV - Estabilidade de PiP Multi-Dispositivo)**:
