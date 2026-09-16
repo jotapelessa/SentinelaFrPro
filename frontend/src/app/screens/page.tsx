@@ -225,7 +225,8 @@ export default function ScreensPage() {
           const fps = metrics.avg_fps ? `${metrics.avg_fps} FPS` : "30 FPS";
           const ttff = metrics.ttff_ms ? `${metrics.ttff_ms}ms` : "Imediato";
           const res = metrics.stream_quality ? metrics.stream_quality.toUpperCase() : "1080P";
-          metricInfo = ` [TTFF: ${ttff} • ${fps} • ${res}]`;
+          const liveDur = metrics.live_video_duration_seconds !== undefined ? ` • Vídeo Ativo: ${metrics.live_video_duration_seconds}s` : "";
+          metricInfo = ` [TTFF: ${ttff}${liveDur} • ${fps} • ${res}]`;
         }
         showToast(`✅ ${devName}: ${detail.message || "PiP renderizado com sucesso!"}${metricInfo}`, "success", 6000);
       }

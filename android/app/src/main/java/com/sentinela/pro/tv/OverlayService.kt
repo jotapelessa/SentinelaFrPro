@@ -556,7 +556,7 @@ class OverlayService : Service() {
         }
 
         activePipCamera = resolvedCamera
-        val streamCamera = if (prefs.streamQuality == "720p" && !resolvedCamera.endsWith("_720p")) "${resolvedCamera}_720p" else resolvedCamera
+        val streamCamera = resolvedCamera
         val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
             "eco" -> "mode=mjpeg"
             "webrtc" -> "mode=webrtc"
@@ -787,23 +787,13 @@ class OverlayService : Service() {
                                         "    if (v.requestVideoFrameCallback) {" +
                                         "      v.requestVideoFrameCallback(onFrame);" +
                                         "    }" +
-                                        "    v.addEventListener('error', function() {" +
-                                        "      if (window.location.search.indexOf('_720p') !== -1) {" +
-                                        "        window.location.href = window.location.href.replace('_720p', '');" +
-                                        "      }" +
+                                        "    v.addEventListener('error', function(err) {" +
+                                        "      console.warn('Video stream error:', err);" +
                                         "    });" +
                                         "    if (v.paused) { v.play().catch(function(){}); }" +
                                         "  }" +
                                         "};" +
                                         "initVideo();" +
-                                        "if (window.location.search.indexOf('_720p') !== -1 && !window.__fallbackTimer) {" +
-                                        "  window.__fallbackTimer = setTimeout(function() {" +
-                                        "    var v = document.querySelector('video');" +
-                                        "    if (!v || v.readyState < 2 || v.currentTime === 0) {" +
-                                        "      window.location.href = window.location.href.replace('_720p', '');" +
-                                        "    }" +
-                                        "  }, 1800);" +
-                                        "}" +
                                         "if (!window.__metricsTimer) {" +
                                         "  window.__metricsTimer = setInterval(function() {" +
                                         "    var now = performance.now();" +
@@ -1040,17 +1030,25 @@ class OverlayService : Service() {
                 val prefs = SentinelaPreferences(this)
                 val qual = prefs.streamQuality
                 val cam = currentCam
+                val liveVideoDuration = if (pipTtffMs > 0 && actualDuration > (pipTtffMs / 1000.0)) {
+                    actualDuration - (pipTtffMs / 1000.0)
+                } else if (pipTtffMs > 0) {
+                    0.0
+                } else {
+                    actualDuration
+                }
                 val isClean = pipStallCount == 0 && pipDroppedFrames <= 5
                 SentinelaRemoteLogger.log(
                     category = "PIP",
                     action = "PIP_SESSION_METRICS",
                     severity = if (isClean) "SUCCESS" else "WARNING",
-                    message = "Resumo PiP [$cam | $qual]: TTFF=${pipTtffMs}ms, Dur=${String.format("%.1f", actualDuration)}s, FPS=${String.format("%.1f", pipAvgFps)} (mín ${String.format("%.1f", pipMinFps)}), Drops=${pipDroppedFrames}, Stalls=${pipStallCount}, Total=${pipTotalFramesRendered} frames",
+                    message = "Resumo PiP [$cam | $qual]: TTFF=${pipTtffMs}ms, DurTotal=${String.format("%.1f", actualDuration)}s, DurLive=${String.format("%.1f", liveVideoDuration)}s, FPS=${String.format("%.1f", pipAvgFps)} (mín ${String.format("%.1f", pipMinFps)}), Drops=${pipDroppedFrames}, Stalls=${pipStallCount}, Total=${pipTotalFramesRendered} frames",
                     metadata = mapOf(
                         "camera" to cam,
                         "stream_quality" to qual,
                         "ttff_ms" to pipTtffMs,
                         "duration_seconds" to actualDuration,
+                        "live_video_duration_seconds" to liveVideoDuration,
                         "avg_fps" to pipAvgFps,
                         "min_fps" to pipMinFps,
                         "dropped_frames" to pipDroppedFrames,
@@ -1072,9 +1070,10 @@ class OverlayService : Service() {
                             deviceIdentifier = prefs.deviceIdentifier,
                             testId = null,
                             success = true,
-                            message = "Sessão PiP finalizada: Dur=${String.format("%.1f", actualDuration)}s, FPS=${String.format("%.1f", pipAvgFps)}, Stalls=${pipStallCount}",
+                            message = "Sessão PiP finalizada: Dur=${String.format("%.1f", actualDuration)}s (Live=${String.format("%.1f", liveVideoDuration)}s), FPS=${String.format("%.1f", pipAvgFps)}, Stalls=${pipStallCount}",
                             dimensions = "",
                             durationSeconds = actualDuration.toInt().coerceAtLeast(1),
+                            liveVideoDurationSeconds = liveVideoDuration,
                             camera = cam,
                             streamQuality = qual,
                             ttffMs = pipTtffMs,

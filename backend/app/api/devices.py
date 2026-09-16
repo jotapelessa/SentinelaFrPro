@@ -911,6 +911,7 @@ class PipAckRequest(BaseModel):
     message: str = "PiP renderizado na tela com sucesso"
     dimensions: Optional[str] = None
     duration_seconds: Optional[int] = 10
+    live_video_duration_seconds: Optional[float] = None
     camera: Optional[str] = None
     stream_quality: Optional[str] = None
     ttff_ms: Optional[int] = None
@@ -927,11 +928,14 @@ async def receive_pip_ack(device_identifier: str, req: PipAckRequest):
     from app.services.pip_gateway import pip_gateway_service
     from app.api.ws import ws_manager
 
+    live_dur = req.live_video_duration_seconds if req.live_video_duration_seconds is not None else max(0.0, float(req.duration_seconds or 10) - (float(req.ttff_ms or 0) / 1000.0))
+
     metrics_dict = {
         "camera": req.camera or "camera_secundaria",
         "stream_quality": req.stream_quality or "1080p",
         "ttff_ms": req.ttff_ms or 0,
         "duration_seconds": req.duration_seconds or 10,
+        "live_video_duration_seconds": round(live_dur, 2),
         "avg_fps": req.avg_fps or 0.0,
         "min_fps": req.min_fps or 0.0,
         "dropped_frames": req.dropped_frames or 0,
@@ -967,7 +971,7 @@ async def receive_pip_ack(device_identifier: str, req: PipAckRequest):
     drops_text = f"Drops={req.dropped_frames or 0} | Stalls={req.stall_count or 0}"
     details_log = (
         f"PiP Preview Confirmado [{device_identifier}]: {ttff_text} | {fps_text} | "
-        f"Dur={req.duration_seconds}s | {drops_text} | Qualidade={req.stream_quality or '1080p'} | "
+        f"DurTotal={req.duration_seconds}s | DurLiveVideo={metrics_dict['live_video_duration_seconds']}s | {drops_text} | Qualidade={req.stream_quality or '1080p'} | "
         f"Decoder={req.decoder or 'MSE'} | Dim={req.dimensions or 'Default'}"
     )
 

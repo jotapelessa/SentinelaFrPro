@@ -329,6 +329,19 @@
       "source_location": "L22"
     },
     {
+      "id": "backend_app_core_logging_handler_memoryringbufferhandler",
+      "label": "MemoryRingBufferHandler",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "MemoryRingBufferHandler",
+      "file_type": "code",
+      "norm_label": "memoryringbufferhandler",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L19"
+    },
+    {
       "id": "backend_app_services_telegram_vault_telegramvaultservice",
       "label": "TelegramVaultService",
       "_callable": true,
@@ -511,19 +524,6 @@
       "source_location": "L25"
     },
     {
-      "id": "backend_app_db_models_eventrecord",
-      "label": "EventRecord",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "events.py",
-      "file_type": "code",
-      "norm_label": "eventrecord",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L35"
-    },
-    {
       "id": "backend_app_services_frigate_bridge_frigatebridgeservice",
       "label": "FrigateBridgeService",
       "_callable": true,
@@ -586,7 +586,7 @@
       "file_type": "code",
       "norm_label": "batchtestrequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1079"
+      "source_location": "L1083"
     },
     {
       "id": "backend_app_api_devices_deviceallowedcamerasupdate",
@@ -677,7 +677,7 @@
       "file_type": "code",
       "norm_label": "mastertogglerequest",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1088"
+      "source_location": "L1092"
     },
     {
       "id": "backend_app_api_devices_pipackrequest",
@@ -836,30 +836,17 @@
       "source_location": "L2887"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegrameventitem",
-      "label": "TelegramEventItem",
+      "id": "backend_app_services_mqtt_service_mqttservice",
+      "label": "MQTTService",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": "telegrameventitem",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L26"
-    },
-    {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue",
-      "label": "TelegramVideoQueue",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TelegramVideoQueue",
-      "file_type": "code",
-      "norm_label": "telegramvideoqueue",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L40"
+      "norm_label": "mqttservice",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L22"
     },
     {
       "id": "backend_app_services_telemetry_telemetryservice",
@@ -953,6 +940,32 @@
       "source_location": "L71"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169",
+      "label": "WebChromeClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webchromeclient",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L169"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175",
+      "label": "WebViewClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webviewclient",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L175"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_clientlogentry",
       "label": "ClientLogEntry",
       "_callable": true,
@@ -1005,19 +1018,6 @@
       "source_location": "L42"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65",
-      "label": "X509TrustManager",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "SentinelaRemoteLogger",
-      "file_type": "code",
-      "norm_label": "x509trustmanager",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L65"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_bandwidthsuiteresult",
       "label": "BandwidthSuiteResult",
       "_callable": true,
@@ -1068,6 +1068,19 @@
       "norm_label": "paireddeviceitem",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
       "source_location": "L121"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration",
+      "label": "PipDuration",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "pipduration",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L110"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_speedtestresult",
@@ -1148,6 +1161,19 @@
       "source_location": "L105"
     },
     {
+      "id": "backend_app_db_models_eventrecord",
+      "label": "EventRecord",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 37,
+      "community_name": "AuditLog",
+      "file_type": "code",
+      "norm_label": "eventrecord",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L35"
+    },
+    {
       "id": "backend_app_services_audit_service_auditservice",
       "label": "AuditService",
       "_callable": true,
@@ -1159,19 +1185,6 @@
       "norm_label": "auditservice",
       "source_file": "backend/app/services/audit_service.py",
       "source_location": "L9"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration",
-      "label": "PipDuration",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 38,
-      "community_name": "PipDuration",
-      "file_type": "code",
-      "norm_label": "pipduration",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L110"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_src_components_tv_kotlincodemodal_kotlincodemodalprops",
@@ -1408,17 +1421,30 @@
       "source_location": "L13"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice",
-      "label": "MQTTService",
+      "id": "backend_app_services_telegram_queue_telegrameventitem",
+      "label": "TelegramEventItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": "mqttservice",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L22"
+      "norm_label": "telegrameventitem",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L26"
+    },
+    {
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue",
+      "label": "TelegramVideoQueue",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "asyncio",
+      "file_type": "code",
+      "norm_label": "telegramvideoqueue",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L40"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_openconnection_object_x509trustmanager_l72",
@@ -1499,43 +1525,17 @@
       "source_location": "L80"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_auditlogentry",
-      "label": "AuditLogEntry",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65",
+      "label": "X509TrustManager",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "TvLogsViewport",
+      "community_name": "X509TrustManager",
       "file_type": "code",
-      "norm_label": "auditlogentry",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L62"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_clientdevicelogitem",
-      "label": "ClientDeviceLogItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "clientdevicelogitem",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1723"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_remotedeviceitem",
-      "label": "RemoteDeviceItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "remotedeviceitem",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L35"
+      "norm_label": "x509trustmanager",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
+      "source_location": "L65"
     },
     {
       "id": "frontend_src_utils_logger_loglevel",
@@ -1655,6 +1655,19 @@
       "source_location": "L3"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_auditlogentry",
+      "label": "AuditLogEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": "auditlogentry",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L62"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_singleconnectionresult",
       "label": "SingleConnectionResult",
       "_callable": true,
@@ -1666,6 +1679,32 @@
       "norm_label": "singleconnectionresult",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
       "source_location": "L150"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_clientdevicelogitem",
+      "label": "ClientDeviceLogItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": "clientdevicelogitem",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1725"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_remotedeviceitem",
+      "label": "RemoteDeviceItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": "remotedeviceitem",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L35"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_routetelemetry",
@@ -1704,20 +1743,7 @@
       "file_type": "code",
       "norm_label": "servicestatus",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1500"
-    },
-    {
-      "id": "backend_app_api_scanner_scanpayload",
-      "label": "ScanPayload",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "scanpayload",
-      "source_file": "backend/app/api/scanner.py",
-      "source_location": "L8"
+      "source_location": "L1502"
     },
     {
       "id": "backend_app_api_settings_dndconfigupdate",
@@ -1824,19 +1850,6 @@
       "source_location": "L36"
     },
     {
-      "id": "backend_app_core_logging_handler_memoryringbufferhandler",
-      "label": "MemoryRingBufferHandler",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "memoryringbufferhandler",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L19"
-    },
-    {
       "id": "backend_app_db_models_systemsetting",
       "label": "SystemSetting",
       "_callable": true,
@@ -1850,30 +1863,17 @@
       "source_location": "L86"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169",
-      "label": "WebChromeClient",
+      "id": "backend_app_api_scanner_scanpayload",
+      "label": "ScanPayload",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 76,
-      "community_name": "MseCameraView",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
-      "norm_label": "webchromeclient",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L169"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175",
-      "label": "WebViewClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webviewclient",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L175"
+      "norm_label": "scanpayload",
+      "source_file": "backend/app/api/scanner.py",
+      "source_location": "L8"
     },
     {
       "id": "backend_app_services_pip_gateway_pipgatewayservice",
@@ -2658,6 +2658,30 @@
       "source_location": "L53"
     },
     {
+      "id": "backend_app_core_logging_handler_mask_sensitive_data",
+      "label": "mask_sensitive_data()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "MemoryRingBufferHandler",
+      "file_type": "code",
+      "norm_label": "mask_sensitive_data()",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "backend_app_core_logging_handler_memoryringbufferhandler_emit",
+      "label": ".emit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "MemoryRingBufferHandler",
+      "file_type": "code",
+      "norm_label": ".emit()",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L21"
+    },
+    {
       "id": "backend_app_services_telegram_vault_telegramvaultservice_apply_watermark",
       "label": ".apply_watermark()",
       "_callable": true,
@@ -3066,6 +3090,18 @@
       "source_location": "L319"
     },
     {
+      "id": "backend_app_api_events_get_events_summary",
+      "label": "get_events_summary()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "get_events_summary()",
+      "source_file": "backend/app/api/events.py",
+      "source_location": "L173"
+    },
+    {
       "id": "backend_app_api_events_list_events",
       "label": "list_events()",
       "_callable": true,
@@ -3411,7 +3447,7 @@
       "file_type": "code",
       "norm_label": "device_diagnostics()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1005"
+      "source_location": "L1009"
     },
     {
       "id": "backend_app_api_devices_device_heartbeat",
@@ -3447,7 +3483,7 @@
       "file_type": "code",
       "norm_label": "execute_batch_test()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1167"
+      "source_location": "L1171"
     },
     {
       "id": "backend_app_api_devices_get_device_permitted_cameras",
@@ -3507,7 +3543,7 @@
       "file_type": "code",
       "norm_label": "receive_pip_ack()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L925"
+      "source_location": "L926"
     },
     {
       "id": "backend_app_api_devices_register_device",
@@ -3555,7 +3591,7 @@
       "file_type": "code",
       "norm_label": "test_pip()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L990"
+      "source_location": "L994"
     },
     {
       "id": "backend_app_api_devices_test_single_device",
@@ -3567,7 +3603,7 @@
       "file_type": "code",
       "norm_label": "test_single_device()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L984"
+      "source_location": "L988"
     },
     {
       "id": "backend_app_api_devices_toggle_device_master",
@@ -3579,7 +3615,7 @@
       "file_type": "code",
       "norm_label": "toggle_device_master()",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1094"
+      "source_location": "L1098"
     },
     {
       "id": "backend_app_api_devices_toggle_device_pip",
@@ -3724,6 +3760,18 @@
       "norm_label": ".getacceptedissuers()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt",
       "source_location": "L38"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_triggerpip",
+      "label": ".triggerPiP()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 22,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": ".triggerpip()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
+      "source_location": "L313"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardestabilidadedevideo",
@@ -3978,18 +4026,6 @@
       "source_location": "L252"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecamerastreamcard",
-      "label": "PhoneCameraStreamCard()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "phonecamerastreamcard()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L443"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecapturestab",
       "label": "PhoneCapturesTab()",
       "_callable": true,
@@ -4012,18 +4048,6 @@
       "norm_label": "phoneclipplayerdialog()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
       "source_location": "L2879"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonelivecamerastab",
-      "label": "PhoneLiveCamerasTab()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "phonelivecamerastab()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L345"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonelogstab",
@@ -4098,18 +4122,6 @@
       "source_location": "L137"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonezoomcameradialog",
-      "label": "PhoneZoomCameraDialog()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "SentinelaPreferences",
-      "file_type": "code",
-      "norm_label": "phonezoomcameradialog()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L2626"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_smartphoneyoutubescreen",
       "label": "SmartphoneYouTubeScreen()",
       "_callable": true,
@@ -4122,124 +4134,136 @@
       "source_location": "L66"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_cleanup_disk_item",
-      "label": "._cleanup_disk_item()",
+      "id": "backend_app_services_mqtt_service_mqttservice_broadcast_event",
+      "label": ".broadcast_event()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": "._cleanup_disk_item()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L334"
+      "norm_label": ".broadcast_event()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L47"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_enqueue_event",
-      "label": ".enqueue_event()",
+      "id": "backend_app_services_mqtt_service_mqttservice_dispatch_background_alert_tasks",
+      "label": "._dispatch_background_alert_tasks()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": ".enqueue_event()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L86"
+      "norm_label": "._dispatch_background_alert_tasks()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L256"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_fetch_clip_with_retries",
-      "label": "._fetch_clip_with_retries()",
+      "id": "backend_app_services_mqtt_service_mqttservice_dispatch_telegram_video_with_retry",
+      "label": "._dispatch_telegram_video_with_retry()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": "._fetch_clip_with_retries()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L249"
+      "norm_label": "._dispatch_telegram_video_with_retry()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L355"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_init",
+      "id": "backend_app_services_mqtt_service_mqttservice_get_mqtt_traffic",
+      "label": ".get_mqtt_traffic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "MQTTService",
+      "file_type": "code",
+      "norm_label": ".get_mqtt_traffic()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L41"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_get_telegram_policy",
+      "label": "._get_telegram_policy()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "MQTTService",
+      "file_type": "code",
+      "norm_label": "._get_telegram_policy()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L59"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_handle_frigate_event",
+      "label": ".handle_frigate_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "MQTTService",
+      "file_type": "code",
+      "norm_label": ".handle_frigate_event()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L106"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_init",
       "label": ".__init__()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
       "norm_label": ".__init__()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L51"
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L23"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_process_item",
-      "label": "._process_item()",
+      "id": "backend_app_services_mqtt_service_mqttservice_mark_processed",
+      "label": "._mark_processed()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": "._process_item()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L168"
+      "norm_label": "._mark_processed()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L56"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_recover_pending_events",
-      "label": "._recover_pending_events()",
+      "id": "backend_app_services_mqtt_service_mqttservice_record_mqtt_traffic",
+      "label": ".record_mqtt_traffic()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": "._recover_pending_events()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L69"
+      "norm_label": ".record_mqtt_traffic()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L31"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_start",
-      "label": ".start()",
+      "id": "backend_app_services_mqtt_service_mqttservice_register_ws_callback",
+      "label": ".register_ws_callback()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": ".start()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L57"
+      "norm_label": ".register_ws_callback()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L44"
     },
     {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_stop",
-      "label": ".stop()",
+      "id": "backend_app_services_mqtt_service_mqttservice_start_listening",
+      "label": ".start_listening()",
       "_callable": true,
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": ".stop()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L64"
-    },
-    {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_transcode_clean_video",
-      "label": "._transcode_clean_video()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TelegramVideoQueue",
-      "file_type": "code",
-      "norm_label": "._transcode_clean_video()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L273"
-    },
-    {
-      "id": "backend_app_services_telegram_queue_telegramvideoqueue_worker_loop",
-      "label": "._worker_loop()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TelegramVideoQueue",
-      "file_type": "code",
-      "norm_label": "._worker_loop()",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L155"
+      "norm_label": ".start_listening()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L400"
     },
     {
       "id": "backend_app_services_telemetry_telemetryservice_get_cpu_temperature",
@@ -4347,7 +4371,7 @@
       "file_type": "code",
       "norm_label": ".buildnotification()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1120"
+      "source_location": "L1119"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_createnotificationchannel",
@@ -4359,7 +4383,7 @@
       "file_type": "code",
       "norm_label": ".createnotificationchannel()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1108"
+      "source_location": "L1107"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_loadsnapshotwithfallbacks",
@@ -4395,7 +4419,7 @@
       "file_type": "code",
       "norm_label": ".onbind()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1106"
+      "source_location": "L1105"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_oncreate",
@@ -4419,7 +4443,7 @@
       "file_type": "code",
       "norm_label": ".ondestroy()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1099"
+      "source_location": "L1098"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_onstartcommand",
@@ -4443,7 +4467,7 @@
       "file_type": "code",
       "norm_label": ".removepip()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1008"
+      "source_location": "L998"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_showpip",
@@ -4506,18 +4530,6 @@
       "source_location": "L260"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_triggerpip",
-      "label": ".triggerPiP()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".triggerpip()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L313"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_pipmetricsbridge_reportmetrics",
       "label": ".reportMetrics()",
       "_callable": true,
@@ -4528,6 +4540,66 @@
       "norm_label": ".reportmetrics()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
       "source_location": "L74"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview",
+      "label": "MseCameraView()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "msecameraview()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L34"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169_onpermissionrequest",
+      "label": ".onPermissionRequest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": ".onpermissionrequest()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L170"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onpagefinished",
+      "label": ".onPageFinished()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": ".onpagefinished()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L185"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivederror",
+      "label": ".onReceivedError()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": ".onreceivederror()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L245"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
+      "label": ".onReceivedSslError()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": ".onreceivedsslerror()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L176"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_sentinelaremotelogger_flushbatch",
@@ -4590,42 +4662,6 @@
       "source_location": "L69"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkclienttrusted",
-      "label": ".checkClientTrusted()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "SentinelaRemoteLogger",
-      "file_type": "code",
-      "norm_label": ".checkclienttrusted()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L66"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkservertrusted",
-      "label": ".checkServerTrusted()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "SentinelaRemoteLogger",
-      "file_type": "code",
-      "norm_label": ".checkservertrusted()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L67"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_getacceptedissuers",
-      "label": ".getAcceptedIssuers()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "SentinelaRemoteLogger",
-      "file_type": "code",
-      "norm_label": ".getacceptedissuers()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L68"
-    },
-    {
       "id": "backend_app_services_audit_service_auditservice_log",
       "label": ".log()",
       "_callable": true,
@@ -4636,6 +4672,78 @@
       "norm_label": ".log()",
       "source_file": "backend/app/services/audit_service.py",
       "source_location": "L10"
+    },
+    {
+      "id": "backend_app_db_session_get_db",
+      "label": "get_db()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "FastAPI",
+      "file_type": "code",
+      "norm_label": "get_db()",
+      "source_file": "backend/app/db/session.py",
+      "source_location": "L28"
+    },
+    {
+      "id": "backend_app_db_session_init_db",
+      "label": "init_db()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "FastAPI",
+      "file_type": "code",
+      "norm_label": "init_db()",
+      "source_file": "backend/app/db/session.py",
+      "source_location": "L35"
+    },
+    {
+      "id": "backend_app_main_audit_http_requests",
+      "label": "audit_http_requests()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "FastAPI",
+      "file_type": "code",
+      "norm_label": "audit_http_requests()",
+      "source_file": "backend/app/main.py",
+      "source_location": "L86"
+    },
+    {
+      "id": "backend_app_main_health_check",
+      "label": "health_check()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "FastAPI",
+      "file_type": "code",
+      "norm_label": "health_check()",
+      "source_file": "backend/app/main.py",
+      "source_location": "L116"
+    },
+    {
+      "id": "backend_app_main_lifespan",
+      "label": "lifespan()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "FastAPI",
+      "file_type": "code",
+      "norm_label": "lifespan()",
+      "source_file": "backend/app/main.py",
+      "source_location": "L36"
+    },
+    {
+      "id": "backend_app_main_root",
+      "label": "root()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "FastAPI",
+      "file_type": "code",
+      "norm_label": "root()",
+      "source_file": "backend/app/main.py",
+      "source_location": "L124"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_src_app_app",
@@ -4902,79 +5010,43 @@
       "source_location": "L8"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_broadcast_event",
-      "label": ".broadcast_event()",
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_cleanup_disk_item",
+      "label": "._cleanup_disk_item()",
       "_callable": true,
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": ".broadcast_event()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L47"
+      "norm_label": "._cleanup_disk_item()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L334"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_dispatch_background_alert_tasks",
-      "label": "._dispatch_background_alert_tasks()",
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_enqueue_event",
+      "label": ".enqueue_event()",
       "_callable": true,
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": "._dispatch_background_alert_tasks()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L256"
+      "norm_label": ".enqueue_event()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L86"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_dispatch_telegram_video_with_retry",
-      "label": "._dispatch_telegram_video_with_retry()",
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_fetch_clip_with_retries",
+      "label": "._fetch_clip_with_retries()",
       "_callable": true,
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": "._dispatch_telegram_video_with_retry()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L355"
+      "norm_label": "._fetch_clip_with_retries()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L249"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_get_mqtt_traffic",
-      "label": ".get_mqtt_traffic()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".get_mqtt_traffic()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L41"
-    },
-    {
-      "id": "backend_app_services_mqtt_service_mqttservice_get_telegram_policy",
-      "label": "._get_telegram_policy()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": "._get_telegram_policy()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L59"
-    },
-    {
-      "id": "backend_app_services_mqtt_service_mqttservice_handle_frigate_event",
-      "label": ".handle_frigate_event()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 41,
-      "community_name": "asyncio",
-      "file_type": "code",
-      "norm_label": ".handle_frigate_event()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L106"
-    },
-    {
-      "id": "backend_app_services_mqtt_service_mqttservice_init",
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_init",
       "label": ".__init__()",
       "_callable": true,
       "_origin": "ast",
@@ -4982,56 +5054,80 @@
       "community_name": "asyncio",
       "file_type": "code",
       "norm_label": ".__init__()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L23"
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L51"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_mark_processed",
-      "label": "._mark_processed()",
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_process_item",
+      "label": "._process_item()",
       "_callable": true,
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": "._mark_processed()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L56"
+      "norm_label": "._process_item()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L168"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_record_mqtt_traffic",
-      "label": ".record_mqtt_traffic()",
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_recover_pending_events",
+      "label": "._recover_pending_events()",
       "_callable": true,
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": ".record_mqtt_traffic()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L31"
+      "norm_label": "._recover_pending_events()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L69"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_register_ws_callback",
-      "label": ".register_ws_callback()",
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_start",
+      "label": ".start()",
       "_callable": true,
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": ".register_ws_callback()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L44"
+      "norm_label": ".start()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L57"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_start_listening",
-      "label": ".start_listening()",
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_stop",
+      "label": ".stop()",
       "_callable": true,
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": ".start_listening()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L400"
+      "norm_label": ".stop()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L64"
+    },
+    {
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_transcode_clean_video",
+      "label": "._transcode_clean_video()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "asyncio",
+      "file_type": "code",
+      "norm_label": "._transcode_clean_video()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L273"
+    },
+    {
+      "id": "backend_app_services_telegram_queue_telegramvideoqueue_worker_loop",
+      "label": "._worker_loop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "asyncio",
+      "file_type": "code",
+      "norm_label": "._worker_loop()",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L155"
     },
     {
       "id": "backend_tests_test_backend_test_pip_dnd_check",
@@ -5130,52 +5226,40 @@
       "source_location": "L73"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getauditlogs",
-      "label": ".getAuditLogs()",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkclienttrusted",
+      "label": ".checkClientTrusted()",
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "TvLogsViewport",
+      "community_name": "X509TrustManager",
       "file_type": "code",
-      "norm_label": ".getauditlogs()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L582"
+      "norm_label": ".checkclienttrusted()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
+      "source_location": "L66"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
-      "label": ".getClientLogs()",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkservertrusted",
+      "label": ".checkServerTrusted()",
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "TvLogsViewport",
+      "community_name": "X509TrustManager",
       "file_type": "code",
-      "norm_label": ".getclientlogs()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1654"
+      "norm_label": ".checkservertrusted()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
+      "source_location": "L67"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
-      "label": ".pingServer()",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_getacceptedissuers",
+      "label": ".getAcceptedIssuers()",
       "_callable": true,
       "_origin": "ast",
       "community": 46,
-      "community_name": "TvLogsViewport",
+      "community_name": "X509TrustManager",
       "file_type": "code",
-      "norm_label": ".pingserver()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1316"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvlogsviewport",
-      "label": "TvLogsViewport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "tvlogsviewport()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2690"
+      "norm_label": ".getacceptedissuers()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
+      "source_location": "L68"
     },
     {
       "id": "frontend_src_utils_logger_formattimestamp",
@@ -5562,6 +5646,42 @@
       "source_location": "L36"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonecamerastreamcard",
+      "label": "PhoneCameraStreamCard()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "CameraItem",
+      "file_type": "code",
+      "norm_label": "phonecamerastreamcard()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
+      "source_location": "L443"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonelivecamerastab",
+      "label": "PhoneLiveCamerasTab()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "CameraItem",
+      "file_type": "code",
+      "norm_label": "phonelivecamerastab()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
+      "source_location": "L345"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonezoomcameradialog",
+      "label": "PhoneZoomCameraDialog()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "CameraItem",
+      "file_type": "code",
+      "norm_label": "phonezoomcameradialog()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
+      "source_location": "L2626"
+    },
+    {
       "id": "opencode_plugins_graphify_graphifyplugin",
       "label": "GraphifyPlugin()",
       "_callable": true,
@@ -5583,7 +5703,7 @@
       "file_type": "code",
       "norm_label": ".checkserviceshealth()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1502"
+      "source_location": "L1504"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_cleanstorage",
@@ -5607,7 +5727,7 @@
       "file_type": "code",
       "norm_label": ".discovernetworkdevices()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1534"
+      "source_location": "L1536"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_executebatchtest",
@@ -5620,6 +5740,18 @@
       "norm_label": ".executebatchtest()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L1372"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getauditlogs",
+      "label": ".getAuditLogs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": ".getauditlogs()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L582"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getcameras",
@@ -5644,6 +5776,18 @@
       "norm_label": ".getcaptures()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L373"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
+      "label": ".getClientLogs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": ".getclientlogs()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1656"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getdevicemacaddress",
@@ -5739,7 +5883,19 @@
       "file_type": "code",
       "norm_label": ".pausealerts()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1562"
+      "source_location": "L1564"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
+      "label": ".pingServer()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": ".pingserver()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1316"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pushlocalsettingstoserver",
@@ -5799,7 +5955,7 @@
       "file_type": "code",
       "norm_label": ".resumealerts()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1584"
+      "source_location": "L1586"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
@@ -5835,7 +5991,7 @@
       "file_type": "code",
       "norm_label": ".sendclientlogsbatch()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1602"
+      "source_location": "L1604"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendpipack",
@@ -5910,6 +6066,18 @@
       "source_location": "L1231"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvlogsviewport",
+      "label": "TvLogsViewport()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": "tvlogsviewport()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2690"
+    },
+    {
       "id": "frontend_src_app_settings_backup_page_backupsettingspage",
       "label": "BackupSettingsPage()",
       "_callable": true,
@@ -5956,18 +6124,6 @@
       "norm_label": "telegramsettingspage()",
       "source_file": "frontend/src/app/settings/telegram/page.tsx",
       "source_location": "L30"
-    },
-    {
-      "id": "backend_app_api_scanner_trigger_network_scan",
-      "label": "trigger_network_scan()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "trigger_network_scan()",
-      "source_file": "backend/app/api/scanner.py",
-      "source_location": "L12"
     },
     {
       "id": "backend_app_api_settings_cached_dir_size",
@@ -6222,160 +6378,16 @@
       "source_location": "L94"
     },
     {
-      "id": "backend_app_core_logging_handler_mask_sensitive_data",
-      "label": "mask_sensitive_data()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "mask_sensitive_data()",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L14"
-    },
-    {
-      "id": "backend_app_core_logging_handler_memoryringbufferhandler_emit",
-      "label": ".emit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": ".emit()",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L21"
-    },
-    {
-      "id": "backend_app_db_session_get_db",
-      "label": "get_db()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "get_db()",
-      "source_file": "backend/app/db/session.py",
-      "source_location": "L28"
-    },
-    {
-      "id": "backend_app_db_session_init_db",
-      "label": "init_db()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "init_db()",
-      "source_file": "backend/app/db/session.py",
-      "source_location": "L35"
-    },
-    {
-      "id": "backend_app_main_audit_http_requests",
-      "label": "audit_http_requests()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "audit_http_requests()",
-      "source_file": "backend/app/main.py",
-      "source_location": "L86"
-    },
-    {
-      "id": "backend_app_main_health_check",
-      "label": "health_check()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "health_check()",
-      "source_file": "backend/app/main.py",
-      "source_location": "L116"
-    },
-    {
-      "id": "backend_app_main_lifespan",
-      "label": "lifespan()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "lifespan()",
-      "source_file": "backend/app/main.py",
-      "source_location": "L36"
-    },
-    {
-      "id": "backend_app_main_root",
-      "label": "root()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "root()",
-      "source_file": "backend/app/main.py",
-      "source_location": "L124"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview",
-      "label": "MseCameraView()",
+      "id": "backend_app_api_scanner_trigger_network_scan",
+      "label": "trigger_network_scan()",
       "_callable": true,
       "_origin": "ast",
       "community": 76,
-      "community_name": "MseCameraView",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
-      "norm_label": "msecameraview()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L34"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169_onpermissionrequest",
-      "label": ".onPermissionRequest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": ".onpermissionrequest()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L170"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onpagefinished",
-      "label": ".onPageFinished()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": ".onpagefinished()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L185"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivederror",
-      "label": ".onReceivedError()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": ".onreceivederror()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L245"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
-      "label": ".onReceivedSslError()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": ".onreceivedsslerror()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L176"
+      "norm_label": "trigger_network_scan()",
+      "source_file": "backend/app/api/scanner.py",
+      "source_location": "L12"
     },
     {
       "id": "backend_app_services_pip_gateway_cast_sync",
@@ -6508,18 +6520,6 @@
       "norm_label": "get_event_snapshot()",
       "source_file": "backend/app/api/events.py",
       "source_location": "L581"
-    },
-    {
-      "id": "backend_app_api_events_get_events_summary",
-      "label": "get_events_summary()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "get_audit_trail",
-      "file_type": "code",
-      "norm_label": "get_events_summary()",
-      "source_file": "backend/app/api/events.py",
-      "source_location": "L173"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_mobile_nvr_src_app_app",
@@ -7141,7 +7141,7 @@
       "file_type": "code",
       "norm_label": "app_codename",
       "source_file": "frontend/src/constants/version.ts",
-      "source_location": "L7"
+      "source_location": "L8"
     },
     {
       "id": "frontend_src_constants_version_app_version",
@@ -7153,6 +7153,17 @@
       "norm_label": "app_version",
       "source_file": "frontend/src/constants/version.ts",
       "source_location": "L5"
+    },
+    {
+      "id": "frontend_src_constants_version_build_number",
+      "label": "BUILD_NUMBER",
+      "_origin": "ast",
+      "community": 1,
+      "community_name": "useSentinelaStore",
+      "file_type": "code",
+      "norm_label": "build_number",
+      "source_file": "frontend/src/constants/version.ts",
+      "source_location": "L7"
     },
     {
       "id": "frontend_src_store_usesentinelastore",
@@ -7428,6 +7439,39 @@
       "norm_label": "sentinelawebsocket.kt",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt",
       "source_location": "L1"
+    },
+    {
+      "id": "backend_app_core_logging_handler",
+      "label": "logging_handler.py",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "MemoryRingBufferHandler",
+      "file_type": "code",
+      "norm_label": "logging_handler.py",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "logrecord",
+      "label": "LogRecord",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "MemoryRingBufferHandler",
+      "file_type": "code",
+      "norm_label": "logrecord",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_core_logging_handler_rationale_20",
+      "label": "Captures all logging records in memory for real-time API streaming.",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "MemoryRingBufferHandler",
+      "file_type": "rationale",
+      "norm_label": "captures all logging records in memory for real-time api streaming.",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L20"
     },
     {
       "id": "backend_app_services_telegram_vault",
@@ -8761,6 +8805,17 @@
       "source_location": ""
     },
     {
+      "id": "backend_app_api_events_rationale_174",
+      "label": "Returns real-time analytics summary directly from Frigate NVR.",
+      "_origin": "ast",
+      "community": 16,
+      "community_name": "events.py",
+      "file_type": "rationale",
+      "norm_label": "returns real-time analytics summary directly from frigate nvr.",
+      "source_file": "backend/app/api/events.py",
+      "source_location": "L174"
+    },
+    {
       "id": "backend_app_api_events_rationale_186",
       "label": "Deep synchronization of historical events from Frigate NVR into Sentinela.",
       "_origin": "ast",
@@ -9420,7 +9475,7 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_api_devices_rationale_1100",
+      "id": "backend_app_api_devices_rationale_1104",
       "label": "Toggles Master Admin rights for a smartphone device with debounce and\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9428,10 +9483,10 @@
       "file_type": "rationale",
       "norm_label": "toggles master admin rights for a smartphone device with debounce and...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1100"
+      "source_location": "L1104"
     },
     {
-      "id": "backend_app_api_devices_rationale_1168",
+      "id": "backend_app_api_devices_rationale_1172",
       "label": "Executes batch tests across multiple or all devices simultaneously.",
       "_origin": "ast",
       "community": 2,
@@ -9439,7 +9494,7 @@
       "file_type": "rationale",
       "norm_label": "executes batch tests across multiple or all devices simultaneously.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1168"
+      "source_location": "L1172"
     },
     {
       "id": "backend_app_api_devices_rationale_164",
@@ -9552,7 +9607,7 @@
       "source_location": "L891"
     },
     {
-      "id": "backend_app_api_devices_rationale_926",
+      "id": "backend_app_api_devices_rationale_927",
       "label": "Receives physical execution confirmation and rich telemetry from the Android TV\u2026",
       "_origin": "ast",
       "community": 2,
@@ -9560,10 +9615,10 @@
       "file_type": "rationale",
       "norm_label": "receives physical execution confirmation and rich telemetry from the android tv...",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L926"
+      "source_location": "L927"
     },
     {
-      "id": "backend_app_api_devices_rationale_985",
+      "id": "backend_app_api_devices_rationale_989",
       "label": "Triggers an interactive PiP test to this single TV with the selected camera.",
       "_origin": "ast",
       "community": 2,
@@ -9571,10 +9626,10 @@
       "file_type": "rationale",
       "norm_label": "triggers an interactive pip test to this single tv with the selected camera.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L985"
+      "source_location": "L989"
     },
     {
-      "id": "backend_app_api_devices_rationale_991",
+      "id": "backend_app_api_devices_rationale_995",
       "label": "Triggers a broadcast PiP test to all active TVs.",
       "_origin": "ast",
       "community": 2,
@@ -9582,7 +9637,7 @@
       "file_type": "rationale",
       "norm_label": "triggers a broadcast pip test to all active tvs.",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L991"
+      "source_location": "L995"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_tsconfig",
@@ -10025,92 +10080,48 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_services_telegram_queue",
-      "label": "telegram_queue.py",
+      "id": "backend_app_services_mqtt_service_py_any",
+      "label": "Any",
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "code",
-      "norm_label": "telegram_queue.py",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L1"
+      "norm_label": "any",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "backend_app_services_telegram_queue_rationale_156",
-      "label": "Worker that sequentially consumes video alert tasks one at a time.",
+      "id": "backend_app_services_mqtt_service_rationale_266",
+      "label": "Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast\u2026",
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "rationale",
-      "norm_label": "worker that sequentially consumes video alert tasks one at a time.",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L156"
+      "norm_label": "asynchronously handles telegram photo dispatch, db logging, and chromecast...",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L266"
     },
     {
-      "id": "backend_app_services_telegram_queue_rationale_169",
-      "label": "Processes a single event item: waits for segments, fetches MP4, transcodes\u2026",
+      "id": "backend_app_services_mqtt_service_rationale_401",
+      "label": "Connects to MQTT and runs consumer loop with automatic reconnection.",
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "rationale",
-      "norm_label": "processes a single event item: waits for segments, fetches mp4, transcodes...",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L169"
+      "norm_label": "connects to mqtt and runs consumer loop with automatic reconnection.",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L401"
     },
     {
-      "id": "backend_app_services_telegram_queue_rationale_250",
-      "label": "Tries to download the extended range clip from Frigate with incremental delays.",
+      "id": "backend_app_services_mqtt_service_rationale_60",
+      "label": "Dynamically loads live Telegram settings with 30s in-memory cache.",
       "_origin": "ast",
       "community": 24,
-      "community_name": "TelegramVideoQueue",
+      "community_name": "MQTTService",
       "file_type": "rationale",
-      "norm_label": "tries to download the extended range clip from frigate with incremental delays.",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L250"
-    },
-    {
-      "id": "backend_app_services_telegram_queue_rationale_274",
-      "label": "FFmpeg pipeline specifically engineered to fix color blotches, green frames,\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TelegramVideoQueue",
-      "file_type": "rationale",
-      "norm_label": "ffmpeg pipeline specifically engineered to fix color blotches, green frames,...",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L274"
-    },
-    {
-      "id": "backend_app_services_telegram_queue_rationale_41",
-      "label": "Sequential Disk-Buffered Video Processing Queue for Telegram Alerts.\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TelegramVideoQueue",
-      "file_type": "rationale",
-      "norm_label": "sequential disk-buffered video processing queue for telegram alerts....",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L41"
-    },
-    {
-      "id": "backend_app_services_telegram_queue_rationale_70",
-      "label": "Recovers any pending disk-buffered events from /tmp/event_queue/ upon startup.",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TelegramVideoQueue",
-      "file_type": "rationale",
-      "norm_label": "recovers any pending disk-buffered events from /tmp/event_queue/ upon startup.",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L70"
-    },
-    {
-      "id": "backend_app_services_telegram_queue_rationale_97",
-      "label": "Calculates the Golden Duration window (5s pre + min 10s det + 5s post = MIN\u2026",
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "TelegramVideoQueue",
-      "file_type": "rationale",
-      "norm_label": "calculates the golden duration window (5s pre + min 10s det + 5s post = min...",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L97"
+      "norm_label": "dynamically loads live telegram settings with 30s in-memory cache.",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L60"
     },
     {
       "id": "frontend_package",
@@ -11352,6 +11363,94 @@
       "source_location": ""
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
+      "label": "MseCameraView.kt",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "msecameraview.kt",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L1"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
+      "label": "android",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "android",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
+      "label": "Modifier",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "modifier",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_permissionrequest",
+      "label": "PermissionRequest",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "permissionrequest",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_sslerrorhandler",
+      "label": "SslErrorHandler",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "sslerrorhandler",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webchromeclient",
+      "label": "WebChromeClient",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webchromeclient",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webview",
+      "label": "WebView",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webview",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webviewclient",
+      "label": "WebViewClient",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webviewclient",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "broadcastreceiver",
       "label": "BroadcastReceiver",
       "_origin": "ast",
@@ -11447,6 +11546,28 @@
       "community_name": "OverlayService",
       "file_type": "code",
       "norm_label": "view",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "webresourceerror",
+      "label": "WebResourceError",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webresourceerror",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "webresourcerequest",
+      "label": "WebResourceRequest",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webresourcerequest",
       "source_file": "",
       "source_location": ""
     },
@@ -11592,28 +11713,6 @@
       "norm_label": "warning",
       "source_file": "android/app/src/main/java/com/sentinela/pro/logging/SentinelaRemoteLogger.kt",
       "source_location": "L22"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_java",
-      "label": "java",
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "SentinelaRemoteLogger",
-      "file_type": "code",
-      "norm_label": "java",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_x509trustmanager",
-      "label": "X509TrustManager",
-      "_origin": "ast",
-      "community": 30,
-      "community_name": "SentinelaRemoteLogger",
-      "file_type": "code",
-      "norm_label": "x509trustmanager",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "docs_arquitetura_e_api",
@@ -12655,6 +12754,94 @@
       "source_location": "L145"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_10s",
+      "label": "D_10S",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "d_10s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L112"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_15s",
+      "label": "D_15S",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "d_15s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L113"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_20s",
+      "label": "D_20S",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "d_20s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L114"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_30s",
+      "label": "D_30S",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "d_30s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L115"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_45s",
+      "label": "D_45S",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "d_45s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L116"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_5s",
+      "label": "D_5S",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "d_5s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L111"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_60s",
+      "label": "D_60S",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "d_60s",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L117"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_infinite",
+      "label": "INFINITE",
+      "_origin": "ast",
+      "community": 35,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": "infinite",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L118"
+    },
+    {
       "id": "frontend_public_manifest",
       "label": "manifest.json",
       "_origin": "ast",
@@ -12809,92 +12996,70 @@
       "source_location": "L18"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_10s",
-      "label": "D_10S",
+      "id": "backend_app_db_session",
+      "label": "session.py",
       "_origin": "ast",
       "community": 38,
-      "community_name": "PipDuration",
+      "community_name": "FastAPI",
       "file_type": "code",
-      "norm_label": "d_10s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L112"
+      "norm_label": "session.py",
+      "source_file": "backend/app/db/session.py",
+      "source_location": "L1"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_15s",
-      "label": "D_15S",
+      "id": "backend_app_main",
+      "label": "main.py",
       "_origin": "ast",
       "community": 38,
-      "community_name": "PipDuration",
+      "community_name": "FastAPI",
       "file_type": "code",
-      "norm_label": "d_15s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L113"
+      "norm_label": "main.py",
+      "source_file": "backend/app/main.py",
+      "source_location": "L1"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_20s",
-      "label": "D_20S",
+      "id": "backend_app_main_py_get",
+      "label": "get",
       "_origin": "ast",
       "community": 38,
-      "community_name": "PipDuration",
+      "community_name": "FastAPI",
       "file_type": "code",
-      "norm_label": "d_20s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L114"
+      "norm_label": "get",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_30s",
-      "label": "D_30S",
+      "id": "backend_app_main_py_request",
+      "label": "Request",
       "_origin": "ast",
       "community": 38,
-      "community_name": "PipDuration",
+      "community_name": "FastAPI",
       "file_type": "code",
-      "norm_label": "d_30s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L115"
+      "norm_label": "request",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_45s",
-      "label": "D_45S",
+      "id": "fastapi",
+      "label": "FastAPI",
       "_origin": "ast",
       "community": 38,
-      "community_name": "PipDuration",
+      "community_name": "FastAPI",
       "file_type": "code",
-      "norm_label": "d_45s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L116"
+      "norm_label": "fastapi",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_5s",
-      "label": "D_5S",
+      "id": "middleware",
+      "label": "middleware",
       "_origin": "ast",
       "community": 38,
-      "community_name": "PipDuration",
+      "community_name": "FastAPI",
       "file_type": "code",
-      "norm_label": "d_5s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L111"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_d_60s",
-      "label": "D_60S",
-      "_origin": "ast",
-      "community": 38,
-      "community_name": "PipDuration",
-      "file_type": "code",
-      "norm_label": "d_60s",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L117"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipduration_infinite",
-      "label": "INFINITE",
-      "_origin": "ast",
-      "community": 38,
-      "community_name": "PipDuration",
-      "file_type": "code",
-      "norm_label": "infinite",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L118"
+      "norm_label": "middleware",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "android_gradlew",
@@ -13385,15 +13550,15 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_app_services_mqtt_service_py_any",
-      "label": "Any",
+      "id": "backend_app_services_telegram_queue",
+      "label": "telegram_queue.py",
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": "any",
-      "source_file": "",
-      "source_location": ""
+      "norm_label": "telegram_queue.py",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L1"
     },
     {
       "id": "backend_tests_test_backend",
@@ -13451,37 +13616,81 @@
       "source_location": "L14"
     },
     {
-      "id": "backend_app_services_mqtt_service_rationale_266",
-      "label": "Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast\u2026",
+      "id": "backend_app_services_telegram_queue_rationale_156",
+      "label": "Worker that sequentially consumes video alert tasks one at a time.",
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "rationale",
-      "norm_label": "asynchronously handles telegram photo dispatch, db logging, and chromecast...",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L266"
+      "norm_label": "worker that sequentially consumes video alert tasks one at a time.",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L156"
     },
     {
-      "id": "backend_app_services_mqtt_service_rationale_401",
-      "label": "Connects to MQTT and runs consumer loop with automatic reconnection.",
+      "id": "backend_app_services_telegram_queue_rationale_169",
+      "label": "Processes a single event item: waits for segments, fetches MP4, transcodes\u2026",
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "rationale",
-      "norm_label": "connects to mqtt and runs consumer loop with automatic reconnection.",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L401"
+      "norm_label": "processes a single event item: waits for segments, fetches mp4, transcodes...",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L169"
     },
     {
-      "id": "backend_app_services_mqtt_service_rationale_60",
-      "label": "Dynamically loads live Telegram settings with 30s in-memory cache.",
+      "id": "backend_app_services_telegram_queue_rationale_250",
+      "label": "Tries to download the extended range clip from Frigate with incremental delays.",
       "_origin": "ast",
       "community": 41,
       "community_name": "asyncio",
       "file_type": "rationale",
-      "norm_label": "dynamically loads live telegram settings with 30s in-memory cache.",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L60"
+      "norm_label": "tries to download the extended range clip from frigate with incremental delays.",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L250"
+    },
+    {
+      "id": "backend_app_services_telegram_queue_rationale_274",
+      "label": "FFmpeg pipeline specifically engineered to fix color blotches, green frames,\u2026",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "asyncio",
+      "file_type": "rationale",
+      "norm_label": "ffmpeg pipeline specifically engineered to fix color blotches, green frames,...",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L274"
+    },
+    {
+      "id": "backend_app_services_telegram_queue_rationale_41",
+      "label": "Sequential Disk-Buffered Video Processing Queue for Telegram Alerts.\u2026",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "asyncio",
+      "file_type": "rationale",
+      "norm_label": "sequential disk-buffered video processing queue for telegram alerts....",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L41"
+    },
+    {
+      "id": "backend_app_services_telegram_queue_rationale_70",
+      "label": "Recovers any pending disk-buffered events from /tmp/event_queue/ upon startup.",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "asyncio",
+      "file_type": "rationale",
+      "norm_label": "recovers any pending disk-buffered events from /tmp/event_queue/ upon startup.",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L70"
+    },
+    {
+      "id": "backend_app_services_telegram_queue_rationale_97",
+      "label": "Calculates the Golden Duration window (5s pre + min 10s det + 5s post = MIN\u2026",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "asyncio",
+      "file_type": "rationale",
+      "norm_label": "calculates the golden duration window (5s pre + min 10s det + 5s post = min...",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L97"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_java",
@@ -13677,46 +13886,24 @@
       "source_location": "L1"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository",
-      "label": "SentinelaRepository.kt",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_java",
+      "label": "java",
       "_origin": "ast",
       "community": 46,
-      "community_name": "TvLogsViewport",
+      "community_name": "X509TrustManager",
       "file_type": "code",
-      "norm_label": "sentinelarepository.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_context",
-      "label": "Context",
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "context",
+      "norm_label": "java",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "httpurlconnection",
-      "label": "HttpURLConnection",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_x509trustmanager",
+      "label": "X509TrustManager",
       "_origin": "ast",
       "community": 46,
-      "community_name": "TvLogsViewport",
+      "community_name": "X509TrustManager",
       "file_type": "code",
-      "norm_label": "httpurlconnection",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "url",
-      "label": "URL",
-      "_origin": "ast",
-      "community": 46,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "url",
+      "norm_label": "x509trustmanager",
       "source_file": "",
       "source_location": ""
     },
@@ -14554,6 +14741,17 @@
       "source_location": "L1"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository",
+      "label": "SentinelaRepository.kt",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": "sentinelarepository.kt",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_com",
       "label": "com",
       "_origin": "ast",
@@ -14561,6 +14759,28 @@
       "community_name": "SentinelaRepository",
       "file_type": "code",
       "norm_label": "com",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_context",
+      "label": "Context",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": "context",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "httpurlconnection",
+      "label": "HttpURLConnection",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": "httpurlconnection",
       "source_file": "",
       "source_location": ""
     },
@@ -14583,6 +14803,17 @@
       "community_name": "SentinelaRepository",
       "file_type": "code",
       "norm_label": "telemetrydata",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "url",
+      "label": "URL",
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": "url",
       "source_file": "",
       "source_location": ""
     },
@@ -14790,39 +15021,6 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_app_api_scanner",
-      "label": "scanner.py",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "scanner.py",
-      "source_file": "backend/app/api/scanner.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_api_scanner_py_basemodel",
-      "label": "BaseModel",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "basemodel",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_scanner_py_post",
-      "label": "post",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "post",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "backend_app_api_settings",
       "label": "settings.py",
       "_origin": "ast",
@@ -14887,105 +15085,6 @@
       "norm_label": "request",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_app_core_logging_handler",
-      "label": "logging_handler.py",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "logging_handler.py",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_db_session",
-      "label": "session.py",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "session.py",
-      "source_file": "backend/app/db/session.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_main",
-      "label": "main.py",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "main.py",
-      "source_file": "backend/app/main.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_main_py_get",
-      "label": "get",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "get",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_main_py_request",
-      "label": "Request",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "fastapi",
-      "label": "FastAPI",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "fastapi",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "logrecord",
-      "label": "LogRecord",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "logrecord",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "middleware",
-      "label": "middleware",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "middleware",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_scanner_rationale_13",
-      "label": "Triggers concurrent ONVIF Discovery and verified CCTV port scanner.",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "rationale",
-      "norm_label": "triggers concurrent onvif discovery and verified cctv port scanner.",
-      "source_file": "backend/app/api/scanner.py",
-      "source_location": "L13"
     },
     {
       "id": "backend_app_api_settings_rationale_197",
@@ -15085,17 +15184,6 @@
       "norm_label": "cleans old non-retained recordings and/or snapshots from ubuntu server ssd...",
       "source_file": "backend/app/api/settings.py",
       "source_location": "L689"
-    },
-    {
-      "id": "backend_app_core_logging_handler_rationale_20",
-      "label": "Captures all logging records in memory for real-time API streaming.",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "settings.py",
-      "file_type": "rationale",
-      "norm_label": "captures all logging records in memory for real-time api streaming.",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L20"
     },
     {
       "id": "scripts_setup_ubuntu",
@@ -15202,114 +15290,48 @@
       "source_location": "L1"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
-      "label": "MseCameraView.kt",
+      "id": "backend_app_api_scanner",
+      "label": "scanner.py",
       "_origin": "ast",
       "community": 76,
-      "community_name": "MseCameraView",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
-      "norm_label": "msecameraview.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "norm_label": "scanner.py",
+      "source_file": "backend/app/api/scanner.py",
       "source_location": "L1"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
-      "label": "android",
+      "id": "backend_app_api_scanner_py_basemodel",
+      "label": "BaseModel",
       "_origin": "ast",
       "community": 76,
-      "community_name": "MseCameraView",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
-      "norm_label": "android",
+      "norm_label": "basemodel",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
-      "label": "Modifier",
+      "id": "backend_app_api_scanner_py_post",
+      "label": "post",
       "_origin": "ast",
       "community": 76,
-      "community_name": "MseCameraView",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
-      "norm_label": "modifier",
+      "norm_label": "post",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_permissionrequest",
-      "label": "PermissionRequest",
+      "id": "backend_app_api_scanner_rationale_13",
+      "label": "Triggers concurrent ONVIF Discovery and verified CCTV port scanner.",
       "_origin": "ast",
       "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "permissionrequest",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_sslerrorhandler",
-      "label": "SslErrorHandler",
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "sslerrorhandler",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webchromeclient",
-      "label": "WebChromeClient",
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webchromeclient",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webview",
-      "label": "WebView",
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webview",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webviewclient",
-      "label": "WebViewClient",
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webviewclient",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "webresourceerror",
-      "label": "WebResourceError",
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webresourceerror",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "webresourcerequest",
-      "label": "WebResourceRequest",
-      "_origin": "ast",
-      "community": 76,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webresourcerequest",
-      "source_file": "",
-      "source_location": ""
+      "community_name": "trigger_network_scan",
+      "file_type": "rationale",
+      "norm_label": "triggers concurrent onvif discovery and verified cctv port scanner.",
+      "source_file": "backend/app/api/scanner.py",
+      "source_location": "L13"
     },
     {
       "id": "backend_app_services_pip_gateway",
@@ -15420,17 +15442,6 @@
       "norm_label": "head",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_app_api_events_rationale_174",
-      "label": "Returns real-time analytics summary directly from Frigate NVR.",
-      "_origin": "ast",
-      "community": 78,
-      "community_name": "get_audit_trail",
-      "file_type": "rationale",
-      "norm_label": "returns real-time analytics summary directly from frigate nvr.",
-      "source_file": "backend/app/api/events.py",
-      "source_location": "L174"
     },
     {
       "id": "backend_app_api_events_rationale_410",
@@ -16692,7 +16703,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L485"
+      "source_location": "L494"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -17198,7 +17209,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1515",
+      "source_location": "L1517",
       "weight": 1.0
     },
     {
@@ -17210,7 +17221,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1529",
+      "source_location": "L1531",
       "weight": 1.0
     },
     {
@@ -17234,7 +17245,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1538",
+      "source_location": "L1540",
       "weight": 1.0
     },
     {
@@ -17342,7 +17353,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1674",
+      "source_location": "L1676",
       "weight": 1.0
     },
     {
@@ -17354,7 +17365,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1699",
+      "source_location": "L1701",
       "weight": 1.0
     },
     {
@@ -17462,7 +17473,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1565",
+      "source_location": "L1567",
       "weight": 1.0
     },
     {
@@ -17570,7 +17581,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1587",
+      "source_location": "L1589",
       "weight": 1.0
     },
     {
@@ -17654,7 +17665,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1611",
+      "source_location": "L1613",
       "weight": 1.0
     },
     {
@@ -17666,7 +17677,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1466",
+      "source_location": "L1467",
       "weight": 1.0
     },
     {
@@ -17882,7 +17893,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1102",
+      "source_location": "L1101",
       "weight": 1.0
     },
     {
@@ -17906,7 +17917,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1040",
+      "source_location": "L1030",
       "weight": 1.0
     },
     {
@@ -20654,7 +20665,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1004",
+      "source_location": "L1008",
       "weight": 1.0
     },
     {
@@ -20690,7 +20701,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1166",
+      "source_location": "L1170",
       "weight": 1.0
     },
     {
@@ -20750,7 +20761,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L924",
+      "source_location": "L925",
       "weight": 1.0
     },
     {
@@ -20798,7 +20809,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L989",
+      "source_location": "L993",
       "weight": 1.0
     },
     {
@@ -20810,7 +20821,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L983",
+      "source_location": "L987",
       "weight": 1.0
     },
     {
@@ -20822,7 +20833,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1093",
+      "source_location": "L1097",
       "weight": 1.0
     },
     {
@@ -21938,7 +21949,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1602",
+      "source_location": "L1604",
       "weight": 1.0
     },
     {
@@ -22178,7 +22189,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L984",
+      "source_location": "L988",
       "weight": 1.0
     },
     {
@@ -22190,7 +22201,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1094",
+      "source_location": "L1098",
       "weight": 1.0
     },
     {
@@ -27668,7 +27679,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1106",
+      "source_location": "L1105",
       "weight": 1.0
     },
     {
@@ -28760,7 +28771,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1005",
+      "source_location": "L1009",
       "weight": 1.0
     },
     {
@@ -28820,7 +28831,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1167",
+      "source_location": "L1171",
       "weight": 1.0
     },
     {
@@ -28832,7 +28843,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1167",
+      "source_location": "L1171",
       "weight": 1.0
     },
     {
@@ -28844,7 +28855,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1167",
+      "source_location": "L1171",
       "weight": 1.0
     },
     {
@@ -28928,7 +28939,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L925",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -29036,7 +29047,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L990",
+      "source_location": "L994",
       "weight": 1.0
     },
     {
@@ -29048,7 +29059,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1094",
+      "source_location": "L1098",
       "weight": 1.0
     },
     {
@@ -29060,7 +29071,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1094",
+      "source_location": "L1098",
       "weight": 1.0
     },
     {
@@ -29876,7 +29887,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1120",
+      "source_location": "L1119",
       "weight": 1.0
     },
     {
@@ -29888,7 +29899,7 @@
       "confidence_score": 1.0,
       "context": "return_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1106",
+      "source_location": "L1105",
       "weight": 1.0
     },
     {
@@ -33002,7 +33013,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1723",
+      "source_location": "L1725",
       "weight": 1.0
     },
     {
@@ -33035,7 +33046,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1500",
+      "source_location": "L1502",
       "weight": 1.0
     },
     {
@@ -34201,7 +34212,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1005",
+      "source_location": "L1009",
       "weight": 1.0
     },
     {
@@ -34234,7 +34245,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1079",
+      "source_location": "L1083",
       "weight": 1.0
     },
     {
@@ -34245,7 +34256,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1088",
+      "source_location": "L1092",
       "weight": 1.0
     },
     {
@@ -34256,7 +34267,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1094",
+      "source_location": "L1098",
       "weight": 1.0
     },
     {
@@ -34267,7 +34278,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1167",
+      "source_location": "L1171",
       "weight": 1.0
     },
     {
@@ -34531,7 +34542,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L925",
+      "source_location": "L926",
       "weight": 1.0
     },
     {
@@ -34564,7 +34575,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L984",
+      "source_location": "L988",
       "weight": 1.0
     },
     {
@@ -34575,7 +34586,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L990",
+      "source_location": "L994",
       "weight": 1.0
     },
     {
@@ -36593,13 +36604,24 @@
     },
     {
       "source": "frontend_src_constants_version",
-      "target": "frontend_src_constants_version_app_codename",
+      "target": "frontend_src_constants_version_build_number",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/constants/version.ts",
       "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "frontend_src_constants_version",
+      "target": "frontend_src_constants_version_app_codename",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "frontend/src/constants/version.ts",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -38535,7 +38557,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L485",
+      "source_location": "L494",
       "weight": 1.0
     },
     {
@@ -38907,7 +38929,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1079",
+      "source_location": "L1083",
       "weight": 1.0
     },
     {
@@ -38984,7 +39006,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1088",
+      "source_location": "L1092",
       "weight": 1.0
     },
     {
@@ -39622,7 +39644,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1502",
+      "source_location": "L1504",
       "weight": 1.0
     },
     {
@@ -39633,7 +39655,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1534",
+      "source_location": "L1536",
       "weight": 1.0
     },
     {
@@ -39644,7 +39666,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1562",
+      "source_location": "L1564",
       "weight": 1.0
     },
     {
@@ -39655,7 +39677,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1584",
+      "source_location": "L1586",
       "weight": 1.0
     },
     {
@@ -39666,7 +39688,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1602",
+      "source_location": "L1604",
       "weight": 1.0
     },
     {
@@ -39688,7 +39710,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1654",
+      "source_location": "L1656",
       "weight": 1.0
     },
     {
@@ -40221,24 +40243,13 @@
     },
     {
       "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice",
-      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_removepip",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1008",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice",
       "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_ondestroy",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1099",
+      "source_location": "L1098",
       "weight": 1.0
     },
     {
@@ -40249,7 +40260,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1106",
+      "source_location": "L1105",
       "weight": 1.0
     },
     {
@@ -40260,7 +40271,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1108",
+      "source_location": "L1107",
       "weight": 1.0
     },
     {
@@ -40271,7 +40282,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L1120",
+      "source_location": "L1119",
       "weight": 1.0
     },
     {
@@ -40349,6 +40360,17 @@
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
       "source_location": "L80",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice",
+      "target": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_removepip",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
+      "source_location": "L998",
       "weight": 1.0
     },
     {
@@ -41518,25 +41540,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_1100",
+      "source": "backend_app_api_devices_rationale_1104",
       "target": "backend_app_api_devices_toggle_device_master",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1100",
+      "source_location": "L1104",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_1168",
+      "source": "backend_app_api_devices_rationale_1172",
       "target": "backend_app_api_devices_execute_batch_test",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1168",
+      "source_location": "L1172",
       "weight": 1.0
     },
     {
@@ -41650,36 +41672,36 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_926",
+      "source": "backend_app_api_devices_rationale_927",
       "target": "backend_app_api_devices_receive_pip_ack",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L926",
+      "source_location": "L927",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_985",
+      "source": "backend_app_api_devices_rationale_989",
       "target": "backend_app_api_devices_test_single_device",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L985",
+      "source_location": "L989",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_devices_rationale_991",
+      "source": "backend_app_api_devices_rationale_995",
       "target": "backend_app_api_devices_test_pip",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L991",
+      "source_location": "L995",
       "weight": 1.0
     },
     {
@@ -42800,7 +42822,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1573",
+      "source_location": "L1575",
       "weight": 1.0
     },
     {
@@ -42848,7 +42870,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1623",
+      "source_location": "L1625",
       "weight": 1.0
     },
     {
@@ -42860,7 +42882,7 @@
       "confidence_score": 0.85,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1475",
+      "source_location": "L1476",
       "weight": 1.0
     },
     {
@@ -43237,7 +43259,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1007",
+      "source_location": "L1011",
       "weight": 0.8
     },
     {
@@ -43248,7 +43270,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1054",
+      "source_location": "L1058",
       "weight": 0.8
     },
     {
@@ -43270,7 +43292,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1170",
+      "source_location": "L1174",
       "weight": 0.8
     },
     {
@@ -43369,7 +43391,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/devices.py",
-      "source_location": "L1110",
+      "source_location": "L1114",
       "weight": 0.8
     },
     {
@@ -43726,5 +43748,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "78ab613587056bfc0355adfc41543c25f556f43d"
+  "built_at_commit": "626be0691b7cd1d60fc59e2653cacadc33249a06"
 }

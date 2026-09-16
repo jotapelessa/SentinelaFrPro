@@ -1451,6 +1451,7 @@ object SentinelaRepository {
         message: String,
         dimensions: String = "",
         durationSeconds: Int = 10,
+        liveVideoDurationSeconds: Double = 0.0,
         camera: String = "camera_secundaria",
         streamQuality: String = "1080p",
         ttffMs: Long = 0L,
@@ -1477,6 +1478,7 @@ object SentinelaRepository {
                 put("message", message)
                 put("dimensions", dimensions)
                 put("duration_seconds", durationSeconds)
+                put("live_video_duration_seconds", liveVideoDurationSeconds)
                 put("camera", camera)
                 put("stream_quality", streamQuality)
                 put("ttff_ms", ttffMs)
