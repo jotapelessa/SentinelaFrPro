@@ -108,6 +108,7 @@ class MainActivity : ComponentActivity() {
                         deviceIdentifier = prefs.deviceIdentifier,
                         friendlyName = prefs.friendlyName,
                         deviceType = deviceType,
+                        appVersion = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}",
                         prefs = prefs
                     )
                     val fetched = SentinelaRepository.getCameras(prefs.deviceIdentifier)
@@ -126,6 +127,7 @@ class MainActivity : ComponentActivity() {
                         deviceIdentifier = prefs.deviceIdentifier,
                         friendlyName = prefs.friendlyName,
                         deviceType = deviceType,
+                        appVersion = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}",
                         prefs = prefs
                     )
                 }

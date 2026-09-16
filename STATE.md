@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-16 06:24 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.121 operacional (Build 121). Sincronização bidirecional em tempo real de dispositivos via WebSocket e Heartbeat enriquecido (resolução 720p/1080p, posição e tamanho do PiP). Telemetria forense completa em disparos de PiP preview (TTFF em ms, FPS médio/mínimo, contagem de drops e stalls de buffer). Reconciliação aprimorada de Smart TVs e tablets na aplicação web. Injeção automática de stream _720p acelerado por hardware para todas as câmeras.
+> **Última Atualização:** 2026-09-16 08:00 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.122 operacional (Build 122). Sincronização bidirecional em tempo real de dispositivos via WebSocket e Heartbeat enriquecido (resolução 720p/1080p, posição e tamanho do PiP). Telemetria forense completa em disparos de PiP preview (TTFF em ms, FPS médio/mínimo, contagem de drops e stalls de buffer). Eliminação definitiva do duplo loading no PiP preview através de injeção de CSS embutido e supressão de spinner Compose sobre snapshot quente. Política de Único Stream Ao Vivo (Single Live Stream Policy) e mosaico vertical responsivo para 2 câmeras no frontend web. Suporte nativo a câmeras RTSP sem caminho na porta 1935 (ex: Intelbras Mibo). Fila sequencial FIFO resiliente com buffer em disco (/tmp/event_queue/) e transcodificação YUV420p limpa para o Telegram Vault.
 
 ---
 

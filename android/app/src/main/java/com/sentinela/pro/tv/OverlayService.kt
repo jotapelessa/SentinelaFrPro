@@ -731,6 +731,7 @@ class OverlayService : Service() {
                                         "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
                                         "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; pointer-events:none !important; } " +
                                         "video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel, video::-webkit-media-controls-play-button, video::-webkit-media-controls-start-playback-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-current-time-display, video::-webkit-media-controls-time-remaining-display, video::-webkit-media-controls-mute-button, video::-webkit-media-controls-toggle-closed-captions-button, video::-webkit-media-controls-volume-slider { display:none !important; -webkit-appearance:none !important; opacity:0 !important; visibility:hidden !important; } " +
+                                        "video-stream .info, .info, .mode, .status, .spinner { display:none !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important; } " +
                                         "* { outline:none !important; -webkit-tap-highlight-color:transparent !important; }';" +
                                         "document.head.appendChild(style);" +
                                         "var tStart = performance.now();" +
@@ -1064,6 +1065,30 @@ class OverlayService : Service() {
                     severity = "INFO",
                     message = "Janela PiP fechada e recursos liberados"
                 )
+
+                serviceScope.launch {
+                    try {
+                        SentinelaRepository.sendPipAck(
+                            deviceIdentifier = prefs.deviceIdentifier,
+                            testId = null,
+                            success = true,
+                            message = "Sessão PiP finalizada: Dur=${String.format("%.1f", actualDuration)}s, FPS=${String.format("%.1f", pipAvgFps)}, Stalls=${pipStallCount}",
+                            dimensions = "",
+                            durationSeconds = actualDuration.toInt().coerceAtLeast(1),
+                            camera = cam,
+                            streamQuality = qual,
+                            ttffMs = pipTtffMs,
+                            avgFps = pipAvgFps,
+                            minFps = pipMinFps,
+                            droppedFrames = pipDroppedFrames,
+                            stallCount = pipStallCount,
+                            totalFrames = pipTotalFramesRendered,
+                            decoder = "MSE_WEBSOCKET_TCP"
+                        )
+                    } catch (e: Exception) {
+                        android.util.Log.w("OverlayService", "Failed to send final pip ack: ${e.message}")
+                    }
+                }
             }
             isPipShowing.value = false
         } catch (e: Exception) {

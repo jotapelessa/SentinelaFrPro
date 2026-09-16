@@ -144,6 +144,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
 
   // Recording & Streaming State
   const [recordMode, setRecordMode] = useState(camera.record_mode || "motion");
+  const [resolution, setResolution] = useState(camera.resolution || "1080p");
   const [streamMode, setStreamMode] = useState(camera.stream_mode || "webrtc");
   const [ecoFps, setEcoFps] = useState(camera.eco_fps || 10);
   const [recordFps, setRecordFps] = useState(camera.record_fps || 24);
@@ -185,6 +186,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
           detect_fps: detectFps,
           motion_threshold: motionThreshold,
           record_mode: recordMode,
+          resolution: resolution,
           stream_mode: streamMode,
           eco_fps: ecoFps,
           record_fps: recordFps,
@@ -679,6 +681,41 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* Resolução da Câmera (Qualidade de Imagem) */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-300 font-bold">Resolução da Câmera (Stream & Gravação):</label>
+                  <span className="text-xs font-mono font-bold text-cyan-400 uppercase">{resolution}</span>
+                </div>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {[
+                    { id: "720p", label: "720p HD", sub: "1280x720 (Baixa Banda)" },
+                    { id: "1080p", label: "1080p FHD", sub: "1920x1080 (Padrão NVR)" },
+                    { id: "2.5k", label: "2.5K / 5MP", sub: "2560x1440 (Ultra Nitidez)" },
+                    { id: "auto", label: "Nativa (Auto)", sub: "Sensor Direto" }
+                  ].map((res) => (
+                    <button
+                      key={res.id}
+                      type="button"
+                      onClick={() => setResolution(res.id)}
+                      className={`p-2 rounded-xl border text-center transition-all ${
+                        resolution === res.id
+                          ? "bg-cyan-500 text-obsidian-950 border-cyan-400 font-bold shadow-md shadow-cyan-500/20"
+                          : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      <span className="block text-xs font-bold">{res.label}</span>
+                      <span className={`text-[9px] block ${resolution === res.id ? "text-obsidian-900 font-semibold" : "text-slate-400"}`}>
+                        {res.sub}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[10px] text-slate-500 block">
+                  Ajusta os perfis de streaming no go2rtc e nos pipelines de gravação e detecção do Frigate.
+                </span>
               </div>
 
               {/* Taxa de Gravação de Vídeo */}

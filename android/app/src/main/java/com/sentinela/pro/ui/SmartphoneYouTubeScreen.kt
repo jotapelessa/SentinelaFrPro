@@ -75,7 +75,13 @@ fun SmartphoneYouTubeScreen(
 
     LaunchedEffect(Unit) {
         while (isActive) {
-            SentinelaRepository.registerOrHeartbeat(prefs.deviceIdentifier, prefs.friendlyName, "smartphone", prefs = prefs)
+            SentinelaRepository.registerOrHeartbeat(
+                deviceIdentifier = prefs.deviceIdentifier,
+                friendlyName = prefs.friendlyName,
+                deviceType = "smartphone",
+                appVersion = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}",
+                prefs = prefs
+            )
             isMaster = SentinelaRepository.isMasterAdmin
             delay(10000)
         }

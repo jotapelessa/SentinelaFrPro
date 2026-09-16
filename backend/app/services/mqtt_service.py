@@ -364,140 +364,38 @@ class MQTTService:
         start_time: float = 0.0,
         end_time: float = 0.0
     ):
-        """Asynchronously acquires the exact duration 30 FPS MP4 video with >= 7s pre-capture, >= 7s post-capture, and min 25s duration."""
-        from app.services.frigate_bridge import frigate_bridge
-
-        if not event_id:
-            logger.warning("Evento sem ID válido para envio de vídeo ao Telegram. Ignorando envio (evita duplicados).")
-            return
-
-        # Persistent idempotency guard: skip if this event's video was already sent (survives restarts).
-        try:
-            from app.db.session import AsyncSessionLocal
-            from app.db.models import EventRecord
-            from sqlalchemy import select
-            async with AsyncSessionLocal() as session:
-                stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
-                res = await session.execute(stmt)
-                existing = res.scalar_one_or_none()
-                if existing and existing.video_sent:
-                    logger.debug(f"Vídeo do evento {event_id} já enviado (guarda persistente). Ignorando.")
-                    return
-        except Exception as e:
-            logger.debug(f"Falha ao verificar idempotência persistente: {e}")
-
-        now_ts = datetime.datetime.now(datetime.timezone.utc).timestamp()
-        event_start = start_time if start_time > 0 else (now_ts - 10.0)
-
-        # Regra de duração: 5s antes + detecção (mín. 10s) + 5s depois = mínimo 20s (máximo 60s)
+        # AC-024: Extended capture calculation with minimum pre_capture (5s) and post_capture (5s)
         pre_capture = 5.0
         post_capture = 5.0
-        min_detection = 10.0
-        event_end = end_time if (end_time and end_time > event_start) else (event_start + min_detection)
-        if event_end - event_start < min_detection:
-            event_end = event_start + min_detection
-        clip_start_ts = int(event_start - pre_capture)
-        clip_end_ts = int(event_end + post_capture)
-        if clip_end_ts - clip_start_ts < 20:
-            clip_end_ts = clip_start_ts + 20
-        if clip_end_ts - clip_start_ts > 60:
-            clip_end_ts = clip_start_ts + 60
+        calculated_duration = max(20.0, float(end_time - start_time) + pre_capture + post_capture if (end_time and start_time) else duration_s)
 
-        target_duration = int(clip_end_ts - clip_start_ts)
-        logger.info(f"🎬 Solicitando clipe estendido ({clip_start_ts} até {clip_end_ts} = ~{target_duration}s com 5s pré + mín 10s detecção + 5s pós) para Telegram (Câmera: {camera}, Evento: {event_id})...")
-
-        # 3. Intelligent synchronization: wait until clip_end_ts timestamp has passed + 1s for Frigate to flush disk segments
-        wait_seconds = max(0.0, (clip_end_ts - datetime.datetime.now(datetime.timezone.utc).timestamp()) + 1.0)
-        if wait_seconds > 0:
-            logger.info(f"⏳ Aguardando gravação completa do clipe estendido ({wait_seconds:.1f}s)...")
-            await asyncio.sleep(min(wait_seconds, 15.0))
-
-        # Strategy 1: Fetch extended range clip from Frigate NVR (/api/{camera}/start/{start}/end/{end}/clip.mp4)
-        # This guarantees at least 7s pre-capture, object duration, at least 7s post-capture, and min 25s total duration.
-        delays = [1.0, 2.0, 3.0, 5.0]
-        for attempt, delay in enumerate(delays, start=1):
-            await asyncio.sleep(delay)
-            try:
-                async with httpx.AsyncClient(timeout=45.0) as client:
-                    # 1. Primary: Extended range clip guaranteeing full pre and post capture
-                    range_url = f"{settings.FRIGATE_API_URL}/api/{camera}/start/{clip_start_ts}/end/{clip_end_ts}/clip.mp4"
-                    clip_resp = await client.get(range_url)
-
-                    # 2. Secondary fallback: Official Frigate detection event clip with 10s padding
-                    if clip_resp.status_code != 200 or len(clip_resp.content) < 1024:
-                        event_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4?padding=10"
-                        clip_resp = await client.get(event_url)
-
-                    # 3. Tertiary fallback: Raw Frigate detection event clip without query
-                    if clip_resp.status_code != 200 or len(clip_resp.content) < 1024:
-                        event_raw_url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/clip.mp4"
-                        clip_resp = await client.get(event_raw_url)
-
-                    if clip_resp.status_code == 200 and len(clip_resp.content) > 1024:
-                        if not frigate_bridge.has_video_stream(clip_resp.content):
-                            logger.warning(f"⚠️ Clipe retornado pelo Frigate para evento {event_id} ainda não possui stream de vídeo finalizado (tentativa {attempt}/{len(delays)}). Aguardando flush...")
-                            continue
-
-                        logger.info(f"✅ Clipe MP4 estendido obtido do Frigate ({len(clip_resp.content)} bytes). Preparando fluxo H.264 CFR fluido...")
-                        async with self._video_transcode_lock:
-                            smooth_video = await frigate_bridge.transcode_to_30fps(clip_resp.content, target_fps=25)
-                            sent_ok = False
-                            if smooth_video and frigate_bridge.has_video_stream(smooth_video):
-                                real_clip_dur = frigate_bridge.get_video_duration(smooth_video)
-                                final_dur = real_clip_dur if real_clip_dur > 0 else target_duration
-                                sent_ok = await telegram_vault_service.send_alert_video(
-                                    video_bytes=smooth_video,
-                                    camera_name=camera,
-                                    label=label,
-                                    zone=zone_name,
-                                    duration_s=final_dur,
-                                    score=score,
-                                    friendly_name=friendly_name
-                                )
-                        if sent_ok:
-                            async with AsyncSessionLocal() as session:
-                                stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
-                                res = await session.execute(stmt)
-                                ev = res.scalar_one_or_none()
-                                if ev:
-                                    ev.has_clip = True
-                                    ev.video_sent = True
-                                    ev.end_time = datetime.datetime.utcnow()
-                                    await session.commit()
-                            return
-            except Exception as e:
-                logger.warning(f"Tentativa {attempt} de envio de clipe do Frigate falhou: {e}")
-
-        logger.warning(f"⚠️ Não foi possível obter o clipe oficial do Frigate para o evento {event_id} após {len(delays)} tentativas. Acionando gravação de emergência via FrigateBridge...")
+        # AC-026: Persistent idempotency check for video_sent in EventRecord and memory cache
+        # Verification happens in memory via self._processed_videos and persistently via EventRecord.video_sent
         try:
-            live_clip = await frigate_bridge.record_live_video(
-                camera_name=camera,
-                duration_s=min(int(target_duration), 20)
+            async with AsyncSessionLocal() as session:
+                ev_stmt = select(EventRecord).where(EventRecord.event_id == event_id)
+                ev_res = await session.execute(ev_stmt)
+                ev_rec = ev_res.scalar_one_or_none()
+                if ev_rec and ev_rec.video_sent:
+                    logger.debug(f"Event {event_id} already marked as video_sent=True in DB. Skipping.")
+                    return
+        except Exception as e:
+            logger.debug(f"DB video_sent verification fallback: {e}")
+
+        try:
+            from app.services.telegram_queue import telegram_video_queue
+            await telegram_video_queue.enqueue_event(
+                event_id=event_id,
+                camera=camera,
+                label=label,
+                score=score,
+                zone_name=zone_name,
+                friendly_name=friendly_name,
+                start_time=start_time,
+                end_time=end_time
             )
-            if live_clip and frigate_bridge.has_video_stream(live_clip):
-                async with self._video_transcode_lock:
-                    smooth_live = await frigate_bridge.transcode_to_30fps(live_clip, target_fps=20) or live_clip
-                    logger.info(f"✅ Vídeo de emergência capturado com sucesso via FrigateBridge ({len(smooth_live)} bytes). Enviando para o Telegram...")
-                    sent_ok = await telegram_vault_service.send_alert_video(
-                        video_bytes=smooth_live,
-                        camera_name=camera,
-                        label=label,
-                        zone=zone_name,
-                        duration_s=min(target_duration, 20.0),
-                        score=score,
-                        friendly_name=friendly_name
-                    )
-                if sent_ok:
-                    async with AsyncSessionLocal() as session:
-                        stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
-                        res = await session.execute(stmt)
-                        ev = res.scalar_one_or_none()
-                        if ev:
-                            ev.has_clip = True
-                            ev.video_sent = True
-                            await session.commit()
-        except Exception as fb_err:
-            logger.error(f"❌ Falha no fallback de gravação ao vivo para Telegram: {fb_err}")
+        except Exception as e:
+            logger.error(f"Erro ao enfileirar vídeo na TelegramVideoQueue ({event_id}): {e}")
 
     async def start_listening(self):
         """Connects to MQTT and runs consumer loop with automatic reconnection."""

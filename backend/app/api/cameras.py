@@ -92,6 +92,7 @@ class CameraCreate(BaseModel):
     ip_address: Optional[str] = None
     onvif_port: Optional[int] = 80
     enabled: Optional[bool] = True
+    resolution: Optional[str] = "1080p"
     stream_mode: Optional[str] = "webrtc"
     eco_fps: Optional[int] = 10
     record_fps: Optional[int] = 24
@@ -503,6 +504,7 @@ class CameraUpdate(BaseModel):
     detect_fps: Optional[int] = None
     motion_threshold: Optional[int] = None
     record_mode: Optional[str] = None
+    resolution: Optional[str] = None
     stream_mode: Optional[str] = None
     eco_fps: Optional[int] = None
     record_fps: Optional[int] = None

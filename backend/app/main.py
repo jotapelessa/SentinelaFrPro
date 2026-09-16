@@ -50,12 +50,14 @@ async def lifespan(app: FastAPI):
     # Start Background Telemetry WebSocket loop
     telemetry_task = asyncio.create_task(ws.telemetry_broadcast_loop())
 
-    # Start Background Telegram Bot Poller
-    telegram_task = telegram_vault_service.start_polling_task()
+    # Start Background Telegram Video Processing Queue
+    from app.services.telegram_queue import telegram_video_queue
+    telegram_video_queue.start()
 
     yield
 
     logger.info("Encerrando serviços Sentinela...")
+    telegram_video_queue.stop()
     mqtt_task.cancel()
     telemetry_task.cancel()
     if telegram_task:

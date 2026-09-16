@@ -305,9 +305,15 @@ class ScannerService:
             friendly_name = f"Câmera IP ONVIF ({ip})"
             protocol = "ONVIF Universal / RTSP"
             resolution = "Full HD (1080p)"
-            features = ["RTSP H.264/H.265", "ONVIF Profile S"]
-            rtsp_main = f"rtsp://{ip}:{rtsp_port_to_use}/live" if rtsp_port_to_use == 8554 else f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch0"
-            rtsp_sub = None if rtsp_port_to_use == 8554 else f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch1"
+            if rtsp_port_to_use == 1935:
+                rtsp_main = f"rtsp://admin:admin@{ip}:1935"
+                rtsp_sub = None
+            elif rtsp_port_to_use == 8554:
+                rtsp_main = f"rtsp://admin:admin@{ip}:8554/live"
+                rtsp_sub = None
+            else:
+                rtsp_main = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch0"
+                rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch1"
             onvif_port = 80
             is_5mp = False
 
@@ -466,8 +472,8 @@ class ScannerService:
                     # Classify camera profile
                     profile = self.identify_camera_profile(ip, port_nums, onvif_info)
 
-                    # Cameras exposing only port 1935 (non-standard RTSP) use a pathless URL
-                    if 1935 in port_nums and 554 not in port_nums:
+                    # Cameras exposing port 1935 (RTSP/RTMP stream) use a pathless URL
+                    if 1935 in port_nums:
                         profile["rtsp_main"] = f"rtsp://admin:admin@{ip}:1935"
                         profile["rtsp_sub"] = None
 
