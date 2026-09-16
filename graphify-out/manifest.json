@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1789559301.8124044,
-    "seen": 1789559564.861717,
-    "ast_hash": "2d9a3148293f4bcefd5525700caf5a38",
+    "mtime": 1789562045.1893878,
+    "seen": 1789562121.667221,
+    "ast_hash": "667968ee52b8ad19319f4e5b1da50cd2",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1789556367.3463788,
-    "seen": 1789556396.119174,
-    "ast_hash": "8fa179b0ba12b640f897b22635d6691f",
+    "mtime": 1789562001.7818742,
+    "seen": 1789562121.6672251,
+    "ast_hash": "ce78835bff3638bec29c75719e7f012c",
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1789559310.5892344,
-    "seen": 1789559564.861729,
-    "ast_hash": "be47b507b5e9d28267bfb67f20978991",
+    "mtime": 1789562060.6964505,
+    "seen": 1789562121.667231,
+    "ast_hash": "ec27fc76db41b812fa555c39689d2747",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1789559330.2082071,
-    "seen": 1789559564.8617759,
-    "ast_hash": "2637f99afc5f53fc00d7321d01a61124",
+    "mtime": 1789562035.9172757,
+    "seen": 1789562121.6672692,
+    "ast_hash": "2da5058ecc4bb3d5d207e824d8495d9e",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789559558.5614114,
-    "seen": 1789559564.861771,
-    "ast_hash": "243fbb2c2e6e0eaac80723ee4083ea01",
+    "mtime": 1789562111.5922668,
+    "seen": 1789562121.667264,
+    "ast_hash": "c4e6d7f86e5402b6dd897f306dec3af3",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1789559534.632191,
-    "seen": 1789559564.8617458,
-    "ast_hash": "68e3d6832faeaf3a62da383811889fd6",
+    "mtime": 1789562069.94128,
+    "seen": 1789562121.667244,
+    "ast_hash": "0c559684d5d2d0b2bdd922ef4868e8cb",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {

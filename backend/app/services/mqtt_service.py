@@ -140,12 +140,13 @@ class MQTTService:
         tg_policy = await self._get_telegram_policy()
 
         if event_type in ["new", "update"]:
+            is_stationary = bool(after.get("stationary", False))
             cooldown_key = f"{camera}:{label}"
             now_ts = asyncio.get_event_loop().time()
             last_time = self._cooldowns.get(cooldown_key, 0)
             cooldown_duration = tg_policy.get("cooldown_seconds", 3.0)
 
-            # 1. Instant WebSocket Broadcast (<10ms) for UI & PiP
+            # 1. Instant WebSocket Broadcast (<10ms) for UI & PiP (HUD continues visible)
             await self.broadcast_event({
                 "type": "CAMERA_DETECTION_ACTIVE",
                 "camera": camera,
@@ -153,8 +154,14 @@ class MQTTService:
                 "score": round(score * 100) if score <= 1 else round(score),
                 "zone": zone_name,
                 "box": after.get("box"),
+                "stationary": is_stationary,
                 "active": True
             })
+
+            # Suppress intrusive alerts (PiP on Smart TV, toasts, Telegram) for stationary vehicles
+            if is_stationary and label == "car":
+                logger.debug(f"Carro estacionado detectado em {camera} ({event_id}) - Alertas invasivos suprimidos.")
+                return
 
             if event_id not in self._processed_events and (now_ts - last_time > cooldown_duration):
                 self._mark_processed(event_id)

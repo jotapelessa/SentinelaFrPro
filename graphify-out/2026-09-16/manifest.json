@@ -276,9 +276,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt": {
-    "mtime": 1789555467.3532166,
-    "seen": 1789556396.119158,
-    "ast_hash": "49cd81af26887f77781f63a91096170b",
+    "mtime": 1789559421.724938,
+    "seen": 1789559564.861703,
+    "ast_hash": "aa1744ec44833d717905e9202f29a027",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt": {
@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1789555548.8594923,
-    "seen": 1789556396.1191602,
-    "ast_hash": "cb07cdb5f5c8f82504d8ec6e3147cc1e",
+    "mtime": 1789559490.7652261,
+    "seen": 1789559564.861705,
+    "ast_hash": "6ba4bd0449269a1ffb8a28da93acd882",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
-    "mtime": 1789555749.2025506,
-    "seen": 1789556396.119167,
-    "ast_hash": "69fe654c68799098552e74e732cf9038",
+    "mtime": 1789559410.3369114,
+    "seen": 1789559564.861713,
+    "ast_hash": "d34ea67ff58ef131c225690eb8855b1b",
     "semantic_hash": ""
   },
   "backend/app/api/events.py": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1789555925.3083866,
-    "seen": 1789556396.11917,
-    "ast_hash": "3ce8d38b492e725fd4bc2ac7a689be75",
+    "mtime": 1789559301.8124044,
+    "seen": 1789559564.861717,
+    "ast_hash": "2d9a3148293f4bcefd5525700caf5a38",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -426,9 +426,9 @@
     "semantic_hash": ""
   },
   "backend/app/db/session.py": {
-    "mtime": 1789410962.6894982,
-    "seen": 1789411005.330923,
-    "ast_hash": "9905da1b3da2f247c9be617625418ca5",
+    "mtime": 1789557214.1278396,
+    "seen": 1789559564.8617191,
+    "ast_hash": "83896f67f4d8535116902a79f4487a57",
     "semantic_hash": ""
   },
   "backend/app/main.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1789555572.509689,
-    "seen": 1789556396.11918,
-    "ast_hash": "f1b3ae0c429d57d488aa9e0fab4479f0",
+    "mtime": 1789559310.5892344,
+    "seen": 1789559564.861729,
+    "ast_hash": "be47b507b5e9d28267bfb67f20978991",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -552,9 +552,9 @@
     "semantic_hash": ""
   },
   "frontend/src/app/screens/page.tsx": {
-    "mtime": 1789555720.225769,
-    "seen": 1789556396.1191838,
-    "ast_hash": "0ef75331063b08b74e02261e9ece41b5",
+    "mtime": 1789559517.7627761,
+    "seen": 1789559564.861734,
+    "ast_hash": "f8764e841bd3fbd8deabd3430ba2ff79",
     "semantic_hash": ""
   },
   "frontend/src/app/settings/backup/page.tsx": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1789556312.1493225,
-    "seen": 1789556396.1192179,
-    "ast_hash": "ae37a9c6033bc4e2f2c453a51188df87",
+    "mtime": 1789559330.2082071,
+    "seen": 1789559564.8617759,
+    "ast_hash": "2637f99afc5f53fc00d7321d01a61124",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789556388.3853743,
-    "seen": 1789556396.119214,
-    "ast_hash": "7b54746c8764533a9ba047305cb1e0aa",
+    "mtime": 1789559558.5614114,
+    "seen": 1789559564.861771,
+    "ast_hash": "243fbb2c2e6e0eaac80723ee4083ea01",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1789555565.6964114,
-    "seen": 1789556396.119193,
-    "ast_hash": "e6f2ad501d55fff55a5124a1c20eea62",
+    "mtime": 1789559534.632191,
+    "seen": 1789559564.8617458,
+    "ast_hash": "68e3d6832faeaf3a62da383811889fd6",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {

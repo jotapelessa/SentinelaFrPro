@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-16 09:00 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.123 operacional (Build 123). Eliminação definitiva do atraso de 5-10s no PiP através de stream direto RTSP passthrough no go2rtc e remoção de reload loops no OverlayService. Telemetria forense enriquecida com duração real de vídeo ativo (live_video_duration_seconds), TTFF sub-segundo (<300ms) e auditoria completa de FPS, drops e stalls. Sincronização bidirecional em tempo real de dispositivos via WebSocket e Heartbeat enriquecido. Single Live Stream Policy no frontend web com mosaico vertical para 2 câmeras. Fila sequencial FIFO resiliente e transcodificação YUV420p limpa para o Telegram Vault.
+> **Última Atualização:** 2026-09-16 09:35 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.124 operacional (Build 124). Filtro inteligente de veículos estacionários (stationary vehicle suppression) no Frigate NVR 0.17 e Sentinela Core MQTT, silenciando alertas repetidos e PiPs indesejados para carros parados. PiP instantâneo com stream direto RTSP passthrough no go2rtc (< 250ms TTFF). Telemetria forense enriquecida com duração real de vídeo ativo (live_video_duration_seconds). Sincronização bidirecional em tempo real de dispositivos via WebSocket e Heartbeat enriquecido. Fila sequencial FIFO resiliente e transcodificação YUV420p limpa para o Telegram Vault.
 
 ---
 
@@ -488,6 +488,13 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
   - **3. Telemetria Forense de Vídeo Ativo Real**:
     - Implementado campo `live_video_duration_seconds` no payload de `sendPipAck`, na rota FastAPI `/api/devices/{id}/pip-ack`, no log de auditoria executivo e no toast da interface web `/screens`.
     - O sistema agora audita e relata exatamente: (a) quanto tempo levou para exibir vídeo ao vivo (`ttff_ms`), (b) quantos segundos de vídeo ao vivo foram efetivamente reproduzidos na sessão (`live_video_duration_seconds`), e (c) FPS médio e mínimo mantidos durante o vídeo.
+- **[2026-09-16] Filtro Inteligente de Veículos Estacionários e Supressão de Alertas Repetidos (`v001.000.000.124`)**:
+  - **1. Supressão Condicional no Sentinela Core (`mqtt_service.py`)**:
+    - Leitura atômica da propriedade `stationary: true` nos eventos do Frigate NVR.
+    - Se o veículo estiver imóvel (`is_stationary and label == "car"`), os disparos invasivos (`pip_alert` para Smart TVs, `NEW_DETECTION` com avisos sonoros e despacho para o Telegram Vault) são estritamente suprimidos.
+    - A emissão passiva via WebSocket `CAMERA_DETECTION_ACTIVE` é mantida para que a caixa de detecção HUD permaneça visível para usuários assistindo ao vivo no painel, sem intrusão.
+  - **2. Calibração de Confiança no Frigate NVR (`frigate/config/config.yml`)**:
+    - Ajustado o filtro de objetos para `car` com `threshold: 0.70` e `min_score: 0.65`, eliminando disparos falso-positivos causados por oscilações de luminosidade, sombras de vegetação e ruído de compressão de vídeo sobre veículos estacionados.
 
 ---
 

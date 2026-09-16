@@ -4155,7 +4155,7 @@
       "file_type": "code",
       "norm_label": "._dispatch_background_alert_tasks()",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L256"
+      "source_location": "L263"
     },
     {
       "id": "backend_app_services_mqtt_service_mqttservice_dispatch_telegram_video_with_retry",
@@ -4167,7 +4167,7 @@
       "file_type": "code",
       "norm_label": "._dispatch_telegram_video_with_retry()",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L355"
+      "source_location": "L362"
     },
     {
       "id": "backend_app_services_mqtt_service_mqttservice_get_mqtt_traffic",
@@ -4263,7 +4263,7 @@
       "file_type": "code",
       "norm_label": ".start_listening()",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L400"
+      "source_location": "L407"
     },
     {
       "id": "backend_app_services_telemetry_telemetryservice_get_cpu_temperature",
@@ -10091,7 +10091,7 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_services_mqtt_service_rationale_266",
+      "id": "backend_app_services_mqtt_service_rationale_273",
       "label": "Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast\u2026",
       "_origin": "ast",
       "community": 24,
@@ -10099,10 +10099,10 @@
       "file_type": "rationale",
       "norm_label": "asynchronously handles telegram photo dispatch, db logging, and chromecast...",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L266"
+      "source_location": "L273"
     },
     {
-      "id": "backend_app_services_mqtt_service_rationale_401",
+      "id": "backend_app_services_mqtt_service_rationale_408",
       "label": "Connects to MQTT and runs consumer loop with automatic reconnection.",
       "_origin": "ast",
       "community": 24,
@@ -10110,7 +10110,7 @@
       "file_type": "rationale",
       "norm_label": "connects to mqtt and runs consumer loop with automatic reconnection.",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L401"
+      "source_location": "L408"
     },
     {
       "id": "backend_app_services_mqtt_service_rationale_60",
@@ -16703,7 +16703,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L494"
+      "source_location": "L501"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -19633,7 +19633,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L335",
+      "source_location": "L342",
       "weight": 1.0
     },
     {
@@ -19669,7 +19669,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L149",
+      "source_location": "L150",
       "weight": 1.0
     },
     {
@@ -19681,7 +19681,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L160",
+      "source_location": "L167",
       "weight": 1.0
     },
     {
@@ -19693,7 +19693,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L193",
+      "source_location": "L200",
       "weight": 1.0
     },
     {
@@ -19705,7 +19705,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L243",
+      "source_location": "L250",
       "weight": 1.0
     },
     {
@@ -19717,7 +19717,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L427",
+      "source_location": "L434",
       "weight": 1.0
     },
     {
@@ -19729,7 +19729,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L436",
+      "source_location": "L443",
       "weight": 1.0
     },
     {
@@ -22297,7 +22297,7 @@
       "confidence_score": 1.0,
       "context": "generic_arg",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L256",
+      "source_location": "L263",
       "weight": 1.0
     },
     {
@@ -25543,7 +25543,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L229",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -38557,7 +38557,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L494",
+      "source_location": "L501",
       "weight": 1.0
     },
     {
@@ -40722,7 +40722,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L256",
+      "source_location": "L263",
       "weight": 1.0
     },
     {
@@ -40744,7 +40744,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L355",
+      "source_location": "L362",
       "weight": 1.0
     },
     {
@@ -40755,7 +40755,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L400",
+      "source_location": "L407",
       "weight": 1.0
     },
     {
@@ -42178,25 +42178,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_services_mqtt_service_rationale_266",
+      "source": "backend_app_services_mqtt_service_rationale_273",
       "target": "backend_app_services_mqtt_service_mqttservice_dispatch_background_alert_tasks",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L266",
+      "source_location": "L273",
       "weight": 1.0
     },
     {
-      "source": "backend_app_services_mqtt_service_rationale_401",
+      "source": "backend_app_services_mqtt_service_rationale_408",
       "target": "backend_app_services_mqtt_service_mqttservice_start_listening",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L401",
+      "source_location": "L408",
       "weight": 1.0
     },
     {
@@ -43677,7 +43677,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L231",
+      "source_location": "L238",
       "weight": 0.8
     },
     {
@@ -43688,7 +43688,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L335",
+      "source_location": "L342",
       "weight": 0.8
     },
     {
@@ -43748,5 +43748,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "626be0691b7cd1d60fc59e2653cacadc33249a06"
+  "built_at_commit": "eb75ddb03fd3136dcdd91dddf68a2fdec69f0c09"
 }
