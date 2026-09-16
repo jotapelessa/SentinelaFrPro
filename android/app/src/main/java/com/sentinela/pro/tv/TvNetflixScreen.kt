@@ -3138,49 +3138,50 @@ fun TvSettingsViewport(
                     if (evType == "DEVICE_CONFIG_UPDATED" || evType == "DEVICE_POLICY_UPDATE") {
                         val targetIdent = event.optString("device_identifier", "")
                         if (targetIdent == prefs.deviceIdentifier) {
-                        val qual = event.optString("stream_quality", "")
-                        if (qual.isNotBlank()) {
-                            streamQuality = qual
-                            prefs.streamQuality = qual
-                        }
-                        val pos = event.optString("pip_position", "")
-                        if (pos.isNotBlank()) {
-                            try {
-                                val pIdx = PipPosition.valueOf(pos.uppercase()).ordinal
-                                posIndex = pIdx
-                                prefs.pipPositionIndex = pIdx
-                            } catch (e: Exception) {}
-                        }
-                        val sizeStr = event.optString("pip_default_size", "")
-                        if (sizeStr.isNotBlank()) {
-                            val sIdx = when (sizeStr.lowercase()) {
-                                "mini", "extra_small" -> PipSize.EXTRA_SMALL.ordinal
-                                "small" -> PipSize.SMALL.ordinal
-                                "medium_small" -> PipSize.MEDIUM_SMALL.ordinal
-                                "medium" -> PipSize.MEDIUM.ordinal
-                                "medium_large" -> PipSize.MEDIUM_LARGE.ordinal
-                                "large" -> PipSize.LARGE.ordinal
-                                "extra_large" -> PipSize.EXTRA_LARGE.ordinal
-                                "cinema" -> PipSize.CINEMA.ordinal
-                                else -> prefs.pipSizeIndex
+                            val qual = event.optString("stream_quality", "")
+                            if (qual.isNotBlank()) {
+                                streamQuality = qual
+                                prefs.streamQuality = qual
                             }
-                            sizeIndex = sIdx
-                            prefs.pipSizeIndex = sIdx
-                        }
-                        val durInt = event.optInt("pip_duration_seconds", 0)
-                        if (durInt > 0) {
-                            val dIdx = when (durInt) {
-                                5 -> PipDuration.D_5S.ordinal
-                                10 -> PipDuration.D_10S.ordinal
-                                15 -> PipDuration.D_15S.ordinal
-                                20 -> PipDuration.D_20S.ordinal
-                                30 -> PipDuration.D_30S.ordinal
-                                45 -> PipDuration.D_45S.ordinal
-                                60 -> PipDuration.D_60S.ordinal
-                                else -> prefs.pipDurationIndex
+                            val pos = event.optString("pip_position", "")
+                            if (pos.isNotBlank()) {
+                                try {
+                                    val pIdx = PipPosition.valueOf(pos.uppercase()).ordinal
+                                    posIndex = pIdx
+                                    prefs.pipPositionIndex = pIdx
+                                } catch (e: Exception) {}
                             }
-                            durIndex = dIdx
-                            prefs.pipDurationIndex = dIdx
+                            val sizeStr = event.optString("pip_default_size", "")
+                            if (sizeStr.isNotBlank()) {
+                                val sIdx = when (sizeStr.lowercase()) {
+                                    "mini", "extra_small" -> PipSize.EXTRA_SMALL.ordinal
+                                    "small" -> PipSize.SMALL.ordinal
+                                    "medium_small" -> PipSize.MEDIUM_SMALL.ordinal
+                                    "medium" -> PipSize.MEDIUM.ordinal
+                                    "medium_large" -> PipSize.MEDIUM_LARGE.ordinal
+                                    "large" -> PipSize.LARGE.ordinal
+                                    "extra_large" -> PipSize.EXTRA_LARGE.ordinal
+                                    "cinema" -> PipSize.CINEMA.ordinal
+                                    else -> prefs.pipSizeIndex
+                                }
+                                sizeIndex = sIdx
+                                prefs.pipSizeIndex = sIdx
+                            }
+                            val durInt = event.optInt("pip_duration_seconds", 0)
+                            if (durInt > 0) {
+                                val dIdx = when (durInt) {
+                                    5 -> PipDuration.D_5S.ordinal
+                                    10 -> PipDuration.D_10S.ordinal
+                                    15 -> PipDuration.D_15S.ordinal
+                                    20 -> PipDuration.D_20S.ordinal
+                                    30 -> PipDuration.D_30S.ordinal
+                                    45 -> PipDuration.D_45S.ordinal
+                                    60 -> PipDuration.D_60S.ordinal
+                                    else -> prefs.pipDurationIndex
+                                }
+                                durIndex = dIdx
+                                prefs.pipDurationIndex = dIdx
+                            }
                         }
                     }
                 }
