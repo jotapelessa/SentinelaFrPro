@@ -54,7 +54,7 @@ objects:
       min_area: 400
     car:
       min_score: 0.65
-      threshold: 0.70
+      threshold: 0.7
       min_area: 1200
     motorcycle:
       min_score: 0.55
@@ -84,18 +84,16 @@ snapshots:
 go2rtc:
   streams:
     camera_secundaria:
-    - rtsp://admin:admin@192.168.1.6:1935
-    - rtsp://192.168.1.6:8554/live
+    - rtsp://192.168.1.6:8554/live#transport=tcp
     camera_secundaria_720p:
-    - rtsp://192.168.1.6:8554/live
-    - rtsp://admin:admin@192.168.1.6:1935
+    - rtsp://192.168.1.6:8554/live#transport=tcp
     camera_principal:
     - rtsp://127.0.0.1:8554/camera_secundaria
     camera_principal_720p:
     - rtsp://127.0.0.1:8554/camera_secundaria
     cam_192_168_1_136:
-    - rtsp://admin:admin@192.168.1.136:1935
-    - rtsp://192.168.1.136:8554/live
+    - rtsp://192.168.1.136:8554/live#transport=tcp
+    - rtsp://admin:admin@192.168.1.136:1935#transport=tcp
   webrtc:
     candidates:
     - 100.93.129.91:8555
@@ -111,15 +109,12 @@ cameras:
         input_args: preset-rtsp-restream
         roles:
         - record
-      - path: rtsp://127.0.0.1:8554/camera_secundaria
-        input_args: preset-rtsp-restream
-        roles:
         - detect
     detect:
       enabled: true
       width: 640
       height: 360
-      fps: 10
+      fps: 5
     record:
       enabled: true
       continuous:
@@ -164,27 +159,31 @@ cameras:
         required_zones: []
     objects:
       track:
-      - motorcycle
       - person
       - dog
-      - car
+      - motorcycle
+      - bicycle
+      - cat
       filters:
         person:
-          threshold: 0.65
+          threshold: 0.9
         car:
-          threshold: 0.70
+          threshold: 0.7
           min_score: 0.65
     motion:
-      threshold: 25
+      threshold: 30
       contour_area: 20
       improve_contrast: true
+      mask:
+      - 0.013,0.008,0.001,0.989,0.476,0.998,0.483,0.709,0.497,0.433,0.507,0.005
+      - 0.478,0.716,0.471,0.994,0.988,0.998,0.996,0.738
+      - 0.5,0.012,0.488,0.44,0.676,0.451,0.666,0.738,0.989,0.751,0.997,0.014
     zones:
-      detecgggg:
-        coordinates: 0.206,0.357,0.201,0.544,0.528,0.588,0.535,0.351
-        loitering_time: 0
-        objects:
-        - car
-        - person
+      detec:
+        coordinates: 0.495,0.433,0.483,0.712,0.668,0.716,0.681,0.445
+        inertia: 5
+        loitering_time: 2
+        friendly_name: Detec
   camera_principal:
     enabled: false
     ffmpeg:
@@ -201,9 +200,39 @@ cameras:
       fps: 5
     record:
       enabled: false
+      continuous:
+        days: 0
+      motion:
+        days: 3
+      alerts:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+      detections:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
     snapshots:
       enabled: true
       bounding_box: true
+    review:
+      alerts:
+        labels: &id001
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
+        required_zones: []
+      detections:
+        labels: *id001
+        required_zones: []
   cam_192_168_1_136:
     enabled: false
     ffmpeg:
