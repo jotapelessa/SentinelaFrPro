@@ -558,6 +558,19 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
       2. O gatilho de primeiro frame foi restrito estritamente a `requestVideoFrameCallback(onFrame)` (quando o quadro é fisicamente entregue ao compositor da GPU), com fallback resiliente para `timeupdate` quando `currentTime > 0.05s`.
       3. Suprimido o disparo em `'playing'`, assegurando que o snapshot permaneça sólido e nítido até que o vídeo ao vivo esteja renderizando com perfeição, resultando em uma transição suave e contínua a 60 FPS sem piscas ou telas de loading.
 
+  - **5. Estabilização Definitiva de RTSP e go2rtc no Frigate NVR 0.17 (`camera_secundaria`)**:
+    - **Sintomas Identificados nos Logs**:
+      1. `[rtsp] RTP: PT=61 / PT=60: bad cseq 0001 expected=xxxx`: Frequente reset de sequência RTP.
+      2. `watchdog.camera_secundaria: No frames received in 20 seconds. Exiting ffmpeg...`
+      3. `watchdog.camera_secundaria: camera_secundaria exceeded fps limit. Exiting ffmpeg...`
+      4. `watchdog.camera_secundaria: No new valid recording segments created in 120s. Restarting ffmpeg record...`
+    - **Causa Raiz 1 (go2rtc Failover Loop)**: Na lista `go2rtc.streams.camera_secundaria`, o primeiro producer era `rtsp://admin:admin@192.168.1.6:1935`. A porta 1935 estava fechada na câmera física (`Connection refused`), forçando o go2rtc a cair para a porta 8554 e reiniciar a contagem de cseq para `0001` ciclicamente.
+    - **Causa Raiz 2 (Duplicação de Processos FFmpeg)**: O arquivo `config.yml` definia dois inputs idênticos para a mesma câmera (um para a role `record` e outro para `detect`), abrindo dois processos independentes de decodificação e demuxing, disputando sockets e gerando rajadas de frames que estouravam o limite do watchdog de detecção.
+    - **Soluções Aplicadas**:
+      1. Em `go2rtc.streams`, o producer inválido foi removido, definindo diretamente `rtsp://192.168.1.6:8554/live` como fonte única.
+      2. As roles `record` e `detect` foram unificadas sob uma única entrada de input `rtsp://127.0.0.1:8554/camera_secundaria` com `input_args: preset-rtsp-restream`. O Frigate gerencia um único processo FFmpeg com aceleração Intel QSV, gravando segmentos MP4 sem re-encode (`-c copy`) e escalonando internamente a 5 FPS para o detector OpenVINO.
+      3. Testes provados: `node --test test/*.js` 100% PASS (31/31), logs do Frigate limpos com 0 erros de cseq e telemetria de 1 produtor / 1 consumidor constante no go2rtc.
+
 ---
 
 ## ⚡ Próximos Passos e Itens em Aberto
@@ -568,4 +581,5 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
    - Sempre executar `graphify update .` após alterações de código.
 3. **Persistência de Sessão**:
    - Manter este `STATE.md` atualizado em cada início e fim de sessão, preservando decisões técnicas e progresso.
+
 
