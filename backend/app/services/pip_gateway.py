@@ -43,13 +43,14 @@ class PiPGatewayService:
         self._ack_events: Dict[str, asyncio.Event] = {}
         self._ack_results: Dict[str, dict] = {}
 
-    def record_ack(self, device_identifier: str, test_id: Optional[str], success: bool, message: str):
+    def record_ack(self, device_identifier: str, test_id: Optional[str], success: bool, message: str, metrics: Optional[dict] = None):
         """Records an execution acknowledgement from a remote device overlay."""
         if test_id and test_id in self._ack_events:
             self._ack_results[test_id] = {
                 "device_identifier": device_identifier,
                 "success": success,
-                "message": message
+                "message": message,
+                "metrics": metrics or {}
             }
             self._ack_events[test_id].set()
 
@@ -346,12 +347,14 @@ class PiPGatewayService:
 
         confirmed = False
         ack_message = ""
+        ack_metrics = {}
         if dispatched and protocol_used == "sentinela_app_ws":
             try:
                 await asyncio.wait_for(ack_event.wait(), timeout=5.0)
                 ack_res = self._ack_results.get(test_id, {})
                 confirmed = ack_res.get("success", False)
                 ack_message = ack_res.get("message", "Renderização confirmada no display da tela")
+                ack_metrics = ack_res.get("metrics", {})
             except asyncio.TimeoutError:
                 confirmed = False
                 if dev.device_type in ["smartphone", "mobile"]:
@@ -382,7 +385,8 @@ class PiPGatewayService:
                 "message": f"✅ {dev_name}: {ack_message}",
                 "protocol": protocol_used,
                 "test_id": test_id,
-                "target_ip": target_ip
+                "target_ip": target_ip,
+                "metrics": ack_metrics
             }
         elif dispatched:
             await audit_service.log(

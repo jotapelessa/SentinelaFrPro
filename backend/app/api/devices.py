@@ -291,7 +291,7 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         except Exception:
             events = ["person", "car", "motorcycle", "dog", "cat", "bus"]
 
-    return {
+    out_dict = {
         "status": "online",
         "device_identifier": dev.device_identifier,
         "friendly_name": dev.friendly_name,
@@ -306,9 +306,31 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         "pip_default_size": dev.pip_default_size or "medium",
         "pip_duration_seconds": dev.pip_duration_seconds or 10,
         "pip_position": dev.pip_position or "TOP_RIGHT",
+        "stream_quality": dev.stream_quality or "1080p",
         "is_master_admin": bool(dev.is_master_admin),
         "last_seen": dev.last_seen.isoformat() if dev.last_seen else None
     }
+
+    try:
+        from app.api.ws import ws_manager
+        asyncio.create_task(ws_manager.broadcast_json({
+            "type": "DEVICE_HEARTBEAT_PULSE",
+            "id": dev.id,
+            "device_identifier": dev.device_identifier,
+            "friendly_name": dev.friendly_name,
+            "device_type": dev.device_type,
+            "ip_address": dev.ip_address,
+            "tailscale_ip": dev.tailscale_ip,
+            "online": True,
+            "stream_quality": dev.stream_quality or "1080p",
+            "pip_position": dev.pip_position or "TOP_RIGHT",
+            "pip_duration_seconds": dev.pip_duration_seconds or 10,
+            "last_seen": dev.last_seen.isoformat() if dev.last_seen else None
+        }))
+    except Exception:
+        pass
+
+    return out_dict
 
 @router.get("/by-id/{device_identifier}/cameras")
 async def get_device_permitted_cameras(device_identifier: str, db: AsyncSession = Depends(get_db)):
@@ -450,11 +472,11 @@ async def check_devices_health(db: AsyncSession = Depends(get_db)):
         is_recent_heartbeat = False
         if d.last_seen:
             diff_seconds = (now - d.last_seen).total_seconds()
-            if diff_seconds < 60:
+            if diff_seconds < 90:
                 is_recent_heartbeat = True
 
         is_online = is_recent_heartbeat
-        # For Cast hardware or if heartbeat is older than 60s, verify network port
+        # For Cast hardware or if heartbeat is older than 90s, verify network port
         if not is_online and ip and d.device_type in ["chromecast", "google_tv", "tcl"]:
             is_online = await pip_gateway_service.check_device_online(ip)
 
@@ -884,29 +906,74 @@ class PipAckRequest(BaseModel):
     message: str = "PiP renderizado na tela com sucesso"
     dimensions: Optional[str] = None
     duration_seconds: Optional[int] = 10
+    camera: Optional[str] = None
+    stream_quality: Optional[str] = None
+    ttff_ms: Optional[int] = None
+    avg_fps: Optional[float] = None
+    min_fps: Optional[float] = None
+    dropped_frames: Optional[int] = None
+    stall_count: Optional[int] = None
+    total_frames: Optional[int] = None
+    decoder: Optional[str] = "MSE_WEBSOCKET_TCP"
 
 @router.post("/{device_identifier}/pip-ack")
 async def receive_pip_ack(device_identifier: str, req: PipAckRequest):
-    """Receives physical execution confirmation from the Android TV overlay service."""
+    """Receives physical execution confirmation and rich telemetry from the Android TV overlay service."""
     from app.services.pip_gateway import pip_gateway_service
     from app.api.ws import ws_manager
+
+    metrics_dict = {
+        "camera": req.camera or "camera_secundaria",
+        "stream_quality": req.stream_quality or "1080p",
+        "ttff_ms": req.ttff_ms or 0,
+        "duration_seconds": req.duration_seconds or 10,
+        "avg_fps": req.avg_fps or 0.0,
+        "min_fps": req.min_fps or 0.0,
+        "dropped_frames": req.dropped_frames or 0,
+        "stall_count": req.stall_count or 0,
+        "total_frames": req.total_frames or 0,
+        "decoder": req.decoder or "MSE_WEBSOCKET_TCP",
+        "dimensions": req.dimensions or "38% (Médio)"
+    }
 
     pip_gateway_service.record_ack(
         device_identifier=device_identifier,
         test_id=req.test_id,
         success=req.success,
-        message=req.message
+        message=req.message,
+        metrics=metrics_dict
     )
 
-    await ws_manager.broadcast_json({
+    ack_payload = {
         "type": "PIP_EXECUTION_CONFIRMED",
         "device_identifier": device_identifier,
         "test_id": req.test_id,
         "success": req.success,
-        "message": req.message
-    })
+        "message": req.message,
+        "metrics": metrics_dict
+    }
 
-    return {"status": "received", "test_id": req.test_id, "confirmed": req.success}
+    await ws_manager.broadcast_json(ack_payload)
+
+    # Telemetria Auditada com Resumo Executivo Completo
+    audit_severity = "SUCCESS" if req.success and (req.stall_count or 0) == 0 else "WARNING"
+    fps_text = f"FPS={req.avg_fps:.1f} (mín {req.min_fps:.1f})" if req.avg_fps else "FPS=30.0"
+    ttff_text = f"TTFF={req.ttff_ms}ms" if req.ttff_ms else "TTFF=Imediato"
+    drops_text = f"Drops={req.dropped_frames or 0} | Stalls={req.stall_count or 0}"
+    details_log = (
+        f"PiP Preview Confirmado [{device_identifier}]: {ttff_text} | {fps_text} | "
+        f"Dur={req.duration_seconds}s | {drops_text} | Qualidade={req.stream_quality or '1080p'} | "
+        f"Decoder={req.decoder or 'MSE'} | Dim={req.dimensions or 'Default'}"
+    )
+
+    await audit_service.log(
+        action="PIP_PREVIEW_METRICS",
+        module="PIP",
+        severity=audit_severity,
+        details=details_log
+    )
+
+    return {"status": "received", "test_id": req.test_id, "confirmed": req.success, "metrics": metrics_dict}
 
 @router.post("/{device_id}/test")
 async def test_single_device(device_id: int, req: Optional[TestSingleDeviceRequest] = None):

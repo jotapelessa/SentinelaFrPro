@@ -1393,7 +1393,13 @@ async def sync_camera_to_frigate(cam: Camera):
 
     rtsp_url = cam.rtsp_main
     if rtsp_url:
-        cfg["go2rtc"]["streams"][target_cam_key] = [rtsp_url.strip()]
+        clean_url = rtsp_url.strip()
+        cfg["go2rtc"]["streams"][target_cam_key] = [clean_url]
+        # Hardware-accelerated 720p profile for low bandwidth and eco mobile/TV PiP clients
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [
+            f"ffmpeg:{clean_url}#video=h264#raw=-vf scale=1280:720 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 1500k",
+            clean_url
+        ]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
 

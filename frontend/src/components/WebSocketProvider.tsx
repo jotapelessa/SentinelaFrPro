@@ -150,9 +150,18 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               }
             } else if (data.type === "CAMERA_OBJECTS_COUNT") {
               setObjectCount(data.camera, data.label, data.count);
-            } else if (data.type === "DEVICE_POLICY_UPDATE") {
+            } else if (data.type === "DEVICE_POLICY_UPDATE" || data.type === "DEVICE_CONFIG_UPDATED") {
               if (typeof window !== "undefined") {
                 window.dispatchEvent(new CustomEvent("device_policy_update", { detail: data }));
+                window.dispatchEvent(new CustomEvent("device_config_updated", { detail: data }));
+              }
+            } else if (data.type === "DEVICE_HEARTBEAT_PULSE") {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("device_heartbeat_pulse", { detail: data }));
+              }
+            } else if (data.type === "PIP_EXECUTION_CONFIRMED") {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("pip_execution_confirmed", { detail: data }));
               }
             } else if (data.type === "CLIENT_LOGS_INGESTED") {
               if (typeof window !== "undefined") {

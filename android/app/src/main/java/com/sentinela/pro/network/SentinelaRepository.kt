@@ -267,6 +267,20 @@ object SentinelaRepository {
                             60 -> prefs.pipDurationIndex = PipDuration.D_60S.ordinal
                         }
                     }
+                    val serverPipPos = obj.optString("pip_position", "")
+                    if (serverPipPos.isNotBlank()) {
+                        try {
+                            val pEnum = PipPosition.valueOf(serverPipPos.uppercase())
+                            prefs.pipPositionIndex = pEnum.ordinal
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Unknown pip_position: $serverPipPos")
+                        }
+                    }
+
+                    val serverStreamQual = obj.optString("stream_quality", "")
+                    if (serverStreamQual.isNotBlank()) {
+                        prefs.streamQuality = serverStreamQual.lowercase()
+                    }
 
                     if (obj.has("allow_pip_alerts")) {
                         prefs.allowPipAlerts = obj.optBoolean("allow_pip_alerts", true)
@@ -1436,7 +1450,16 @@ object SentinelaRepository {
         success: Boolean,
         message: String,
         dimensions: String = "",
-        durationSeconds: Int = 10
+        durationSeconds: Int = 10,
+        camera: String = "camera_secundaria",
+        streamQuality: String = "1080p",
+        ttffMs: Long = 0L,
+        avgFps: Double = 0.0,
+        minFps: Double = 0.0,
+        droppedFrames: Int = 0,
+        stallCount: Int = 0,
+        totalFrames: Int = 0,
+        decoder: String = "MSE_WEBSOCKET_TCP"
     ): Boolean = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/$deviceIdentifier/pip-ack")
@@ -1454,6 +1477,15 @@ object SentinelaRepository {
                 put("message", message)
                 put("dimensions", dimensions)
                 put("duration_seconds", durationSeconds)
+                put("camera", camera)
+                put("stream_quality", streamQuality)
+                put("ttff_ms", ttffMs)
+                put("avg_fps", avgFps)
+                put("min_fps", minFps)
+                put("dropped_frames", droppedFrames)
+                put("stall_count", stallCount)
+                put("total_frames", totalFrames)
+                put("decoder", decoder)
             }
             conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
             val code = conn.responseCode

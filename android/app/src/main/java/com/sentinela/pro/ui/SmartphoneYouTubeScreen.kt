@@ -1122,8 +1122,15 @@ fun PhoneMasterCentralTab() {
                     } else if (evType == "PIP_EXECUTION_CONFIRMED") {
                         val msg = event.optString("message", "Exibição de PiP confirmada na tela!")
                         val success = event.optBoolean("success", true)
+                        val metrics = event.optJSONObject("metrics")
+                        val extra = if (metrics != null) {
+                            val ttff = metrics.optLong("ttff_ms", 0L)
+                            val fps = metrics.optDouble("avg_fps", 0.0)
+                            val qual = metrics.optString("stream_quality", "1080p")
+                            " [TTFF: ${ttff}ms • ${String.format("%.1f", fps)} FPS • ${qual.uppercase()}]"
+                        } else ""
                         val icon = if (success) "✅" else "⚠️"
-                        Toast.makeText(context, "$icon $msg", Toast.LENGTH_LONG).show()
+                        Toast.makeText(context, "$icon $msg$extra", Toast.LENGTH_LONG).show()
                     }
                 }
             }

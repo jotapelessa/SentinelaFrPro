@@ -154,8 +154,89 @@ export default function ScreensPage() {
       fetchDevices(true);
     }, 15000);
 
-    return () => clearInterval(interval);
-  }, [fetchDevices, fetchHealth, fetchCameras]);
+    // WebSocket real-time reactive event listeners for immediate updates (0ms delay)
+    const handleDeviceConfigUpdated = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail && detail.device_identifier) {
+        setDevices((prev) =>
+          prev.map((d) => {
+            if (d.device_identifier === detail.device_identifier) {
+              return {
+                ...d,
+                friendly_name: detail.friendly_name || d.friendly_name,
+                permission_status: detail.permission_status || d.permission_status,
+                pip_default_size: detail.pip_default_size || d.pip_default_size,
+                pip_duration_seconds: detail.pip_duration_seconds ?? d.pip_duration_seconds,
+                pip_position: detail.pip_position || d.pip_position,
+                stream_quality: detail.stream_quality || d.stream_quality,
+                allow_pip_alerts: detail.allow_pip_alerts !== undefined ? detail.allow_pip_alerts : d.allow_pip_alerts
+              };
+            }
+            return d;
+          })
+        );
+      }
+    };
+
+    const handleHeartbeatPulse = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail && detail.device_identifier) {
+        setDevices((prev) => {
+          const exists = prev.some((d) => d.device_identifier === detail.device_identifier || (detail.id && d.id === detail.id));
+          if (exists) {
+            return prev.map((d) => {
+              if (d.device_identifier === detail.device_identifier || (detail.id && d.id === detail.id)) {
+                return {
+                  ...d,
+                  ip_address: detail.ip_address || d.ip_address,
+                  tailscale_ip: detail.tailscale_ip || d.tailscale_ip,
+                  last_seen: detail.last_seen || new Date().toISOString(),
+                  stream_quality: detail.stream_quality || d.stream_quality,
+                  pip_position: detail.pip_position || d.pip_position,
+                  pip_duration_seconds: detail.pip_duration_seconds || d.pip_duration_seconds
+                };
+              }
+              return d;
+            });
+          } else {
+            // New device registered on the fly
+            fetchDevices(true);
+            return prev;
+          }
+        });
+        if (detail.id) {
+          setHealthMap((prev) => ({ ...prev, [detail.id]: true }));
+        }
+      }
+    };
+
+    const handlePipConfirmed = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail) {
+        const devName = detail.device_identifier || "Tela";
+        const metrics = detail.metrics;
+        let metricInfo = "";
+        if (metrics) {
+          const fps = metrics.avg_fps ? `${metrics.avg_fps} FPS` : "30 FPS";
+          const ttff = metrics.ttff_ms ? `${metrics.ttff_ms}ms` : "Imediato";
+          const res = metrics.stream_quality ? metrics.stream_quality.toUpperCase() : "1080P";
+          metricInfo = ` [TTFF: ${ttff} • ${fps} • ${res}]`;
+        }
+        showToast(`✅ ${devName}: ${detail.message || "PiP renderizado com sucesso!"}${metricInfo}`, "success", 6000);
+      }
+    };
+
+    window.addEventListener("device_config_updated", handleDeviceConfigUpdated);
+    window.addEventListener("device_heartbeat_pulse", handleHeartbeatPulse);
+    window.addEventListener("pip_execution_confirmed", handlePipConfirmed);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("device_config_updated", handleDeviceConfigUpdated);
+      window.removeEventListener("device_heartbeat_pulse", handleHeartbeatPulse);
+      window.removeEventListener("pip_execution_confirmed", handlePipConfirmed);
+    };
+  }, [fetchDevices, fetchHealth, fetchCameras, showToast]);
 
   // Copy to clipboard helper
   const handleCopy = (text: string, key: string) => {

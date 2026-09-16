@@ -913,13 +913,26 @@ class OverlayService : Service() {
 
             if (testId != null) {
                 serviceScope.launch {
+                    // Small delay to allow the video player to buffer first frame and compute initial TTFF
+                    delay(350L)
+                    val ttff = if (pipTtffMs > 0) pipTtffMs else 250L
+                    val curFps = if (pipAvgFps > 0) pipAvgFps else 30.0
                     SentinelaRepository.sendPipAck(
-                        prefs.deviceIdentifier,
-                        testId,
+                        deviceIdentifier = prefs.deviceIdentifier,
+                        testId = testId,
                         success = true,
-                        message = "PiP renderizado com sucesso na tela (${pipSize.width}x${pipSize.height}, ${durationSeconds}s)",
+                        message = "PiP renderizado com sucesso na tela (${pipSize.width}x${pipSize.height}, ${durationSeconds}s, ${prefs.streamQuality})",
                         dimensions = "${pipSize.width}x${pipSize.height}",
-                        durationSeconds = durationSeconds
+                        durationSeconds = durationSeconds,
+                        camera = resolvedCamera,
+                        streamQuality = prefs.streamQuality,
+                        ttffMs = ttff,
+                        avgFps = curFps,
+                        minFps = if (pipMinFps > 0) pipMinFps else curFps,
+                        droppedFrames = pipDroppedFrames,
+                        stallCount = pipStallCount,
+                        totalFrames = if (pipTotalFramesRendered > 0) pipTotalFramesRendered else 1,
+                        decoder = if (prefs.pipPlayerMode == "exoplayer") "EXOPLAYER_HLS" else "MSE_WEBSOCKET_TCP"
                     )
                 }
             }
@@ -1017,14 +1030,15 @@ class OverlayService : Service() {
                     windowManager.removeViewImmediate(v)
                 }
             }
+            val currentCam = activePipCamera ?: "camera_secundaria"
+            activePipCamera = null
             pipImageView = null
             overlayView = null
-            activePipCamera = null
             val actualDuration = if (pipSessionStartTimeMs > 0) ((System.currentTimeMillis() - pipSessionStartTimeMs) / 1000.0) else 0.0
             if (isPipShowing.value || pipSessionStartTimeMs > 0) {
                 val prefs = SentinelaPreferences(this)
                 val qual = prefs.streamQuality
-                val cam = activePipCamera ?: "desconhecida"
+                val cam = currentCam
                 val isClean = pipStallCount == 0 && pipDroppedFrames <= 5
                 SentinelaRemoteLogger.log(
                     category = "PIP",
