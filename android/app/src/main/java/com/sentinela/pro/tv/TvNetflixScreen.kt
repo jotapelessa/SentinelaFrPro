@@ -50,8 +50,7 @@ import coil.compose.AsyncImage
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
 import com.sentinela.pro.SentinelaConfig
-import com.sentinela.pro.data.CameraItem
-import com.sentinela.pro.data.CaptureEvent
+import com.sentinela.pro.data.*
 import com.sentinela.pro.tv.theme.*
 import com.sentinela.pro.ui.components.SeamlessCameraImage
 import com.sentinela.pro.logging.SentinelaRemoteLogger
