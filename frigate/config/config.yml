@@ -84,16 +84,15 @@ snapshots:
 go2rtc:
   streams:
     camera_secundaria:
-    - rtsp://192.168.1.6:8554/live#transport=tcp
+    - rtsp://192.168.1.6:8554/live
     camera_secundaria_720p:
-    - rtsp://192.168.1.6:8554/live#transport=tcp
+    - rtsp://192.168.1.6:8554/live
     camera_principal:
     - rtsp://127.0.0.1:8554/camera_secundaria
     camera_principal_720p:
     - rtsp://127.0.0.1:8554/camera_secundaria
     cam_192_168_1_136:
-    - rtsp://192.168.1.136:8554/live#transport=tcp
-    - rtsp://admin:admin@192.168.1.136:1935#transport=tcp
+    - rtsp://192.168.1.136:8554/live
   webrtc:
     candidates:
     - 100.93.129.91:8555
