@@ -83,6 +83,8 @@ export interface Camera {
   motion_threshold?: number;
   record_mode?: string;
   resolution?: string;
+  detect_width?: number;
+  detect_height?: number;
   stream_mode?: "eco" | "mse" | "webrtc" | string;
   eco_fps?: number;
   record_fps?: number;

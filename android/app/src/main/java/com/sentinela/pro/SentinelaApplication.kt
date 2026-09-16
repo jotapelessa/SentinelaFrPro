@@ -22,11 +22,23 @@ class SentinelaApplication : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
 
-        // 1. Global crash protection for Android TV & background services
+        // 1. Initialize Distributed Operational Logger early for all activities & background services
+        com.sentinela.pro.logging.SentinelaRemoteLogger.init(this)
+
+        // 2. Global crash protection for Android TV & background services
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
             Log.e("SentinelaApp", "FATAL CRASH INTERCEPTED on thread ${thread.name}: ${throwable.message}", throwable)
-            // Log to disk or recover if possible
+            runCatching {
+                com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                    category = com.sentinela.pro.logging.LogCategory.SYSTEM,
+                    action = "APP_FATAL_CRASH",
+                    severity = com.sentinela.pro.logging.LogSeverity.ERROR,
+                    message = "FATAL CRASH na thread ${thread.name}: ${throwable.message}",
+                    metadata = mapOf("thread" to thread.name, "exception" to (throwable.javaClass.simpleName))
+                )
+                com.sentinela.pro.logging.SentinelaRemoteLogger.flushNow()
+            }
             defaultHandler?.uncaughtException(thread, throwable)
         }
 

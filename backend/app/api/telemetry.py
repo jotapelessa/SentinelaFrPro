@@ -468,6 +468,7 @@ async def ingest_client_logs(
 @router.get("/client-logs")
 async def get_client_device_logs(
     device_identifier: Optional[str] = None,
+    device_type: Optional[str] = None,
     category: Optional[str] = None,
     severity: Optional[str] = None,
     limit: int = Query(150, le=500),
@@ -478,6 +479,8 @@ async def get_client_device_logs(
 
     if device_identifier and device_identifier != "ALL":
         stmt = stmt.where(ClientDeviceLog.device_identifier == device_identifier)
+    if device_type and device_type != "ALL":
+        stmt = stmt.where(ClientDeviceLog.device_type == device_type.lower())
     if category and category != "ALL":
         stmt = stmt.where(ClientDeviceLog.category == category.upper())
     if severity and severity != "ALL":

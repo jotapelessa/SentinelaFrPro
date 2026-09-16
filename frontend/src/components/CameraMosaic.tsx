@@ -42,7 +42,14 @@ export const CameraMosaic: React.FC = () => {
       const res = await fetch(`${apiUrl}/cameras`);
       if (res.ok) {
         const data = await res.json();
-        setCameras(Array.isArray(data) ? data : []);
+        const camList = Array.isArray(data) ? data : [];
+        setCameras(camList);
+        if (spotlightCamera) {
+          const updated = camList.find((c: Camera) => (c.id && c.id === spotlightCamera.id) || (c.name && c.name === spotlightCamera.name));
+          if (updated) {
+            setSpotlightCamera(updated);
+          }
+        }
       }
     } catch (e) {
       console.error("Error fetching cameras:", e);

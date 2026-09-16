@@ -24,7 +24,8 @@ import {
   Sliders,
   Filter,
   Layers,
-  ArrowUpDown
+  ArrowUpDown,
+  Globe
 } from "lucide-react";
 
 export interface ClientLogItem {
@@ -59,6 +60,7 @@ export const ClientDeviceLogsTerminal: React.FC<ClientDeviceLogsTerminalProps> =
   const [selectedSeverity, setSelectedSeverity] = useState<string>("ALL");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [selectedDevice, setSelectedDevice] = useState<string>(deviceIdentifier || "ALL");
+  const [selectedDeviceType, setSelectedDeviceType] = useState<string>("ALL");
   const [expandedLogId, setExpandedLogId] = useState<number | null>(null);
   const [copied, setCopied] = useState(false);
   const [knownDevices, setKnownDevices] = useState<{ id: string; name: string; type: string }[]>([]);
@@ -98,6 +100,9 @@ export const ClientDeviceLogsTerminal: React.FC<ClientDeviceLogsTerminalProps> =
         if (targetDev && targetDev !== "ALL") {
           params.append("device_identifier", targetDev);
         }
+        if (selectedDeviceType && selectedDeviceType !== "ALL") {
+          params.append("device_type", selectedDeviceType);
+        }
         if (selectedCategory && selectedCategory !== "ALL") {
           params.append("category", selectedCategory);
         }
@@ -118,7 +123,7 @@ export const ClientDeviceLogsTerminal: React.FC<ClientDeviceLogsTerminalProps> =
         if (!silent) setLoading(false);
       }
     },
-    [apiUrl, deviceIdentifier, selectedDevice, selectedCategory, selectedSeverity]
+    [apiUrl, deviceIdentifier, selectedDevice, selectedDeviceType, selectedCategory, selectedSeverity]
   );
 
   // Carga inicial
@@ -215,6 +220,8 @@ export const ClientDeviceLogsTerminal: React.FC<ClientDeviceLogsTerminalProps> =
         return <Smartphone className="w-3.5 h-3.5 text-emerald-400" />;
       case "tablet":
         return <Tablet className="w-3.5 h-3.5 text-blue-400" />;
+      case "web_browser":
+        return <Globe className="w-3.5 h-3.5 text-violet-400" />;
       default:
         return <Tv className="w-3.5 h-3.5 text-cyan-400" />;
     }
@@ -381,6 +388,32 @@ export const ClientDeviceLogsTerminal: React.FC<ClientDeviceLogsTerminalProps> =
               <ChevronDown className="w-3 h-3 text-cyan-500 absolute right-2 top-2.5 pointer-events-none" />
             </div>
           )}
+
+          {/* Device Type Quick Filter */}
+          <div className="flex items-center gap-1 bg-[#0b1429] p-0.5 rounded-lg border border-slate-800">
+            {[
+              { id: "ALL", label: "TODOS", icon: null },
+              { id: "android_tv", label: "TV", icon: <Tv className="w-3 h-3 text-cyan-400" /> },
+              { id: "smartphone", label: "APP", icon: <Smartphone className="w-3 h-3 text-emerald-400" /> },
+              { id: "web_browser", label: "WEB", icon: <Globe className="w-3 h-3 text-violet-400" /> }
+            ].map((dt) => {
+              const isSelected = selectedDeviceType === dt.id;
+              return (
+                <button
+                  key={dt.id}
+                  onClick={() => setSelectedDeviceType(dt.id)}
+                  className={`flex items-center gap-1 px-2 py-1 rounded text-[10px] font-black transition ${
+                    isSelected
+                      ? "bg-slate-700 text-white shadow-sm"
+                      : "text-slate-400 hover:text-slate-200"
+                  }`}
+                >
+                  {dt.icon}
+                  {dt.label}
+                </button>
+              );
+            })}
+          </div>
 
           {/* Severities Filter */}
           <div className="flex items-center gap-1 bg-[#0b1429] p-0.5 rounded-lg border border-slate-800">

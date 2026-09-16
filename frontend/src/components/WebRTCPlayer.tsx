@@ -9,7 +9,7 @@ import { CameraConfigModal } from "./CameraConfigModal";
 // By extracting these into memoized components that subscribe ONLY to their specific camera's state,
 // we prevent the heavy WebRTC iframe from re-rendering 10 times a second during active detections.
 
-const DetectionOverlays = React.memo(({ cameraAliases, isPaused }: { cameraAliases: Set<string>, isPaused: boolean }) => {
+const DetectionOverlays = React.memo(({ camera, cameraAliases, isPaused }: { camera: Camera, cameraAliases: Set<string>, isPaused: boolean }) => {
   const activeDet = useSentinelaStore(state => {
     for (const alias of cameraAliases) {
       if (state.activeDetections[alias]) return state.activeDetections[alias];
@@ -30,10 +30,25 @@ const DetectionOverlays = React.memo(({ cameraAliases, isPaused }: { cameraAlias
   if (activeDet?.box && Array.isArray(activeDet.box) && activeDet.box.length >= 4) {
     let [ymin, xmin, ymax, xmax] = activeDet.box;
     if (ymin > 1 || xmin > 1 || ymax > 1 || xmax > 1) {
-      ymin = ymin / 720;
-      ymax = ymax / 720;
-      xmin = xmin / 1280;
-      xmax = xmax / 1280;
+      // Dynamic detect resolution support (handles 640x360 Frigate default, 720p, 1080p, 1440p)
+      let resW = camera.detect_width || 640;
+      let resH = camera.detect_height || 360;
+
+      if (xmax > 1920 || ymax > 1080) {
+        resW = 2560;
+        resH = 1440;
+      } else if (xmax > 1280 || ymax > 720) {
+        resW = 1920;
+        resH = 1080;
+      } else if (xmax > 640 || ymax > 360) {
+        resW = 1280;
+        resH = 720;
+      }
+
+      ymin = ymin / resH;
+      ymax = ymax / resH;
+      xmin = xmin / resW;
+      xmax = xmax / resW;
     }
     const topPct = Math.max(0, Math.min(100, ymin * 100));
     const leftPct = Math.max(0, Math.min(100, xmin * 100));
@@ -61,8 +76,21 @@ const DetectionOverlays = React.memo(({ cameraAliases, isPaused }: { cameraAlias
         <div className="absolute inset-0 border border-amber-500/80 rounded-2xl pointer-events-none z-30 shadow-lg shadow-amber-500/20" />
       ) : null}
 
-      {/* The Bounding Box */}
-      {bbox}
+      {/* The Bounding Box perfectly aligned with object-fit: contain using container query sizing */}
+      {bbox && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-20 overflow-hidden rounded-2xl [container-type:size]">
+          <div 
+            className="relative pointer-events-none" 
+            style={{ 
+              aspectRatio: '16/9', 
+              width: 'min(100cqw, calc(100cqh * 16 / 9))', 
+              height: 'min(100cqh, calc(100cqw * 9 / 16))' 
+            }}
+          >
+            {bbox}
+          </div>
+        </div>
+      )}
 
       {/* Floating Banner */}
       {activeDet && (
@@ -400,7 +428,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
         }`}
       >
         {/* Isolated Zustand Subscription Overlays (Prevents iframe re-renders) */}
-        {!isPaused && <DetectionOverlays cameraAliases={cameraAliases} isPaused={isPaused} />}
+        {!isPaused && <DetectionOverlays camera={camera} cameraAliases={cameraAliases} isPaused={isPaused} />}
         
         {/* Isolated Header HUD */}
         <CameraHeaderHUD 
@@ -446,7 +474,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
                 (e.currentTarget as HTMLImageElement).src = `/frigate/api/${cameraSrc}/latest.jpg?h=720`;
               }}
               alt={camera.friendly_name || camera.name}
-              className="w-full h-full object-cover opacity-80 group-hover/thumb:opacity-100 transition-all duration-300 transform group-hover/thumb:scale-105"
+              className="w-full h-full object-contain opacity-80 group-hover/thumb:opacity-100 transition-all duration-300 transform group-hover/thumb:scale-105"
             />
             <div className="absolute inset-0 bg-black/40 group-hover/thumb:bg-black/20 flex flex-col items-center justify-center gap-2.5 transition-all z-20">
               <div className="p-3 rounded-full bg-cyan-500/90 text-obsidian-950 shadow-xl shadow-cyan-500/40 transform group-hover/thumb:scale-110 transition-transform flex items-center justify-center">
@@ -463,7 +491,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
               key={`${cameraSrc}-frame-${key}`}
               src={frameUrl}
               alt={camera.friendly_name || camera.name}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
             {!isLiveOnline && (
               <div className="absolute inset-0 bg-black/75 flex flex-col items-center justify-center gap-2 text-slate-400 z-10">

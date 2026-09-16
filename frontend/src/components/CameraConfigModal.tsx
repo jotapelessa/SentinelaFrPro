@@ -133,11 +133,23 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
     }
   };
 
+  // Safe parsing helper for tracked objects
+  const parseTrackedObjects = (objs: any): string[] => {
+    if (!objs) return ["person", "car", "motorcycle", "dog"];
+    if (Array.isArray(objs)) return objs;
+    if (typeof objs === "string") {
+      try {
+        const parsed = JSON.parse(objs);
+        if (Array.isArray(parsed)) return parsed;
+      } catch {
+        return objs.split(",").map(s => s.trim()).filter(Boolean);
+      }
+    }
+    return ["person", "car", "motorcycle", "dog"];
+  };
+
   // AI & Detection State
-  const initialObjects: string[] = camera.objects_to_track
-    ? (typeof camera.objects_to_track === "string" ? JSON.parse(camera.objects_to_track || "[]") : camera.objects_to_track)
-    : ["person", "car", "motorcycle", "dog"];
-  const [trackedObjects, setTrackedObjects] = useState<string[]>(initialObjects);
+  const [trackedObjects, setTrackedObjects] = useState<string[]>(parseTrackedObjects(camera.objects_to_track));
   const [minScore, setMinScore] = useState(camera.min_score ? Math.round(camera.min_score * 100) : 70);
   const [detectFps, setDetectFps] = useState(camera.detect_fps || 5);
   const [motionThreshold, setMotionThreshold] = useState(camera.motion_threshold || 25);
@@ -157,6 +169,31 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [notifyAudio, setNotifyAudio] = useState(camera.notify_audio ?? true);
   const [cooldown, setCooldown] = useState(camera.cooldown_seconds || 10);
 
+  // Synchronize form state whenever the camera prop is updated from store or parent
+  useEffect(() => {
+    setFriendlyName(camera.friendly_name || camera.name);
+    setRtspMain(camera.rtsp_main);
+    setRtspSub(camera.rtsp_sub || "");
+    setIpAddress(camera.ip_address || "");
+    setOnvifPort(camera.onvif_port || 80);
+    setEnabled(camera.enabled ?? true);
+    setTrackedObjects(parseTrackedObjects(camera.objects_to_track));
+    setMinScore(camera.min_score ? Math.round(camera.min_score * 100) : 70);
+    setDetectFps(camera.detect_fps || 5);
+    setMotionThreshold(camera.motion_threshold || 25);
+    setRecordMode(camera.record_mode || "motion");
+    setResolution(camera.resolution || "1080p");
+    setStreamMode(camera.stream_mode || "webrtc");
+    setEcoFps(camera.eco_fps || 10);
+    setRecordFps(camera.record_fps || 24);
+    setRetainDays(camera.record_retain_days || 14);
+    setRecordAudio(camera.record_audio ?? false);
+    setNotifyTelegram(camera.notify_telegram ?? true);
+    setNotifyTv(camera.notify_tv ?? true);
+    setNotifyAudio(camera.notify_audio ?? true);
+    setCooldown(camera.cooldown_seconds || 10);
+  }, [camera]);
+
   const toggleObject = (obj: string) => {
     setTrackedObjects(prev => 
       prev.includes(obj) ? prev.filter(o => o !== obj) : [...prev, obj]
@@ -170,7 +207,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
 
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
-      const camIdentifier = camera.id || camera.name || "camera_principal";
+      const camIdentifier = (camera.id !== undefined && camera.id !== null) ? String(camera.id) : (camera.name || "camera_principal");
       const res = await fetch(`${apiUrl}/cameras/${camIdentifier}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },

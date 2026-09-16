@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "TelemetryData_2.md",
+                "file": "_COMMUNITY_SentinelaMobileTokens.kt.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "TelemetryData_2"
+              "title": "_COMMUNITY_SentinelaMobileTokens.kt"
             }
           }
         ]
@@ -187,8 +187,13 @@
   },
   "active": "cc9ddfe378e767a1",
   "lastOpenFiles": [
-    "dot-getTelemetry().md",
+    "_COMMUNITY_sentinela-pro-tvvite.config.ts.md",
+    "Escrevendo especificações auditáveis.md",
+    "graph.canvas",
+    "_cached_dir_size().md",
+    "_COMMUNITY_🛡️ Sentinela Frigate Pro.md",
     "TelemetryData_2.md",
+    "dot-getTelemetry().md",
     "TvToolsViewport().md",
     "_COMMUNITY_TvNetflixScreen.kt.md",
     "_COMMUNITY_compile_apk.sh.md",
@@ -196,7 +201,6 @@
     "_COMMUNITY_android-smartphone-app.spec.test.js.md",
     "_COMMUNITY_AGENTS.md",
     "_COMMUNITY_3. Catálogo de Endpoints da API REST (`api`).md",
-    "_COMMUNITY_🛡️ Sentinela Frigate Pro.md",
     "_COMMUNITY_Community 77.md",
     "_COMMUNITY_Community 76.md",
     "_COMMUNITY_Community 46.md",
@@ -209,9 +213,6 @@
     "TelegramPhotoTestPayload.md",
     "_COMMUNITY_sentinela-core.spec.test.js.md",
     "_COMMUNITY_integracao-frigate.spec.test.js.md",
-    "_COMMUNITY_android-tv-app.spec.test.js.md",
-    "_COMMUNITY_Constituição — v1.1.0.md",
-    "_COMMUNITY_Tasks Sentinela Core Ecosystem (Web, Mobile & Orquestrador).md",
-    "_COMMUNITY_Tasks Aplicativo Android TV (Sentinela TV Netflix Edition).md"
+    "_COMMUNITY_android-tv-app.spec.test.js.md"
   ]
 }

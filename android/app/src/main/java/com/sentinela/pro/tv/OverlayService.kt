@@ -69,16 +69,23 @@ class OverlayService : Service() {
     private var pipTotalFramesRendered: Int = 0
 
     class PipMetricsBridge(
-        private val onMetrics: (ttffMs: Long, avgFps: Double, minFps: Double, dropped: Int, stalls: Int, totalFrames: Int) -> Unit
+        private val onMetrics: (ttffMs: Long, avgFps: Double, minFps: Double, dropped: Int, stalls: Int, totalFrames: Int) -> Unit,
+        private val onFirstFrame: () -> Unit
     ) {
+        private var firstFrameReported = false
         @android.webkit.JavascriptInterface
         fun reportMetrics(ttffMs: Long, avgFps: Double, minFps: Double, dropped: Int, stalls: Int, totalFrames: Int) {
             onMetrics(ttffMs, avgFps, minFps, dropped, stalls, totalFrames)
+            if (ttffMs > 0 && !firstFrameReported) {
+                firstFrameReported = true
+                onFirstFrame()
+            }
         }
     }
 
     override fun onCreate() {
         super.onCreate()
+        com.sentinela.pro.logging.SentinelaRemoteLogger.init(this)
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
         try {
@@ -370,12 +377,12 @@ class OverlayService : Service() {
         targetHeight: Int = 360
     ) {
         val base = SentinelaConfig.BASE_URL.trimEnd('/')
-        val fastFrigate = "$base/frigate/api/$camera/latest.jpg?h=720"
         val fastGo2rtc = "$base/go2rtc/api/frame.jpeg?src=$camera&t=${System.currentTimeMillis()}"
+        val fastFrigate = "$base/frigate/api/$camera/latest.jpg?h=720"
 
         serviceScope.launch(Dispatchers.IO) {
-            // Prioritize fast RAM snapshot from Frigate (15ms), then primary event snapshot, then go2rtc frame
-            val candidateUrls = listOf(fastFrigate, primaryUrl, fastGo2rtc).filter { it.isNotBlank() }.distinct()
+            // Prioritize instant RAM snapshot from go2rtc (<5ms), then primary event snapshot, then Frigate latest
+            val candidateUrls = listOf(fastGo2rtc, primaryUrl, fastFrigate).filter { it.isNotBlank() }.distinct()
             val imageLoader = coil.Coil.imageLoader(applicationContext)
 
             for (url in candidateUrls) {
@@ -384,8 +391,8 @@ class OverlayService : Service() {
                         .data(url)
                         .size(targetWidth, targetHeight)
                         .allowHardware(false)
-                        .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
-                        .diskCachePolicy(coil.request.CachePolicy.DISABLED)
+                        .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
+                        .diskCachePolicy(coil.request.CachePolicy.ENABLED)
                         .build()
 
                     val result = imageLoader.execute(req)
@@ -666,6 +673,7 @@ class OverlayService : Service() {
                                 FrameLayout.LayoutParams.MATCH_PARENT
                             )
                             scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+                            setBackgroundColor(Color.BLACK)
                         }
                         pipImageView = snapImageView
                         inner.addView(snapImageView)
@@ -697,15 +705,28 @@ class OverlayService : Service() {
                             isVerticalScrollBarEnabled = false
                             isHorizontalScrollBarEnabled = false
 
+                            alpha = 0f // Oculta o WebView até o primeiro frame do vídeo ser renderizado (evita double loading flash)
+
                             addJavascriptInterface(
-                                PipMetricsBridge { ttff, avgFps, minFps, dropped, stalls, totalFrames ->
-                                    pipTtffMs = ttff
-                                    pipAvgFps = avgFps
-                                    pipMinFps = minFps
-                                    pipDroppedFrames = dropped
-                                    pipStallCount = stalls
-                                    pipTotalFramesRendered = totalFrames
-                                },
+                                PipMetricsBridge(
+                                    onMetrics = { ttff, avgFps, minFps, dropped, stalls, totalFrames ->
+                                        pipTtffMs = ttff
+                                        pipAvgFps = avgFps
+                                        pipMinFps = minFps
+                                        pipDroppedFrames = dropped
+                                        pipStallCount = stalls
+                                        pipTotalFramesRendered = totalFrames
+                                    },
+                                    onFirstFrame = {
+                                        serviceScope.launch(Dispatchers.Main) {
+                                            pipWebView?.animate()?.alpha(1f)?.setDuration(250)?.start()
+                                            // Reduz opacidade do snapshot para não brigar com vídeos de proporções diferentes
+                                            pipImageView?.animate()?.alpha(0f)?.setDuration(350)?.withEndAction {
+                                                pipImageView?.visibility = View.GONE
+                                            }?.start()
+                                        }
+                                    }
+                                ),
                                 "PipBridge"
                             )
 
@@ -778,14 +799,16 @@ class OverlayService : Service() {
                                         "    v.removeAttribute('controls');" +
                                         "    v.addEventListener('waiting', function() { stallCount++; reportToNative(); });" +
                                         "    v.addEventListener('stalled', function() { stallCount++; reportToNative(); });" +
-                                        "    v.addEventListener('playing', function() {" +
-                                        "      if (firstFrameTime === 0) {" +
-                                        "        firstFrameTime = performance.now() - tStart;" +
-                                        "        reportToNative();" +
-                                        "      }" +
-                                        "    });" +
                                         "    if (v.requestVideoFrameCallback) {" +
                                         "      v.requestVideoFrameCallback(onFrame);" +
+                                        "    } else {" +
+                                        "      v.addEventListener('timeupdate', function() {" +
+                                        "        if (firstFrameTime === 0 && v.currentTime > 0.05) {" +
+                                        "          firstFrameTime = performance.now() - tStart;" +
+                                        "          frameCount = Math.max(frameCount, 1);" +
+                                        "          reportToNative();" +
+                                        "        }" +
+                                        "      });" +
                                         "    }" +
                                         "    v.addEventListener('error', function(err) {" +
                                         "      console.warn('Video stream error:', err);" +
@@ -815,9 +838,9 @@ class OverlayService : Service() {
                                         "      if (v.buffered && v.buffered.length > 0) {" +
                                         "        var end = v.buffered.end(v.buffered.length - 1);" +
                                         "        var drift = end - v.currentTime;" +
-                                        "        if (drift > 2.0) {" +
+                                        "        if (drift > 1.0) {" +
                                         "          v.playbackRate = 1.15;" +
-                                        "        } else if (drift > 0.4) {" +
+                                        "        } else if (drift > 0.3) {" +
                                         "          v.playbackRate = 1.08;" +
                                         "        } else if (drift < 0.1) {" +
                                         "          v.playbackRate = 1.0;" +
@@ -863,9 +886,12 @@ class OverlayService : Service() {
                     }
                     else -> {
                         pipImageView?.let { iv ->
+                            iv.visibility = View.VISIBLE
+                            iv.alpha = 1f
                             loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                         }
                         pipWebView?.apply {
+                            alpha = 0f
                             onResume()
                             resumeTimers()
                             loadUrl(streamUrl)
@@ -1023,6 +1049,7 @@ class OverlayService : Service() {
             }
             val currentCam = activePipCamera ?: "camera_secundaria"
             activePipCamera = null
+            pipImageView?.alpha = 1f
             pipImageView = null
             overlayView = null
             val actualDuration = if (pipSessionStartTimeMs > 0) ((System.currentTimeMillis() - pipSessionStartTimeMs) / 1000.0) else 0.0

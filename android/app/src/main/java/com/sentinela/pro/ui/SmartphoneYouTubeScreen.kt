@@ -294,7 +294,16 @@ fun PhoneBottomNavigationBar(
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .clickable { onSelectTab(index) }
+                        .clickable {
+                            com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                category = "NAVIGATION",
+                                action = "TAB_CHANGED",
+                                severity = "INFO",
+                                message = "Smartphone navegou para aba: $title",
+                                metadata = mapOf("tab_index" to index, "tab_title" to title)
+                            )
+                            onSelectTab(index)
+                        }
                         .padding(horizontal = 0.5.dp, vertical = 2.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
@@ -367,12 +376,33 @@ fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
                 PhoneCameraStreamCard(
                     camera = camera,
                     onCaptureSnapshot = {
+                        com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                            category = "TOOLS",
+                            action = "SNAPSHOT_REQUESTED",
+                            severity = "INFO",
+                            message = "Snapshot manual solicitado para câmera ${camera.name}",
+                            metadata = mapOf("camera" to camera.name)
+                        )
                         Toast.makeText(context, "📸 Snapshot salvo: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
                     },
                     onRecordClip = {
+                        com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                            category = "TOOLS",
+                            action = "RECORD_CLIP_REQUESTED",
+                            severity = "INFO",
+                            message = "Gravação de evidência manual solicitada para câmera ${camera.name}",
+                            metadata = mapOf("camera" to camera.name)
+                        )
                         Toast.makeText(context, "🎬 Gravando evidência de 10s: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
                     },
                     onExpandFullscreen = {
+                        com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                            category = "PLAYER",
+                            action = "ZOOM_VIEW_OPENED",
+                            severity = "INFO",
+                            message = "Visualizador com Zoom 5x aberto para câmera ${camera.name}",
+                            metadata = mapOf("camera" to camera.name)
+                        )
                         selectedZoomCamera = camera
                     }
                 )
@@ -389,6 +419,12 @@ fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
                         val ok = SentinelaRepository.resumeAlerts()
                         if (ok) {
                             isAlertsSilenced = false
+                            com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                category = "TOOLS",
+                                action = "ALERTS_RESUMED",
+                                severity = "SUCCESS",
+                                message = "Alertas Telegram reativados pelo smartphone"
+                            )
                             Toast.makeText(context, "🔔 Alertas do Telegram REATIVADOS!", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(context, "Erro ao reativar alertas", Toast.LENGTH_SHORT).show()
@@ -397,6 +433,12 @@ fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
                         val ok = SentinelaRepository.pauseAlerts(60)
                         if (ok) {
                             isAlertsSilenced = true
+                            com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                category = "TOOLS",
+                                action = "ALERTS_SILENCED_1H",
+                                severity = "WARNING",
+                                message = "Alertas Telegram silenciados por 1 hora pelo smartphone"
+                            )
                             Toast.makeText(context, "🔕 Alertas silenciados por 1 HORA!", Toast.LENGTH_SHORT).show()
                         } else {
                             Toast.makeText(context, "Erro ao silenciar alertas", Toast.LENGTH_SHORT).show()
@@ -762,7 +804,16 @@ fun PhoneCapturesTab() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
-                            .clickable { selectedPhoto = ev }
+                            .clickable {
+                                selectedPhoto = ev
+                                com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                    category = "PLAYER",
+                                    action = "PHOTO_SELECTED",
+                                    severity = "INFO",
+                                    message = "Foto/Snapshot ${ev.id} da câmera ${ev.camera} aberta no smartphone",
+                                    metadata = mapOf("event_id" to ev.id, "camera" to ev.camera, "label" to ev.label)
+                                )
+                            }
                     ) {
                         Column {
                             Box(
@@ -1864,12 +1915,26 @@ fun PhoneToolsTab() {
                         onClick = {
                             isTesting = true
                             coroutineScope.launch {
-                                speedResult = SentinelaRepository.runSpeedAndPingTest(
+                                com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                    category = "TOOLS",
+                                    action = "SPEED_TEST_STARTED",
+                                    severity = "INFO",
+                                    message = "Iniciado teste de conexão e throughput no smartphone"
+                                )
+                                val res = SentinelaRepository.runSpeedAndPingTest(
                                     deviceIdentifier = prefs.deviceIdentifier,
                                     friendlyName = prefs.friendlyName,
                                     deviceType = "smartphone"
                                 )
+                                speedResult = res
                                 isTesting = false
+                                com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                    category = "TOOLS",
+                                    action = "SPEED_TEST_FINISHED",
+                                    severity = "SUCCESS",
+                                    message = "Teste de throughput concluído: ${res.downloadMbps} Mbps, ping ${res.pingMs}ms",
+                                    metadata = mapOf("download_mbps" to res.downloadMbps, "ping_ms" to res.pingMs, "jitter_ms" to res.jitterMs)
+                                )
                                 Toast.makeText(context, "✅ Smartphone sincronizado em http://sentinela.local/screens!", Toast.LENGTH_SHORT).show()
                             }
                         },
@@ -2026,8 +2091,23 @@ fun PhoneToolsTab() {
                             onClick = {
                                 isCheckingHealth = true
                                 coroutineScope.launch {
-                                    healthStatuses = SentinelaRepository.checkServicesHealth()
+                                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                        category = "NETWORK",
+                                        action = "HEALTH_CHECK_STARTED",
+                                        severity = "INFO",
+                                        message = "Iniciada verificação de saúde dos serviços NVR pelo smartphone"
+                                    )
+                                    val res = SentinelaRepository.checkServicesHealth()
+                                    healthStatuses = res
                                     isCheckingHealth = false
+                                    val allOk = res.all { it.isOk }
+                                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                        category = "NETWORK",
+                                        action = "HEALTH_CHECK_FINISHED",
+                                        severity = if (allOk) "SUCCESS" else "WARNING",
+                                        message = "Saúde dos serviços: ${if (allOk) "Todos operacionais" else "Alertas encontrados"}",
+                                        metadata = mapOf("services_count" to res.size, "all_ok" to allOk)
+                                    )
                                 }
                             },
                             enabled = !isCheckingHealth,
@@ -2105,9 +2185,23 @@ fun PhoneToolsTab() {
                             onClick = {
                                 isScanningNetwork = true
                                 coroutineScope.launch {
-                                    discoveredDevices = SentinelaRepository.discoverNetworkDevices()
+                                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                        category = "NETWORK",
+                                        action = "LAN_SCAN_STARTED",
+                                        severity = "INFO",
+                                        message = "Iniciada varredura de Smart TVs na LAN pelo smartphone"
+                                    )
+                                    val devs = SentinelaRepository.discoverNetworkDevices()
+                                    discoveredDevices = devs
                                     isScanningNetwork = false
-                                    Toast.makeText(context, "Varredura concluída: ${discoveredDevices?.size ?: 0} tela(s) encontrada(s)", Toast.LENGTH_SHORT).show()
+                                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                        category = "NETWORK",
+                                        action = "LAN_SCAN_FINISHED",
+                                        severity = "SUCCESS",
+                                        message = "Varredura de LAN concluída: ${devs.size} telas encontradas",
+                                        metadata = mapOf("devices_found" to devs.size)
+                                    )
+                                    Toast.makeText(context, "Varredura concluída: ${devs.size} tela(s) encontrada(s)", Toast.LENGTH_SHORT).show()
                                 }
                             },
                             enabled = !isScanningNetwork,
@@ -2506,6 +2600,13 @@ fun PhoneSettingsTab() {
                         onCheckedChange = {
                             isMasterActive = it
                             SentinelaRepository.isMasterAdmin = it
+                            com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                category = "SYSTEM",
+                                action = "MASTER_MODE_TOGGLED",
+                                severity = "INFO",
+                                message = "Modo Master VIP ${if (it) "ativado" else "desativado"} no smartphone",
+                                metadata = mapOf("enabled" to it)
+                            )
                             Toast.makeText(context, if (it) "⭐ Modo Master Ativado!" else "Modo Master Desativado", Toast.LENGTH_SHORT).show()
                         },
                         colors = SwitchDefaults.colors(
@@ -2552,6 +2653,13 @@ fun PhoneSettingsTab() {
                                         currentHost = host
                                         prefs.serverHost = host
                                         SentinelaConfig.currentHost = host
+                                        com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                            category = "NETWORK",
+                                            action = "SERVER_HOST_CHANGED",
+                                            severity = "INFO",
+                                            message = "Servidor NVR alterado para $host ($label)",
+                                            metadata = mapOf("host" to host, "label" to label)
+                                        )
                                         Toast.makeText(context, "Servidor alterado para $label", Toast.LENGTH_SHORT).show()
                                     }
                             ) {

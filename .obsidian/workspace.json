@@ -11,10 +11,14 @@
             "id": "85eba596a7863e00",
             "type": "leaf",
             "state": {
-              "type": "empty",
-              "state": {},
+              "type": "markdown",
+              "state": {
+                "file": "STATE.md",
+                "mode": "source",
+                "source": false
+              },
               "icon": "lucide-file",
-              "title": "Nova aba"
+              "title": "STATE"
             }
           }
         ]
@@ -182,5 +186,8 @@
     }
   },
   "active": "85eba596a7863e00",
-  "lastOpenFiles": []
+  "lastOpenFiles": [
+    "README.md",
+    "implementation_plan.md"
+  ]
 }

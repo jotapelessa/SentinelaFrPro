@@ -1216,12 +1216,22 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
         for dev in devices:
             results.append({"device": dev.friendly_name, "id": dev.device_identifier, "status": "pip_dispatched"})
     elif req.test_type == "simulated_detection":
+        import uuid
+        sim_test_id = f"sim_{uuid.uuid4().hex[:8]}"
+        target_cam = req.camera_name or "camera_secundaria"
+        server_ip = "192.168.1.247"
+        snap_url = f"http://{server_ip}:8088/frigate/api/{target_cam}/latest.jpg?h=720"
+        stream_url = f"http://{server_ip}:8088/go2rtc/stream.html?src={target_cam}&mode=mse&width=100%"
         await ws_manager.broadcast_json({
             "type": "FRIGATE_EVENT",
-            "camera": req.camera_name,
+            "test_id": sim_test_id,
+            "camera": target_cam,
             "label": req.label,
             "top_score": 0.96,
             "active": True,
+            "snapshot_url": snap_url,
+            "stream_url": stream_url,
+            "duration": duration,
             "timestamp": datetime.datetime.utcnow().isoformat()
         })
         for dev in devices:

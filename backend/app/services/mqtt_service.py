@@ -57,51 +57,56 @@ class MQTTService:
         self._processed_events[event_id] = True
 
     async def _get_telegram_policy(self) -> Dict[str, Any]:
-        """Dynamically loads live Telegram settings with 30s in-memory cache."""
-        # Return cached policy if still fresh
+        """Dynamically loads live Telegram settings with 30s in-memory cache. Zero-latency updates."""
+        import time
         if hasattr(self, '_tg_policy_cache') and self._tg_policy_cache:
-            import time
             if (time.time() - self._tg_policy_cache_time) < 30.0:
                 return self._tg_policy_cache
 
-        policy = {
-            "send_mode": "both",
-            "clip_duration_seconds": 15,
-            "allowed_events": ["person", "car", "motorcycle", "bus", "truck", "dog", "cat"],
-            "cooldown_seconds": 5.0
-        }
-        try:
-            from app.db.models import SystemSetting
-            async with AsyncSessionLocal() as session:
-                stmt = select(SystemSetting).where(
-                    SystemSetting.key.in_([
-                        "telegram_send_mode",
-                        "telegram_clip_duration_seconds",
-                        "telegram_allowed_events",
-                        "telegram_cooldown_seconds"
-                    ])
-                )
-                res = await session.execute(stmt)
-                for s in res.scalars().all():
-                    if s.key == "telegram_send_mode" and s.value:
-                        policy["send_mode"] = s.value.lower()
-                    elif s.key == "telegram_clip_duration_seconds" and s.value:
-                        policy["clip_duration_seconds"] = max(10, int(s.value))
-                    elif s.key == "telegram_allowed_events" and s.value:
-                        try:
-                            policy["allowed_events"] = json.loads(s.value)
-                        except Exception:
-                            pass
-                    elif s.key == "telegram_cooldown_seconds" and s.value:
-                        policy["cooldown_seconds"] = max(1.0, float(s.value))
-        except Exception as e:
-            logger.debug(f"Could not load live telegram policy: {e}")
+        async def fetch_and_cache():
+            policy = {
+                "send_mode": "both",
+                "clip_duration_seconds": 15,
+                "allowed_events": ["person", "car", "motorcycle", "bus", "truck", "dog", "cat"],
+                "cooldown_seconds": 5.0
+            }
+            try:
+                from app.db.models import SystemSetting
+                async with AsyncSessionLocal() as session:
+                    stmt = select(SystemSetting).where(
+                        SystemSetting.key.in_([
+                            "telegram_send_mode",
+                            "telegram_clip_duration_seconds",
+                            "telegram_allowed_events",
+                            "telegram_cooldown_seconds"
+                        ])
+                    )
+                    res = await session.execute(stmt)
+                    for s in res.scalars().all():
+                        if s.key == "telegram_send_mode" and s.value:
+                            policy["send_mode"] = s.value.lower()
+                        elif s.key == "telegram_clip_duration_seconds" and s.value:
+                            policy["clip_duration_seconds"] = max(10, int(s.value))
+                        elif s.key == "telegram_allowed_events" and s.value:
+                            try:
+                                policy["allowed_events"] = json.loads(s.value)
+                            except Exception:
+                                pass
+                        elif s.key == "telegram_cooldown_seconds" and s.value:
+                            policy["cooldown_seconds"] = max(1.0, float(s.value))
+            except Exception as e:
+                logger.debug(f"Could not load live telegram policy: {e}")
 
-        # Cache the result
-        import time
-        self._tg_policy_cache = policy
-        self._tg_policy_cache_time = time.time()
-        return policy
+            self._tg_policy_cache = policy
+            self._tg_policy_cache_time = time.time()
+            return policy
+
+        # Se já tiver um cache expirado, devolve o cache e atualiza em background para não bloquear (Zero-latency)
+        if hasattr(self, '_tg_policy_cache') and self._tg_policy_cache:
+            asyncio.create_task(fetch_and_cache())
+            return self._tg_policy_cache
+
+        return await fetch_and_cache()
 
     async def handle_frigate_event(self, payload: Dict[str, Any]):
         if not isinstance(payload, dict):

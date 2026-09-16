@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-16 09:35 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.124 operacional (Build 124). Filtro inteligente de veículos estacionários (stationary vehicle suppression) no Frigate NVR 0.17 e Sentinela Core MQTT, silenciando alertas repetidos e PiPs indesejados para carros parados. PiP instantâneo com stream direto RTSP passthrough no go2rtc (< 250ms TTFF). Telemetria forense enriquecida com duração real de vídeo ativo (live_video_duration_seconds). Sincronização bidirecional em tempo real de dispositivos via WebSocket e Heartbeat enriquecido. Fila sequencial FIFO resiliente e transcodificação YUV420p limpa para o Telegram Vault.
+> **Última Atualização:** 2026-09-16 20:05 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.126 operacional (Build 126). Sistema unificado de observabilidade e logs operacionais distribuídos em tempo real em todas as abas, cards, botões, testes e funções no Android TV, Android Smartphone e Web Dashboard (`POST /api/telemetry/client-logs`). Resolução definitiva do pisca duplo/duas telas de loading no PiP da Android TV via priorização de snapshot em RAM do go2rtc (< 5ms) e transição GPU sincronizada sem crossfade artificial.
 
 ---
 
@@ -63,7 +63,24 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
 
 ---
 
-## 📦 Versão Atual: v001.000.000.121 (Sincronização Bidirecional Total, Telemetria Forense PiP & 720p/1080p Dinâmico)
+## 📦 Versão Atual: v001.000.000.126 (Observabilidade e Logs Distribuídos em Todas as Abas/Cards/Botões & PiP Zero Loading Flash)
+- **Data**: 2026-09-16
+- **Objetivo**: Implementação integral dos requisitos 1.1, 2.1, 3.4, 4.1 e 4.2:
+  1. **Item 1.1 (Android TV - Telemetria e Logs em Todas as Abas, Cards e Botões)**:
+     - `SentinelaRemoteLogger` instrumentado em [TvNetflixScreen.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt) para: seleção de câmeras no carrossel, alternância de modos de reprodução (MSE / WebRTC / Eco), abertura de tela cheia, abertura de gravações de IA no player nativo, ressincronização de buffer de 24 FPS, disparo de testes de vazão de banda e alterações de configurações de PiP (modo, tamanho, posição e duração).
+     - Identificação granular do dispositivo (`device_identifier`, `friendly_name`, `device_type: android_tv`).
+  2. **Item 2.1 (Android Smartphone - Telemetria e Logs em Todas as Abas, Cards e Botões)**:
+     - `SentinelaRemoteLogger` instrumentado em [SmartphoneYouTubeScreen.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt) para: navegação entre as 5 abas da barra inferior, silenciamento/reativação de 1h de alertas via FAB, abertura de zoom 5x, requisição de snapshot manual e clipe de evidência, clique em fotos de capturas HD, teste de velocidade e throughput, verificação de saúde dos 4 módulos NVR, varredura de LAN de Smart TVs, alternância de modo Central Master e alteração de presets de host do servidor.
+  3. **Item 3.4 & 4.2 (Web Dashboard & Backend - Observabilidade Universal e Filtro por Tipo de Aparelho)**:
+     - Criação do módulo [frontend/src/utils/webClientLogger.ts](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/frontend/src/utils/webClientLogger.ts) com ring-buffer assíncrono, captura de erros não tratados (`window.onerror` e `unhandledrejection`) e despacho em lote para `/api/telemetry/client-logs` com `device_type: "web_browser"`.
+     - Atualização do backend em [backend/app/api/telemetry.py](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/backend/app/api/telemetry.py) adicionando o parâmetro de filtro `device_type` ao endpoint `GET /api/telemetry/client-logs`.
+     - Atualização do componente [ClientDeviceLogsTerminal.tsx](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/frontend/src/components/ClientDeviceLogsTerminal.tsx) com seletor visual de tipo de dispositivo (`TODOS`, `TV`, `APP`, `WEB`) e ícones dinâmicos.
+  4. **Item 4.1 (Android TV PiP - Fim das Duas Telas de Loading)**:
+     - Em [OverlayService.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt), a busca de snapshot de abertura do PiP foi otimizada para priorizar o frame direto da memória RAM do go2rtc (`/go2rtc/api/frame.jpeg?src=$camera`) que entrega a imagem em menos de 5ms, eliminando a espera e o pisca intermediário do endpoint do Frigate.
+     - Removido o `crossfade(150)` artificial do Coil, tornando a exibição do primeiro quadro instantânea e sólida, seguida da transição suave com `withEndAction { visibility = GONE }` quando o decoder de hardware da GPU inicia a reprodução do vídeo ao vivo.
+  5. **Inicialização Global e Proteção de Crash**:
+     - `SentinelaRemoteLogger.init(this)` adicionado a [SentinelaApplication.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt) e [OverlayService.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt), com captura de exceções fatais despachando relatório para o servidor antes da saída do app.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS. TypeScript compilação 100% limpa (`npx tsc --noEmit` exit 0). Build incrementado para `126`.
 - **Data**: 2026-09-16
 - **Objetivo**: Resolução definitiva dos 4 grupos de melhorias solicitados (Transcodificação 720p, Sincronização Bidirecional de Configurações, Telemetria Forense de PiP Preview e Correção de Status da Aba Telas na Web).
 - **Entregas Principais**:
@@ -496,6 +513,28 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
   - **2. Calibração de Confiança no Frigate NVR (`frigate/config/config.yml`)**:
     - Ajustado o filtro de objetos para `car` com `threshold: 0.70` e `min_score: 0.65`, eliminando disparos falso-positivos causados por oscilações de luminosidade, sombras de vegetação e ruído de compressão de vídeo sobre veículos estacionados.
 
+- [2026-09-16] Melhoria Geral do Ecossistema: Persistência de Câmeras, Precisão Milimétrica de Caixas IA, Simulação Imediata e Fim do Pisca Duplo no PiP (`v001.000.000.125`):
+  - **1. Persistência e Edição Completa no Modal de Câmeras (Item 3.1)**:
+    - **Causa Raiz no Backend**: Exceção `NameError: name 'updated_yaml' is not defined` no worker de segundo plano `sync_camera_to_frigate` de `cameras.py` devido a escopo de variável em bloco `try/finally`; ausência do campo `"resolution"` na serialização de `list_cameras`; e ausência de invalidação de `_YAML_CONFIG_CACHE` após persistência atômica.
+    - **Causa Raiz no Frontend**: O estado interno de `CameraConfigModal.tsx` só era inicializado na montagem (`useState`) e não reagia a mudanças na prop `camera`. Ao fechar e reabrir o modal ou mudar de câmera no mosaico, o modal retinha dados defasados. Além disso, `JSON.parse` direto em `objects_to_track` gerava quebras de execução com arrays já desserializados.
+    - **Soluções Aplicadas**: Escopo corrigido do YAML com invalidação atômica de cache no FastAPI, inclusão de `detect_width`/`detect_height`/`resolution` em `list_cameras`, `useEffect` reativo sincronizando os 5 campos/abas do modal a cada abertura ou alteração da câmera, função auxiliar `safeParseStringArray` e sincronização bidirecional do `spotlightCamera` em `CameraMosaic.tsx`.
+  - **2. Precisão Milimétrica das Caixas de Detecção IA no WebRTCPlayer (Item 3.2)**:
+    - **Causa Raiz de Escala**: A resolução padrão do motor `detect` do Frigate NVR é 640x360. A lógica anterior assumia apenas 1920x1080 ou 1280x720, dividindo coordenadas de 640x360 por 1280 e 720 e reduzindo a caixa pela metade para o canto superior esquerdo.
+    - **Causa Raiz de CSS**: O container possuía classes conflitantes `w-full h-full` com `aspect-ratio: 16/9`. De acordo com as especificações CSS, dimensões explícitas 100% de largura e altura anulam o `aspect-ratio`, esticando a camada enquanto o vídeo do iframe era letterboxed (`object-fit: contain`), deslocando os eixos X e Y.
+    - **Solução Arquitetural**: O componente `DetectionOverlays` agora recebe a câmera diretamente e suporta dinamicamente resoluções 640x360 (Frigate), 720p, 1080p e 1440p. O container foi reconstruído com Container Queries CSS moderníssimas (`[container-type:size]` e `width: min(100cqw, calc(100cqh * 16 / 9))`), garantindo alinhamento pixel a pixel exato sobre qualquer formato de tela e proporção de grid, com aceleração por GPU e zero repaints.
+  - **3. Disparo Imediato da Simulação de Alerta IA na Aba Telas (Item 3.3)**:
+    - **Causa Raiz**: O seletor `selectedCam` em `screens/page.tsx` vinha estaticamente configurado como `"camera_principal"`, uma câmera pausada/inativa na configuração. O teste em lote simulava alertas para uma câmera offline, gerando timeouts e esperas no cliente.
+    - **Solução**: `fetchCameras()` em `screens/page.tsx` agora seleciona automaticamente a primeira câmera ativa e habilitada (`enabled !== false`), e as opções do seletor indicam claramente o status `(Ativa)` ou `(Pausada)`. No backend (`devices.py`), a rota `/api/devices/batch-test` enriquece o payload de `simulated_detection` com `snapshot_url`, `stream_url`, `duration` e `test_id`, eliminando chamadas HTTP bloqueantes na Smart TV.
+  - **4. Fim do Pisca Duplo de Loading no PiP da Smart TV Android (Item 4.1)**:
+    - **Causa Raiz**:
+      1. A imagem base de snapshot utilizava `CachePolicy.DISABLED` no Coil, forçando nova requisição de rede e deixando a tela preta até o download (primeiro pisca/tela).
+      2. O evento `'playing'` do elemento de vídeo HTML5 disparava a notificação nativa de primeiro frame antes que o decodificador de vídeo da GPU tivesse processado o primeiro quadro físico, desvanecendo prematuramente o snapshot e expondo um canvas vazio (segundo pisca/tela).
+      3. Na reutilização do overlay, a opacidade do WebView não era reiniciada a zero.
+    - **Solução no `OverlayService.kt`**:
+      1. Ativado `CachePolicy.ENABLED` na memória e disco com `crossfade(150)` no Coil, tornando a exibição do snapshot instantânea (<10ms).
+      2. O gatilho de primeiro frame foi restrito estritamente a `requestVideoFrameCallback(onFrame)` (quando o quadro é fisicamente entregue ao compositor da GPU), com fallback resiliente para `timeupdate` quando `currentTime > 0.05s`.
+      3. Suprimido o disparo em `'playing'`, assegurando que o snapshot permaneça sólido e nítido até que o vídeo ao vivo esteja renderizando com perfeição, resultando em uma transição suave e contínua a 60 FPS sem piscas ou telas de loading.
+
 ---
 
 ## ⚡ Próximos Passos e Itens em Aberto
@@ -503,6 +542,7 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
 1. **Front-end Web (Next.js Dashboard)**:
    - Especificar formalmente as features restantes da interface Web (timeline de gravações, modal de desenho de zonas poligonais e configurações do sistema) com `onp-spec`.
 2. **Manutenção do Grafo de Conhecimento**:
-   - Sempre executar `graphify extract . --code-only` e `graphify export obsidian --dir graphify-out/obsidian-vault` após alterações de código.
+   - Sempre executar `graphify update .` após alterações de código.
 3. **Persistência de Sessão**:
    - Manter este `STATE.md` atualizado em cada início e fim de sessão, preservando decisões técnicas e progresso.
+

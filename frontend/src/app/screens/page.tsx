@@ -106,6 +106,16 @@ export default function ScreensPage() {
       if (res.ok) {
         const data = await res.json();
         setCameras(data);
+        if (Array.isArray(data) && data.length > 0) {
+          setSelectedCam((current) => {
+            const currentCam = data.find((c: any) => c.name === current);
+            if (!currentCam || currentCam.enabled === false) {
+              const firstActive = data.find((c: any) => c.enabled !== false);
+              return firstActive ? firstActive.name : data[0].name;
+            }
+            return current;
+          });
+        }
       }
     } catch (e) {
       console.error("Failed to fetch cameras:", e);
@@ -688,7 +698,7 @@ export default function ScreensPage() {
             >
               {cameras.map((c) => (
                 <option key={c.id} value={c.name} className="bg-slate-900 text-white">
-                  {c.friendly_name || c.name}
+                  {c.friendly_name || c.name} {c.enabled === false ? " (Pausada)" : " (Ativa)"}
                 </option>
               ))}
             </select>

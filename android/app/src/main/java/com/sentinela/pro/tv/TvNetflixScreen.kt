@@ -188,7 +188,16 @@ fun TvNetflixScreenCore(
                             heroModeFocusRequester = heroModeFocusRequester,
                             heroFullscreenFocusRequester = heroFullscreenFocusRequester,
                             onFocusCamera = { index -> focusedCameraIndex = index },
-                            onSelectCamera = { camera -> onCameraSelected(camera) },
+                            onSelectCamera = { camera ->
+                                SentinelaRemoteLogger.log(
+                                    category = "NAVIGATION",
+                                    action = "CAMERA_SELECTED",
+                                    severity = "INFO",
+                                    message = "Câmera ${camera.id} selecionada no carrossel da TV",
+                                    metadata = mapOf("camera" to camera.id, "name" to camera.name)
+                                )
+                                onCameraSelected(camera)
+                            },
                             onNavigateLeftToSidebar = { sidebarFocusRequesters.getOrNull(selectedTab.ordinal)?.requestFocus() }
                         )
                     }
@@ -213,7 +222,7 @@ fun TvNetflixScreenCore(
                                         message = "Disparo de PiP teste acionado para ${cam.id}",
                                         metadata = mapOf("camera" to cam.id)
                                     )
-                                    val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/frigate/api/${cam.id}/latest.jpg?h=720"
+                                    val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/api/frame.jpeg?src=${cam.id}"
                                     val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=${cam.id}&mode=mse&width=100%"
                                     com.sentinela.pro.tv.OverlayService.triggerPiP(
                                         context = context,
@@ -641,6 +650,13 @@ fun TvCamerasViewport(
                                         streamMode = nextMode
                                         selectedCamera.let { cam ->
                                             prefs.setCameraDefaultStreamMode(cam.id, nextMode)
+                                            SentinelaRemoteLogger.log(
+                                                category = "PLAYER",
+                                                action = "STREAM_MODE_CHANGED",
+                                                severity = "INFO",
+                                                message = "Modo de stream alterado para ${nextMode.uppercase()} na câmera ${cam.id}",
+                                                metadata = mapOf("camera" to cam.id, "mode" to nextMode)
+                                            )
                                         }
                                         Toast.makeText(context, "Modo alterado para: ${nextMode.uppercase()}", Toast.LENGTH_SHORT).show()
                                         true
@@ -668,6 +684,13 @@ fun TvCamerasViewport(
                             streamMode = nextMode
                             selectedCamera.let { cam ->
                                 prefs.setCameraDefaultStreamMode(cam.id, nextMode)
+                                SentinelaRemoteLogger.log(
+                                    category = "PLAYER",
+                                    action = "STREAM_MODE_CHANGED",
+                                    severity = "INFO",
+                                    message = "Modo de stream alterado para ${nextMode.uppercase()} na câmera ${cam.id}",
+                                    metadata = mapOf("camera" to cam.id, "mode" to nextMode)
+                                )
                             }
                             Toast.makeText(context, "Modo alterado para: ${nextMode.uppercase()}", Toast.LENGTH_SHORT).show()
                         }
@@ -728,6 +751,15 @@ fun TvCamerasViewport(
                                 when (keyEvent.key) {
                                     Key.Enter, Key.DirectionCenter -> {
                                         isFullscreenLiveOpen = true
+                                        selectedCamera.let { cam ->
+                                            SentinelaRemoteLogger.log(
+                                                category = "PLAYER",
+                                                action = "FULLSCREEN_OPENED",
+                                                severity = "INFO",
+                                                message = "Câmera ${cam.id} aberta em tela cheia na TV",
+                                                metadata = mapOf("camera" to cam.id)
+                                            )
+                                        }
                                         true
                                     }
                                     Key.DirectionLeft -> {
@@ -744,6 +776,15 @@ fun TvCamerasViewport(
                         }
                         .clickable(interactionSource = fsInteractionSource, indication = null) {
                             isFullscreenLiveOpen = true
+                            selectedCamera.let { cam ->
+                                SentinelaRemoteLogger.log(
+                                    category = "PLAYER",
+                                    action = "FULLSCREEN_OPENED",
+                                    severity = "INFO",
+                                    message = "Câmera ${cam.id} aberta em tela cheia na TV",
+                                    metadata = mapOf("camera" to cam.id)
+                                )
+                            }
                         }
                         .focusable(interactionSource = fsInteractionSource)
                 ) {
@@ -1070,6 +1111,13 @@ fun TvRecordingsViewport(
                                         keyEvent.key == Key.Enter || keyEvent.key == Key.DirectionCenter -> {
                                             selectedClip = clip
                                             isClipPlayerOpen = true
+                                            SentinelaRemoteLogger.log(
+                                                category = "PLAYER",
+                                                action = "RECORDING_CLIP_OPENED",
+                                                severity = "INFO",
+                                                message = "Gravação IA ${clip.id} da câmera ${clip.cameraName} aberta no player da TV",
+                                                metadata = mapOf("clip_id" to clip.id, "camera" to clip.cameraName, "label" to clip.label)
+                                            )
                                             true
                                         }
                                         else -> false
@@ -1090,6 +1138,13 @@ fun TvRecordingsViewport(
                             .clickable(interactionSource = interactionSource, indication = null) {
                                 selectedClip = clip
                                 isClipPlayerOpen = true
+                                SentinelaRemoteLogger.log(
+                                    category = "PLAYER",
+                                    action = "RECORDING_CLIP_OPENED",
+                                    severity = "INFO",
+                                    message = "Gravação IA ${clip.id} da câmera ${clip.cameraName} aberta no player da TV",
+                                    metadata = mapOf("clip_id" to clip.id, "camera" to clip.cameraName, "label" to clip.label)
+                                )
                             }
                     ) {
                         TvCaptureCard(clip = clip, isFocused = isFocused)
@@ -2572,6 +2627,12 @@ fun CardSubsistemasEComandos(
                 activeColor = TvColors.CyberCyan,
                 modifier = Modifier.weight(1f),
                 onClick = {
+                    SentinelaRemoteLogger.log(
+                        category = "TOOLS",
+                        action = "BUFFER_SYNC_CLICKED",
+                        severity = "INFO",
+                        message = "Buffers de vídeo ressincronizados na TV"
+                    )
                     onRefresh()
                     onTriggerFeedback("Streams Ressincronizados!")
                 }
@@ -3269,6 +3330,13 @@ fun TvSettingsViewport(
                                     .clickable(interactionSource = interactionSource, indication = null) {
                                         playerMode = modeKey
                                         prefs.pipPlayerMode = modeKey
+                                        SentinelaRemoteLogger.log(
+                                            category = "PIP",
+                                            action = "PIP_PLAYER_MODE_CHANGED",
+                                            severity = "INFO",
+                                            message = "Modo do Player PiP alterado para $modeTitle na TV",
+                                            metadata = mapOf("mode" to modeKey)
+                                        )
                                         Toast.makeText(context, "Modo do Player: $modeTitle", Toast.LENGTH_SHORT).show()
                                     }
                             ) {
@@ -3360,6 +3428,13 @@ fun TvSettingsViewport(
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 sizeIndex = size.ordinal
                                                 prefs.pipSizeIndex = size.ordinal
+                                                SentinelaRemoteLogger.log(
+                                                    category = "PIP",
+                                                    action = "PIP_SIZE_CHANGED",
+                                                    severity = "INFO",
+                                                    message = "Tamanho do PiP alterado para ${size.label} na TV",
+                                                    metadata = mapOf("size" to size.name, "dimensions" to "${size.width}x${size.height}")
+                                                )
                                                 Toast.makeText(context, "Tamanho PiP: ${size.label}", Toast.LENGTH_SHORT).show()
                                                 settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                             }
@@ -3447,6 +3522,13 @@ fun TvSettingsViewport(
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 posIndex = pos.ordinal
                                                 prefs.pipPositionIndex = pos.ordinal
+                                                SentinelaRemoteLogger.log(
+                                                    category = "PIP",
+                                                    action = "PIP_POSITION_CHANGED",
+                                                    severity = "INFO",
+                                                    message = "Posição do PiP alterada para ${pos.label} na TV",
+                                                    metadata = mapOf("position" to pos.name)
+                                                )
                                                 Toast.makeText(context, "Posição PiP: ${pos.label}", Toast.LENGTH_SHORT).show()
                                                 settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                             }
@@ -3524,6 +3606,13 @@ fun TvSettingsViewport(
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 durIndex = dur.ordinal
                                                 prefs.pipDurationIndex = dur.ordinal
+                                                SentinelaRemoteLogger.log(
+                                                    category = "PIP",
+                                                    action = "PIP_DURATION_CHANGED",
+                                                    severity = "INFO",
+                                                    message = "Duração do PiP alterada para ${dur.label} na TV",
+                                                    metadata = mapOf("duration_seconds" to dur.seconds)
+                                                )
                                                 Toast.makeText(context, "Duração PiP: ${dur.label}", Toast.LENGTH_SHORT).show()
                                                 settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                             }

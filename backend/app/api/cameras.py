@@ -270,6 +270,11 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
     output = []
     for c in cameras:
         cam_stat = frigate_stats.get(c.name, {})
+        f_cam_cfg = frigate_cams.get(c.name, {}) if isinstance(frigate_cams, dict) else {}
+        detect_cfg = f_cam_cfg.get("detect", {}) if isinstance(f_cam_cfg, dict) else {}
+        detect_w = detect_cfg.get("width", 640) if isinstance(detect_cfg, dict) else 640
+        detect_h = detect_cfg.get("height", 360) if isinstance(detect_cfg, dict) else 360
+
         cam_dict = {
             "id": c.id,
             "name": c.name,
@@ -285,6 +290,9 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
             "detect_fps": getattr(c, "detect_fps", 5) or 5,
             "motion_threshold": getattr(c, "motion_threshold", 25) or 25,
             "record_mode": c.record_mode,
+            "resolution": getattr(c, "resolution", "1080p") or "1080p",
+            "detect_width": detect_w,
+            "detect_height": detect_h,
             "stream_mode": getattr(c, "stream_mode", "webrtc") or "webrtc",
             "eco_fps": getattr(c, "eco_fps", 10) or 10,
             "record_fps": getattr(c, "record_fps", 24) or 24,
@@ -550,6 +558,10 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
 
     await db.commit()
     await db.refresh(cam)
+
+    global _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
+    _YAML_CONFIG_CACHE = {}
+    _YAML_CONFIG_TIME = 0.0
 
     # Only sync Frigate config + restart when fields that affect the NVR pipeline changed.
     # Frontend-only preferences (stream_mode, eco_fps, notify_*, cooldown, etc.) must NOT
@@ -1542,6 +1554,8 @@ async def sync_camera_to_frigate(cam: Camera):
 
     # Salva e recarrega de forma autoritativa no Frigate via API oficial
     try:
+        cfg_sanitized = sanitize_frigate_config(cfg)
+        updated_yaml = yaml.dump(cfg_sanitized, default_flow_style=False, allow_unicode=True, sort_keys=False)
         async with httpx.AsyncClient(timeout=10.0) as client:
             save_resp = await client.post(
                 f"{settings.FRIGATE_API_URL}/api/config/save?save_option=restart",
