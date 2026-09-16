@@ -3126,11 +3126,18 @@ fun TvSettingsViewport(
 
         // 2. Realtime WebSocket listener for remote updates (from Smartphone or Web Sentinela)
         try {
-            com.sentinela.pro.network.SentinelaWebSocket.events.collect { event ->
-                val evType = event.optString("type", "")
-                if (evType == "DEVICE_CONFIG_UPDATED" || evType == "DEVICE_POLICY_UPDATE") {
-                    val targetIdent = event.optString("device_identifier", "")
-                    if (targetIdent == prefs.deviceIdentifier) {
+            val ws = com.sentinela.pro.network.SentinelaWebSocket(
+                serverUrl = com.sentinela.pro.SentinelaConfig.currentHost,
+                deviceIdentifier = prefs.deviceIdentifier,
+                deviceType = "android_tv"
+            )
+            launch { ws.connectAndListen() }
+            launch {
+                ws.events.collect { event ->
+                    val evType = event.optString("type", "")
+                    if (evType == "DEVICE_CONFIG_UPDATED" || evType == "DEVICE_POLICY_UPDATE") {
+                        val targetIdent = event.optString("device_identifier", "")
+                        if (targetIdent == prefs.deviceIdentifier) {
                         val qual = event.optString("stream_quality", "")
                         if (qual.isNotBlank()) {
                             streamQuality = qual
