@@ -85,6 +85,13 @@ class OverlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
+        val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
+                packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
+        if (!isTv) {
+            stopSelf()
+            return
+        }
         com.sentinela.pro.logging.SentinelaRemoteLogger.init(this)
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
         createNotificationChannel()
@@ -302,6 +309,13 @@ class OverlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
+        val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
+                packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
+        if (!isTv) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         val action = intent?.action
         if (action == "ACTION_SHOW_PIP") {
             val cam = intent.getStringExtra("camera") ?: "camera_secundaria"
@@ -318,6 +332,13 @@ class OverlayService : Service() {
         val isPipShowing = kotlinx.coroutines.flow.MutableStateFlow(false)
 
         fun triggerPiP(context: Context, camera: String = "camera_secundaria", label: String = "TESTE PIP", testId: String? = null, snapshotUrl: String? = null, streamUrl: String? = null) {
+            val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
+            val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
+                    context.packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
+            if (!isTv) {
+                // Smartphones do not have or run PiP preview - return silently
+                return
+            }
             try {
                 val intent = Intent(context, OverlayService::class.java).apply {
                     action = "ACTION_SHOW_PIP"
@@ -333,7 +354,7 @@ class OverlayService : Service() {
                     context.startService(intent)
                 }
             } catch (e: Exception) {
-                android.util.Log.e("OverlayService", "Failed to trigger PiP: ${e.message}")
+                android.util.Log.e("OverlayService", "Failed to trigger PiP on TV: ${e.message}")
             }
         }
     }
@@ -425,6 +446,13 @@ class OverlayService : Service() {
         overrideSize: String? = null,
         overrideDuration: Int? = null
     ) {
+        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
+        val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
+                packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
+        if (!isTv) {
+            return
+        }
+
         pipJob?.cancel()
         pipSessionStartTimeMs = System.currentTimeMillis()
         pipTtffMs = 0L

@@ -45,8 +45,8 @@ class MainActivity : ComponentActivity() {
             )
         )
 
-        // Start background service for PiP & WebSocket listener if on Android TV OR if overlay permission granted on mobile/tablet
-        val shouldStartOverlay = isTv() || (prefs.allowPipAlerts && hasOverlayPermission())
+        // Start background service for PiP & WebSocket listener STRICTLY on Android TV
+        val shouldStartOverlay = isTv()
         if (shouldStartOverlay) {
             try {
                 val intent = Intent(this, OverlayService::class.java)
@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
                     startService(intent)
                 }
             } catch (e: Exception) {
-                Log.e("MainActivity", "Failed to start OverlayService: ${e.message}")
+                Log.e("MainActivity", "Failed to start OverlayService on TV: ${e.message}")
             }
         }
 

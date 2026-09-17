@@ -1,5 +1,4 @@
 {
-  "0": "PipPosition",
   "1": "useSentinelaStore",
   "2": "devices.py",
   "3": "OverlayService",
@@ -22,7 +21,6 @@
   "20": "compilerOptions",
   "21": "WebSocketManager",
   "22": "🛠️ Guia de Compilação do Sentinela Frigate Pro no GitHub Codespaces",
-  "23": "CameraItem",
   "24": "TelegramVideoQueue",
   "25": "dependencies",
   "26": "Histórias",
@@ -34,7 +32,6 @@
   "32": "🛡️ Sentinela Frigate Pro",
   "33": "dependencies",
   "34": "Spec: Sentinela Core Ecosystem (Web, Mobile & Orquestrador)",
-  "35": "PipSize",
   "36": "manifest.json",
   "37": "AuditLog",
   "38": "SentinelaPreferences",
@@ -54,7 +51,6 @@
   "52": "Run and deploy your AI Studio app",
   "53": "Tasks: Integração Frigate NVR 0.17 & go2rtc",
   "54": "Settings",
-  "55": ".onCreate",
   "56": "graphify.js",
   "57": "AGENTS.md",
   "58": "execution.md",
@@ -64,7 +60,6 @@
   "62": "next-env.d.ts",
   "63": "postcss.config.mjs",
   "64": "backup/page.tsx",
-  "65": "settings/page.tsx",
   "66": "storage/page.tsx",
   "67": "telegram/page.tsx",
   "68": "tailwind.config.ts",
@@ -75,7 +70,6 @@
   "73": "sentinela-pro-mobile-nvr/vite.config.ts",
   "74": "sentinela-pro-tv/vite.config.ts",
   "75": "app/build.gradle.kts",
-  "76": "X509TrustManager",
   "77": "PiPGatewayService",
   "78": "get_audit_trail",
   "79": "android/build.gradle.kts",
@@ -101,6 +95,5 @@
   "99": "telegram-vault/tasks.md",
   "100": "next",
   "101": "generate_android_icons.py",
-  "102": "CaptureEvent",
   "103": "clear_client_device_logs"
 }

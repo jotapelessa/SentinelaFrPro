@@ -2,9 +2,11 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Send, HardDrive, Activity, Terminal, Moon, Volume2, VolumeX, ArrowRight, ShieldCheck, Check, Trash2, RefreshCw, AlertTriangle, Sparkles, FolderArchive, Layers } from "lucide-react";
+import { Send, HardDrive, Activity, Terminal, Moon, Volume2, VolumeX, ArrowRight, ShieldCheck, Check, Trash2, RefreshCw, AlertTriangle, Sparkles, FolderArchive, Layers, PictureInPicture2 } from "lucide-react";
+import { useSentinelaStore } from "@/store/useSentinelaStore";
 
 export default function SettingsHubPage() {
+  const { isWebPipEnabled, toggleWebPip } = useSentinelaStore();
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [dndEnabled, setDndEnabled] = useState(false);
   const [dndStart, setDndStart] = useState(23);
@@ -335,6 +337,33 @@ export default function SettingsHubPage() {
         </div>
         <p className="text-xs text-slate-400">
           Toca um sinal sonoro suave quando uma pessoa for detectada no portão ou zonas prioritárias.
+        </p>
+      </div>
+
+      {/* 📺 Prévia PiP Web Automática */}
+      <div className="glass-panel rounded-2xl p-6 border border-slate-800 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            <PictureInPicture2 className={`w-5 h-5 ${isWebPipEnabled ? "text-cyan-400" : "text-slate-500"}`} />
+            <div>
+              <h2 className="text-base font-bold text-white">Prévia PiP Web Automática</h2>
+              <span className="text-[10px] font-mono text-cyan-400 font-bold bg-cyan-950/60 px-1.5 py-0.5 rounded border border-cyan-500/30">
+                {isWebPipEnabled ? "ATIVADO" : "PAUSADO"}
+              </span>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={toggleWebPip}
+            className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${
+              isWebPipEnabled ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/30" : "bg-slate-800 text-slate-400 border-slate-700"
+            }`}
+          >
+            {isWebPipEnabled ? "PiP Ativado 📺" : "Desativado ⏸️"}
+          </button>
+        </div>
+        <p className="text-xs text-slate-400">
+          Abre automaticamente uma janela flutuante com streaming ao vivo (MSE) no canto da tela quando detecções de segurança ou testes de câmeras ocorrerem no navegador.
         </p>
       </div>
 

@@ -146,6 +146,7 @@ interface SentinelaState {
   liveObjectCounts: Record<string, Record<string, number>>;
   audioAlertEnabled: boolean;
   showZonesOverlay: boolean;
+  isWebPipEnabled: boolean;
   
   setTelemetry: (data: TelemetryData) => void;
   setCameras: (cameras: Camera[]) => void;
@@ -162,6 +163,8 @@ interface SentinelaState {
   setObjectCount: (cam: string, label: string, count: number) => void;
   toggleAudioAlert: () => void;
   toggleZonesOverlay: () => void;
+  setWebPipEnabled: (enabled: boolean) => void;
+  toggleWebPip: () => void;
 }
 
 export const useSentinelaStore = create<SentinelaState>((set) => ({
@@ -185,6 +188,7 @@ export const useSentinelaStore = create<SentinelaState>((set) => ({
   liveObjectCounts: {},
   audioAlertEnabled: true,
   showZonesOverlay: true,
+  isWebPipEnabled: typeof window !== "undefined" ? localStorage.getItem("sentinela_web_pip_enabled") !== "false" : true,
 
   setTelemetry: (data) => set({ telemetry: data }),
   setCameras: (cameras) => set({ cameras }),
@@ -221,5 +225,18 @@ export const useSentinelaStore = create<SentinelaState>((set) => ({
     };
   }),
   toggleAudioAlert: () => set((state) => ({ audioAlertEnabled: !state.audioAlertEnabled })),
-  toggleZonesOverlay: () => set((state) => ({ showZonesOverlay: !state.showZonesOverlay }))
+  toggleZonesOverlay: () => set((state) => ({ showZonesOverlay: !state.showZonesOverlay })),
+  setWebPipEnabled: (enabled) => {
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sentinela_web_pip_enabled", String(enabled));
+    }
+    set({ isWebPipEnabled: enabled });
+  },
+  toggleWebPip: () => set((state) => {
+    const next = !state.isWebPipEnabled;
+    if (typeof window !== "undefined") {
+      localStorage.setItem("sentinela_web_pip_enabled", String(next));
+    }
+    return { isWebPipEnabled: next };
+  })
 }));

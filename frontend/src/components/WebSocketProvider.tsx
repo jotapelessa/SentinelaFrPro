@@ -100,8 +100,13 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       try {
         const isHttps = typeof window !== "undefined" && window.location.protocol === "https:";
         const defaultWsProto = isHttps ? "wss:" : "ws:";
-        const wsUrl = process.env.NEXT_PUBLIC_WS_URL || `${defaultWsProto}//${window.location.host}/ws`;
-        ws = new WebSocket(wsUrl);
+        const host = typeof window !== "undefined" ? window.location.host : "localhost:8088";
+        let targetWsUrl = process.env.NEXT_PUBLIC_WS_URL || "";
+        if (!targetWsUrl.startsWith("ws://") && !targetWsUrl.startsWith("wss://")) {
+          const path = targetWsUrl.startsWith("/") ? targetWsUrl : "/ws";
+          targetWsUrl = `${defaultWsProto}//${host}${path}`;
+        }
+        ws = new WebSocket(targetWsUrl);
 
         ws.onopen = () => {
           if (isActive) {

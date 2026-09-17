@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
 import { X, Maximize2, ShieldAlert, Radio, PictureInPicture2, ExternalLink } from "lucide-react";
+import { useSentinelaStore } from "@/store/useSentinelaStore";
 
 interface PipAlertData {
   type: string;
@@ -16,6 +17,7 @@ interface PipAlertData {
 }
 
 export const WebPipAlertModal: React.FC = () => {
+  const isWebPipEnabled = useSentinelaStore((state) => state.isWebPipEnabled);
   const [activeAlert, setActiveAlert] = useState<PipAlertData | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(12);
   const [isMultiTabPipActive, setIsMultiTabPipActive] = useState<boolean>(false);
@@ -157,6 +159,8 @@ export const WebPipAlertModal: React.FC = () => {
 
   useEffect(() => {
     const handlePipAlert = (e: Event) => {
+      if (!isWebPipEnabled) return;
+
       const customEvent = e as CustomEvent<PipAlertData>;
       const detail = customEvent.detail;
       if (!detail || !detail.camera) return;
@@ -203,7 +207,7 @@ export const WebPipAlertModal: React.FC = () => {
       if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
     };
-  }, [triggerDesktopNotification, updatePipWindowFeed]);
+  }, [triggerDesktopNotification, updatePipWindowFeed, isWebPipEnabled]);
 
   const handleClose = () => {
     if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
@@ -217,9 +221,10 @@ export const WebPipAlertModal: React.FC = () => {
     }
   };
 
-  if (!activeAlert) return null;
+  if (!activeAlert || !isWebPipEnabled) return null;
 
-  const streamSrc = activeAlert.stream_url || `/go2rtc/stream.html?src=${encodeURIComponent(activeAlert.camera)}&mode=mse`;
+  const baseStreamSrc = activeAlert.stream_url || `/go2rtc/stream.html?src=${encodeURIComponent(activeAlert.camera)}&mode=mse`;
+  const streamSrc = baseStreamSrc.includes("muted=") ? baseStreamSrc : `${baseStreamSrc}&muted=1`;
 
   return (
     <div className="fixed bottom-6 right-6 w-80 md:w-96 z-50 bg-slate-950/95 backdrop-blur-xl border border-cyan-500/40 rounded-2xl shadow-2xl shadow-cyan-950/40 overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300">

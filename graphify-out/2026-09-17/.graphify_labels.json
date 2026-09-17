@@ -21,7 +21,7 @@
   "19": "api/telemetry.py",
   "20": "compilerOptions",
   "21": "WebSocketManager",
-  "22": "TvNetflixScreen.kt",
+  "22": "🛠️ Guia de Compilação do Sentinela Frigate Pro no GitHub Codespaces",
   "23": "CameraItem",
   "24": "TelegramVideoQueue",
   "25": "dependencies",
@@ -34,7 +34,7 @@
   "32": "🛡️ Sentinela Frigate Pro",
   "33": "dependencies",
   "34": "Spec: Sentinela Core Ecosystem (Web, Mobile & Orquestrador)",
-  "35": "Models.kt",
+  "35": "PipSize",
   "36": "manifest.json",
   "37": "AuditLog",
   "38": "SentinelaPreferences",
@@ -101,6 +101,6 @@
   "99": "telegram-vault/tasks.md",
   "100": "next",
   "101": "generate_android_icons.py",
-  "102": "SentinelaWebSocket",
+  "102": "CaptureEvent",
   "103": "clear_client_device_logs"
 }
