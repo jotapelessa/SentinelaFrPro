@@ -1,6 +1,6 @@
 {
   "name": "sentinela-dashboard",
-  "version": "001.000.000.131",
+  "version": "001.000.000.132",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3000",

@@ -126,6 +126,20 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 snapshot_url: data.snapshot_url
               };
               addEvent(event);
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("pip_alert", {
+                  detail: {
+                    type: "pip_alert",
+                    camera: data.camera,
+                    label: data.label,
+                    score: data.score,
+                    zone: data.zone,
+                    event_id: data.event_id,
+                    snapshot_url: data.snapshot_url,
+                    stream_url: `/go2rtc/stream.html?src=${encodeURIComponent(data.camera)}&mode=mse`
+                  }
+                }));
+              }
               if (audioEnabledRef.current) {
                 playAlertChime();
               }

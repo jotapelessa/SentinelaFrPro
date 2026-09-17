@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-17 07:55 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.131 operacional (Build 131). Otimização global de servidores Frigate, Sentinela Core, APKs, go2rtc e Mosquitto. Resolução definitiva dos gargalos de salvamento (SQLite WAL + busy_timeout) e temperatura (unificação de inputs FFmpeg roles: [record, detect]), segregação estrita de PiP Preview (ausente no smartphone, exclusivo na TV e no Web Dashboard com suporte avançado a Janela Flutuante Always-On-Top Document Picture-in-Picture e notificações nativas do SO para navegação em outras abas).
+> **Última Atualização:** 2026-09-17 08:15 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.132 operacional (Build 132). Otimização global de servidores Frigate, Sentinela Core, APKs, go2rtc e Mosquitto. Resolução definitiva dos gargalos de salvamento (SQLite WAL + busy_timeout), temperatura (unificação de inputs FFmpeg roles: [record, detect]), segregação estrita de PiP Preview (ausente no smartphone, exclusivo na TV e no Web Dashboard) e resolução dos problemas 3.2 e 4.2: broadcast imediato de pip_alert via WebSocket para navegadores web no pip_gateway.py, disparo automático de stream ao vivo em NEW_DETECTION no WebPipAlertModal, unificação do AlertToast para erradicar colisões de z-index e suporte completo a Document Picture-in-Picture Multi-Abas e Notificações nativas do S.O.
 
 ---
 

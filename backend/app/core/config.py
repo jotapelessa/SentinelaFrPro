@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "Sentinela Frigate Core API"
     APP_TITLE: str = "Sentinela NVR Core"
     APP_NAME: str = "Sentinela NVR Core"
-    VERSION: str = "001.000.000.131"
-    APP_VERSION: str = "001.000.000.131"
+    VERSION: str = "001.000.000.132"
+    APP_VERSION: str = "001.000.000.132"
     API_V1_STR: str = "/api"
     ENVIRONMENT: str = "production"
     DEBUG: bool = False

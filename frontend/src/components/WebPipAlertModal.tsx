@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
+import Link from "next/link";
 import { X, Maximize2, ShieldAlert, Radio, PictureInPicture2, ExternalLink } from "lucide-react";
 
 interface PipAlertData {
@@ -272,10 +273,20 @@ export const WebPipAlertModal: React.FC = () => {
         </div>
       </div>
 
-      {/* Rodapé com Countdown Bar */}
-      <div className="px-3 py-2 bg-slate-900/60 flex items-center justify-between text-[11px] text-slate-400">
-        <span>Zona: <strong className="text-slate-200">{activeAlert.zone || "Geral"}</strong></span>
-        <span className="font-mono text-cyan-400 text-[10px] font-bold">Auto-fechar: {timeLeft}s</span>
+      {/* Rodapé com Ação Rápida e Countdown Bar */}
+      <div className="px-3 py-2 bg-slate-900/60 flex items-center justify-between text-[11px] text-slate-400 gap-2">
+        <span className="truncate">Zona: <strong className="text-slate-200">{activeAlert.zone || "Geral"}</strong></span>
+        <div className="flex items-center gap-2 shrink-0">
+          <Link
+            href="/events"
+            onClick={handleClose}
+            className="inline-flex items-center gap-1 text-[10px] font-bold text-cyan-300 hover:text-cyan-100 bg-cyan-950/80 hover:bg-cyan-900/80 px-2 py-0.5 rounded border border-cyan-500/30 transition shadow-sm"
+          >
+            <ExternalLink className="w-2.5 h-2.5" />
+            <span>Ver Evento</span>
+          </Link>
+          <span className="font-mono text-cyan-400 text-[10px] font-bold">{timeLeft}s</span>
+        </div>
       </div>
       <div className="w-full h-1 bg-slate-800 overflow-hidden">
         <div 

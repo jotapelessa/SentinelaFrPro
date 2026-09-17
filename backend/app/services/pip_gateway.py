@@ -130,12 +130,27 @@ class PiPGatewayService:
             logger.info("PiP alert skipped due to active Do-Not-Disturb (DND) schedule.")
             return {"status": "skipped", "reason": "dnd_active"}
 
+        from app.api.ws import ws_manager
+
+        # 1. Transmissão imediata (<10ms) via WebSocket para navegadores Web (Web Dashboard / PiP Multi-Abas)
+        try:
+            await ws_manager.broadcast_json({
+                "type": "pip_alert",
+                "camera": camera_name,
+                "label": label,
+                "snapshot_url": snapshot_url,
+                "stream_url": stream_url or f"/go2rtc/stream.html?src={camera_name}&mode=mse",
+                "duration_seconds": duration_seconds,
+                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+            })
+        except Exception as ws_err:
+            logger.debug(f"Erro ao transmitir pip_alert para WebSocket web: {ws_err}")
+
         devices = await self.get_active_tv_devices(camera_name=camera_name, label=label)
         if not devices:
-            logger.info(f"No paired TV devices found for PiP dispatch (Camera: {camera_name}, Label: {label}).")
-            return {"status": "no_devices", "dispatched": 0}
+            logger.info(f"No paired TV devices found for PiP dispatch (Camera: {camera_name}, Label: {label}). Web broadcast enviado.")
+            return {"status": "success", "web_broadcast": True, "dispatched": 0}
 
-        from app.api.ws import ws_manager
         results = []
         async with httpx.AsyncClient(timeout=3.0) as client:
             for dev in devices:
