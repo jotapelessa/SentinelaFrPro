@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-17 03:35 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.128 operacional (Build 128). Correção crítica de compilação Android TV e Smartphone no CI/CD (#287) e estabilização definitiva de timestamps RTSP (DTS/PTS) com `-avoid_negative_ts make_zero` no Frigate NVR 0.17.
+> **Última Atualização:** 2026-09-17 04:15 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.129 operacional (Build 129). Otimização e deduplicação de câmeras ativas na Android TV (resolvendo 3 cards repetidos), alinhamento responsivo em proporção 16:9 dinâmica no Smartphone e incremento de estabilidade geral.
 
 ---
 
@@ -570,6 +570,16 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
       1. Em `go2rtc.streams`, o producer inválido foi removido, definindo diretamente `rtsp://192.168.1.6:8554/live` como fonte única.
       2. As roles `record` e `detect` foram unificadas sob uma única entrada de input `rtsp://127.0.0.1:8554/camera_secundaria` com `input_args: preset-rtsp-restream`. O Frigate gerencia um único processo FFmpeg com aceleração Intel QSV, gravando segmentos MP4 sem re-encode (`-c copy`) e escalonando internamente a 5 FPS para o detector OpenVINO.
       3. Testes provados: `node --test test/*.js` 100% PASS (31/31), logs do Frigate limpos com 0 erros de cseq e telemetria de 1 produtor / 1 consumidor constante no go2rtc.
+
+  - **6. Otimização de Câmeras e Alinhamento de UI na Android TV e Smartphone (Build 129)**:
+    - **Câmeras Repetidas na TV (Item 1.1)**:
+      - **Causa Raiz**: O Frigate e a REST API retornavam todas as 3 câmeras cadastradas (`camera_secundaria` [enabled=true], `camera_principal` [enabled=false], `cam_192_168_1_136` [enabled=false]). O app TV renderizava a lista sem filtrar por `enabled == true`, e ambas as câmeras inativas faziam fallback para o stream ativo da `camera_secundaria`, gerando 3 cards idênticos da mesma câmera na tela.
+      - **Soluções Aplicadas**: Filtro de câmeras ativas (`.filter { it.enabled }.distinctBy { it.name }`) aplicado em [SentinelaRepository.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt) e em [TvNetflixScreen.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt). Redução imediata de 66% de consumo de instâncias MediaCodec de hardware.
+    - **Alinhamento do Player de Vídeo no Smartphone (Item 2.1)**:
+      - **Causa Raiz**: Em [SmartphoneYouTubeScreen.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt), o feed de vídeo utilizava altura fixa de 230dp (`height(230.dp)`), quebrando proporções em smartphones com telas ultra-wide (19.5:9 ou 20:9).
+      - **Solução Aplicada**: Proporção padronizada com `aspectRatio(16f / 9f)` dinâmico e auto-ajustável.
+    - **Incremento de Versão**:
+      - Atualizado ecossistema para a versão **v001.000.000.129** (Build 129) em `version.properties`, backend FastAPI, Next.js dashboard e APKs.
 
 ---
 

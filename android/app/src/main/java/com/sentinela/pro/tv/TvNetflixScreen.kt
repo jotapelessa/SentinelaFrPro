@@ -73,7 +73,10 @@ fun TvNetflixScreen(
     onRefresh: () -> Unit = {}
 ) {
     val entities = remember(cameras, SentinelaConfig.currentHost) {
-        cameras.mapIndexed { idx, cam -> cam.toEntity(idx, SentinelaConfig.currentHost) }
+        cameras
+            .filter { it.enabled }
+            .distinctBy { it.name }
+            .mapIndexed { idx, cam -> cam.toEntity(idx, SentinelaConfig.currentHost) }
     }
 
     TvNetflixScreenCore(

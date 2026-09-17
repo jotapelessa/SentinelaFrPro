@@ -519,7 +519,7 @@ fun PhoneCameraStreamCard(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(230.dp)
+                    .aspectRatio(16f / 9f)
                     .clip(SentinelaShapes.CameraCard)
                     .background(Color.Black)
                     .pointerInput(Unit) {

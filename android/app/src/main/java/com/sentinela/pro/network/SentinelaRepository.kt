@@ -367,7 +367,8 @@ object SentinelaRepository {
         if (list.isEmpty()) {
             list.add(CameraItem("camera_secundaria", "Câmera IP ONVIF (192.168.1.6)", true))
         }
-        list
+        // Retorna apenas câmeras ativas e desduplicadas por nome para evitar múltiplos cards da mesma câmera
+        list.filter { it.enabled }.distinctBy { it.name }
     }
 
     suspend fun getCaptures(deviceIdentifier: String? = null): List<CaptureEvent> = withContext(Dispatchers.IO) {
