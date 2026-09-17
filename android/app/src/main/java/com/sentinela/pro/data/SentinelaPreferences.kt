@@ -91,4 +91,27 @@ class SentinelaPreferences(private val context: Context) {
     fun setCameraDefaultStreamMode(cameraName: String, mode: String) {
         prefs.edit().putString("camera_stream_mode_$cameraName", mode).apply()
     }
+
+    fun recordCrash(message: String, stackTrace: String) {
+        prefs.edit()
+            .putString("pending_crash_message", message)
+            .putString("pending_crash_stack", stackTrace)
+            .putLong("pending_crash_timestamp", System.currentTimeMillis())
+            .commit()
+    }
+
+    fun getPendingCrash(): Triple<String, String, Long>? {
+        val msg = prefs.getString("pending_crash_message", null) ?: return null
+        val stack = prefs.getString("pending_crash_stack", "") ?: ""
+        val ts = prefs.getLong("pending_crash_timestamp", 0L)
+        return Triple(msg, stack, ts)
+    }
+
+    fun clearPendingCrash() {
+        prefs.edit()
+            .remove("pending_crash_message")
+            .remove("pending_crash_stack")
+            .remove("pending_crash_timestamp")
+            .apply()
+    }
 }

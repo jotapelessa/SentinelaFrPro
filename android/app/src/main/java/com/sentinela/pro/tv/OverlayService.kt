@@ -33,6 +33,8 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.app.NotificationCompat
+import androidx.core.app.ServiceCompat
+import android.content.pm.ServiceInfo
 import com.sentinela.pro.SentinelaConfig
 import com.sentinela.pro.data.*
 import com.sentinela.pro.logging.SentinelaRemoteLogger
@@ -85,21 +87,19 @@ class OverlayService : Service() {
 
     override fun onCreate() {
         super.onCreate()
+        createNotificationChannel()
+        startForegroundSafe()
+
         val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
         val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
                 packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
         if (!isTv) {
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
             stopSelf()
             return
         }
         com.sentinela.pro.logging.SentinelaRemoteLogger.init(this)
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
-        createNotificationChannel()
-        try {
-            startForeground(1, buildNotification())
-        } catch (e: Exception) {
-            android.util.Log.e("OverlayService", "Failed to start foreground notification: ${e.message}")
-        }
 
         val prefs = SentinelaPreferences(this)
         val host = prefs.serverHost
@@ -313,6 +313,7 @@ class OverlayService : Service() {
         val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
                 packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
         if (!isTv) {
+            ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
             stopSelf()
             return START_NOT_STICKY
         }
@@ -326,6 +327,29 @@ class OverlayService : Service() {
             showPiP(cam, label, null, testId, customSnap, customStream)
         }
         return START_STICKY
+    }
+
+    private fun startForegroundSafe() {
+        try {
+            val notification = buildNotification()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                ServiceCompat.startForeground(
+                    this,
+                    1,
+                    notification,
+                    ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+                )
+            } else {
+                startForeground(1, notification)
+            }
+        } catch (e: Exception) {
+            android.util.Log.e("OverlayService", "Failed to start foreground notification with type: ${e.message}")
+            try {
+                startForeground(1, buildNotification())
+            } catch (fallbackEx: Exception) {
+                android.util.Log.e("OverlayService", "Fallback startForeground failed: ${fallbackEx.message}")
+            }
+        }
     }
 
     companion object {

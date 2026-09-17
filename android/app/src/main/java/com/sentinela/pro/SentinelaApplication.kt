@@ -70,18 +70,50 @@ class SentinelaApplication : Application(), ImageLoaderFactory {
 
         // 1. Initialize Distributed Operational Logger early for all activities & background services
         com.sentinela.pro.logging.SentinelaRemoteLogger.init(this)
+        val prefs = com.sentinela.pro.data.SentinelaPreferences(this)
 
-        // 2. Global crash protection for Android TV & background services
+        // 2. Report any recovered crash from previous session
+        prefs.getPendingCrash()?.let { (crashMsg, stackTrace, crashTime) ->
+            com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                category = com.sentinela.pro.logging.LogCategory.SYSTEM,
+                action = "APP_RECOVERED_PREVIOUS_CRASH",
+                severity = com.sentinela.pro.logging.LogSeverity.ERROR,
+                message = "Crash recuperado da sessão anterior: $crashMsg",
+                metadata = mapOf(
+                    "stack_trace" to stackTrace.take(1500),
+                    "crash_timestamp" to crashTime.toString()
+                )
+            )
+            prefs.clearPendingCrash()
+        }
+
+        // 3. Global crash protection for Android TV & background services
         val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
-            Log.e("SentinelaApp", "FATAL CRASH INTERCEPTED on thread ${thread.name}: ${throwable.message}", throwable)
+            val stackTraceStr = Log.getStackTraceString(throwable)
+            val crashMsg = throwable.message ?: throwable.javaClass.simpleName
+            Log.e("SentinelaApp", "FATAL CRASH INTERCEPTED on thread ${thread.name}: $crashMsg\n$stackTraceStr", throwable)
+            
+            // Persist synchronously to local disk before process death
+            runCatching {
+                prefs.recordCrash(
+                    message = "FATAL CRASH na thread ${thread.name}: $crashMsg",
+                    stackTrace = stackTraceStr
+                )
+            }
+            
+            // Try immediate remote flush
             runCatching {
                 com.sentinela.pro.logging.SentinelaRemoteLogger.log(
                     category = com.sentinela.pro.logging.LogCategory.SYSTEM,
                     action = "APP_FATAL_CRASH",
                     severity = com.sentinela.pro.logging.LogSeverity.ERROR,
-                    message = "FATAL CRASH na thread ${thread.name}: ${throwable.message}",
-                    metadata = mapOf("thread" to thread.name, "exception" to (throwable.javaClass.simpleName))
+                    message = "FATAL CRASH na thread ${thread.name}: $crashMsg",
+                    metadata = mapOf(
+                        "thread" to thread.name,
+                        "exception" to (throwable.javaClass.simpleName),
+                        "stack_trace" to stackTraceStr.take(1500)
+                    )
                 )
                 com.sentinela.pro.logging.SentinelaRemoteLogger.flushNow()
             }

@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-17 10:25 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.134 operacional (Build 134). Otimização global de servidores Frigate, Sentinela Core, APKs, go2rtc e Mosquitto. Resolução definitiva do Item 4.1: snapshots do Frigate e alertas fotográficos do Telegram promovidos para Full HD 1080p nativo (quality: 98, height: 1080) com renderização de marca d'água HUD em fonte TrueType vetorial proporcional (DejaVuSans-Bold) e pipeline de retry HD no MQTTService, eliminando snapshots borrados de 360p (detect-stream). Estabilidade térmica mantida no Intel Celeron Jasper Lake N5105 (~53°C) e 31/31 critérios do onp-spec 100% PASS.
+> **Última Atualização:** 2026-09-17 11:00 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.135 operacional (Build 135). Resolução definitiva do fechamento inesperado do aplicativo Android TV (Item 1.1 / 2.1 / 3.1 / 4.2): diagnosticado e corrigido o `ForegroundServiceDidNotStartInTimeException` no Android 14 (API 34) decorrente de `specialUse` FGS sem permissão `FOREGROUND_SERVICE_SPECIAL_USE` declarada e violação do contrato do ciclo de vida em `OverlayService.kt`. Implementado `CrashJournal` offline com gravação síncrona em disco no `SentinelaApplication.kt` e upload imediato para `/api/telemetry/client-logs`. Todos os serviços (Frigate, Sentinela Core, APKs TV/Mobile, Next.js Dashboard) operando harmoniosamente.
 
 ---
 
@@ -615,8 +615,16 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
     - **Harmonização da Aba Configurações na TV (Item 1.3)**:
       - **Causa Raiz**: As grades 4x2 de opções de PiP (Tamanho, Posição e Duração) possuíam alturas variáveis de texto e alinhamentos assimétricos, causando oscilações de borda ao mover o foco do controle remoto.
       - **Solução Aplicada**: Padronizada altura uniforme de `44.dp` e centralização bidirecional em `Box(contentAlignment = Alignment.Center)` para as 24 opções das grades 4x2 (8 tamanhos, 8 posições, 8 durações), além de `height(IntrinsicSize.Min)` e `fillMaxHeight()` para os seletores de Módulo de Vídeo e Resolução de Transmissão em [TvNetflixScreen.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt).
-    - **Incremento de Versão**:
-      - Atualizado ecossistema para a versão **v001.000.000.129** (Build 129) em `version.properties`, backend FastAPI, Next.js dashboard e APKs.
+  - **7. Correção Definitiva do Fechamento Inesperado na Android TV (Build 135 - Itens 1.1, 2.1, 3.1, 4.2)**:
+    - **Sintoma Forense**: Crash fatal registrado em `GET /api/telemetry/client-logs` às 13:48:57 UTC em aparelho `Android (9491G)` (Android 14 API 34): `android.app.ForegroundServiceDidNotStartInTimeException: Context.startForegroundService() did not then call Service.startForeground(): ServiceRecord{... com.sentinela.pro.tv/.OverlayService}`.
+    - **Causa Raiz 1 (Permissão FGS no Android 14)**: O Android 14 exige estritamente a permissão `<uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />` e a tag `<property android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE" ...>` no manifesto. A ausência dessas declarações causava `SecurityException` silencioso ao invocar `startForeground()`.
+    - **Causa Raiz 2 (Violação do Contrato de Ciclo de Vida do OS)**: Em `OverlayService.kt`, se a validação `!isTv` falhasse ou se houvesse exceção antes de `startForeground()`, o serviço chamava `stopSelf()` ou retornava prematuramente. No Android 8.0+, todo serviço iniciado via `startForegroundService()` que não conclui `startForeground()` em até 5-10 segundos é sumariamente exterminado pelo Watchdog do sistema operacional.
+    - **Soluções Aplicadas**:
+      1. Adicionada a permissão `FOREGROUND_SERVICE_SPECIAL_USE` e propriedade de subtipo no `AndroidManifest.xml`.
+      2. No `OverlayService.kt`, a notificação de primeiro plano e `ServiceCompat.startForeground(this, 1, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE)` são invocados imediatamente no início de `onCreate()`. Caso o dispositivo não seja TV (`!isTv`), invoca-se `ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)` antes de `stopSelf()`, honrando o contrato da API 34.
+      3. Unificada a detecção `isTv()` em `MainActivity.kt` combinando checagem de flavor, `UI_MODE_TYPE_TELEVISION` e `FEATURE_LEANBACK`.
+      4. Implementado o `CrashJournal` offline com `SentinelaPreferences.kt` (commit síncrono em SharedPreferences no `Thread.UncaughtExceptionHandler`) e flush imediato para `/api/telemetry/client-logs` no `SentinelaApplication.kt`, garantindo diagnóstico instantâneo mesmo se o app for finalizado bruscamente.
+      5. Versionamento semântico promovido para **v001.000.000.135** (Build 135) em todo o ecossistema.
 
 ---
 
