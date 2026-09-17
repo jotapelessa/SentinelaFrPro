@@ -578,6 +578,12 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
     - **Alinhamento do Player de Vídeo no Smartphone (Item 2.1)**:
       - **Causa Raiz**: Em [SmartphoneYouTubeScreen.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt), o feed de vídeo utilizava altura fixa de 230dp (`height(230.dp)`), quebrando proporções em smartphones com telas ultra-wide (19.5:9 ou 20:9).
       - **Solução Aplicada**: Proporção padronizada com `aspectRatio(16f / 9f)` dinâmico e auto-ajustável.
+    - **Harmonização da Aba Ferramentas na TV (Item 1.2)**:
+      - **Causa Raiz**: Os 4 cards de diagnóstico (`CardTesteDeBanda`, `CardEstabilidadeDeVideo`, `CardLarguraDeBanda` e `CardSubsistemasEComandos`) apresentavam alturas desiguais e margens internas heterogêneas nas linhas de layout da TV (Linha 1 e Linha 2), gerando desalinhamento visual na navegação por D-Pad.
+      - **Solução Aplicada**: Adicionado `height(IntrinsicSize.Min)` em ambas as linhas e `Modifier.weight(1f).fillMaxHeight()` em todos os 4 cards em [TvNetflixScreen.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt), com espaçamento padronizado de 10.dp e auto-expansão equilibrada via `Spacer(modifier = Modifier.weight(1f))` em `CardSubsistemasEComandos`.
+    - **Harmonização da Aba Configurações na TV (Item 1.3)**:
+      - **Causa Raiz**: As grades 4x2 de opções de PiP (Tamanho, Posição e Duração) possuíam alturas variáveis de texto e alinhamentos assimétricos, causando oscilações de borda ao mover o foco do controle remoto.
+      - **Solução Aplicada**: Padronizada altura uniforme de `44.dp` e centralização bidirecional em `Box(contentAlignment = Alignment.Center)` para as 24 opções das grades 4x2 (8 tamanhos, 8 posições, 8 durações), além de `height(IntrinsicSize.Min)` e `fillMaxHeight()` para os seletores de Módulo de Vídeo e Resolução de Transmissão em [TvNetflixScreen.kt](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt).
     - **Incremento de Versão**:
       - Atualizado ecossistema para a versão **v001.000.000.129** (Build 129) em `version.properties`, backend FastAPI, Next.js dashboard e APKs.
 

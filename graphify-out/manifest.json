@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
-    "mtime": 1789628864.659405,
-    "seen": 1789629346.898177,
-    "ast_hash": "ed9c12d50158cdf39b81e313914d473e",
+    "mtime": 1789629640.5098999,
+    "seen": 1789629664.382134,
+    "ast_hash": "415f57c98b4989a43d4838d4f506bc92",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789601587.0718403,
-    "seen": 1789603126.907691,
-    "ast_hash": "125e5277aa4f66315ab98117d9f6adad",
+    "mtime": 1789629394.3944988,
+    "seen": 1789629664.3821929,
+    "ast_hash": "482abfdb92256070cecb67513d6e819e",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789626990.1525397,
-    "seen": 1789627000.470402,
-    "ast_hash": "41fefcc5a42b8476db60a8089ab3042a",
+    "mtime": 1789629681.941614,
+    "seen": 1789629690.225609,
+    "ast_hash": "c1be9fd39bac6fc513df541868a223f1",
     "semantic_hash": ""
   },
   "android/gradlew": {

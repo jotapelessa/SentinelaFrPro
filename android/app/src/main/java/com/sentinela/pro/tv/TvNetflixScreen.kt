@@ -1779,12 +1779,16 @@ fun TvToolsViewport(
             item {
                 if (isWide) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
                         // 1.1 Card: TESTE DE BANDA (Sequencial para as 4 Rotas)
                         CardTesteDeBanda(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                             connections = connectionList,
                             activeTestingIndex = activeTestingConnIndex,
                             bestConnId = bestConnId,
@@ -1797,7 +1801,9 @@ fun TvToolsViewport(
 
                         // 1.2 Card: ESTABILIDADE DE VÍDEO (Individual: Eco, MSE, WebRTC, Snapshot Adaptativo)
                         CardEstabilidadeDeVideo(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                             videoModes = videoModesList,
                             selectedIndex = selectedVideoModeIdx,
                             activeTestingIndex = activeTestingVideoIndex,
@@ -1844,12 +1850,16 @@ fun TvToolsViewport(
             item {
                 if (isWide) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
                         // 1.3 Card: LARGURA DE BANDA DO SERVIDOR (Bateria Completa de Testes)
                         CardLarguraDeBanda(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                             suiteResult = bandwidthSuite,
                             liveTelemetry = liveTelemetry,
                             pulseAnim = pulseAnim,
@@ -1859,7 +1869,9 @@ fun TvToolsViewport(
 
                         // Card: STATUS DOS SUBSISTEMAS & COMANDOS RÁPIDOS
                         CardSubsistemasEComandos(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
                             context = context,
                             onRefresh = onRefresh,
                             onTriggerTestPip = onTriggerTestPip,
@@ -2596,7 +2608,7 @@ fun CardSubsistemasEComandos(
             .background(TvColors.CardBackground)
             .border(1.dp, TvColors.BorderSubtle, TvShapes.CameraCard)
             .padding(14.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -2620,7 +2632,7 @@ fun CardSubsistemasEComandos(
         TvDiagnosticRow(title = "Pipeline IA OpenVINO", status = "Ativo (5ms)", isOk = true)
         TvDiagnosticRow(title = "Mosquitto MQTT Broker", status = "Conectado (1883)", isOk = true)
 
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.weight(1f))
         Text("COMANDOS RÁPIDOS DE HARDWARE", color = TvColors.TextSecondary, fontSize = 10.sp, fontWeight = FontWeight.Bold)
 
         Row(
@@ -3346,7 +3358,9 @@ fun TvSettingsViewport(
                     )
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         modes.forEachIndexed { idx, (modeKey, modeTitle, modeDesc) ->
@@ -3360,6 +3374,7 @@ fun TvSettingsViewport(
                                 border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                 modifier = Modifier
                                     .weight(1f)
+                                    .fillMaxHeight()
                                     .then(if (idx == 0) Modifier.focusRequester(firstItemRequester) else Modifier)
                                     .onKeyEvent { keyEvent ->
                                         if (idx == 0 && keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
@@ -3465,6 +3480,7 @@ fun TvSettingsViewport(
                                         border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                         modifier = Modifier
                                             .weight(1f)
+                                            .height(44.dp)
                                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 sizeIndex = size.ordinal
@@ -3480,24 +3496,29 @@ fun TvSettingsViewport(
                                                 settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                             }
                                     ) {
-                                        Column(
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp),
-                                            horizontalAlignment = Alignment.CenterHorizontally
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
                                         ) {
-                                            Text(
-                                                text = size.name.replace("_", " "),
-                                                color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
-                                                fontSize = 10.sp,
-                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                            Text(
-                                                text = "${size.width}x${size.height}",
-                                                color = if (isSelected) Color.White.copy(alpha = 0.8f) else TvColors.CyberCyan,
-                                                fontSize = 9.sp,
-                                                fontFamily = FontFamily.Monospace
-                                            )
+                                            Column(
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                verticalArrangement = Arrangement.Center
+                                            ) {
+                                                Text(
+                                                    text = size.name.replace("_", " "),
+                                                    color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
+                                                    fontSize = 10.sp,
+                                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                                Text(
+                                                    text = "${size.width}x${size.height}",
+                                                    color = if (isSelected) Color.White.copy(alpha = 0.8f) else TvColors.CyberCyan,
+                                                    fontSize = 9.sp,
+                                                    fontFamily = FontFamily.Monospace
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -3559,6 +3580,7 @@ fun TvSettingsViewport(
                                         border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                         modifier = Modifier
                                             .weight(1f)
+                                            .height(44.dp)
                                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 posIndex = pos.ordinal
@@ -3574,15 +3596,20 @@ fun TvSettingsViewport(
                                                 settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                             }
                                     ) {
-                                        Text(
-                                            text = pos.label,
-                                            color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
-                                            fontSize = 10.sp,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = pos.label,
+                                                color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
+                                                fontSize = 10.sp,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                modifier = Modifier.padding(horizontal = 4.dp),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -3643,6 +3670,7 @@ fun TvSettingsViewport(
                                         border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                         modifier = Modifier
                                             .weight(1f)
+                                            .height(44.dp)
                                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 durIndex = dur.ordinal
@@ -3658,15 +3686,20 @@ fun TvSettingsViewport(
                                                 settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                             }
                                     ) {
-                                        Text(
-                                            text = dur.label,
-                                            color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
-                                            fontSize = 10.sp,
-                                            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
+                                        Box(
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(
+                                                text = dur.label,
+                                                color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
+                                                fontSize = 10.sp,
+                                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                                modifier = Modifier.padding(horizontal = 4.dp),
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -3712,7 +3745,9 @@ fun TvSettingsViewport(
                     )
 
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(IntrinsicSize.Min),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         qualityOptions.forEach { (qualKey, qualTitle, qualDesc) ->
@@ -3726,6 +3761,7 @@ fun TvSettingsViewport(
                                 border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                 modifier = Modifier
                                     .weight(1f)
+                                    .fillMaxHeight()
                                     .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.CameraCard)
                                     .clickable(interactionSource = interactionSource, indication = null) {
                                         streamQuality = qualKey
