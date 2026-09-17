@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Body
 from app.services.telemetry import telemetry_service
 from app.services.telegram_vault import telegram_vault_service
+from app.core.timezone import get_brasilia_now, TZ_BRASILIA
 from pydantic import BaseModel
 from typing import Optional, List, Dict, Any
 
@@ -412,19 +413,23 @@ async def ingest_client_logs(
         return {"status": "ok", "ingested": 0}
 
     client_ip = request.client.host if request.client else "unknown"
-    now_utc = datetime.datetime.utcnow()
+    now_local = get_brasilia_now()
 
     # 1. Update PairedDevice last seen timestamp
     dev_stmt = select(PairedDevice).where(PairedDevice.device_identifier == payload.device_identifier)
     dev_res = await db.execute(dev_stmt)
     dev = dev_res.scalar_one_or_none()
     if dev:
-        dev.last_seen = now_utc
+        dev.last_seen = now_local
 
     # 2. Batch insert logs into ClientDeviceLog
     log_records = []
     for ev in payload.events:
-        event_time = datetime.datetime.utcfromtimestamp(ev.timestamp / 1000.0) if ev.timestamp else now_utc
+        event_time = (
+            datetime.datetime.fromtimestamp(ev.timestamp / 1000.0, TZ_BRASILIA).replace(tzinfo=None)
+            if ev.timestamp
+            else now_local
+        )
         meta_str = json.dumps(ev.metadata) if ev.metadata else None
 
         log_records.append(ClientDeviceLog(
@@ -437,7 +442,7 @@ async def ingest_client_logs(
             message=ev.message,
             client_timestamp=event_time,
             metadata_json=meta_str,
-            created_at=now_utc
+            created_at=now_local
         ))
 
         # Replicate high severity/audit-worthy events to system AuditLog for universal console visibility

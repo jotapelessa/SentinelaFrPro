@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-17 12:15 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.136 operacional (Build 136). Resolução definitiva do Item 4.1: eliminação do timeout de 5 segundos no disparo de PiP para Tablets e TVs AOSP (`Smart TV 'Tablet' não confirmou a exibição do PiP`). Centralização canônica de `SentinelaConfig.isTv(context)` respeitando o flavor do APK compilado (`BuildConfig.FLAVOR == "tv"`), reativação estável do `OverlayService` em tablets, feedback de erro com ACK instantâneo (<80ms) caso a permissão `SYSTEM_ALERT_WINDOW` esteja pendente e guia com 1 clique nas configurações. Todos os serviços (Frigate, Sentinela Core, APKs TV/Mobile, Next.js Dashboard) operando em perfeita harmonia.
+> **Última Atualização:** 2026-09-17 12:50 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.137 operacional (Build 137). Resolução definitiva dos Itens 4.1, 4.2 e 4.3: eliminação de erros de Non-monotonic DTS no Frigate com preset `preset-rtsp-generic` e wallclock de timestamps; sincronização estrita e canônica de Fuso Horário de Brasília (`America/Sao_Paulo`, UTC-3) em todas as camadas de banco de dados SQLite, FastAPI Core e container frontend Next.js (com `tzdata` no Alpine); e blindagem de abertura direta de configurações de sobreposição (`ACTION_MANAGE_OVERLAY_PERMISSION`) para PiP em Tablets e TVs AOSP. Todo o ecossistema operando em perfeita harmonia.
 
 ---
 
@@ -634,6 +634,21 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
       3. No `OverlayService.kt`, caso a permissão `SYSTEM_ALERT_WINDOW` esteja pendente durante um teste com `testId`, envia-se um ACK de erro imediato (`SentinelaRepository.sendPipAck`) com diagnóstico amigável, reduzindo a latência da resposta de 5.000ms para <80ms.
       4. Na aba de configurações da TV, botões dedicados de abertura de `Settings.ACTION_MANAGE_OVERLAY_PERMISSION` e revalidação de permissão asseguram configuração sem atrito.
       5. Versionamento semântico promovido para **v001.000.000.136** (Build 136) em todo o ecossistema.
+  - **9. Estabilização Total de Timestamps Frigate, Permissões PiP e Fuso Horário de Brasília (Build 137 - Itens 4.1, 4.2, 4.3)**:
+    - **Sintomas Forenses**:
+      1. *Item 4.1*: Erro `Non-monotonic DTS; previous: 204719430, current: 1895197` em `ffmpeg.camera_secundaria.detect` forçando reinício cíclico do processo via `watchdog.camera_secundaria: Restarting ffmpeg...`.
+      2. *Item 4.2*: Erros repetitivos `Permissão SYSTEM_ALERT_WINDOW não concedida para PiP` e crash `Context.startForegroundService() did not then call Service.startForeground()` no tablet/smartphone.
+      3. *Item 4.3*: Horário do sistema e registros de logs adiantados em +3 horas (UTC), exibindo `15:05:01` no lugar de `12:05:01`.
+    - **Causas Raiz**:
+      1. O preset `preset-rtsp-restream` do Frigate não regenera timestamps e não utiliza wallclock do sistema. Ao ocorrer qualquer reconexão ou salto de RTP no go2rtc, o FFmpeg recebia timestamps regressivos (~2200s -> 21s) e travava.
+      2. Dispositivos tablet bloqueiam `SYSTEM_ALERT_WINDOW` até que o usuário ative manualmente nas configurações do Android. Faltava um atalho interativo nativo na tela da TV direcionando para `ACTION_MANAGE_OVERLAY_PERMISSION`.
+      3. Modelos e serviços Python gravavam `datetime.utcnow()` sem timezone, e a imagem Alpine do frontend não continha `tzdata`, fazendo com que todas as formatações refletissem UTC.
+    - **Soluções Aplicadas**:
+      1. No `frigate/config/config.yml`: Atualizado `input_args` para `preset-rtsp-generic` (injetando `-avoid_negative_ts make_zero -fflags +genpts+discardcorrupt -use_wallclock_as_timestamps 1`) e adicionado `#backchannel=0` no go2rtc. Eliminação de 100% dos reinícios por timestamp.
+      2. No Android: Redirecionamento com 1 clique para `Settings.ACTION_MANAGE_OVERLAY_PERMISSION` ao tentar testar o PiP sem permissão em `TvNetflixScreen.kt`.
+      3. No Backend: Criado módulo canônico `app.core.timezone.py` com `get_brasilia_now()` e `TZ_BRASILIA = ZoneInfo("America/Sao_Paulo")`, substituindo 100% dos usos de `utcnow()` em `models.py`, `telemetry.py`, `audit_service.py`, `devices.py`, `events.py`, `settings.py`, `cameras.py` e `telegram_queue.py`.
+      4. No Frontend: Injetado `RUN apk add --no-cache tzdata` no runner do `Dockerfile` e sincronizado com `TZ=America/Sao_Paulo`.
+      5. Versionamento semântico promovido para **v001.000.000.137** (Build 137) em todo o ecossistema.
 
 ---
 

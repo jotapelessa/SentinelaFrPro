@@ -7,6 +7,7 @@ import asyncio
 import json
 import datetime
 import logging
+from app.core.timezone import get_brasilia_now, get_brasilia_isoformat
 
 logger = logging.getLogger(__name__)
 
@@ -248,7 +249,7 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
             dev.device_model = hb.device_model
         if logs_json:
             dev.recent_logs = logs_json
-        dev.last_seen = datetime.datetime.utcnow()
+        dev.last_seen = get_brasilia_now()
         await db.commit()
     else:
         dev = PairedDevice(
@@ -264,7 +265,7 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
             device_model=hb.device_model,
             recent_logs=logs_json,
             permission_status="allowed",
-            last_seen=datetime.datetime.utcnow()
+            last_seen=get_brasilia_now()
         )
         db.add(dev)
         await db.commit()
@@ -470,7 +471,7 @@ async def check_devices_health(db: AsyncSession = Depends(get_db)):
     stmt = select(PairedDevice)
     result = await db.execute(stmt)
     devices = result.scalars().all()
-    now = datetime.datetime.utcnow()
+    now = get_brasilia_now()
 
     async def check_one(d: PairedDevice):
         ip = d.tailscale_ip if d.tailscale_ip else d.ip_address
@@ -1057,8 +1058,7 @@ async def device_diagnostics(device_id: int, db: AsyncSession = Depends(get_db))
     await asyncio.gather(*[check_port(p, n) for p, n in ports_to_check.items()])
     
     # 3. Statistics
-    import datetime
-    yesterday = datetime.datetime.utcnow() - datetime.timedelta(days=1)
+    yesterday = get_brasilia_now() - datetime.timedelta(days=1)
     audit_stmt = select(AuditLog).where(
         AuditLog.action == "PIP_TEST_SUCCESS",
         AuditLog.timestamp >= yesterday,
@@ -1149,7 +1149,7 @@ async def toggle_device_master(
 
     _last_master_toggle_time[device_identifier] = now_ts
     dev.is_master_admin = new_state
-    dev.admin_unlocked_at = datetime.datetime.utcnow() if new_state else None
+    dev.admin_unlocked_at = get_brasilia_now() if new_state else None
     await db.commit()
 
     # Broadcast real-time permission update via WebSocket
@@ -1197,7 +1197,7 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
             "label": req.label,
             "duration": duration,
             "target_identifier": "",
-            "timestamp": datetime.datetime.utcnow().isoformat()
+            "timestamp": get_brasilia_isoformat()
         })
 
         # 2. Despacho assíncrono para Cast/REST legados sem bloquear o endpoint HTTP
@@ -1236,7 +1236,7 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
             "snapshot_url": snap_url,
             "stream_url": stream_url,
             "duration": duration,
-            "timestamp": datetime.datetime.utcnow().isoformat()
+            "timestamp": get_brasilia_isoformat()
         })
         for dev in devices:
             results.append({"device": dev.friendly_name, "id": dev.device_identifier, "status": "detection_simulated"})

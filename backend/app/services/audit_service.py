@@ -3,6 +3,7 @@ import datetime
 from typing import Optional
 from app.db.session import AsyncSessionLocal
 from app.db.models import AuditLog
+from app.core.timezone import get_brasilia_now
 
 logger = logging.getLogger("sentinela.audit")
 
@@ -24,7 +25,7 @@ class AuditService:
                     severity=severity,
                     details=details,
                     client_ip=client_ip,
-                    created_at=datetime.datetime.utcnow()
+                    created_at=get_brasilia_now()
                 )
                 session.add(entry)
                 await session.commit()

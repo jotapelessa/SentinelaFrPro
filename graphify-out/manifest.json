@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
-    "mtime": 1789658056.8643973,
-    "seen": 1789658199.460122,
-    "ast_hash": "574ca0ff1985fc85def924658768beff",
+    "mtime": 1789660263.4985988,
+    "seen": 1789660369.698048,
+    "ast_hash": "b218f441ce1d6c68c295aaec7d54f244",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
@@ -366,21 +366,21 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1789637470.7259939,
-    "seen": 1789637773.593707,
-    "ast_hash": "18bef72ea4146f0a1f0bcad6e83a8890",
+    "mtime": 1789660120.8026795,
+    "seen": 1789660369.698055,
+    "ast_hash": "4ccc9beb981041ec11458046c7f2ac91",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
-    "mtime": 1789637494.7381017,
-    "seen": 1789637773.593708,
-    "ast_hash": "2ee744d09c70d5be88ec362e85c4e943",
+    "mtime": 1789660067.73522,
+    "seen": 1789660369.698056,
+    "ast_hash": "c80b3d9c05855986d4819372c5f2a120",
     "semantic_hash": ""
   },
   "backend/app/api/events.py": {
-    "mtime": 1789105112.2640266,
-    "seen": 1789105527.948847,
-    "ast_hash": "ef19a499e64402bde8b5df539e705b49",
+    "mtime": 1789660090.4923794,
+    "seen": 1789660369.698056,
+    "ast_hash": "89002a7e68d2162287f34014914403f8",
     "semantic_hash": ""
   },
   "backend/app/api/scanner.py": {
@@ -390,15 +390,15 @@
     "semantic_hash": "345f8b332456cb48b154b6bce875d426"
   },
   "backend/app/api/settings.py": {
-    "mtime": 1788715930.8168192,
-    "seen": 1788716089.7913768,
-    "ast_hash": "77ede78194de90865f1e2d91717e71b5",
+    "mtime": 1789660108.704203,
+    "seen": 1789660369.698057,
+    "ast_hash": "e58601e640bb7b7290489b52785b3234",
     "semantic_hash": ""
   },
   "backend/app/api/telemetry.py": {
-    "mtime": 1789599828.4180765,
-    "seen": 1789600141.700696,
-    "ast_hash": "31aa291e776aae1a07f11145f93b2117",
+    "mtime": 1789660035.5790796,
+    "seen": 1789660369.698058,
+    "ast_hash": "5e25425f52021c76e4f159d2ac7d8279",
     "semantic_hash": ""
   },
   "backend/app/api/ws.py": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1789658090.6500432,
-    "seen": 1789658199.4601312,
-    "ast_hash": "d90c58e3ce7899e2c045032fe8d963a8",
+    "mtime": 1789660169.0028114,
+    "seen": 1789660369.698058,
+    "ast_hash": "d0671cc9d6a742c48b9d65fb4a27ae2e",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -420,9 +420,9 @@
     "semantic_hash": "56bf0020c7ad6d8cc30eec6f0ca1ef2d"
   },
   "backend/app/db/models.py": {
-    "mtime": 1789555975.9840298,
-    "seen": 1789556396.1191711,
-    "ast_hash": "deffdb5e071be501f42a31d17fe7a3ee",
+    "mtime": 1789659990.928483,
+    "seen": 1789660369.698061,
+    "ast_hash": "f7dbdfb6e207dce55be9c59c839783cf",
     "semantic_hash": ""
   },
   "backend/app/db/session.py": {
@@ -438,16 +438,16 @@
     "semantic_hash": ""
   },
   "backend/app/mocks/mock_publisher.py": {
-    "mtime": 1788121414.7797306,
-    "seen": 1788641395.538275,
-    "ast_hash": "ee886253240bf3fcf9d3fcd89d7f06b2",
-    "semantic_hash": "ee886253240bf3fcf9d3fcd89d7f06b2"
+    "mtime": 1789660153.1379592,
+    "seen": 1789660369.6980622,
+    "ast_hash": "fa78069deedd0c52cd75b904e016a129",
+    "semantic_hash": ""
   },
   "backend/app/services/audit_service.py": {
-    "mtime": 1788141674.6983674,
-    "seen": 1788641395.538275,
-    "ast_hash": "ce82fcdcb587194670daf56dd49ef013",
-    "semantic_hash": "ce82fcdcb587194670daf56dd49ef013"
+    "mtime": 1789660002.6029563,
+    "seen": 1789660369.6980631,
+    "ast_hash": "70c2595edece3deef4e5b0126a55685e",
+    "semantic_hash": ""
   },
   "backend/app/services/frigate_bridge.py": {
     "mtime": 1789134058.578593,
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1789658117.120394,
-    "seen": 1789658199.46014,
-    "ast_hash": "df729591e7e9ab88248f9a201c0df321",
+    "mtime": 1789660207.5203187,
+    "seen": 1789660369.698069,
+    "ast_hash": "b05ee3b4480a2f1a77edab99597dd0bc",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789658136.1345818,
-    "seen": 1789658199.460172,
-    "ast_hash": "79c352b042818aab3c5b170d0d87bf62",
+    "mtime": 1789660296.4850025,
+    "seen": 1789660369.698102,
+    "ast_hash": "8194372583ee7139d2712b9db3d4432d",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1789651474.8403277,
-    "seen": 1789651637.960268,
-    "ast_hash": "19273236f7a4805e57234ff54b5216e6",
+    "mtime": 1789659923.7562044,
+    "seen": 1789660369.6981068,
+    "ast_hash": "85ed333a4fbc6587240dcaa97fbaa205",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789658165.4333134,
-    "seen": 1789658199.4601731,
-    "ast_hash": "75023300e537cad1928d48a485df9414",
+    "mtime": 1789660333.4865966,
+    "seen": 1789660369.698102,
+    "ast_hash": "fefdb015335b71ec90a5514c6667fb59",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,15 +1104,15 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1789658102.6549666,
-    "seen": 1789658199.4601521,
-    "ast_hash": "0b3048e74b19b0e7ecfb366fdbef493b",
+    "mtime": 1789660194.2982597,
+    "seen": 1789660369.698082,
+    "ast_hash": "3b592320487dd2a76937b6714d0b4c64",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
-    "mtime": 1789556161.57724,
-    "seen": 1789556396.119176,
-    "ast_hash": "e4b59ad6808c276c9faebfc8db83d3d7",
+    "mtime": 1789660140.6220973,
+    "seen": 1789660369.698066,
+    "ast_hash": "1f09c52654adad6f1508be218d2f3599",
     "semantic_hash": ""
   },
   ".agents/workflows/cerebro.md": {
@@ -1137,6 +1137,12 @@
     "mtime": 1789642636.9197292,
     "seen": 1789643711.294392,
     "ast_hash": "c2b26f2d9aaa2e910a8e000e9d277ae4",
+    "semantic_hash": ""
+  },
+  "backend/app/core/timezone.py": {
+    "mtime": 1789659936.6570115,
+    "seen": 1789660369.69806,
+    "ast_hash": "ed7d02d33f082cd31956d97b95d7c0c8",
     "semantic_hash": ""
   }
 }

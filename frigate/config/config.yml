@@ -86,9 +86,9 @@ snapshots:
 go2rtc:
   streams:
     camera_secundaria:
-    - rtsp://192.168.1.6:8554/live
+    - rtsp://192.168.1.6:8554/live#backchannel=0
     camera_secundaria_720p:
-    - rtsp://192.168.1.6:8554/live
+    - rtsp://192.168.1.6:8554/live#backchannel=0
     camera_principal:
     - rtsp://127.0.0.1:8554/camera_secundaria
     camera_principal_720p:
@@ -107,7 +107,7 @@ cameras:
     ffmpeg:
       inputs:
       - path: rtsp://127.0.0.1:8554/camera_secundaria
-        input_args: preset-rtsp-restream
+        input_args: preset-rtsp-generic
         roles:
         - record
         - detect

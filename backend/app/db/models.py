@@ -1,6 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, String, Boolean, Float, DateTime, Text
 from app.db.session import Base
+from app.core.timezone import get_brasilia_now
 
 class Camera(Base):
     __tablename__ = "cameras"
@@ -29,7 +30,7 @@ class Camera(Base):
     notify_tv = Column(Boolean, default=True)
     notify_audio = Column(Boolean, default=True)
     cooldown_seconds = Column(Integer, default=10)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=get_brasilia_now)
 
 
 class EventRecord(Base):
@@ -41,7 +42,7 @@ class EventRecord(Base):
     label = Column(String(32), index=True, nullable=False) # person, car, motorcycle, dog, etc.
     top_score = Column(Float, default=0.0)
     zone = Column(String(64), nullable=True)
-    start_time = Column(DateTime, default=datetime.datetime.utcnow)
+    start_time = Column(DateTime, default=get_brasilia_now)
     end_time = Column(DateTime, nullable=True)
     has_snapshot = Column(Boolean, default=False)
     has_clip = Column(Boolean, default=False)
@@ -80,15 +81,15 @@ class PairedDevice(Base):
     app_version = Column(String(32), nullable=True)
     device_model = Column(String(64), nullable=True)
     recent_logs = Column(Text, nullable=True) # JSON array of recent logs
-    last_seen = Column(DateTime, default=datetime.datetime.utcnow)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    last_seen = Column(DateTime, default=get_brasilia_now)
+    created_at = Column(DateTime, default=get_brasilia_now)
 
 class SystemSetting(Base):
     __tablename__ = "system_settings"
 
     key = Column(String(64), primary_key=True, index=True)
     value = Column(Text, nullable=True)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
+    updated_at = Column(DateTime, default=get_brasilia_now, onupdate=get_brasilia_now)
 
 class AuditLog(Base):
     __tablename__ = "audit_logs"
@@ -99,7 +100,7 @@ class AuditLog(Base):
     severity = Column(String(16), default="INFO") # INFO, WARNING, ERROR, SUCCESS
     details = Column(Text, nullable=True)
     client_ip = Column(String(64), nullable=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow)
+    created_at = Column(DateTime, default=get_brasilia_now)
 
 
 class ClientDeviceLog(Base):
@@ -115,6 +116,6 @@ class ClientDeviceLog(Base):
     message = Column(Text, nullable=False)
     client_timestamp = Column(DateTime, nullable=True)
     metadata_json = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.datetime.utcnow, index=True)
+    created_at = Column(DateTime, default=get_brasilia_now, index=True)
 
 

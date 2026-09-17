@@ -235,7 +235,15 @@ fun TvNetflixScreenCore(
                                         streamUrl = testStream
                                     )
                                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(context)) {
-                                        Toast.makeText(context, "⚠️ Conceda a permissão 'Sobrepor a outros apps' na aba Configurações para ativar o PiP flutuante!", Toast.LENGTH_LONG).show()
+                                        val pkg = context.packageName
+                                        try {
+                                            val permIntent = android.content.Intent(
+                                                android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                android.net.Uri.parse("package:$pkg")
+                                            ).apply { addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                            context.startActivity(permIntent)
+                                        } catch (_: Exception) {}
+                                        Toast.makeText(context, "⚠️ Permissão 'Sobrepor a outros apps' necessária para PiP. Ative nas configurações abertas.", Toast.LENGTH_LONG).show()
                                     }
                                 }
                             },
@@ -3911,7 +3919,15 @@ fun TvSettingsViewport(
                                         )
                                         Toast.makeText(context, "🔔 Janela PiP In-App aberta na TV! ($targetCam)", Toast.LENGTH_SHORT).show()
                                     } else {
-                                        Toast.makeText(context, "⚠️ Permissão SYSTEM_ALERT_WINDOW necessária na TV", Toast.LENGTH_SHORT).show()
+                                        val pkg = context.packageName
+                                        try {
+                                            val permIntent = android.content.Intent(
+                                                android.provider.Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                                android.net.Uri.parse("package:$pkg")
+                                            ).apply { addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK) }
+                                            context.startActivity(permIntent)
+                                        } catch (_: Exception) {}
+                                        Toast.makeText(context, "⚠️ Permissão 'Sobrepor a outros apps' necessária. Ative nas configurações abertas.", Toast.LENGTH_LONG).show()
                                     }
                                 },
                                 colors = ButtonDefaults.buttonColors(containerColor = TvColors.NetflixRed),

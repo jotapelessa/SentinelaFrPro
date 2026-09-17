@@ -13,6 +13,7 @@ import httpx
 from sqlalchemy import select
 
 from app.core.config import settings
+from app.core.timezone import get_brasilia_now
 from app.db.session import AsyncSessionLocal
 from app.db.models import EventRecord
 from app.services.telegram_vault import telegram_vault_service
@@ -237,7 +238,7 @@ class TelegramVideoQueue:
                     if ev:
                         ev.has_clip = True
                         ev.video_sent = True
-                        ev.end_time = datetime.datetime.utcnow()
+                        ev.end_time = get_brasilia_now()
                         await session.commit()
                 logger.info(f"✅ Vídeo de alerta de {final_duration:.1f}s entregue com sucesso no Telegram ({event_id})")
 

@@ -14,6 +14,7 @@ import uuid
 from app.db.session import get_db
 from app.db.models import EventRecord, AuditLog
 from app.core.config import settings
+from app.core.timezone import get_brasilia_now, get_brasilia_isoformat, TZ_BRASILIA
 from app.services.audit_service import audit_service
 
 logger = logging.getLogger(__name__)
@@ -124,7 +125,7 @@ async def list_events(
                         zone=ev.get("zone"),
                         has_snapshot=ev.get("has_snapshot", True),
                         has_clip=ev.get("has_clip", True),
-                        start_time=datetime.datetime.fromtimestamp(ev["start_time"]) if ev.get("start_time") else datetime.datetime.utcnow()
+                        start_time=datetime.datetime.fromtimestamp(ev["start_time"], TZ_BRASILIA).replace(tzinfo=None) if ev.get("start_time") else get_brasilia_now()
                     )
                     db.add(rec)
             await db.commit()
@@ -149,7 +150,7 @@ async def list_events(
             "label": ev.label,
             "sub_label": None,
             "score": round(ev.top_score * 100) if ev.top_score <= 1 else round(ev.top_score),
-            "timestamp": ev.start_time.isoformat() if ev.start_time else datetime.datetime.utcnow().isoformat(),
+            "timestamp": ev.start_time.isoformat() if ev.start_time else get_brasilia_isoformat(),
             "start_time": ev.start_time.timestamp() if ev.start_time else None,
             "end_time": ev.end_time.timestamp() if ev.end_time else None,
             "duration": round((ev.end_time - ev.start_time).total_seconds(), 1) if (ev.start_time and ev.end_time and ev.has_clip) else None,
@@ -206,7 +207,7 @@ async def sync_events_from_frigate(request: Request, db: AsyncSession = Depends(
                             zone=(item.get("zones") or [None])[0],
                             has_snapshot=item.get("has_snapshot", True),
                             has_clip=item.get("has_clip", True),
-                            start_time=datetime.datetime.fromtimestamp(start_ts) if start_ts else datetime.datetime.utcnow()
+                            start_time=datetime.datetime.fromtimestamp(start_ts, TZ_BRASILIA).replace(tzinfo=None) if start_ts else get_brasilia_now()
                         )
                         db.add(rec)
                         synced += 1

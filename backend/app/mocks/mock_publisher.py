@@ -4,6 +4,7 @@ import uuid
 import datetime
 from aiomqtt import Client
 from app.core.config import settings
+from app.core.timezone import get_brasilia_now
 
 async def publish_simulated_event(
     camera: str = "portao_principal",
@@ -12,20 +13,22 @@ async def publish_simulated_event(
     score: float = 0.88
 ):
     """Publishes a mock Frigate security event to Mosquitto MQTT."""
-    event_id = f"{int(datetime.datetime.utcnow().timestamp())}.{uuid.uuid4().hex[:6]}-test"
+    now = get_brasilia_now()
+    now_ts = now.timestamp()
+    event_id = f"{int(now_ts)}.{uuid.uuid4().hex[:6]}-test"
     payload = {
         "type": "new",
         "before": {},
         "after": {
             "id": event_id,
             "camera": camera,
-            "frame_time": datetime.datetime.utcnow().timestamp(),
-            "snapshot_time": datetime.datetime.utcnow().timestamp(),
+            "frame_time": now_ts,
+            "snapshot_time": now_ts,
             "label": label,
             "top_score": score,
             "score": score,
             "false_positive": False,
-            "start_time": datetime.datetime.utcnow().timestamp(),
+            "start_time": now_ts,
             "end_time": None,
             "has_clip": True,
             "has_snapshot": True,

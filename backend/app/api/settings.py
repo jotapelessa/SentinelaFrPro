@@ -695,11 +695,12 @@ async def clean_server_storage(
     import datetime
     import asyncio
     import httpx
+    from app.core.timezone import get_brasilia_now
     from app.db.models import EventRecord
     from sqlalchemy import delete
 
     client_ip = request.client.host if request and request.client else "unknown"
-    cutoff_dt = datetime.datetime.utcnow() - datetime.timedelta(days=max(0, req.older_than_days))
+    cutoff_dt = get_brasilia_now() - datetime.timedelta(days=max(0, req.older_than_days))
     cutoff_ts = int(cutoff_dt.timestamp())
 
     deleted_events_count = 0
