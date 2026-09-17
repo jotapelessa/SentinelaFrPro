@@ -12,7 +12,8 @@ if db_url.startswith("sqlite+aiosqlite:////app/data/") and not os.path.exists("/
 engine = create_async_engine(
     db_url,
     echo=settings.DEBUG,
-    future=True
+    future=True,
+    connect_args={"timeout": 15} if "sqlite" in db_url else {}
 )
 
 AsyncSessionLocal = async_sessionmaker(
@@ -34,6 +35,12 @@ async def get_db():
 
 async def init_db():
     async with engine.begin() as conn:
+        if "sqlite" in db_url:
+            from sqlalchemy import text
+            await conn.execute(text("PRAGMA journal_mode=WAL;"))
+            await conn.execute(text("PRAGMA busy_timeout=15000;"))
+            await conn.execute(text("PRAGMA synchronous=NORMAL;"))
+
         await conn.run_sync(Base.metadata.create_all)
         
         # SQLite automatic column migration for existing databases

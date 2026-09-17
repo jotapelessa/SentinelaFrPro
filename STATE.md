@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-17 04:15 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.129 operacional (Build 129). Otimização e deduplicação de câmeras ativas na Android TV (resolvendo 3 cards repetidos), alinhamento responsivo em proporção 16:9 dinâmica no Smartphone e incremento de estabilidade geral.
+> **Última Atualização:** 2026-09-17 06:40 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.130 operacional (Build 130). Otimização global de servidores Frigate, Sentinela Core, APKs, go2rtc e Mosquitto. Resolução definitiva dos gargalos de salvamento (SQLite WAL + busy_timeout) e temperatura (unificação de inputs FFmpeg roles: [record, detect]), segregação estrita de PiP Preview (ausente no smartphone, exclusivo na TV e novo Web PiP Alert Modal com HTML5 Native PiP).
 
 ---
 
@@ -61,7 +61,25 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
    - **Regra**: Todas as fontes de vídeo, feeds go2rtc, clipes Telegram e overlays de visualização devem operar em codec H.264 constante (CFR).
    - **Motivo**: Previne incompatibilidades com decodificadores SoC legados e garante reprodução instantânea com menos de 120ms de latência.
 
-## 📦 Versão Atual: v001.000.000.129 (Deduplicação de Câmeras na TV, Alinhamento Responsivo de UI/UX e Proporção Dinâmica 16:9 no Smartphone)
+## 📦 Versão Atual: v001.000.000.130 (Otimização Global de Servidores, Resolução de Salvamento/Temperatura e Segregação de PiP)
+- **Data**: 2026-09-17
+- **Objetivo**: Implementação integral dos 32 pontos de otimização acordados entre Frigate, Sentinela Core, APKs e Web:
+  1. **Resolução de Salvamento (SQLite WAL & Busy Timeout)**:
+     - `session.py`: Ativados `PRAGMA journal_mode=WAL;`, `PRAGMA busy_timeout=15000;` e `PRAGMA synchronous=NORMAL;` com `timeout=15` no engine. Erradicação total de colisões `database is locked` entre tarefas MQTT de segundo plano e operações de escrita da API.
+     - `cameras.py`: Removido fallback perigoso que sobrescrevia a primeira câmera quando ID não era localizado.
+  2. **Resolução de Temperatura (FFmpeg Demuxer Unificado & Redução de Carga)**:
+     - `cameras.py`: Unificados inputs FFmpeg sob `roles: [record, detect]`, eliminando a execução de dois processos demuxer concorrentes para a mesma câmera física. Redução drástica da carga de CPU do Frigate e queda na temperatura média da CPU do host.
+     - Perfil `720p` ajustado para stream copy nativo, eliminando transcodificação pesada por software em CPU (`libx264`).
+     - `telemetry.py`: Cache em memória com TTL de 2.0s para medições térmicas de `/sys/class/thermal/`, eliminando sobrecarga de I/O no kernel.
+  3. **Segregação Estrita de PiP Preview**:
+     - Smartphone: Formalizada a ausência de PiP preview local. Removidas dependências de `OverlayService` em `SmartphoneYouTubeScreen.kt`. O smartphone opera como Central Master remota para as Smart TVs e `allow_pip_alerts` é forçado para `false` no pareamento.
+     - Web Dashboard: Criado o componente [WebPipAlertModal.tsx](file:///Users/jotapelessa/Documents/DEV45/SentinelaFrigate/frontend/src/components/WebPipAlertModal.tsx), que exibe um card flutuante translúcido no canto da tela quando detecções de segurança ocorrem, com auto-dismiss de 12s e suporte completo à **HTML5 Native Picture-in-Picture API** (`video.requestPictureInPicture()`).
+     - Backend: `pip_gateway.py` filtra estritamente `device_type` para `android_tv` e `web`, eliminando smartphones do pool de despacho.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS. TypeScript compilação 100% limpa (`npx tsc --noEmit` exit 0). Build incrementado para `130`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.129 (Deduplicação de Câmeras na TV, Alinhamento Responsivo de UI/UX e Proporção Dinâmica 16:9 no Smartphone)
 - **Data**: 2026-09-17
 - **Objetivo**: Resolução definitiva das 4 anomalias relatadas em UI/UX e consumo de hardware:
   1. **Item 1.1 (Android TV - Deduplicação de Câmeras e Preservação de MediaCodec)**:

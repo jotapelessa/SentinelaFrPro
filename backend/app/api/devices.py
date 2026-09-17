@@ -506,6 +506,8 @@ async def register_device(dev: DeviceCreate, request: Request, db: AsyncSession 
         existing.ip_address = dev.ip_address
         existing.tailscale_ip = dev.tailscale_ip
         existing.device_type = dev.device_type
+        if (dev.device_type and dev.device_type.lower() in ["smartphone", "mobile", "phone"]) or existing.is_master_admin:
+            existing.allow_pip_alerts = False
         await db.commit()
         await audit_service.log(
             action="DEVICE_UPDATED",
@@ -517,6 +519,8 @@ async def register_device(dev: DeviceCreate, request: Request, db: AsyncSession 
         return existing
 
     new_dev = PairedDevice(**dev.model_dump())
+    if (new_dev.device_type and new_dev.device_type.lower() in ["smartphone", "mobile", "phone"]) or new_dev.is_master_admin:
+        new_dev.allow_pip_alerts = False
     db.add(new_dev)
     await db.commit()
     await db.refresh(new_dev)

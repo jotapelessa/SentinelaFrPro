@@ -12,12 +12,19 @@ class TelemetryService:
         self._last_net = psutil.net_io_counters()
         self._last_disk_io = psutil.disk_io_counters() if hasattr(psutil, "disk_io_counters") else None
         self._last_time = time.time()
+        self._cached_temp = 37.5
+        self._cached_temp_time = 0.0
 
     def get_cpu_temperature(self) -> float:
         """
         Reads CPU temperature from Linux thermal zones (/sys/class/thermal/ or psutil).
         Prioritizes x86_pkg_temp, coretemp, cpu-thermal, or the maximum active zone.
+        Cached with 2.0s TTL to prevent heavy sysfs I/O polling overhead.
         """
+        now = time.time()
+        if now - self._cached_temp_time < 2.0:
+            return self._cached_temp
+
         try:
             # 1. Direct sysfs thermal zones scanning on Linux (checks x86_pkg_temp / coretemp)
             pkg_temps = []
@@ -40,13 +47,14 @@ class TelemetryService:
                 except Exception:
                     pass
 
+            calc_temp = None
             if pkg_temps:
-                return round(max(pkg_temps), 1)
-            if all_temps:
-                return round(max(all_temps), 1)
+                calc_temp = round(max(pkg_temps), 1)
+            elif all_temps:
+                calc_temp = round(max(all_temps), 1)
 
             # 2. Check psutil hardware sensors
-            if hasattr(psutil, "sensors_temperatures"):
+            if calc_temp is None and hasattr(psutil, "sensors_temperatures"):
                 temps = psutil.sensors_temperatures()
                 if temps:
                     sensor_vals = []
@@ -55,21 +63,29 @@ class TelemetryService:
                             if entry.current and entry.current > 0:
                                 sensor_vals.append(entry.current)
                     if sensor_vals:
-                        return round(max(sensor_vals), 1)
+                        calc_temp = round(max(sensor_vals), 1)
 
             # 3. Check hwmon
-            for hwmon in glob.glob("/sys/class/hwmon/hwmon*/temp*_input"):
-                try:
-                    with open(hwmon, "r") as f:
-                        val = int(f.read().strip()) / 1000.0
-                        if 10.0 <= val <= 115.0:
-                            return round(val, 1)
-                except Exception:
-                    pass
+            if calc_temp is None:
+                for hwmon in glob.glob("/sys/class/hwmon/hwmon*/temp*_input"):
+                    try:
+                        with open(hwmon, "r") as f:
+                            val = int(f.read().strip()) / 1000.0
+                            if 10.0 <= val <= 115.0:
+                                calc_temp = round(val, 1)
+                                break
+                    except Exception:
+                        pass
+            if calc_temp is not None:
+                self._cached_temp = calc_temp
+                self._cached_temp_time = now
+                return calc_temp
         except Exception:
             pass
 
         # Fallback / Dev environment value (Intel Celeron Jasper Lake idle)
+        self._cached_temp = 37.5
+        self._cached_temp_time = now
         return 37.5
 
     def get_uptime_string(self) -> str:

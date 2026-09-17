@@ -504,8 +504,7 @@ fun PhoneCameraStreamCard(
     )
 
     val isAppInForeground by com.sentinela.pro.SentinelaApplication.isAppInForeground.collectAsState()
-    val isPipOverlayActive by com.sentinela.pro.tv.OverlayService.isPipShowing.collectAsState()
-    val isCameraStreaming = isAppInForeground && !isPipOverlayActive
+    val isCameraStreaming = isAppInForeground
 
     Card(
         shape = SentinelaShapes.CameraCard,
@@ -589,10 +588,10 @@ fun PhoneCameraStreamCard(
                                         modifier = Modifier
                                             .size(8.dp)
                                             .clip(androidx.compose.foundation.shape.CircleShape)
-                                            .background(if (isPipOverlayActive) SentinelaColors.PrimaryCyan else SentinelaColors.StandbyAmber)
+                                            .background(SentinelaColors.StandbyAmber)
                                     )
                                     Text(
-                                        text = if (isPipOverlayActive) "MODO DE ESPERA · PiP ATIVO" else "MODO DE ESPERA · DETECÇÃO ATIVA",
+                                        text = "MODO DE ESPERA · DETECÇÃO ATIVA",
                                         color = Color.White,
                                         fontSize = 10.sp,
                                         fontWeight = androidx.compose.ui.text.font.FontWeight.Bold

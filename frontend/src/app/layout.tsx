@@ -3,6 +3,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { ScannerModal } from "@/components/ScannerModal";
 import { AlertToast } from "@/components/AlertToast";
+import { WebPipAlertModal } from "@/components/WebPipAlertModal";
 import { WebSocketProvider } from "@/components/WebSocketProvider";
 import { APP_VERSION } from "@/constants/version";
 
@@ -69,6 +70,7 @@ export default function RootLayout({
           </footer>
           <ScannerModal />
           <AlertToast />
+          <WebPipAlertModal />
         </WebSocketProvider>
       </body>
     </html>

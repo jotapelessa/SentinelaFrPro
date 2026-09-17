@@ -163,6 +163,10 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               if (typeof window !== "undefined") {
                 window.dispatchEvent(new CustomEvent("pip_execution_confirmed", { detail: data }));
               }
+            } else if (data.type === "pip_alert") {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("pip_alert", { detail: data }));
+              }
             } else if (data.type === "CLIENT_LOGS_INGESTED") {
               if (typeof window !== "undefined") {
                 window.dispatchEvent(new CustomEvent("client_logs_ingested", { detail: data }));

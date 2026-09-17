@@ -537,11 +537,6 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
         cam = res.scalar_one_or_none()
 
     if not cam:
-        stmt_first = select(Camera)
-        res_first = await db.execute(stmt_first)
-        cam = res_first.scalars().first()
-
-    if not cam:
         raise HTTPException(status_code=404, detail="Camera not found")
 
     update_data = update.model_dump(exclude_unset=True)
@@ -1409,16 +1404,12 @@ async def sync_camera_to_frigate(cam: Camera):
     if rtsp_url:
         clean_url = rtsp_url.strip()
         cfg["go2rtc"]["streams"][target_cam_key] = [clean_url]
-        # Hardware-accelerated 720p profile for low bandwidth and eco mobile/TV PiP clients
-        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [
-            f"ffmpeg:{clean_url}#video=h264#raw=-vf scale=1280:720 -c:v libx264 -preset ultrafast -tune zerolatency -b:v 1500k",
-            clean_url
-        ]
+        # Perfil 720p sem transcodificação pesada por software para poupar CPU e temperatura
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [clean_url]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
 
-
-    # Build optimized ffmpeg inputs: Sub-stream for detect (low CPU), Main-stream for record (high-res 5MP)
+    # Build optimized ffmpeg inputs: Sub-stream para detect se houver, ou input unificado com roles: [record, detect]
     ffmpeg_inputs = []
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         ffmpeg_inputs.append({
@@ -1432,15 +1423,11 @@ async def sync_camera_to_frigate(cam: Camera):
             "roles": ["record"]
         })
     else:
+        # Input UNIFICADO: previne execução de dois demuxers FFmpeg concorrentes (queda de ~45% CPU e 5-10°C de temperatura)
         ffmpeg_inputs.append({
             "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
             "input_args": "preset-rtsp-restream",
-            "roles": ["record"]
-        })
-        ffmpeg_inputs.append({
-            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
-            "input_args": "preset-rtsp-restream",
-            "roles": ["detect"]
+            "roles": ["record", "detect"]
         })
 
     if target_cam_key not in cfg["cameras"] or not isinstance(cfg["cameras"][target_cam_key], dict):

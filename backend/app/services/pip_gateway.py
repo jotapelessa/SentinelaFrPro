@@ -78,6 +78,10 @@ class PiPGatewayService:
             devices = result.scalars().all()
             filtered_devices = []
             for d in devices:
+                # 0. Exclui estritamente smartphones (smartphone não tem e nem terá função pip preview)
+                if (d.device_type and d.device_type.lower() in ["smartphone", "mobile", "phone"]) or d.is_master_admin:
+                    continue
+
                 # 1. Filter by allowed cameras if specified
                 if camera_name and d.allowed_cameras:
                     try:

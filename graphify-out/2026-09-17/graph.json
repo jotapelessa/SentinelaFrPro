@@ -14585,7 +14585,7 @@
       "node_kind": "heading",
       "norm_label": "graphify",
       "source_file": "AGENTS.md",
-      "source_location": "L28"
+      "source_location": "L30"
     },
     {
       "id": "agents_regras_de_ouro_inegoci\u00e1veis_de_streaming_pip_nunca_quebrar",
@@ -30910,7 +30910,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "AGENTS.md",
-      "source_location": "L28",
+      "source_location": "L30",
       "weight": 1.0
     },
     {
@@ -44406,5 +44406,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "45acd40bf1c92f067f367563c8bc8ee524b5e628"
+  "built_at_commit": "2f006a2518403456a160bd4718217e0c37c8a8bd"
 }
