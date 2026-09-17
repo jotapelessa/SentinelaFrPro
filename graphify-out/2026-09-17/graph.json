@@ -16926,7 +16926,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L586"
+      "source_location": "L592"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -39072,7 +39072,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L586",
+      "source_location": "L592",
       "weight": 1.0
     },
     {

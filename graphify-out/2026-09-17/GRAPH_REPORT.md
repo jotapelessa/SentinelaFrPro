@@ -1,7 +1,7 @@
 # Graph Report - SentinelaFrigate  (2026-09-17)
 
 ## Corpus Check
-- 165 files · ~191,364 words
+- 165 files · ~191,531 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary

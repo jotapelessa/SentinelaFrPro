@@ -24,6 +24,8 @@ Regras de Ouro:
 5. **Desacoplamento Assíncrono de Cast**: Google Cast (porta 8009) NUNCA deve bloquear a API síncrona nem ser disparado se a TV já estiver conectada via WebSocket ao app Sentinela.
 6. **Sincronização Estrita de Primeiro Quadro no PiP**: NUNCA desvanecer o snapshot nem revelar o WebView no evento `'playing'`. O gatilho DEVE ocorrer estritamente via `requestVideoFrameCallback(onFrame)` com `CachePolicy.ENABLED` no Coil, eliminando qualquer pisca duplo ou flash de tela preta.
 7. **Container Queries em Overlays de IA**: NUNCA combinar `w-full h-full` com `aspect-ratio: 16/9`. Use `[container-type:size]` e funções `min()` de container query para casar milimetricamente com o vídeo letterboxed (`object-fit: contain`).
+8. **Suspensão de Players em Background (`STANDBY_MONITORING_ENFORCED`)**: NUNCA manter streaming ativo quando o app/aba perder o foco de primeiro plano ou quando o PiP estiver ativo. Descarregue a URL para liberar decodificadores de hardware `MediaCodec`.
+9. **Deduplicação Estrita de Câmeras Ativas na UI**: SEMPRE filtrar `.filter { it.enabled }.distinctBy { it.name }` na camada de repositório e UI dos clientes para evitar instanciar múltiplos decodificadores de hardware para a mesma câmera física.
 
 ## graphify
 
