@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-16 20:30 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.127 operacional (Build 127). Modo de espera / monitoramento de detecção inteligente com suspensão imediata de players de vídeo em segundo plano para eliminação total de concorrência de decodificadores MediaCodec no PiP (Android TV, Smartphone, Web Dashboard e PiP Gateway).
+> **Última Atualização:** 2026-09-17 03:35 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.128 operacional (Build 128). Correção crítica de compilação Android TV e Smartphone no CI/CD (#287) e estabilização definitiva de timestamps RTSP (DTS/PTS) com `-avoid_negative_ts make_zero` no Frigate NVR 0.17.
 
 ---
 

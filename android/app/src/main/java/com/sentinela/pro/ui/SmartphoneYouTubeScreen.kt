@@ -2138,7 +2138,7 @@ fun PhoneToolsTab() {
                                     val res = SentinelaRepository.checkServicesHealth()
                                     healthStatuses = res
                                     isCheckingHealth = false
-                                    val allOk = res.all { it.isOk }
+                                    val allOk = res.all { it.isOnline }
                                     com.sentinela.pro.logging.SentinelaRemoteLogger.log(
                                         category = "NETWORK",
                                         action = "HEALTH_CHECK_FINISHED",

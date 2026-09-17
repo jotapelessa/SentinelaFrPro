@@ -12217,7 +12217,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcfa 1. android tv 55\" (layout horizontal estilo netflix)",
       "source_file": "README.md",
-      "source_location": "L39"
+      "source_location": "L36"
     },
     {
       "id": "readme_2_android_smartphone_layout_vertical_estilo_youtube",
@@ -12229,7 +12229,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcf1 2. android smartphone (layout vertical estilo youtube)",
       "source_file": "README.md",
-      "source_location": "L49"
+      "source_location": "L46"
     },
     {
       "id": "readme_aplicativos_nativos_android_v001_000_000_117",
@@ -12241,7 +12241,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcf1 aplicativos nativos android (`v001.000.000.117`)",
       "source_file": "README.md",
-      "source_location": "L37"
+      "source_location": "L34"
     },
     {
       "id": "readme_como_atualizar_o_servidor_ubuntu",
@@ -12253,7 +12253,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udda5\ufe0f como atualizar o servidor ubuntu",
       "source_file": "README.md",
-      "source_location": "L107"
+      "source_location": "L104"
     },
     {
       "id": "readme_como_compilar_os_apks_no_github_codespaces",
@@ -12265,19 +12265,19 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 como compilar os apks no github codespaces",
       "source_file": "README.md",
-      "source_location": "L79"
+      "source_location": "L76"
     },
     {
-      "id": "readme_download_dos_apks_oficiais_v001_000_000_117",
-      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.117`)",
+      "id": "readme_download_dos_apks_oficiais_v001_000_000_127",
+      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.127`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.117`)",
+      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.127`)",
       "source_file": "README.md",
-      "source_location": "L26"
+      "source_location": "L23"
     },
     {
       "id": "readme_licen\u00e7a",
@@ -12289,7 +12289,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcc4 licenca",
       "source_file": "README.md",
-      "source_location": "L141"
+      "source_location": "L138"
     },
     {
       "id": "readme_mapa_de_portas_e_servi\u00e7os",
@@ -12301,7 +12301,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\uddfa\ufe0f mapa de portas e servicos",
       "source_file": "README.md",
-      "source_location": "L126"
+      "source_location": "L123"
     },
     {
       "id": "readme_principais_recursos_do_servidor_nvr",
@@ -12313,7 +12313,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 principais recursos do servidor & nvr",
       "source_file": "README.md",
-      "source_location": "L65"
+      "source_location": "L62"
     },
     {
       "id": "readme_sentinela_frigate_pro",
@@ -12337,7 +12337,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83c\udfaf visao geral",
       "source_file": "README.md",
-      "source_location": "L21"
+      "source_location": "L18"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_mobile_nvr_package",
@@ -16926,7 +16926,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L563"
+      "source_location": "L576"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -37587,7 +37587,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L39",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -37598,7 +37598,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L49",
+      "source_location": "L46",
       "weight": 1.0
     },
     {
@@ -37609,7 +37609,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L107",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -37620,7 +37620,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L126",
+      "source_location": "L123",
       "weight": 1.0
     },
     {
@@ -37631,7 +37631,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L141",
+      "source_location": "L138",
       "weight": 1.0
     },
     {
@@ -37642,18 +37642,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L21",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_download_dos_apks_oficiais_v001_000_000_117",
+      "target": "readme_download_dos_apks_oficiais_v001_000_000_127",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L26",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -37664,7 +37664,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L37",
+      "source_location": "L34",
       "weight": 1.0
     },
     {
@@ -37675,7 +37675,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L65",
+      "source_location": "L62",
       "weight": 1.0
     },
     {
@@ -37686,7 +37686,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "README.md",
-      "source_location": "L79",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -39072,7 +39072,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L563",
+      "source_location": "L576",
       "weight": 1.0
     },
     {
@@ -44406,5 +44406,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1221fbf718b6681120ddd87ccb2a1f084b2d878e"
+  "built_at_commit": "f285164380a0f3874b992286b5f81499bd7e117c"
 }

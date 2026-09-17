@@ -1154,7 +1154,7 @@ fun TvRecordingsViewport(
                                                 action = "RECORDING_CLIP_OPENED",
                                                 severity = "INFO",
                                                 message = "Gravação IA ${clip.id} da câmera ${clip.cameraName} aberta no player da TV",
-                                                metadata = mapOf("clip_id" to clip.id, "camera" to clip.cameraName, "label" to clip.label)
+                                                metadata = mapOf("clip_id" to clip.id, "camera" to clip.cameraName)
                                             )
                                             true
                                         }
@@ -1181,7 +1181,7 @@ fun TvRecordingsViewport(
                                     action = "RECORDING_CLIP_OPENED",
                                     severity = "INFO",
                                     message = "Gravação IA ${clip.id} da câmera ${clip.cameraName} aberta no player da TV",
-                                    metadata = mapOf("clip_id" to clip.id, "camera" to clip.cameraName, "label" to clip.label)
+                                    metadata = mapOf("clip_id" to clip.id, "camera" to clip.cameraName)
                                 )
                             }
                     ) {

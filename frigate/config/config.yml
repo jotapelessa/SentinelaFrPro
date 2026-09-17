@@ -15,7 +15,7 @@ ffmpeg:
   hwaccel_args: preset-intel-qsv-h264
   output_args:
     record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime
-      1 -c:v copy -bsf:v h264_redundant_pps -c:a copy
+      1 -avoid_negative_ts make_zero -c:v copy -bsf:v h264_redundant_pps -c:a copy
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
   width: 300
