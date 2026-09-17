@@ -61,9 +61,22 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
    - **Regra**: Todas as fontes de vídeo, feeds go2rtc, clipes Telegram e overlays de visualização devem operar em codec H.264 constante (CFR).
    - **Motivo**: Previne incompatibilidades com decodificadores SoC legados e garante reprodução instantânea com menos de 120ms de latência.
 
+## 📦 Versão Atual: v001.000.000.129 (Deduplicação de Câmeras na TV, Alinhamento Responsivo de UI/UX e Proporção Dinâmica 16:9 no Smartphone)
+- **Data**: 2026-09-17
+- **Objetivo**: Resolução definitiva das 4 anomalias relatadas em UI/UX e consumo de hardware:
+  1. **Item 1.1 (Android TV - Deduplicação de Câmeras e Preservação de MediaCodec)**:
+     - `SentinelaRepository.kt` e `TvNetflixScreen.kt`: Adicionado filtro `.filter { it.enabled }.distinctBy { it.name }`. Câmeras inativas/clones no NVR (`camera_principal` e `cam_192_168_1_136`) não geram mais cards repetidos no carrossel ou no viewport hero. Apenas a câmera física ativa (`camera_secundaria`) é renderizada, reduzindo em 66% a alocação de decodificadores de hardware `MediaCodec` e prevenindo travamentos de stream.
+  2. **Item 1.2 (Android TV - Alinhamento Responsivo na Aba Ferramentas)**:
+     - `TvNetflixScreen.kt`: Aplicado `Modifier.fillMaxWidth().height(IntrinsicSize.Min)` em ambas as linhas da grade e `Modifier.weight(1f).fillMaxHeight()` em todos os 4 cards (`CardTesteDeBanda`, `CardEstabilidadeDeVideo`, `CardLarguraDeBanda` e `CardSubsistemasEComandos`). Espaçamento padronizado em 10.dp e alinhamento milimétrico nas bordas superiores e inferiores.
+  3. **Item 1.3 (Android TV - Harmonização da Aba Configurações)**:
+     - `TvNetflixScreen.kt`: Caixas das opções das grades 4x2 de PiP (Tamanho, Posição e Duração) padronizadas com `.height(44.dp)` e alinhamento centralizado. Seletores de Módulo de Vídeo e Resolução equalizados com `IntrinsicSize.Min` e `fillMaxHeight()`, garantindo navegação D-Pad precisa e simétrica.
+  4. **Item 2.1 (Android Smartphone - Proporção Dinâmica 16:9 no Feed de Câmeras)**:
+     - `SmartphoneYouTubeScreen.kt`: Altura rígida de 230dp substituída por `Modifier.aspectRatio(16f / 9f)` dinâmico, ajustando-se a qualquer largura de tela ultra-wide sem distorcer o vídeo nem comprimir o feed.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS. Build incrementado para `129`.
+
 ---
 
-## 📦 Versão Atual: v001.000.000.127 (Modo de Espera / Monitoramento de Detecção & Suspensão de Players em Background para PiP)
+## 📦 Versão Anterior: v001.000.000.127 (Modo de Espera / Monitoramento de Detecção & Suspensão de Players em Background para PiP)
 - **Data**: 2026-09-16
 - **Objetivo**: Implementação integral dos requisitos 1.1, 2.1, 3.1 e 4:
   1. **Item 1.1 (Android TV - Suspensão do Player em Segundo Plano & Modo de Espera para PiP)**:
