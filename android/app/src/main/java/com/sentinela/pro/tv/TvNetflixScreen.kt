@@ -234,6 +234,9 @@ fun TvNetflixScreenCore(
                                         snapshotUrl = testSnap,
                                         streamUrl = testStream
                                     )
+                                    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M && !android.provider.Settings.canDrawOverlays(context)) {
+                                        Toast.makeText(context, "⚠️ Conceda a permissão 'Sobrepor a outros apps' na aba Configurações para ativar o PiP flutuante!", Toast.LENGTH_LONG).show()
+                                    }
                                 }
                             },
                             onNavigateLeftToSidebar = { sidebarFocusRequesters.getOrNull(selectedTab.ordinal)?.requestFocus() }

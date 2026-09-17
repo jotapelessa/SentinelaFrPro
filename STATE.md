@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-17 11:00 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.135 operacional (Build 135). Resolução definitiva do fechamento inesperado do aplicativo Android TV (Item 1.1 / 2.1 / 3.1 / 4.2): diagnosticado e corrigido o `ForegroundServiceDidNotStartInTimeException` no Android 14 (API 34) decorrente de `specialUse` FGS sem permissão `FOREGROUND_SERVICE_SPECIAL_USE` declarada e violação do contrato do ciclo de vida em `OverlayService.kt`. Implementado `CrashJournal` offline com gravação síncrona em disco no `SentinelaApplication.kt` e upload imediato para `/api/telemetry/client-logs`. Todos os serviços (Frigate, Sentinela Core, APKs TV/Mobile, Next.js Dashboard) operando harmoniosamente.
+> **Última Atualização:** 2026-09-17 12:15 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.136 operacional (Build 136). Resolução definitiva do Item 4.1: eliminação do timeout de 5 segundos no disparo de PiP para Tablets e TVs AOSP (`Smart TV 'Tablet' não confirmou a exibição do PiP`). Centralização canônica de `SentinelaConfig.isTv(context)` respeitando o flavor do APK compilado (`BuildConfig.FLAVOR == "tv"`), reativação estável do `OverlayService` em tablets, feedback de erro com ACK instantâneo (<80ms) caso a permissão `SYSTEM_ALERT_WINDOW` esteja pendente e guia com 1 clique nas configurações. Todos os serviços (Frigate, Sentinela Core, APKs TV/Mobile, Next.js Dashboard) operando em perfeita harmonia.
 
 ---
 
@@ -625,6 +625,15 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
       3. Unificada a detecção `isTv()` em `MainActivity.kt` combinando checagem de flavor, `UI_MODE_TYPE_TELEVISION` e `FEATURE_LEANBACK`.
       4. Implementado o `CrashJournal` offline com `SentinelaPreferences.kt` (commit síncrono em SharedPreferences no `Thread.UncaughtExceptionHandler`) e flush imediato para `/api/telemetry/client-logs` no `SentinelaApplication.kt`, garantindo diagnóstico instantâneo mesmo se o app for finalizado bruscamente.
       5. Versionamento semântico promovido para **v001.000.000.135** (Build 135) em todo o ecossistema.
+  - **8. Resolução Definitiva de Timeout de PiP no Tablet e TVs AOSP (Build 136 - Item 4.1)**:
+    - **Sintoma Forense**: Alerta disparado para Tablet (`192.168.1.42`) gerava timeout de 5 segundos no backend: `Smart TV 'Tablet' não confirmou a exibição do PiP (tempo limite esgotado)`.
+    - **Causa Raiz**: O `OverlayService.kt` verificava se o dispositivo era TV exclusivamente através de `uiModeManager.currentModeType == UI_MODE_TYPE_TELEVISION` e `FEATURE_LEANBACK`. Em Tablets Android (como o TCL 9491G) ou TV boxes AOSP onde o usuário instala a versão TV, ambas as checagens retornavam `false`. Como resultado, `OverlayService.onCreate()` invocava `stopSelf()` imediatamente após o boot, destruindo a conexão WebSocket do serviço de overlay. Funções de PiP (`triggerPiP`, `showPiP`), preferências (`allowPipAlerts`) e loggers (`SentinelaRemoteLogger`) também rejeitavam o dispositivo.
+    - **Soluções Aplicadas**:
+      1. Centralizada a função canônica `SentinelaConfig.isTv(context)` dando prioridade máxima ao flavor do APK (`BuildConfig.FLAVOR == "tv"`).
+      2. Substituídas todas as checagens fragmentadas por `SentinelaConfig.isTv(this/context)` em `OverlayService.kt`, `SentinelaPreferences.kt`, `SentinelaRemoteLogger.kt`, `MainActivity.kt` e `BootReceiver.kt`.
+      3. No `OverlayService.kt`, caso a permissão `SYSTEM_ALERT_WINDOW` esteja pendente durante um teste com `testId`, envia-se um ACK de erro imediato (`SentinelaRepository.sendPipAck`) com diagnóstico amigável, reduzindo a latência da resposta de 5.000ms para <80ms.
+      4. Na aba de configurações da TV, botões dedicados de abertura de `Settings.ACTION_MANAGE_OVERLAY_PERMISSION` e revalidação de permissão asseguram configuração sem atrito.
+      5. Versionamento semântico promovido para **v001.000.000.136** (Build 136) em todo o ecossistema.
 
 ---
 

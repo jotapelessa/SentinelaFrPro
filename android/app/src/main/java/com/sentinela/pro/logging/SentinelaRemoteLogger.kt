@@ -169,11 +169,6 @@ object SentinelaRemoteLogger {
     }
 
     private fun isTv(context: Context): Boolean {
-        return try {
-            val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
-            uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION
-        } catch (e: Exception) {
-            false
-        }
+        return com.sentinela.pro.SentinelaConfig.isTv(context)
     }
 }

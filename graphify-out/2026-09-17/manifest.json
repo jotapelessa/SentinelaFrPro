@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/MainActivity.kt": {
-    "mtime": 1789653350.6481082,
-    "seen": 1789653492.913588,
-    "ast_hash": "cd6b1f30386eeaf6399402a6ed1c5218",
+    "mtime": 1789656778.1292682,
+    "seen": 1789656792.238625,
+    "ast_hash": "8aabd4d9d68c3ed014177748405c9f3f",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt": {

@@ -20,10 +20,7 @@ class SentinelaPreferences(private val context: Context) {
 
     var allowPipAlerts: Boolean
         get() {
-            val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
-            val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
-                    context.packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
-            if (!isTv) return false
+            if (!com.sentinela.pro.SentinelaConfig.isTv(context)) return false
             return prefs.getBoolean("allow_pip_alerts", true)
         }
         set(value) = prefs.edit().putBoolean("allow_pip_alerts", value).apply()

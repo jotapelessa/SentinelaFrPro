@@ -90,10 +90,7 @@ class OverlayService : Service() {
         createNotificationChannel()
         startForegroundSafe()
 
-        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
-        val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
-                packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
-        if (!isTv) {
+        if (!SentinelaConfig.isTv(this)) {
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
             stopSelf()
             return
@@ -309,10 +306,7 @@ class OverlayService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
-        val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
-                packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
-        if (!isTv) {
+        if (!SentinelaConfig.isTv(this)) {
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
             stopSelf()
             return START_NOT_STICKY
@@ -356,11 +350,8 @@ class OverlayService : Service() {
         val isPipShowing = kotlinx.coroutines.flow.MutableStateFlow(false)
 
         fun triggerPiP(context: Context, camera: String = "camera_secundaria", label: String = "TESTE PIP", testId: String? = null, snapshotUrl: String? = null, streamUrl: String? = null) {
-            val uiModeManager = context.getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
-            val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
-                    context.packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
-            if (!isTv) {
-                // Smartphones do not have or run PiP preview - return silently
+            if (!SentinelaConfig.isTv(context)) {
+                // Dispositivos smartphone não possuem preview de PiP flutuante - retorno seguro
                 return
             }
             try {
@@ -470,10 +461,7 @@ class OverlayService : Service() {
         overrideSize: String? = null,
         overrideDuration: Int? = null
     ) {
-        val uiModeManager = getSystemService(Context.UI_MODE_SERVICE) as? android.app.UiModeManager
-        val isTv = uiModeManager?.currentModeType == android.content.res.Configuration.UI_MODE_TYPE_TELEVISION ||
-                packageManager.hasSystemFeature(android.content.pm.PackageManager.FEATURE_LEANBACK)
-        if (!isTv) {
+        if (!SentinelaConfig.isTv(this)) {
             return
         }
 
@@ -498,7 +486,7 @@ class OverlayService : Service() {
             if (testId != null) {
                 val prefs = SentinelaPreferences(this)
                 serviceScope.launch {
-                    SentinelaRepository.sendPipAck(prefs.deviceIdentifier, testId, success = false, message = "Permissão SYSTEM_ALERT_WINDOW não concedida")
+                    SentinelaRepository.sendPipAck(prefs.deviceIdentifier, testId, success = false, message = "Permissão 'Sobrepor a outros apps' (SYSTEM_ALERT_WINDOW) necessária no dispositivo")
                 }
             }
             return
