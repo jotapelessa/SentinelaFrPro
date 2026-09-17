@@ -81,6 +81,8 @@ snapshots:
   clean_copy: true
   timestamp: true
   bounding_box: true
+  quality: 98
+  height: 1080
 go2rtc:
   streams:
     camera_secundaria:
@@ -135,6 +137,8 @@ cameras:
     snapshots:
       enabled: true
       bounding_box: true
+      quality: 98
+      height: 1080
     review:
       alerts:
         labels:

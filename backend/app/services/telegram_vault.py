@@ -85,6 +85,25 @@ class TelegramVaultService:
     def pause_alerts(self, minutes: int):
         self.pause_until = datetime.datetime.now() + datetime.timedelta(minutes=minutes)
 
+    def _get_scaled_font(self, size: int):
+        """Attempts to load a clean TrueType font, falling back to default."""
+        font_paths = [
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+            "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+            "/usr/share/fonts/TTF/DejaVuSans-Bold.ttf",
+            "/System/Library/Fonts/Helvetica.ttc",
+            "/Library/Fonts/Arial.ttf"
+        ]
+        for fp in font_paths:
+            try:
+                return ImageFont.truetype(fp, size)
+            except Exception:
+                continue
+        try:
+            return ImageFont.load_default()
+        except Exception:
+            return None
+
     def apply_watermark(self, image_bytes: bytes, camera_name: str, label: str, zone: Optional[str] = None) -> bytes:
         """Applies a professional HUD watermark on the snapshot with dynamic scaling for 1080p HD."""
         try:
@@ -93,7 +112,7 @@ class TelegramVaultService:
             width, height = image.size
 
             # HUD banner background (proportional dark bar at top)
-            bar_height = max(int(height * 0.06), 36)
+            bar_height = max(int(height * 0.058), 42)
             draw.rectangle([(0, 0), (width, bar_height)], fill=(8, 13, 20))
 
             # HUD Accent line (Cyan)
@@ -103,21 +122,27 @@ class TelegramVaultService:
             zone_str = f" | Zona: {zone}" if zone else ""
             hud_text = f"🛡️ SENTINELA PRO | {camera_name.upper()} | OBJETO: {label.upper()}{zone_str} | {now_str}"
 
-            # Draw text
-            draw.text((15, int(bar_height * 0.22)), hud_text, fill=(255, 255, 255))
+            # Calculate crisp font size proportional to resolution (e.g. ~26px on 1080p Full HD)
+            font_size = max(14, int(bar_height * 0.42))
+            font = self._get_scaled_font(font_size)
+
+            # Draw text with vertical centering in HUD bar
+            text_y = max(6, int((bar_height - font_size) / 2) - 2)
+            draw.text((18, text_y), hud_text, fill=(255, 255, 255), font=font)
 
             out_buf = io.BytesIO()
-            image.save(out_buf, format="JPEG", quality=95, subsampling=0)
+            # Maximum JPEG quality with full 4:4:4 chroma (subsampling=0) to preserve crisp edges
+            image.save(out_buf, format="JPEG", quality=98, subsampling=0, dpi=(300, 300))
             data = out_buf.getvalue()
 
-            # Keep the photo under Telegram's ~5MB limit while preserving max resolution.
-            max_bytes = 4_500_000
+            # Keep the photo under Telegram's ~9.5MB limit while preserving max native resolution
+            max_bytes = 9_500_000
             scale = 1.0
-            while len(data) > max_bytes and scale > 0.15:
-                scale *= 0.8
+            while len(data) > max_bytes and scale > 0.2:
+                scale *= 0.85
                 resized = image.resize((max(1, int(width * scale)), max(1, int(height * scale))), Image.LANCZOS)
                 buf = io.BytesIO()
-                resized.save(buf, format="JPEG", quality=85, subsampling=0)
+                resized.save(buf, format="JPEG", quality=90, subsampling=0)
                 data = buf.getvalue()
 
             return data

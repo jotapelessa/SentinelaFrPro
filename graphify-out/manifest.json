@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1789648503.97743,
-    "seen": 1789648580.834174,
-    "ast_hash": "fbdd8f83024fbb7407bb7278a7e68636",
+    "mtime": 1789651560.618387,
+    "seen": 1789651637.9602208,
+    "ast_hash": "34d026082aeb63a09860c538a769e950",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1789601446.7164042,
-    "seen": 1789601550.94811,
-    "ast_hash": "ea8b4f0e2013faab4562d87a706a0f5f",
+    "mtime": 1789651536.8152611,
+    "seen": 1789651637.960226,
+    "ast_hash": "77336a2400d84c21acaee6a4c8fbd6e6",
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
@@ -474,10 +474,10 @@
     "semantic_hash": ""
   },
   "backend/app/services/telegram_vault.py": {
-    "mtime": 1788629297.8791637,
-    "seen": 1788641395.5382771,
-    "ast_hash": "517937ac4912a7780da42153cce9f36d",
-    "semantic_hash": "517937ac4912a7780da42153cce9f36d"
+    "mtime": 1789651525.5388174,
+    "seen": 1789651637.9602282,
+    "ast_hash": "c3bd2d376b8669963f5a7ee9875e237f",
+    "semantic_hash": ""
   },
   "backend/app/services/telemetry.py": {
     "mtime": 1789637525.8928292,
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1789648521.8777928,
-    "seen": 1789648580.834183,
-    "ast_hash": "e546b6042389e30e8b24c5bd12df67db",
+    "mtime": 1789651594.2322364,
+    "seen": 1789651637.9602299,
+    "ast_hash": "f262d98df4010626d9365dda070c595a",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789648540.3903415,
-    "seen": 1789648580.8342159,
-    "ast_hash": "c2e02e74c5088498e3f62ad2f063cfd4",
+    "mtime": 1789651618.9715056,
+    "seen": 1789651637.960263,
+    "ast_hash": "33bb1ffb0ba76f19a4c10a5e7c68dc91",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1789626899.4900787,
-    "seen": 1789627000.4704058,
-    "ast_hash": "0a69dbdba9d5a314871b267f929167ae",
+    "mtime": 1789651474.8403277,
+    "seen": 1789651637.960268,
+    "ast_hash": "19273236f7a4805e57234ff54b5216e6",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1789648555.5587637,
-    "seen": 1789648580.834217,
-    "ast_hash": "38dc51693b4a5506e994316ecca5ecdb",
+    "mtime": 1789651629.198977,
+    "seen": 1789651637.960263,
+    "ast_hash": "156a9b5bed839ecf5765f08c94b837e9",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1789648511.2142115,
-    "seen": 1789648580.8341959,
-    "ast_hash": "99c62058b236516e2ad5db22f8ba318c",
+    "mtime": 1789651580.1444693,
+    "seen": 1789651637.960243,
+    "ast_hash": "c2a36a05e28437374621534926888a2d",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {

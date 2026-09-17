@@ -2,9 +2,9 @@
 
 <div align="center">
 
-![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.133-06B6D4?style=for-the-badge&logo=android&logoColor=white)
+![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.134-06B6D4?style=for-the-badge&logo=android&logoColor=white)
 ![Build](https://img.shields.io/badge/Status-Estável-emerald?style=for-the-badge)
-![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.133-success?style=for-the-badge&logo=github)
+![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.134-success?style=for-the-badge&logo=github)
 ![Frigate](https://img.shields.io/badge/Frigate_NVR-v0.17--0882103-blue?style=for-the-badge)
 ![go2rtc](https://img.shields.io/badge/go2rtc-v1.9.9--WebRTC-orange?style=for-the-badge)
 ![OpenVINO](https://img.shields.io/badge/OpenVINO-2024.5.0-purple?style=for-the-badge)
@@ -20,18 +20,18 @@ O **SentinelaFrigate PRO** é um sistema completo de videomonitoramento de níve
 
 ---
 
-## 📥 Download dos APKs Oficiais (`v001.000.000.133`)
+## 📥 Download dos APKs Oficiais (`v001.000.000.134`)
 
-Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.133):
+Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.134):
 
-* 📺 **[Download Android TV APK (v001.000.000.133)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.133/sentinela-android-tv-v001.000.000.133.apk)**  
-  *(Ou baixe a versão contínua mais recente: [`sentinela-android-tv-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.133/sentinela-android-tv-latest.apk))*
-* 📱 **[Download Smartphone / Tablet APK (v001.000.000.133)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.133/sentinela-android-smartphone-v001.000.000.133.apk)**  
-  *(Ou baixe a versão contínua mais recente: [`sentinela-android-smartphone-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.133/sentinela-android-smartphone-latest.apk))*
+* 📺 **[Download Android TV APK (v001.000.000.134)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.134/sentinela-android-tv-v001.000.000.134.apk)**  
+  *(Ou baixe a versão contínua mais recente: [`sentinela-android-tv-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.134/sentinela-android-tv-latest.apk))*
+* 📱 **[Download Smartphone / Tablet APK (v001.000.000.134)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.134/sentinela-android-smartphone-v001.000.000.134.apk)**  
+  *(Ou baixe a versão contínua mais recente: [`sentinela-android-smartphone-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.134/sentinela-android-smartphone-latest.apk))*
 
 ---
 
-## 📱 Aplicativos Nativos Android (`v001.000.000.133`)
+## 📱 Aplicativos Nativos Android (`v001.000.000.134`)
 
 ### 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix)
 * **Aba 1 • Câmeras**: Spotlight imersivo com navegação D-Pad, carrossel dinâmico e alternância para tela cheia instantânea.
