@@ -1639,10 +1639,10 @@
       "file_type": "code",
       "norm_label": "mainactivity",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L26"
+      "source_location": "L27"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66",
       "label": "X509TrustManager",
       "_callable": true,
       "_callable_class": true,
@@ -1652,7 +1652,7 @@
       "file_type": "code",
       "norm_label": "x509trustmanager",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L65"
+      "source_location": "L66"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket_sentinelawebsocket",
@@ -5671,7 +5671,7 @@
       "file_type": "code",
       "norm_label": ".hasoverlaypermission()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L162"
+      "source_location": "L163"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_istv",
@@ -5683,7 +5683,7 @@
       "file_type": "code",
       "norm_label": ".istv()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L154"
+      "source_location": "L155"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
@@ -5695,10 +5695,10 @@
       "file_type": "code",
       "norm_label": ".oncreate()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L27"
+      "source_location": "L28"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkclienttrusted",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_checkclienttrusted",
       "label": ".checkClientTrusted()",
       "_callable": true,
       "_origin": "ast",
@@ -5707,10 +5707,10 @@
       "file_type": "code",
       "norm_label": ".checkclienttrusted()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L66"
+      "source_location": "L67"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkservertrusted",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_checkservertrusted",
       "label": ".checkServerTrusted()",
       "_callable": true,
       "_origin": "ast",
@@ -5719,10 +5719,10 @@
       "file_type": "code",
       "norm_label": ".checkservertrusted()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L67"
+      "source_location": "L68"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_getacceptedissuers",
+      "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_getacceptedissuers",
       "label": ".getAcceptedIssuers()",
       "_callable": true,
       "_origin": "ast",
@@ -5731,7 +5731,7 @@
       "file_type": "code",
       "norm_label": ".getacceptedissuers()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L68"
+      "source_location": "L69"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket_sentinelawebsocket_connectandlisten",
@@ -17621,7 +17621,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L100",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -17633,7 +17633,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L139",
+      "source_location": "L140",
       "weight": 1.0
     },
     {
@@ -17645,7 +17645,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L144",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -17657,7 +17657,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L30",
+      "source_location": "L31",
       "weight": 1.0
     },
     {
@@ -17669,7 +17669,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L32",
+      "source_location": "L33",
       "weight": 1.0
     },
     {
@@ -17681,7 +17681,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L35",
+      "source_location": "L36",
       "weight": 1.0
     },
     {
@@ -22509,19 +22509,7 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkclienttrusted",
-      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_java",
-      "relation": "references",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "context": "generic_arg",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L66",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkservertrusted",
+      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_checkclienttrusted",
       "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_java",
       "relation": "references",
       "_origin": "ast",
@@ -22533,7 +22521,7 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_getacceptedissuers",
+      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_checkservertrusted",
       "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_java",
       "relation": "references",
       "_origin": "ast",
@@ -22542,6 +22530,18 @@
       "context": "generic_arg",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
       "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_getacceptedissuers",
+      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_java",
+      "relation": "references",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "generic_arg",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -23384,7 +23384,7 @@
         "target_fqn": "android.os.Bundle"
       },
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -23534,7 +23534,7 @@
         "target_fqn": "androidx.activity.ComponentActivity"
       },
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L12",
+      "source_location": "L13",
       "weight": 1.0
     },
     {
@@ -23954,7 +23954,7 @@
         "target_fqn": "com.sentinela.pro.data.CameraItem"
       },
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L19",
+      "source_location": "L20",
       "weight": 1.0
     },
     {
@@ -24074,7 +24074,7 @@
         "target_fqn": "com.sentinela.pro.network.SentinelaRepository"
       },
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L23",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -24134,7 +24134,7 @@
         "target_fqn": "com.sentinela.pro.tv.OverlayService"
       },
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L22",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
@@ -24149,7 +24149,7 @@
         "target_fqn": "com.sentinela.pro.tv.TvNetflixScreen"
       },
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L21",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -24164,7 +24164,7 @@
         "target_fqn": "com.sentinela.pro.ui.SmartphoneYouTubeScreen"
       },
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L20",
+      "source_location": "L21",
       "weight": 1.0
     },
     {
@@ -28163,7 +28163,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
@@ -33774,18 +33774,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
       "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate",
-      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65",
+      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L65",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -39672,14 +39672,14 @@
       "source_file": "frontend/postcss.config.mjs"
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65",
+      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66",
       "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_kt_x509trustmanager",
       "relation": "implements",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L65",
+      "source_location": "L66",
       "weight": 1.0
     },
     {
@@ -39789,7 +39789,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L26",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -40460,7 +40460,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L154",
+      "source_location": "L155",
       "weight": 1.0
     },
     {
@@ -40471,7 +40471,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L162",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -40482,23 +40482,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L27",
+      "source_location": "L28",
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65",
-      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkclienttrusted",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
-      "source_location": "L66",
-      "weight": 1.0
-    },
-    {
-      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65",
-      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_checkservertrusted",
+      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66",
+      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_checkclienttrusted",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -40508,14 +40497,25 @@
       "weight": 1.0
     },
     {
-      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65",
-      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l65_getacceptedissuers",
+      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66",
+      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_checkservertrusted",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
       "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66",
+      "target": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_getacceptedissuers",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "android/app/src/main/java/com/sentinela/pro/MainActivity.kt",
+      "source_location": "L69",
       "weight": 1.0
     },
     {
@@ -44927,5 +44927,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "231962b11da1311c2fd868ee8933d0b74f0fd1bc"
+  "built_at_commit": "80ef21437d5d3996fab0699769e17006b6dc76de"
 }
