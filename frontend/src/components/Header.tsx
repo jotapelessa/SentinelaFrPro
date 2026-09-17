@@ -163,6 +163,20 @@ export const Header: React.FC = () => {
             <Search className="w-3.5 h-3.5" />
             <span className="hidden sm:inline">Scanner</span>
           </button>
+
+          {/* Botão PiP Multi-Abas (Janela Flutuante Always-on-Top no SO) */}
+          <button
+            onClick={() => {
+              if (typeof window !== "undefined") {
+                window.dispatchEvent(new CustomEvent("launch_multitab_pip", { detail: { camera: "garagem" } }));
+              }
+            }}
+            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/30 hover:border-cyan-400 text-xs font-semibold tracking-wide transition-all shadow-sm shadow-cyan-500/20"
+            title="Abrir Janela PiP Flutuante do Sistema (visível ao navegar em outras abas)"
+          >
+            <Radio className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+            <span className="hidden sm:inline">PiP Multi-Abas</span>
+          </button>
         </div>
 
       </div>

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useEffect, useState, useRef } from "react";
-import { X, Maximize2, ShieldAlert, Radio } from "lucide-react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
+import { X, Maximize2, ShieldAlert, Radio, PictureInPicture2, ExternalLink } from "lucide-react";
 
 interface PipAlertData {
   type: string;
@@ -17,9 +17,142 @@ interface PipAlertData {
 export const WebPipAlertModal: React.FC = () => {
   const [activeAlert, setActiveAlert] = useState<PipAlertData | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(12);
+  const [isMultiTabPipActive, setIsMultiTabPipActive] = useState<boolean>(false);
   const dismissTimerRef = useRef<NodeJS.Timeout | null>(null);
   const countdownIntervalRef = useRef<NodeJS.Timeout | null>(null);
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
+  const pipWindowRef = useRef<Window | null>(null);
+
+  // Helper para atualizar feed na janela flutuante nativa do SO (Document Picture-in-Picture)
+  const updatePipWindowFeed = useCallback((camera: string, label?: string, zone?: string) => {
+    if (!pipWindowRef.current || pipWindowRef.current.closed) {
+      pipWindowRef.current = null;
+      setIsMultiTabPipActive(false);
+      return;
+    }
+    const doc = pipWindowRef.current.document;
+    const iframe = doc.getElementById("pip-stream-frame") as HTMLIFrameElement;
+    const titleEl = doc.getElementById("pip-cam-name");
+    const tagEl = doc.getElementById("pip-cam-tag");
+    const src = `/go2rtc/stream.html?src=${encodeURIComponent(camera)}&mode=mse`;
+
+    if (iframe && iframe.src !== src) {
+      iframe.src = src;
+    }
+    if (titleEl) titleEl.textContent = camera;
+    if (tagEl) tagEl.textContent = `${label ? label.toUpperCase() : "MOVIMENTO"} • ${zone || "Geral"}`;
+  }, []);
+
+  // Disparador de Notificação Nativa do SO quando em outras abas
+  const triggerDesktopNotification = useCallback((detail: PipAlertData) => {
+    if (typeof window === "undefined" || !("Notification" in window)) return;
+
+    if (Notification.permission === "granted" && document.hidden) {
+      try {
+        const notif = new Notification(`🚨 Sentinela: ${detail.camera}`, {
+          body: `Detectado: ${detail.label ? detail.label.toUpperCase() : "Movimento"} (${detail.score ? `${detail.score}%` : ""}) na zona ${detail.zone || "Geral"}.`,
+          icon: "/icon-192.png",
+          tag: `sentinela-${detail.camera}`,
+          silent: false
+        });
+
+        notif.onclick = () => {
+          window.focus();
+          notif.close();
+        };
+      } catch (err) {
+        console.debug("Notification error:", err);
+      }
+    }
+  }, []);
+
+  // Abertura explícita do Document PiP (Always-On-Top no SO)
+  const openDocumentPipWindow = useCallback(async (initialCam: string = "garagem") => {
+    if (typeof window === "undefined") return;
+
+    // Se já estiver aberto, apenas foca
+    if (pipWindowRef.current && !pipWindowRef.current.closed) {
+      pipWindowRef.current.focus();
+      return;
+    }
+
+    try {
+      // 1. Pedir permissão de notificações em segundo plano
+      if ("Notification" in window && Notification.permission === "default") {
+        await Notification.requestPermission();
+      }
+
+      // 2. Verificar suporte da Document Picture-in-Picture API
+      if ("documentPictureInPicture" in window) {
+        const pipWindow = await (window as any).documentPictureInPicture.requestWindow({
+          width: 440,
+          height: 275,
+        });
+        pipWindowRef.current = pipWindow;
+        setIsMultiTabPipActive(true);
+
+        // Copiar folhas de estilos e fontes
+        document.querySelectorAll('style, link[rel="stylesheet"]').forEach((el) => {
+          pipWindow.document.head.appendChild(el.cloneNode(true));
+        });
+
+        // Montar container Obsidian Pro dentro da janela PiP flutuante do SO
+        const pipDoc = pipWindow.document;
+        pipDoc.body.style.margin = "0";
+        pipDoc.body.style.backgroundColor = "#020617";
+        pipDoc.body.style.fontFamily = "system-ui, -apple-system, sans-serif";
+        pipDoc.body.style.color = "#f8fafc";
+        pipDoc.body.style.overflow = "hidden";
+
+        pipDoc.body.innerHTML = `
+          <div style="display: flex; flex-direction: column; width: 100vw; height: 100vh; background: #020617;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 6px 10px; background: #0f172a; border-bottom: 1px solid #1e293b; font-size: 11px; font-weight: 600;">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <span style="width: 8px; height: 8px; border-radius: 50%; background: #06b6d4; display: inline-block; box-shadow: 0 0 8px #06b6d4;"></span>
+                <span id="pip-cam-name" style="color: #67e8f9; font-weight: 700; text-transform: uppercase;">${initialCam}</span>
+              </div>
+              <span id="pip-cam-tag" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-family: monospace;">SENTINELA LIVE</span>
+            </div>
+            <div style="flex: 1; position: relative; width: 100%; height: calc(100% - 28px); background: #000;">
+              <iframe id="pip-stream-frame" src="/go2rtc/stream.html?src=${encodeURIComponent(initialCam)}&mode=mse" style="width: 100%; height: 100%; border: none;" allow="autoplay; fullscreen"></iframe>
+            </div>
+          </div>
+        `;
+
+        pipWindow.addEventListener("pagehide", () => {
+          pipWindowRef.current = null;
+          setIsMultiTabPipActive(false);
+        });
+
+      } else {
+        // Fallback: popup flutuante desencaixado
+        const popup = window.open(
+          `/go2rtc/stream.html?src=${encodeURIComponent(initialCam)}&mode=mse`,
+          "SentinelaPiP",
+          "width=440,height=280,resizable=yes,alwaysRaised=yes,scrollbars=no,status=no"
+        );
+        if (popup) {
+          pipWindowRef.current = popup;
+          setIsMultiTabPipActive(true);
+        }
+      }
+    } catch (err) {
+      console.warn("Document PiP window launch failed:", err);
+    }
+  }, []);
+
+  // Ouvir disparo de abertura de PiP Multi-Abas vindo de qualquer botão da UI (ex: Header)
+  useEffect(() => {
+    const handleLaunchMultiTabPip = (e: Event) => {
+      const customEvent = e as CustomEvent<{ camera?: string }>;
+      openDocumentPipWindow(customEvent.detail?.camera || "garagem");
+    };
+
+    window.addEventListener("launch_multitab_pip", handleLaunchMultiTabPip);
+    return () => {
+      window.removeEventListener("launch_multitab_pip", handleLaunchMultiTabPip);
+    };
+  }, [openDocumentPipWindow]);
 
   useEffect(() => {
     const handlePipAlert = (e: Event) => {
@@ -27,7 +160,15 @@ export const WebPipAlertModal: React.FC = () => {
       const detail = customEvent.detail;
       if (!detail || !detail.camera) return;
 
-      // Idempotência: se já estiver ativo para a mesma câmera, apenas estende o timer de auto-dismiss
+      // 1. Notificação nativa do SO se o usuário estiver navegando em outra aba
+      triggerDesktopNotification(detail);
+
+      // 2. Se houver janela PiP nativa aberta em segundo plano, atualiza o stream imediatamente!
+      if (pipWindowRef.current && !pipWindowRef.current.closed) {
+        updatePipWindowFeed(detail.camera, detail.label, detail.zone);
+      }
+
+      // 3. Alerta in-app com idempotência: se for a mesma câmera, apenas renova o countdown
       setActiveAlert(prev => {
         if (prev && prev.camera === detail.camera) {
           return { ...prev, ...detail };
@@ -35,7 +176,6 @@ export const WebPipAlertModal: React.FC = () => {
         return detail;
       });
 
-      // Reset timer
       setTimeLeft(12);
       if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
@@ -62,7 +202,7 @@ export const WebPipAlertModal: React.FC = () => {
       if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
       if (countdownIntervalRef.current) clearInterval(countdownIntervalRef.current);
     };
-  }, []);
+  }, [triggerDesktopNotification, updatePipWindowFeed]);
 
   const handleClose = () => {
     if (dismissTimerRef.current) clearTimeout(dismissTimerRef.current);
@@ -71,19 +211,8 @@ export const WebPipAlertModal: React.FC = () => {
   };
 
   const handleNativePip = async () => {
-    try {
-      if (iframeRef.current && iframeRef.current.contentDocument) {
-        const video = iframeRef.current.contentDocument.querySelector("video");
-        if (video && document.pictureInPictureEnabled) {
-          if (document.pictureInPictureElement) {
-            await document.exitPictureInPicture();
-          } else {
-            await video.requestPictureInPicture();
-          }
-        }
-      }
-    } catch (err) {
-      console.debug("Native PiP fallback:", err);
+    if (activeAlert) {
+      await openDocumentPipWindow(activeAlert.camera);
     }
   };
 
@@ -113,10 +242,10 @@ export const WebPipAlertModal: React.FC = () => {
         <div className="flex items-center gap-1">
           <button
             onClick={handleNativePip}
-            title="Desacoplar PiP Nativo do Navegador"
+            title="Abrir em Janela PiP do Sistema (Visível em outras abas)"
             className="p-1 rounded text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition"
           >
-            <Maximize2 className="w-3.5 h-3.5" />
+            <PictureInPicture2 className="w-3.5 h-3.5" />
           </button>
           <button
             onClick={handleClose}
@@ -157,3 +286,4 @@ export const WebPipAlertModal: React.FC = () => {
     </div>
   );
 };
+
