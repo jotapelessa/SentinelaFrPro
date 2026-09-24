@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-24 16:25 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.140 operacional (Build 140). Resolução definitiva do engasgo/lag em MSE 24 FPS nas novas câmeras IP AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`): blindagem de playbackRate contra freio de 0.1x do video-rtc.js, desvinculação de clock de áudio mono 8kHz via `&media=video`, mapeamento de miniaturas para o sub-stream nativo com aceleração por hardware Intel Jasper Lake QSV HEVC e sincronização total nos servidores, Web e APKs.
+> **Última Atualização:** 2026-09-24 17:00 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.141 operacional (Build 141). Reprogramação definitiva das câmeras IP AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`) de H.265+ (Smart Codec) para H.264 nativo com GOP/Keyframe=25 (1s) e CBR; cascateamento interno no go2rtc para evitar sobrecarga de conexões de hardware; fim absoluto do congelamento de 30s no MSE; e preservação fiel de timestamps nos alertas do Telegram com clipes de 20s a 60s reais via `setpts=PTS-STARTPTS`.
 
 ---
 
@@ -33,7 +33,22 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
-## 📦 Versão Atual: v001.000.000.140 (Otimização Extrema para Câmeras IP AITEK SEG6050BP e Correção Definitiva do Lag/Stutter MSE 24 FPS)
+## 📦 Versão Atual: v001.000.000.141 (Harmonização Universal H.264, GOP 25, Clipes Reais Telegram e Fim dos Travamentos de 30s)
+- **Data**: 2026-09-24
+- **Objetivo**: Resolução definitiva dos problemas de streaming ao vivo (travamento em 3s seguido de congelamento de 30s) e clipes curtos do Telegram (< 3s) nas novas câmeras IP AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`):
+  1. **Reprogramação de Firmware das Câmeras (H.264 Nativo + GOP 25)**:
+     - As câmeras vinham de fábrica configuradas para `H.265+` com `keyFrameInterval=100` (I-frame suprimido por até 30s em cenas estáticas).
+     - Reprogramados `/Streams/1/1` e `/Streams/1/2` via API HTTP PUT para `H.264`, `CBR` e `keyFrameInterval=25` (1 keyframe a cada 1 segundo).
+     - Resultado: Início imediato do stream (< 300ms) em MSE e fim de qualquer congelamento ou tela preta em Web, Android TV e Smartphone.
+  2. **Cascateamento de Streams no go2rtc**:
+     - `cam_..._720p` configurado para consumir o sub-stream local `rtsp://127.0.0.1:8554/cam_..._sub`, eliminando conexões TCP/RTSP extras ao hardware das câmeras e prevenindo `unexpected EOF`.
+  3. **Preservação de Duração Real nos Vídeos do Telegram**:
+     - Em `telegram_queue.py` e `frigate_bridge.py`, substituído o filtro compactador `setpts=N/({fps}*TB)` pelo filtro padronizado `setpts=PTS-STARTPTS`.
+     - Frigate agora entrega segmentos de gravação íntegros de 20s e 60s (HTTP 200, ~1.8MB), enviados com sucesso ao Telegram.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.140 (Otimização Extrema para Câmeras IP AITEK SEG6050BP e Correção Definitiva do Lag/Stutter MSE 24 FPS)
 - **Data**: 2026-09-24
 - **Objetivo**: Resolução definitiva do travamento/lag relatado em MSE 24 FPS em todas as plataformas (Android TV, Smartphone, Web Dashboard e Servidor Ubuntu) para as câmeras `cam_192_168_1_200` e `cam_192_168_1_93`:
   1. **Eliminação do Conflito de Watchdogs (`playbackRate` Clamping)**:

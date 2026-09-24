@@ -305,8 +305,8 @@ class FrigateBridgeService:
             elif avg_fps and avg_fps > 60:
                 out_fps = 15  # broken timestamps (e.g. 90000/1) -> safe default
 
-            # Regenerate PTS from the frame index, completely ignoring broken source timestamps.
-            vf = f"setpts=N/({out_fps}*TB)"
+            # Clean timestamp baseline from PTS-STARTPTS, preserving real event duration
+            vf = "setpts=PTS-STARTPTS"
             has_audio = self._has_audio_stream(in_file)
             audio_args = ["-c:a", "aac", "-b:a", "128k"] if has_audio else ["-an"]
 

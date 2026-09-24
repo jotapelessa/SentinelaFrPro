@@ -93,16 +93,16 @@ go2rtc:
     - rtsp://127.0.0.1:8554/camera_secundaria
     cam_192_168_1_200:
     - rtsp://admin:admin@192.168.1.200:554/live/0/MAIN#backchannel=0
-    cam_192_168_1_200_720p:
-    - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
     cam_192_168_1_200_sub:
     - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
+    cam_192_168_1_200_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_200_sub
     cam_192_168_1_93:
     - rtsp://admin:admin@192.168.1.93:554/live/0/MAIN#backchannel=0
-    cam_192_168_1_93_720p:
-    - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
     cam_192_168_1_93_sub:
     - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
+    cam_192_168_1_93_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_93_sub
   webrtc:
     candidates:
     - 100.93.129.91:8555
@@ -194,7 +194,7 @@ cameras:
   cam_192_168_1_200:
     enabled: true
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h265
+      hwaccel_args: preset-intel-qsv-h264
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_200
         input_args: preset-rtsp-restream
@@ -277,7 +277,7 @@ cameras:
         input_args: preset-rtsp-restream
         roles:
         - detect
-      hwaccel_args: preset-intel-qsv-h265
+      hwaccel_args: preset-intel-qsv-h264
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
           1 -strftime 1 -c:v copy -c:a aac

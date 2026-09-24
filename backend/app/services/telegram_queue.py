@@ -294,7 +294,7 @@ class TelegramVideoQueue:
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
                 "-i", in_file,
-                "-vf", f"setpts=N/({target_fps}*TB),format=yuv420p",
+                "-vf", "setpts=PTS-STARTPTS,format=yuv420p",
                 *audio_args,
                 "-r", str(target_fps),
                 "-c:v", "libx264",
