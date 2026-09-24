@@ -450,9 +450,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/frigate_bridge.py": {
-    "mtime": 1789134058.578593,
-    "seen": 1789137038.0902889,
-    "ast_hash": "27e20f6aef29bd430cee3e66d79db62c",
+    "mtime": 1790279289.9545991,
+    "seen": 1790279925.04321,
+    "ast_hash": "fe8dd5d855edb37ea035d97b7cb1fdbb",
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790277884.3108678,
-    "seen": 1790277947.749505,
-    "ast_hash": "a7ba367f65aa542e7bedf2bd8f172417",
+    "mtime": 1790279856.3861394,
+    "seen": 1790279925.043249,
+    "ast_hash": "a5eb2851a523ca4284482b3449aab37b",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1790277391.0295594,
-    "seen": 1790277947.7495098,
-    "ast_hash": "7bf4dc88cc2155d17a0c6eff9885da24",
+    "mtime": 1790279521.1737223,
+    "seen": 1790279925.043254,
+    "ast_hash": "6f5ae117da8ac6b0b90e6b70f6eafce3",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790277909.5827482,
-    "seen": 1790277947.749505,
-    "ast_hash": "6bff09aea02086b8a28b28928a344fa6",
+    "mtime": 1790279879.4895968,
+    "seen": 1790279925.043249,
+    "ast_hash": "5f5bc93d3ff445c101bc94ffc77fc95f",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1110,9 +1110,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
-    "mtime": 1789660140.6220973,
-    "seen": 1789660369.698066,
-    "ast_hash": "1f09c52654adad6f1508be218d2f3599",
+    "mtime": 1790279276.5554724,
+    "seen": 1790279925.043212,
+    "ast_hash": "a7f4347a98feb6c96405cc00adc290f5",
     "semantic_hash": ""
   },
   ".agents/workflows/cerebro.md": {

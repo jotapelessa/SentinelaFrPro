@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-24 17:00 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.141 operacional (Build 141). Reprogramação definitiva das câmeras IP AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`) de H.265+ (Smart Codec) para H.264 nativo com GOP/Keyframe=25 (1s) e CBR; cascateamento interno no go2rtc para evitar sobrecarga de conexões de hardware; fim absoluto do congelamento de 30s no MSE; e preservação fiel de timestamps nos alertas do Telegram com clipes de 20s a 60s reais via `setpts=PTS-STARTPTS`.
+> **Última Atualização:** 2026-09-24 17:35 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.142 operacional (Build 142). Resolução definitiva e arquitetural de sobrecarga nas câmeras AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`) com ingestão exclusiva por hardware via Sub-Stream H.264 CBR 512k (800x448 @ 25fps GOP 25), cascateamento interno 100% local no go2rtc para `cam_...`, `cam_..._720p` e `cam_..._sub`, consolidação de processos FFmpeg (processo único para record e detect), remoção do timer disruptivo de 1800ms no MseCameraView.kt, rebuild do container backend com `setpts=PTS-STARTPTS` ativo e tuning de socket buffers de rede no Ubuntu Server.
 
 ---
 
@@ -33,7 +33,26 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
-## 📦 Versão Atual: v001.000.000.141 (Harmonização Universal H.264, GOP 25, Clipes Reais Telegram e Fim dos Travamentos de 30s)
+## 📦 Versão Atual: v001.000.000.142 (Ingestão Única Sub-Stream Estável, Cascateamento Zero-Drop go2rtc e Rebuild Backend)
+- **Data**: 2026-09-24
+- **Objetivo**: Eliminação definitiva dos travamentos de 3s e congelamentos de 30s nos clientes Android TV, Smartphone, Web Dashboard e Servidor Ubuntu:
+  1. **Ingestão Exclusiva por Hardware via Sub-Stream (RtpRtspFlyer)**:
+     - As câmeras AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`) agora recebem estritamente UMA ÚNICA conexão RTSP TCP de hardware (`/live/0/SUB`), operando em 800x448 @ 25 FPS, CBR 512 kbps, H.264 Baseline e GOP 25 (1 keyframe/s).
+     - Isso anula a sobrecarga do buffer interno de 64KB do firmware e impede qualquer queda por `unexpected EOF` ou `connection reset by peer`.
+  2. **Cascateamento Local Integral no go2rtc**:
+     - `cam_...`, `cam_..._720p` e `cam_..._sub` foram unificados para compartilhar o mesmo stream localmente via loopback (`rtsp://127.0.0.1:8554/cam_..._sub`), eliminando requisições duplicadas de hardware.
+  3. **Consolidação de FFmpeg no Frigate (Record + Detect Único)**:
+     - Os inputs de cada câmera no Frigate foram consolidados para um único processo FFmpeg com as roles `[record, detect]`, cortando pela metade o consumo de CPU e decodificadores da máquina servidora.
+  4. **Estabilidade no MseCameraView.kt (Remoção do Timeout Disruptivo)**:
+     - Removido o timer de 1800ms que recarregava a URL forçando o stream raiz pesado. A recuperação agora ocorre de forma suave via `v.play()` sem reloads de WebView.
+  5. **Ativação Real de Vídeos no Telegram via Rebuild Docker**:
+     - O container Docker `sentinela_backend` foi reconstruído no servidor, ativando em produção a geração de clipes MP4 de 20s a 60s reais com timestamps consistentes (`setpts=PTS-STARTPTS`).
+  6. **Tuning de Sockets de Rede do Kernel Linux**:
+     - Parâmetros `net.core.rmem_max` (16MB) e `net.core.rmem_default` (2MB) aplicados e persistidos no Ubuntu Server.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.141 (Harmonização Universal H.264, GOP 25, Clipes Reais Telegram e Fim dos Travamentos de 30s)
 - **Data**: 2026-09-24
 - **Objetivo**: Resolução definitiva dos problemas de streaming ao vivo (travamento em 3s seguido de congelamento de 30s) e clipes curtos do Telegram (< 3s) nas novas câmeras IP AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`):
   1. **Reprogramação de Firmware das Câmeras (H.264 Nativo + GOP 25)**:

@@ -15,7 +15,6 @@
   "13": "compilerOptions",
   "14": "TvDesignTokens.kt",
   "15": "ScannerService",
-  "16": "MseCameraView",
   "17": "FrigateBridgeService",
   "18": "Histórias",
   "19": "api/telemetry.py",
@@ -51,7 +50,7 @@
   "52": "Run and deploy your AI Studio app",
   "53": "Tasks: Integração Frigate NVR 0.17 & go2rtc",
   "54": "Settings",
-  "55": "TvNetflixScreen.kt",
+  "55": "TvNetflixScreenCore",
   "56": "graphify.js",
   "57": "AGENTS.md",
   "58": "execution.md",
@@ -99,10 +98,9 @@
   "100": "next",
   "101": "generate_android_icons.py",
   "102": "SentinelaConfig",
-  "103": "TvToolsViewport",
+  "103": "TvNetflixScreen.kt",
   "105": "WebSocketManager",
   "106": "Models.kt",
-  "108": "SentinelaRepository.kt",
-  "110": "SentinelaPreferences",
-  "113": "TvLogsViewport"
+  "108": "TvLogsViewport",
+  "110": "SentinelaPreferences"
 }

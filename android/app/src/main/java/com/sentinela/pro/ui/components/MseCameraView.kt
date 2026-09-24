@@ -218,22 +218,12 @@ fun MseCameraView(
                                     "      }" +
                                     "    } catch(e) {}" +
                                     "    v.addEventListener('error', function() {" +
-                                    "      if (window.location.search.indexOf('_720p') !== -1) {" +
-                                    "        window.location.href = window.location.href.replace('_720p', '');" +
-                                    "      }" +
+                                    "      if (v.paused) { v.play().catch(function(){}); }" +
                                     "    });" +
                                     "    if (v.paused) { v.play().catch(function(){}); }" +
                                     "  }" +
                                     "};" +
                                     "initVideo();" +
-                                    "if (window.location.search.indexOf('_720p') !== -1 && !window.__fallbackTimer) {" +
-                                    "  window.__fallbackTimer = setTimeout(function() {" +
-                                    "    var v = document.querySelector('video');" +
-                                    "    if (!v || v.readyState < 2 || v.currentTime === 0) {" +
-                                    "      window.location.href = window.location.href.replace('_720p', '');" +
-                                    "    }" +
-                                    "  }, 1800);" +
-                                    "}" +
                                     "if (!window.__liveEdgeTimer) {" +
                                     "  window.__liveEdgeTimer = setInterval(function() {" +
                                     "    var v = document.querySelector('video');" +
