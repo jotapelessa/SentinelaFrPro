@@ -13,7 +13,7 @@ logger:
     frigate.video: info
 ffmpeg:
   output_args:
-    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v hevc_mp4toannexb -c:a aac
+    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
   width: 300
@@ -120,7 +120,7 @@ cameras:
   cam_192_168_1_189:
     enabled: true
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h265
+      hwaccel_args: preset-intel-qsv-h264
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_189
         input_args: preset-rtsp-restream
@@ -128,7 +128,7 @@ cameras:
         - record
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac
     detect:
       width: 800
       height: 448
@@ -191,7 +191,7 @@ cameras:
   cam_192_168_1_196:
     enabled: true
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h265
+      hwaccel_args: preset-intel-qsv-h264
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_196
         input_args: preset-rtsp-restream
@@ -199,7 +199,7 @@ cameras:
         - record
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac
     detect:
       width: 800
       height: 448
