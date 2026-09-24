@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-17 12:50 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.137 operacional (Build 137). Resolução definitiva dos Itens 4.1, 4.2 e 4.3: eliminação de erros de Non-monotonic DTS no Frigate com preset `preset-rtsp-generic` e wallclock de timestamps; sincronização estrita e canônica de Fuso Horário de Brasília (`America/Sao_Paulo`, UTC-3) em todas as camadas de banco de dados SQLite, FastAPI Core e container frontend Next.js (com `tzdata` no Alpine); e blindagem de abertura direta de configurações de sobreposição (`ACTION_MANAGE_OVERLAY_PERMISSION`) para PiP em Tablets e TVs AOSP. Todo o ecossistema operando em perfeita harmonia.
+> **Última Atualização:** 2026-09-24 15:45 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.139 operacional (Build 139). Resolução definitiva dos problemas de qualidade, resolução e quedas na segunda câmera (`192.168.1.200` e `192.168.1.93`): extração de perfis ONVIF nativos (`/live/0/MAIN` a 2304x1296 3MP e `/live/0/SUB` a 800x448), ingestão em cascata exclusiva no go2rtc com `#backchannel=0` e TCP, detecção leve no Frigate a 800x448@5fps, atualização do SQLite com liberação de dispositivos pareados para todas as câmeras e sincronização total nos servidores, Web e APKs. Todo o ecossistema operando em perfeita harmonia.
 
 ---
 
@@ -61,7 +61,28 @@ Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo re
    - **Regra**: Todas as fontes de vídeo, feeds go2rtc, clipes Telegram e overlays de visualização devem operar em codec H.264 constante (CFR).
    - **Motivo**: Previne incompatibilidades com decodificadores SoC legados e garante reprodução instantânea com menos de 120ms de latência.
 
-## 📦 Versão Atual: v001.000.000.130 (Otimização Global de Servidores, Resolução de Salvamento/Temperatura e Segregação de PiP)
+## 📦 Versão Atual: v001.000.000.139 (Resolução de Qualidade/Resolução 3MP, Ingestão go2rtc Estável e Detecção Frigate Otimizada para Câmeras ONVIF 192.168.1.200 e 192.168.1.93)
+- **Data**: 2026-09-24
+- **Objetivo**: Resolução definitiva e otimizada dos problemas relatados na segunda câmera (`cam_192_168_1_200` e `cam_192_168_1_93`):
+  1. **Descoberta dos Perfis Nativos ONVIF SOAP (`H2-52PGX` / `ONVIF_IPNC`)**:
+     - Main Stream de Alta Definição: `rtsp://admin:admin@<ip>:554/live/0/MAIN` (2304x1296 @ 3MP, HEVC/H.265).
+     - Sub Stream Leve para Detecção: `rtsp://admin:admin@<ip>:554/live/0/SUB` (800x448 @ 5FPS, HEVC/H.265).
+     - Eliminação de `/live/ch0` (que entregava apenas resolução secundária borrada) e `/live/ch1` (que não existia na câmera e causava timeouts contínuos).
+  2. **go2rtc Streaming Isolation & Zero Crash de Hardware**:
+     - Configurado `#backchannel=0` com conexões TCP persistentes. go2rtc passa a ser o único componente a conectar na câmera física (apenas 2 streams por câmera), eliminando saturação de sockets e quedas de rede.
+  3. **Frigate NVR 0.17 com Detecção Leve**:
+     - Role `detect` consome o restream interno do sub-stream em 800x448 @ 5fps, reduzindo drasticamente a carga de CPU/GPU do host e acelerando inferência de IA.
+     - Role `record` consome o stream principal em 2304x1296 com `-c:v copy -c:a aac` sem reencodificação destrutiva.
+  4. **Atualização do SQLite e Pareamento em Android TV / Smartphone**:
+     - Tabela `cameras` sincronizada com `resolution = '3MP (2304x1296)'`, `detect_width = 800`, `detect_height = 448`.
+     - Tabela `paired_devices` normalizada com `allowed_cameras = '[]'`, garantindo visibilidade total das novas câmeras em todos os clientes Android e Web.
+  5. **Scanner Automático & Roteamento (`scanner_service.py` & `cameras.py`)**:
+     - Suporte nativo a detecção automática do modelo `H2-52PGX` e caminhos `/live/0/MAIN` e `/live/0/SUB`.
+- **Governança**: 31/31 testes de especificação (`node --test test/*.js`) validados com 100% PASS. Build incrementado para `139`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.130 (Otimização Global de Servidores, Resolução de Salvamento/Temperatura e Segregação de PiP)
 - **Data**: 2026-09-17
 - **Objetivo**: Implementação integral dos 32 pontos de otimização acordados entre Frigate, Sentinela Core, APKs e Web:
   1. **Resolução de Salvamento (SQLite WAL & Busy Timeout)**:

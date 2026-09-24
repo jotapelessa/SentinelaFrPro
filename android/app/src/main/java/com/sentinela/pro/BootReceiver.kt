@@ -15,12 +15,19 @@ class BootReceiver : BroadcastReceiver() {
             val isTv = SentinelaConfig.isTv(context)
 
             if (isTv) {
+                // 1. Iniciar o serviço de overlay em background
                 val serviceIntent = Intent(context, OverlayService::class.java)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     context.startForegroundService(serviceIntent)
                 } else {
                     context.startService(serviceIntent)
                 }
+                
+                // 2. Iniciar a interface principal (MainActivity)
+                val activityIntent = Intent(context, MainActivity::class.java).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(activityIntent)
             }
         }
     }

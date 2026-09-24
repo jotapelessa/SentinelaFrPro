@@ -136,49 +136,58 @@ class ScannerService:
         except Exception:
             return False
 
-    async def verify_rtsp_stream(self, ip: str, port: int = 554, timeout: float = 0.8, path: str = "/live/ch0") -> Dict[str, Any]:
+    async def verify_rtsp_stream(self, ip: str, port: int = 554, timeout: float = 0.8, path: str = "/live/0/MAIN") -> Dict[str, Any]:
         """
         Sends authentic RTSP OPTIONS / DESCRIBE probes to verify real video stream capability
-        and test default credentials (including AITEK SEG6050BP defaults).
+        and test default credentials, checking standard ONVIF paths (/live/0/MAIN, /live/ch0, /live).
         """
-        result = {
-            "verified": False,
-            "best_url_main": f"rtsp://admin:admin@{ip}:{port}{path}",
-            "best_url_sub": f"rtsp://admin:admin@{ip}:{port}/live/ch1",
-            "codec": "H.265 / H.264",
+        candidate_paths = [path]
+        if path == "/live/0/MAIN":
+            candidate_paths.extend(["/live/ch0", "/live"])
+        elif path == "/live/ch0":
+            candidate_paths = ["/live/0/MAIN", "/live/ch0", "/live"]
+
+        best_main = f"rtsp://admin:admin@{ip}:{port}{path}"
+        best_sub = f"rtsp://admin:admin@{ip}:{port}/live/0/SUB" if "/live/0/MAIN" in path else f"rtsp://admin:admin@{ip}:{port}/live/ch1"
+        verified = False
+        codec = "H.265 / H.264"
+
+        for test_path in candidate_paths:
+            try:
+                reader, writer = await asyncio.wait_for(
+                    asyncio.open_connection(ip, port),
+                    timeout=timeout
+                )
+                req = f"OPTIONS rtsp://{ip}:{port}{test_path} RTSP/1.0\r\nCSeq: 1\r\nUser-Agent: SentinelaFrigatePro/1.0\r\n\r\n"
+                writer.write(req.encode())
+                await writer.drain()
+                data = await asyncio.wait_for(reader.read(512), timeout=timeout)
+                writer.close()
+                await writer.wait_closed()
+
+                if b"RTSP" in data or b"200 OK" in data or b"401" in data or b"Public:" in data:
+                    verified = True
+                    best_main = f"rtsp://admin:admin@{ip}:{port}{test_path}"
+                    if test_path == "/live/0/MAIN":
+                        best_sub = f"rtsp://admin:admin@{ip}:{port}/live/0/SUB"
+                    elif test_path == "/live/ch0":
+                        best_sub = f"rtsp://admin:admin@{ip}:{port}/live/ch1"
+                    else:
+                        best_sub = None
+
+                    if b"H265" in data or b"HEVC" in data:
+                        codec = "H.265 (HEVC)"
+                    break
+            except Exception:
+                continue
+
+        return {
+            "verified": verified,
+            "best_url_main": best_main,
+            "best_url_sub": best_sub,
+            "codec": codec,
             "credentials_tested": "admin:admin"
         }
-
-        # Common credentials for AITEK, Xiongmai, Intelbras, Hikvision
-        credential_candidates = [
-            ("admin", "admin"),
-            ("admin", ""),       # Factory default for AITEK / Xiongmai
-            ("admin", "123456"),
-            ("admin", "admin123")
-        ]
-
-        try:
-            reader, writer = await asyncio.wait_for(
-                asyncio.open_connection(ip, port),
-                timeout=timeout
-            )
-            # Test OPTIONS
-            req = f"OPTIONS rtsp://{ip}:{port}{path} RTSP/1.0\r\nCSeq: 1\r\nUser-Agent: SentinelaFrigatePro/1.0\r\n\r\n"
-            writer.write(req.encode())
-            await writer.drain()
-            data = await asyncio.wait_for(reader.read(512), timeout=timeout)
-            writer.close()
-            await writer.wait_closed()
-
-            if b"RTSP" in data or b"200 OK" in data or b"401" in data or b"Public:" in data:
-                result["verified"] = True
-                # Check for H.265 / HEVC hints in response
-                if b"H265" in data or b"HEVC" in data:
-                    result["codec"] = "H.265 (HEVC 5MP)"
-        except Exception:
-            pass
-
-        return result
 
     async def probe_onvif_device_info(self, ip: str, ports: List[int] = [8899, 80, 5000, 8000], timeout: float = 1.0) -> Optional[Dict[str, str]]:
         """
@@ -220,10 +229,10 @@ class ScannerService:
                 continue
         return None
 
-    def identify_camera_profile(self, ip: str, open_ports: List[int], onvif_info: Optional[Dict[str, str]] = None) -> Dict[str, Any]:
+    def identify_camera_profile(self, ip: str, open_ports: List[int], onvif_info: Optional[Dict[str, str]] = None, rtsp_info: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """
         Classifies camera hardware, identifying AITEK SEG6050BP (Guangdong Pineng Sx-959),
-        Intelbras, Dahua, Hikvision, and Xiongmai models with exact stream capabilities.
+        H2-52PGX (ONVIF_IPNC 3MP), Intelbras, Dahua, Hikvision, and Xiongmai models with exact stream capabilities.
         """
         man = (onvif_info.get("manufacturer", "") if onvif_info else "").upper()
         mod = (onvif_info.get("model", "") if onvif_info else "").upper()
@@ -233,6 +242,7 @@ class ScannerService:
         is_xiongmai = False
         is_intelbras = False
         is_hikvision = False
+        is_h252 = False
 
         if "AITEK" in man or "AITEK" in mod or "SEG6050BP" in mod:
             is_aitek = True
@@ -247,6 +257,8 @@ class ScannerService:
             is_intelbras = True
         elif "HIKVISION" in man or "HIKVISION" in mod:
             is_hikvision = True
+        elif "H2-52PGX" in mod or "ONVIF_IPNC" in man:
+            is_h252 = True
 
         # Identificar porta RTSP real verificada
         rtsp_port_to_use = 8554
@@ -301,21 +313,47 @@ class ScannerService:
             rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/Streaming/Channels/102" if rtsp_port_to_use != 8554 else None
             onvif_port = 80
             is_5mp = False
-        else:
-            friendly_name = f"Câmera IP ONVIF ({ip})"
-            protocol = "ONVIF Universal / RTSP"
-            resolution = "Full HD (1080p)"
-            if rtsp_port_to_use == 1935:
-                rtsp_main = f"rtsp://admin:admin@{ip}:1935"
-                rtsp_sub = None
-            elif rtsp_port_to_use == 8554:
-                rtsp_main = f"rtsp://admin:admin@{ip}:8554/live"
-                rtsp_sub = None
-            else:
-                rtsp_main = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch0"
-                rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch1"
+        elif is_h252:
+            friendly_name = f"Câmera IP ONVIF 3MP ({ip})"
+            protocol = "ONVIF Profile S/T (H2-52PGX)"
+            resolution = "3MP (2304×1296)"
+            features = [
+                "Resolução 3MP (2304×1296)",
+                "Compressão H.265 (HEVC)",
+                "Detecção Inteligente IA",
+                "Microfone Integrado",
+                "ONVIF Profile S/T"
+            ]
+            rtsp_main = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/0/MAIN"
+            rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/0/SUB"
             onvif_port = 80
             is_5mp = False
+        else:
+            if rtsp_info and rtsp_info.get("verified") and "/live/0/MAIN" in rtsp_info.get("best_url_main", ""):
+                friendly_name = f"Câmera IP ONVIF 3MP ({ip})"
+                protocol = "ONVIF Profile S/T / RTSP"
+                resolution = "3MP (2304×1296)"
+                features = ["Resolução 3MP (2304×1296)", "Compressão H.265 (HEVC)", "Suporte ONVIF"]
+                rtsp_main = rtsp_info["best_url_main"]
+                rtsp_sub = rtsp_info.get("best_url_sub")
+                onvif_port = 80
+                is_5mp = False
+            else:
+                friendly_name = f"Câmera IP ONVIF ({ip})"
+                protocol = "ONVIF Universal / RTSP"
+                resolution = "Full HD (1080p)"
+                features = ["Stream RTSP H.264/H.265", "Suporte ONVIF"]
+                if rtsp_port_to_use == 1935:
+                    rtsp_main = f"rtsp://admin:admin@{ip}:1935"
+                    rtsp_sub = None
+                elif rtsp_port_to_use == 8554:
+                    rtsp_main = f"rtsp://admin:admin@{ip}:8554/live"
+                    rtsp_sub = None
+                else:
+                    rtsp_main = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch0"
+                    rtsp_sub = f"rtsp://admin:admin@{ip}:{rtsp_port_to_use}/live/ch1"
+                onvif_port = 80
+                is_5mp = False
 
         return {
             "friendly_name": friendly_name,
@@ -326,8 +364,8 @@ class ScannerService:
             "rtsp_sub": rtsp_sub,
             "onvif_port": onvif_port,
             "is_5mp": is_5mp,
-            "manufacturer": onvif_info.get("manufacturer", "AITEK / Pineng" if is_aitek else "Genérico") if onvif_info else ("AITEK / Pineng" if is_aitek else ""),
-            "model": onvif_info.get("model", "SEG6050BP (Sx-959)" if is_aitek else "") if onvif_info else ("SEG6050BP" if is_aitek else ""),
+            "manufacturer": onvif_info.get("manufacturer", "AITEK / Pineng" if is_aitek else ("ONVIF_IPNC" if is_h252 else "Genérico")) if onvif_info else ("AITEK / Pineng" if is_aitek else ""),
+            "model": onvif_info.get("model", "SEG6050BP (Sx-959)" if is_aitek else ("H2-52PGX" if is_h252 else "")) if onvif_info else ("SEG6050BP" if is_aitek else ""),
             "firmware": onvif_info.get("firmware", "") if onvif_info else ""
         }
 
@@ -470,7 +508,7 @@ class ScannerService:
                         onvif_info = await self.probe_onvif_device_info(ip, ports=onvif_ports_to_try, timeout=0.8)
 
                     # Classify camera profile
-                    profile = self.identify_camera_profile(ip, port_nums, onvif_info)
+                    profile = self.identify_camera_profile(ip, port_nums, onvif_info, rtsp_info)
 
                     # Cameras exposing port 1935 (RTSP/RTMP stream) use a pathless URL
                     if 1935 in port_nums:

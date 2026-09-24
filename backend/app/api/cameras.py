@@ -28,6 +28,10 @@ def infer_substream_url(main_url: str) -> Optional[str]:
     if not main_url:
         return None
     url = main_url.strip()
+    if "/live/0/MAIN" in url:
+        return url.replace("/live/0/MAIN", "/live/0/SUB")
+    if "/live/0/main" in url:
+        return url.replace("/live/0/main", "/live/0/sub")
     if "/live/ch0" in url:
         return url.replace("/live/ch0", "/live/ch1")
     if "subtype=0" in url:
