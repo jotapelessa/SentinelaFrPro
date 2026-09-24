@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-24 17:35 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.142 operacional (Build 142). Resolução definitiva e arquitetural de sobrecarga nas câmeras AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`) com ingestão exclusiva por hardware via Sub-Stream H.264 CBR 512k (800x448 @ 25fps GOP 25), cascateamento interno 100% local no go2rtc para `cam_...`, `cam_..._720p` e `cam_..._sub`, consolidação de processos FFmpeg (processo único para record e detect), remoção do timer disruptivo de 1800ms no MseCameraView.kt, rebuild do container backend com `setpts=PTS-STARTPTS` ativo e tuning de socket buffers de rede no Ubuntu Server.
+> **Última Atualização:** 2026-09-24 20:30 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.143 operacional (Build 143). Harmonização de câmeras H.265/HEVC (`192.168.1.189` e `192.168.1.196`) com decodificação Intel QSV H.265 (`preset-intel-qsv-h265`) e VA-API, transcodificação universal de áudio PCM (`pcm_mulaw`) para AAC em contêineres MP4 de gravação, ingestão única de hardware no go2rtc e desativação limpa de câmeras offline para economia total de CPU.
 
 ---
 

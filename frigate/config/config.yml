@@ -12,10 +12,8 @@ logger:
     frigate.events: info
     frigate.video: info
 ffmpeg:
-  hwaccel_args: preset-intel-qsv-h264
   output_args:
-    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime
-      1 -c:v copy -bsf:v h264_redundant_pps -c:a copy
+    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v hevc_mp4toannexb -c:a aac
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
   width: 300
@@ -85,18 +83,27 @@ snapshots:
   height: 1080
 go2rtc:
   streams:
-    camera_secundaria:
-    - rtsp://192.168.1.6:8554/live
-    camera_secundaria_720p:
-    - rtsp://192.168.1.6:8554/live
-    camera_principal_720p:
-    - rtsp://127.0.0.1:8554/camera_secundaria
+    cam_192_168_1_189_sub:
+    - rtsp://admin:admin@192.168.1.189:554/live/0/SUB#backchannel=0
+    cam_192_168_1_189:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_189_sub
+    cam_192_168_1_189_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_189_sub
+
+    cam_192_168_1_196_sub:
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
+    cam_192_168_1_196:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+    cam_192_168_1_196_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+
     cam_192_168_1_200_sub:
     - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
     cam_192_168_1_200:
     - rtsp://127.0.0.1:8554/cam_192_168_1_200_sub
     cam_192_168_1_200_720p:
     - rtsp://127.0.0.1:8554/cam_192_168_1_200_sub
+
     cam_192_168_1_93_sub:
     - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
     cam_192_168_1_93:
@@ -110,100 +117,18 @@ go2rtc:
     - stun:8555
     - stun:stun.l.google.com:19302
 cameras:
-  camera_secundaria:
-    enabled: false
-    ffmpeg:
-      inputs:
-      - path: rtsp://127.0.0.1:8554/camera_secundaria
-        input_args: preset-rtsp-restream
-        roles:
-        - record
-        - detect
-    detect:
-      enabled: true
-      width: 640
-      height: 360
-      fps: 5
-    record:
-      enabled: true
-      continuous:
-        days: 0
-      motion:
-        days: 9
-      alerts:
-        pre_capture: 10
-        post_capture: 10
-        retain:
-          days: 14
-          mode: active_objects
-      detections:
-        pre_capture: 10
-        post_capture: 10
-        retain:
-          days: 14
-          mode: active_objects
-    snapshots:
-      enabled: true
-      bounding_box: true
-      quality: 98
-      height: 1080
-    review:
-      alerts:
-        labels:
-        - person
-        - car
-        - motorcycle
-        - bus
-        - dog
-        - cat
-        - bicycle
-        required_zones: []
-      detections:
-        labels:
-        - person
-        - car
-        - motorcycle
-        - bus
-        - dog
-        - cat
-        - bicycle
-        required_zones: []
-    objects:
-      track:
-      - person
-      filters:
-        person:
-          threshold: 0.9
-        car:
-          threshold: 0.7
-          min_score: 0.65
-    motion:
-      threshold: 30
-      contour_area: 20
-      improve_contrast: true
-      mask:
-      - 0.013,0.008,0.001,0.989,0.476,0.998,0.483,0.709,0.497,0.433,0.507,0.005
-      - 0.478,0.716,0.471,0.994,0.988,0.998,0.996,0.738
-      - 0.5,0.012,0.488,0.44,0.676,0.451,0.666,0.738,0.989,0.751,0.997,0.014
-    zones:
-      detec:
-        coordinates: 0.495,0.433,0.483,0.712,0.668,0.716,0.681,0.445
-        inertia: 5
-        loitering_time: 2
-        friendly_name: Detec
-  cam_192_168_1_200:
+  cam_192_168_1_189:
     enabled: true
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h264
+      hwaccel_args: preset-intel-qsv-h265
       inputs:
-      - path: rtsp://127.0.0.1:8554/cam_192_168_1_200
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_189
         input_args: preset-rtsp-restream
         roles:
         - record
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
-          1 -strftime 1 -c:v copy -c:a aac
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
     detect:
       width: 800
       height: 448
@@ -262,19 +187,19 @@ cameras:
         - cat
         - bicycle
         required_zones: []
-  cam_192_168_1_93:
+
+  cam_192_168_1_196:
     enabled: true
     ffmpeg:
+      hwaccel_args: preset-intel-qsv-h265
       inputs:
-      - path: rtsp://127.0.0.1:8554/cam_192_168_1_93
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_196
         input_args: preset-rtsp-restream
         roles:
         - record
         - detect
-      hwaccel_args: preset-intel-qsv-h264
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
-          1 -strftime 1 -c:v copy -c:a aac
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -c:a aac
     detect:
       width: 800
       height: 448
@@ -297,7 +222,7 @@ cameras:
     record:
       enabled: true
       motion:
-        days: 3
+        days: 14
       continuous:
         days: 0
       alerts:
@@ -333,4 +258,76 @@ cameras:
         - cat
         - bicycle
         required_zones: []
+
+  cam_192_168_1_200:
+    enabled: false
+    ffmpeg:
+      hwaccel_args: preset-intel-qsv-h264
+      inputs:
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_200
+        input_args: preset-rtsp-restream
+        roles:
+        - record
+        - detect
+    detect:
+      width: 800
+      height: 448
+      fps: 5
+      enabled: true
+    snapshots:
+      enabled: true
+      bounding_box: true
+    objects:
+      track:
+      - person
+      - car
+      - motorcycle
+      - dog
+      filters:
+        person:
+          threshold: 0.7
+    motion:
+      threshold: 25
+    record:
+      enabled: true
+      motion:
+        days: 14
+      continuous:
+        days: 0
+
+  cam_192_168_1_93:
+    enabled: false
+    ffmpeg:
+      hwaccel_args: preset-intel-qsv-h264
+      inputs:
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_93
+        input_args: preset-rtsp-restream
+        roles:
+        - record
+        - detect
+    detect:
+      width: 800
+      height: 448
+      fps: 5
+      enabled: true
+    snapshots:
+      enabled: true
+      bounding_box: true
+    objects:
+      track:
+      - person
+      - car
+      - motorcycle
+      - dog
+      filters:
+        person:
+          threshold: 0.7
+    motion:
+      threshold: 25
+    record:
+      enabled: true
+      motion:
+        days: 3
+      continuous:
+        days: 0
 version: 0.17-0
