@@ -174,7 +174,7 @@ class MQTTService:
                 logger.info(f"🚨 Security event: {label} on {camera} (zone: {zone_name}, score: {score:.2f})")
 
                 snapshot_url = f"/api/events/{event_id}/snapshot.jpg"
-                stream_url = f"/go2rtc/stream.html?src={camera}&mode=mse&width=100%"
+                stream_url = f"/go2rtc/stream.html?src={camera}&mode=mse&media=video&width=100%"
 
                 # Instant PiP Alert and New Detection messages to Android TV & Web
                 await self.broadcast_event({

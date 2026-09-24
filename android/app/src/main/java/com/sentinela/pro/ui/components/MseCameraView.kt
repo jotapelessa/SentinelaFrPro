@@ -46,9 +46,9 @@ fun MseCameraView(
     val streamUrl = remember(cameraName, streamMode) {
         val modeQuery = when (streamMode.lowercase()) {
             "eco" -> "mode=mjpeg"
-            "mse" -> "mode=mse"
-            "webrtc" -> "mode=webrtc,mse"
-            else -> "mode=mse"
+            "mse" -> "mode=mse&media=video"
+            "webrtc" -> "mode=webrtc,mse&media=video"
+            else -> "mode=mse&media=video"
         }
         "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&${modeQuery}&width=100%"
     }
@@ -202,6 +202,21 @@ fun MseCameraView(
                                     "    v.autoplay = true;" +
                                     "    v.playsInline = true;" +
                                     "    v.removeAttribute('controls');" +
+                                    "    try {" +
+                                    "      var origDesc = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'playbackRate');" +
+                                    "      if (origDesc && !v.__rateIntercepted) {" +
+                                    "        v.__rateIntercepted = true;" +
+                                    "        Object.defineProperty(v, 'playbackRate', {" +
+                                    "          get: function() { return origDesc.get.call(v); }," +
+                                    "          set: function(val) {" +
+                                    "            if (val < 1.0) val = 1.0;" +
+                                    "            if (val > 1.15) val = 1.15;" +
+                                    "            origDesc.set.call(v, val);" +
+                                    "          }," +
+                                    "          configurable: true" +
+                                    "        });" +
+                                    "      }" +
+                                    "    } catch(e) {}" +
                                     "    v.addEventListener('error', function() {" +
                                     "      if (window.location.search.indexOf('_720p') !== -1) {" +
                                     "        window.location.href = window.location.href.replace('_720p', '');" +

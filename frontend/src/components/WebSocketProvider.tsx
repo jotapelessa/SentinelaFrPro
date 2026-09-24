@@ -141,7 +141,7 @@ export const WebSocketProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                     zone: data.zone,
                     event_id: data.event_id,
                     snapshot_url: data.snapshot_url,
-                    stream_url: `/go2rtc/stream.html?src=${encodeURIComponent(data.camera)}&mode=mse`
+                    stream_url: `/go2rtc/stream.html?src=${encodeURIComponent(data.camera)}&mode=mse&media=video`
                   }
                 }));
               }

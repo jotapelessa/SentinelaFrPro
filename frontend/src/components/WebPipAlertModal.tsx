@@ -37,7 +37,7 @@ export const WebPipAlertModal: React.FC = () => {
     const iframe = doc.getElementById("pip-stream-frame") as HTMLIFrameElement;
     const titleEl = doc.getElementById("pip-cam-name");
     const tagEl = doc.getElementById("pip-cam-tag");
-    const src = `/go2rtc/stream.html?src=${encodeURIComponent(camera)}&mode=mse`;
+    const src = `/go2rtc/stream.html?src=${encodeURIComponent(camera)}&mode=mse&media=video`;
 
     if (iframe && iframe.src !== src) {
       iframe.src = src;
@@ -117,7 +117,7 @@ export const WebPipAlertModal: React.FC = () => {
               <span id="pip-cam-tag" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-family: monospace;">SENTINELA LIVE</span>
             </div>
             <div style="flex: 1; position: relative; width: 100%; height: calc(100% - 28px); background: #000;">
-              <iframe id="pip-stream-frame" src="/go2rtc/stream.html?src=${encodeURIComponent(initialCam)}&mode=mse" style="width: 100%; height: 100%; border: none;" allow="autoplay; fullscreen"></iframe>
+              <iframe id="pip-stream-frame" src="/go2rtc/stream.html?src=${encodeURIComponent(initialCam)}&mode=mse&media=video" style="width: 100%; height: 100%; border: none;" allow="autoplay; fullscreen"></iframe>
             </div>
           </div>
         `;
@@ -130,7 +130,7 @@ export const WebPipAlertModal: React.FC = () => {
       } else {
         // Fallback: popup flutuante desencaixado
         const popup = window.open(
-          `/go2rtc/stream.html?src=${encodeURIComponent(initialCam)}&mode=mse`,
+          `/go2rtc/stream.html?src=${encodeURIComponent(initialCam)}&mode=mse&media=video`,
           "SentinelaPiP",
           "width=440,height=280,resizable=yes,alwaysRaised=yes,scrollbars=no,status=no"
         );
@@ -223,7 +223,7 @@ export const WebPipAlertModal: React.FC = () => {
 
   if (!activeAlert || !isWebPipEnabled) return null;
 
-  const baseStreamSrc = activeAlert.stream_url || `/go2rtc/stream.html?src=${encodeURIComponent(activeAlert.camera)}&mode=mse`;
+  const baseStreamSrc = activeAlert.stream_url || `/go2rtc/stream.html?src=${encodeURIComponent(activeAlert.camera)}&mode=mse&media=video`;
   const streamSrc = baseStreamSrc.includes("muted=") ? baseStreamSrc : `${baseStreamSrc}&muted=1`;
 
   return (

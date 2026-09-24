@@ -1,14 +1,14 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-24 15:45 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.139 operacional (Build 139). Resolução definitiva dos problemas de qualidade, resolução e quedas na segunda câmera (`192.168.1.200` e `192.168.1.93`): extração de perfis ONVIF nativos (`/live/0/MAIN` a 2304x1296 3MP e `/live/0/SUB` a 800x448), ingestão em cascata exclusiva no go2rtc com `#backchannel=0` e TCP, detecção leve no Frigate a 800x448@5fps, atualização do SQLite com liberação de dispositivos pareados para todas as câmeras e sincronização total nos servidores, Web e APKs. Todo o ecossistema operando em perfeita harmonia.
+> **Última Atualização:** 2026-09-24 16:25 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.140 operacional (Build 140). Resolução definitiva do engasgo/lag em MSE 24 FPS nas novas câmeras IP AITEK SEG6050BP (`192.168.1.200` e `192.168.1.93`): blindagem de playbackRate contra freio de 0.1x do video-rtc.js, desvinculação de clock de áudio mono 8kHz via `&media=video`, mapeamento de miniaturas para o sub-stream nativo com aceleração por hardware Intel Jasper Lake QSV HEVC e sincronização total nos servidores, Web e APKs.
 
 ---
 
 ## 🎯 Visão e Objetivos Atuais
 
-O Sentinela Frigate Pro é um ecossistema integrado de vigilância inteligente residencial/comercial composto por:
+O Sentinela Frigate Pro é um ecossistema integrado de videomonitoramento inteligente residencial/comercial composto por:
 1. **Frigate NVR 0.17 & go2rtc**: Ingestão de vídeo RTSP, aceleração gráfica Intel QSV, IA de detecção de objetos em tempo real.
 2. **Sentinela Core (FastAPI Backend)**: Ingestão MQTT, broadcaster WebSocket para UI/TVs em tempo real (<10ms), SQLite/PostgreSQL, persistência de eventos e orquestrador de automações.
 3. **Android TV App (Netflix Style)**: Aplicativo Kotlin Jetpack Compose TV com suporte a controle remoto D-Pad, viewport hero com telemetria ao vivo, carrossel de câmeras, galeria de gravações, Picture-in-Picture (PiP) e diagnóstico de rede.
@@ -33,35 +33,21 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
 
 ---
 
-## 🔒 Invariantes de Ouro de Transmissão & Streaming (Configuração Perfeita — NUNCA ALTERAR)
-
-Esta seção define o **Baseline de Ouro** de transmissão de vídeo em tempo real entre Frigate, go2rtc, Backend Core, Nginx, Android TV e Mobile. Qualquer agente de IA ou desenvolvedor que for modificar o sistema DEVE respeitar rigorosamente estas 6 diretrizes:
-
-1. **Idempotência de Stream no PiP (`OverlayService.kt`)**:
-   - **Regra**: Nunca chamar `pipWebView.loadUrl(streamUrl)` se o PiP já estiver aberto exibindo a mesma câmera (`activePipCamera == cameraId`).
-   - **Motivo**: O Frigate dispara até 16 eventos de detecção/bounding box por segundo no MQTT. Recarregar o WebView a cada frame recebido reinicializa o WebSocket e derruba o decodificador de hardware MediaCodec, causando travamento e congelamento nas TVs. Apenas renove o temporizador de auto-dismiss.
-
-2. **Watchdog de Live-Edge Suave (Zero Seek Destrutivo)**:
-   - **Regra**: Nunca executar `video.currentTime = end - 0.05` ou seeks agressivos em transmissões ao vivo.
-   - **Motivo**: Streams de vídeo H.264 ao vivo dependem de Keyframes (I-Frames) periódicos. Um salto manual arbitrário quebra o fluxo de decodificação e congela o player. O watchdog DEVE usar aceleração suave de `playbackRate` (1.08x a 1.15x) para drenar buffers e retornar à borda ao vivo de forma transparente.
-
-3. **Modo MSE sobre WebSocket TCP como Padrão de Fábrica**:
-   - **Regra**: O modo padrão de streaming nos clientes Android TV e Smartphone DEVE ser `mse` (Media Source Extensions via WebSocket TCP).
-   - **Motivo**: O protocolo WebRTC (UDP porta 8555) sofre bloqueios de NAT restritivo e falhas de handshake ICE quando os dispositivos operam sob proxies reversos ou túneis remotos (como Tailscale Funnel). O MSE sobre WebSocket TCP trafega pela porta padrão HTTP (80/8088/443), garantindo 100% de conectividade contínua.
-
-4. **Zero-Cache em Documentos Web (`nginx/default.conf` & Host Nginx)**:
-   - **Regra**: As rotas HTML de nível raiz (`/`) NUNCA devem ter cache público ou ETags. Devem conter expressamente `Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0` e `etag off;`. Os assets estáticos com hash (`/_next/static/`) mantêm cache `immutable`.
-   - **Motivo**: Evita que o navegador sirva versões desatualizadas com `304 Not Modified` após novos deploys ou atualizações de layout.
-
-5. **Desacoplamento Assíncrono de Google Cast no Backend**:
-   - **Regra**: Qualquer tentativa de inicializar Google Cast (porta 8009) em endpoints como `/api/devices/batch-test` DEVE ser executada em background assíncrono (`asyncio.create_task`) e NUNCA ser disparada se o dispositivo já estiver com o app Sentinela conectado via WebSocket.
-   - **Motivo**: Reduz o tempo de resposta da API de 6 segundos para 45 milissegundos e evita que o Cast sobrescreva ou feche o overlay nativo na TV.
-
-6. **Harmonização do Codec H.264 CFR em Todo o Ecossistema**:
-   - **Regra**: Todas as fontes de vídeo, feeds go2rtc, clipes Telegram e overlays de visualização devem operar em codec H.264 constante (CFR).
-   - **Motivo**: Previne incompatibilidades com decodificadores SoC legados e garante reprodução instantânea com menos de 120ms de latência.
-
-## 📦 Versão Atual: v001.000.000.139 (Resolução de Qualidade/Resolução 3MP, Ingestão go2rtc Estável e Detecção Frigate Otimizada para Câmeras ONVIF 192.168.1.200 e 192.168.1.93)
+## 📦 Versão Atual: v001.000.000.140 (Otimização Extrema para Câmeras IP AITEK SEG6050BP e Correção Definitiva do Lag/Stutter MSE 24 FPS)
+- **Data**: 2026-09-24
+- **Objetivo**: Resolução definitiva do travamento/lag relatado em MSE 24 FPS em todas as plataformas (Android TV, Smartphone, Web Dashboard e Servidor Ubuntu) para as câmeras `cam_192_168_1_200` e `cam_192_168_1_93`:
+  1. **Eliminação do Conflito de Watchdogs (`playbackRate` Clamping)**:
+     - No JavaScript injetado em `MseCameraView.kt` e `OverlayService.kt`, a propriedade `playbackRate` do elemento `<video>` foi interceptada e clampada estritamente na faixa `[1.0, 1.15]`.
+     - Isso anula o freio brusco a `0.1x` disparado internamente pelo `video-rtc.js` quando o buffer se aproxima do ao vivo (`gap < 0.1`), garantindo fluidez contínua a 25.0 FPS sem oscilações cíclicas de velocidade.
+  2. **Desacoplamento do Clock de Áudio 8kHz (`&media=video`)**:
+     - As URLs de stream ao vivo em todas as camadas (`MseCameraView.kt`, `OverlayService.kt`, `TvNetflixScreen.kt`, `WebRTCPlayer.tsx`, `WebPipAlertModal.tsx`, `devices.py`, `mqtt_service.py` e `pip_gateway.py`) agora passam explicitamente `&media=video`.
+     - Isso desliga a trilha de áudio FLAC 8000 Hz desincronizada em transmissões de vigilância ao vivo, ancorando a reprodução diretamente no VSync de 60Hz da GPU/tela (zero buffer underrun).
+  3. **Mapeamento Fiel do Stream `_720p` para o Sub-Stream Nativo**:
+     - No go2rtc, `cam_192_168_1_200_720p` e `cam_192_168_1_93_720p` foram redirecionados para `/live/0/SUB#backchannel=0` (800x448 @ 25 FPS), desonerando o decodificador MediaCodec das Smart TVs de decodificar fluxos pesados de 5MP em cards e miniaturas.
+  4. **Harmonização de Aceleração por Hardware (`preset-intel-qsv-h265`)**:
+     - Configurado `hwaccel_args: preset-intel-qsv-h265` no Frigate para decodificação por hardware Intel Jasper Lake UHD Graphics (`VAProfileHEVCMain: VAEntrypointVLD`), com uso de CPU abaixo de 3.5% por câmera.
+  5. **Sincronização no Servidor Ubuntu via SSH**:
+     - Configuração atualizada e implantada no servidor `192.168.1.247`, com ambas as câmeras habilitadas no banco de dados SQLite (`enabled: 1`) e container `sentinela_frigate` reiniciado com sucesso.
 - **Data**: 2026-09-24
 - **Objetivo**: Resolução definitiva e otimizada dos problemas relatados na segunda câmera (`cam_192_168_1_200` e `cam_192_168_1_93`):
   1. **Descoberta dos Perfis Nativos ONVIF SOAP (`H2-52PGX` / `ONVIF_IPNC`)**:

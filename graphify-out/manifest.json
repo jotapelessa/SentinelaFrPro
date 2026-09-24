@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1789657984.3372269,
-    "seen": 1789658199.4601212,
-    "ast_hash": "fa3fff13f18dc775b7a878ba397650f2",
+    "mtime": 1790277497.1956596,
+    "seen": 1790277947.749452,
+    "ast_hash": "7002538f6e14cb8177331fea8614cff9",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -306,15 +306,15 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
-    "mtime": 1789660263.4985988,
-    "seen": 1789660369.698048,
-    "ast_hash": "b218f441ce1d6c68c295aaec7d54f244",
+    "mtime": 1790277516.0971987,
+    "seen": 1790277947.749454,
+    "ast_hash": "4b981f1bae5f46cb1e1ab57c5fd19152",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
-    "mtime": 1789123643.8772283,
-    "seen": 1789124034.240414,
-    "ast_hash": "c62bc2e68b13c69d7e5200671e860508",
+    "mtime": 1790277528.0746553,
+    "seen": 1790277947.749454,
+    "ast_hash": "6da36b90073d9fb22df28c30a3e71af1",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt": {
@@ -330,9 +330,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt": {
-    "mtime": 1789555515.6764183,
-    "seen": 1789556396.1191628,
-    "ast_hash": "987cb595c80a55d373fcb7f64c9ada51",
+    "mtime": 1790277467.6318357,
+    "seen": 1790277947.749456,
+    "ast_hash": "e5772161116c525203b10e9ea535be59",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/components/SeamlessCameraImage.kt": {
@@ -372,9 +372,9 @@
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
-    "mtime": 1789660067.73522,
-    "seen": 1789660369.698056,
-    "ast_hash": "c80b3d9c05855986d4819372c5f2a120",
+    "mtime": 1790277638.2155306,
+    "seen": 1790277947.74946,
+    "ast_hash": "c6675416c34601e70356c52c3257d86c",
     "semantic_hash": ""
   },
   "backend/app/api/events.py": {
@@ -456,15 +456,15 @@
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1789651536.8152611,
-    "seen": 1789651637.960226,
-    "ast_hash": "77336a2400d84c21acaee6a4c8fbd6e6",
+    "mtime": 1790277645.4640968,
+    "seen": 1790277947.749467,
+    "ast_hash": "d97928d349eb9eb91aafbadb8a28f2ba",
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
-    "mtime": 1789643573.6977077,
-    "seen": 1789643711.294348,
-    "ast_hash": "71661846af83bc5e7ac3427882dd7b3a",
+    "mtime": 1790277654.0250342,
+    "seen": 1790277947.7494678,
+    "ast_hash": "edd74dbc4147241607aaf52e4d5f6c90",
     "semantic_hash": ""
   },
   "backend/app/services/scanner_service.py": {
@@ -636,15 +636,15 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1789601416.505506,
-    "seen": 1789601550.948127,
-    "ast_hash": "db6599e862cbe2dd96d52b7860946307",
+    "mtime": 1790277540.5622454,
+    "seen": 1790277947.749483,
+    "ast_hash": "dc9b636b7ed4722dd56474c25dd0b11d",
     "semantic_hash": ""
   },
   "frontend/src/components/WebSocketProvider.tsx": {
-    "mtime": 1789648356.8640084,
-    "seen": 1789648580.834195,
-    "ast_hash": "7a3451dd3b8b14a34528e138cefa6c3f",
+    "mtime": 1790277602.5713263,
+    "seen": 1790277947.749484,
+    "ast_hash": "e17934806ea3a81329f296e3d64a21ef",
     "semantic_hash": ""
   },
   "frontend/src/components/ZoneCanvasModal.tsx": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790275603.158896,
-    "seen": 1790275619.297504,
-    "ast_hash": "ce78fb872e06ed8b525d3e40764ab704",
+    "mtime": 1790277884.3108678,
+    "seen": 1790277947.749505,
+    "ast_hash": "a7ba367f65aa542e7bedf2bd8f172417",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1790275402.3378115,
-    "seen": 1790275619.29751,
-    "ast_hash": "0bae740c228690b25df6141d9b9e0721",
+    "mtime": 1790277391.0295594,
+    "seen": 1790277947.7495098,
+    "ast_hash": "7bf4dc88cc2155d17a0c6eff9885da24",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790275556.7302709,
-    "seen": 1790275619.2975051,
-    "ast_hash": "9d928c8787dbc5a0c6e4171b10a835e6",
+    "mtime": 1790277909.5827482,
+    "seen": 1790277947.749505,
+    "ast_hash": "6bff09aea02086b8a28b28928a344fa6",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/WebPipAlertModal.tsx": {
-    "mtime": 1789648487.1801085,
-    "seen": 1789648580.834194,
-    "ast_hash": "d5ba933c32ecd484d0f577017b5d8812",
+    "mtime": 1790277588.9936461,
+    "seen": 1790277947.749483,
+    "ast_hash": "ea2ae2cb33635a14e8a0ffb21724457a",
     "semantic_hash": ""
   },
   "docs/CODESPACES_BUILD_GUIDE.md": {

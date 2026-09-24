@@ -205,7 +205,7 @@ data class LogEntryItem(
 fun CameraItem.toEntity(index: Int, host: String): CameraEntity {
     val base = com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')
     val snapUrl = "$base/go2rtc/api/frame.jpeg?src=${this.name}&t=${System.currentTimeMillis()}"
-    val stream = "$base/go2rtc/stream.html?src=${this.name}&mode=mse,mjpeg"
+    val stream = "$base/go2rtc/stream.html?src=${this.name}&mode=mse,mjpeg&media=video"
     return CameraEntity(
         id = this.name,
         name = this.friendlyName.ifBlank { this.name.replace("_", " ").replaceFirstChar { it.uppercase() } },

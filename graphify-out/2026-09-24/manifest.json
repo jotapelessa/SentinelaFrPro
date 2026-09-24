@@ -366,9 +366,9 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1789660120.8026795,
-    "seen": 1789660369.698055,
-    "ast_hash": "4ccc9beb981041ec11458046c7f2ac91",
+    "mtime": 1790275269.0435846,
+    "seen": 1790275619.297457,
+    "ast_hash": "638c08c056c4ecc03072acd0767dc642",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1790267166.058199,
-    "seen": 1790267240.8942552,
-    "ast_hash": "96d9fec51a23de3f2f90fd1d7311c006",
+    "mtime": 1790275489.1127284,
+    "seen": 1790275619.297461,
+    "ast_hash": "c6f4a61f32f410fdddf6bd41d5780e2d",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -468,9 +468,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/scanner_service.py": {
-    "mtime": 1790261919.0888906,
-    "seen": 1790267240.89426,
-    "ast_hash": "deb523939f163a7f9d74c9d2efaabc6e",
+    "mtime": 1790275381.0291526,
+    "seen": 1790275619.297467,
+    "ast_hash": "1fe9b7130fb2d2094a4126ebfb0fdac5",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_vault.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1790267159.5639408,
-    "seen": 1790267240.894264,
-    "ast_hash": "51c9bb5174028f3a387476f5035b5a28",
+    "mtime": 1790275474.1241677,
+    "seen": 1790275619.297471,
+    "ast_hash": "1a20189ab81df46576fa03087cf31c65",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1789660296.4850025,
-    "seen": 1789660369.698102,
-    "ast_hash": "8194372583ee7139d2712b9db3d4432d",
+    "mtime": 1790275603.158896,
+    "seen": 1790275619.297504,
+    "ast_hash": "ce78fb872e06ed8b525d3e40764ab704",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1789659923.7562044,
-    "seen": 1789660369.6981068,
-    "ast_hash": "85ed333a4fbc6587240dcaa97fbaa205",
+    "mtime": 1790275402.3378115,
+    "seen": 1790275619.29751,
+    "ast_hash": "0bae740c228690b25df6141d9b9e0721",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790267177.56085,
-    "seen": 1790267240.894298,
-    "ast_hash": "363fa7f5f99288d0bba58e4e22e8c894",
+    "mtime": 1790275556.7302709,
+    "seen": 1790275619.2975051,
+    "ast_hash": "9d928c8787dbc5a0c6e4171b10a835e6",
     "semantic_hash": ""
   },
   "android/gradlew": {

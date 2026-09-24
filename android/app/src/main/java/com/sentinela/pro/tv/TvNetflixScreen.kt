@@ -226,7 +226,7 @@ fun TvNetflixScreenCore(
                                         metadata = mapOf("camera" to cam.id)
                                     )
                                     val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/api/frame.jpeg?src=${cam.id}"
-                                    val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=${cam.id}&mode=mse&width=100%"
+                                    val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=${cam.id}&mode=mse&media=video&width=100%"
                                     com.sentinela.pro.tv.OverlayService.triggerPiP(
                                         context = context,
                                         camera = cam.id,
@@ -3886,7 +3886,7 @@ fun TvSettingsViewport(
                             Button(
                                 onClick = {
                                     val testSnap = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/frigate/api/$targetCam/latest.jpg?h=720"
-                                    val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=$targetCam&mode=mse&width=100%"
+                                    val testStream = "${com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')}/go2rtc/stream.html?src=$targetCam&mode=mse&media=video&width=100%"
                                     
                                     val hasOverlayPerm = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
                                         android.provider.Settings.canDrawOverlays(context)

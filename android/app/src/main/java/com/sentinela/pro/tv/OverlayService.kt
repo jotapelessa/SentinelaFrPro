@@ -614,8 +614,8 @@ class OverlayService : Service() {
         val streamCamera = resolvedCamera
         val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
             "eco" -> "mode=mjpeg"
-            "webrtc" -> "mode=webrtc"
-            else -> "mode=mse"
+            "webrtc" -> "mode=webrtc&media=video"
+            else -> "mode=mse&media=video"
         }
         val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${streamCamera}&${streamModeParam}&width=100%")
         val streamUrl = if (baseStreamUrl.contains("stream.html")) {
@@ -845,6 +845,21 @@ class OverlayService : Service() {
                                         "    v.autoplay = true;" +
                                         "    v.playsInline = true;" +
                                         "    v.removeAttribute('controls');" +
+                                        "    try {" +
+                                        "      var origDesc = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'playbackRate');" +
+                                        "      if (origDesc && !v.__rateIntercepted) {" +
+                                        "        v.__rateIntercepted = true;" +
+                                        "        Object.defineProperty(v, 'playbackRate', {" +
+                                        "          get: function() { return origDesc.get.call(v); }," +
+                                        "          set: function(val) {" +
+                                        "            if (val < 1.0) val = 1.0;" +
+                                        "            if (val > 1.15) val = 1.15;" +
+                                        "            origDesc.set.call(v, val);" +
+                                        "          }," +
+                                        "          configurable: true" +
+                                        "        });" +
+                                        "      }" +
+                                        "    } catch(e) {}" +
                                         "    v.addEventListener('waiting', function() { stallCount++; reportToNative(); });" +
                                         "    v.addEventListener('stalled', function() { stallCount++; reportToNative(); });" +
                                         "    if (v.requestVideoFrameCallback) {" +

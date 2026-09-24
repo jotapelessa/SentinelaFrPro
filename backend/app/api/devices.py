@@ -1205,7 +1205,7 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
             try:
                 server_ip = "192.168.1.247"
                 snap_url = f"http://{server_ip}:8088/frigate/api/{req.camera_name}/latest.jpg?h=720"
-                stream_url = f"http://{server_ip}:8088/go2rtc/stream.html?src={req.camera_name}&mode=mse&width=100%"
+                stream_url = f"http://{server_ip}:8088/go2rtc/stream.html?src={req.camera_name}&mode=mse&media=video&width=100%"
                 await pip_gateway_service.dispatch_pip_alert(
                     camera_name=req.camera_name,
                     label=req.label,
@@ -1225,7 +1225,7 @@ async def execute_batch_test(req: BatchTestRequest, request: Request, db: AsyncS
         target_cam = req.camera_name or "camera_secundaria"
         server_ip = "192.168.1.247"
         snap_url = f"http://{server_ip}:8088/frigate/api/{target_cam}/latest.jpg?h=720"
-        stream_url = f"http://{server_ip}:8088/go2rtc/stream.html?src={target_cam}&mode=mse&width=100%"
+        stream_url = f"http://{server_ip}:8088/go2rtc/stream.html?src={target_cam}&mode=mse&media=video&width=100%"
         await ws_manager.broadcast_json({
             "type": "FRIGATE_EVENT",
             "test_id": sim_test_id,

@@ -94,13 +94,13 @@ go2rtc:
     cam_192_168_1_200:
     - rtsp://admin:admin@192.168.1.200:554/live/0/MAIN#backchannel=0
     cam_192_168_1_200_720p:
-    - rtsp://admin:admin@192.168.1.200:554/live/0/MAIN#backchannel=0
+    - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
     cam_192_168_1_200_sub:
     - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
     cam_192_168_1_93:
     - rtsp://admin:admin@192.168.1.93:554/live/0/MAIN#backchannel=0
     cam_192_168_1_93_720p:
-    - rtsp://admin:admin@192.168.1.93:554/live/0/MAIN#backchannel=0
+    - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
     cam_192_168_1_93_sub:
     - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
   webrtc:
@@ -111,7 +111,7 @@ go2rtc:
     - stun:stun.l.google.com:19302
 cameras:
   camera_secundaria:
-    enabled: true
+    enabled: false
     ffmpeg:
       inputs:
       - path: rtsp://127.0.0.1:8554/camera_secundaria
