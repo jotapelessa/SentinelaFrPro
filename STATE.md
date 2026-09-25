@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-25 02:12 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Harmonização de streams: 1080p nativo H.264 CBR 1536k para Web Sentinela e Smartphone, PiP dedicado 720p para Android TV com abertura em < 180ms, ingestão única de hardware no go2rtc (#backchannel=0#buffer=1000) eliminando resets de socket, transcodificação universal de áudio AAC com timestamps monotônicos para vídeos do Telegram (20s a 60s) e zero-cache no Nginx.
+> **Última Atualização:** 2026-09-25 02:23 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Harmonização de streams: Ingestão de fluxo único por hardware via `SUB` stream (`800x448 @ h264`), cascateando localmente por loopback interno (`rtsp://127.0.0.1:8554/...`). Erros de `unexpected EOF` e `connection reset by peer` 100% eliminados no go2rtc, reprodução fluida no Web Dashboard, Android TV e Smartphone.
 
 ---
 
