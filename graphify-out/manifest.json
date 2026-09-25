@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1790313275.6985326,
-    "seen": 1790313285.2254012,
-    "ast_hash": "2231b0cf9eb86628706c6130e80dbb06",
+    "mtime": 1790319019.292921,
+    "seen": 1790319050.2373672,
+    "ast_hash": "f09285a73b79f949c5381c457c12bed4",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -426,9 +426,9 @@
     "semantic_hash": ""
   },
   "backend/app/db/session.py": {
-    "mtime": 1789637424.1983032,
-    "seen": 1789637773.593712,
-    "ast_hash": "9ee6103bb27f5383affc09186e747739",
+    "mtime": 1790318455.6406398,
+    "seen": 1790319050.237369,
+    "ast_hash": "0addaf7e039a8d1c96ad8bce2fbd5b6a",
     "semantic_hash": ""
   },
   "backend/app/main.py": {
@@ -612,9 +612,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/CameraMosaic.tsx": {
-    "mtime": 1789589517.3221104,
-    "seen": 1789589555.7475479,
-    "ast_hash": "58700370fc03363eb66e4870bebd82bb",
+    "mtime": 1790318906.650564,
+    "seen": 1790319050.237385,
+    "ast_hash": "4e26a5113522618997bc6ce25499752a",
     "semantic_hash": ""
   },
   "frontend/src/components/Header.tsx": {
@@ -636,9 +636,9 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1790317771.8607745,
-    "seen": 1790317895.605355,
-    "ast_hash": "f80fbc29f57285fd9b1451c5b75ae940",
+    "mtime": 1790318950.334028,
+    "seen": 1790319050.2373881,
+    "ast_hash": "c0ad119d4e53a09409ff7cac8b3a8eab",
     "semantic_hash": ""
   },
   "frontend/src/components/WebSocketProvider.tsx": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790317877.1214676,
-    "seen": 1790317895.605377,
-    "ast_hash": "44ee953b8a574d5ca977a59bc7276d4a",
+    "mtime": 1790319029.7062144,
+    "seen": 1790319050.237409,
+    "ast_hash": "6fee9f35e6a6103b096fcc6813f7fa40",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1790317612.0224648,
-    "seen": 1790317895.605382,
-    "ast_hash": "4879f944c643bf0086041051c0500c9a",
+    "mtime": 1790318892.0433521,
+    "seen": 1790319050.237414,
+    "ast_hash": "413925f5bb4d2e036cbdc464e3ab52d5",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790317885.0603461,
-    "seen": 1790317895.605377,
-    "ast_hash": "b19cf7da96389244e752adf089bd360a",
+    "mtime": 1790319037.6485972,
+    "seen": 1790319050.237409,
+    "ast_hash": "00d7b1c02689115ddf31353e6b73bef9",
     "semantic_hash": ""
   },
   "android/gradlew": {

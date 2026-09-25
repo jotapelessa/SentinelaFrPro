@@ -96,27 +96,27 @@ go2rtc:
     cam_192_168_1_196:
     - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
     cam_192_168_1_196_main:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196
     cam_192_168_1_196_720p:
-    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_196#video=h264#scale=1280:720#hardware
+    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_196#video=h264#scale=1280:720#b=2048k#hardware
     cam_192_168_1_196_sub:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
+    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_196#video=h264#scale=800:448#b=512k#hardware
 
     cam_192_168_1_200:
     - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
     cam_192_168_1_200_720p:
-    - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
+    - rtsp://127.0.0.1:8554/cam_192_168_1_200
     cam_192_168_1_200_sub:
-    - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
+    - rtsp://127.0.0.1:8554/cam_192_168_1_200
     cam_192_168_1_200_main:
-    - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
+    - rtsp://127.0.0.1:8554/cam_192_168_1_200
 
     cam_192_168_1_93:
     - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
     cam_192_168_1_93_720p:
-    - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
+    - rtsp://127.0.0.1:8554/cam_192_168_1_93
     cam_192_168_1_93_sub:
-    - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
+    - rtsp://127.0.0.1:8554/cam_192_168_1_93
     camera_principal:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196
     camera_secundaria:

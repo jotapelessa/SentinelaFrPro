@@ -306,15 +306,14 @@ export const CameraMosaic: React.FC = () => {
                 />
               </div>
             ) : cameras.length === 2 ? (
-              <div className="flex flex-col gap-4 w-full">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                 {cameras.map((camera) => {
                   const camId = camera.id || camera.name;
-                  const isCurrentActive = activeStreamingCameraId === camId;
                   return (
                     <WebRTCPlayer
                       key={camId}
                       camera={camera}
-                      isActivePlayer={isCurrentActive}
+                      isActivePlayer={true}
                       onActivate={() => setActiveStreamingCameraId(camId)}
                       onToggleSpotlight={() => {
                         setActiveStreamingCameraId(camId);
@@ -326,32 +325,23 @@ export const CameraMosaic: React.FC = () => {
                 })}
               </div>
             ) : (
-              <div className="space-y-4">
-                <WebRTCPlayer
-                  camera={activeCamera}
-                  isActivePlayer={true}
-                  onToggleSpotlight={() => setSpotlightCamera(activeCamera)}
-                  onCameraUpdated={fetchCameras}
-                />
-                <div className="grid grid-cols-2 gap-4">
-                  {otherCameras.map((camera) => {
-                    const camId = camera.id || camera.name;
-                    return (
-                      <WebRTCPlayer
-                        key={camId}
-                        camera={camera}
-                        small
-                        isActivePlayer={false}
-                        onActivate={() => setActiveStreamingCameraId(camId)}
-                        onToggleSpotlight={() => {
-                          setActiveStreamingCameraId(camId);
-                          setSpotlightCamera(camera);
-                        }}
-                        onCameraUpdated={fetchCameras}
-                      />
-                    );
-                  })}
-                </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full">
+                {cameras.map((camera) => {
+                  const camId = camera.id || camera.name;
+                  return (
+                    <WebRTCPlayer
+                      key={camId}
+                      camera={camera}
+                      isActivePlayer={true}
+                      onActivate={() => setActiveStreamingCameraId(camId)}
+                      onToggleSpotlight={() => {
+                        setActiveStreamingCameraId(camId);
+                        setSpotlightCamera(camera);
+                      }}
+                      onCameraUpdated={fetchCameras}
+                    />
+                  );
+                })}
               </div>
             )}
 

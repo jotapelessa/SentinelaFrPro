@@ -375,8 +375,9 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
         return;
       }
 
-      // Prioridade 1: frame nativo em resolução full-sensor do go2rtc (AC-029)
-      const gSrc = `/go2rtc/api/frame.jpeg?src=${cameraSrc}&t=${Date.now()}`;
+      // Prioridade 1: frame nativo na qualidade selecionada do go2rtc (AC-029)
+      const effectiveSrc = getEffectiveSrc();
+      const gSrc = `/go2rtc/api/frame.jpeg?src=${effectiveSrc}&t=${Date.now()}`;
       const gImg = new Image();
       gImg.onload = () => {
         if (active) {
@@ -388,7 +389,8 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
       gImg.onerror = () => {
         if (active) {
           // Fallback 2: detect stream do Frigate caso go2rtc não responda
-          const fSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=720&t=${Date.now()}`;
+          const fHeight = streamQuality === "minima" ? 448 : streamQuality === "media" ? 720 : 1080;
+          const fSrc = `/frigate/api/${cameraSrc}/latest.jpg?h=${fHeight}&t=${Date.now()}`;
           const fImg = new Image();
           fImg.onload = () => {
             if (active) {
