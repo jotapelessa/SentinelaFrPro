@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1790275489.1127284,
-    "seen": 1790275619.297461,
-    "ast_hash": "c6f4a61f32f410fdddf6bd41d5780e2d",
+    "mtime": 1790313275.6985326,
+    "seen": 1790313285.2254012,
+    "ast_hash": "2231b0cf9eb86628706c6130e80dbb06",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1790275474.1241677,
-    "seen": 1790275619.297471,
-    "ast_hash": "1a20189ab81df46576fa03087cf31c65",
+    "mtime": 1790313268.1619325,
+    "seen": 1790313285.2254112,
+    "ast_hash": "579d0d39b8897e97a4de6eaf27f2e762",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1789660194.2982597,
-    "seen": 1789660369.698082,
-    "ast_hash": "3b592320487dd2a76937b6714d0b4c64",
+    "mtime": 1790313260.2878993,
+    "seen": 1790313285.225423,
+    "ast_hash": "e99f5280d445433767d45c56f6684a25",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
