@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-25 02:52 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Câmera `192.168.1.196` configurada com ingestão nativa Full HD `1080p` (`1920x1080 @ 15fps`) para exibição máxima no Web Dashboard Sentinela e gravações NVR, fornecendo stream dedicado `720p` (`1280x720`) via transcodificação por aceleração de hardware GPU Intel VAAPI para o aplicativo Android TV.
+> **Última Atualização:** 2026-09-25 03:00 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Backend corrigido (`_resolve_active_test_camera` seguro contra `MultipleResultsFound`). Câmera `192.168.1.196` online gravando e enviando clips de vídeo em 1080p para o Telegram com 100% de sucesso. Câmera `192.168.1.189` identificada como fisicamente desligada/fora da rede Wi-Fi (`Host Unreachable`).
 
 ---
 
