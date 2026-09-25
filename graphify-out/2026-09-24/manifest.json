@@ -450,9 +450,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/frigate_bridge.py": {
-    "mtime": 1790279289.9545991,
-    "seen": 1790279925.04321,
-    "ast_hash": "fe8dd5d855edb37ea035d97b7cb1fdbb",
+    "mtime": 1790296810.134598,
+    "seen": 1790296864.722841,
+    "ast_hash": "f6566eea7010aeaf9ac023f2f00d603e",
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790295779.976518,
-    "seen": 1790295789.964352,
-    "ast_hash": "bc73e0bf9a1c8652e904091703319a3d",
+    "mtime": 1790296854.822319,
+    "seen": 1790296864.72288,
+    "ast_hash": "482f7901bda4ad92e21c31160393f0e2",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1790295701.400464,
-    "seen": 1790295789.9643571,
-    "ast_hash": "1316d857d2579cee78e1476822062456",
+    "mtime": 1790296490.950045,
+    "seen": 1790296864.7228858,
+    "ast_hash": "745aa99caaa10c59bb28b8c10afd5eb6",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790295754.0565798,
-    "seen": 1790295789.964352,
-    "ast_hash": "1f83365ae44678af1b953281b7cce98d",
+    "mtime": 1790296832.837661,
+    "seen": 1790296864.722881,
+    "ast_hash": "a707a8af844becbf4de656ea010f5735",
     "semantic_hash": ""
   },
   "android/gradlew": {

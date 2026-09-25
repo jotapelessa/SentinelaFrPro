@@ -3583,7 +3583,7 @@
       "file_type": "code",
       "norm_label": ".get_video_duration()",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L392"
+      "source_location": "L394"
     },
     {
       "id": "backend_app_services_frigate_bridge_frigatebridgeservice_has_audio_stream",
@@ -3655,7 +3655,7 @@
       "file_type": "code",
       "norm_label": ".record_live_video()",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L420"
+      "source_location": "L422"
     },
     {
       "id": "backend_app_services_frigate_bridge_frigatebridgeservice_transcode_to_30fps",
@@ -9219,7 +9219,7 @@
       "source_location": "L36"
     },
     {
-      "id": "backend_app_services_frigate_bridge_rationale_393",
+      "id": "backend_app_services_frigate_bridge_rationale_395",
       "label": "Accurately extracts real playback duration of video_bytes using ffprobe in ~2ms.",
       "_origin": "ast",
       "community": 17,
@@ -9227,10 +9227,10 @@
       "file_type": "rationale",
       "norm_label": "accurately extracts real playback duration of video_bytes using ffprobe in ~2ms.",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L393"
+      "source_location": "L395"
     },
     {
-      "id": "backend_app_services_frigate_bridge_rationale_429",
+      "id": "backend_app_services_frigate_bridge_rationale_431",
       "label": "Captures a live video clip directly from the camera stream with constant 30\u2026",
       "_origin": "ast",
       "community": 17,
@@ -9238,7 +9238,7 @@
       "file_type": "rationale",
       "norm_label": "captures a live video clip directly from the camera stream with constant 30...",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L429"
+      "source_location": "L431"
     },
     {
       "id": "spec_features_integracao_frigate_spec",
@@ -12252,14 +12252,14 @@
       "source_location": "L46"
     },
     {
-      "id": "readme_aplicativos_nativos_android_v001_000_000_144",
-      "label": "\ud83d\udcf1 Aplicativos Nativos Android (`v001.000.000.144`)",
+      "id": "readme_aplicativos_nativos_android_v001_000_000_145",
+      "label": "\ud83d\udcf1 Aplicativos Nativos Android (`v001.000.000.145`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udcf1 aplicativos nativos android (`v001.000.000.144`)",
+      "norm_label": "\ud83d\udcf1 aplicativos nativos android (`v001.000.000.145`)",
       "source_file": "README.md",
       "source_location": "L34"
     },
@@ -12288,14 +12288,14 @@
       "source_location": "L76"
     },
     {
-      "id": "readme_download_dos_apks_oficiais_v001_000_000_144",
-      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.144`)",
+      "id": "readme_download_dos_apks_oficiais_v001_000_000_145",
+      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.145`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.144`)",
+      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.145`)",
       "source_file": "README.md",
       "source_location": "L23"
     },
@@ -20412,7 +20412,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L445",
+      "source_location": "L447",
       "weight": 1.0
     },
     {
@@ -20424,7 +20424,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L447",
+      "source_location": "L449",
       "weight": 1.0
     },
     {
@@ -38657,7 +38657,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_aplicativos_nativos_android_v001_000_000_144",
+      "source": "readme_aplicativos_nativos_android_v001_000_000_145",
       "target": "readme_1_android_tv_55_layout_horizontal_estilo_netflix",
       "relation": "contains",
       "_origin": "ast",
@@ -38668,7 +38668,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_aplicativos_nativos_android_v001_000_000_144",
+      "source": "readme_aplicativos_nativos_android_v001_000_000_145",
       "target": "readme_2_android_smartphone_layout_vertical_estilo_youtube",
       "relation": "contains",
       "_origin": "ast",
@@ -38724,7 +38724,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_download_dos_apks_oficiais_v001_000_000_144",
+      "target": "readme_download_dos_apks_oficiais_v001_000_000_145",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -38735,7 +38735,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_aplicativos_nativos_android_v001_000_000_144",
+      "target": "readme_aplicativos_nativos_android_v001_000_000_145",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -42457,7 +42457,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L392",
+      "source_location": "L394",
       "weight": 1.0
     },
     {
@@ -42468,7 +42468,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L420",
+      "source_location": "L422",
       "weight": 1.0
     },
     {
@@ -44023,25 +44023,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_services_frigate_bridge_rationale_393",
+      "source": "backend_app_services_frigate_bridge_rationale_395",
       "target": "backend_app_services_frigate_bridge_frigatebridgeservice_get_video_duration",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L393",
+      "source_location": "L395",
       "weight": 1.0
     },
     {
-      "source": "backend_app_services_frigate_bridge_rationale_429",
+      "source": "backend_app_services_frigate_bridge_rationale_431",
       "target": "backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L429",
+      "source_location": "L431",
       "weight": 1.0
     },
     {
@@ -45626,5 +45626,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "fedaaba3e01ae7c172831fcf388466d38021408e"
+  "built_at_commit": "e9f2338f1d139aadb13f334e96091c18dac316a2"
 }

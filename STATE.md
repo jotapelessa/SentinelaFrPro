@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-24 21:40 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.145 operacional (Build 145). Validação empírica de 20s contínuos sem queda no MSE WebSocket, transcodificação universal de áudio AAC em todos os pipelines do Telegram (eliminando rejeição por pcm_mulaw), padronização de GOP=25 (1s) e 2Mbps CBR em câmeras físicas, e zero-copy loopback restreaming no go2rtc.
+> **Última Atualização:** 2026-09-24 21:58 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.146 operacional (Build 146). Padronização das câmeras físicas AITEK em 1080p H.264 CBR 1536k, GOP=25 (1s) e Shutter Time 1/25s via ONVIF, buffer go2rtc otimizado (#backchannel=0#buffer=1000), single-stream loopback restreaming para gravação 1080p e PiP 720p, transcodificação universal de áudio AAC para o Telegram e zero-cache no Nginx Web.
 
 ---
 

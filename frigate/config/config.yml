@@ -85,7 +85,7 @@ snapshots:
 go2rtc:
   streams:
     cam_192_168_1_189_main:
-    - rtsp://admin:admin@192.168.1.189:554/live/0/MAIN#backchannel=0
+    - rtsp://admin:admin@192.168.1.189:554/live/0/MAIN#backchannel=0#buffer=1000
     cam_192_168_1_189:
     - rtsp://127.0.0.1:8554/cam_192_168_1_189_main
     cam_192_168_1_189_720p:
@@ -94,7 +94,7 @@ go2rtc:
     - rtsp://127.0.0.1:8554/cam_192_168_1_189_main
 
     cam_192_168_1_196_main:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0
+    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
     cam_192_168_1_196:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196_main
     cam_192_168_1_196_720p:
@@ -103,7 +103,7 @@ go2rtc:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196_main
 
     cam_192_168_1_200_main:
-    - rtsp://admin:admin@192.168.1.200:554/live/0/MAIN#backchannel=0
+    - rtsp://admin:admin@192.168.1.200:554/live/0/MAIN#backchannel=0#buffer=1000
     cam_192_168_1_200:
     - rtsp://127.0.0.1:8554/cam_192_168_1_200_main
     cam_192_168_1_200_720p:
@@ -112,7 +112,7 @@ go2rtc:
     - rtsp://127.0.0.1:8554/cam_192_168_1_200_main
 
     cam_192_168_1_93_main:
-    - rtsp://admin:admin@192.168.1.93:554/live/0/MAIN#backchannel=0
+    - rtsp://admin:admin@192.168.1.93:554/live/0/MAIN#backchannel=0#buffer=1000
     cam_192_168_1_93:
     - rtsp://127.0.0.1:8554/cam_192_168_1_93_main
     cam_192_168_1_93_720p:
