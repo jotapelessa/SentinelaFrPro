@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-24 21:25 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.144 operacional (Build 144). Transmissão 1080p nativa H.264 para Web Dashboard e Android Smartphone, PiP dedicado 720p para Android TV via OverlayService.kt, unificação de ingestão 1080p single-stream no go2rtc com loopback restreaming para Frigate e clientes, eliminação total de travamento de 3s/30s e áudio AAC em gravações de eventos MP4.
+> **Última Atualização:** 2026-09-24 21:40 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.145 operacional (Build 145). Validação empírica de 20s contínuos sem queda no MSE WebSocket, transcodificação universal de áudio AAC em todos os pipelines do Telegram (eliminando rejeição por pcm_mulaw), padronização de GOP=25 (1s) e 2Mbps CBR em câmeras físicas, e zero-copy loopback restreaming no go2rtc.
 
 ---
 

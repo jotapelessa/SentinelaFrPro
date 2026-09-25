@@ -89,7 +89,7 @@ go2rtc:
     cam_192_168_1_189:
     - rtsp://127.0.0.1:8554/cam_192_168_1_189_main
     cam_192_168_1_189_720p:
-    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_189_main#video=h264#raw=-s 1280x720 -b:v 1024k -preset ultrafast -tune zerolatency
+    - rtsp://127.0.0.1:8554/cam_192_168_1_189_main
     cam_192_168_1_189_sub:
     - rtsp://127.0.0.1:8554/cam_192_168_1_189_main
 
@@ -98,7 +98,7 @@ go2rtc:
     cam_192_168_1_196:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196_main
     cam_192_168_1_196_720p:
-    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_196_main#video=h264#raw=-s 1280x720 -b:v 1024k -preset ultrafast -tune zerolatency
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_main
     cam_192_168_1_196_sub:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196_main
 
@@ -107,7 +107,7 @@ go2rtc:
     cam_192_168_1_200:
     - rtsp://127.0.0.1:8554/cam_192_168_1_200_main
     cam_192_168_1_200_720p:
-    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_200_main#video=h264#raw=-s 1280x720 -b:v 1024k -preset ultrafast -tune zerolatency
+    - rtsp://127.0.0.1:8554/cam_192_168_1_200_main
     cam_192_168_1_200_sub:
     - rtsp://127.0.0.1:8554/cam_192_168_1_200_main
 
@@ -116,7 +116,7 @@ go2rtc:
     cam_192_168_1_93:
     - rtsp://127.0.0.1:8554/cam_192_168_1_93_main
     cam_192_168_1_93_720p:
-    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_93_main#video=h264#raw=-s 1280x720 -b:v 1024k -preset ultrafast -tune zerolatency
+    - rtsp://127.0.0.1:8554/cam_192_168_1_93_main
     cam_192_168_1_93_sub:
     - rtsp://127.0.0.1:8554/cam_192_168_1_93_main
   webrtc:

@@ -363,11 +363,13 @@ class FrigateBridgeService:
                     logger.info(f"✅ Vídeo otimizado para Telegram (libx264): {len(video_bytes)} -> {len(smooth_bytes)} bytes em {out_fps} FPS CFR")
                     return smooth_bytes
 
-            # 3. Last resort: lossless stream copy with +faststart
+            # 3. Last resort: lossless video stream copy with AAC audio and +faststart
             cmd_copy = [
                 "ffmpeg", "-y",
+                "-fflags", "+genpts+discardcorrupt",
                 "-i", in_file,
-                "-c", "copy",
+                "-c:v", "copy",
+                *audio_args,
                 "-movflags", "+faststart",
                 out_file
             ]

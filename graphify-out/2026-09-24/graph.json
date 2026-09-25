@@ -12252,14 +12252,14 @@
       "source_location": "L46"
     },
     {
-      "id": "readme_aplicativos_nativos_android_v001_000_000_142",
-      "label": "\ud83d\udcf1 Aplicativos Nativos Android (`v001.000.000.142`)",
+      "id": "readme_aplicativos_nativos_android_v001_000_000_144",
+      "label": "\ud83d\udcf1 Aplicativos Nativos Android (`v001.000.000.144`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udcf1 aplicativos nativos android (`v001.000.000.142`)",
+      "norm_label": "\ud83d\udcf1 aplicativos nativos android (`v001.000.000.144`)",
       "source_file": "README.md",
       "source_location": "L34"
     },
@@ -12288,14 +12288,14 @@
       "source_location": "L76"
     },
     {
-      "id": "readme_download_dos_apks_oficiais_v001_000_000_142",
-      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.142`)",
+      "id": "readme_download_dos_apks_oficiais_v001_000_000_144",
+      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.144`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.142`)",
+      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.144`)",
       "source_file": "README.md",
       "source_location": "L23"
     },
@@ -38657,7 +38657,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_aplicativos_nativos_android_v001_000_000_142",
+      "source": "readme_aplicativos_nativos_android_v001_000_000_144",
       "target": "readme_1_android_tv_55_layout_horizontal_estilo_netflix",
       "relation": "contains",
       "_origin": "ast",
@@ -38668,7 +38668,7 @@
       "weight": 1.0
     },
     {
-      "source": "readme_aplicativos_nativos_android_v001_000_000_142",
+      "source": "readme_aplicativos_nativos_android_v001_000_000_144",
       "target": "readme_2_android_smartphone_layout_vertical_estilo_youtube",
       "relation": "contains",
       "_origin": "ast",
@@ -38724,7 +38724,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_download_dos_apks_oficiais_v001_000_000_142",
+      "target": "readme_download_dos_apks_oficiais_v001_000_000_144",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -38735,7 +38735,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_aplicativos_nativos_android_v001_000_000_142",
+      "target": "readme_aplicativos_nativos_android_v001_000_000_144",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -45626,5 +45626,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "307a08ed72d23ca2a4080dab77139db4b3760ac2"
+  "built_at_commit": "fedaaba3e01ae7c172831fcf388466d38021408e"
 }
