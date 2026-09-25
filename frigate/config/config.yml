@@ -12,9 +12,9 @@ logger:
     frigate.events: info
     frigate.video: info
 ffmpeg:
-  hwaccel_args: preset-intel-qsv-h264
+  hwaccel_args: preset-vaapi
   output_args:
-    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac
+    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
   width: 300
@@ -129,7 +129,7 @@ cameras:
   cam_192_168_1_189:
     enabled: true
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h264
+      hwaccel_args: preset-vaapi
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_189
         input_args: preset-rtsp-restream
@@ -137,11 +137,11 @@ cameras:
         - record
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
       width: 800
       height: 448
-      fps: 10
+      fps: 5
       enabled: true
     snapshots:
       enabled: true
@@ -200,7 +200,7 @@ cameras:
   cam_192_168_1_196:
     enabled: true
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h264
+      hwaccel_args: preset-vaapi
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_196
         input_args: preset-rtsp-restream
@@ -208,11 +208,11 @@ cameras:
         - record
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
       width: 800
       height: 448
-      fps: 15
+      fps: 5
       enabled: true
     snapshots:
       enabled: true
@@ -271,7 +271,7 @@ cameras:
   cam_192_168_1_200:
     enabled: false
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h264
+      hwaccel_args: preset-vaapi
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_200
         input_args: preset-rtsp-restream
@@ -307,7 +307,7 @@ cameras:
   cam_192_168_1_93:
     enabled: false
     ffmpeg:
-      hwaccel_args: preset-intel-qsv-h264
+      hwaccel_args: preset-vaapi
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_93
         input_args: preset-rtsp-restream
@@ -339,5 +339,6 @@ cameras:
         days: 3
       continuous:
         days: 0
+
 version: 0.17-0
 
