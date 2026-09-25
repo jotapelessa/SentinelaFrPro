@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-25 02:23 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Harmonização de streams: Ingestão de fluxo único por hardware via `SUB` stream (`800x448 @ h264`), cascateando localmente por loopback interno (`rtsp://127.0.0.1:8554/...`). Erros de `unexpected EOF` e `connection reset by peer` 100% eliminados no go2rtc, reprodução fluida no Web Dashboard, Android TV e Smartphone.
+> **Última Atualização:** 2026-09-25 02:40 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Servidor Ubuntu migrado com sucesso para Wi-Fi 5GHz (`Katia-5G` na interface `wlp2s0`) com IP estático fixado em `192.168.1.247/24`. Todos os serviços (Frigate NVR 0.17, go2rtc, Backend FastAPI 8088, Web Dashboard e APKs Android TV/Mobile) operando 100% normalmente sem necessidade de reconfiguração de clientes.
 
 ---
 
