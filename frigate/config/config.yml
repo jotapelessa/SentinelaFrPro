@@ -84,41 +84,41 @@ snapshots:
   height: 1080
 go2rtc:
   streams:
-    cam_192_168_1_189_main:
-    - rtsp://admin:admin@192.168.1.189:554/live/0/MAIN#backchannel=0#buffer=1000
-    cam_192_168_1_189:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_189_main
-    cam_192_168_1_189_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_189_main
     cam_192_168_1_189_sub:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_189_main
+    - rtsp://admin:admin@192.168.1.189:554/live/0/SUB#backchannel=0
+    cam_192_168_1_189:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_189_sub
+    cam_192_168_1_189_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_189_sub
+    cam_192_168_1_189_main:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_189_sub
 
-    cam_192_168_1_196_main:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
-    cam_192_168_1_196:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196_main
-    cam_192_168_1_196_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196_main
     cam_192_168_1_196_sub:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196_main
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
+    cam_192_168_1_196:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+    cam_192_168_1_196_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+    cam_192_168_1_196_main:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
 
-    cam_192_168_1_200_main:
-    - rtsp://admin:admin@192.168.1.200:554/live/0/MAIN#backchannel=0#buffer=1000
-    cam_192_168_1_200:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_200_main
-    cam_192_168_1_200_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_200_main
     cam_192_168_1_200_sub:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_200_main
+    - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
+    cam_192_168_1_200:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_200_sub
+    cam_192_168_1_200_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_200_sub
+    cam_192_168_1_200_main:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_200_sub
 
-    cam_192_168_1_93_main:
-    - rtsp://admin:admin@192.168.1.93:554/live/0/MAIN#backchannel=0#buffer=1000
-    cam_192_168_1_93:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_93_main
-    cam_192_168_1_93_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_93_main
     cam_192_168_1_93_sub:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_93_main
+    - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
+    cam_192_168_1_93:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_93_sub
+    cam_192_168_1_93_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_93_sub
+    cam_192_168_1_93_main:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_93_sub
   webrtc:
     candidates:
     - 100.93.129.91:8555
@@ -139,9 +139,9 @@ cameras:
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac
     detect:
-      width: 1920
-      height: 1080
-      fps: 5
+      width: 800
+      height: 448
+      fps: 10
       enabled: true
     snapshots:
       enabled: true
@@ -210,9 +210,9 @@ cameras:
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac
     detect:
-      width: 1920
-      height: 1080
-      fps: 5
+      width: 800
+      height: 448
+      fps: 15
       enabled: true
     snapshots:
       enabled: true
@@ -279,8 +279,8 @@ cameras:
         - record
         - detect
     detect:
-      width: 1920
-      height: 1080
+      width: 800
+      height: 448
       fps: 5
       enabled: true
     snapshots:
@@ -315,8 +315,8 @@ cameras:
         - record
         - detect
     detect:
-      width: 1920
-      height: 1080
+      width: 800
+      height: 448
       fps: 5
       enabled: true
     snapshots:
@@ -340,3 +340,4 @@ cameras:
       continuous:
         days: 0
 version: 0.17-0
+
