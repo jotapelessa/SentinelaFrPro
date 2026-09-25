@@ -252,6 +252,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     ? "monitor" 
     : (camera.stream_mode === "webrtc" ? "webrtc" : "mse");
   const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">(initialMode);
+  const [streamQuality, setStreamQuality] = useState<"minima" | "media" | "maxima">((camera.stream_quality as any) || "maxima");
   const [ecoFps, setEcoFps] = useState<number>(camera.eco_fps || 2);
   const [key, setKey] = useState(0);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
@@ -424,13 +425,36 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     };
   }, [streamMode, cameraSrc, ecoFps, key, isPaused, isActivePlayer]);
 
+  const handleQualityChange = async (newQuality: "minima" | "media" | "maxima") => {
+    setStreamQuality(newQuality);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const camId = camera.id || camera.name || "camera_principal";
+      await fetch(`${apiUrl}/cameras/${camId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ stream_quality: newQuality })
+      });
+      if (onCameraUpdated) onCameraUpdated();
+    } catch (e) {
+      console.error("Erro ao persistir qualidade de vídeo:", e);
+    }
+  };
+
+  const getEffectiveSrc = () => {
+    if (streamQuality === "minima") return `${cameraSrc}_sub`;
+    if (streamQuality === "media") return `${cameraSrc}_720p`;
+    return cameraSrc;
+  };
+
   const getStreamUrl = () => {
+    const activeSrc = getEffectiveSrc();
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=webrtc,mse&media=video`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&media=video`;
       case "mse":
       default:
-        return `/go2rtc/stream.html?src=${encodeURIComponent(cameraSrc)}&mode=mse&media=video`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&media=video`;
     }
   };
 
@@ -550,42 +574,79 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 
         {/* Floating Action Controls on Hover */}
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none z-40">
-          {!isPaused && isActivePlayer && (
-            <div className="flex items-center gap-1 bg-black/85 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 shadow-2xl pointer-events-auto">
-              <button
-                type="button"
-                onClick={() => setStreamMode("monitor")}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
-                  streamMode === "monitor" ? "bg-emerald-500 text-obsidian-950 shadow-md shadow-emerald-500/30" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800/80"
-                }`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "monitor" ? "bg-obsidian-950" : "bg-emerald-400"}`} />
-                <span>Eco 10 FPS</span>
-              </button>
+            <div className="flex items-center gap-1.5 flex-wrap pointer-events-auto">
+              {/* Stream Mode Pills */}
+              <div className="flex items-center gap-1 bg-black/85 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 shadow-2xl">
+                <button
+                  type="button"
+                  onClick={() => setStreamMode("monitor")}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
+                    streamMode === "monitor" ? "bg-emerald-500 text-obsidian-950 shadow-md shadow-emerald-500/30" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800/80"
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "monitor" ? "bg-obsidian-950" : "bg-emerald-400"}`} />
+                  <span>Eco</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setStreamMode("webrtc")}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
-                  streamMode === "webrtc" ? "bg-cyan-500 text-obsidian-950 shadow-md shadow-cyan-500/30" : "text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80"
-                }`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "webrtc" ? "bg-obsidian-950" : "bg-cyan-400"}`} />
-                <span>WebRTC</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setStreamMode("webrtc")}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
+                    streamMode === "webrtc" ? "bg-cyan-500 text-obsidian-950 shadow-md shadow-cyan-500/30" : "text-slate-400 hover:text-cyan-300 hover:bg-slate-800/80"
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "webrtc" ? "bg-obsidian-950" : "bg-cyan-400"}`} />
+                  <span>WebRTC</span>
+                </button>
 
-              <button
-                type="button"
-                onClick={() => setStreamMode("mse")}
-                className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
-                  streamMode === "mse" ? "bg-purple-500 text-white shadow-md shadow-purple-500/30" : "text-slate-400 hover:text-purple-300 hover:bg-slate-800/80"
-                }`}
-              >
-                <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "mse" ? "bg-white" : "bg-purple-400"}`} />
-                <span>MSE 24 FPS</span>
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setStreamMode("mse")}
+                  className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
+                    streamMode === "mse" ? "bg-purple-500 text-white shadow-md shadow-purple-500/30" : "text-slate-400 hover:text-purple-300 hover:bg-slate-800/80"
+                  }`}
+                >
+                  <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "mse" ? "bg-white" : "bg-purple-400"}`} />
+                  <span>MSE</span>
+                </button>
+              </div>
+
+              {/* Resolution / Quality Switcher Pills */}
+              <div className="flex items-center gap-1 bg-black/85 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 shadow-2xl">
+                <button
+                  type="button"
+                  onClick={() => handleQualityChange("minima")}
+                  title="Qualidade Mínima (480p / Stream SUB econômico)"
+                  className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                    streamQuality === "minima" ? "bg-amber-500 text-obsidian-950 shadow-md shadow-amber-500/30" : "text-slate-400 hover:text-amber-300 hover:bg-slate-800/80"
+                  }`}
+                >
+                  Mín (480p)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQualityChange("media")}
+                  title="Qualidade Média (720p / Transcodificação GPU VAAPI)"
+                  className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                    streamQuality === "media" ? "bg-sky-500 text-obsidian-950 shadow-md shadow-sky-500/30" : "text-slate-400 hover:text-sky-300 hover:bg-slate-800/80"
+                  }`}
+                >
+                  Méd (720p)
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleQualityChange("maxima")}
+                  title="Qualidade Máxima (1080p Full HD Pro nativo)"
+                  className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                    streamQuality === "maxima" ? "bg-emerald-500 text-obsidian-950 shadow-md shadow-emerald-500/30" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800/80"
+                  }`}
+                >
+                  Máx (1080p)
+                </button>
+              </div>
             </div>
-          )}
 
           <div className="flex items-center gap-1.5 pointer-events-auto ml-auto">
             <button

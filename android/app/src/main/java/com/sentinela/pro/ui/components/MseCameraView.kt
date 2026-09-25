@@ -185,17 +185,31 @@ fun MseCameraView(
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
-                            // Inject CSS and intelligent WebRTC/MSE stall recovery watchdog
+                            // Inject CSS and intelligent WebRTC/MSE stall recovery watchdog (supporting go2rtc Shadow DOM)
                             val js = "javascript:(function() {" +
                                     "var style = document.createElement('style');" +
                                     "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent !important; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
                                     "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; pointer-events:none !important; background:transparent !important; } " +
                                     "video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel, video::-webkit-media-controls-play-button, video::-webkit-media-controls-start-playback-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-current-time-display, video::-webkit-media-controls-time-remaining-display, video::-webkit-media-controls-mute-button, video::-webkit-media-controls-toggle-closed-captions-button, video::-webkit-media-controls-volume-slider { display:none !important; -webkit-appearance:none !important; opacity:0 !important; visibility:hidden !important; } " +
-                                    "video-stream .info, .info, .mode, .status, .spinner { display:none !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important; } " +
+                                    "video-stream .info, .info, .mode, .status, .spinner, .mode-box { display:none !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important; } " +
                                     "* { outline:none !important; -webkit-tap-highlight-color:transparent !important; }';" +
                                     "document.head.appendChild(style);" +
+                                    "var getVideo = function() {" +
+                                    "  var vs = document.querySelector('video-stream');" +
+                                    "  if (vs && vs.shadowRoot) {" +
+                                    "    if (!vs.shadowRoot.__styled) {" +
+                                    "      vs.shadowRoot.__styled = true;" +
+                                    "      var sStyle = document.createElement('style');" +
+                                    "      sStyle.innerHTML = 'video { width:100% !important; height:100% !important; object-fit:cover !important; background:transparent !important; } .info, .mode, .status, .spinner { display:none !important; }';" +
+                                    "      vs.shadowRoot.appendChild(sStyle);" +
+                                    "    }" +
+                                    "    var sv = vs.shadowRoot.querySelector('video');" +
+                                    "    if (sv) return sv;" +
+                                    "  }" +
+                                    "  return document.querySelector('video');" +
+                                    "};" +
                                     "var initVideo = function() {" +
-                                    "  var v = document.querySelector('video');" +
+                                    "  var v = getVideo();" +
                                     "  if (v) {" +
                                     "    v.controls = false;" +
                                     "    v.muted = true;" +
@@ -226,7 +240,7 @@ fun MseCameraView(
                                     "initVideo();" +
                                     "if (!window.__liveEdgeTimer) {" +
                                     "  window.__liveEdgeTimer = setInterval(function() {" +
-                                    "    var v = document.querySelector('video');" +
+                                    "    var v = getVideo();" +
                                     "    if (v) {" +
                                     "      if (v.paused) { v.play().catch(function(){}); }" +
                                     "      if (v.buffered && v.buffered.length > 0) {" +
@@ -240,8 +254,10 @@ fun MseCameraView(
                                     "          v.playbackRate = 1.0;" +
                                     "        }" +
                                     "      }" +
+                                    "    } else {" +
+                                    "      initVideo();" +
                                     "    }" +
-                                    "  }, 400);" +
+                                    "  }, 350);" +
                                     "}" +
                                     "})()"
                             view?.loadUrl(js)

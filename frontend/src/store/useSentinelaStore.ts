@@ -86,6 +86,7 @@ export interface Camera {
   detect_width?: number;
   detect_height?: number;
   stream_mode?: "eco" | "mse" | "webrtc" | string;
+  stream_quality?: "minima" | "media" | "maxima" | string;
   eco_fps?: number;
   record_fps?: number;
   record_retain_days?: number;

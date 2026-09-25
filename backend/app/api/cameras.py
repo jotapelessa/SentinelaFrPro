@@ -99,6 +99,7 @@ class CameraCreate(BaseModel):
     enabled: Optional[bool] = True
     resolution: Optional[str] = "1080p"
     stream_mode: Optional[str] = "webrtc"
+    stream_quality: Optional[str] = "maxima"
     eco_fps: Optional[int] = 10
     record_fps: Optional[int] = 24
     detect_fps: Optional[int] = 5
@@ -519,6 +520,7 @@ class CameraUpdate(BaseModel):
     record_mode: Optional[str] = None
     resolution: Optional[str] = None
     stream_mode: Optional[str] = None
+    stream_quality: Optional[str] = None
     eco_fps: Optional[int] = None
     record_fps: Optional[int] = None
     record_retain_days: Optional[int] = None

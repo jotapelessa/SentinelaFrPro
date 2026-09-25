@@ -158,6 +158,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [recordMode, setRecordMode] = useState(camera.record_mode || "motion");
   const [resolution, setResolution] = useState(camera.resolution || "1080p");
   const [streamMode, setStreamMode] = useState(camera.stream_mode || "webrtc");
+  const [streamQuality, setStreamQuality] = useState(camera.stream_quality || "maxima");
   const [ecoFps, setEcoFps] = useState(camera.eco_fps || 10);
   const [recordFps, setRecordFps] = useState(camera.record_fps || 24);
   const [retainDays, setRetainDays] = useState(camera.record_retain_days || 14);
@@ -184,6 +185,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
     setRecordMode(camera.record_mode || "motion");
     setResolution(camera.resolution || "1080p");
     setStreamMode(camera.stream_mode || "webrtc");
+    setStreamQuality(camera.stream_quality || "maxima");
     setEcoFps(camera.eco_fps || 10);
     setRecordFps(camera.record_fps || 24);
     setRetainDays(camera.record_retain_days || 14);
@@ -225,6 +227,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
           record_mode: recordMode,
           resolution: resolution,
           stream_mode: streamMode,
+          stream_quality: streamQuality,
           eco_fps: ecoFps,
           record_fps: recordFps,
           record_retain_days: retainDays,
@@ -718,6 +721,42 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* Qualidade do Stream ao Vivo (Mínima / Média / Máxima) */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-300 font-bold">Qualidade de Stream Ao Vivo:</label>
+                  <span className="text-xs font-mono font-bold text-cyan-400 uppercase">
+                    {streamQuality === "minima" ? "Mínima (480p Eco)" : streamQuality === "media" ? "Média (720p VAAPI)" : "Máxima (1080p FHD)"}
+                  </span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "minima", label: "Mínima", desc: "480p (Stream SUB)" },
+                    { id: "media", label: "Média", desc: "720p (GPU VAAPI)" },
+                    { id: "maxima", label: "Máxima", desc: "1080p (Sensor Nativo)" }
+                  ].map((q) => (
+                    <button
+                      key={q.id}
+                      type="button"
+                      onClick={() => setStreamQuality(q.id)}
+                      className={`p-2.5 rounded-xl border text-center transition-all ${
+                        streamQuality === q.id
+                          ? "bg-cyan-500 text-obsidian-950 border-cyan-400 font-bold shadow-md shadow-cyan-500/20"
+                          : "bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      <strong className="block text-xs font-bold">{q.label}</strong>
+                      <span className={`text-[9px] block ${streamQuality === q.id ? "text-obsidian-900 font-semibold" : "text-slate-400"}`}>
+                        {q.desc}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <span className="text-[10px] text-slate-500 block">
+                  Alterna dinamicamente a fonte de ingestão RTSP consumida pelos players Web e APKs.
+                </span>
               </div>
 
               {/* Resolução da Câmera (Qualidade de Imagem) */}

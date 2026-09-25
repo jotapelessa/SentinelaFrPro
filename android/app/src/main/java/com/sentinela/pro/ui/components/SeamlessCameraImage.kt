@@ -108,7 +108,7 @@ fun SeamlessCameraImage(
         while (isActive) {
             val loopStart = System.currentTimeMillis()
             val now = loopStart
-            val primaryUrl = SentinelaConfig.getSnapshotUrl(cameraName, now, height = 480)
+            val primaryUrl = SentinelaConfig.getGo2rtcFrameUrl(cameraName, now)
 
             val request = ImageRequest.Builder(context)
                 .data(primaryUrl)
@@ -136,10 +136,10 @@ fun SeamlessCameraImage(
                 // Ignore and try fallback
             }
 
-            // Fallback to go2rtc frame if Frigate snapshot failed
+            // Fallback to Frigate snapshot if go2rtc frame failed
             if (!decoded) {
                 try {
-                    val fallbackUrl = SentinelaConfig.getGo2rtcFrameUrl(cameraName, now)
+                    val fallbackUrl = SentinelaConfig.getSnapshotUrl(cameraName, now, height = 480)
                     val fallbackReq = ImageRequest.Builder(context)
                         .data(fallbackUrl)
                         .memoryCachePolicy(CachePolicy.DISABLED)

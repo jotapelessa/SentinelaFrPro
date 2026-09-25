@@ -117,8 +117,11 @@ go2rtc:
     - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
     cam_192_168_1_93_sub:
     - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
-    cam_192_168_1_93_main:
-    - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
+    camera_principal:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196
+    camera_secundaria:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196
+
   webrtc:
     candidates:
     - 100.93.129.91:8555
@@ -127,7 +130,7 @@ go2rtc:
     - stun:stun.l.google.com:19302
 cameras:
   cam_192_168_1_189:
-    enabled: true
+    enabled: false
     ffmpeg:
       hwaccel_args: preset-vaapi
       inputs:

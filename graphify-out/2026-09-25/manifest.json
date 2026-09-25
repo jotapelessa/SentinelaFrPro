@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1790275489.1127284,
-    "seen": 1790275619.297461,
-    "ast_hash": "c6f4a61f32f410fdddf6bd41d5780e2d",
+    "mtime": 1790313275.6985326,
+    "seen": 1790313285.2254012,
+    "ast_hash": "2231b0cf9eb86628706c6130e80dbb06",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1790275474.1241677,
-    "seen": 1790275619.297471,
-    "ast_hash": "1a20189ab81df46576fa03087cf31c65",
+    "mtime": 1790313268.1619325,
+    "seen": 1790313285.2254112,
+    "ast_hash": "579d0d39b8897e97a4de6eaf27f2e762",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790297902.6636333,
-    "seen": 1790297912.920274,
-    "ast_hash": "ab126be280dcd64357b19f3fa8799288",
+    "mtime": 1790313132.7879245,
+    "seen": 1790313142.2166479,
+    "ast_hash": "ad3d9880a3e9c131e90c534d49963dc7",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1790297807.7656229,
-    "seen": 1790297912.920279,
-    "ast_hash": "11a1c5ec74012fb3c1ead1a5e521824a",
+    "mtime": 1790315486.4624555,
+    "seen": 1790315549.3347478,
+    "ast_hash": "99555257c1004733f12eaeff6dfced7c",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790297855.4574594,
-    "seen": 1790297912.920274,
-    "ast_hash": "6f76133e40df7904f66d3b0b02f04798",
+    "mtime": 1790314840.8197618,
+    "seen": 1790315025.461151,
+    "ast_hash": "acd3d0b370ec0c359ce13d4e1b2dd6a4",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1789660194.2982597,
-    "seen": 1789660369.698082,
-    "ast_hash": "3b592320487dd2a76937b6714d0b4c64",
+    "mtime": 1790313260.2878993,
+    "seen": 1790313285.225423,
+    "ast_hash": "e99f5280d445433767d45c56f6684a25",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {

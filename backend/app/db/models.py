@@ -22,6 +22,7 @@ class Camera(Base):
     record_mode = Column(String(32), default="motion") # all, motion
     resolution = Column(String(32), default="1080p") # 720p, 1080p, 2.5k, auto
     stream_mode = Column(String(32), default="mse") # eco, mse, webrtc
+    stream_quality = Column(String(32), default="maxima") # minima, media, maxima
     eco_fps = Column(Integer, default=10) # 5, 10, 15
     record_fps = Column(Integer, default=24) # 24, 30
     record_retain_days = Column(Integer, default=14)

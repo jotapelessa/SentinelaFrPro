@@ -928,7 +928,7 @@ fun TvCamerasViewport(
                         modifier = Modifier.fillMaxSize(),
                         isStreaming = true,
                         forceSnapshotMode = true,
-                        refreshIntervalMs = 15000L
+                        refreshIntervalMs = 1500L
                     )
 
                     // Overlay de Informações do Card

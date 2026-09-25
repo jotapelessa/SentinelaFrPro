@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-25 03:00 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Backend corrigido (`_resolve_active_test_camera` seguro contra `MultipleResultsFound`). Câmera `192.168.1.196` online gravando e enviando clips de vídeo em 1080p para o Telegram com 100% de sucesso. Câmera `192.168.1.189` identificada como fisicamente desligada/fora da rede Wi-Fi (`Host Unreachable`).
+> **Última Atualização:** 2026-09-25 03:30 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.148 operacional (Build 148). Shadow DOM penetration implementado no `MseCameraView.kt` para WebComponents do go2rtc (MSE/WebRTC nos APKs TV e Smartphone). Seletor dinâmico de qualidade de vídeo (Mínima 480p, Média 720p, Máxima 1080p) adicionado no Web Dashboard e persistido no Backend. Aliases transparentes `camera_principal` e `camera_secundaria` configurados no Frigate e Nginx para eliminar 404s.
 
 ---
 
