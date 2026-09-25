@@ -205,21 +205,21 @@ async def _resolve_active_test_camera(db: AsyncSession, requested_camera: Option
     if requested_camera:
         stmt = select(Camera).where(Camera.name == requested_camera)
         res = await db.execute(stmt)
-        cam = res.scalar_one_or_none()
+        cam = res.scalars().first()
         if cam:
             return cam.name, cam.friendly_name or cam.name
 
     # Query first enabled camera
     stmt = select(Camera).where(Camera.enabled == True).order_by(Camera.id.asc())
     res = await db.execute(stmt)
-    active_cam = res.scalar_one_or_none()
+    active_cam = res.scalars().first()
     if active_cam:
         return active_cam.name, active_cam.friendly_name or active_cam.name
 
     # Fallback to any registered camera
     stmt = select(Camera).order_by(Camera.id.asc())
     res = await db.execute(stmt)
-    any_cam = res.scalar_one_or_none()
+    any_cam = res.scalars().first()
     if any_cam:
         return any_cam.name, any_cam.friendly_name or any_cam.name
 
