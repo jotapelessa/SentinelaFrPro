@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-24 20:30 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.143 operacional (Build 143). Harmonização de câmeras H.265/HEVC (`192.168.1.189` e `192.168.1.196`) com decodificação Intel QSV H.265 (`preset-intel-qsv-h265`) e VA-API, transcodificação universal de áudio PCM (`pcm_mulaw`) para AAC em contêineres MP4 de gravação, ingestão única de hardware no go2rtc e desativação limpa de câmeras offline para economia total de CPU.
+> **Última Atualização:** 2026-09-24 21:25 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.144 operacional (Build 144). Transmissão 1080p nativa H.264 para Web Dashboard e Android Smartphone, PiP dedicado 720p para Android TV via OverlayService.kt, unificação de ingestão 1080p single-stream no go2rtc com loopback restreaming para Frigate e clientes, eliminação total de travamento de 3s/30s e áudio AAC em gravações de eventos MP4.
 
 ---
 

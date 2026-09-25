@@ -611,7 +611,7 @@ class OverlayService : Service() {
         }
 
         activePipCamera = resolvedCamera
-        val streamCamera = resolvedCamera
+        val streamCamera = if (resolvedCamera.endsWith("_720p")) resolvedCamera else "${resolvedCamera}_720p"
         val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
             "eco" -> "mode=mjpeg"
             "webrtc" -> "mode=webrtc&media=video"

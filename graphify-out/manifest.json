@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1790277497.1956596,
-    "seen": 1790277947.749452,
-    "ast_hash": "7002538f6e14cb8177331fea8614cff9",
+    "mtime": 1790295683.7904665,
+    "seen": 1790295789.9643,
+    "ast_hash": "65541acbfc3525873383882b130c0d4b",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790282156.71392,
-    "seen": 1790290216.832832,
-    "ast_hash": "1b37322c872d5983b0e591ffb3620ad2",
+    "mtime": 1790295779.976518,
+    "seen": 1790295789.964352,
+    "ast_hash": "bc73e0bf9a1c8652e904091703319a3d",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1790282039.9062262,
-    "seen": 1790290216.832837,
-    "ast_hash": "667cfe56c977456b7c2d54ed65d85fe7",
+    "mtime": 1790295701.400464,
+    "seen": 1790295789.9643571,
+    "ast_hash": "1316d857d2579cee78e1476822062456",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790282190.7709758,
-    "seen": 1790290216.832832,
-    "ast_hash": "a9ee627fa9ad632bc69905d7190ac2f1",
+    "mtime": 1790295754.0565798,
+    "seen": 1790295789.964352,
+    "ast_hash": "1f83365ae44678af1b953281b7cce98d",
     "semantic_hash": ""
   },
   "android/gradlew": {
