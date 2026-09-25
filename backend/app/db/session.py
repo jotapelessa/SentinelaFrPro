@@ -60,6 +60,7 @@ async def init_db():
             ("record_retain_days", "INTEGER DEFAULT 14"),
             ("record_audio", "BOOLEAN DEFAULT 0"),
             ("stream_mode", "VARCHAR(32) DEFAULT 'mse'"),
+            ("stream_quality", "VARCHAR(32) DEFAULT 'maxima'"),
             ("eco_fps", "INTEGER DEFAULT 10"),
             ("record_fps", "INTEGER DEFAULT 24"),
             ("notify_telegram", "BOOLEAN DEFAULT 1"),
