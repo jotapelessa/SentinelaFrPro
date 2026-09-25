@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-25 02:40 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Servidor Ubuntu migrado com sucesso para Wi-Fi 5GHz (`Katia-5G` na interface `wlp2s0`) com IP estático fixado em `192.168.1.247/24`. Todos os serviços (Frigate NVR 0.17, go2rtc, Backend FastAPI 8088, Web Dashboard e APKs Android TV/Mobile) operando 100% normalmente sem necessidade de reconfiguração de clientes.
+> **Última Atualização:** 2026-09-25 02:52 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Câmera `192.168.1.196` configurada com ingestão nativa Full HD `1080p` (`1920x1080 @ 15fps`) para exibição máxima no Web Dashboard Sentinela e gravações NVR, fornecendo stream dedicado `720p` (`1280x720`) via transcodificação por aceleração de hardware GPU Intel VAAPI para o aplicativo Android TV.
 
 ---
 
