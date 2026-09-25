@@ -1,8 +1,8 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-24 21:58 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.146 operacional (Build 146). Padronização das câmeras físicas AITEK em 1080p H.264 CBR 1536k, GOP=25 (1s) e Shutter Time 1/25s via ONVIF, buffer go2rtc otimizado (#backchannel=0#buffer=1000), single-stream loopback restreaming para gravação 1080p e PiP 720p, transcodificação universal de áudio AAC para o Telegram e zero-cache no Nginx Web.
+> **Última Atualização:** 2026-09-25 02:12 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.147 operacional (Build 147). Harmonização de streams: 1080p nativo H.264 CBR 1536k para Web Sentinela e Smartphone, PiP dedicado 720p para Android TV com abertura em < 180ms, ingestão única de hardware no go2rtc (#backchannel=0#buffer=1000) eliminando resets de socket, transcodificação universal de áudio AAC com timestamps monotônicos para vídeos do Telegram (20s a 60s) e zero-cache no Nginx.
 
 ---
 

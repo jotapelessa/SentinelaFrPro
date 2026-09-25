@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790313132.7879245,
-    "seen": 1790313142.2166479,
-    "ast_hash": "ad3d9880a3e9c131e90c534d49963dc7",
+    "mtime": 1790297902.6636333,
+    "seen": 1790297912.920274,
+    "ast_hash": "ab126be280dcd64357b19f3fa8799288",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790313113.6409316,
-    "seen": 1790313142.216649,
-    "ast_hash": "33b82fe6b097af388351ed293c77f533",
+    "mtime": 1790297855.4574594,
+    "seen": 1790297912.920274,
+    "ast_hash": "6f76133e40df7904f66d3b0b02f04798",
     "semantic_hash": ""
   },
   "android/gradlew": {
