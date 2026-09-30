@@ -6,6 +6,7 @@ import httpx
 import subprocess
 from typing import Dict, Any, Optional, List
 from app.core.config import settings
+from app.services.audit_service import audit_service
 
 import time
 from collections import deque
@@ -28,6 +29,17 @@ class FrigateBridgeService:
             "detail": detail
         }
         self._connectivity_logs.appendleft(entry)
+        if status == "ERROR":
+            import asyncio
+            try:
+                asyncio.create_task(audit_service.log(
+                    action="CROSS_SERVICE_ERROR",
+                    module="FRIGATE",
+                    severity="ERROR",
+                    details=f"Falha de sonda em {target}: {detail}"
+                ))
+            except RuntimeError:
+                pass
 
     def get_connectivity_logs(self) -> List[Dict[str, Any]]:
         return list(self._connectivity_logs)

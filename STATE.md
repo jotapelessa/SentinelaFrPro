@@ -1,8 +1,37 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-25 03:50 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.149 operacional (Build 149). Cascata de streams go2rtc otimizada com perfis de bitrate CBR calibrados (Mínima 480p/512k, Média 720p/2048k, Máxima 1080p/Nativo). Multi-view ao vivo desbloqueado no mosaico de câmeras Web (`CameraMosaic.tsx`). Ingestão em 1080p Full HD estabilizada em 1 conexão de hardware fixa para eliminar resets de socket no firmware AITEK SEG6050BP.
+> **Última Atualização:** 2026-09-30 06:45 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.150 operacional (Build 150). Otimização completa do ecossistema: segurança MQTT/Compose, calibração do detector Frigate 800x448, watchdog de tempo horário com NTP (America/Sao_Paulo), ações completas na Web (snapshot, clip 15s MP4, PiP actions), redução ergonômica de 50% nos seletores da Android TV e testes de rotas individuais no Smartphone.
+
+---
+
+## 📦 Versão Atual: v001.000.000.150 (Build 150) — Otimização Global do Ecossistema e Harmonização Multi-Plataforma
+- **Data**: 2026-09-30
+- **Objetivo**: Auditoria integral e implementação aprovada da Fase 3 do ecossistema Sentinela Frigate Pro:
+  1. **Segurança & Infraestrutura**:
+     - Mosquitto MQTT configurado com autenticação obrigatória (`allow_anonymous false`), ACL dedicada e throttling de conexões.
+     - Docker Compose com healthchecks rigorosos e dependências em cascata (`condition: service_healthy`).
+     - Segredos parametrizados via variáveis de ambiente (`FRIGATE_MQTT_USER`, `FRIGATE_MQTT_PASSWORD`, etc.).
+  2. **Backend & Sincronização**:
+     - Fila de eventos MQTT otimizada para `collections.deque(maxlen=200)` (O(1)).
+     - Fila do Telegram persistida em `/app/data/event_queue` (volume seguro).
+     - Serviço de sincronização horária periódica (`time_sync.py`) com servidores NTP brasileiros e verificação de fuso horário `America/Sao_Paulo`.
+  3. **Frigate NVR & Streams go2rtc**:
+     - Detecção leve calibrada para 800x448 @ 5fps na câmera ativa, preservando gravação nativa 3MP.
+     - `motion.threshold` calibrado para 18.
+     - Sockets órfãos de câmeras inativas desativados no go2rtc.
+  4. **Android TV UI & PiP**:
+     - Botões de seleção de Tamanho, Posição e Duração do PiP reduzidos em ~50% (altura de 26dp), eliminando poluição visual na Smart TV.
+     - Padding vertical dos cards de modo de vídeo reduzido para 6dp.
+  5. **Web Dashboard sentinela.local**:
+     - Mosaico 2x2 preenche 100% da viewport vertical e horizontal de forma equilibrada.
+     - Botões de Captura de Foto Instantânea (Snapshot HD) e Gravação de Clipe (15s MP4) adicionados aos cards dos players.
+     - Modal de configurações com controles completos de hardware e codec.
+  6. **Android Smartphone (Mobile Shorts Edition)**:
+     - Testes individuais de rota (Tailscale Tunnel, Tailscale IP Direto, mDNS e LAN Direct).
+     - Confirmação de reboot do servidor Ubuntu com comunicação direta à API.
+     - Proibição de PiP preservada estritamente conforme Regra de Ouro #11.
 
 ---
 
@@ -690,6 +719,11 @@ Todas as features do projeto são especificadas no diretório `.spec/features/`,
       3. No Backend: Criado módulo canônico `app.core.timezone.py` com `get_brasilia_now()` e `TZ_BRASILIA = ZoneInfo("America/Sao_Paulo")`, substituindo 100% dos usos de `utcnow()` em `models.py`, `telemetry.py`, `audit_service.py`, `devices.py`, `events.py`, `settings.py`, `cameras.py` e `telegram_queue.py`.
       4. No Frontend: Injetado `RUN apk add --no-cache tzdata` no runner do `Dockerfile` e sincronizado com `TZ=America/Sao_Paulo`.
       5. Versionamento semântico promovido para **v001.000.000.137** (Build 137) em todo o ecossistema.
+
+## Resumo da Sessão Atual (v001.000.000.149)
+
+- **Correção Crítica de UI/Permissões (2.6)**: Corrigido o bug onde a aba "Master" falhava ao reiniciar o servidor (retornando HTTP 403). A API `/policies` do FastAPI (backend) estava omitindo a flag `is_master_admin`, o que fazia o App Android revogar silenciosamente a permissão de Master do usuário localmente ao carregar as políticas.
+- **Resiliência do Telegram (4.3)**: Implementado loop de retry de 3 tentativas com *exponential backoff* e tratamento explícito de *Rate Limit (HTTP 429)* nos métodos `sendVideo` e `sendPhoto` do `telegram_vault.py` para resolver falhas intermitentes na entrega de alertas devido a instabilidades de rede ou limitação da API do Telegram.
 
 ---
 

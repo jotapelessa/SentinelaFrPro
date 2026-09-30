@@ -65,12 +65,9 @@ fun SeamlessCameraImage(
         }
     }
 
-    if (!isAppInForeground) {
-        Box(modifier = modifier.background(Color.Black))
-        return
-    }
+    // Background behavior handled below by defaulting to 720p snapshot when !isAppInForeground
 
-    if (!forceSnapshotMode && !isStreaming) {
+    if (!forceSnapshotMode && (!isStreaming || !isAppInForeground)) {
         val snapshotUrl = remember(cameraName) {
             "${SentinelaConfig.BASE_URL}/frigate/api/${cameraName}/latest.jpg?h=720"
         }

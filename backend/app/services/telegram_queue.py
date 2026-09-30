@@ -18,10 +18,12 @@ from app.db.session import AsyncSessionLocal
 from app.db.models import EventRecord
 from app.services.telegram_vault import telegram_vault_service
 from app.services.frigate_bridge import frigate_bridge
+from app.services.audit_service import audit_service
 
 logger = logging.getLogger(__name__)
 
-QUEUE_DIR = "/tmp/event_queue"
+# BE-004: usar volume persistente montado em vez de /tmp (tmpfs — apagado em restart)
+QUEUE_DIR = "/app/data/event_queue"
 
 @dataclass
 class TelegramEventItem:
@@ -144,6 +146,12 @@ class TelegramVideoQueue:
                 json.dump(asdict(item), f)
         except Exception as e:
             logger.warning(f"Falha ao persistir evento no buffer de disco: {e}")
+            await audit_service.log(
+                action="DISK_BUFFER_ERROR",
+                module="TELEGRAM",
+                severity="ERROR",
+                details=f"Falha ao persistir evento {event_id} no disco: {e}"
+            )
 
         # 2. Add to FIFO Queue
         await self._queue.put(item)
@@ -244,6 +252,12 @@ class TelegramVideoQueue:
 
         except Exception as e:
             logger.error(f"❌ Falha ao processar item na TelegramVideoQueue ({event_id}): {e}", exc_info=True)
+            await audit_service.log(
+                action="VIDEO_PROCESS_ERROR",
+                module="TELEGRAM",
+                severity="ERROR",
+                details=f"Falha na esteira de vídeo para {event_id}: {str(e)[:150]}"
+            )
         finally:
             self._cleanup_disk_item(disk_file)
 

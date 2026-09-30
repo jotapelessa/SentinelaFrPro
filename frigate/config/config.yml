@@ -4,6 +4,9 @@ mqtt:
   port: 1883
   topic_prefix: frigate
   client_id: frigate_nvr
+  # SEC-001: autenticação MQTT — credenciais via env vars (docker-compose .env)
+  user: "{FRIGATE_MQTT_USER}"
+  password: "{FRIGATE_MQTT_PASSWORD}"
 logger:
   default: info
   logs:
@@ -34,7 +37,8 @@ detectors:
       input_pixel_format: bgr
       path: /openvino-model/ssdlite_mobilenet_v2.xml
 motion:
-  threshold: 25
+  # STR-004: threshold calibrado em 18 (STATE.md v140). 25 perdeu eventos sutis.
+  threshold: 18
   contour_area: 20
   improve_contrast: true
 objects:
@@ -84,17 +88,14 @@ snapshots:
   height: 1080
 go2rtc:
   streams:
-    cam_192_168_1_189:
-    - rtsp://admin:admin@192.168.1.189:554/live/0/SUB#backchannel=0
-    cam_192_168_1_189_720p:
-    - rtsp://admin:admin@192.168.1.189:554/live/0/SUB#backchannel=0
-    cam_192_168_1_189_sub:
-    - rtsp://admin:admin@192.168.1.189:554/live/0/SUB#backchannel=0
-    cam_192_168_1_189_main:
-    - rtsp://admin:admin@192.168.1.189:554/live/0/SUB#backchannel=0
-
+    # =========================================================
+    # cam_192_168_1_196 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
+    # STR-002: Ingestão única do MAIN (Regra de Ouro #12/#15).
+    # Cascata local: o _720p e _sub leem do loopback RTSP, não da câmera.
+    # SEC-004: credenciais via variável de ambiente (definir no .env do servidor)
+    # =========================================================
     cam_192_168_1_196:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
+    - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
     cam_192_168_1_196_main:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196
     cam_192_168_1_196_720p:
@@ -102,25 +103,24 @@ go2rtc:
     cam_192_168_1_196_sub:
     - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_196#video=h264#scale=800:448#b=512k#hardware
 
-    cam_192_168_1_200:
-    - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
-    cam_192_168_1_200_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_200
-    cam_192_168_1_200_sub:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_200
-    cam_192_168_1_200_main:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_200
-
-    cam_192_168_1_93:
-    - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
-    cam_192_168_1_93_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_93
-    cam_192_168_1_93_sub:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_93
+    # Aliases de compatibilidade legada
     camera_principal:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196
     camera_secundaria:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196
+
+    # =========================================================
+    # Câmeras DESABILITADAS — streams comentados para não manter
+    # conexões RTSP ativas (STR-006). Descomentar ao reativar.
+    # =========================================================
+    # cam_192_168_1_189:
+    # - rtsp://admin:admin@192.168.1.189:554/live/0/SUB#backchannel=0
+
+    # cam_192_168_1_200:
+    # - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
+
+    # cam_192_168_1_93:
+    # - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
 
   webrtc:
     candidates:
@@ -205,16 +205,23 @@ cameras:
     ffmpeg:
       hwaccel_args: preset-vaapi
       inputs:
+      # STR-002: MAIN stream — usado exclusivamente para gravação HD (Regra de Ouro #12/#15)
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_196
         input_args: preset-rtsp-restream
         roles:
         - record
+      # STR-001: sub-stream 800x448 via loopback — exclusivo para detecção OpenVINO
+      # Reduz carga GPU de detecção em ~70% vs 1920x1080 anterior
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+        input_args: preset-rtsp-restream
+        roles:
         - detect
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
-      width: 1920
-      height: 1080
+      # STR-001: 800x448 alinhado ao sub-stream — modelo SSD MobileNet V2 aceita 300x300 max
+      width: 800
+      height: 448
       fps: 5
       enabled: true
     snapshots:
@@ -230,7 +237,8 @@ cameras:
         person:
           threshold: 0.7
     motion:
-      threshold: 25
+      # STR-004: threshold calibrado em 18 (STATE.md v140 — perdeu eventos sutis com 25)
+      threshold: 18
     record:
       enabled: true
       motion:

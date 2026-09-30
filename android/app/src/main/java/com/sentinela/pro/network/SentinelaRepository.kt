@@ -1229,6 +1229,43 @@ object SentinelaRepository {
         list
     }
 
+    suspend fun updateCameraConfig(
+        cameraName: String,
+        friendlyName: String,
+        resolution: String,
+        streamMode: String,
+        streamQuality: String,
+        bitrate: Int
+    ): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/api/cameras/$cameraName")
+            val conn = openConnection(url).apply {
+                connectTimeout = 5000
+                readTimeout = 5000
+                requestMethod = "PATCH"
+                setRequestProperty("Content-Type", "application/json")
+                setRequestProperty("Accept", "application/json")
+                doOutput = true
+            }
+            val payload = JSONObject().apply {
+                put("friendly_name", friendlyName)
+                put("resolution", resolution)
+                put("stream_mode", streamMode)
+                put("stream_quality", streamQuality)
+                put("bitrate", bitrate)
+            }
+            conn.outputStream.write(payload.toString().toByteArray())
+            val code = conn.responseCode
+            if (code in 200..299) {
+                Pair(true, "Câmera atualizada com sucesso.")
+            } else {
+                Pair(false, "Erro API: HTTP $code")
+            }
+        } catch (e: Exception) {
+            Pair(false, "Falha na rede: ${e.message}")
+        }
+    }
+
     suspend fun updateDevicePermissions(
         deviceId: Int,
         friendlyName: String,

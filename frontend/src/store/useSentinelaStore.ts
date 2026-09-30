@@ -83,6 +83,7 @@ export interface Camera {
   motion_threshold?: number;
   record_mode?: string;
   resolution?: string;
+  bitrate?: number;
   detect_width?: number;
   detect_height?: number;
   stream_mode?: "eco" | "mse" | "webrtc" | string;
@@ -116,6 +117,7 @@ export interface DiscoveredDevice {
   rtsp_sub?: string;
   onvif_port?: number;
   resolution?: string;
+  bitrate?: number;
   features?: string[];
   is_5mp?: boolean;
   manufacturer?: string;

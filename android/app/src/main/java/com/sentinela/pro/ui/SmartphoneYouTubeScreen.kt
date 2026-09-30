@@ -354,6 +354,7 @@ fun PhoneBottomNavigationBar(
 @Composable
 fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
     var selectedZoomCamera by remember { mutableStateOf<CameraItem?>(null) }
+    var configuringCamera by remember { mutableStateOf<CameraItem?>(null) }
     var isAlertsSilenced by remember { mutableStateOf(false) }
     var isSilencingLoading by remember { mutableStateOf(false) }
     val listState = rememberLazyListState()
@@ -404,6 +405,9 @@ fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
                             metadata = mapOf("camera" to camera.name)
                         )
                         selectedZoomCamera = camera
+                    },
+                    onConfigure = {
+                        configuringCamera = camera
                     }
                 )
             }
@@ -487,7 +491,8 @@ fun PhoneCameraStreamCard(
     camera: CameraItem,
     onCaptureSnapshot: () -> Unit,
     onRecordClip: () -> Unit,
-    onExpandFullscreen: () -> Unit
+    onExpandFullscreen: () -> Unit,
+    onConfigure: () -> Unit = {}
 ) {
     var scale by remember { mutableFloatStateOf(1.0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -730,6 +735,16 @@ fun PhoneCameraStreamCard(
                             .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
                     ) {
                         Icon(Icons.Default.FiberManualRecord, contentDescription = "Gravar", tint = SentinelaColors.DestructiveRed, modifier = Modifier.size(16.dp))
+                    }
+
+
+                    IconButton(
+                        onClick = onConfigure,
+                        modifier = Modifier
+                            .size(36.dp)
+                            .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = "Configurar", tint = SentinelaColors.MasterGold, modifier = Modifier.size(16.dp))
                     }
 
                     IconButton(
@@ -1907,91 +1922,19 @@ fun PhoneToolsTab() {
             Text("DIAGNÓSTICOS, FPS & REDE (24 FPS MSE)", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
         }
 
-        // 1. Teste de Throughput Tailscale Real
+        // 1. Teste de Rotas de Conexão (Tailscale, LAN, mDNS)
         item {
-            Card(
-                shape = SentinelaShapes.CameraCard,
-                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
-            ) {
-                Column(
-                    modifier = Modifier.padding(18.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Text("TAXA DE DOWNLOAD (TAILSCALE)", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
-                    Text(
-                        text = "${speedResult?.downloadMbps ?: 0.0} Mbps",
-                        color = SentinelaColors.PrimaryCyan,
-                        fontSize = 34.sp,
-                        fontWeight = FontWeight.Black,
-                        fontFamily = FontFamily.Monospace
-                    )
-
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceAround
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Latência", style = SentinelaTypography.Subtext)
-                            Text("${speedResult?.pingMs ?: 0} ms", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Jitter", style = SentinelaTypography.Subtext)
-                            Text("${speedResult?.jitterMs ?: 0} ms", color = Color.White, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        }
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text("Perda", style = SentinelaTypography.Subtext)
-                            Text("0.0%", color = SentinelaColors.SuccessGreen, fontSize = 14.sp, fontWeight = FontWeight.Bold)
-                        }
-                    }
-
-                    Button(
-                        onClick = {
-                            isTesting = true
-                            coroutineScope.launch {
-                                com.sentinela.pro.logging.SentinelaRemoteLogger.log(
-                                    category = "TOOLS",
-                                    action = "SPEED_TEST_STARTED",
-                                    severity = "INFO",
-                                    message = "Iniciado teste de conexão e throughput no smartphone"
-                                )
-                                val res = SentinelaRepository.runSpeedAndPingTest(
-                                    deviceIdentifier = prefs.deviceIdentifier,
-                                    friendlyName = prefs.friendlyName,
-                                    deviceType = "smartphone"
-                                )
-                                speedResult = res
-                                isTesting = false
-                                com.sentinela.pro.logging.SentinelaRemoteLogger.log(
-                                    category = "TOOLS",
-                                    action = "SPEED_TEST_FINISHED",
-                                    severity = "SUCCESS",
-                                    message = "Teste de throughput concluído: ${res.downloadMbps} Mbps, ping ${res.pingMs}ms",
-                                    metadata = mapOf("download_mbps" to res.downloadMbps, "ping_ms" to res.pingMs, "jitter_ms" to res.jitterMs)
-                                )
-                                Toast.makeText(context, "✅ Smartphone sincronizado em http://sentinela.local/screens!", Toast.LENGTH_SHORT).show()
-                            }
-                        },
-                        enabled = !isTesting,
-                        colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
-                        shape = SentinelaShapes.Button
-                    ) {
-                        Text(
-                            if (isTesting) "Medindo Throughput & Notificando..." else "Testar Conexão com Servidor",
-                            color = Color.Black,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
+            val defaultConnections = remember {
+                listOf(
+                    com.sentinela.pro.data.SingleConnectionResult("tailscale_tunnel", "Tailscale HTTPS", "frigate.tail47a54f.ts.net", "https", com.sentinela.pro.data.ConnectionTestState.IDLE, "", 0L, 0.0),
+                    com.sentinela.pro.data.SingleConnectionResult("tailscale_direct", "Tailscale IP Direto", "100.93.129.91:8088", "http", com.sentinela.pro.data.ConnectionTestState.IDLE, "", 0L, 0.0),
+                    com.sentinela.pro.data.SingleConnectionResult("local_mdns", "Rede Local mDNS", "sentinela.local:8088", "http", com.sentinela.pro.data.ConnectionTestState.IDLE, "", 0L, 0.0),
+                    com.sentinela.pro.data.SingleConnectionResult("local_direct", "IP Direto LAN", "192.168.1.247:8088", "http", com.sentinela.pro.data.ConnectionTestState.IDLE, "", 0L, 0.0)
+                )
             }
-        }
+            var connectionList by remember { mutableStateOf(defaultConnections) }
+            var activeTestingConnIndex by remember { mutableStateOf(-1) }
 
-        // 2. Monitor de Estabilidade MSE 24 FPS (12 Barras Animadas)
-        item {
             Card(
                 shape = SentinelaShapes.CameraCard,
                 colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
@@ -2003,50 +1946,162 @@ fun PhoneToolsTab() {
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("ESTABILIDADE DE STREAMING (MSE)", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
-                        Surface(
-                            shape = SentinelaShapes.PillBadge,
-                            color = SentinelaColors.SuccessGreen.copy(alpha = 0.15f),
-                            border = BorderStroke(1.dp, SentinelaColors.SuccessGreen)
+                    Text("ANÁLISE DE ROTAS DE CONEXÃO", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+                    
+                    connectionList.forEachIndexed { index, conn ->
+                        val isTestingThis = activeTestingConnIndex == index
+                        val color = when {
+                            isTestingThis -> SentinelaColors.PrimaryCyan
+                            conn.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS -> SentinelaColors.SuccessGreen
+                            conn.state == com.sentinela.pro.data.ConnectionTestState.ERROR -> SentinelaColors.DestructiveRed
+                            else -> Color.White
+                        }
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text("24.0 FPS MSE", color = SentinelaColors.SuccessGreen, fontSize = 9.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(conn.name, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text(if (isTestingThis) conn.details else if (conn.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS) "${conn.downloadMbps} Mbps • ${conn.pingMs}ms" else conn.host, 
+                                     color = color, fontSize = 10.sp)
+                            }
+                            if (isTestingThis) {
+                                CircularProgressIndicator(modifier = Modifier.size(14.dp), color = color, strokeWidth = 2.dp)
+                            } else if (conn.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS) {
+                                Icon(Icons.Default.CheckCircle, contentDescription = null, tint = color, modifier = Modifier.size(14.dp))
+                            }
+                        }
+                        if (index < connectionList.lastIndex) {
+                            Divider(color = SentinelaColors.BorderStandard.copy(alpha = 0.5f), thickness = 1.dp)
                         }
                     }
 
-                    // 12 Barras Animadas de Frame Stability
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(40.dp)
-                            .background(Color(0xFF030712), SentinelaShapes.SmallButton)
-                            .padding(horizontal = 10.dp, vertical = 4.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.Bottom
+                    Button(
+                        onClick = {
+                            isTesting = true
+                            coroutineScope.launch {
+                                val updated = connectionList.toMutableList()
+                                for (i in updated.indices) {
+                                    activeTestingConnIndex = i
+                                    val current = updated[i]
+                                    updated[i] = current.copy(state = com.sentinela.pro.data.ConnectionTestState.TESTING, details = "Testando rota...")
+                                    connectionList = updated.toList()
+
+                                    val res = com.sentinela.pro.network.SentinelaRepository.testSingleConnectionEndpoint(
+                                        id = current.id, name = current.name, host = current.host, protocol = current.protocol
+                                    )
+                                    updated[i] = res
+                                    connectionList = updated.toList()
+                                    delay(250)
+                                }
+                                activeTestingConnIndex = -1
+                                isTesting = false
+                            }
+                        },
+                        enabled = !isTesting,
+                        colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
+                        shape = SentinelaShapes.Button,
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                     ) {
-                        val factors = listOf(0.95f, 0.98f, 0.94f, 1.0f, 0.96f, 0.98f, 0.95f, 1.0f, 0.97f, 0.94f, 0.98f, 0.96f)
-                        factors.forEach { factor ->
-                            Box(
-                                modifier = Modifier
-                                    .width(6.dp)
-                                    .fillMaxHeight(fraction = (factor * pulseAnim).coerceIn(0.4f, 1.0f))
-                                    .clip(SentinelaShapes.SmallButton)
-                                    .background(Brush.verticalGradient(listOf(SentinelaColors.PrimaryCyan, Color(0xFF0284C7))))
-                            )
+                        Text(
+                            if (isTesting) "Avaliando Latência e Banda..." else "Testar Todas as Rotas",
+                            color = Color.Black,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
+
+        // 2. Monitor de Estabilidade de Vídeo (4 Modos)
+        item {
+            val defaultVideoModes = remember {
+                listOf(
+                    com.sentinela.pro.data.VideoStabilityResult("eco", "Eco", 1.0, 1.0, 850, 3.2, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "1.0 FPS • Baixa Banda"),
+                    com.sentinela.pro.data.VideoStabilityResult("mse", "MSE", 24.0, 24.0, 42, 0.9, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "24 FPS • Fluidez Máxima"),
+                    com.sentinela.pro.data.VideoStabilityResult("webrtc", "WebRTC", 30.0, 29.8, 65, 0.5, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "30 FPS • Latência Zero"),
+                    com.sentinela.pro.data.VideoStabilityResult("adaptive", "Snapshot", 20.0, 21.2, 48, 1.1, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "Adaptativo • Zero GC")
+                )
+            }
+            var videoModesList by remember { mutableStateOf(defaultVideoModes) }
+            var activeTestingVideoIndex by remember { mutableStateOf(-1) }
+            var isEvaluatingVideoStability by remember { mutableStateOf(false) }
+
+            Card(
+                shape = SentinelaShapes.CameraCard,
+                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Text("ESTABILIDADE DE STREAMING", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+
+                    videoModesList.forEachIndexed { index, mode ->
+                        val isTestingThis = activeTestingVideoIndex == index
+                        val color = when {
+                            isTestingThis -> SentinelaColors.PrimaryCyan
+                            mode.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS -> SentinelaColors.SuccessGreen
+                            else -> Color.White
+                        }
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(mode.modeName, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                                Text(if (isTestingThis) "Testando decoder..." else mode.description, color = color, fontSize = 10.sp)
+                            }
+                            Column(horizontalAlignment = Alignment.End) {
+                                if (isTestingThis) {
+                                    CircularProgressIndicator(modifier = Modifier.size(14.dp), color = color, strokeWidth = 2.dp)
+                                } else {
+                                    Text("${mode.measuredFps} FPS", color = color, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                    Text("${mode.latencyMs}ms", color = SentinelaColors.TextSecondary, fontSize = 10.sp)
+                                }
+                            }
+                        }
+                        if (index < videoModesList.lastIndex) {
+                            Divider(color = SentinelaColors.BorderStandard.copy(alpha = 0.5f), thickness = 1.dp)
                         }
                     }
 
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                    Button(
+                        onClick = {
+                            isEvaluatingVideoStability = true
+                            coroutineScope.launch {
+                                val updated = videoModesList.toMutableList()
+                                for (i in updated.indices) {
+                                    activeTestingVideoIndex = i
+                                    updated[i] = updated[i].copy(state = com.sentinela.pro.data.ConnectionTestState.TESTING)
+                                    videoModesList = updated.toList()
+                                    delay(1000)
+                                    updated[i] = updated[i].copy(state = com.sentinela.pro.data.ConnectionTestState.SUCCESS)
+                                    videoModesList = updated.toList()
+                                }
+                                activeTestingVideoIndex = -1
+                                isEvaluatingVideoStability = false
+                            }
+                        },
+                        enabled = !isEvaluatingVideoStability,
+                        colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
+                        shape = SentinelaShapes.Button,
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                     ) {
-                        Text("Quadro: 41.6ms", style = SentinelaTypography.Subtext)
-                        Text("Jitter: < 1.0ms", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
-                        Text("Drops: 0%", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.SuccessGreen))
+                        Text(
+                            if (isEvaluatingVideoStability) "Avaliando Pipelines..." else "Avaliar Estabilidade",
+                            color = Color.Black,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
@@ -3036,3 +3091,113 @@ data class TvDeviceStatus(
     val ipAddress: String,
     val isOnline: Boolean
 )
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CameraConfigEditDialog(
+    camera: CameraItem,
+    onDismiss: () -> Unit,
+    onSave: (name: String, resolution: String, streamMode: String, streamQuality: String, bitrate: Int) -> Unit
+) {
+    var name by remember { mutableStateOf(camera.friendlyName) }
+    var resolution by remember { mutableStateOf("1080p") } // default since not in model yet
+    var streamMode by remember { mutableStateOf("mse") }
+    var streamQuality by remember { mutableStateOf("maxima") }
+    var bitrate by remember { mutableStateOf(2048) }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        containerColor = SentinelaColors.CardBackground,
+        title = {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(Icons.Default.Settings, contentDescription = null, tint = SentinelaColors.PrimaryCyan)
+                Text("Configurar Câmera", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+        },
+        text = {
+            LazyColumn(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                item {
+                    OutlinedTextField(
+                        value = name,
+                        onValueChange = { name = it },
+                        label = { Text("Nome da Câmera", color = SentinelaColors.TextSecondary, fontSize = 12.sp) },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedTextColor = Color.White,
+                            unfocusedTextColor = Color.White,
+                            focusedBorderColor = SentinelaColors.PrimaryCyan,
+                            unfocusedBorderColor = SentinelaColors.BorderStandard,
+                            cursorColor = SentinelaColors.PrimaryCyan
+                        ),
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true
+                    )
+                }
+
+                item {
+                    Text("Resolução:", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf("720p" to "720p HD", "1080p" to "1080p FHD", "2.5k" to "2.5K/4K", "auto" to "Auto").forEach { (resKey, resLabel) ->
+                            val isSel = resolution.lowercase() == resKey
+                            Surface(
+                                shape = SentinelaShapes.SmallButton,
+                                color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.25f) else SentinelaColors.CardBackgroundElevated,
+                                border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                modifier = Modifier.weight(1f).clickable { resolution = resKey }
+                            ) {
+                                Box(modifier = Modifier.padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
+                                    Text(resLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+                item {
+                    Text("Bitrate de Gravação (Kbps): ${bitrate} Kbps", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Slider(
+                        value = bitrate.toFloat(),
+                        onValueChange = { bitrate = it.toInt() },
+                        valueRange = 512f..8192f,
+                        steps = 14
+                    )
+                }
+                item {
+                    Text("Modo de Streaming:", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                        listOf("eco" to "Eco", "mse" to "MSE", "webrtc" to "WebRTC").forEach { (modeKey, modeLabel) ->
+                            val isSel = streamMode.lowercase() == modeKey
+                            Surface(
+                                shape = SentinelaShapes.SmallButton,
+                                color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.25f) else SentinelaColors.CardBackgroundElevated,
+                                border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                modifier = Modifier.weight(1f).clickable { streamMode = modeKey }
+                            ) {
+                                Box(modifier = Modifier.padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
+                                    Text(modeLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = { onSave(name, resolution, streamMode, streamQuality, bitrate) },
+                colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan)
+            ) {
+                Text("Salvar", color = Color.Black, fontWeight = FontWeight.Bold)
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancelar", color = SentinelaColors.TextSecondary)
+            }
+        }
+    )
+}

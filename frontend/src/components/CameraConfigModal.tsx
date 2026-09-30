@@ -161,6 +161,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [streamQuality, setStreamQuality] = useState(camera.stream_quality || "maxima");
   const [ecoFps, setEcoFps] = useState(camera.eco_fps || 10);
   const [recordFps, setRecordFps] = useState(camera.record_fps || 24);
+  const [bitrate, setBitrate] = useState(camera.bitrate || 2048);
   const [retainDays, setRetainDays] = useState(camera.record_retain_days || 14);
   const [recordAudio, setRecordAudio] = useState(camera.record_audio ?? false);
 
@@ -188,6 +189,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
     setStreamQuality(camera.stream_quality || "maxima");
     setEcoFps(camera.eco_fps || 10);
     setRecordFps(camera.record_fps || 24);
+    setBitrate(camera.bitrate || 2048);
     setRetainDays(camera.record_retain_days || 14);
     setRecordAudio(camera.record_audio ?? false);
     setNotifyTelegram(camera.notify_telegram ?? true);
@@ -230,6 +232,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
           stream_quality: streamQuality,
           eco_fps: ecoFps,
           record_fps: recordFps,
+          bitrate: bitrate,
           record_retain_days: retainDays,
           record_audio: recordAudio,
           notify_telegram: notifyTelegram,
@@ -815,6 +818,32 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   ))}
                 </div>
                 <span className="text-[10px] text-slate-500 block">Garante que as gravações de vídeo no Frigate e no SSD sejam suaves e sem travamentos.</span>
+              </div>
+
+              {/* Bitrate */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-300 font-bold">Bitrate de Gravação (Kbps):</label>
+                  <span className="text-xs font-mono font-bold text-cyan-400">{bitrate} Kbps</span>
+                </div>
+                <div className="flex gap-4 items-center">
+                  <input
+                    type="range"
+                    min="512"
+                    max="8192"
+                    step="512"
+                    value={bitrate}
+                    onChange={(e) => setBitrate(Number(e.target.value))}
+                    className="flex-1 accent-cyan-500"
+                  />
+                  <input
+                    type="number"
+                    value={bitrate}
+                    onChange={(e) => setBitrate(Number(e.target.value))}
+                    className="w-20 bg-slate-800 border-slate-700 text-white rounded p-1 text-center font-mono text-sm"
+                  />
+                </div>
+                <span className="text-[10px] text-slate-500 block">Ajusta a taxa de bits da câmera para controlar a qualidade de compressão vs uso de rede.</span>
               </div>
 
               <div>

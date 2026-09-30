@@ -86,14 +86,14 @@ data class SpeedTestResult(
 )
 
 enum class PipSize(val label: String, val width: Int, val height: Int) {
-    EXTRA_SMALL("Extra Pequeno (320x180)", 320, 180),
-    SMALL("Pequeno (480x270)", 480, 270),
-    MEDIUM_SMALL("Médio-Pequeno (640x360)", 640, 360),
-    MEDIUM("Médio (800x450)", 800, 450),
-    MEDIUM_LARGE("Médio-Grande (960x540)", 960, 540),
-    LARGE("Grande (1120x630)", 1120, 630),
-    EXTRA_LARGE("Extra Grande (1280x720)", 1280, 720),
-    CINEMA("Cinema (1440x810)", 1440, 810)
+    EXTRA_SMALL("Extra Pequeno (320x90)", 320, 90),
+    SMALL("Pequeno (480x135)", 480, 135),
+    MEDIUM_SMALL("Médio-Pequeno (640x180)", 640, 180),
+    MEDIUM("Médio (800x225)", 800, 225),
+    MEDIUM_LARGE("Médio-Grande (960x270)", 960, 270),
+    LARGE("Grande (1120x315)", 1120, 315),
+    EXTRA_LARGE("Extra Grande (1280x360)", 1280, 360),
+    CINEMA("Cinema (1440x405)", 1440, 405)
 }
 
 enum class PipPosition(val label: String, val gravity: Int) {

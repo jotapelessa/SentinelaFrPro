@@ -460,6 +460,56 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     }
   };
 
+  const [isCapturing, setIsCapturing] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+
+  const handleCaptureSnapshot = async () => {
+    try {
+      setIsCapturing(true);
+      const effectiveSrc = getEffectiveSrc();
+      const res = await fetch(`/go2rtc/api/frame.jpeg?src=${effectiveSrc}&t=${Date.now()}`);
+      if (!res.ok) throw new Error("Falha ao obter snapshot");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `snapshot_${cameraSrc}_${new Date().toISOString().replace(/[:.]/g, "-")}.jpg`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Erro ao capturar foto:", err);
+      alert("Erro ao capturar foto da câmera.");
+    } finally {
+      setIsCapturing(false);
+    }
+  };
+
+  const handleRecordClip = async () => {
+    try {
+      setIsRecording(true);
+      const effectiveSrc = getEffectiveSrc();
+      const durationSeconds = 15;
+      const res = await fetch(`/go2rtc/api/stream.mp4?src=${effectiveSrc}&duration=${durationSeconds}`);
+      if (!res.ok) throw new Error("Falha ao gravar vídeo");
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `clip_${cameraSrc}_${new Date().toISOString().replace(/[:.]/g, "-")}.mp4`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error("Erro ao gravar clipe de vídeo:", err);
+      alert("Erro ao gravar clipe de vídeo da câmera.");
+    } finally {
+      setIsRecording(false);
+    }
+  };
+
   return (
     <>
       <div
@@ -651,9 +701,44 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
             </div>
 
           <div className="flex items-center gap-1.5 pointer-events-auto ml-auto">
+            {/* Snapshot Photo Button */}
+            <button
+              onClick={handleCaptureSnapshot}
+              disabled={isCapturing}
+              className="p-1.5 sm:p-2 rounded-lg bg-black/85 hover:bg-cyan-500 hover:text-obsidian-950 text-slate-300 border border-slate-700 shadow-md transition-all text-xs flex items-center gap-1"
+              title="Tirar Foto Instantânea (Snapshot HD)"
+            >
+              {isCapturing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : (
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+                  <circle cx="12" cy="13" r="3"/>
+                </svg>
+              )}
+            </button>
+
+            {/* Video Record Clip Button */}
+            <button
+              onClick={handleRecordClip}
+              disabled={isRecording}
+              className={`p-1.5 sm:p-2 rounded-lg border shadow-md transition-all text-xs flex items-center gap-1 ${
+                isRecording 
+                  ? "bg-rose-600 text-white border-rose-500 animate-pulse" 
+                  : "bg-black/85 hover:bg-rose-500 hover:text-white text-slate-300 border-slate-700"
+              }`}
+              title="Gravar Clipe de Vídeo (15 segundos MP4)"
+            >
+              {isRecording ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : (
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="m22 8-6 4 6 4V8Z" />
+                  <rect width="14" height="12" x="2" y="6" rx="2" />
+                </svg>
+              )}
+            </button>
+
             <button
               onClick={reloadStream}
               className="p-1.5 sm:p-2 rounded-lg bg-black/85 hover:bg-slate-800 text-slate-300 border border-slate-700 shadow-md transition-all text-xs"
+              title="Recarregar Transmissão"
             >
               <RefreshCw className="w-3.5 h-3.5" />
             </button>
@@ -662,6 +747,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
               <button
                 onClick={onToggleSpotlight}
                 className="p-1.5 sm:p-2 rounded-lg bg-black/85 hover:bg-cyan-500 hover:text-obsidian-950 text-white border border-slate-700 shadow-md transition-all"
+                title={isSpotlight ? "Sair do Destaque" : "Expandir Câmera em Destaque"}
               >
                 {isSpotlight ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>

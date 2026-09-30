@@ -54,16 +54,19 @@ async def lifespan(app: FastAPI):
     from app.services.telegram_queue import telegram_video_queue
     telegram_video_queue.start()
 
+    # Start Background Time Sync Watchdog (America/Sao_Paulo hourly check)
+    from app.services.time_sync import run_time_sync_watchdog
+    time_sync_task = asyncio.create_task(run_time_sync_watchdog())
+
     yield
 
     logger.info("Encerrando serviços Sentinela...")
     telegram_video_queue.stop()
+    time_sync_task.cancel()
     mqtt_task.cancel()
     telemetry_task.cancel()
-    if telegram_task:
-        telegram_task.cancel()
     try:
-        await asyncio.gather(mqtt_task, telemetry_task, return_exceptions=True)
+        await asyncio.gather(mqtt_task, telemetry_task, time_sync_task, return_exceptions=True)
     except Exception:
         pass
 

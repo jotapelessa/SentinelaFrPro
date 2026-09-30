@@ -21,6 +21,7 @@ class Camera(Base):
     motion_threshold = Column(Integer, default=25) # 15 to 50
     record_mode = Column(String(32), default="motion") # all, motion
     resolution = Column(String(32), default="1080p") # 720p, 1080p, 2.5k, auto
+    bitrate = Column(Integer, default=2048) # Kbps
     stream_mode = Column(String(32), default="mse") # eco, mse, webrtc
     stream_quality = Column(String(32), default="maxima") # minima, media, maxima
     eco_fps = Column(Integer, default=10) # 5, 10, 15

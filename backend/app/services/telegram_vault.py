@@ -306,19 +306,34 @@ class TelegramVaultService:
         url = f"https://api.telegram.org/bot{self.bot_token}/sendPhoto"
         try:
             logger.info(f"📤 Enviando foto de alerta para o Telegram ({self.chat_id})...")
-            async with httpx.AsyncClient(timeout=15.0) as client:
-                files = {"photo": ("snapshot.jpg", watermarked, "image/jpeg")}
-                data = {"chat_id": self.chat_id, "caption": caption}
-                resp = await client.post(url, data=data, files=files)
-                if resp.status_code == 200:
-                    logger.info("✅ Foto de alerta entregue com sucesso ao Telegram!")
-                    self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone, "size_bytes": len(image_bytes)}, True)
-                    return True
-                else:
-                    err = f"HTTP {resp.status_code}: {resp.text}"
-                    logger.error(f"❌ Telegram sendPhoto falhou ({err})")
-                    self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, err)
-                    return False
+            import asyncio
+            for attempt in range(3):
+                try:
+                    async with httpx.AsyncClient(timeout=15.0) as client:
+                        files = {"photo": ("snapshot.jpg", watermarked, "image/jpeg")}
+                        data = {"chat_id": self.chat_id, "caption": caption}
+                        resp = await client.post(url, data=data, files=files)
+                        if resp.status_code == 200:
+                            logger.info("✅ Foto de alerta entregue com sucesso ao Telegram!")
+                            self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone, "size_bytes": len(image_bytes)}, True)
+                            return True
+                        elif resp.status_code == 429:
+                            retry_after = int(resp.json().get("parameters", {}).get("retry_after", 3))
+                            logger.warning(f"Telegram Rate Limit (429). Aguardando {retry_after}s...")
+                            await asyncio.sleep(retry_after)
+                            continue
+                        else:
+                            err = f"HTTP {resp.status_code}: {resp.text}"
+                            logger.error(f"❌ Telegram sendPhoto falhou ({err})")
+                            self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, err)
+                            return False
+                except httpx.RequestError as req_err:
+                    logger.warning(f"Erro de rede ao enviar foto para Telegram na tentativa {attempt+1}: {req_err}")
+                    if attempt == 2:
+                        self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, str(req_err))
+                        return False
+                    await asyncio.sleep(2 * (attempt + 1))
+            return False
         except Exception as e:
             err = str(e)
             logger.error(f"❌ Erro de rede ao enviar foto para o Telegram: {err}")
@@ -371,29 +386,44 @@ class TelegramVaultService:
         )
         try:
             logger.info(f"📤 Enviando vídeo MP4 de alerta para o Telegram ({self.chat_id}, {len(video_bytes)} bytes)...")
-            async with httpx.AsyncClient(timeout=60.0) as client:
-                files = {"video": ("event.mp4", video_bytes, "video/mp4")}
-                data = {
-                    "chat_id": self.chat_id,
-                    "caption": caption,
-                    "supports_streaming": "true"
-                }
-                resp = await client.post(url, data=data, files=files)
-                if resp.status_code == 200:
-                    logger.info("✅ Vídeo MP4 entregue com sucesso ao Telegram!")
-                    self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "zone": zone, "duration_s": duration_s, "size_bytes": len(video_bytes)}, True)
-                    return True
-                else:
-                    err = f"HTTP {resp.status_code}: {resp.text}"
-                    logger.error(f"❌ Telegram sendVideo falhou ({err})")
-                    self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
-                    return False
+            import asyncio
+            for attempt in range(3):
+                try:
+                    async with httpx.AsyncClient(timeout=60.0) as client:
+                        files = {"video": ("event.mp4", video_bytes, "video/mp4")}
+                        data = {
+                            "chat_id": self.chat_id,
+                            "caption": caption,
+                            "supports_streaming": "true"
+                        }
+                        resp = await client.post(url, data=data, files=files)
+                        if resp.status_code == 200:
+                            logger.info("✅ Vídeo MP4 entregue com sucesso ao Telegram!")
+                            self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "zone": zone, "duration_s": duration_s, "size_bytes": len(video_bytes)}, True)
+                            return True
+                        elif resp.status_code == 429:
+                            retry_after = int(resp.json().get("parameters", {}).get("retry_after", 3))
+                            logger.warning(f"Telegram Rate Limit (429). Aguardando {retry_after}s...")
+                            await asyncio.sleep(retry_after)
+                            continue
+                        else:
+                            err = f"HTTP {resp.status_code}: {resp.text}"
+                            logger.error(f"❌ Telegram sendVideo falhou ({err})")
+                            self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
+                            return False
+                except httpx.RequestError as req_err:
+                    logger.warning(f"Erro de rede ao enviar vídeo para Telegram na tentativa {attempt+1}: {req_err}")
+                    if attempt == 2:
+                        self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, str(req_err))
+                        return False
+                    await asyncio.sleep(2 * (attempt + 1))
+                    
+            return False
         except Exception as e:
             err = str(e)
             logger.error(f"❌ Erro de rede ao enviar vídeo para o Telegram: {err}")
             self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
             return False
-
 
 
 

@@ -1,0 +1,12 @@
+# Mosquitto ACL — Sentinela Frigate Pro
+# SEC-001: Lista de controle de acesso por usuário
+
+# frigate: pode publicar e assinar tudo em frigate/#
+user frigate
+topic readwrite frigate/#
+
+# sentinela (backend): assina eventos, publica apenas respostas/comandos
+user sentinela
+topic read frigate/#
+topic write frigate/+/set
+topic write frigate/+/+/set

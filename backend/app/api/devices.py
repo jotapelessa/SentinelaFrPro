@@ -401,7 +401,8 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
             "pip_default_size": "medium",
             "pip_duration_seconds": 10,
             "pip_position": "TOP_RIGHT",
-            "stream_quality": "1080p"
+            "stream_quality": "1080p",
+            "is_master_admin": False
         }
 
     cams = []
@@ -432,7 +433,8 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
         "pip_default_size": dev.pip_default_size or "medium",
         "pip_duration_seconds": dev.pip_duration_seconds or 10,
         "pip_position": dev.pip_position or "TOP_RIGHT",
-        "stream_quality": dev.stream_quality or "1080p"
+        "stream_quality": dev.stream_quality or "1080p",
+        "is_master_admin": bool(dev.is_master_admin)
     }
 
 @router.patch("/{device_id}/cameras")

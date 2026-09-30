@@ -98,6 +98,7 @@ class CameraCreate(BaseModel):
     onvif_port: Optional[int] = 80
     enabled: Optional[bool] = True
     resolution: Optional[str] = "1080p"
+    bitrate: Optional[int] = 2048
     stream_mode: Optional[str] = "webrtc"
     stream_quality: Optional[str] = "maxima"
     eco_fps: Optional[int] = 10
@@ -519,6 +520,7 @@ class CameraUpdate(BaseModel):
     motion_threshold: Optional[int] = None
     record_mode: Optional[str] = None
     resolution: Optional[str] = None
+    bitrate: Optional[int] = None
     stream_mode: Optional[str] = None
     stream_quality: Optional[str] = None
     eco_fps: Optional[int] = None
@@ -570,7 +572,7 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
     # trigger a full Frigate restart (avoids downtime and camera reconnect churn).
     frigate_relevant_fields = {
         "rtsp_main", "rtsp_sub", "enabled", "zones", "objects_to_track",
-        "min_score", "detect_fps", "motion_threshold", "record_mode", "record_retain_days"
+        "min_score", "detect_fps", "motion_threshold", "record_mode", "record_retain_days", "bitrate"
     }
     if real_changes.keys() & frigate_relevant_fields:
         # Sync RTSP and camera state asynchronously in background to ensure instant API return (<100ms)

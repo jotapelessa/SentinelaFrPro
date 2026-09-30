@@ -3,6 +3,7 @@ import asyncio
 import logging
 import httpx
 import datetime
+from collections import deque
 from cachetools import TTLCache
 from typing import Dict, Any, Callable, List, Optional
 from aiomqtt import Client, MqttError
@@ -12,6 +13,7 @@ from app.db.models import EventRecord
 from app.services.telegram_vault import telegram_vault_service
 from app.services.pip_gateway import pip_gateway_service
 from sqlalchemy import select
+from app.services.audit_service import audit_service
 
 logger = logging.getLogger(__name__)
 
@@ -25,7 +27,8 @@ class MQTTService:
         self._processed_events: TTLCache = TTLCache(maxsize=10000, ttl=86400)
         self._processed_videos: TTLCache = TTLCache(maxsize=1000, ttl=86400)
         self._cooldowns: Dict[str, float] = {}
-        self._mqtt_traffic: List[Dict[str, Any]] = []
+        # BE-002: deque O(1) vs list.insert(0) O(n)
+        self._mqtt_traffic: deque = deque(maxlen=200)
         self._video_transcode_lock = asyncio.Semaphore(1)
 
     def record_mqtt_traffic(self, topic: str, payload_summary: Dict[str, Any]):
@@ -34,12 +37,11 @@ class MQTTService:
             "topic": topic,
             "data": payload_summary
         }
-        self._mqtt_traffic.insert(0, entry)
-        if len(self._mqtt_traffic) > 200:
-            self._mqtt_traffic.pop()
+        # BE-002: appendleft é O(1), deque descarta automaticamente quando maxlen é atingido
+        self._mqtt_traffic.appendleft(entry)
 
     def get_mqtt_traffic(self, limit: int = 100) -> List[Dict[str, Any]]:
-        return self._mqtt_traffic[:limit]
+        return list(self._mqtt_traffic)[:limit]
 
     def register_ws_callback(self, cb: Callable[[Dict[str, Any]], Any]):
         self.ws_broadcast_callbacks.append(cb)
@@ -52,6 +54,15 @@ class MQTTService:
                     await res
             except Exception as e:
                 logger.error(f"Error in ws callback: {e}")
+                try:
+                    asyncio.create_task(audit_service.log(
+                        action="WS_BROADCAST_ERROR",
+                        module="MQTT",
+                        severity="ERROR",
+                        details=f"Erro no callback de broadcast WS: {str(e)[:150]}"
+                    ))
+                except RuntimeError:
+                    pass
 
     def _mark_processed(self, event_id: str):
         self._processed_events[event_id] = True
@@ -427,11 +438,16 @@ class MQTTService:
         while True:
             try:
                 logger.info(f"Connecting to MQTT at {settings.MQTT_BROKER}:{settings.MQTT_PORT}...")
-                async with Client(
-                    hostname=settings.MQTT_BROKER,
-                    port=settings.MQTT_PORT,
-                    identifier=settings.MQTT_CLIENT_ID
-                ) as client:
+                # SEC-001: conexão autenticada se credenciais estiverem configuradas
+                mqtt_kwargs: dict = {
+                    "hostname": settings.MQTT_BROKER,
+                    "port": settings.MQTT_PORT,
+                    "identifier": settings.MQTT_CLIENT_ID,
+                }
+                if settings.MQTT_USER:
+                    mqtt_kwargs["username"] = settings.MQTT_USER
+                    mqtt_kwargs["password"] = settings.MQTT_PASSWORD
+                async with Client(**mqtt_kwargs) as client:
                     prefix = settings.MQTT_TOPIC_PREFIX
                     await client.subscribe(f"{prefix}/events")
                     await client.subscribe(f"{prefix}/reviews")

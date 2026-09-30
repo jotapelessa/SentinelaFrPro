@@ -7,6 +7,7 @@ from typing import Dict, Any, List, Optional
 from app.db.session import AsyncSessionLocal
 from app.db.models import PairedDevice
 from sqlalchemy import select
+from app.services.audit_service import audit_service
 
 logger = logging.getLogger(__name__)
 
@@ -145,6 +146,7 @@ class PiPGatewayService:
             })
         except Exception as ws_err:
             logger.debug(f"Erro ao transmitir pip_alert para WebSocket web: {ws_err}")
+            await audit_service.log(action="PIP_WS_ERROR", module="PIP", severity="ERROR", details=f"Falha de WebSocket ao notificar Web Dashboard: {ws_err}")
 
         devices = await self.get_active_tv_devices(camera_name=camera_name, label=label)
         if not devices:

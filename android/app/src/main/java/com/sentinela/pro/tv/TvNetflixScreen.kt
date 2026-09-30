@@ -3408,8 +3408,8 @@ fun TvSettingsViewport(
                                     }
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(12.dp),
-                                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                                    verticalArrangement = Arrangement.spacedBy(2.dp)
                                 ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -3491,7 +3491,7 @@ fun TvSettingsViewport(
                                         border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                         modifier = Modifier
                                             .weight(1f)
-                                            .height(44.dp)
+                                            .height(26.dp)
                                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 sizeIndex = size.ordinal
@@ -3511,22 +3511,23 @@ fun TvSettingsViewport(
                                             modifier = Modifier.fillMaxSize(),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            Column(
-                                                horizontalAlignment = Alignment.CenterHorizontally,
-                                                verticalArrangement = Arrangement.Center
+                                            Row(
+                                                horizontalArrangement = Arrangement.Center,
+                                                verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Text(
                                                     text = size.name.replace("_", " "),
                                                     color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
-                                                    fontSize = 10.sp,
+                                                    fontSize = 9.sp,
                                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                                     maxLines = 1,
                                                     overflow = TextOverflow.Ellipsis
                                                 )
+                                                Spacer(modifier = Modifier.width(4.dp))
                                                 Text(
                                                     text = "${size.width}x${size.height}",
                                                     color = if (isSelected) Color.White.copy(alpha = 0.8f) else TvColors.CyberCyan,
-                                                    fontSize = 9.sp,
+                                                    fontSize = 8.sp,
                                                     fontFamily = FontFamily.Monospace
                                                 )
                                             }
@@ -3591,7 +3592,7 @@ fun TvSettingsViewport(
                                         border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                         modifier = Modifier
                                             .weight(1f)
-                                            .height(44.dp)
+                                            .height(26.dp)
                                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 posIndex = pos.ordinal
@@ -3614,7 +3615,7 @@ fun TvSettingsViewport(
                                             Text(
                                                 text = pos.label,
                                                 color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
-                                                fontSize = 10.sp,
+                                                fontSize = 9.sp,
                                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                                 modifier = Modifier.padding(horizontal = 4.dp),
                                                 maxLines = 1,
@@ -3681,7 +3682,7 @@ fun TvSettingsViewport(
                                         border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                         modifier = Modifier
                                             .weight(1f)
-                                            .height(44.dp)
+                                            .height(26.dp)
                                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 durIndex = dur.ordinal
@@ -3704,7 +3705,7 @@ fun TvSettingsViewport(
                                             Text(
                                                 text = dur.label,
                                                 color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
-                                                fontSize = 10.sp,
+                                                fontSize = 9.sp,
                                                 fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                                 modifier = Modifier.padding(horizontal = 4.dp),
                                                 maxLines = 1,

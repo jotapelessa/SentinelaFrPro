@@ -14,6 +14,14 @@ class SentinelaPreferences(private val context: Context) {
         get() = prefs.getInt("pip_position_index", PipPosition.TOP_RIGHT.ordinal)
         set(value) = prefs.edit().putInt("pip_position_index", value).apply()
 
+    fun getPipPositionIndex(cameraName: String): Int {
+        return prefs.getInt("pip_position_index_$cameraName", pipPositionIndex)
+    }
+
+    fun setPipPositionIndex(cameraName: String, value: Int) {
+        prefs.edit().putInt("pip_position_index_$cameraName", value).apply()
+    }
+
     var pipDurationIndex: Int
         get() = prefs.getInt("pip_duration_index", PipDuration.D_10S.ordinal)
         set(value) = prefs.edit().putInt("pip_duration_index", value).apply()
@@ -77,6 +85,10 @@ class SentinelaPreferences(private val context: Context) {
 
     val currentPipPosition: PipPosition
         get() = PipPosition.values().getOrElse(pipPositionIndex) { PipPosition.TOP_RIGHT }
+
+    fun getCurrentPipPosition(cameraName: String): PipPosition {
+        return PipPosition.values().getOrElse(getPipPositionIndex(cameraName)) { PipPosition.TOP_RIGHT }
+    }
 
     val currentPipDuration: PipDuration
         get() = PipDuration.values().getOrElse(pipDurationIndex) { PipDuration.D_15S }
