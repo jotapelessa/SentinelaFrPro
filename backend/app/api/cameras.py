@@ -1544,16 +1544,16 @@ async def sync_camera_to_frigate(cam: Camera):
             cam_block["record"]["detections"]["retain"]["days"] = retain_days
 
     # Configuração de Áudio na gravação do Frigate
+    if "ffmpeg" not in cam_block or not isinstance(cam_block["ffmpeg"], dict):
+        cam_block["ffmpeg"] = {}
+    if "output_args" not in cam_block["ffmpeg"] or not isinstance(cam_block["ffmpeg"]["output_args"], dict):
+        cam_block["ffmpeg"]["output_args"] = {}
+
     if getattr(cam, "record_audio", False):
-        if "ffmpeg" not in cam_block:
-            cam_block["ffmpeg"] = {}
-        if "output_args" not in cam_block["ffmpeg"] or not isinstance(cam_block["ffmpeg"]["output_args"], dict):
-            cam_block["ffmpeg"]["output_args"] = {}
         cam_block["ffmpeg"]["output_args"]["record"] = "preset-record-generic-audio-aac"
     else:
-        if "ffmpeg" in cam_block and isinstance(cam_block["ffmpeg"], dict) and "output_args" in cam_block["ffmpeg"]:
-            if isinstance(cam_block["ffmpeg"]["output_args"], dict) and "record" in cam_block["ffmpeg"]["output_args"]:
-                del cam_block["ffmpeg"]["output_args"]["record"]
+        # Se record_audio for falso, silencia o áudio (-an) para prevenir crash fatal com pcm_mulaw em contêiner MP4
+        cam_block["ffmpeg"]["output_args"]["record"] = "preset-record-generic"
 
     # 7. Garantir review labels
     if "review" not in cam_block or not isinstance(cam_block["review"], dict):

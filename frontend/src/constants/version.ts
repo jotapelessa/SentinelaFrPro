@@ -2,7 +2,7 @@
  * Fonte da Verdade Única da Versão do Sentinela Frigate Pro
  * Sincronizada com android/version.properties e o pipeline de release.
  */
-export const APP_VERSION = "001.000.000.150";
-export const APP_BUILD = 150;
-export const BUILD_NUMBER = 150;
+export const APP_VERSION = "001.000.000.153";
+export const APP_BUILD = 153;
+export const BUILD_NUMBER = 153;
 export const APP_CODENAME = "Sentinela Pro Ultra";
