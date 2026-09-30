@@ -57,6 +57,7 @@ async def init_db():
             ("motion_threshold", "INTEGER DEFAULT 25"),
             ("record_mode", "VARCHAR(32) DEFAULT 'motion'"),
             ("resolution", "VARCHAR(32) DEFAULT '1080p'"),
+            ("bitrate", "INTEGER DEFAULT 2048"),
             ("record_retain_days", "INTEGER DEFAULT 14"),
             ("record_audio", "BOOLEAN DEFAULT 0"),
             ("stream_mode", "VARCHAR(32) DEFAULT 'mse'"),
