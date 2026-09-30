@@ -70,11 +70,11 @@ export interface AuditLogItem {
 export interface Camera {
   id: number;
   name: string;
-  friendly_name?: string;
+  friendly_name?: string | null;
   rtsp_main: string;
-  rtsp_sub?: string;
-  ip_address?: string;
-  onvif_port?: number;
+  rtsp_sub?: string | null;
+  ip_address?: string | null;
+  onvif_port?: number | null;
   enabled: boolean;
   zones?: string[] | string | any;
   objects_to_track?: string;
@@ -153,6 +153,7 @@ interface SentinelaState {
   
   setTelemetry: (data: TelemetryData) => void;
   setCameras: (cameras: Camera[]) => void;
+  updateCameraInStore: (camId: string | number, updates: Partial<Camera>) => void;
   setEvents: (events: SecurityEvent[]) => void;
   addEvent: (event: SecurityEvent) => void;
   setSpotlightCamera: (camera: Camera | null) => void;
@@ -195,6 +196,16 @@ export const useSentinelaStore = create<SentinelaState>((set) => ({
 
   setTelemetry: (data) => set({ telemetry: data }),
   setCameras: (cameras) => set({ cameras }),
+  updateCameraInStore: (camId, updates) => set((state) => {
+    const updated = state.cameras.map((c) => {
+      const match = String(c.id) === String(camId) || c.name === String(camId);
+      return match ? { ...c, ...updates } : c;
+    });
+    const updatedSpotlight = state.spotlightCamera && (String(state.spotlightCamera.id) === String(camId) || state.spotlightCamera.name === String(camId))
+      ? { ...state.spotlightCamera, ...updates }
+      : state.spotlightCamera;
+    return { cameras: updated, spotlightCamera: updatedSpotlight };
+  }),
   setEvents: (events) => set({ events }),
   addEvent: (event) => set((state) => ({ 
     events: [event, ...state.events.slice(0, 49)],

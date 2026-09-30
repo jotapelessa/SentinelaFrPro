@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Camera } from "@/store/useSentinelaStore";
+import { Camera, useSentinelaStore } from "@/store/useSentinelaStore";
 import { 
   X, Settings, Wifi, Eye, HardDrive, Bell, Save, Trash2, Check, 
   User, Car, Zap, Shield, Sparkles, Sliders, Activity, Terminal, 
@@ -212,38 +212,42 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
       const camIdentifier = (camera.id !== undefined && camera.id !== null) ? String(camera.id) : (camera.name || "camera_principal");
+      const payload = {
+        friendly_name: friendlyName,
+        rtsp_main: rtspMain,
+        rtsp_sub: rtspSub || null,
+        ip_address: ipAddress || null,
+        onvif_port: onvifPort,
+        enabled: enabled,
+        objects_to_track: JSON.stringify(trackedObjects),
+        min_score: minScore / 100,
+        detect_fps: detectFps,
+        motion_threshold: motionThreshold,
+        record_mode: recordMode,
+        resolution: resolution,
+        stream_mode: streamMode,
+        stream_quality: streamQuality,
+        eco_fps: ecoFps,
+        record_fps: recordFps,
+        bitrate: bitrate,
+        record_retain_days: retainDays,
+        record_audio: recordAudio,
+        notify_telegram: notifyTelegram,
+        notify_tv: notifyTv,
+        notify_audio: notifyAudio,
+        cooldown_seconds: cooldown
+      };
+
       const res = await fetch(`${apiUrl}/cameras/${camIdentifier}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          friendly_name: friendlyName,
-          rtsp_main: rtspMain,
-          rtsp_sub: rtspSub || null,
-          ip_address: ipAddress || null,
-          onvif_port: onvifPort,
-          enabled: enabled,
-          objects_to_track: JSON.stringify(trackedObjects),
-          min_score: minScore / 100,
-          detect_fps: detectFps,
-          motion_threshold: motionThreshold,
-          record_mode: recordMode,
-          resolution: resolution,
-          stream_mode: streamMode,
-          stream_quality: streamQuality,
-          eco_fps: ecoFps,
-          record_fps: recordFps,
-          bitrate: bitrate,
-          record_retain_days: retainDays,
-          record_audio: recordAudio,
-          notify_telegram: notifyTelegram,
-          notify_tv: notifyTv,
-          notify_audio: notifyAudio,
-          cooldown_seconds: cooldown
-        })
+        body: JSON.stringify(payload)
       });
 
       if (res.ok) {
         setStatusMsg("✅ Configurações salvas com sucesso!");
+        // Propagação instantânea no Zustand store
+        useSentinelaStore.getState().updateCameraInStore(camIdentifier, payload);
         onSaved();
         setTimeout(() => {
           onClose();

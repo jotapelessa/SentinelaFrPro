@@ -281,6 +281,20 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     setIsPaused(camera.enabled === false);
   }, [camera.enabled]);
 
+  // Sincronizar dinamicamente modo de stream, qualidade e FPS quando a câmera for editada
+  useEffect(() => {
+    if (camera.stream_mode) {
+      const mode = (camera.stream_mode === "eco" || camera.stream_mode === "monitor") ? "monitor" : (camera.stream_mode === "webrtc" ? "webrtc" : "mse");
+      setStreamMode(mode);
+    }
+    if (camera.stream_quality) {
+      setStreamQuality(camera.stream_quality as "minima" | "media" | "maxima");
+    }
+    if (camera.eco_fps) {
+      setEcoFps(camera.eco_fps);
+    }
+  }, [camera.stream_mode, camera.stream_quality, camera.eco_fps]);
+
   const handleTogglePause = async () => {
     setIsTogglingPause(true);
     const targetState = !isPaused;

@@ -298,9 +298,11 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
             "motion_threshold": getattr(c, "motion_threshold", 25) or 25,
             "record_mode": c.record_mode,
             "resolution": getattr(c, "resolution", "1080p") or "1080p",
+            "bitrate": getattr(c, "bitrate", 2048) or 2048,
             "detect_width": detect_w,
             "detect_height": detect_h,
             "stream_mode": getattr(c, "stream_mode", "webrtc") or "webrtc",
+            "stream_quality": getattr(c, "stream_quality", "maxima") or "maxima",
             "eco_fps": getattr(c, "eco_fps", 10) or 10,
             "record_fps": getattr(c, "record_fps", 24) or 24,
             "record_retain_days": c.record_retain_days,
@@ -572,7 +574,8 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
     # trigger a full Frigate restart (avoids downtime and camera reconnect churn).
     frigate_relevant_fields = {
         "rtsp_main", "rtsp_sub", "enabled", "zones", "objects_to_track",
-        "min_score", "detect_fps", "motion_threshold", "record_mode", "record_retain_days", "bitrate"
+        "min_score", "detect_fps", "motion_threshold", "record_mode", "record_retain_days",
+        "bitrate", "resolution", "record_fps", "record_audio", "stream_quality"
     }
     if real_changes.keys() & frigate_relevant_fields:
         # Sync RTSP and camera state asynchronously in background to ensure instant API return (<100ms)
@@ -1450,9 +1453,29 @@ async def sync_camera_to_frigate(cam: Camera):
         cam_block["ffmpeg"] = {}
     cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
 
-    # 2. Configurar detect otimizado para H.264
+    # 2. Configurar detect otimizado para H.264 e sincronizado com resolução
+    # Mapeamento de resolução de detecção para manter proporção nativa e poupar CPU
+    res_str = (getattr(cam, "resolution", "1080p") or "1080p").lower()
+    if res_str == "720p":
+        target_w, target_h = 1280, 720
+    elif res_str == "2.5k":
+        target_w, target_h = 2560, 1440
+    elif res_str == "1080p":
+        target_w, target_h = 1920, 1080
+    else:
+        target_w, target_h = 640, 360
+
     if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
-        cam_block["detect"] = {"width": 640, "height": 360, "fps": 5}
+        cam_block["detect"] = {"width": target_w, "height": target_h, "fps": 5}
+    else:
+        # Se for substream, usa 640x360 para poupar CPU; senão, usa a resolução configurada
+        if cam.rtsp_sub and cam.rtsp_sub.strip():
+            cam_block["detect"]["width"] = 640
+            cam_block["detect"]["height"] = 360
+        else:
+            cam_block["detect"]["width"] = target_w
+            cam_block["detect"]["height"] = target_h
+
     cam_block["detect"]["enabled"] = bool(cam.enabled)
     cam_block["detect"]["fps"] = int(cam.detect_fps) if getattr(cam, "detect_fps", None) is not None else (cam_block["detect"].get("fps") or 5)
 
@@ -1488,7 +1511,7 @@ async def sync_camera_to_frigate(cam: Camera):
             cam_block["objects"]["filters"]["person"] = {}
         cam_block["objects"]["filters"]["person"]["threshold"] = float(cam.min_score)
 
-    # 6. Configurar gravação otimizada (H.264 copy) e retenção
+    # 6. Configurar gravação otimizada (H.264 copy), retenção e áudio
     if "record" not in cam_block or not isinstance(cam_block["record"], dict):
         cam_block["record"] = {}
     
@@ -1505,6 +1528,32 @@ async def sync_camera_to_frigate(cam: Camera):
     if mode_key not in cam_block["record"] or not isinstance(cam_block["record"][mode_key], dict):
         cam_block["record"][mode_key] = {}
     cam_block["record"][mode_key]["days"] = int(cam.record_retain_days) if cam.record_retain_days else 3
+
+    # Retenção em detecções e alertas
+    retain_days = int(cam.record_retain_days) if cam.record_retain_days else 14
+    if "alerts" not in cam_block["record"] or not isinstance(cam_block["record"]["alerts"], dict):
+        cam_block["record"]["alerts"] = {"pre_capture": 5, "post_capture": 10, "retain": {"days": retain_days, "mode": "active_objects"}}
+    else:
+        if "retain" in cam_block["record"]["alerts"] and isinstance(cam_block["record"]["alerts"]["retain"], dict):
+            cam_block["record"]["alerts"]["retain"]["days"] = retain_days
+
+    if "detections" not in cam_block["record"] or not isinstance(cam_block["record"]["detections"], dict):
+        cam_block["record"]["detections"] = {"pre_capture": 5, "post_capture": 10, "retain": {"days": retain_days, "mode": "active_objects"}}
+    else:
+        if "retain" in cam_block["record"]["detections"] and isinstance(cam_block["record"]["detections"]["retain"], dict):
+            cam_block["record"]["detections"]["retain"]["days"] = retain_days
+
+    # Configuração de Áudio na gravação do Frigate
+    if getattr(cam, "record_audio", False):
+        if "ffmpeg" not in cam_block:
+            cam_block["ffmpeg"] = {}
+        if "output_args" not in cam_block["ffmpeg"] or not isinstance(cam_block["ffmpeg"]["output_args"], dict):
+            cam_block["ffmpeg"]["output_args"] = {}
+        cam_block["ffmpeg"]["output_args"]["record"] = "preset-record-generic-audio-aac"
+    else:
+        if "ffmpeg" in cam_block and isinstance(cam_block["ffmpeg"], dict) and "output_args" in cam_block["ffmpeg"]:
+            if isinstance(cam_block["ffmpeg"]["output_args"], dict) and "record" in cam_block["ffmpeg"]["output_args"]:
+                del cam_block["ffmpeg"]["output_args"]["record"]
 
     # 7. Garantir review labels
     if "review" not in cam_block or not isinstance(cam_block["review"], dict):
