@@ -10,7 +10,7 @@ import socket
 import struct
 import time
 from datetime import datetime
-import pytz
+from zoneinfo import ZoneInfo
 
 logger = logging.getLogger("sentinela.time_sync")
 
@@ -50,7 +50,7 @@ async def run_time_sync_watchdog():
     while True:
         try:
             local_epoch = time.time()
-            tz = pytz.timezone(TIMEZONE_STR)
+            tz = ZoneInfo(TIMEZONE_STR)
             local_dt = datetime.fromtimestamp(local_epoch, tz)
             
             ntp_epoch = None
