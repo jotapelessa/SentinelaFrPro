@@ -1,12 +1,30 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-30 06:45 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.150 operacional (Build 150). Otimização completa do ecossistema: segurança MQTT/Compose, calibração do detector Frigate 800x448, watchdog de tempo horário com NTP (America/Sao_Paulo), ações completas na Web (snapshot, clip 15s MP4, PiP actions), redução ergonômica de 50% nos seletores da Android TV e testes de rotas individuais no Smartphone.
+> **Última Atualização:** 2026-09-30 10:00 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.151 operacional em produção (Build 151). Transmissão estritamente em 720p H.264 no Android TV, transcodificação Telegram em 4096 kbps CBR constante, remoção atômica em SQLite e go2rtc API HTTP, e contêineres saudáveis no servidor Ubuntu.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.150 (Build 150) — Otimização Global do Ecossistema e Harmonização Multi-Plataforma
+## 📦 Versão Atual: v001.000.000.151 (Build 151) — Harmonização de Streaming 720p H.264, Bitrate 4096k Telegram e Purge Atômico
+- **Data**: 2026-09-30
+- **Objetivo**: Otimização completa do ecossistema e resolução dos itens relatados:
+  1. **Android TV (Netflix Edition)**:
+     - Streaming ao vivo na TV padronizado estritamente em 720p H.264 via go2rtc (`stream.html?src=${camera.name}_720p&mode=mse&media=video`), removendo opções de 1080p do seletor.
+     - Ergonomia D-Pad aprimorada e botões do seletor PiP com altura reduzida para 26dp.
+  2. **Telegram Drive & Evidências**:
+     - Transcodificação de vídeo no FFmpeg fixada em bitrate constante de 4096 kbps (`-b:v 4096k -maxrate 4096k -bufsize 8192k`) com taxa de quadros CFR de 25 fps.
+     - Preservação da captura de alta resolução em fotos e clipes.
+  3. **Backend & Sincronização**:
+     - Remoção atômica de câmeras sincronizando a base SQLite e a API HTTP do go2rtc (`DELETE /api/streams?name={cam}` e variações `_sub` / `_720p`).
+     - Versão `001.000.000.151` ativa no backend FastAPI e respondendo `status: online` em `/api/health`.
+  4. **Servidor Ubuntu em Produção**:
+     - Imagem `sentinelafrpro-backend` reconstruída com sucesso.
+     - Todos os 5 contêineres operando com status `healthy`: `sentinela_backend`, `sentinela_frontend`, `sentinela_nginx`, `sentinela_frigate`, `sentinela_mosquitto`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.150 (Build 150) — Otimização Global do Ecossistema e Harmonização Multi-Plataforma
 - **Data**: 2026-09-30
 - **Objetivo**: Auditoria integral e implementação aprovada da Fase 3 do ecossistema Sentinela Frigate Pro:
   1. **Segurança & Infraestrutura**:
