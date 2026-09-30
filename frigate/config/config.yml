@@ -4,9 +4,6 @@ mqtt:
   port: 1883
   topic_prefix: frigate
   client_id: frigate_nvr
-  # SEC-001: autenticação MQTT — credenciais via env vars (docker-compose .env)
-  user: "{FRIGATE_MQTT_USER}"
-  password: "{FRIGATE_MQTT_PASSWORD}"
 logger:
   default: info
   logs:
@@ -95,7 +92,7 @@ go2rtc:
     # SEC-004: credenciais via variável de ambiente (definir no .env do servidor)
     # =========================================================
     cam_192_168_1_196:
-    - rtsp://{FRIGATE_RTSP_USER}:{FRIGATE_RTSP_PASSWORD}@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
+    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
     cam_192_168_1_196_main:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196
     cam_192_168_1_196_720p:
