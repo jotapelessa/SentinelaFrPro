@@ -60,19 +60,28 @@ jobs:
         export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
         export ANDROID_SDK_ROOT="$ANDROID_HOME"
         
-        # Aceitar licenças do Android SDK preventivamente
+        # Pré-aceitação canônica de licenças do Android SDK
+        mkdir -p "$ANDROID_HOME/licenses" || true
+        echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> "$ANDROID_HOME/licenses/android-sdk-license"
+        echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> "$ANDROID_HOME/licenses/android-sdk-license"
+        echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> "$ANDROID_HOME/licenses/android-sdk-preview-license"
+        echo "84831b9409646a918e30573bab4c9c91346d8abd" >> "$ANDROID_HOME/licenses/android-sdk-preview-license"
         if command -v sdkmanager &>/dev/null; then
-          echo "📱 Aceitando licenças do Android SDK..."
           yes | sdkmanager --licenses >/dev/null 2>&1 || true
-        elif [ -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
-          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
         fi
 
-        # Garante a resolução e descompactação do Gradle Wrapper com resiliência
+        # Limpar journals de cache corrompidos
+        rm -rf ~/.gradle/caches/journal* 2>/dev/null || true
+
+        # Validação do wrapper
         ./gradlew --version || gradle --version
         
-        echo "🔨 Iniciando compilação dos APKs TV e Smartphone..."
-        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --no-daemon --stacktrace
+        echo "🔨 Compilando APKs TV e Smartphone..."
+        if ! ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --no-daemon --stacktrace 2>&1 | tee build_gradle.log; then
+          echo "❌ FALHA NA COMPILAÇÃO GRADLE. Últimas 100 linhas:"
+          tail -n 100 build_gradle.log
+          exit 1
+        fi
 
         echo "### 📋 APKs Encontrados" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
@@ -123,20 +132,21 @@ jobs:
           ### 📦 Aplicativos Disponíveis para Download:
           - 📺 **Android TV / TV Box**: [`sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/${{ steps.get_version.outputs.tag }}/sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk)
             * Navegação otimizada para D-Pad / Controle Remoto
-            * Suporte a Notificações Flutuantes Picture-in-Picture (PiP 8 tamanhos)
-            * Seletor de Resolução do Vídeo (720p HD Econômico vs 1080p FHD Nativo)
-            * Live Feed contínuo das câmeras com MSE e aceleração de hardware H.264
+            * Suporte a Notificações Flutuantes Picture-in-Picture (PiP compacto 26dp)
+            * Suporte a Dual PiP simultâneo com posicionamento inteligente (esquerda/direita)
+            * Padrão 720p HD @ 25 FPS H.264 para máxima fluidez sem saturação do decodificador
+            * Live Feed contínuo das câmeras com MSE TCP
           - 📱 **Tablet & Smartphone**: [`sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/${{ steps.get_version.outputs.tag }}/sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk)
             * Interface estilo YouTube com feed vertical e suporte a toque
             * Zoom digital de até 5x e grade dinâmica de câmeras
             * Central Master VIP com controle de resolução 720p/1080p para todas as Smart TVs
+            * Ferramentas de diagnóstico em 4 rotas de rede (Tailscale HTTPS, Tailscale IP, mDNS, LAN)
+            * Confirmação visual e auditoria do reboot seguro do host Ubuntu
             * Controle granular de taxa de quadros e silenciamento por FAB
 
-          ### 🚀 Melhorias Desta Versão (Build 121):
-          - 🔄 **Sincronização Bidirecional Contínua (Web, Master & TV)**: Aplicação e persistência imediata em SharedPreferences e banco SQLite das configurações de resolução e PiP propagadas entre Web, Smartphone Master e Android TV.
-          - 📊 **Telemetria Enriquecida de PiP Preview**: Métricas em tempo real de TTFF (Time-To-First-Frame em ms), FPS médio/mínimo, contagem de travamentos (stalls) e decodificador ativo reportadas em banco e Toast.
-          - 🌐 **Reatividade Web Zero-Delay**: Atualização em 0ms da aba Telas (`/screens`) eliminando o badge incorreto de "Sem Resposta há 1d".
-          - ⚡ **Multi-Resolução 720p HD por Hardware**: Sub-streams ultrafast otimizados no go2rtc para alívio de memória e rede em redes locais e Wi-Fi.
+          ### 🚀 Melhorias Desta Versão (Build 154):
+          - 🧹 **Purga em Cascata de Câmeras**: Remoção no Frigate config, streams do go2rtc e chamada DELETE REST garantindo desativação instantânea sem streams fantasmas.
+          - 📸 **Web PiP & Mosaico 2×2**: Botões de Foto HD (JPG) e Gravação 15s (MP4) direto no cabeçalho do PiP; Mosaico perfeitamente ajustado sem distorção anamórfica.
           - 🔒 **Invariantes de Ouro Preservadas**: Idempotência total no PiP, watchdog suave via `playbackRate`, MSE TCP e zero-cache no Nginx.
           - 🛡️ **Governança & Estabilidade**: 100% de aprovação na suíte `onp-spec` (31/31 testes PASS).
       env:
