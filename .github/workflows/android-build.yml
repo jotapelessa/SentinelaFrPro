@@ -33,6 +33,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v4
       with:
         gradle-version: '8.5'
+        cache-disabled: true
 
     - name: Read & Format Version
       id: get_version
@@ -78,6 +79,10 @@ jobs:
         
         echo "🔨 Compilando APKs TV e Smartphone..."
         if ! ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --no-daemon --stacktrace 2>&1 | tee build_gradle.log; then
+          echo "### ❌ FALHA NA COMPILAÇÃO GRADLE" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY
+          tail -n 120 build_gradle.log >> $GITHUB_STEP_SUMMARY 2>&1
+          echo '```' >> $GITHUB_STEP_SUMMARY
           echo "❌ FALHA NA COMPILAÇÃO GRADLE. Últimas 100 linhas:"
           tail -n 100 build_gradle.log
           exit 1
@@ -103,6 +108,14 @@ jobs:
         echo '```' >> $GITHUB_STEP_SUMMARY
         
         ls -lh "$DEST/"
+
+    - name: Upload Build Log on Failure
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: gradle-build-log
+        path: android/build_gradle.log
+        if-no-files-found: ignore
 
     - name: Upload Artifacts to Run Summary
       uses: actions/upload-artifact@v4
