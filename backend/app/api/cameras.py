@@ -1595,7 +1595,7 @@ async def remove_camera_from_frigate(cam_name: str):
     changed = False
     if "go2rtc" in cfg and isinstance(cfg["go2rtc"], dict) and "streams" in cfg["go2rtc"] and isinstance(cfg["go2rtc"]["streams"], dict):
         for k in list(cfg["go2rtc"]["streams"].keys()):
-            if k == cam_name or k == f"{cam_name}_sub":
+            if k == cam_name or k.startswith(f"{cam_name}_"):
                 del cfg["go2rtc"]["streams"][k]
                 changed = True
 
@@ -1607,6 +1607,14 @@ async def remove_camera_from_frigate(cam_name: str):
 
     await _save_yaml_config_atomic(cfg, config_path)
 
+    # Deletar atômico no go2rtc via API HTTP
+    try:
+        async with httpx.AsyncClient(timeout=3.0) as client:
+            await client.delete(f"{settings.GO2RTC_API_URL}/api/streams?name={cam_name}")
+            await client.delete(f"{settings.GO2RTC_API_URL}/api/streams?name={cam_name}_sub")
+            await client.delete(f"{settings.GO2RTC_API_URL}/api/streams?name={cam_name}_720p")
+    except Exception as e:
+        logger.debug(f"go2rtc API stream delete failed: {e}")
 
     try:
         async with httpx.AsyncClient(timeout=5.0) as client:

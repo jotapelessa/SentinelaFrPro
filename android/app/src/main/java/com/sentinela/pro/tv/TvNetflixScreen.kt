@@ -3752,8 +3752,7 @@ fun TvSettingsViewport(
                     }
 
                     val qualityOptions = listOf(
-                        Triple("720p", "⚡ 720p HD (Econômico / Alta Fluidez)", "Transcodificação acelerada por hardware Intel QSV. Economiza ~60% de banda de rede e reduz drasticamente o consumo de memória na Smart TV."),
-                        Triple("1080p", "📺 1080p FHD (Alta Fidelidade)", "Resolução nativa Full HD original das câmeras sem re-escalonamento (maior nitidez, maior uso de banda).")
+                        Triple("720p", "⚡ 720p HD (Padrão Otimizado H.264)", "Transcodificação acelerada por hardware Intel QSV. Economiza ~60% de banda de rede e elimina latência na Smart TV.")
                     )
 
                     Row(
@@ -3763,21 +3762,21 @@ fun TvSettingsViewport(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         qualityOptions.forEach { (qualKey, qualTitle, qualDesc) ->
-                            val isSelected = streamQuality == qualKey
+                            val isSelected = true
                             val interactionSource = remember { MutableInteractionSource() }
                             val isFocused by interactionSource.collectIsFocusedAsState()
 
                             Surface(
                                 shape = TvShapes.CameraCard,
-                                color = if (isSelected) TvColors.NetflixRed.copy(alpha = 0.15f) else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
-                                border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
+                                color = TvColors.NetflixRed.copy(alpha = 0.15f),
+                                border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else TvColors.NetflixRed),
                                 modifier = Modifier
                                     .weight(1f)
                                     .fillMaxHeight()
                                     .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.CameraCard)
                                     .clickable(interactionSource = interactionSource, indication = null) {
-                                        streamQuality = qualKey
-                                        prefs.streamQuality = qualKey
+                                        streamQuality = "720p"
+                                        prefs.streamQuality = "720p"
                                         Toast.makeText(context, "Qualidade de Stream: $qualTitle", Toast.LENGTH_SHORT).show()
                                         settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                     }

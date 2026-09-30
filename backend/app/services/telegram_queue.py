@@ -313,7 +313,9 @@ class TelegramVideoQueue:
                 "-r", str(target_fps),
                 "-c:v", "libx264",
                 "-preset", "veryfast",
-                "-crf", "22",
+                "-b:v", "4096k",
+                "-maxrate", "4096k",
+                "-bufsize", "8192k",
                 "-pix_fmt", "yuv420p",
                 "-movflags", "+faststart",
                 out_file
