@@ -310,7 +310,7 @@ export const CameraMosaic: React.FC = () => {
                 {cameras.map((camera) => {
                   const camId = camera.id || camera.name;
                   return (
-                    <div key={camId} className="w-full aspect-video min-h-[260px] sm:min-h-[320px]">
+                    <div key={camId} className="w-full h-full min-h-[280px] sm:min-h-[340px] flex flex-col">
                       <WebRTCPlayer
                         camera={camera}
                         isActivePlayer={true}

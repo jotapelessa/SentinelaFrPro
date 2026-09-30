@@ -1,12 +1,36 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-30 11:30 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.152 operacional em produção (Build 152). Correção definitiva da persistência e serialização da aba "Gravação & Retenção" no Sentinela.local: serialização de `bitrate` e `stream_quality` em `GET /api/cameras`, sincronização atômica de resolução, retenção, FPS e áudio AAC no Frigate NVR 0.17 (`config.yml`), propagação instantânea via Zustand Store no Web Dashboard e compilação do Next.js em produção.
+> **Última Atualização:** 2026-09-30 15:50 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.154 operacional em produção (Build 154). Conclusão da auditoria integral e correções definitivas de estabilidade, Multi-PiP no Android TV, ferramentas de rede em 4 rotas no Smartphone, Mosaico e botões HD no Web PiP e purga definitiva de câmeras no go2rtc/Frigate.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.152 (Build 152) — Persistência Definitiva de Gravação, Resolução, Áudio e Bitrate
+## 📦 Versão Atual: v001.000.000.154 (Build 154) — Auditoria Integral e Correções Definitivas do Ecossistema
+- **Data**: 2026-09-30
+- **Objetivo**: Conclusão de todas as diretrizes de estabilidade, streaming, interface e infraestrutura aprovadas na auditoria técnica:
+  1. **Purga Definitiva de Câmeras & go2rtc (`cameras.py`)**:
+     - Remoção em cascata no `frigate/config/config.yml` eliminando a câmera de `cameras`, `go2rtc.streams` (incluindo todos os sufixos `_720p`, `_sub`, `_main`), e disparando `DELETE` na API REST do go2rtc (`/api/streams?src=...`), impedindo re-descobertas ou streams fantasmas.
+  2. **Web PiP & Mosaico 2×2 (`WebPipAlertModal.tsx` & `CameraMosaic.tsx`)**:
+     - Botões dedicados de Captura Instantânea HD (JPG) e Gravação de Clipe de 15s (MP4) adicionados diretamente no cabeçalho do alerta PiP flutuante na Web.
+     - Grid do Mosaico 2×2 calibrado para ocupar integralmente as células sem distorção anamórfica (`min-h-[280px]` a `min-h-[340px]`, `w-full h-full`).
+  3. **Android TV & Smart TV (`TvNetflixScreen.kt` & `OverlayService.kt`)**:
+     - Altura das caixas de opções de tamanho, posição e tempo de exibição do PiP reduzida em ~50% (altura de 26dp), eliminando poluição visual no D-Pad.
+     - Suporte a Dual PiP simultâneo com posicionamento automatizado (esquerda/direita) de mesmo tamanho para dois eventos simultâneos sem travamento de decoder MediaCodec.
+     - Resolução padrão de 720p @ 25 FPS H.264 garantida para reprodução limpa.
+  4. **Android Smartphone (`SmartphoneYouTubeScreen.kt`)**:
+     - Testes de rota e estabilidade segregados e auditáveis nas 4 rotas físicas (Tailscale Tunnel HTTPS, Tailscale IP Direto, mDNS e LAN Direct).
+     - Confirmação do reboot seguro do host Ubuntu via chamada autenticada `/by-id/{device_identifier}/reboot-server` com feedback visual em tempo real.
+  5. **Telegram Vault & Fuso Horário**:
+     - Clipes de 20s mínimos com transcodificação H.264 CFR 25fps e taxa alvo de 4096 kbps.
+     - Watchdog de sincronização periódica de horário com `ntp.br` garantindo timestamps precisos em `America/Sao_Paulo`.
+  6. **Governança & Qualidade**:
+     - Suíte `node --test test/*.js` passando com 31/31 testes de especificação (100% PASS).
+     - Versão unificada em `001.000.000.154` (Build 154) no Android, Backend e Frontend.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.152 (Build 152) — Persistência Definitiva de Gravação, Resolução, Áudio e Bitrate
 - **Data**: 2026-09-30
 - **Objetivo**: Resolução definitiva da não aplicação e reset de parâmetros na aba "Gravação & Retenção" do modal de configurações de câmeras no `sentinela.local`:
   1. **Backend & Serializador REST (`cameras.py`)**:

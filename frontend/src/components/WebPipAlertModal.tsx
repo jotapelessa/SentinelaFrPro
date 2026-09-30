@@ -247,6 +247,60 @@ export const WebPipAlertModal: React.FC = () => {
         </div>
         <div className="flex items-center gap-1">
           <button
+            onClick={async () => {
+              if (!activeAlert?.camera) return;
+              try {
+                const res = await fetch(`/go2rtc/api/frame.jpeg?src=${encodeURIComponent(activeAlert.camera)}&t=${Date.now()}`);
+                if (!res.ok) throw new Error();
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `snapshot_pip_${activeAlert.camera}_${new Date().toISOString().replace(/[:.]/g, "-")}.jpg`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+              } catch (e) {
+                console.error("Falha ao capturar foto no PiP", e);
+              }
+            }}
+            title="Capturar Foto Instantânea"
+            className="p-1 rounded text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition"
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"/>
+              <circle cx="12" cy="13" r="3"/>
+            </svg>
+          </button>
+          <button
+            onClick={async () => {
+              if (!activeAlert?.camera) return;
+              try {
+                const res = await fetch(`/go2rtc/api/stream.mp4?src=${encodeURIComponent(activeAlert.camera)}&duration=15`);
+                if (!res.ok) throw new Error();
+                const blob = await res.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = `clip_pip_${activeAlert.camera}_${new Date().toISOString().replace(/[:.]/g, "-")}.mp4`;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+              } catch (e) {
+                console.error("Falha ao gravar clipe no PiP", e);
+              }
+            }}
+            title="Gravar Clipe de 15s"
+            className="p-1 rounded text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition"
+          >
+            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m22 8-6 4 6 4V8Z" />
+              <rect width="14" height="12" x="2" y="6" rx="2" />
+            </svg>
+          </button>
+          <button
             onClick={handleNativePip}
             title="Abrir em Janela PiP do Sistema (Visível em outras abas)"
             className="p-1 rounded text-slate-400 hover:text-cyan-300 hover:bg-slate-800 transition"

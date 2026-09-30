@@ -1641,10 +1641,10 @@ async def remove_camera_from_frigate(cam_name: str):
     if not isinstance(cfg, dict):
         cfg = {}
 
-    changed = False
+    # Remove de go2rtc.streams todos os aliases relacionados (incluindo _720p, _sub, _main)
     if "go2rtc" in cfg and isinstance(cfg["go2rtc"], dict) and "streams" in cfg["go2rtc"] and isinstance(cfg["go2rtc"]["streams"], dict):
         for k in list(cfg["go2rtc"]["streams"].keys()):
-            if k == cam_name or k.startswith(f"{cam_name}_"):
+            if k == cam_name or k.startswith(f"{cam_name}_") or (cam_name in str(cfg["go2rtc"]["streams"][k])):
                 del cfg["go2rtc"]["streams"][k]
                 changed = True
 
@@ -1662,6 +1662,7 @@ async def remove_camera_from_frigate(cam_name: str):
             await client.delete(f"{settings.GO2RTC_API_URL}/api/streams?name={cam_name}")
             await client.delete(f"{settings.GO2RTC_API_URL}/api/streams?name={cam_name}_sub")
             await client.delete(f"{settings.GO2RTC_API_URL}/api/streams?name={cam_name}_720p")
+            await client.delete(f"{settings.GO2RTC_API_URL}/api/streams?name={cam_name}_main")
     except Exception as e:
         logger.debug(f"go2rtc API stream delete failed: {e}")
 
