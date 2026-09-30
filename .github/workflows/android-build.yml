@@ -107,7 +107,15 @@ jobs:
         ls -lh "$DEST/" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
         
-        ls -lh "$DEST/"
+    - name: Output Build Log
+      if: always()
+      working-directory: android
+      run: |
+        if [ -f build_gradle.log ]; then
+          echo "==================== BUILD GRADLE LOG (TAIL 250) ===================="
+          tail -n 250 build_gradle.log
+          echo "====================================================================="
+        fi
 
     - name: Upload Build Log on Failure
       if: failure()
