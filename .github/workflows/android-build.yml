@@ -60,11 +60,19 @@ jobs:
         export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
         export ANDROID_SDK_ROOT="$ANDROID_HOME"
         
+        # Aceitar licenças do Android SDK preventivamente
+        if command -v sdkmanager &>/dev/null; then
+          echo "📱 Aceitando licenças do Android SDK..."
+          yes | sdkmanager --licenses >/dev/null 2>&1 || true
+        elif [ -d "$ANDROID_HOME/cmdline-tools/latest/bin" ]; then
+          yes | "$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager" --licenses >/dev/null 2>&1 || true
+        fi
+
         # Garante a resolução e descompactação do Gradle Wrapper com resiliência
         ./gradlew --version || gradle --version
         
         echo "🔨 Iniciando compilação dos APKs TV e Smartphone..."
-        ./gradlew assembleTvDebug assembleSmartphoneDebug --no-daemon --info
+        ./gradlew :app:assembleTvDebug :app:assembleSmartphoneDebug --no-daemon --stacktrace
 
         echo "### 📋 APKs Encontrados" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
