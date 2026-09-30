@@ -1,26 +1,27 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-30 10:00 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.151 operacional em produção (Build 151). Transmissão estritamente em 720p H.264 no Android TV, transcodificação Telegram em 4096 kbps CBR constante, remoção atômica em SQLite e go2rtc API HTTP, e contêineres saudáveis no servidor Ubuntu.
+> **Última Atualização:** 2026-09-30 11:30 BRT
+> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.152 operacional em produção (Build 152). Correção definitiva da persistência e serialização da aba "Gravação & Retenção" no Sentinela.local: serialização de `bitrate` e `stream_quality` em `GET /api/cameras`, sincronização atômica de resolução, retenção, FPS e áudio AAC no Frigate NVR 0.17 (`config.yml`), propagação instantânea via Zustand Store no Web Dashboard e compilação do Next.js em produção.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.151 (Build 151) — Harmonização de Streaming 720p H.264, Bitrate 4096k Telegram e Purge Atômico
+## 📦 Versão Atual: v001.000.000.152 (Build 152) — Persistência Definitiva de Gravação, Resolução, Áudio e Bitrate
 - **Data**: 2026-09-30
-- **Objetivo**: Otimização completa do ecossistema e resolução dos itens relatados:
-  1. **Android TV (Netflix Edition)**:
-     - Streaming ao vivo na TV padronizado estritamente em 720p H.264 via go2rtc (`stream.html?src=${camera.name}_720p&mode=mse&media=video`), removendo opções de 1080p do seletor.
-     - Ergonomia D-Pad aprimorada e botões do seletor PiP com altura reduzida para 26dp.
-  2. **Telegram Drive & Evidências**:
-     - Transcodificação de vídeo no FFmpeg fixada em bitrate constante de 4096 kbps (`-b:v 4096k -maxrate 4096k -bufsize 8192k`) com taxa de quadros CFR de 25 fps.
-     - Preservação da captura de alta resolução em fotos e clipes.
-  3. **Backend & Sincronização**:
-     - Remoção atômica de câmeras sincronizando a base SQLite e a API HTTP do go2rtc (`DELETE /api/streams?name={cam}` e variações `_sub` / `_720p`).
-     - Versão `001.000.000.151` ativa no backend FastAPI e respondendo `status: online` em `/api/health`.
-  4. **Servidor Ubuntu em Produção**:
-     - Imagem `sentinelafrpro-backend` reconstruída com sucesso.
-     - Todos os 5 contêineres operando com status `healthy`: `sentinela_backend`, `sentinela_frontend`, `sentinela_nginx`, `sentinela_frigate`, `sentinela_mosquitto`.
+- **Objetivo**: Resolução definitiva da não aplicação e reset de parâmetros na aba "Gravação & Retenção" do modal de configurações de câmeras no `sentinela.local`:
+  1. **Backend & Serializador REST (`cameras.py`)**:
+     - Corrigida a omissão em `GET /api/cameras` que descartava `bitrate` e `stream_quality`, retornando `null` para o frontend e resetando o formulário para valores default locais toda vez que a página recarregava.
+     - Expandido o conjunto `frigate_relevant_fields` em `PATCH /api/cameras/{id}` para disparar `sync_camera_to_frigate` de forma não blocante quando qualquer parâmetro de gravação (`resolution`, `record_fps`, `record_audio`, `stream_quality`, `bitrate`) for alterado.
+  2. **Frigate NVR 0.17 & go2rtc Pipeline Sync**:
+     - `resolution`: Sincroniza dinamicamente as dimensões do bloco `detect` no Frigate (720p: 1280x720, 1080p: 1920x1080, 2.5k: 2560x1440), mantendo 640x360 em substreams para poupar CPU.
+     - `record_audio`: Ativa presets de cópia de áudio AAC (`preset-record-generic-audio-aac`) quando a opção estiver marcada, ou silencia na gravação caso contrário.
+     - `record_retain_days` & `record_mode`: Gravação contínua vs motion configuram perfeitamente a chave `days` e os blocos `alerts` e `detections` conforme as regras estritas da sintaxe do Frigate 0.17.
+  3. **Frontend Reativo (`CameraConfigModal.tsx` & `WebRTCPlayer.tsx`)**:
+     - Implementado método `updateCameraInStore` no `useSentinelaStore` para que, ao salvar a câmera, o estado global do Zustand atualize instantaneamente, refletindo as alterações no player antes mesmo do re-fetch.
+     - `WebRTCPlayer` reage dinamicamente a mudanças em `stream_mode`, `stream_quality` e `eco_fps`, comutando o stream do go2rtc (`_720p`, `_sub`, nativo) sem travar a interface nem exigir recarregamento da página.
+  4. **Deploy & Produção**:
+     - Artefatos Next.js compilados e sincronizados no contêiner `sentinela_frontend`.
+     - Backend e Frontend reiniciados e saudáveis no servidor Ubuntu Host `100.93.129.91`.
 
 ---
 
