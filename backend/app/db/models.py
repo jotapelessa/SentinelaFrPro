@@ -74,6 +74,8 @@ class PairedDevice(Base):
     pip_default_size = Column(String(32), default="medium") # mini, medium, large, split
     pip_duration_seconds = Column(Integer, default=10) # 5, 10, 15, 30
     pip_position = Column(String(32), default="TOP_RIGHT") # TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT, etc.
+    camera_pip_positions = Column(Text, nullable=True) # JSON map e.g. {"cam_1": "TOP_LEFT", "cam_2": "BOTTOM_RIGHT"}
+    camera_pip_enabled = Column(Text, nullable=True) # JSON map e.g. {"cam_1": true, "cam_2": false}
     stream_quality = Column(String(16), default="1080p") # 1080p, 720p
     is_master_admin = Column(Boolean, default=False) # Master special permissions for smartphone
     admin_unlocked_at = Column(DateTime, nullable=True)

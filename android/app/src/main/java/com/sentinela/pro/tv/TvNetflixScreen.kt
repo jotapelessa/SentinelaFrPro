@@ -878,6 +878,9 @@ fun TvCamerasViewport(
             itemsIndexed(cameras) { index, camera ->
                 val interactionSource = remember { MutableInteractionSource() }
                 val isFocused by interactionSource.collectIsFocusedAsState()
+                var isPipCamEnabled by remember(camera.id) {
+                    mutableStateOf(prefs.isCameraPipEnabled(camera.id))
+                }
 
                 Box(
                     modifier = Modifier
@@ -902,6 +905,20 @@ fun TvCamerasViewport(
                                     }
                                     keyEvent.key == Key.Enter || keyEvent.key == Key.DirectionCenter -> {
                                         onSelectCamera(camera)
+                                        true
+                                    }
+                                    keyEvent.key == Key.MediaPlayPause || keyEvent.key == Key.Menu -> {
+                                        val nextState = !isPipCamEnabled
+                                        isPipCamEnabled = nextState
+                                        prefs.setCameraPipEnabled(camera.id, nextState)
+                                        SentinelaRemoteLogger.log(
+                                            category = "PIP",
+                                            action = "CAMERA_PIP_TOGGLED",
+                                            severity = "INFO",
+                                            message = "PiP da câmera ${camera.id} alterado para ${if (nextState) "ATIVADO" else "DESATIVADO"} via controle remoto",
+                                            metadata = mapOf("camera" to camera.id, "enabled" to nextState)
+                                        )
+                                        Toast.makeText(context, "${camera.name}: PiP ${if (nextState) "ATIVADO" else "DESATIVADO"}", Toast.LENGTH_SHORT).show()
                                         true
                                     }
                                     else -> false
@@ -961,10 +978,6 @@ fun TvCamerasViewport(
                                 fontWeight = FontWeight.Bold,
                                 modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
                             )
-                        }
-
-                        var isPipCamEnabled by remember(camera.id) {
-                            mutableStateOf(prefs.isCameraPipEnabled(camera.id))
                         }
 
                         val camMode = prefs.getCameraDefaultStreamMode(camera.id)
@@ -3596,9 +3609,13 @@ fun TvSettingsViewport(
                 var selectedConfigCameraId by remember(pipEnabledCameras) {
                     mutableStateOf(pipEnabledCameras.firstOrNull()?.id ?: cameras.firstOrNull()?.id ?: "")
                 }
-                val currentCameraPosIndex = if (selectedConfigCameraId.isNotBlank()) {
-                    prefs.getPipPositionIndex(selectedConfigCameraId)
-                } else posIndex
+                var currentCameraPosIndex by remember(selectedConfigCameraId) {
+                    mutableStateOf(
+                        if (selectedConfigCameraId.isNotBlank()) {
+                            prefs.getPipPositionIndex(selectedConfigCameraId)
+                        } else posIndex
+                    )
+                }
 
                 Column(
                     modifier = Modifier
@@ -3707,6 +3724,7 @@ fun TvSettingsViewport(
                                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 posIndex = pos.ordinal
+                                                currentCameraPosIndex = pos.ordinal
                                                 prefs.pipPositionIndex = pos.ordinal
                                                 if (selectedConfigCameraId.isNotBlank()) {
                                                     prefs.setPipPositionIndex(selectedConfigCameraId, pos.ordinal)

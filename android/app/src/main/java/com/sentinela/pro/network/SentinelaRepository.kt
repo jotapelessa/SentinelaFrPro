@@ -29,7 +29,9 @@ data class DevicePolicy(
     val pipDurationSeconds: Int = 10,
     val pipPosition: String = "TOP_RIGHT",
     val streamQuality: String = "1080p",
-    val isMasterAdmin: Boolean = false
+    val isMasterAdmin: Boolean = false,
+    val cameraPipPositions: Map<String, String> = emptyMap(),
+    val cameraPipEnabled: Map<String, Boolean> = emptyMap()
 )
 
 data class RemoteDeviceItem(
@@ -52,7 +54,9 @@ data class RemoteDeviceItem(
     val pipPosition: String = "TOP_RIGHT",
     val streamQuality: String = "1080p",
     val allowedCameras: List<String> = emptyList(),
-    val lastSeen: String? = null
+    val lastSeen: String? = null,
+    val cameraPipPositions: Map<String, String> = emptyMap(),
+    val cameraPipEnabled: Map<String, Boolean> = emptyMap()
 ) {
     val isOnline: Boolean
         get() = !lastSeen.isNullOrBlank()
@@ -116,6 +120,26 @@ object SentinelaRepository {
                     }
                 }
 
+                val camPosMap = mutableMapOf<String, String>()
+                val camPosObj = obj.optJSONObject("camera_pip_positions")
+                if (camPosObj != null) {
+                    val kIter = camPosObj.keys()
+                    while (kIter.hasNext()) {
+                        val k = kIter.next()
+                        camPosMap[k] = camPosObj.optString(k)
+                    }
+                }
+
+                val camEnabledMap = mutableMapOf<String, Boolean>()
+                val camEnabledObj = obj.optJSONObject("camera_pip_enabled")
+                if (camEnabledObj != null) {
+                    val kIter = camEnabledObj.keys()
+                    while (kIter.hasNext()) {
+                        val k = kIter.next()
+                        camEnabledMap[k] = camEnabledObj.optBoolean(k, true)
+                    }
+                }
+
                 return@withContext DevicePolicy(
                     deviceIdentifier = deviceIdentifier,
                     friendlyName = obj.optString("friendly_name", "Android Device"),
@@ -131,7 +155,9 @@ object SentinelaRepository {
                     pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
                     pipPosition = obj.optString("pip_position", "TOP_RIGHT"),
                     streamQuality = obj.optString("stream_quality", "1080p"),
-                    isMasterAdmin = obj.optBoolean("is_master_admin", false)
+                    isMasterAdmin = obj.optBoolean("is_master_admin", false),
+                    cameraPipPositions = camPosMap,
+                    cameraPipEnabled = camEnabledMap
                 )
             }
             conn.disconnect()
@@ -1196,6 +1222,24 @@ object SentinelaRepository {
                     if (camsArr != null) {
                         for (k in 0 until camsArr.length()) camsList.add(camsArr.getString(k))
                     }
+                    val devPosMap = mutableMapOf<String, String>()
+                    val devPosObj = obj.optJSONObject("camera_pip_positions")
+                    if (devPosObj != null) {
+                        val kIter = devPosObj.keys()
+                        while (kIter.hasNext()) {
+                            val k = kIter.next()
+                            devPosMap[k] = devPosObj.optString(k)
+                        }
+                    }
+                    val devEnabledMap = mutableMapOf<String, Boolean>()
+                    val devEnabledObj = obj.optJSONObject("camera_pip_enabled")
+                    if (devEnabledObj != null) {
+                        val kIter = devEnabledObj.keys()
+                        while (kIter.hasNext()) {
+                            val k = kIter.next()
+                            devEnabledMap[k] = devEnabledObj.optBoolean(k, true)
+                        }
+                    }
                     list.add(
                         RemoteDeviceItem(
                             id = obj.optInt("id"),
@@ -1217,7 +1261,9 @@ object SentinelaRepository {
                             pipPosition = obj.optString("pip_position", "TOP_RIGHT"),
                             streamQuality = obj.optString("stream_quality", "1080p"),
                             allowedCameras = camsList,
-                            lastSeen = obj.optString("last_seen").takeIf { it.isNotBlank() }
+                            lastSeen = obj.optString("last_seen").takeIf { it.isNotBlank() },
+                            cameraPipPositions = devPosMap,
+                            cameraPipEnabled = devEnabledMap
                         )
                     )
                 }
@@ -1275,7 +1321,9 @@ object SentinelaRepository {
         streamQuality: String = "1080p",
         allowedCameras: List<String> = emptyList(),
         allowPip: Boolean = true,
-        permissionStatus: String = "allowed"
+        permissionStatus: String = "allowed",
+        cameraPipPositions: Map<String, String> = emptyMap(),
+        cameraPipEnabled: Map<String, Boolean> = emptyMap()
     ): Pair<Boolean, String> = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/$deviceId/permissions")
@@ -1289,6 +1337,13 @@ object SentinelaRepository {
             }
             val camsArr = JSONArray()
             allowedCameras.forEach { camsArr.put(it) }
+
+            val posObj = JSONObject()
+            cameraPipPositions.forEach { (k, v) -> posObj.put(k, v) }
+
+            val enabledObj = JSONObject()
+            cameraPipEnabled.forEach { (k, v) -> enabledObj.put(k, v) }
+
             val payload = JSONObject().apply {
                 put("friendly_name", friendlyName)
                 put("permission_status", permissionStatus)
@@ -1298,6 +1353,8 @@ object SentinelaRepository {
                 put("stream_quality", streamQuality)
                 put("allow_pip_alerts", allowPip)
                 put("allowed_cameras", camsArr)
+                put("camera_pip_positions", posObj)
+                put("camera_pip_enabled", enabledObj)
             }
             conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
             val code = conn.responseCode

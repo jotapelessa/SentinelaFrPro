@@ -1,12 +1,33 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-02 15:15 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.159 (Build 159). Desacoplamento de foco/seleção de câmeras na TV eliminando stalls no MediaCodec, PiP estrito 16:9 sem distorções, posicionamento e ativação de PiP por câmera, card compacto e diálogo de configurações no smartphone, remoção de LAN scan desnecessário.
+> **Última Atualização:** 2026-10-02 16:20 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.160 (Build 160). Implementação de PiP escalonado em pixels físicos de densidade de tela sem distorção 16:9, controle de PiP por câmera na TV via controle remoto (botão Menu/PlayPause), persistência de posição e ativação de PiP por câmera sincronizada com o backend FastAPI e gerenciável pelo aplicativo móvel via Master Central.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.159 (Build 159) — Desacoplamento de Foco na TV, PiP 16:9 Estrito, Controles por Câmera e Otimização Mobile
+## 📦 Versão Atual: v001.000.000.160 (Build 160) — PiP Escalonado Físico, Mapeamento Granular por Câmera e Sincronização Master
+- **Data**: 2026-10-02
+- **Objetivo**: Conclusão da harmonização completa da esteira de streaming e controle de PiP em todo o ecossistema:
+  1. **Escalonamento Físico de Tela no PiP (`OverlayService.kt`)**:
+     - Conversão de Dp para pixels físicos via `(pipSize.width * density).toInt()`, garantindo que televisores 1080p e 4K renderizem a janela com precisão milimétrica.
+     - Ajuste do CSS injetado de `object-fit: cover` para `object-fit: contain` com background letterbox preto (`#000000`), preservando proporções nativas 16:9 sem distorções nem cortes indesejados.
+  2. **Controle Remoto Ágil de PiP na TV (`TvNetflixScreen.kt`)**:
+     - Ativação/desativação imediata de PiP para a câmera em foco no carrossel através dos botões `Menu` ou `Play/Pause` do controle remoto D-Pad, eliminando atritos de navegação.
+     - Seletor de câmeras na tela de Configurações da TV com atualização de estado local instantânea, sem atraso na UI.
+  3. **Mapeamento Granular de PiP no Backend FastAPI & Banco de Dados (`models.py`, `devices.py`)**:
+     - Colunas `camera_pip_positions` e `camera_pip_enabled` adicionadas ao modelo `PairedDevice`.
+     - Endpoints de permissões e push de configurações agora transmitem e persistem os mapas JSON por câmera via WebSocket e MQTT.
+  4. **Gerenciamento Centralizado no Smartphone (`SmartphoneYouTubeScreen.kt`)**:
+     - `DeviceConfigEditDialog` na aba Master Central VIP atualizado para permitir definir posição de PiP (8 posições) e status ativo/silenciado individualmente por câmera para cada Smart TV pareada.
+  5. **Padronização Estrita de Streaming MSE (`MseCameraView.kt`)**:
+     - Modo padrão configurado estritamente como `mse` (TCP WebSocket), prevenindo falhas de handshake ICE em túneis VPN e Tailscale.
+  6. **Sincronização Global da Versão v001.000.000.160 (Build 160)**:
+     - Versão sincronizada nos 5 pontos de verdade: `android/version.properties`, `frontend/src/constants/version.ts`, `backend/app/core/config.py`, `README.md` e `STATE.md`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.159 (Build 159) — Desacoplamento de Foco na TV, PiP 16:9 Estrito, Controles por Câmera e Otimização Mobile
 - **Data**: 2026-10-02
 - **Objetivo**: Conclusão da harmonização completa e resolução definitiva dos gargalos de streaming e usabilidade nos clientes Android:
   1. **Eliminação de Travamentos ao Alternar Câmeras na TV (`TvNetflixScreen.kt`)**:

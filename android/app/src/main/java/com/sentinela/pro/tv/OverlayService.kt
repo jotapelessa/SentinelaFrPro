@@ -182,6 +182,30 @@ class OverlayService : Service() {
                                 android.util.Log.w("OverlayService", "Unknown pip_position: $serverPipPos")
                             }
                         }
+                        if (event.has("camera_pip_positions")) {
+                            val camPosObj = event.optJSONObject("camera_pip_positions")
+                            if (camPosObj != null) {
+                                val keys = camPosObj.keys()
+                                while (keys.hasNext()) {
+                                    val cKey = keys.next()
+                                    val cPosStr = camPosObj.optString(cKey)
+                                    try {
+                                        val p = PipPosition.valueOf(cPosStr.uppercase())
+                                        prefs.setPipPositionIndex(cKey, p.ordinal)
+                                    } catch (_: Exception) {}
+                                }
+                            }
+                        }
+                        if (event.has("camera_pip_enabled")) {
+                            val camEnabledObj = event.optJSONObject("camera_pip_enabled")
+                            if (camEnabledObj != null) {
+                                val keys = camEnabledObj.keys()
+                                while (keys.hasNext()) {
+                                    val cKey = keys.next()
+                                    prefs.setCameraPipEnabled(cKey, camEnabledObj.optBoolean(cKey, true))
+                                }
+                            }
+                        }
                         // Refresh in background and synchronize
                         serviceScope.launch {
                             try {
@@ -580,17 +604,21 @@ class OverlayService : Service() {
 
         val resolvedCamera = if (camera.isBlank()) "camera_secundaria" else camera
 
+        val density = resources.displayMetrics.density
+        val targetWidthPx = (pipSize.width * density).toInt()
+        val targetHeightPx = (pipSize.height * density).toInt()
+
         // 1. Idempotência absoluta: se o PiP já está exibindo a MESMA câmera no MESMO modo de vídeo,
         // JAMAIS reiniciamos o WebView nem chamamos loadUrl(), evitando tempestades de reconexão.
         if (overlayView != null && activePipCamera == resolvedCamera) {
             val currentParams = overlayView?.layoutParams as? WindowManager.LayoutParams
             if (currentParams?.gravity != pipPos.gravity ||
-                currentParams?.width != pipSize.width ||
-                currentParams?.height != pipSize.height
+                currentParams?.width != targetWidthPx ||
+                currentParams?.height != targetHeightPx
             ) {
                 currentParams?.gravity = pipPos.gravity
-                currentParams?.width = pipSize.width
-                currentParams?.height = pipSize.height
+                currentParams?.width = targetWidthPx
+                currentParams?.height = targetHeightPx
                 windowManager.updateViewLayout(overlayView, currentParams)
             }
 
@@ -632,6 +660,11 @@ class OverlayService : Service() {
         } else {
             baseStreamUrl
         }
+        val density = resources.displayMetrics.density
+        val targetWidthPx = (pipSize.width * density).toInt()
+        val targetHeightPx = (pipSize.height * density).toInt()
+        val marginPx = (24 * density).toInt()
+
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${resolvedCamera}/latest.jpg?h=720")
 
         try {
@@ -639,7 +672,7 @@ class OverlayService : Service() {
             WebView(this).resumeTimers()
 
             val params = WindowManager.LayoutParams(
-                pipSize.width, pipSize.height,
+                targetWidthPx, targetHeightPx,
                 WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
                 WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                 WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
@@ -649,8 +682,8 @@ class OverlayService : Service() {
                 PixelFormat.TRANSLUCENT
             ).apply {
                 gravity = pipPos.gravity
-                x = 32
-                y = 32
+                x = marginPx
+                y = marginPx
             }
 
             if (overlayView == null) {
@@ -803,8 +836,8 @@ class OverlayService : Service() {
                                     super.onPageFinished(view, url)
                                     val js = "javascript:(function() {" +
                                         "var style = document.createElement('style');" +
-                                        "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
-                                        "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; pointer-events:none !important; } " +
+                                        "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:#000000; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
+                                        "video-stream, video { width:100% !important; height:100% !important; object-fit:contain !important; background:#000000 !important; pointer-events:none !important; } " +
                                         "video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel, video::-webkit-media-controls-play-button, video::-webkit-media-controls-start-playback-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-current-time-display, video::-webkit-media-controls-time-remaining-display, video::-webkit-media-controls-mute-button, video::-webkit-media-controls-toggle-closed-captions-button, video::-webkit-media-controls-volume-slider { display:none !important; -webkit-appearance:none !important; opacity:0 !important; visibility:hidden !important; } " +
                                         "video-stream .info, .info, .mode, .status, .spinner { display:none !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important; } " +
                                         "* { outline:none !important; -webkit-tap-highlight-color:transparent !important; }';" +

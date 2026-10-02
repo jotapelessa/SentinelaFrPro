@@ -948,7 +948,7 @@ fun PhoneCapturesTab() {
 fun DeviceConfigEditDialog(
     device: com.sentinela.pro.network.RemoteDeviceItem,
     onDismiss: () -> Unit,
-    onSave: (name: String, pipSize: String, pipDuration: Int, pipPosition: String, allowPip: Boolean, status: String, streamQuality: String) -> Unit
+    onSave: (name: String, pipSize: String, pipDuration: Int, pipPosition: String, allowPip: Boolean, status: String, streamQuality: String, cameraPipPositions: Map<String, String>, cameraPipEnabled: Map<String, Boolean>) -> Unit
 ) {
     var name by remember { mutableStateOf(device.friendlyName) }
     var pipSize by remember { mutableStateOf(device.pipDefaultSize) }
@@ -957,6 +957,8 @@ fun DeviceConfigEditDialog(
     var allowPip by remember { mutableStateOf(device.allowPipAlerts) }
     var status by remember { mutableStateOf(device.permissionStatus) }
     var streamQuality by remember { mutableStateOf(device.streamQuality) }
+    var camPositionsMap by remember { mutableStateOf(device.cameraPipPositions) }
+    var camEnabledMap by remember { mutableStateOf(device.cameraPipEnabled) }
 
     val allSizes = listOf(
         "extra_small" to "15% (Mini)",
@@ -1167,11 +1169,82 @@ fun DeviceConfigEditDialog(
                         )
                     }
                 }
+
+                // Configurações Específicas de PiP por Câmera para esta TV
+                if (device.allowedCameras.isNotEmpty()) {
+                    item {
+                        Divider(color = SentinelaColors.BorderStandard, thickness = 0.5.dp)
+                        Text("POSIÇÃO DO PIP POR CÂMERA:", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                    }
+
+                    device.allowedCameras.forEach { camName ->
+                        item {
+                            var camPos by remember(camName) {
+                                mutableStateOf(camPositionsMap[camName] ?: pipPosition)
+                            }
+                            var camOn by remember(camName) {
+                                mutableStateOf(camEnabledMap[camName] ?: true)
+                            }
+
+                            Card(
+                                shape = SentinelaShapes.SmallButton,
+                                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackgroundElevated),
+                                modifier = Modifier.fillMaxWidth().border(0.5.dp, SentinelaColors.BorderStandard, SentinelaShapes.SmallButton)
+                            ) {
+                                Column(modifier = Modifier.padding(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(camName.replace("_", " ").uppercase(), color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                            Text(if (camOn) "PiP Ativo" else "Silenciado", color = if (camOn) SentinelaColors.SuccessGreen else SentinelaColors.DestructiveRed, fontSize = 9.sp)
+                                            Switch(
+                                                checked = camOn,
+                                                onCheckedChange = {
+                                                    camOn = it
+                                                    val m = camEnabledMap.toMutableMap()
+                                                    m[camName] = it
+                                                    camEnabledMap = m
+                                                },
+                                                modifier = Modifier.scale(0.75f),
+                                                colors = SwitchDefaults.colors(checkedThumbColor = SentinelaColors.PrimaryCyan)
+                                            )
+                                        }
+                                    }
+
+                                    // Posição da câmera em chips compactos
+                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        listOf("TOP_RIGHT" to "Sup. Dir", "TOP_LEFT" to "Sup. Esq", "BOTTOM_RIGHT" to "Inf. Dir", "BOTTOM_LEFT" to "Inf. Esq").forEach { (posKey, posLabel) ->
+                                            val isSel = camPos.equals(posKey, ignoreCase = true)
+                                            Surface(
+                                                shape = SentinelaShapes.SmallButton,
+                                                color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.3f) else SentinelaColors.CardBackground,
+                                                border = BorderStroke(0.5.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                                modifier = Modifier.weight(1f).clickable {
+                                                    camPos = posKey
+                                                    val m = camPositionsMap.toMutableMap()
+                                                    m[camName] = posKey
+                                                    camPositionsMap = m
+                                                }
+                                            ) {
+                                                Box(modifier = Modifier.padding(vertical = 4.dp), contentAlignment = Alignment.Center) {
+                                                    Text(posLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         },
         confirmButton = {
             Button(
-                onClick = { onSave(name, pipSize, pipDuration, pipPosition, allowPip, status, streamQuality) },
+                onClick = { onSave(name, pipSize, pipDuration, pipPosition, allowPip, status, streamQuality, camPositionsMap, camEnabledMap) },
                 colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan)
             ) {
                 Text("Salvar & Sincronizar", color = Color.Black, fontWeight = FontWeight.Bold)
@@ -1262,7 +1335,7 @@ fun PhoneMasterCentralTab() {
         DeviceConfigEditDialog(
             device = editingDevice!!,
             onDismiss = { editingDevice = null },
-            onSave = { updatedName, pipSize, pipDur, pipPos, allowPip, status, streamQuality ->
+            onSave = { updatedName, pipSize, pipDur, pipPos, allowPip, status, streamQuality, camPositions, camEnabled ->
                 val devId = editingDevice!!.id
                 val devName = editingDevice!!.friendlyName
                 editingDevice = null
@@ -1275,7 +1348,9 @@ fun PhoneMasterCentralTab() {
                         pipPosition = pipPos,
                         allowPip = allowPip,
                         permissionStatus = status,
-                        streamQuality = streamQuality
+                        streamQuality = streamQuality,
+                        cameraPipPositions = camPositions,
+                        cameraPipEnabled = camEnabled
                     )
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                     com.sentinela.pro.logging.SentinelaRemoteLogger.log(
