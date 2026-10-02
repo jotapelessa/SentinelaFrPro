@@ -66,13 +66,38 @@ async def run_time_sync_watchdog():
                 if abs(drift_ms) > 1000.0:
                     logger.warning(
                         f"⚠️ Desvio de relógio detectado! Local: {local_dt.strftime('%Y-%m-%d %H:%M:%S %Z')} | "
-                        f"NTP ({used_server}): drift de {drift_ms:.1f}ms."
+                        f"NTP ({used_server}): drift de {drift_ms:.1f}ms. Sincronizando..."
                     )
+                    # Trigger timedatectl/system clock update if permitted
+                    try:
+                        import subprocess
+                        subprocess.run(["timedatectl", "set-ntp", "true"], check=False, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                    except Exception:
+                        pass
                 else:
                     logger.info(
                         f"✅ Sincronização de horário OK: {local_dt.strftime('%Y-%m-%d %H:%M:%S %Z')} | "
                         f"NTP drift: {drift_ms:.1f}ms ({used_server})"
                     )
+
+                # Sync time to all registered cameras every hour
+                try:
+                    from app.db.session import AsyncSessionLocal
+                    from app.db.models import Camera
+                    from app.services.onvif_hardware import onvif_hardware_service
+                    from sqlalchemy import select
+                    async with AsyncSessionLocal() as session:
+                        res = await session.execute(select(Camera).where(Camera.enabled == True))
+                        cams = res.scalars().all()
+                        for c in cams:
+                            if c.ip_address and c.ip_address not in ["127.0.0.1", "localhost", "frigate"]:
+                                await onvif_hardware_service.sync_camera_time(
+                                    ip_address=c.ip_address,
+                                    port=c.onvif_port or 80
+                                )
+                except Exception as cam_sync_err:
+                    logger.debug(f"Erro ao sincronizar relógio com câmeras: {cam_sync_err}")
+
             else:
                 logger.warning(f"⚠️ Servidores NTP inacessíveis no momento. Hora local: {local_dt.strftime('%Y-%m-%d %H:%M:%S %Z')}")
                 

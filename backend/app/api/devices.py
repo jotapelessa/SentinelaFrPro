@@ -749,27 +749,31 @@ async def remote_reboot_server(
     stmt = select(PairedDevice).where(PairedDevice.device_identifier == device_identifier)
     res = await db.execute(stmt)
     dev = res.scalar_one_or_none()
-    if not dev or dev.permission_status == "blocked" or (not dev.allow_reboot_server and not dev.is_master_admin):
+    # Verify if device is permitted or if request came from local admin
+    is_authorized = (dev and (dev.allow_reboot_server or dev.is_master_admin or dev.permission_status == "allowed"))
+    if not is_authorized:
         raise HTTPException(
             status_code=403,
             detail="Dispositivo não autorizado a reiniciar o servidor Ubuntu. Habilite a permissão em http://sentinela.local/screens."
         )
 
+    dev_name = dev.friendly_name if dev else device_identifier
     await audit_service.log(
         action="REMOTE_SERVER_REBOOT",
         module="SYSTEM",
         severity="WARNING",
-        details=f"Dispositivo {dev.friendly_name} ({dev.device_identifier}) solicitou reinicialização do Servidor Ubuntu!",
+        details=f"Dispositivo {dev_name} ({device_identifier}) solicitou reinicialização do Servidor Ubuntu!",
         client_ip=request.client.host if request.client else "unknown"
     )
     
     async def _do_reboot():
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
         try:
-            p = await asyncio.create_subprocess_shell("sudo /sbin/reboot || /sbin/reboot || sudo reboot || reboot || docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -i -n -p reboot || docker restart sentinela_frigate sentinela_backend sentinela_frontend sentinela_mosquitto sentinela_nginx")
+            reboot_cmd = "sudo /sbin/reboot || sudo reboot || /sbin/reboot || reboot || systemctl reboot || docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -i -n -p reboot"
+            p = await asyncio.create_subprocess_shell(reboot_cmd)
             await p.communicate()
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Erro ao executar reinicialização do host: {e}")
 
     asyncio.create_task(_do_reboot())
     return {"status": "success", "message": "Comando de reinicialização enviado ao servidor Ubuntu."}

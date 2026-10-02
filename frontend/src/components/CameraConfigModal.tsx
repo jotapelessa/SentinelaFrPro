@@ -17,7 +17,7 @@ interface CameraConfigModalProps {
 }
 
 export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, onClose, onSaved }) => {
-  const [activeTab, setActiveTab] = useState<"conn" | "ai" | "record" | "alerts" | "diag">("conn");
+  const [activeTab, setActiveTab] = useState<"conn" | "ai" | "record" | "alerts" | "diag" | "hardware">("conn");
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [isZoneModalOpen, setIsZoneModalOpen] = useState(false);
@@ -25,6 +25,16 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
   const [rtspTestResult, setRtspTestResult] = useState<{ success: boolean; message: string; suggested_port?: number; suggested_url?: string } | null>(null);
   const [loadingStreamInfo, setLoadingStreamInfo] = useState(false);
   const [streamInfo, setStreamInfo] = useState<{ main?: { codec: string; width: number; height: number; fps: number } | null; sub?: { codec: string; width: number; height: number; fps: number } | null } | null>(null);
+
+  // Hardware Tab State
+  const [hwCodec, setHwCodec] = useState("h264");
+  const [hwBitrate, setHwBitrate] = useState(4096);
+  const [hwFps, setHwFps] = useState(25);
+  const [hwResolution, setHwResolution] = useState("3mp");
+  const [hwIrMode, setHwIrMode] = useState("auto");
+  const [hwWhiteLed, setHwWhiteLed] = useState("off");
+  const [hwLoading, setHwLoading] = useState(false);
+  const [hwSuccessMsg, setHwSuccessMsg] = useState<string | null>(null);
 
   // Diagnostics State
   const [loadingDiag, setLoadingDiag] = useState(false);
@@ -366,6 +376,17 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
           >
             <Terminal className="w-4 h-4" />
             <span>5. Logs & Diagnóstico</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("hardware")}
+            className={`flex items-center gap-1.5 py-3 px-3 border-b-2 transition-all ${
+              activeTab === "hardware" ? "border-cyan-400 text-cyan-300" : "border-transparent text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            <Sliders className="w-4 h-4" />
+            <span>6. Sensor & Hardware</span>
           </button>
         </div>
 
@@ -1141,6 +1162,187 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                     <div className="text-slate-500 text-[10px] text-center py-2">Nenhuma alteração registrada recentemente.</div>
                   )}
                 </div>
+              </div>
+            </div>
+          )}
+
+          {/* TAB 6: HARDWARE & SENSOR (ONVIF/HTTP DIRECT CONFIG) */}
+          {activeTab === "hardware" && (
+            <div className="space-y-4">
+              <div className="p-3 rounded-xl bg-cyan-950/40 border border-cyan-500/30 text-xs text-cyan-200 flex items-center justify-between">
+                <div>
+                  <span className="font-bold block">⚙️ Configurações Internas da Câmera IP (ONVIF / Sensor)</span>
+                  <span className="text-[11px] text-cyan-300/80">
+                    Ajuste diretamente o processador da câmera para garantir máxima performance, estabilidade no Frigate e no Telegram.
+                  </span>
+                </div>
+              </div>
+
+              {hwSuccessMsg && (
+                <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  <span>{hwSuccessMsg}</span>
+                </div>
+              )}
+
+              {/* Codec Selection */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <label className="block text-slate-300 font-bold text-xs">Codec de Vídeo da Câmera:</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "h264", label: "H.264 (Recomendado)", desc: "100% compatível, zero travamento" },
+                    { id: "h265", label: "H.265 (HEVC)", desc: "Maior compressão de rede" },
+                    { id: "h265+", label: "H.265+ Smart", desc: "Economia máxima de banda" }
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => setHwCodec(item.id)}
+                      className={`p-2.5 rounded-lg border text-left text-xs font-bold transition-all ${
+                        hwCodec === item.id ? "bg-cyan-500 text-obsidian-950 border-cyan-400" : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      <span className="block text-[10px] font-normal opacity-80 mt-0.5">{item.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Bitrate & Quality (Min, Med, Max) */}
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                <div className="flex items-center justify-between">
+                  <label className="text-slate-300 font-bold text-xs">Taxa de Bits (Bitrate):</label>
+                  <span className="font-mono text-cyan-400 font-bold text-xs">{hwBitrate} kbps</span>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { val: 1024, label: "Mínima (1024 kbps)", desc: "Econômica para conexões fracas" },
+                    { val: 2048, label: "Média (2048 kbps)", desc: "Equilíbrio padrão" },
+                    { val: 4096, label: "Máxima (4096 kbps)", desc: "Qualidade máxima 3MP / Telegram" }
+                  ].map((b) => (
+                    <button
+                      key={b.val}
+                      type="button"
+                      onClick={() => setHwBitrate(b.val)}
+                      className={`p-2.5 rounded-lg border text-left text-xs font-bold transition-all ${
+                        hwBitrate === b.val ? "bg-cyan-500 text-obsidian-950 border-cyan-400" : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
+                      }`}
+                    >
+                      <span>{b.label}</span>
+                      <span className="block text-[10px] font-normal opacity-80 mt-0.5">{b.desc}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Resolution & FPS */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label className="text-slate-300 font-bold text-xs block">Resolução do Sensor:</label>
+                  <select
+                    value={hwResolution}
+                    onChange={(e) => setHwResolution(e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value="3mp">3MP (2304x1296 - Resolução Nativa Máxima)</option>
+                    <option value="1080p">1080p Full HD (1920x1080)</option>
+                    <option value="720p">720p HD (1280x720)</option>
+                  </select>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label className="text-slate-300 font-bold text-xs block">Taxa de Quadros (FPS):</label>
+                  <select
+                    value={hwFps}
+                    onChange={(e) => setHwFps(Number(e.target.value))}
+                    className="w-full px-3 py-2 rounded-lg bg-slate-800 border border-slate-700 text-white font-mono text-xs focus:outline-none focus:border-cyan-500"
+                  >
+                    <option value={15}>15 FPS (Ultra-Leve)</option>
+                    <option value={20}>20 FPS (Econômico)</option>
+                    <option value={25}>25 FPS (Padrão Fluido Brasil/CFR)</option>
+                    <option value={30}>30 FPS (Máxima Fluidez)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Lighting / IR & LEDs */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label className="text-slate-300 font-bold text-xs block">Visão Noturna (Infravermelho IR):</label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {["auto", "on", "off"].map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setHwIrMode(mode)}
+                        className={`py-1.5 px-2 rounded-lg border text-center text-xs font-bold uppercase ${
+                          hwIrMode === mode ? "bg-cyan-500 text-obsidian-950 border-cyan-400" : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
+                        }`}
+                      >
+                        {mode === "auto" ? "Automático" : mode === "on" ? "Ligado" : "Desligado"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                  <label className="text-slate-300 font-bold text-xs block">Leds Brancos (Holofote de Alerta):</label>
+                  <div className="grid grid-cols-3 gap-1.5">
+                    {["off", "auto", "on"].map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setHwWhiteLed(mode)}
+                        className={`py-1.5 px-2 rounded-lg border text-center text-xs font-bold uppercase ${
+                          hwWhiteLed === mode ? "bg-cyan-500 text-obsidian-950 border-cyan-400" : "bg-slate-800 border-slate-700 text-slate-300 hover:text-white"
+                        }`}
+                      >
+                        {mode === "auto" ? "No Alarme" : mode === "on" ? "Ligado" : "Desligado"}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setHwLoading(true);
+                    setHwSuccessMsg(null);
+                    try {
+                      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+                      const camId = camera.id || camera.name || "camera_principal";
+                      const res = await fetch(`${apiUrl}/cameras/${camId}/hardware-config`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          codec: hwCodec,
+                          bitrate: hwBitrate,
+                          fps: hwFps,
+                          resolution: hwResolution,
+                          ir_mode: hwIrMode,
+                          white_led: hwWhiteLed,
+                          sync_time: true
+                        })
+                      });
+                      if (res.ok) {
+                        setHwSuccessMsg("✅ Configurações de hardware e relógio de Brasília aplicados na câmera!");
+                        setTimeout(() => setHwSuccessMsg(null), 3000);
+                      }
+                    } catch (e) {
+                      console.error("Erro ao aplicar hardware:", e);
+                    } finally {
+                      setHwLoading(false);
+                    }
+                  }}
+                  disabled={hwLoading}
+                  className="px-4 py-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs flex items-center gap-2 shadow-md shadow-cyan-500/20 disabled:opacity-50"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${hwLoading ? "animate-spin" : ""}`} />
+                  <span>{hwLoading ? "Aplicando no Sensor..." : "Aplicar no Sensor da Câmera"}</span>
+                </button>
               </div>
             </div>
           )}

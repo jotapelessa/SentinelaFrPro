@@ -377,24 +377,25 @@ fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
                 PhoneCameraStreamCard(
                     camera = camera,
                     onCaptureSnapshot = {
-                        com.sentinela.pro.logging.SentinelaRemoteLogger.log(
-                            category = "TOOLS",
-                            action = "SNAPSHOT_REQUESTED",
-                            severity = "INFO",
-                            message = "Snapshot manual solicitado para câmera ${camera.name}",
-                            metadata = mapOf("camera" to camera.name)
-                        )
-                        Toast.makeText(context, "📸 Snapshot salvo: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                        coroutineScope.launch {
+                            val ok = SentinelaRepository.captureSnapshot(camera.name)
+                            if (ok) {
+                                Toast.makeText(context, "📸 Snapshot 3MP capturado e salvo: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "⚠️ Falha ao salvar snapshot: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     },
                     onRecordClip = {
-                        com.sentinela.pro.logging.SentinelaRemoteLogger.log(
-                            category = "TOOLS",
-                            action = "RECORD_CLIP_REQUESTED",
-                            severity = "INFO",
-                            message = "Gravação de evidência manual solicitada para câmera ${camera.name}",
-                            metadata = mapOf("camera" to camera.name)
-                        )
-                        Toast.makeText(context, "🎬 Gravando evidência de 10s: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                        coroutineScope.launch {
+                            Toast.makeText(context, "🎬 Iniciando gravação de 10s: ${camera.friendlyName}", Toast.LENGTH_SHORT).show()
+                            val ok = SentinelaRepository.recordClip(camera.name, 10)
+                            if (ok) {
+                                Toast.makeText(context, "✅ Evidência de 10s salva com sucesso!", Toast.LENGTH_SHORT).show()
+                            } else {
+                                Toast.makeText(context, "⚠️ Falha ao processar gravação de evidência", Toast.LENGTH_SHORT).show()
+                            }
+                        }
                     },
                     onExpandFullscreen = {
                         com.sentinela.pro.logging.SentinelaRemoteLogger.log(

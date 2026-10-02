@@ -3408,8 +3408,8 @@ fun TvSettingsViewport(
                                     }
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
-                                    verticalArrangement = Arrangement.spacedBy(2.dp)
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                    verticalArrangement = Arrangement.Center
                                 ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -3419,19 +3419,17 @@ fun TvSettingsViewport(
                                         Text(
                                             text = modeTitle,
                                             color = if (isSelected) TvColors.NetflixRed else if (isFocused) Color.White else TvColors.TextPrimary,
-                                            fontSize = 11.sp,
-                                            fontWeight = FontWeight.Bold
+                                            fontSize = 10.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
                                         )
                                         if (isSelected) {
                                             Surface(shape = TvShapes.StatusPill, color = TvColors.NetflixRed) {
-                                                Text("ATIVO", color = Color.White, fontSize = 8.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp))
+                                                Text("ATIVO", color = Color.White, fontSize = 7.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
                                             }
                                         }
                                     }
-                                    Text(
-                                        text = modeDesc,
-                                        style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
-                                    )
                                 }
                             }
                         }

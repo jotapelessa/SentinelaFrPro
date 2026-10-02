@@ -1,14 +1,34 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-09-30 15:50 BRT
-> **Estado Geral:** Auditado via `onp-spec` (31/31 critérios provados, 100% PASS, audit exit 0) — Versão v001.000.000.154 operacional em produção (Build 154). Conclusão da auditoria integral e correções definitivas de estabilidade, Multi-PiP no Android TV, ferramentas de rede em 4 rotas no Smartphone, Mosaico e botões HD no Web PiP e purga definitiva de câmeras no go2rtc/Frigate.
+> **Última Atualização:** 2026-10-02 10:30 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.155 (Build 155). Implementação completa do controle direto de sensores/hardware de câmeras via ONVIF (Codecs, Bitrate, Resolução, FPS, IR/LEDs), Sincronização horária automatizada das câmeras com Brasília (UTC-3), Reboot de host seguro no Android TV/Mobile, gravação e snapshot instantâneos no Smartphone, e harmonização de streams para H.264 CFR 720p.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.154 (Build 154) — Auditoria Integral e Correções Definitivas do Ecossistema
-- **Data**: 2026-09-30
-- **Objetivo**: Conclusão de todas as diretrizes de estabilidade, streaming, interface e infraestrutura aprovadas na auditoria técnica:
+## 📦 Versão Atual: v001.000.000.155 (Build 155) — Controle de Sensores/Hardware ONVIF, Sincronização Horária e Otimização do Ecossistema
+- **Data**: 2026-10-02
+- **Objetivo**: Conclusão de todas as diretrizes de performance, hardware de câmera, tempo de sincronização e robustez multi-plataforma:
+  1. **Controle Direto de Sensores & Hardware da Câmera (`onvif_hardware.py` & `cameras.py`)**:
+     - Serviço assíncrono ONVIF SOAP para manipulação direta do sensor de imagem nas câmeras IP físicas.
+     - Ajuste de parâmetros de codificação em hardware: Codec (H.264, H.265, H.265+), Bitrate (1024, 2048, 4096 kbps), Resolução (3MP 2304x1296, 1080p, 720p) e FPS (15 a 30 FPS).
+     - Controle de iluminação noturna: Comutação de Filtro IR Cut (Auto/On/Off) e acionamento de holofote LED branco integrado.
+     - Endpoints REST `/api/cameras/{id}/hardware-config` (GET e POST) com autenticação e validação rigorosa.
+  2. **Sincronização Horária Automática com Brasília (`time_sync.py`)**:
+     - Watchdog horário automatizado em background: além de manter o host Ubuntu sincronizado via NTP (`a.st1.ntp.br`), envia SOAP `SetSystemDateAndTime` para todas as câmeras cadastradas, garantindo que o OSD das câmeras e os timestamps do Frigate permaneçam sincronizados com `America/Sao_Paulo` (UTC-3).
+  3. **Frontend Dashboard Web (`CameraConfigModal.tsx`)**:
+     - Nova Aba 6 "Sensor & Hardware" no modal de configuração de câmeras: controle em tempo real dos parâmetros de codificação, iluminação noturna e botão de sincronização horária imediata.
+  4. **Android TV & Smart TV (`TvNetflixScreen.kt` & `OverlayService.kt`)**:
+     - Altura dos botões de módulo de vídeo do PiP reduzida em 50% (padding e tipografia compactos), otimizando a navegação via controle remoto D-Pad.
+     - Suporte a posicionamento individual de PiP por câmera em `SentinelaPreferences.kt`.
+     - Preservação da regra de ouro: idempotência absoluta no PiP e modo padrão MSE sobre WebSocket (TCP).
+  5. **Android Smartphone (`SmartphoneYouTubeScreen.kt` & `SentinelaRepository.kt`)**:
+     - Conexão assíncrona dos botões de ação dos cartões de câmera com a API de snapshot 3MP nativo e gravação de evidência de 10s.
+     - Suporte ao reboot seguro do host com autorização do dispositivo.
+  6. **Governança & Versão Unificada**:
+     - Atualização semântica sincronizada em `001.000.000.155` (Build 155) em todos os componentes: `android/version.properties`, `frontend/src/constants/version.ts` e `backend/app/core/config.py`.
+
+---
   1. **Purga Definitiva de Câmeras & go2rtc (`cameras.py`)**:
      - Remoção em cascata no `frigate/config/config.yml` eliminando a câmera de `cameras`, `go2rtc.streams` (incluindo todos os sufixos `_720p`, `_sub`, `_main`), e disparando `DELETE` na API REST do go2rtc (`/api/streams?src=...`), impedindo re-descobertas ou streams fantasmas.
   2. **Web PiP & Mosaico 2×2 (`WebPipAlertModal.tsx` & `CameraMosaic.tsx`)**:

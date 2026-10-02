@@ -1756,7 +1756,46 @@ object SentinelaRepository {
         } catch (e: Exception) {
             Log.w(TAG, "getClientLogs error: ${e.message}")
         }
-        list
+    suspend fun captureSnapshot(cameraName: String): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/go2rtc/api/frame.jpeg?src=${cameraName}&t=${System.currentTimeMillis()}")
+            val conn = openConnection(url).apply {
+                connectTimeout = 5000
+                readTimeout = 5000
+                requestMethod = "GET"
+            }
+            val code = conn.responseCode
+            if (code in 200..299) {
+                val bytes = conn.inputStream.readBytes()
+                conn.disconnect()
+                return@withContext Pair(true, "Foto 3MP capturada com sucesso (${bytes.size / 1024} KB)")
+            }
+            conn.disconnect()
+            return@withContext Pair(false, "Erro ao obter snapshot: HTTP $code")
+        } catch (e: Exception) {
+            return@withContext Pair(false, "Erro de rede: ${e.message}")
+        }
+    }
+
+    suspend fun recordClip(cameraName: String, durationSeconds: Int = 10): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        try {
+            val url = URL("${SentinelaConfig.BASE_URL}/go2rtc/api/stream.mp4?src=${cameraName}&duration=${durationSeconds}")
+            val conn = openConnection(url).apply {
+                connectTimeout = (durationSeconds + 10) * 1000
+                readTimeout = (durationSeconds + 10) * 1000
+                requestMethod = "GET"
+            }
+            val code = conn.responseCode
+            if (code in 200..299) {
+                val bytes = conn.inputStream.readBytes()
+                conn.disconnect()
+                return@withContext Pair(true, "Clipe de gravação gerado (${bytes.size / 1024} KB)")
+            }
+            conn.disconnect()
+            return@withContext Pair(false, "Erro ao gravar clipe: HTTP $code")
+        } catch (e: Exception) {
+            return@withContext Pair(false, "Erro de gravação: ${e.message}")
+        }
     }
 }
 

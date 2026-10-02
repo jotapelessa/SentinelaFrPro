@@ -1691,6 +1691,15 @@ async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Dep
         await db.delete(cam)
         await db.commit()
 
+    # Clear in-memory caches to prevent ghost re-discovery
+    global _FRIGATE_STATS_CACHE, _FRIGATE_STATS_TIME, _YAML_CONFIG_CACHE, _YAML_CONFIG_TIME
+    _FRIGATE_STATS_CACHE.pop(cam_name, None)
+    if cam and cam.ip_address:
+        _FRIGATE_STATS_CACHE.pop(f"cam_{cam.ip_address.replace('.', '_')}", None)
+    _FRIGATE_STATS_TIME = 0.0
+    _YAML_CONFIG_CACHE = {}
+    _YAML_CONFIG_TIME = 0.0
+
     # Always ensure Frigate removes the camera definition and any associated IP slug
     try:
         await remove_camera_from_frigate(cam_name)
@@ -1709,6 +1718,82 @@ async def delete_camera(camera_id: str, request: Request, db: AsyncSession = Dep
         client_ip=request.client.host if request.client else "unknown"
     )
     return {"status": "deleted", "id": camera_id, "camera_name": cam_name}
+
+
+class CameraHardwareConfigPayload(BaseModel):
+    codec: Optional[str] = "h264"
+    bitrate: Optional[int] = 4096
+    fps: Optional[int] = 25
+    resolution: Optional[str] = "3mp"
+    camera_name: Optional[str] = None
+    ir_mode: Optional[str] = "auto"
+    white_led: Optional[str] = "off"
+    sync_time: Optional[bool] = True
+
+@router.get("/{camera_id}/hardware-config")
+async def get_camera_hardware_config(camera_id: str, db: AsyncSession = Depends(get_db)):
+    """Fetches camera on-board hardware encoder and device settings."""
+    from app.services.onvif_hardware import onvif_hardware_service
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    
+    ip = cam.ip_address if cam else (camera_id if "." in camera_id else "192.168.1.6")
+    port = cam.onvif_port if cam and cam.onvif_port else 80
+    return await onvif_hardware_service.get_camera_hardware_config(ip_address=ip, port=port)
+
+@router.post("/{camera_id}/hardware-config")
+async def update_camera_hardware_config(camera_id: str, payload: CameraHardwareConfigPayload, request: Request, db: AsyncSession = Depends(get_db)):
+    """Applies on-board hardware encoder configurations (codec, bitrate, fps, resolution, IR/LEDs, NTP time)."""
+    from app.services.onvif_hardware import onvif_hardware_service
+    cam = None
+    if camera_id.isdigit():
+        stmt = select(Camera).where(Camera.id == int(camera_id))
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+    if not cam:
+        stmt = select(Camera).where(Camera.name == camera_id)
+        res = await db.execute(stmt)
+        cam = res.scalar_one_or_none()
+
+    ip = cam.ip_address if cam else (camera_id if "." in camera_id else "192.168.1.6")
+    port = cam.onvif_port if cam and cam.onvif_port else 80
+
+    result = await onvif_hardware_service.set_camera_hardware_config(
+        ip_address=ip,
+        port=port,
+        codec=payload.codec,
+        bitrate=payload.bitrate,
+        fps=payload.fps,
+        resolution=payload.resolution,
+        camera_name=payload.camera_name,
+        ir_mode=payload.ir_mode,
+        white_led=payload.white_led,
+        sync_time=payload.sync_time if payload.sync_time is not None else True
+    )
+
+    # If camera object exists, update DB fields if relevant
+    if cam:
+        if payload.bitrate:
+            cam.bitrate = payload.bitrate
+        if payload.resolution:
+            cam.resolution = payload.resolution
+        await db.commit()
+
+    await audit_service.log(
+        action="CAMERA_HARDWARE_CONFIG_APPLIED",
+        module="CAMERA",
+        severity="INFO",
+        details=f"Configurações de hardware aplicadas para {cam.name if cam else camera_id} ({payload.codec}, {payload.bitrate}k, {payload.resolution})",
+        client_ip=request.client.host if request.client else "unknown"
+    )
+    return result
 
 
 class FrigateZonesPayload(BaseModel):
