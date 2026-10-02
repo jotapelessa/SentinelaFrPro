@@ -690,7 +690,7 @@ fun PhoneCameraStreamCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onExpandFullscreen() }
-                    .padding(horizontal = 10.dp, vertical = 8.dp),
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -1214,23 +1214,47 @@ fun DeviceConfigEditDialog(
                                         }
                                     }
 
-                                    // Posição da câmera em chips compactos
-                                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                        listOf("TOP_RIGHT" to "Sup. Dir", "TOP_LEFT" to "Sup. Esq", "BOTTOM_RIGHT" to "Inf. Dir", "BOTTOM_LEFT" to "Inf. Esq").forEach { (posKey, posLabel) ->
-                                            val isSel = camPos.equals(posKey, ignoreCase = true)
-                                            Surface(
-                                                shape = SentinelaShapes.SmallButton,
-                                                color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.3f) else SentinelaColors.CardBackground,
-                                                border = BorderStroke(0.5.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
-                                                modifier = Modifier.weight(1f).clickable {
-                                                    camPos = posKey
-                                                    val m = camPositionsMap.toMutableMap()
-                                                    m[camName] = posKey
-                                                    camPositionsMap = m
+                                    // Posição da câmera em 8 chips divididos em 2 linhas (4x2)
+                                    val row1 = listOf("TOP_RIGHT" to "Sup. Dir", "TOP_LEFT" to "Sup. Esq", "BOTTOM_RIGHT" to "Inf. Dir", "BOTTOM_LEFT" to "Inf. Esq")
+                                    val row2 = listOf("TOP_CENTER" to "Sup. Cen", "BOTTOM_CENTER" to "Inf. Cen", "CENTER_LEFT" to "Cen. Esq", "CENTER_RIGHT" to "Cen. Dir")
+                                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                            row1.forEach { (posKey, posLabel) ->
+                                                val isSel = camPos.equals(posKey, ignoreCase = true)
+                                                Surface(
+                                                    shape = SentinelaShapes.SmallButton,
+                                                    color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.3f) else SentinelaColors.CardBackground,
+                                                    border = BorderStroke(0.5.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                                    modifier = Modifier.weight(1f).clickable {
+                                                        camPos = posKey
+                                                        val m = camPositionsMap.toMutableMap()
+                                                        m[camName] = posKey
+                                                        camPositionsMap = m
+                                                    }
+                                                ) {
+                                                    Box(modifier = Modifier.padding(vertical = 4.dp), contentAlignment = Alignment.Center) {
+                                                        Text(posLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                                                    }
                                                 }
-                                            ) {
-                                                Box(modifier = Modifier.padding(vertical = 4.dp), contentAlignment = Alignment.Center) {
-                                                    Text(posLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                                            }
+                                        }
+                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                            row2.forEach { (posKey, posLabel) ->
+                                                val isSel = camPos.equals(posKey, ignoreCase = true)
+                                                Surface(
+                                                    shape = SentinelaShapes.SmallButton,
+                                                    color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.3f) else SentinelaColors.CardBackground,
+                                                    border = BorderStroke(0.5.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                                                    modifier = Modifier.weight(1f).clickable {
+                                                        camPos = posKey
+                                                        val m = camPositionsMap.toMutableMap()
+                                                        m[camName] = posKey
+                                                        camPositionsMap = m
+                                                    }
+                                                ) {
+                                                    Box(modifier = Modifier.padding(vertical = 4.dp), contentAlignment = Alignment.Center) {
+                                                        Text(posLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                                                    }
                                                 }
                                             }
                                         }
@@ -2983,7 +3007,13 @@ fun PhoneCameraConfigDialog(
     var isPipActive by remember(camera.name) {
         mutableStateOf(prefs.isCameraPipEnabled(camera.name))
     }
-    val coroutineScope = rememberCoroutineScope()
+    var friendlyNameInput by remember(camera.name) {
+        mutableStateOf(camera.friendlyName)
+    }
+    var selectedResolution by remember(camera.name) {
+        mutableStateOf(camera.resolution.ifBlank { "1080p" })
+    }
+    var isSaving by remember { mutableStateOf(false) }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -3008,8 +3038,44 @@ fun PhoneCameraConfigDialog(
         text = {
             Column(
                 modifier = Modifier.fillMaxWidth(),
-                verticalArrangement = Arrangement.spacedBy(14.dp)
+                verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
+                // Nome Amigável
+                OutlinedTextField(
+                    value = friendlyNameInput,
+                    onValueChange = { friendlyNameInput = it },
+                    label = { Text("Nome da Câmera", color = SentinelaColors.TextSecondary, fontSize = 11.sp) },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedTextColor = Color.White,
+                        unfocusedTextColor = Color.White,
+                        focusedBorderColor = SentinelaColors.PrimaryCyan,
+                        unfocusedBorderColor = SentinelaColors.BorderStandard
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                // Resolução
+                Text(
+                    text = "RESOLUÇÃO DA CÂMERA",
+                    style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan, fontWeight = FontWeight.Bold)
+                )
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    listOf("720p" to "720p HD", "1080p" to "1080p FHD").forEach { (resKey, resLabel) ->
+                        val isSel = selectedResolution.equals(resKey, ignoreCase = true)
+                        Surface(
+                            shape = SentinelaShapes.SmallButton,
+                            color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.25f) else SentinelaColors.CardBackground,
+                            border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                            modifier = Modifier.weight(1f).clickable { selectedResolution = resKey }
+                        ) {
+                            Box(modifier = Modifier.padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
+                                Text(resLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                            }
+                        }
+                    }
+                }
+
                 // 1. Modo Padrão de Transmissão
                 Text(
                     text = "MODO DE STREAMING PREFERENCIAL",
@@ -3042,19 +3108,18 @@ fun PhoneCameraConfigDialog(
                             .clickable {
                                 currentMode = mKey
                                 prefs.setCameraDefaultStreamMode(camera.name, mKey)
-                                Toast.makeText(context, "Modo alterado para $mTitle", Toast.LENGTH_SHORT).show()
                             }
                     ) {
-                        Column(modifier = Modifier.padding(10.dp)) {
+                        Column(modifier = Modifier.padding(8.dp)) {
                             Text(
                                 text = mTitle,
                                 color = if (isSelected) SentinelaColors.PrimaryCyan else Color.White,
-                                fontSize = 12.sp,
+                                fontSize = 11.sp,
                                 fontWeight = FontWeight.Bold
                             )
                             Text(
                                 text = mDesc,
-                                style = SentinelaTypography.Subtext.copy(fontSize = 10.sp)
+                                style = SentinelaTypography.Subtext.copy(fontSize = 9.sp)
                             )
                         }
                     }
@@ -3070,9 +3135,8 @@ fun PhoneCameraConfigDialog(
                             val next = !isPipActive
                             isPipActive = next
                             prefs.setCameraPipEnabled(camera.name, next)
-                            Toast.makeText(context, "PiP na TV: ${if (next) "ATIVADO" else "DESATIVADO"}", Toast.LENGTH_SHORT).show()
                         }
-                        .padding(vertical = 4.dp),
+                        .padding(vertical = 2.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -3080,12 +3144,12 @@ fun PhoneCameraConfigDialog(
                         Text(
                             text = "PiP Preview nas Smart TVs",
                             color = Color.White,
-                            fontSize = 12.sp,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
                         )
                         Text(
                             text = "Permitir janela flutuante quando houver detecção",
-                            style = SentinelaTypography.Subtext.copy(fontSize = 10.sp)
+                            style = SentinelaTypography.Subtext.copy(fontSize = 9.sp)
                         )
                     }
                     Switch(
@@ -3104,11 +3168,34 @@ fun PhoneCameraConfigDialog(
         },
         confirmButton = {
             Button(
-                onClick = onDismiss,
+                onClick = {
+                    if (isSaving) return@Button
+                    isSaving = true
+                    prefs.setCameraDefaultStreamMode(camera.name, currentMode)
+                    prefs.setCameraPipEnabled(camera.name, isPipActive)
+                    coroutineScope.launch {
+                        val (ok, msg) = SentinelaRepository.updateCameraConfig(
+                            cameraName = camera.name,
+                            friendlyName = friendlyNameInput,
+                            resolution = selectedResolution,
+                            streamMode = currentMode,
+                            streamQuality = "maxima",
+                            bitrate = camera.bitrate.coerceAtLeast(1024)
+                        )
+                        isSaving = false
+                        if (ok) {
+                            Toast.makeText(context, "✅ Configuração salva no servidor!", Toast.LENGTH_SHORT).show()
+                        } else {
+                            Toast.makeText(context, "⚠️ Salvo localmente ($msg)", Toast.LENGTH_SHORT).show()
+                        }
+                        onDismiss()
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
-                shape = SentinelaShapes.SmallButton
+                shape = SentinelaShapes.SmallButton,
+                enabled = !isSaving
             ) {
-                Text("Concluir", color = Color.Black, fontWeight = FontWeight.Bold)
+                Text(if (isSaving) "Salvando..." else "Salvar & Aplicar", color = Color.Black, fontWeight = FontWeight.Bold)
             }
         },
         containerColor = SentinelaColors.CardBackgroundElevated,

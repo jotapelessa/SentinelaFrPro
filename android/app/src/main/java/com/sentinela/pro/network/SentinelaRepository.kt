@@ -353,7 +353,22 @@ object SentinelaRepository {
                     val name = obj.optString("name", "camera_$i")
                     val friendlyName = obj.optString("friendly_name", name)
                     val enabled = obj.optBoolean("enabled", true)
-                    list.add(CameraItem(name = name, friendlyName = friendlyName, enabled = enabled))
+                    val resolution = obj.optString("resolution", "1080p")
+                    val liveStats = obj.optJSONObject("live_stats")
+                    val fps = liveStats?.optInt("camera_fps", 24)?.takeIf { it > 0 } ?: obj.optInt("detect_fps", 24)
+                    val bitrate = obj.optInt("bitrate", 2048)
+                    val sMode = obj.optString("stream_mode", "mse")
+                    list.add(
+                        CameraItem(
+                            name = name,
+                            friendlyName = friendlyName,
+                            enabled = enabled,
+                            resolution = resolution,
+                            fps = fps,
+                            bitrate = bitrate,
+                            streamMode = sMode
+                        )
+                    )
                 }
             }
             conn.disconnect()
@@ -381,7 +396,22 @@ object SentinelaRepository {
                         val name = obj.optString("name", "camera_$i")
                         val friendlyName = obj.optString("friendly_name", name)
                         val enabled = obj.optBoolean("enabled", true)
-                        list.add(CameraItem(name = name, friendlyName = friendlyName, enabled = enabled))
+                        val resolution = obj.optString("resolution", "1080p")
+                        val liveStats = obj.optJSONObject("live_stats")
+                        val fps = liveStats?.optInt("camera_fps", 24)?.takeIf { it > 0 } ?: obj.optInt("detect_fps", 24)
+                        val bitrate = obj.optInt("bitrate", 2048)
+                        val sMode = obj.optString("stream_mode", "mse")
+                        list.add(
+                            CameraItem(
+                                name = name,
+                                friendlyName = friendlyName,
+                                enabled = enabled,
+                                resolution = resolution,
+                                fps = fps,
+                                bitrate = bitrate,
+                                streamMode = sMode
+                            )
+                        )
                     }
                 }
                 conn.disconnect()
@@ -1627,34 +1657,7 @@ object SentinelaRepository {
         }
         list
     }
-
-    suspend fun discoverNetworkDevices(): List<String> = withContext(Dispatchers.IO) {
-        val list = mutableListOf<String>()
-        try {
-            val url = URL("${SentinelaConfig.BASE_URL}/api/devices/discover")
-            val conn = openConnection(url).apply {
-                connectTimeout = 6000
-                readTimeout = 6000
-                requestMethod = "GET"
-                setRequestProperty("Accept", "application/json")
-            }
-            if (conn.responseCode in 200..299) {
-                val text = BufferedReader(InputStreamReader(conn.inputStream)).use { it.readText() }
-                val arr = JSONArray(text)
-                for (i in 0 until arr.length()) {
-                    val obj = arr.getJSONObject(i)
-                    val fn = obj.optString("friendly_name", "Smart TV")
-                    val ip = obj.optString("ip", "")
-                    val dtype = obj.optString("device_type", "android_tv")
-                    list.add("$fn ($ip) • $dtype")
-                }
-            }
-            conn.disconnect()
-        } catch (e: Exception) {
-            Log.w(TAG, "discoverNetworkDevices error: ${e.message}")
-        }
-        list
-    }
+    // Remoção da ferramenta não necessária de descoberta de Smart TVs na LAN (diretriz item 2.2)
 
     suspend fun pauseAlerts(minutes: Int = 60): Boolean = withContext(Dispatchers.IO) {
         try {

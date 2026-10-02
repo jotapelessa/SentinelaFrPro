@@ -3,7 +3,11 @@ package com.sentinela.pro.data
 data class CameraItem(
     val name: String,
     val friendlyName: String = name,
-    val enabled: Boolean = true
+    val enabled: Boolean = true,
+    val resolution: String = "1080p",
+    val fps: Int = 24,
+    val bitrate: Int = 2048,
+    val streamMode: String = "mse"
 )
 
 data class CaptureEvent(

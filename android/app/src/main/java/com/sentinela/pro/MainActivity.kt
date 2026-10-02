@@ -121,6 +121,20 @@ class MainActivity : ComponentActivity() {
 
             LaunchedEffect(Unit) {
                 loadCameras()
+                // Escuta eventos em tempo real para sincronização instantânea (< 50ms) entre TV, Mobile e Web
+                coroutineScope.launch {
+                    try {
+                        com.sentinela.pro.network.SentinelaWebSocket.events.collect { event ->
+                            val type = event.optString("type", "")
+                            if (type == "DEVICE_CONFIG_UPDATED" || type == "CAMERA_CONFIG_CHANGED" || type == "CAMERAS_UPDATED") {
+                                android.util.Log.i("MainActivity", "Sincronização em tempo real recebida via WebSocket: $type")
+                                loadCameras()
+                            }
+                        }
+                    } catch (e: Exception) {
+                        android.util.Log.w("MainActivity", "WebSocket sync collector: ${e.message}")
+                    }
+                }
                 // Periodic heartbeat every 25 seconds to keep device marked as online in /screens
                 while (true) {
                     kotlinx.coroutines.delay(25000)

@@ -557,13 +557,15 @@ fun TvCamerasViewport(
                 )
         ) {
             selectedCamera?.let { camera ->
-                SeamlessCameraImage(
-                    cameraName = camera.id,
-                    contentDescription = camera.name,
-                    modifier = Modifier.fillMaxSize(),
-                    isStreaming = isHeroStreaming,
-                    streamMode = streamMode
-                )
+                key(camera.id) {
+                    SeamlessCameraImage(
+                        cameraName = camera.id,
+                        contentDescription = camera.name,
+                        modifier = Modifier.fillMaxSize(),
+                        isStreaming = isHeroStreaming,
+                        streamMode = streamMode
+                    )
+                }
 
                 // Standby / Detection Monitoring HUD Overlay when streaming is suspended
                 if (!isHeroStreaming) {
@@ -907,7 +909,11 @@ fun TvCamerasViewport(
                                         onSelectCamera(camera)
                                         true
                                     }
-                                    keyEvent.key == Key.MediaPlayPause || keyEvent.key == Key.Menu -> {
+                                    keyEvent.key == Key.MediaPlayPause || keyEvent.key == Key.Menu || 
+                                    keyEvent.key == Key.ButtonY || keyEvent.key == Key.Info ||
+                                    keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_PROG_YELLOW ||
+                                    keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_INFO ||
+                                    keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_MENU -> {
                                         val nextState = !isPipCamEnabled
                                         isPipCamEnabled = nextState
                                         prefs.setCameraPipEnabled(camera.id, nextState)
@@ -3616,6 +3622,8 @@ fun TvSettingsViewport(
                         } else posIndex
                     )
                 }
+                var syncJob by remember { mutableStateOf<kotlinx.coroutines.Job?>(null) }
+                val syncScope = rememberCoroutineScope()
 
                 Column(
                     modifier = Modifier
@@ -3736,8 +3744,11 @@ fun TvSettingsViewport(
                                                     message = "Posição do PiP alterada para ${pos.label} (Câmera: $selectedConfigCameraId)",
                                                     metadata = mapOf("position" to pos.name, "camera" to selectedConfigCameraId)
                                                 )
-                                                Toast.makeText(context, "Posição PiP: ${pos.label}", Toast.LENGTH_SHORT).show()
-                                                settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
+                                                syncJob?.cancel()
+                                                syncJob = syncScope.launch {
+                                                    kotlinx.coroutines.delay(500L)
+                                                    SentinelaRepository.pushLocalSettingsToServer(prefs)
+                                                }
                                             }
                                     ) {
                                         Box(

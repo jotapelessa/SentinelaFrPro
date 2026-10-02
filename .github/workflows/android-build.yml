@@ -55,7 +55,7 @@ jobs:
     - name: Build and Package APKs
       working-directory: android
       env:
-        GRADLE_OPTS: "-Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
+        GRADLE_OPTS: "-Xmx3072m -XX:+UseG1GC -Dorg.gradle.internal.http.socketTimeout=120000 -Dorg.gradle.internal.http.connectionTimeout=120000"
       run: |
         chmod +x gradlew
         export ANDROID_HOME="${ANDROID_HOME:-/usr/local/lib/android/sdk}"
@@ -74,6 +74,9 @@ jobs:
         # Limpar journals de cache corrompidos
         rm -rf ~/.gradle/caches/journal* 2>/dev/null || true
 
+        # Criar diretório base de outputs caso não exista
+        mkdir -p app/build/outputs/apk/tv/debug app/build/outputs/apk/smartphone/debug || true
+
         # Validação do wrapper
         ./gradlew --version || gradle --version
         
@@ -90,17 +93,31 @@ jobs:
 
         echo "### 📋 APKs Encontrados" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
-        find app/build/outputs/apk/ -name "*.apk" -type f >> $GITHUB_STEP_SUMMARY 2>&1
+        find app/build/outputs/apk/ -name "*.apk" -type f >> $GITHUB_STEP_SUMMARY 2>&1 || true
         echo '```' >> $GITHUB_STEP_SUMMARY
         
         VER="${{ steps.get_version.outputs.version }}"
         DEST="${GITHUB_WORKSPACE}/release-apks"
         mkdir -p "$DEST"
         
-        cp app/build/outputs/apk/tv/debug/app-tv-debug.apk "$DEST/sentinela-android-tv-v${VER}.apk"
-        cp app/build/outputs/apk/tv/debug/app-tv-debug.apk "$DEST/sentinela-android-tv-latest.apk"
-        cp app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk "$DEST/sentinela-android-smartphone-v${VER}.apk"
-        cp app/build/outputs/apk/smartphone/debug/app-smartphone-debug.apk "$DEST/sentinela-android-smartphone-latest.apk"
+        TV_APK=$(find app/build/outputs/apk -name "*tv*debug*.apk" -type f | head -n 1)
+        PHONE_APK=$(find app/build/outputs/apk -name "*smartphone*debug*.apk" -type f | head -n 1)
+
+        if [ -n "$TV_APK" ] && [ -f "$TV_APK" ]; then
+          cp "$TV_APK" "$DEST/sentinela-android-tv-v${VER}.apk"
+          cp "$TV_APK" "$DEST/sentinela-android-tv-latest.apk"
+          echo "✅ TV APK copiado: $TV_APK"
+        else
+          echo "⚠️ TV APK não encontrado!"
+        fi
+
+        if [ -n "$PHONE_APK" ] && [ -f "$PHONE_APK" ]; then
+          cp "$PHONE_APK" "$DEST/sentinela-android-smartphone-v${VER}.apk"
+          cp "$PHONE_APK" "$DEST/sentinela-android-smartphone-latest.apk"
+          echo "✅ Smartphone APK copiado: $PHONE_APK"
+        else
+          echo "⚠️ Smartphone APK não encontrado!"
+        fi
         
         echo "### ✅ Release APKs Prontos" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY

@@ -215,6 +215,11 @@ fun CameraItem.toEntity(index: Int, host: String): CameraEntity {
         status = CameraStatus.ONLINE,
         thumbnailUrl = snapUrl,
         streamUrl = stream,
-        telemetry = CameraStreamTelemetry(resolution = "1080p", fps = 24, latencyMs = 85, bitrateKbps = 1800)
+        telemetry = CameraStreamTelemetry(
+            resolution = this.resolution.ifBlank { "1080p" },
+            fps = this.fps.coerceAtLeast(1),
+            latencyMs = 85,
+            bitrateKbps = this.bitrate.coerceAtLeast(512)
+        )
     )
 }

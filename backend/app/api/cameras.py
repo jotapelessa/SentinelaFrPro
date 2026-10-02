@@ -582,6 +582,20 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
         import asyncio
         asyncio.create_task(sync_camera_to_frigate(cam))
 
+    # Disparo de notificação broadcast em tempo real para todos os clientes conectados (TVs, Smartphone, Web)
+    try:
+        from app.services.pip_gateway import pip_gateway_service
+        import asyncio
+        asyncio.create_task(pip_gateway_service.broadcast_event({
+            "type": "CAMERA_CONFIG_CHANGED",
+            "camera": cam.name,
+            "friendly_name": cam.friendly_name,
+            "resolution": getattr(cam, "resolution", "1080p"),
+            "stream_mode": getattr(cam, "stream_mode", "mse")
+        }))
+    except Exception as e:
+        logger.warning(f"Failed to broadcast CAMERA_CONFIG_CHANGED: {e}")
+
     await audit_service.log(
         action="CAMERA_UPDATED",
         module="CAMERA",

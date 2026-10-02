@@ -606,7 +606,8 @@ class OverlayService : Service() {
 
         val density = resources.displayMetrics.density
         val targetWidthPx = (pipSize.width * density).toInt()
-        val targetHeightPx = (pipSize.height * density).toInt()
+        // Proporção matemática 16:9 estrita baseada na largura calculada (evita wide/ultra-wide deformado)
+        val targetHeightPx = (targetWidthPx * 9) / 16
 
         // 1. Idempotência absoluta: se o PiP já está exibindo a MESMA câmera no MESMO modo de vídeo,
         // JAMAIS reiniciamos o WebView nem chamamos loadUrl(), evitando tempestades de reconexão.
@@ -662,7 +663,7 @@ class OverlayService : Service() {
         }
         val density = resources.displayMetrics.density
         val targetWidthPx = (pipSize.width * density).toInt()
-        val targetHeightPx = (pipSize.height * density).toInt()
+        val targetHeightPx = (targetWidthPx * 9) / 16
         val marginPx = (24 * density).toInt()
 
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${resolvedCamera}/latest.jpg?h=720")
@@ -759,7 +760,7 @@ class OverlayService : Service() {
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT
                             )
-                            scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
+                            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
                             setBackgroundColor(Color.BLACK)
                         }
                         pipImageView = snapImageView

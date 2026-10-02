@@ -56,8 +56,8 @@ object SentinelaDimens {
     val xs = 4.dp
     val sm = 8.dp
     val md = 12.dp
-    val screenPadding = 16.dp
-    val feedGap = 16.dp
+    val screenPadding = 12.dp
+    val feedGap = 10.dp
 
     // Ergonomia One-Hand UI
     val MinTouchTarget = 48.dp                     // Área mínima de toque com o polegar

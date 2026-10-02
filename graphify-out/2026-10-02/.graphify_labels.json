@@ -6,7 +6,7 @@
   "4": "sentinela-pro-tv/src/App.tsx",
   "5": "cameras.py",
   "6": "SentinelaRepository",
-  "7": "settings.py",
+  "7": "post",
   "8": "sentinela-pro-mobile-nvr/src/App.tsx",
   "9": "compilerOptions",
   "10": "Observer",
@@ -37,7 +37,7 @@
   "35": "CameraItem",
   "36": "manifest.json",
   "37": "PipSize",
-  "38": "export_backup",
+  "38": "settings.py",
   "39": "gradlew",
   "40": "onp-spec-driven — a especificação que continua verdadeira (Antigravity)",
   "41": "WebSocketManager",
@@ -64,7 +64,7 @@
   "62": "next-env.d.ts",
   "63": "postcss.config.mjs",
   "64": "backup/page.tsx",
-  "65": "delete_events_batch",
+  "65": "events.py",
   "66": "storage/page.tsx",
   "67": "telegram/page.tsx",
   "68": "tailwind.config.ts",
@@ -107,5 +107,8 @@
   "105": "main.py",
   "106": "get",
   "107": "trigger_network_scan",
-  "110": "SentinelaPreferences"
+  "108": "ingest_client_logs",
+  "109": "clean_server_storage",
+  "110": "SentinelaPreferences",
+  "111": "MemoryRingBufferHandler"
 }
