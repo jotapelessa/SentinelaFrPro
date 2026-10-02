@@ -342,19 +342,20 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     setStreamStallCount(0);
   };
 
-  // Watchdog de Auto-Reconexão e Anti-Congelamento (AC-028)
+  // Watchdog de Auto-Reconexão e Anti-Congelamento Resiliente (AC-028)
   useEffect(() => {
     if (isPaused || !isActivePlayer || streamMode === "monitor") return;
 
     let reconnectWatchdog: NodeJS.Timeout;
-    const WATCHDOG_INTERVAL_MS = 25000; // Heartbeat a cada 25 segundos
+    const WATCHDOG_INTERVAL_MS = 45000; // Heartbeat a cada 45 segundos para estabilidade
 
     const checkStreamHealth = () => {
       // Se a aba estiver em segundo plano, não força reconexão desnecessária
       if (typeof document !== "undefined" && document.hidden) return;
 
-      // Executa probe leve no endpoint do go2rtc para aferir liveness da câmera
-      fetch(`/go2rtc/api/streams?src=${encodeURIComponent(cameraSrc)}`, { method: "HEAD", signal: AbortSignal.timeout(3000) })
+      const activeProbeSrc = getEffectiveSrc();
+      // Executa probe leve no endpoint do go2rtc para aferir liveness da câmera ativa
+      fetch(`/go2rtc/api/streams?src=${encodeURIComponent(activeProbeSrc)}`, { method: "HEAD", signal: AbortSignal.timeout(6000) })
         .then((res) => {
           if (!res.ok) {
             setStreamStallCount((prev) => prev + 1);
@@ -365,11 +366,11 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
         .catch(() => {
           setStreamStallCount((prev) => {
             const next = prev + 1;
-            if (next >= 2) {
-              // Recuperação inteligente: aciona reload suave ou faz failover para MSE
+            // Exige 4 falhas consecutivas antes de acionar reload para evitar quedas espúrias de 5s
+            if (next >= 4) {
               setIsWatchdogRecovering(true);
               setKey((k) => k + 1);
-              setTimeout(() => setIsWatchdogRecovering(false), 2000);
+              setTimeout(() => setIsWatchdogRecovering(false), 2500);
               return 0;
             }
             return next;
@@ -382,7 +383,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     return () => {
       clearInterval(reconnectWatchdog);
     };
-  }, [cameraSrc, isPaused, isActivePlayer, streamMode]);
+  }, [cameraSrc, streamQuality, isPaused, isActivePlayer, streamMode]);
 
   // Pipeline de Frame / Snapshot HD Nativo com Failover (AC-029)
   useEffect(() => {
@@ -449,7 +450,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
       clearTimeout(timer);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [streamMode, cameraSrc, ecoFps, key, isPaused, isActivePlayer]);
+  }, [streamMode, cameraSrc, streamQuality, ecoFps, key, isPaused, isActivePlayer]);
 
   const handleQualityChange = async (newQuality: "minima" | "media" | "maxima") => {
     setStreamQuality(newQuality);
@@ -475,12 +476,13 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 
   const getStreamUrl = () => {
     const activeSrc = getEffectiveSrc();
+    // background=true impede que o go2rtc execute o timer de 5s de desconexão (Regra de Ouro #1/Streaming 24/7)
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&media=video`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&media=video&background=true`;
       case "mse":
       default:
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&media=video`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&media=video&background=true`;
     }
   };
 

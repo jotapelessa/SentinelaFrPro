@@ -1,12 +1,30 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-02 18:10 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.161 (Build 161). Resolução definitiva de gargalos de hardware decoder na troca de câmeras na TV, proporção matemática estrita 16:9 no PiP flutuante, suporte estendido a múltiplos códigos D-Pad nos cards, telemetria real em tempo real via API REST/WebSocket, layout compacto no Smartphone com edição real de câmeras no backend, debounce de sincronização na TV e CI/CD corrigido no GitHub Actions.
+> **Última Atualização:** 2026-10-02 18:55 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.162 (Build 162). Resolução definitiva das quedas de 5 segundos nas transmissões Web/MSE através de neutralização de auto-disconnect (`background=true`), tolerância estendida de watchdog no frontend, eliminação de subprocessos ffmpeg transcode instáveis e harmonização total dos streams 720p/sub para ambas as câmeras ativas físicas (cam 196 e cam 47).
 
 ---
 
-## 📦 Versão Atual: v001.000.000.161 (Build 161) — Resolução Definitiva de Transmissões, Aspect Ratio Estrito e CI/CD Verde
+## 📦 Versão Atual: v001.000.000.162 (Build 162) — Resolução Definitiva de Transmissões Web 24/7 (Fim do Ciclo de 5 Segundos) e Harmonização Dual-Cam
+- **Data**: 2026-10-02
+- **Objetivo**: Conclusão da harmonização técnica e resolução das quedas contínuas de transmissão:
+  1. **Fim das Quedas Cíclicas de 5 Segundos no Stream Web (`WebRTCPlayer.tsx`)**:
+     - Descoberta da causa raiz: o componente `video-rtc.js` do go2rtc possui um timer interno de `DISCONNECT_TIMEOUT = 5000` disparado no `disconnectedCallback` quando `background !== true`.
+     - Injeção obrigatória do parâmetro `&background=true&media=video` na URL do iframe no `WebRTCPlayer.tsx`, impedindo encerramento de sockets WebSocket por oscilações de renderização.
+  2. **Watchdog de Probe Resiliente no Frontend (`WebRTCPlayer.tsx`)**:
+     - O probe leve de integridade do stream agora consulta `effectiveSrc` (respeitando se a câmera está em 720p, sub ou 1080p) e possui timeout seguro de 6000ms.
+     - Aumento da tolerância para 4 falhas consecutivas antes de qualquer reload, eliminando reloads em falso a cada 5 segundos.
+  3. **Harmonização do Pipeline de Vídeo 720p / Sub no go2rtc e Frigate (`config.yml`)**:
+     - Eliminação de processos `ffmpeg:...#scale=1280:720#hardware` órfãos que travavam com erro `RTP: bad cseq` no go2rtc.
+     - Streams `cam_192_168_1_196_720p` e `cam_192_168_1_47_720p` agora utilizam restream direto estável sem sobrecarga da CPU.
+     - Ambas as câmeras ativas (`cam_192_168_1_196` e `cam_192_168_1_47`) sincronizadas e ativas no Frigate NVR.
+  4. **Sincronização Semântica Unificada v001.000.000.162 (Build 162)**:
+     - `android/version.properties`, `frontend/src/constants/version.ts`, `backend/app/core/config.py`, `README.md` e `STATE.md`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.161 (Build 161) — Resolução de Decoder TV, Aspect Ratio 16:9 Estrito e CI/CD Verde
 - **Data**: 2026-10-02
 - **Objetivo**: Conclusão da harmonização técnica e resolução pontual de todos os problemas relatados:
   1. **Eliminação de Travamento ao Alternar Câmeras na TV (`TvNetflixScreen.kt`)**:

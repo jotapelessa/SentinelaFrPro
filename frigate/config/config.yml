@@ -87,24 +87,35 @@ go2rtc:
   streams:
     # =========================================================
     # cam_192_168_1_196 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
-    # STR-002: Ingestão única do MAIN (Regra de Ouro #12/#15).
-    # Cascata local: o _720p e _sub leem do loopback RTSP, não da câmera.
-    # SEC-004: credenciais via variável de ambiente (definir no .env do servidor)
+    # STR-002: Ingestão de MAIN e SUB nativos da câmera em H.264 CFR
+    # Restream direto via loopback para Frigate e Clientes Web/TV/Mobile
     # =========================================================
     cam_192_168_1_196:
     - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
     cam_192_168_1_196_main:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196
     cam_192_168_1_196_720p:
-    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_196#video=h264#scale=1280:720#b=2048k#hardware
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
     cam_192_168_1_196_sub:
-    - ffmpeg:rtsp://127.0.0.1:8554/cam_192_168_1_196#video=h264#scale=800:448#b=512k#hardware
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#buffer=1000
+
+    # =========================================================
+    # cam_192_168_1_47 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
+    # =========================================================
+    cam_192_168_1_47:
+    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#buffer=1000
+    cam_192_168_1_47_main:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_47
+    cam_192_168_1_47_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
+    cam_192_168_1_47_sub:
+    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#buffer=1000
 
     # Aliases de compatibilidade legada
     camera_principal:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196
     camera_secundaria:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196
+    - rtsp://127.0.0.1:8554/cam_192_168_1_47
 
     # =========================================================
     # Câmeras DESABILITADAS — streams comentados para não manter
@@ -235,6 +246,80 @@ cameras:
           threshold: 0.7
     motion:
       # STR-004: threshold calibrado em 18 (STATE.md v140 — perdeu eventos sutis com 25)
+      threshold: 18
+    record:
+      enabled: true
+      motion:
+        days: 14
+      continuous:
+        days: 0
+      alerts:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+      detections:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+    review:
+      alerts:
+        labels:
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
+        required_zones: []
+      detections:
+        labels:
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
+        required_zones: []
+
+  cam_192_168_1_47:
+    enabled: true
+    ffmpeg:
+      hwaccel_args: preset-vaapi
+      inputs:
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_47
+        input_args: preset-rtsp-restream
+        roles:
+        - record
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
+        input_args: preset-rtsp-restream
+        roles:
+        - detect
+      output_args:
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
+    detect:
+      width: 800
+      height: 448
+      fps: 5
+      enabled: true
+    snapshots:
+      enabled: true
+      bounding_box: true
+    objects:
+      track:
+      - person
+      - car
+      - motorcycle
+      - dog
+      filters:
+        person:
+          threshold: 0.7
+    motion:
       threshold: 18
     record:
       enabled: true
