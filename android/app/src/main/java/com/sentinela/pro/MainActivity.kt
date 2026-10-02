@@ -127,7 +127,7 @@ class MainActivity : ComponentActivity() {
                         val ws = com.sentinela.pro.network.SentinelaWebSocket(
                             serverUrl = com.sentinela.pro.SentinelaConfig.currentHost,
                             deviceIdentifier = prefs.deviceIdentifier,
-                            deviceType = if (isTv) "android_tv" else "smartphone"
+                            deviceType = if (isTv()) "android_tv" else "smartphone"
                         )
                         launch { ws.connectAndListen() }
                         launch {
