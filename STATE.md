@@ -1,12 +1,25 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-02 11:10 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.156 (Build 156). Resolução definitiva do expurgo de armazenamento SSD NVMe (arquivos órfãos e cálculo de cutoff corrigidos), controle térmico estrito do host Ubuntu (limite de 5 FPS no detect, hardware VAAPI em todas as câmeras, queda de 135% para 45% CPU) e cascateamento loopback no go2rtc para PiP sem stalls na TV.
+> **Última Atualização:** 2026-10-02 11:30 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.157 (Build 157). Deduplicação estrita de câmeras ativas no DOM do Web Dashboard e na LazyColumn do Android Smartphone, alias de loopback universal no go2rtc para PiP/Web sem concorrência de sockets e total harmonização H.264 CFR.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.156 (Build 156) — Correção Definitiva de Limpeza SSD, Otimização Térmica e Cascateamento go2rtc
+## 📦 Versão Atual: v001.000.000.157 (Build 157) — Deduplicação Estrita de Câmeras, Loopback Universal no go2rtc e Otimização Extrema de Recursos
+- **Data**: 2026-10-02
+- **Objetivo**: Conclusão da harmonização completa entre Frigate NVR, go2rtc, Web Dashboard, Android TV e Android Smartphone:
+  1. **Deduplicação Estrita de Câmeras & Zero Re-renders (`CameraMosaic.tsx` & `MobileGridScreen.kt`)**:
+     - No Web Dashboard (`CameraMosaic.tsx`), filtro estrito `enabled !== false` e deduplicação por nome único de câmera (`activeCamerasList`), impedindo montagens desnecessárias de players de vídeo e mantendo o DOM leve.
+     - No Android Smartphone (`MobileGridScreen.kt`), deduplicação de câmeras ativas via `distinctBy { it.name }` com chaves estáveis no `items(activeCameras, key = { it.name })`, reduzindo desperdício de CPU na rolagem do feed vertical.
+  2. **Loopback Universal no go2rtc & Ingestão Única (`cameras.py`)**:
+     - Garantia de que todos os perfis (`target_cam_key`, `_720p`, `_main` e `camera_principal`) utilizem loopback `rtsp://127.0.0.1:8554/` para eliminar 100% de conexões concorrentes no firmware das câmeras físicas (Regra de Ouro #15).
+  3. **Governança & Versão Unificada**:
+     - Atualização semântica sincronizada em `001.000.000.157` (Build 157) em todos os componentes: `android/version.properties`, `frontend/src/constants/version.ts` e `backend/app/core/config.py`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.156 (Build 156) — Correção Definitiva de Limpeza SSD, Otimização Térmica e Cascateamento go2rtc
 - **Data**: 2026-10-02
 - **Objetivo**: Conclusão da auditoria forense e saneamento dos gargalos operacionais:
   1. **Expurgo de Armazenamento e Limpeza de Disco (`settings.py`)**:

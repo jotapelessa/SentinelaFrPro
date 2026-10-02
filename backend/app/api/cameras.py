@@ -1423,6 +1423,9 @@ async def sync_camera_to_frigate(cam: Camera):
             cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}_sub"]
         else:
             cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}"]
+        # Alias camera_principal para compatibilidade total de clientes legados e TV PiP
+        if "camera_principal" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_principal"]:
+            cfg["go2rtc"]["streams"]["camera_principal"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}"]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
 

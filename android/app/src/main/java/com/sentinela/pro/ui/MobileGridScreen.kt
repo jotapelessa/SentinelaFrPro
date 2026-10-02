@@ -40,6 +40,9 @@ fun MobileGridScreen(
     onRefresh: () -> Unit = {}
 ) {
     var selectedCamera by remember { mutableStateOf<CameraItem?>(null) }
+    val activeCameras = remember(cameras) {
+        cameras.filter { it.enabled }.distinctBy { it.name }
+    }
 
     Box(
         modifier = Modifier
@@ -98,7 +101,7 @@ fun MobileGridScreen(
                             }
                         }
                         Text(
-                            text = "${cameras.size} câmeras conectadas",
+                            text = "${activeCameras.size} câmeras conectadas",
                             color = Color(0xFF94A3B8),
                             fontSize = 12.sp
                         )
@@ -118,7 +121,7 @@ fun MobileGridScreen(
                 }
             }
 
-            items(cameras) { camera ->
+            items(activeCameras, key = { it.name }) { camera ->
                 CameraCardMobile(
                     camera = camera,
                     onClick = { selectedCamera = camera }

@@ -125,19 +125,31 @@ export const CameraMosaic: React.FC = () => {
   const totalPersons = events.filter(e => e.label === "person").length;
   const totalVehicles = events.filter(e => e.label === "car" || e.label === "motorcycle").length;
 
-  // STRICT SINGLE PLAYER POLICY: Only one camera streams live video at any time
+  // STRICT SINGLE PLAYER POLICY & DEDUPLICATION (Regra de Ouro #10):
+  // Apenas câmeras habilitadas (enabled) e deduplicadas por nome são renderizadas
+  const activeCamerasList = React.useMemo(() => {
+    const enabledOnly = (cameras || []).filter(c => c.enabled !== false);
+    const seen = new Set<string>();
+    return enabledOnly.filter(c => {
+      const key = (c.name || c.id || "").toString();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [cameras]);
+
   const [activeStreamingCameraId, setActiveStreamingCameraId] = useState<string | number | null>(null);
 
   useEffect(() => {
-    if (cameras.length > 0 && !activeStreamingCameraId) {
-      setActiveStreamingCameraId(cameras[0].id || cameras[0].name);
+    if (activeCamerasList.length > 0 && !activeStreamingCameraId) {
+      setActiveStreamingCameraId(activeCamerasList[0].id || activeCamerasList[0].name);
     }
-  }, [cameras, activeStreamingCameraId]);
+  }, [activeCamerasList, activeStreamingCameraId]);
 
   const activeCamKey = activeStreamingCameraId;
-  const activeCamera = cameras.find(c => (c.id || c.name) === activeCamKey) ?? cameras[0];
+  const activeCamera = activeCamerasList.find(c => (c.id || c.name) === activeCamKey) ?? activeCamerasList[0];
   const otherCameras = activeCamera
-    ? cameras.filter(c => (c.id || c.name) !== (activeCamera.id || activeCamera.name))
+    ? activeCamerasList.filter(c => (c.id || c.name) !== (activeCamera.id || activeCamera.name))
     : [];
 
   return (
@@ -148,7 +160,7 @@ export const CameraMosaic: React.FC = () => {
           <div className="flex items-center gap-2">
             <span className={`w-2.5 h-2.5 rounded-full ${activeCount > 0 ? "bg-rose-500 animate-ping shadow-lg shadow-rose-500/50" : "bg-emerald-400 animate-pulse shadow-lg shadow-emerald-500/50"}`} />
             <span className="text-xs font-mono font-bold text-slate-200">
-              {cameras.length} {cameras.length === 1 ? "Câmera Ativa" : "Câmeras Ativas"}
+              {activeCamerasList.length} {activeCamerasList.length === 1 ? "Câmera Ativa" : "Câmeras Ativas"}
             </span>
           </div>
 
