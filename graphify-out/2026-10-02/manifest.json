@@ -264,15 +264,15 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/data/Models.kt": {
-    "mtime": 1790964324.4523792,
-    "seen": 1790964959.335788,
-    "ast_hash": "5ed6207e9baebfddb9451c6960d9e2d2",
+    "mtime": 1790340125.329993,
+    "seen": 1790950512.454735,
+    "ast_hash": "47edf32e4b23741614284e213b4cb5b7",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/data/SentinelaPreferences.kt": {
-    "mtime": 1790964342.8740883,
-    "seen": 1790964959.335788,
-    "ast_hash": "47c9880254646a5c7d80410c851390d2",
+    "mtime": 1790340143.7534163,
+    "seen": 1790950512.4547358,
+    "ast_hash": "f6a6ea80ef296cee82040d105db4f744",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt": {
@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1790964372.4774745,
-    "seen": 1790964959.335791,
-    "ast_hash": "60fabf254ef23178624b97f61719931e",
+    "mtime": 1790295683.7904665,
+    "seen": 1790295789.9643,
+    "ast_hash": "65541acbfc3525873383882b130c0d4b",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -306,15 +306,15 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
-    "mtime": 1790964551.6140738,
-    "seen": 1790964959.335792,
-    "ast_hash": "3125fec5a275cb35196fcb9cd64af469",
+    "mtime": 1790947463.6369448,
+    "seen": 1790950512.45474,
+    "ast_hash": "c81a5db0fbbabb86c90721adb8bfd50e",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
-    "mtime": 1790964330.5569768,
-    "seen": 1790964959.335792,
-    "ast_hash": "af5c2b9338742293a0b98025dd941c38",
+    "mtime": 1790277528.0746553,
+    "seen": 1790277947.749454,
+    "ast_hash": "6da36b90073d9fb22df28c30a3e71af1",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt": {
@@ -324,9 +324,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt": {
-    "mtime": 1790964881.7981951,
-    "seen": 1790964959.3357928,
-    "ast_hash": "1424990077d372e9c9bde85f802779df",
+    "mtime": 1790960592.3553855,
+    "seen": 1790960666.3388228,
+    "ast_hash": "2a984d603b16624accbdef0fc7f19ad0",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1790964909.20544,
-    "seen": 1790964959.3358011,
-    "ast_hash": "cec1394ea2ac341dba38ecd994eca8d4",
+    "mtime": 1790959248.0631375,
+    "seen": 1790959397.525043,
+    "ast_hash": "72e57b124b3fde46d67297edc9ef4c5c",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1790964926.426756,
-    "seen": 1790964959.335843,
-    "ast_hash": "69d52068e8e9c2ad1a27d9d6f7b922a9",
+    "mtime": 1790959306.3218932,
+    "seen": 1790959397.525086,
+    "ast_hash": "f2d0f4ba77a11195b09d28f9b89f1f71",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1790964942.6112366,
-    "seen": 1790964959.335843,
-    "ast_hash": "ad4db5f83a75f8b24f009a255de82ae3",
+    "mtime": 1790959285.1178858,
+    "seen": 1790959397.5250869,
+    "ast_hash": "f13f0e663b633e6aaebf5e9bed635459",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1790964902.08381,
-    "seen": 1790964959.3358238,
-    "ast_hash": "444126f63ef75e9b107cbc9c4bce8eec",
+    "mtime": 1790959264.24729,
+    "seen": 1790959397.525067,
+    "ast_hash": "75567eae585e97f0ab51e7d4d4b9eabc",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {

@@ -54,7 +54,7 @@ object TvDimens {
     val SidebarWidth = 250.dp
     val GridMinCardWidth = 200.dp
     val PipWidth = 320.dp
-    val PipHeight = 200.dp
+    val PipHeight = 180.dp
 }
 
 object TvShapes {

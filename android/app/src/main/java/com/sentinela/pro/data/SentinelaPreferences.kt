@@ -22,6 +22,14 @@ class SentinelaPreferences(private val context: Context) {
         prefs.edit().putInt("pip_position_index_$cameraName", value).apply()
     }
 
+    fun isCameraPipEnabled(cameraName: String): Boolean {
+        return prefs.getBoolean("pip_enabled_camera_$cameraName", true)
+    }
+
+    fun setCameraPipEnabled(cameraName: String, enabled: Boolean) {
+        prefs.edit().putBoolean("pip_enabled_camera_$cameraName", enabled).apply()
+    }
+
     var pipDurationIndex: Int
         get() = prefs.getInt("pip_duration_index", PipDuration.D_10S.ordinal)
         set(value) = prefs.edit().putInt("pip_duration_index", value).apply()

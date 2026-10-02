@@ -1,14 +1,30 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-02 13:40 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.158 (Build 158). URLs de PiP instantâneas com snapshot em RAM (< 15ms TTFF), eliminação de forks de FFmpeg em disco no snapshot ao vivo, debounce escalonado na Page Visibility API e estabilidade térmica mantida em 62~64°C.
+> **Última Atualização:** 2026-10-02 15:15 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.159 (Build 159). Desacoplamento de foco/seleção de câmeras na TV eliminando stalls no MediaCodec, PiP estrito 16:9 sem distorções, posicionamento e ativação de PiP por câmera, card compacto e diálogo de configurações no smartphone, remoção de LAN scan desnecessário.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.158 (Build 158) — Otimização de TTFF no PiP, Snapshot em Memória RAM e Reconexão Suave Web
+## 📦 Versão Atual: v001.000.000.159 (Build 159) — Desacoplamento de Foco na TV, PiP 16:9 Estrito, Controles por Câmera e Otimização Mobile
 - **Data**: 2026-10-02
-- **Objetivo**: Conclusão da harmonização profunda de PiP, buffers de visualização e redução de I/O de disco no servidor:
+- **Objetivo**: Conclusão da harmonização completa e resolução definitiva dos gargalos de streaming e usabilidade nos clientes Android:
+  1. **Eliminação de Travamentos ao Alternar Câmeras na TV (`TvNetflixScreen.kt`)**:
+     - Desacoplamento entre `focusedCameraIndex` (navegação suave no carrossel inferior) e `selectedCameraId` (alimentação do player Hero).
+     - A troca do stream pesado no Hero Player agora ocorre apenas no clique/Enter deliberado do usuário, impedindo que a rolagem contínua instancie e desmonte decodificadores `MediaCodec` em rajadas de milissegundos.
+  2. **HUD de Telemetria Real da Câmera na TV (`TvNetflixScreen.kt`)**:
+     - Substituição do badge hardcoded "RTSP H.265" por telemetria verídica e precisa da esteira H.264 MSE/go2rtc com CFR e status real.
+  3. **Correção do Aspect Ratio do PiP para 16:9 Normal (`Models.kt` & `TvDesignTokens.kt`)**:
+     - Dimensões do enum `PipSize` corrigidas de proporção ultra-wide (32:9) para o formato 16:9 nativo do sensor das câmeras (320x180, 480x270, 640x360, 800x450, 960x540, 1120x630, 1280x720, 1440x810 dp).
+  4. **Controle Individual de PiP e Posicionamento por Câmera (`SentinelaPreferences.kt`, `OverlayService.kt` & `TvNetflixScreen.kt`)**:
+     - Cada card de câmera no carrossel da TV agora conta com um botão toggle visual para ativar/desativar PiP Preview para aquela câmera específica.
+     - A tela de configurações da TV agora possui seletor com chips de câmeras para configurar e persistir posições distintas de PiP na tela de forma granular (`setPipPositionIndex(camera, pos)`).
+  5. **Smartphone: Card Compacto, Engrenagem Funcional e Remoção de LAN Scan (`SmartphoneYouTubeScreen.kt`)**:
+     - Redução do desperdício de espaço vertical no feed de câmeras através de rodapé otimizado e botões compactos de 32dp.
+     - Implementação completa do `PhoneCameraConfigDialog`, permitindo que o botão da engrenagem configure modo de streaming preferencial e ativação de PiP por câmera.
+     - Remoção da ferramenta desnecessária de descoberta de Smart TVs na LAN e seus respectivos sockets e broadcasts em background.
+  6. **Governança & Versão Unificada**:
+     - Atualização semântica sincronizada em `001.000.000.159` (Build 159) em todos os componentes: `android/version.properties`, `frontend/src/constants/version.ts`, `backend/app/core/config.py` e `README.md`.
   1. **Aceleração de Time-to-First-Frame no PiP (`pip_gateway.py` & `OverlayService.kt`)**:
      - Injeção explícita de `snapshot_url` e `stream_url` padronizados (`mode=mse&media=video`) em todos os disparos de `pip_alert` no `pip_gateway.py`.
      - Exibição de snapshot em menos de 15ms via decodificação direta de RAM do go2rtc, eliminando qualquer tela preta ou atraso de negociação na Android TV.

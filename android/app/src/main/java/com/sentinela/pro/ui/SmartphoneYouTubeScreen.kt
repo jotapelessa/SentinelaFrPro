@@ -485,6 +485,13 @@ fun PhoneLiveCamerasTab(cameras: List<CameraItem>) {
     if (selectedZoomCamera != null) {
         PhoneZoomCameraDialog(camera = selectedZoomCamera!!, onDismiss = { selectedZoomCamera = null })
     }
+
+    if (configuringCamera != null) {
+        PhoneCameraConfigDialog(
+            camera = configuringCamera!!,
+            onDismiss = { configuringCamera = null }
+        )
+    }
 }
 
 @Composable
@@ -678,20 +685,23 @@ fun PhoneCameraStreamCard(
                 }
             }
 
-            // Rodapé do Card com Nome e Ações de Evidência
+            // Rodapé do Card Compacto e Otimizado
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable { onExpandFullscreen() }
-                    .padding(12.dp),
+                    .padding(horizontal = 10.dp, vertical = 8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
                         Text(
                             text = camera.friendlyName,
-                            style = SentinelaTypography.CardTitle,
+                            style = SentinelaTypography.CardTitle.copy(fontSize = 13.sp),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -701,60 +711,59 @@ fun PhoneCameraStreamCard(
                             border = BorderStroke(0.5.dp, SentinelaColors.PrimaryCyan.copy(alpha = 0.4f))
                         ) {
                             Text(
-                                text = "PADRÃO: ${streamMode.uppercase()}",
+                                text = streamMode.uppercase(),
                                 color = SentinelaColors.PrimaryCyan,
                                 fontSize = 8.sp,
                                 fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 5.dp, vertical = 1.dp)
+                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
                             )
                         }
                     }
                     Text(
-                        text = "Toque para tela cheia • Pinça para zoom 5x",
-                        style = SentinelaTypography.Subtext.copy(color = SentinelaColors.TextSecondary)
+                        text = "Toque: tela cheia • Pinça: zoom 5x",
+                        style = SentinelaTypography.Subtext.copy(fontSize = 10.sp, color = SentinelaColors.TextSecondary)
                     )
                 }
 
-                // Botões de Evidência Rápida (Snapshot e Gravação)
+                // Botões de Evidência Rápida (Snapshot, Gravação, Ajustes, Expandir)
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     IconButton(
                         onClick = onCaptureSnapshot,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(32.dp)
                             .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
                     ) {
-                        Icon(Icons.Default.CameraAlt, contentDescription = "Snapshot", tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.CameraAlt, contentDescription = "Snapshot", tint = SentinelaColors.PrimaryCyan, modifier = Modifier.size(15.dp))
                     }
 
                     IconButton(
                         onClick = onRecordClip,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(32.dp)
                             .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
                     ) {
-                        Icon(Icons.Default.FiberManualRecord, contentDescription = "Gravar", tint = SentinelaColors.DestructiveRed, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.FiberManualRecord, contentDescription = "Gravar", tint = SentinelaColors.DestructiveRed, modifier = Modifier.size(15.dp))
                     }
-
 
                     IconButton(
                         onClick = onConfigure,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(32.dp)
                             .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
                     ) {
-                        Icon(Icons.Default.Settings, contentDescription = "Configurar", tint = SentinelaColors.MasterGold, modifier = Modifier.size(16.dp))
+                        Icon(Icons.Default.Settings, contentDescription = "Configurar", tint = SentinelaColors.MasterGold, modifier = Modifier.size(15.dp))
                     }
 
                     IconButton(
                         onClick = onExpandFullscreen,
                         modifier = Modifier
-                            .size(36.dp)
+                            .size(32.dp)
                             .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
                     ) {
-                        Icon(Icons.Default.Fullscreen, contentDescription = "Expandir", tint = Color.White, modifier = Modifier.size(18.dp))
+                        Icon(Icons.Default.Fullscreen, contentDescription = "Expandir", tint = Color.White, modifier = Modifier.size(16.dp))
                     }
                 }
             }
@@ -1890,8 +1899,6 @@ fun PhoneToolsTab() {
     var liveTelemetry by remember { mutableStateOf<TelemetryData?>(null) }
     var healthStatuses by remember { mutableStateOf<List<com.sentinela.pro.network.SentinelaRepository.ServiceStatus>?>(null) }
     var isCheckingHealth by remember { mutableStateOf(false) }
-    var discoveredDevices by remember { mutableStateOf<List<String>?>(null) }
-    var isScanningNetwork by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         while (isActive) {
@@ -2295,83 +2302,7 @@ fun PhoneToolsTab() {
             }
         }
 
-        // 5. Varredura e Descoberta de Smart TVs na Rede Local
-        item {
-            Card(
-                shape = SentinelaShapes.CameraCard,
-                colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .border(1.dp, SentinelaColors.BorderStandard, SentinelaShapes.CameraCard)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("DESCOBERTA DE SMART TVS (LAN)", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
-                        Button(
-                            onClick = {
-                                isScanningNetwork = true
-                                coroutineScope.launch {
-                                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
-                                        category = "NETWORK",
-                                        action = "LAN_SCAN_STARTED",
-                                        severity = "INFO",
-                                        message = "Iniciada varredura de Smart TVs na LAN pelo smartphone"
-                                    )
-                                    val devs = SentinelaRepository.discoverNetworkDevices()
-                                    discoveredDevices = devs
-                                    isScanningNetwork = false
-                                    com.sentinela.pro.logging.SentinelaRemoteLogger.log(
-                                        category = "NETWORK",
-                                        action = "LAN_SCAN_FINISHED",
-                                        severity = "SUCCESS",
-                                        message = "Varredura de LAN concluída: ${devs.size} telas encontradas",
-                                        metadata = mapOf("devices_found" to devs.size)
-                                    )
-                                    Toast.makeText(context, "Varredura concluída: ${devs.size} tela(s) encontrada(s)", Toast.LENGTH_SHORT).show()
-                                }
-                            },
-                            enabled = !isScanningNetwork,
-                            shape = SentinelaShapes.SmallButton,
-                            colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.CardBackgroundElevated),
-                            contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp)
-                        ) {
-                            Text(
-                                if (isScanningNetwork) "Varrendo LAN..." else "Escanear TVs",
-                                color = SentinelaColors.PrimaryCyan,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
 
-                    if (!discoveredDevices.isNullOrEmpty()) {
-                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                            discoveredDevices!!.forEach { devStr ->
-                                Text(
-                                    text = "📺 $devStr",
-                                    color = Color.White,
-                                    fontSize = 11.sp,
-                                    fontFamily = FontFamily.Monospace,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .background(SentinelaColors.CardBackgroundElevated, SentinelaShapes.SmallButton)
-                                        .padding(6.dp)
-                                )
-                            }
-                        }
-                    } else {
-                        Text("Busca automaticamente Smart TVs (Samsung, LG, Android TV e Google Cast) ativas na rede local.", style = SentinelaTypography.Subtext)
-                    }
-                }
-            }
-        }
 
         // 6. Otimizador de Memória e Limpeza de Cache do App
         item {
@@ -2959,6 +2890,155 @@ fun PhoneZoomCameraDialog(
             }
         }
     }
+}
+
+// -------------------------------------------------------------
+// DIÁLOGO DE CONFIGURAÇÃO DA CÂMERA (ENGRENAGEM)
+// -------------------------------------------------------------
+@Composable
+fun PhoneCameraConfigDialog(
+    camera: CameraItem,
+    onDismiss: () -> Unit
+) {
+    val context = LocalContext.current
+    val prefs = remember { SentinelaPreferences(context) }
+    var currentMode by remember(camera.name) {
+        mutableStateOf(prefs.getCameraDefaultStreamMode(camera.name))
+    }
+    var isPipActive by remember(camera.name) {
+        mutableStateOf(prefs.isCameraPipEnabled(camera.name))
+    }
+    val coroutineScope = rememberCoroutineScope()
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Settings,
+                    contentDescription = null,
+                    tint = SentinelaColors.MasterGold,
+                    modifier = Modifier.size(22.dp)
+                )
+                Text(
+                    text = "Ajustes: ${camera.friendlyName}",
+                    style = SentinelaTypography.CardTitle,
+                    color = Color.White
+                )
+            }
+        },
+        text = {
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
+            ) {
+                // 1. Modo Padrão de Transmissão
+                Text(
+                    text = "MODO DE STREAMING PREFERENCIAL",
+                    style = SentinelaTypography.Subtext.copy(
+                        color = SentinelaColors.PrimaryCyan,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+
+                val modes = listOf(
+                    Triple("mse", "🌟 MSE (WebSocket)", "24 FPS ultra fluido, sem aquecimento"),
+                    Triple("webrtc", "WebRTC Direto", "Menor latência P2P"),
+                    Triple("eco", "Modo Eco Snapshot", "Economia máxima de bateria")
+                )
+
+                modes.forEach { (mKey, mTitle, mDesc) ->
+                    val isSelected = currentMode == mKey
+                    Card(
+                        shape = SentinelaShapes.SmallButton,
+                        colors = CardDefaults.cardColors(
+                            containerColor = if (isSelected) SentinelaColors.PrimaryCyan.copy(alpha = 0.15f) else SentinelaColors.CardBackground
+                        ),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .border(
+                                1.dp,
+                                if (isSelected) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard,
+                                SentinelaShapes.SmallButton
+                            )
+                            .clickable {
+                                currentMode = mKey
+                                prefs.setCameraDefaultStreamMode(camera.name, mKey)
+                                Toast.makeText(context, "Modo alterado para $mTitle", Toast.LENGTH_SHORT).show()
+                            }
+                    ) {
+                        Column(modifier = Modifier.padding(10.dp)) {
+                            Text(
+                                text = mTitle,
+                                color = if (isSelected) SentinelaColors.PrimaryCyan else Color.White,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                            Text(
+                                text = mDesc,
+                                style = SentinelaTypography.Subtext.copy(fontSize = 10.sp)
+                            )
+                        }
+                    }
+                }
+
+                Divider(color = SentinelaColors.BorderStandard, thickness = 0.5.dp)
+
+                // 2. Opção de Alerta PiP na TV
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            val next = !isPipActive
+                            isPipActive = next
+                            prefs.setCameraPipEnabled(camera.name, next)
+                            Toast.makeText(context, "PiP na TV: ${if (next) "ATIVADO" else "DESATIVADO"}", Toast.LENGTH_SHORT).show()
+                        }
+                        .padding(vertical = 4.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "PiP Preview nas Smart TVs",
+                            color = Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Permitir janela flutuante quando houver detecção",
+                            style = SentinelaTypography.Subtext.copy(fontSize = 10.sp)
+                        )
+                    }
+                    Switch(
+                        checked = isPipActive,
+                        onCheckedChange = { next ->
+                            isPipActive = next
+                            prefs.setCameraPipEnabled(camera.name, next)
+                        },
+                        colors = SwitchDefaults.colors(
+                            checkedThumbColor = SentinelaColors.PrimaryCyan,
+                            checkedTrackColor = SentinelaColors.PrimaryCyan.copy(alpha = 0.5f)
+                        )
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = onDismiss,
+                colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan),
+                shape = SentinelaShapes.SmallButton
+            ) {
+                Text("Concluir", color = Color.Black, fontWeight = FontWeight.Bold)
+            }
+        },
+        containerColor = SentinelaColors.CardBackgroundElevated,
+        shape = SentinelaShapes.CameraCard
+    )
 }
 
 // -------------------------------------------------------------

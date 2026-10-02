@@ -96,7 +96,8 @@ fun TvNetflixScreenCore(
     val context = LocalContext.current
     var selectedTab by remember { mutableStateOf(TvTab.CAMERAS) }
     var focusedCameraIndex by remember { mutableIntStateOf(0) }
-    val selectedCamera = cameras.getOrNull(focusedCameraIndex) ?: cameras.firstOrNull()
+    var selectedCameraId by remember(cameras) { mutableStateOf(cameras.firstOrNull()?.id) }
+    val selectedCamera = cameras.find { it.id == selectedCameraId } ?: cameras.firstOrNull()
 
     // Estado do Alerta PiP Flutuante na TV
     var activePipAlert by remember { mutableStateOf<PipAlert?>(null) }
@@ -192,6 +193,7 @@ fun TvNetflixScreenCore(
                             heroFullscreenFocusRequester = heroFullscreenFocusRequester,
                             onFocusCamera = { index -> focusedCameraIndex = index },
                             onSelectCamera = { camera ->
+                                selectedCameraId = camera.id
                                 SentinelaRemoteLogger.log(
                                     category = "NAVIGATION",
                                     action = "CAMERA_SELECTED",
@@ -649,7 +651,7 @@ fun TvCamerasViewport(
                     )
                 }
 
-                // HUD DE TELEMETRIA SUPERIOR DIREITO
+                // HUD DE TELEMETRIA SUPERIOR DIREITO (PADRÃO H.264 MSE GO2RTC REAL)
                 Surface(
                     shape = TvShapes.CameraCard,
                     color = TvColors.OverlayHud,
@@ -663,11 +665,11 @@ fun TvCamerasViewport(
                         horizontalAlignment = Alignment.End
                     ) {
                         Text(
-                            text = "RTSP H.265 • ${camera.telemetry.resolution}",
-                            style = TvTypography.Telemetry
+                            text = "H.264 • ${streamMode.uppercase()} • ${camera.telemetry.resolution}",
+                            style = TvTypography.Telemetry.copy(color = TvColors.CyberCyan)
                         )
                         Text(
-                            text = "LATÊNCIA: ${camera.telemetry.latencyMs}ms | BITRATE: ${camera.telemetry.bitrateKbps} kbps",
+                            text = "STATUS: ${camera.status.name} • ${camera.telemetry.fps} FPS • CFR BAIXA LATÊNCIA",
                             style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
                         )
                     }
@@ -961,20 +963,68 @@ fun TvCamerasViewport(
                             )
                         }
 
+                        var isPipCamEnabled by remember(camera.id) {
+                            mutableStateOf(prefs.isCameraPipEnabled(camera.id))
+                        }
+
                         val camMode = prefs.getCameraDefaultStreamMode(camera.id)
-                        Surface(
-                            shape = TvShapes.Badge,
-                            color = TvColors.OverlayHud,
-                            border = BorderStroke(0.5.dp, TvColors.CyberCyan),
-                            modifier = Modifier.align(Alignment.TopEnd)
+                        Row(
+                            modifier = Modifier.align(Alignment.TopEnd),
+                            horizontalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
-                                text = camMode.uppercase(),
-                                color = TvColors.CyberCyan,
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                            )
+                            // Badge clicável / interativo de PiP Preview da Câmera
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = if (isPipCamEnabled) TvColors.CyberCyan.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.6f),
+                                border = BorderStroke(0.6.dp, if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted),
+                                modifier = Modifier.clickable {
+                                    val nextState = !isPipCamEnabled
+                                    isPipCamEnabled = nextState
+                                    prefs.setCameraPipEnabled(camera.id, nextState)
+                                    SentinelaRemoteLogger.log(
+                                        category = "PIP",
+                                        action = "CAMERA_PIP_TOGGLED",
+                                        severity = "INFO",
+                                        message = "PiP da câmera ${camera.id} alterado para ${if (nextState) "ATIVADO" else "DESATIVADO"}",
+                                        metadata = mapOf("camera" to camera.id, "enabled" to nextState)
+                                    )
+                                    Toast.makeText(context, "${camera.name}: PiP ${if (nextState) "ATIVADO" else "DESATIVADO"}", Toast.LENGTH_SHORT).show()
+                                }
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                ) {
+                                    Icon(
+                                        imageVector = if (isPipCamEnabled) Icons.Default.PictureInPicture else Icons.Default.PictureInPictureAlt,
+                                        contentDescription = "PiP",
+                                        tint = if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted,
+                                        modifier = Modifier.size(10.dp)
+                                    )
+                                    Text(
+                                        text = if (isPipCamEnabled) "PiP ON" else "PiP OFF",
+                                        color = if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted,
+                                        fontSize = 8.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                }
+                            }
+
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = TvColors.OverlayHud,
+                                border = BorderStroke(0.5.dp, TvColors.CyberCyan)
+                            ) {
+                                Text(
+                                    text = camMode.uppercase(),
+                                    color = TvColors.CyberCyan,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                )
+                            }
                         }
 
                         Column(
@@ -3542,6 +3592,14 @@ fun TvSettingsViewport(
             // 2.3 POSIÇÃO DA TELA PIP (8 POSIÇÕES - Grade 4x2 Auto-Ajustável)
             // ====================================================================
             item {
+                val pipEnabledCameras = cameras.filter { prefs.isCameraPipEnabled(it.id) }
+                var selectedConfigCameraId by remember(pipEnabledCameras) {
+                    mutableStateOf(pipEnabledCameras.firstOrNull()?.id ?: cameras.firstOrNull()?.id ?: "")
+                }
+                val currentCameraPosIndex = if (selectedConfigCameraId.isNotBlank()) {
+                    prefs.getPipPositionIndex(selectedConfigCameraId)
+                } else posIndex
+
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -3560,13 +3618,68 @@ fun TvSettingsViewport(
                             Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
                                 Icon(Icons.Default.Place, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(18.dp))
                             }
-                            Text("3. POSIÇÃO DA TELA PIP (8 POSIÇÕES)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                            Text("3. POSIÇÃO DA TELA PIP POR CÂMERA (8 POSIÇÕES)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         }
                         Text(
-                            text = "Selecionado: ${com.sentinela.pro.data.PipPosition.values()[posIndex].label}",
+                            text = "Posição: ${com.sentinela.pro.data.PipPosition.values().getOrElse(currentCameraPosIndex) { com.sentinela.pro.data.PipPosition.TOP_RIGHT }.label}",
                             color = TvColors.TextSecondary,
                             fontSize = 11.sp
                         )
+                    }
+
+                    // Seletor de Câmeras com PiP Ativo (Chips Selecionáveis)
+                    if (cameras.isNotEmpty()) {
+                        Text(
+                            text = "Selecione a câmera para configurar sua posição específica na tela:",
+                            color = TvColors.TextSecondary,
+                            fontSize = 10.sp
+                        )
+                        LazyRow(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            items(cameras) { cam ->
+                                val isCamSelected = cam.id == selectedConfigCameraId
+                                val isCamPipOn = prefs.isCameraPipEnabled(cam.id)
+                                val interactionSource = remember { MutableInteractionSource() }
+                                val isFocused by interactionSource.collectIsFocusedAsState()
+
+                                Surface(
+                                    shape = TvShapes.Badge,
+                                    color = if (isCamSelected) TvColors.CyberCyan.copy(alpha = 0.2f) else if (isFocused) TvColors.CardBackgroundElevated else Color(0xFF070B14),
+                                    border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isCamSelected) TvColors.CyberCyan else TvColors.BorderSubtle),
+                                    modifier = Modifier
+                                        .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
+                                        .clickable(interactionSource = interactionSource, indication = null) {
+                                            selectedConfigCameraId = cam.id
+                                        }
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                    ) {
+                                        Text(
+                                            text = cam.name,
+                                            color = if (isCamSelected) Color.White else TvColors.TextSecondary,
+                                            fontSize = 10.sp,
+                                            fontWeight = if (isCamSelected) FontWeight.Bold else FontWeight.Normal
+                                        )
+                                        Surface(
+                                            shape = TvShapes.Badge,
+                                            color = if (isCamPipOn) TvColors.LiveGreen.copy(alpha = 0.2f) else TvColors.AlertCrimson.copy(alpha = 0.2f)
+                                        ) {
+                                            Text(
+                                                text = if (isCamPipOn) "PiP ON" else "PiP OFF",
+                                                color = if (isCamPipOn) TvColors.LiveGreen else TvColors.AlertCrimson,
+                                                fontSize = 8.sp,
+                                                modifier = Modifier.padding(horizontal = 3.dp, vertical = 1.dp)
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
 
                     // Grade 4x2 Auto-Ajustável
@@ -3580,7 +3693,7 @@ fun TvSettingsViewport(
                                 horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
                                 rowItems.forEach { pos ->
-                                    val isSelected = pos.ordinal == posIndex
+                                    val isSelected = pos.ordinal == currentCameraPosIndex
                                     val interactionSource = remember { MutableInteractionSource() }
                                     val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -3595,12 +3708,15 @@ fun TvSettingsViewport(
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 posIndex = pos.ordinal
                                                 prefs.pipPositionIndex = pos.ordinal
+                                                if (selectedConfigCameraId.isNotBlank()) {
+                                                    prefs.setPipPositionIndex(selectedConfigCameraId, pos.ordinal)
+                                                }
                                                 SentinelaRemoteLogger.log(
                                                     category = "PIP",
                                                     action = "PIP_POSITION_CHANGED",
                                                     severity = "INFO",
-                                                    message = "Posição do PiP alterada para ${pos.label} na TV",
-                                                    metadata = mapOf("position" to pos.name)
+                                                    message = "Posição do PiP alterada para ${pos.label} (Câmera: $selectedConfigCameraId)",
+                                                    metadata = mapOf("position" to pos.name, "camera" to selectedConfigCameraId)
                                                 )
                                                 Toast.makeText(context, "Posição PiP: ${pos.label}", Toast.LENGTH_SHORT).show()
                                                 settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }

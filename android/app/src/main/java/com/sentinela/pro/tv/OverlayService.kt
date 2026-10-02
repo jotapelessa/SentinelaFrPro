@@ -221,6 +221,12 @@ class OverlayService : Service() {
                     val alertPipSize = if (event.has("pip_size")) event.optString("pip_size") else null
                     val alertDuration = if (event.has("duration")) event.optInt("duration", 0) else 0
 
+                    val isCameraPipActive = prefs.isCameraPipEnabled(camera)
+                    if (!isCameraPipActive && !isTestAlert) {
+                        android.util.Log.i("OverlayService", "PiP ignorado: câmera $camera está com PiP desativado nas preferências.")
+                        return@collect
+                    }
+
                     val policy = cachedDevicePolicy
                     if (isTestAlert) {
                         // Instant rendering for test triggers: 0ms latency, zero blocking HTTP calls
@@ -532,20 +538,20 @@ class OverlayService : Service() {
             prefs.currentPipSize
         }
 
-        // Dynamically resolve PiP position: override > policy > preferences, and lock into preferences
+        // Dynamically resolve PiP position: override > policy > camera-specific preferences, and lock into preferences
         val rawPos = if (!overridePosition.isNullOrBlank()) overridePosition
                      else if (policy != null && policy.pipPosition.isNotBlank()) policy.pipPosition
                      else null
         val pipPos = if (!rawPos.isNullOrBlank()) {
             try {
                 val p = PipPosition.valueOf(rawPos.uppercase())
-                prefs.pipPositionIndex = p.ordinal
+                prefs.setPipPositionIndex(camera, p.ordinal)
                 p
             } catch (e: Exception) {
-                prefs.currentPipPosition
+                prefs.getCurrentPipPosition(camera)
             }
         } else {
-            prefs.currentPipPosition
+            prefs.getCurrentPipPosition(camera)
         }
 
         val durationSeconds = if (overrideDuration != null && overrideDuration > 0) {
