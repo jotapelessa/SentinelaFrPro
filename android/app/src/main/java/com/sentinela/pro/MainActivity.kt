@@ -124,11 +124,19 @@ class MainActivity : ComponentActivity() {
                 // Escuta eventos em tempo real para sincronização instantânea (< 50ms) entre TV, Mobile e Web
                 coroutineScope.launch {
                     try {
-                        com.sentinela.pro.network.SentinelaWebSocket.events.collect { event ->
-                            val type = event.optString("type", "")
-                            if (type == "DEVICE_CONFIG_UPDATED" || type == "CAMERA_CONFIG_CHANGED" || type == "CAMERAS_UPDATED") {
-                                android.util.Log.i("MainActivity", "Sincronização em tempo real recebida via WebSocket: $type")
-                                loadCameras()
+                        val ws = com.sentinela.pro.network.SentinelaWebSocket(
+                            serverUrl = com.sentinela.pro.SentinelaConfig.currentHost,
+                            deviceIdentifier = prefs.deviceIdentifier,
+                            deviceType = if (isTv) "android_tv" else "smartphone"
+                        )
+                        launch { ws.connectAndListen() }
+                        launch {
+                            ws.events.collect { event ->
+                                val type = event.optString("type", "")
+                                if (type == "DEVICE_CONFIG_UPDATED" || type == "CAMERA_CONFIG_CHANGED" || type == "CAMERAS_UPDATED") {
+                                    android.util.Log.i("MainActivity", "Sincronização em tempo real recebida via WebSocket: $type")
+                                    loadCameras()
+                                }
                             }
                         }
                     } catch (e: Exception) {

@@ -661,9 +661,6 @@ class OverlayService : Service() {
         } else {
             baseStreamUrl
         }
-        val density = resources.displayMetrics.density
-        val targetWidthPx = (pipSize.width * density).toInt()
-        val targetHeightPx = (targetWidthPx * 9) / 16
         val marginPx = (24 * density).toInt()
 
         val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${resolvedCamera}/latest.jpg?h=720")
