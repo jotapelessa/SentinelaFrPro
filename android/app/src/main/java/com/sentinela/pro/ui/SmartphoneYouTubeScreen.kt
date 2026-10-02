@@ -1927,10 +1927,50 @@ fun PhoneToolsTab() {
         item {
             val defaultConnections = remember {
                 listOf(
-                    com.sentinela.pro.data.SingleConnectionResult("tailscale_tunnel", "Tailscale HTTPS", "frigate.tail47a54f.ts.net", "https", com.sentinela.pro.data.ConnectionTestState.IDLE, "", 0L, 0.0),
-                    com.sentinela.pro.data.SingleConnectionResult("tailscale_direct", "Tailscale IP Direto", "100.93.129.91:8088", "http", com.sentinela.pro.data.ConnectionTestState.IDLE, "", 0L, 0.0),
-                    com.sentinela.pro.data.SingleConnectionResult("local_mdns", "Rede Local mDNS", "sentinela.local:8088", "http", com.sentinela.pro.data.ConnectionTestState.IDLE, "", 0L, 0.0),
-                    com.sentinela.pro.data.SingleConnectionResult("local_direct", "IP Direto LAN", "192.168.1.247:8088", "http", com.sentinela.pro.data.ConnectionTestState.IDLE, "", 0L, 0.0)
+                    com.sentinela.pro.data.SingleConnectionResult(
+                        id = "tailscale_tunnel",
+                        name = "Tailscale HTTPS",
+                        host = "frigate.tail47a54f.ts.net",
+                        protocol = "https",
+                        state = com.sentinela.pro.data.ConnectionTestState.IDLE,
+                        downloadMbps = 0.0,
+                        pingMs = 0L,
+                        jitterMs = 0L,
+                        details = ""
+                    ),
+                    com.sentinela.pro.data.SingleConnectionResult(
+                        id = "tailscale_direct",
+                        name = "Tailscale IP Direto",
+                        host = "100.93.129.91:8088",
+                        protocol = "http",
+                        state = com.sentinela.pro.data.ConnectionTestState.IDLE,
+                        downloadMbps = 0.0,
+                        pingMs = 0L,
+                        jitterMs = 0L,
+                        details = ""
+                    ),
+                    com.sentinela.pro.data.SingleConnectionResult(
+                        id = "local_mdns",
+                        name = "Rede Local mDNS",
+                        host = "sentinela.local:8088",
+                        protocol = "http",
+                        state = com.sentinela.pro.data.ConnectionTestState.IDLE,
+                        downloadMbps = 0.0,
+                        pingMs = 0L,
+                        jitterMs = 0L,
+                        details = ""
+                    ),
+                    com.sentinela.pro.data.SingleConnectionResult(
+                        id = "local_direct",
+                        name = "IP Direto LAN",
+                        host = "192.168.1.247:8088",
+                        protocol = "http",
+                        state = com.sentinela.pro.data.ConnectionTestState.IDLE,
+                        downloadMbps = 0.0,
+                        pingMs = 0L,
+                        jitterMs = 0L,
+                        details = ""
+                    )
                 )
             }
             var connectionList by remember { mutableStateOf(defaultConnections) }
@@ -1954,7 +1994,7 @@ fun PhoneToolsTab() {
                         val color = when {
                             isTestingThis -> SentinelaColors.PrimaryCyan
                             conn.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS -> SentinelaColors.SuccessGreen
-                            conn.state == com.sentinela.pro.data.ConnectionTestState.ERROR -> SentinelaColors.DestructiveRed
+                            conn.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> SentinelaColors.DestructiveRed
                             else -> Color.White
                         }
                         
