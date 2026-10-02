@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from pydantic import BaseModel
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
 import logging
 from app.services.telegram_vault import telegram_vault_service
 from app.services.pip_gateway import pip_gateway_service
