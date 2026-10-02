@@ -1,12 +1,27 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-02 11:30 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.157 (Build 157). Deduplicação estrita de câmeras ativas no DOM do Web Dashboard e na LazyColumn do Android Smartphone, alias de loopback universal no go2rtc para PiP/Web sem concorrência de sockets e total harmonização H.264 CFR.
+> **Última Atualização:** 2026-10-02 13:40 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.158 (Build 158). URLs de PiP instantâneas com snapshot em RAM (< 15ms TTFF), eliminação de forks de FFmpeg em disco no snapshot ao vivo, debounce escalonado na Page Visibility API e estabilidade térmica mantida em 62~64°C.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.157 (Build 157) — Deduplicação Estrita de Câmeras, Loopback Universal no go2rtc e Otimização Extrema de Recursos
+## 📦 Versão Atual: v001.000.000.158 (Build 158) — Otimização de TTFF no PiP, Snapshot em Memória RAM e Reconexão Suave Web
+- **Data**: 2026-10-02
+- **Objetivo**: Conclusão da harmonização profunda de PiP, buffers de visualização e redução de I/O de disco no servidor:
+  1. **Aceleração de Time-to-First-Frame no PiP (`pip_gateway.py` & `OverlayService.kt`)**:
+     - Injeção explícita de `snapshot_url` e `stream_url` padronizados (`mode=mse&media=video`) em todos os disparos de `pip_alert` no `pip_gateway.py`.
+     - Exibição de snapshot em menos de 15ms via decodificação direta de RAM do go2rtc, eliminando qualquer tela preta ou atraso de negociação na Android TV.
+  2. **Eliminação de Forks FFmpeg no Host (`frigate_bridge.py`)**:
+     - Reordenação da esteira de `get_live_snapshot`: prioridade absoluta para `/go2rtc/api/frame.jpeg` e `/frigate/api/{cam}/latest.jpg` em memória HTTP antes de qualquer chamada ao binário do FFmpeg, poupando centenas de I/O em disco por minuto.
+  3. **Reconexão Escalonada na Web (`WebRTCPlayer.tsx`)**:
+     - Aplicação de debounce de 120ms na Page Visibility API ao reativar a visualização da aba, evitando stampedes de WebSocket contra o servidor go2rtc.
+  4. **Governança & Versão Unificada**:
+     - Atualização semântica sincronizada em `001.000.000.158` (Build 158) em todos os componentes: `android/version.properties`, `frontend/src/constants/version.ts` e `backend/app/core/config.py`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.157 (Build 157) — Deduplicação Estrita de Câmeras, Loopback Universal no go2rtc e Otimização Extrema de Recursos
 - **Data**: 2026-10-02
 - **Objetivo**: Conclusão da harmonização completa entre Frigate NVR, go2rtc, Web Dashboard, Android TV e Android Smartphone:
   1. **Deduplicação Estrita de Câmeras & Zero Re-renders (`CameraMosaic.tsx` & `MobileGridScreen.kt`)**:

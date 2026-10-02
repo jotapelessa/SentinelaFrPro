@@ -264,15 +264,25 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   const [isWatchdogRecovering, setIsWatchdogRecovering] = useState(false);
   const [isDocumentVisible, setIsDocumentVisible] = useState(true);
 
-  // Global Page Visibility API: Suspend video stream when tab/window is hidden
+  // Global Page Visibility API: Suspend video stream when tab/window is hidden (Regra de Ouro #9)
   useEffect(() => {
     if (typeof document === "undefined") return;
+    let resumeTimeout: NodeJS.Timeout;
     const handleVisibility = () => {
-      setIsDocumentVisible(!document.hidden);
+      clearTimeout(resumeTimeout);
+      if (document.hidden) {
+        setIsDocumentVisible(false);
+      } else {
+        // Staggered resume (120ms debounce) to avoid WebSocket stampede on tab refocus
+        resumeTimeout = setTimeout(() => {
+          setIsDocumentVisible(true);
+        }, 120);
+      }
     };
     setIsDocumentVisible(!document.hidden);
     document.addEventListener("visibilitychange", handleVisibility);
     return () => {
+      clearTimeout(resumeTimeout);
       document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, []);

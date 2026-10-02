@@ -137,7 +137,17 @@ class FrigateBridgeService:
             except Exception:
                 pass
 
-        # Channel 2: FFmpeg RTSP capture at native resolution
+        # Channel 2: Frigate latest.jpg (em memória HTTP rápido, zero fork de subprocesso FFmpeg)
+        for cam in sources:
+            try:
+                async with httpx.AsyncClient(timeout=2.5) as client:
+                    res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
+                    if res.status_code == 200 and len(res.content) > 1000:
+                        return res.content
+            except Exception:
+                pass
+
+        # Channel 3: Local FFmpeg RTSP snapshot (fallback final de segurança com cleanup garantido)
         rtsp_urls = [
             f"rtsp://127.0.0.1:8554/{camera_name}",
             f"rtsp://frigate:8554/{camera_name}",
@@ -149,13 +159,13 @@ class FrigateBridgeService:
                 cmd = [
                     "ffmpeg", "-y",
                     "-rtsp_transport", "tcp",
-                    "-timeout", "3000000",
+                    "-timeout", "2000000",
                     "-i", url,
                     "-vframes", "1",
                     "-q:v", "2",
                     temp_img
                 ]
-                proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=6)
+                proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=4)
                 if proc.returncode == 0 and os.path.exists(temp_img) and os.path.getsize(temp_img) > 1000:
                     with open(temp_img, "rb") as f:
                         img_bytes = f.read()
@@ -167,16 +177,6 @@ class FrigateBridgeService:
                         os.remove(temp_img)
                     except Exception:
                         pass
-
-        # Channel 3: Frigate latest.jpg (detect stream, lower resolution fallback)
-        for cam in sources:
-            try:
-                async with httpx.AsyncClient(timeout=3.0) as client:
-                    res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
-                    if res.status_code == 200 and len(res.content) > 1000:
-                        return res.content
-            except Exception:
-                pass
 
         return None
 

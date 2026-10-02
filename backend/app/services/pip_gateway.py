@@ -317,6 +317,8 @@ class PiPGatewayService:
                 "device_id": device_id,
                 "target_device_id": device_id,
                 "target_identifier": dev.device_identifier,
+                "snapshot_url": snapshot_url,
+                "stream_url": stream_url,
                 "pause_background_player": True,
                 "standby_monitoring": True
             }
