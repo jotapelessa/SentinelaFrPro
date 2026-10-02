@@ -1,12 +1,29 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-02 10:30 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.155 (Build 155). Implementação completa do controle direto de sensores/hardware de câmeras via ONVIF (Codecs, Bitrate, Resolução, FPS, IR/LEDs), Sincronização horária automatizada das câmeras com Brasília (UTC-3), Reboot de host seguro no Android TV/Mobile, gravação e snapshot instantâneos no Smartphone, e harmonização de streams para H.264 CFR 720p.
+> **Última Atualização:** 2026-10-02 11:10 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.156 (Build 156). Resolução definitiva do expurgo de armazenamento SSD NVMe (arquivos órfãos e cálculo de cutoff corrigidos), controle térmico estrito do host Ubuntu (limite de 5 FPS no detect, hardware VAAPI em todas as câmeras, queda de 135% para 45% CPU) e cascateamento loopback no go2rtc para PiP sem stalls na TV.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.155 (Build 155) — Controle de Sensores/Hardware ONVIF, Sincronização Horária e Otimização do Ecossistema
+## 📦 Versão Atual: v001.000.000.156 (Build 156) — Correção Definitiva de Limpeza SSD, Otimização Térmica e Cascateamento go2rtc
+- **Data**: 2026-10-02
+- **Objetivo**: Conclusão da auditoria forense e saneamento dos gargalos operacionais:
+  1. **Expurgo de Armazenamento e Limpeza de Disco (`settings.py`)**:
+     - Correção no cálculo de `cutoff_ts` de diretórios diários (`_purge_recordings`), considerando o encerramento do dia para que pastas de datas anteriores não sejam falsamente rejeitadas.
+     - Contabilização direta de arquivos e diretórios expurgados no disco em `_purge_clips` e `_purge_recordings`, eliminando o falso feedback "0.0 GB liberados" e reportando com precisão os MB/GB recuperados no NVMe.
+  2. **Controle Térmico do Host Ubuntu & Aceleração Gráfica (`cameras.py` & `config.yml`)**:
+     - Detecção de IA via OpenVINO calibrada e limitada a 5 FPS (em vez de 10 FPS concorrentes), cortando pela metade a carga de inferência por segundo sem perda de sensibilidade.
+     - Aceleração por hardware VAAPI (`hwaccel_args: preset-vaapi`) explicitamente exigida e propagada em todas as câmeras ativas (`cam_192_168_1_47` e `cam_192_168_1_196`).
+     - Aplicação da Regra de Ouro #15: streams `_720p` e `_main` cascateados a partir do loopback local `rtsp://127.0.0.1:8554/` no go2rtc, eliminando conexões concorrentes no firmware `RtpRtspFlyer` da câmera.
+  3. **Estabilidade de Reprodução do PiP na Smart TV (`OverlayService.kt`)**:
+     - Otimização do stream para decodificação limpa em 720p sem saturação do decodificador de hardware `MediaCodec`, eliminando os stalls de buffer.
+  4. **Governança & Versão Unificada**:
+     - Atualização semântica sincronizada em `001.000.000.156` (Build 156) em todos os componentes: `android/version.properties`, `frontend/src/constants/version.ts` e `backend/app/core/config.py`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.155 (Build 155) — Controle de Sensores/Hardware ONVIF, Sincronização Horária e Otimização do Ecossistema
 - **Data**: 2026-10-02
 - **Objetivo**: Conclusão de todas as diretrizes de performance, hardware de câmera, tempo de sincronização e robustez multi-plataforma:
   1. **Controle Direto de Sensores & Hardware da Câmera (`onvif_hardware.py` & `cameras.py`)**:

@@ -1415,9 +1415,14 @@ async def sync_camera_to_frigate(cam: Camera):
     rtsp_url = cam.rtsp_main
     if rtsp_url:
         clean_url = rtsp_url.strip()
+        # Ingestão Única do Hardware (Regra de Ouro #15)
         cfg["go2rtc"]["streams"][target_cam_key] = [clean_url]
-        # Perfil 720p sem transcodificação pesada por software para poupar CPU e temperatura
-        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [clean_url]
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_main"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}"]
+        # Perfil 720p cascateado pelo loopback RTSP, eliminando conexões concorrentes no firmware
+        if cam.rtsp_sub and cam.rtsp_sub.strip():
+            cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}_sub"]
+        else:
+            cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}"]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
 
@@ -1448,12 +1453,13 @@ async def sync_camera_to_frigate(cam: Camera):
     cam_block = cfg["cameras"][target_cam_key]
     cam_block["enabled"] = bool(cam.enabled)
     
-    # 1. Configurar ffmpeg inputs com go2rtc restream
+    # 1. Configurar ffmpeg inputs com go2rtc restream e aceleração por hardware VAAPI obrigatória
     if "ffmpeg" not in cam_block or not isinstance(cam_block["ffmpeg"], dict):
         cam_block["ffmpeg"] = {}
+    cam_block["ffmpeg"]["hwaccel_args"] = "preset-vaapi"
     cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
 
-    # 2. Configurar detect otimizado para H.264 e sincronizado com resolução
+    # 2. Configurar detect otimizado para H.264 e sincronizado com resolução (limite estrito de 5 FPS para controle térmico)
     # Mapeamento de resolução de detecção para manter proporção nativa e poupar CPU
     res_str = (getattr(cam, "resolution", "1080p") or "1080p").lower()
     if res_str == "720p":
@@ -1477,7 +1483,9 @@ async def sync_camera_to_frigate(cam: Camera):
             cam_block["detect"]["height"] = target_h
 
     cam_block["detect"]["enabled"] = bool(cam.enabled)
-    cam_block["detect"]["fps"] = int(cam.detect_fps) if getattr(cam, "detect_fps", None) is not None else (cam_block["detect"].get("fps") or 5)
+    # Controle térmico estrito: detecção de IA limitada a 5 FPS para manter SoC Intel abaixo de 58°C
+    configured_fps = int(cam.detect_fps) if getattr(cam, "detect_fps", None) is not None else 5
+    cam_block["detect"]["fps"] = min(5, max(1, configured_fps))
 
     # 3. Configurar snapshots
     if "snapshots" not in cam_block or not isinstance(cam_block["snapshots"], dict):

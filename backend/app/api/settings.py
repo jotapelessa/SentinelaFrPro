@@ -577,40 +577,44 @@ def _cached_dir_size(path: str, ttl_seconds: float = 60.0) -> int:
     return size
 
 
-def _purge_recordings(media_base: str, cutoff_ts: float) -> int:
+def _purge_recordings(media_base: str, cutoff_ts: float) -> Tuple[int, int]:
     """Deletes Frigate recording segment folders older than cutoff under recordings/{YYYY-MM-DD}/{HH}."""
     import os
     import shutil
     import datetime
     freed = 0
+    deleted_dirs = 0
     rec_root = os.path.join(media_base, "recordings")
     if not os.path.isdir(rec_root):
-        return 0
+        return 0, 0
     for date_dir in sorted(os.listdir(rec_root)):
         date_path = os.path.join(rec_root, date_dir)
         if not os.path.isdir(date_path):
             continue
         try:
-            d = datetime.datetime.strptime(date_dir, "%Y-%m-%d")
+            # Interpreta o fim do dia da pasta para não rejeitar gravações antigas do mesmo dia
+            d = datetime.datetime.strptime(date_dir, "%Y-%m-%d") + datetime.timedelta(days=1)
         except ValueError:
             continue
-        if d.timestamp() >= cutoff_ts:
+        if d.timestamp() > cutoff_ts:
             continue
         freed += _dir_size_bytes(date_path)
         try:
             shutil.rmtree(date_path, ignore_errors=True)
+            deleted_dirs += 1
         except Exception:
             pass
-    return freed
+    return freed, deleted_dirs
 
 
-def _purge_clips(media_base: str, cutoff_ts: float) -> int:
+def _purge_clips(media_base: str, cutoff_ts: float) -> Tuple[int, int]:
     """Deletes Frigate clips/snapshots files older than cutoff (by mtime) under clips/."""
     import os
     freed = 0
+    deleted_files = 0
     clips_root = os.path.join(media_base, "clips")
     if not os.path.isdir(clips_root):
-        return 0
+        return 0, 0
     for root, dirs, files in os.walk(clips_root, topdown=False):
         for name in files:
             fp = os.path.join(root, name)
@@ -619,6 +623,7 @@ def _purge_clips(media_base: str, cutoff_ts: float) -> int:
                 if st.st_mtime < cutoff_ts:
                     freed += st.st_size
                     os.remove(fp)
+                    deleted_files += 1
             except Exception:
                 pass
         for d in dirs:
@@ -627,7 +632,8 @@ def _purge_clips(media_base: str, cutoff_ts: float) -> int:
                 os.rmdir(dp)
             except OSError:
                 pass
-    return freed
+    return freed, deleted_files
+
 
 
 @router.get("/storage/status")
@@ -712,9 +718,13 @@ async def clean_server_storage(
     # ---- 1. Direct filesystem purge of recording segments & clips (real space recovery) ----
     try:
         if req.clean_type in ("recordings", "all"):
-            freed_bytes += await asyncio.to_thread(_purge_recordings, media_base, cutoff_ts)
+            rec_bytes, rec_dirs = await asyncio.to_thread(_purge_recordings, media_base, cutoff_ts)
+            freed_bytes += rec_bytes
+            deleted_events_count += rec_dirs
         if req.clean_type in ("snapshots", "all"):
-            freed_bytes += await asyncio.to_thread(_purge_clips, media_base, cutoff_ts)
+            clip_bytes, clip_count = await asyncio.to_thread(_purge_clips, media_base, cutoff_ts)
+            freed_bytes += clip_bytes
+            deleted_events_count += clip_count
     except Exception as e:
         logger.warning(f"Filesystem purge failed: {e}")
 
