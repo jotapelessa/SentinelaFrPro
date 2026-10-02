@@ -1,12 +1,27 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-02 18:55 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.162 (Build 162). Resolução definitiva das quedas de 5 segundos nas transmissões Web/MSE através de neutralização de auto-disconnect (`background=true`), tolerância estendida de watchdog no frontend, eliminação de subprocessos ffmpeg transcode instáveis e harmonização total dos streams 720p/sub para ambas as câmeras ativas físicas (cam 196 e cam 47).
+> **Última Atualização:** 2026-10-02 19:15 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.163 (Build 163). Correção definitiva do pipeline CI/CD GitHub Actions garantindo a compilação, localização determinística de artefatos com find recursivo a partir de outputs e upload estrito com fail_on_unmatched_files, assegurando a disponibilização dos APKs de TV e Smartphone na página de Releases.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.162 (Build 162) — Resolução Definitiva de Transmissões Web 24/7 (Fim do Ciclo de 5 Segundos) e Harmonização Dual-Cam
+## 📦 Versão Atual: v001.000.000.163 (Build 163) — Correção Crítica de Geração e Publicação de APKs no CI/CD
+- **Data**: 2026-10-02
+- **Objetivo**: Garantir que as releases do GitHub Actions gerem e anexem com 100% de confiabilidade os binários `.apk`:
+  1. **Resolução de Falha Silenciosa de Coleta no GitHub Actions (`android-build.yml`)**:
+     - Detecção do erro nas releases v161 e v162: o script de build utilizava avisos suaves quando o binário não era encontrado imediatamente no caminho relativo esperado, gerando o diretório `release-apks/` vazio.
+     - Substituição por busca recursiva robusta via `find app/build/outputs` cobrindo variantes com maiúsculas/minúsculas (`*tv*debug*.apk`, `*smartphone*debug*.apk`).
+     - Injeção de verificação obrigatória com abortamento imediato (`exit 1`) se qualquer binário estiver ausente, impedindo releases sem arquivos.
+  2. **Imposição de Validação Rigorosa no Upload de Assets (`softprops/action-gh-release@v2`)**:
+     - Ativação do parâmetro `fail_on_unmatched_files: true` no `action-gh-release@v2`.
+     - Ativação de `if-no-files-found: error` no `actions/upload-artifact@v4`.
+  3. **Sincronização Semântica Unificada v001.000.000.163 (Build 163)**:
+     - `android/version.properties`, `frontend/src/constants/version.ts`, `backend/app/core/config.py`, `README.md` e `STATE.md`.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.162 (Build 162) — Resolução Definitiva de Transmissões Web 24/7 (Fim do Ciclo de 5 Segundos) e Harmonização Dual-Cam
 - **Data**: 2026-10-02
 - **Objetivo**: Conclusão da harmonização técnica e resolução das quedas contínuas de transmissão:
   1. **Fim das Quedas Cíclicas de 5 Segundos no Stream Web (`WebRTCPlayer.tsx`)**:

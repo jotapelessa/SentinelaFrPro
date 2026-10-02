@@ -342,6 +342,32 @@
       "source_location": "L8"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169",
+      "label": "WebChromeClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webchromeclient",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L169"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175",
+      "label": "WebViewClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webviewclient",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L175"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipposition",
       "label": "PipPosition",
       "_callable": true,
@@ -355,30 +381,121 @@
       "source_location": "L103"
     },
     {
+      "id": "backend_app_core_logging_handler_memoryringbufferhandler",
+      "label": "MemoryRingBufferHandler",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "memoryringbufferhandler",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L19"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_bandwidthsuiteresult",
+      "label": "BandwidthSuiteResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": "bandwidthsuiteresult",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L180"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_singleconnectionresult",
+      "label": "SingleConnectionResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": "singleconnectionresult",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L154"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_videostabilityresult",
+      "label": "VideoStabilityResult",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": "videostabilityresult",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L167"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_routetelemetry",
+      "label": "RouteTelemetry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": "routetelemetry",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L68"
+    },
+    {
       "id": "backend_app_api_scanner_scanpayload",
       "label": "ScanPayload",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 107,
-      "community_name": "FastAPI",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
       "norm_label": "scanpayload",
       "source_file": "backend/app/api/scanner.py",
       "source_location": "L8"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice",
-      "label": "TelegramVaultService",
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_auditlogentry",
+      "label": "AuditLogEntry",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "auditlogentry",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
+      "source_location": "L66"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_clientdevicelogitem",
+      "label": "ClientDeviceLogItem",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "TvLogsViewport",
+      "file_type": "code",
+      "norm_label": "clientdevicelogitem",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1865"
+    },
+    {
+      "id": "backend_app_db_models_paireddevice",
+      "label": "PairedDevice",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": "telegramvaultservice",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L12"
+      "norm_label": "paireddevice",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L57"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences",
@@ -628,17 +745,17 @@
       "source_location": "L395"
     },
     {
-      "id": "backend_app_core_logging_handler_memoryringbufferhandler",
-      "label": "MemoryRingBufferHandler",
+      "id": "backend_app_db_models_clientdevicelog",
+      "label": "ClientDeviceLog",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 19,
       "community_name": "api/telemetry.py",
       "file_type": "code",
-      "norm_label": "memoryringbufferhandler",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L19"
+      "norm_label": "clientdevicelog",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L110"
     },
     {
       "id": "backend_app_api_devices_batchtestrequest",
@@ -797,58 +914,6 @@
       "source_location": "L106"
     },
     {
-      "id": "backend_app_db_models_auditlog",
-      "label": "AuditLog",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "auditlog",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L98"
-    },
-    {
-      "id": "backend_app_db_models_paireddevice",
-      "label": "PairedDevice",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "paireddevice",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L57"
-    },
-    {
-      "id": "backend_app_services_audit_service_auditservice",
-      "label": "AuditService",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "auditservice",
-      "source_file": "backend/app/services/audit_service.py",
-      "source_location": "L10"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_bandwidthsuiteresult",
-      "label": "BandwidthSuiteResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "Models.kt",
-      "file_type": "code",
-      "norm_label": "bandwidthsuiteresult",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L180"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_connectionteststate",
       "label": "ConnectionTestState",
       "_callable": true,
@@ -888,17 +953,17 @@
       "source_location": "L125"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_singleconnectionresult",
-      "label": "SingleConnectionResult",
+      "id": "android_app_src_main_java_com_sentinela_pro_data_models_speedtestresult",
+      "label": "SpeedTestResult",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 21,
       "community_name": "Models.kt",
       "file_type": "code",
-      "norm_label": "singleconnectionresult",
+      "norm_label": "speedtestresult",
       "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L154"
+      "source_location": "L84"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_storagestatus",
@@ -927,69 +992,43 @@
       "source_location": "L35"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_videostabilityresult",
-      "label": "VideoStabilityResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "Models.kt",
-      "file_type": "code",
-      "norm_label": "videostabilityresult",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L167"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_routetelemetry",
-      "label": "RouteTelemetry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "Models.kt",
-      "file_type": "code",
-      "norm_label": "routetelemetry",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L68"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_auditlogentry",
-      "label": "AuditLogEntry",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "auditlogentry",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L66"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_clientdevicelogitem",
-      "label": "ClientDeviceLogItem",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "clientdevicelogitem",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1865"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_remotedeviceitem",
       "label": "RemoteDeviceItem",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 23,
-      "community_name": "TvLogsViewport",
+      "community_name": "SentinelaRepository.kt",
       "file_type": "code",
       "norm_label": "remotedeviceitem",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L37"
+    },
+    {
+      "id": "backend_app_db_models_auditlog",
+      "label": "AuditLog",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "auditlog",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L98"
+    },
+    {
+      "id": "backend_app_services_audit_service_auditservice",
+      "label": "AuditService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "auditservice",
+      "source_file": "backend/app/services/audit_service.py",
+      "source_location": "L10"
     },
     {
       "id": "backend_app_services_telemetry_telemetryservice",
@@ -1094,32 +1133,6 @@
       "norm_label": "pipmetricsbridge",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
       "source_location": "L73"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169",
-      "label": "WebChromeClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webchromeclient",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L169"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175",
-      "label": "WebViewClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webviewclient",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L175"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_clientlogentry",
@@ -1356,32 +1369,6 @@
       "source_location": "L36"
     },
     {
-      "id": "backend_app_db_models_clientdevicelog",
-      "label": "ClientDeviceLog",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 38,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "clientdevicelog",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L110"
-    },
-    {
-      "id": "backend_app_db_models_eventrecord",
-      "label": "EventRecord",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 38,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "eventrecord",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L38"
-    },
-    {
       "id": "backend_app_db_models_systemsetting",
       "label": "SystemSetting",
       "_callable": true,
@@ -1395,17 +1382,17 @@
       "source_location": "L91"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice",
-      "label": "MQTTService",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice",
+      "label": "TelegramVaultService",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": "mqttservice",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L24"
+      "norm_label": "telegramvaultservice",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L12"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_src_components_tv_kotlincodemodal_kotlincodemodalprops",
@@ -1863,19 +1850,6 @@
       "source_location": "L8"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_data_models_speedtestresult",
-      "label": "SpeedTestResult",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": "speedtestresult",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/data/Models.kt",
-      "source_location": "L84"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository",
       "label": "SentinelaRepository",
       "_callable": true,
@@ -1913,6 +1887,32 @@
       "norm_label": "eventbatchdeleterequest",
       "source_file": "backend/app/api/events.py",
       "source_location": "L26"
+    },
+    {
+      "id": "backend_app_db_models_eventrecord",
+      "label": "EventRecord",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "eventrecord",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L38"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice",
+      "label": "MQTTService",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "mqttservice",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L24"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_recordingclipitem",
@@ -2868,76 +2868,88 @@
       "source_location": "L13"
     },
     {
-      "id": "backend_tests_test_backend_test_pip_dnd_check",
-      "label": "test_pip_dnd_check()",
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview",
+      "label": "MseCameraView()",
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "asyncio",
+      "community_name": "MseCameraView",
       "file_type": "code",
-      "norm_label": "test_pip_dnd_check()",
-      "source_file": "backend/tests/test_backend.py",
-      "source_location": "L44"
+      "norm_label": "msecameraview()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L34"
     },
     {
-      "id": "backend_tests_test_backend_test_scanner_subnets",
-      "label": "test_scanner_subnets()",
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169_onpermissionrequest",
+      "label": ".onPermissionRequest()",
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "asyncio",
+      "community_name": "MseCameraView",
       "file_type": "code",
-      "norm_label": "test_scanner_subnets()",
-      "source_file": "backend/tests/test_backend.py",
-      "source_location": "L38"
+      "norm_label": ".onpermissionrequest()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L170"
     },
     {
-      "id": "backend_tests_test_backend_test_telemetry_service",
-      "label": "test_telemetry_service()",
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onpagefinished",
+      "label": ".onPageFinished()",
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "asyncio",
+      "community_name": "MseCameraView",
       "file_type": "code",
-      "norm_label": "test_telemetry_service()",
-      "source_file": "backend/tests/test_backend.py",
-      "source_location": "L9"
+      "norm_label": ".onpagefinished()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L185"
     },
     {
-      "id": "backend_tests_test_backend_test_watermark_generation",
-      "label": "test_watermark_generation()",
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivederror",
+      "label": ".onReceivedError()",
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "asyncio",
+      "community_name": "MseCameraView",
       "file_type": "code",
-      "norm_label": "test_watermark_generation()",
-      "source_file": "backend/tests/test_backend.py",
-      "source_location": "L19"
+      "norm_label": ".onreceivederror()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L266"
     },
     {
-      "id": "verify_system_verify_system",
-      "label": "verify_system()",
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
+      "label": ".onReceivedSslError()",
       "_callable": true,
       "_origin": "ast",
       "community": 103,
-      "community_name": "asyncio",
+      "community_name": "MseCameraView",
       "file_type": "code",
-      "norm_label": "verify_system()",
-      "source_file": "verify_system.py",
-      "source_location": "L9"
+      "norm_label": ".onreceivedsslerror()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L176"
     },
     {
-      "id": "backend_app_db_session_get_db",
-      "label": "get_db()",
+      "id": "backend_app_core_logging_handler_mask_sensitive_data",
+      "label": "mask_sensitive_data()",
       "_callable": true,
       "_origin": "ast",
       "community": 105,
       "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "get_db()",
-      "source_file": "backend/app/db/session.py",
-      "source_location": "L29"
+      "norm_label": "mask_sensitive_data()",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L14"
+    },
+    {
+      "id": "backend_app_core_logging_handler_memoryringbufferhandler_emit",
+      "label": ".emit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": ".emit()",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L21"
     },
     {
       "id": "backend_app_db_session_init_db",
@@ -3000,28 +3012,100 @@
       "source_location": "L127"
     },
     {
-      "id": "backend_app_api_ws_telemetry_broadcast_loop",
-      "label": "telemetry_broadcast_loop()",
+      "id": "backend_app_services_time_sync_query_ntp_time",
+      "label": "query_ntp_time()",
       "_callable": true,
       "_origin": "ast",
-      "community": 106,
-      "community_name": "ws.py",
+      "community": 105,
+      "community_name": "main.py",
       "file_type": "code",
-      "norm_label": "telemetry_broadcast_loop()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L99"
+      "norm_label": "query_ntp_time()",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L22"
     },
     {
-      "id": "backend_app_api_ws_websocket_endpoint",
-      "label": "websocket_endpoint()",
+      "id": "backend_app_services_time_sync_run_time_sync_watchdog",
+      "label": "run_time_sync_watchdog()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "run_time_sync_watchdog()",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L46"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_gettelemetry",
+      "label": ".getTelemetry()",
       "_callable": true,
       "_origin": "ast",
       "community": 106,
-      "community_name": "ws.py",
+      "community_name": "TvToolsViewport",
       "file_type": "code",
-      "norm_label": "websocket_endpoint()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L68"
+      "norm_label": ".gettelemetry()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L500"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
+      "label": ".runBandwidthTestSuite()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": ".runbandwidthtestsuite()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1060"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingleconnectionendpoint",
+      "label": ".testSingleConnectionEndpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": ".testsingleconnectionendpoint()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L746"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testvideopipelinestability",
+      "label": ".testVideoPipelineStability()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": ".testvideopipelinestability()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L935"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolsviewport",
+      "label": "TvToolsViewport()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": "tvtoolsviewport()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L1464"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonetoolstab",
+      "label": "PhoneToolsTab()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": "phonetoolstab()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
+      "source_location": "L1991"
     },
     {
       "id": "backend_app_api_scanner_trigger_network_scan",
@@ -3029,239 +3113,167 @@
       "_callable": true,
       "_origin": "ast",
       "community": 107,
-      "community_name": "FastAPI",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
       "norm_label": "trigger_network_scan()",
       "source_file": "backend/app/api/scanner.py",
       "source_location": "L12"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_apply_watermark",
-      "label": ".apply_watermark()",
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getauditlogs",
+      "label": ".getAuditLogs()",
       "_callable": true,
       "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
+      "community": 108,
+      "community_name": "TvLogsViewport",
       "file_type": "code",
-      "norm_label": ".apply_watermark()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L107"
+      "norm_label": ".getauditlogs()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L639"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_format_event_message",
-      "label": ".format_event_message()",
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
+      "label": ".getClientLogs()",
       "_callable": true,
       "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
+      "community": 108,
+      "community_name": "TvLogsViewport",
       "file_type": "code",
-      "norm_label": ".format_event_message()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L153"
+      "norm_label": ".getclientlogs()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1754"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_get_audit_logs",
-      "label": ".get_audit_logs()",
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvlogsviewport",
+      "label": "TvLogsViewport()",
       "_callable": true,
       "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
+      "community": 108,
+      "community_name": "TvLogsViewport",
       "file_type": "code",
-      "norm_label": ".get_audit_logs()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L32"
+      "norm_label": "tvlogsviewport()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2884"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_get_scaled_font",
-      "label": "._get_scaled_font()",
+      "id": "backend_app_api_devices_check_devices_health",
+      "label": "check_devices_health()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": "._get_scaled_font()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L88"
+      "norm_label": "check_devices_health()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L473"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_get_system_status_text",
-      "label": ".get_system_status_text()",
+      "id": "backend_app_api_devices_cleanup_all_devices",
+      "label": "cleanup_all_devices()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".get_system_status_text()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L430"
+      "norm_label": "cleanup_all_devices()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L921"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_handle_command",
-      "label": ".handle_command()",
+      "id": "backend_app_api_devices_deduplicate_devices",
+      "label": "deduplicate_devices()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".handle_command()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L537"
+      "norm_label": "deduplicate_devices()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L878"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_init",
-      "label": ".__init__()",
+      "id": "backend_app_api_devices_delete_device",
+      "label": "delete_device()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".__init__()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L13"
+      "norm_label": "delete_device()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L859"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_is_configured",
-      "label": ".is_configured()",
+      "id": "backend_app_api_devices_device_diagnostics",
+      "label": "device_diagnostics()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".is_configured()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L36"
+      "norm_label": "device_diagnostics()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L1040"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_is_paused",
-      "label": ".is_paused()",
+      "id": "backend_app_api_devices_get_device_permitted_cameras",
+      "label": "get_device_permitted_cameras()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".is_paused()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L76"
+      "norm_label": "get_device_permitted_cameras()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L346"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_load_credentials_from_db",
-      "label": ".load_credentials_from_db()",
+      "id": "backend_app_api_devices_get_device_policy",
+      "label": "get_device_policy()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".load_credentials_from_db()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L39"
+      "norm_label": "get_device_policy()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L390"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_pause_alerts",
-      "label": ".pause_alerts()",
+      "id": "backend_app_api_devices_list_devices",
+      "label": "list_devices()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".pause_alerts()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L85"
+      "norm_label": "list_devices()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L111"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_record_audit",
-      "label": ".record_audit()",
+      "id": "backend_app_api_devices_remote_reboot_server",
+      "label": "remote_reboot_server()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".record_audit()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L19"
+      "norm_label": "remote_reboot_server()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L764"
     },
     {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_send_alert_photo",
-      "label": ".send_alert_photo()",
+      "id": "backend_app_api_devices_toggle_device_pip",
+      "label": "toggle_device_pip()",
       "_callable": true,
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": ".send_alert_photo()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L272"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_send_alert_video",
-      "label": ".send_alert_video()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "code",
-      "norm_label": ".send_alert_video()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L343"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_send_document",
-      "label": ".send_document()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "code",
-      "norm_label": ".send_document()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L520"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_send_message",
-      "label": ".send_message()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "code",
-      "norm_label": ".send_message()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L504"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_start_polling",
-      "label": ".start_polling()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "code",
-      "norm_label": ".start_polling()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L632"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_start_polling_task",
-      "label": ".start_polling_task()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "code",
-      "norm_label": ".start_polling_task()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L703"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_telegramvaultservice_test_connection",
-      "label": ".test_connection()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "code",
-      "norm_label": ".test_connection()",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L450"
+      "norm_label": "toggle_device_pip()",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L829"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences_sentinelapreferences_clearpendingcrash",
@@ -3936,88 +3948,16 @@
       "source_location": "L29"
     },
     {
-      "id": "backend_app_core_logging_handler_mask_sensitive_data",
-      "label": "mask_sensitive_data()",
+      "id": "backend_app_db_session_get_db",
+      "label": "get_db()",
       "_callable": true,
       "_origin": "ast",
       "community": 19,
       "community_name": "api/telemetry.py",
       "file_type": "code",
-      "norm_label": "mask_sensitive_data()",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L14"
-    },
-    {
-      "id": "backend_app_core_logging_handler_memoryringbufferhandler_emit",
-      "label": ".emit()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": ".emit()",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L21"
-    },
-    {
-      "id": "backend_app_api_devices_check_devices_health",
-      "label": "check_devices_health()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "check_devices_health()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L473"
-    },
-    {
-      "id": "backend_app_api_devices_cleanup_all_devices",
-      "label": "cleanup_all_devices()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "cleanup_all_devices()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L921"
-    },
-    {
-      "id": "backend_app_api_devices_deduplicate_devices",
-      "label": "deduplicate_devices()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "deduplicate_devices()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L878"
-    },
-    {
-      "id": "backend_app_api_devices_delete_device",
-      "label": "delete_device()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "delete_device()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L859"
-    },
-    {
-      "id": "backend_app_api_devices_device_diagnostics",
-      "label": "device_diagnostics()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "device_diagnostics()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L1040"
+      "norm_label": "get_db()",
+      "source_file": "backend/app/db/session.py",
+      "source_location": "L29"
     },
     {
       "id": "backend_app_api_devices_device_heartbeat",
@@ -4056,42 +3996,6 @@
       "source_location": "L1201"
     },
     {
-      "id": "backend_app_api_devices_get_device_permitted_cameras",
-      "label": "get_device_permitted_cameras()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "get_device_permitted_cameras()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L346"
-    },
-    {
-      "id": "backend_app_api_devices_get_device_policy",
-      "label": "get_device_policy()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "get_device_policy()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L390"
-    },
-    {
-      "id": "backend_app_api_devices_list_devices",
-      "label": "list_devices()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "list_devices()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L111"
-    },
-    {
       "id": "backend_app_api_devices_push_device_settings",
       "label": "push_device_settings()",
       "_callable": true,
@@ -4126,18 +4030,6 @@
       "norm_label": "register_device()",
       "source_file": "backend/app/api/devices.py",
       "source_location": "L509"
-    },
-    {
-      "id": "backend_app_api_devices_remote_reboot_server",
-      "label": "remote_reboot_server()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "remote_reboot_server()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L764"
     },
     {
       "id": "backend_app_api_devices_remote_restart_container",
@@ -4188,18 +4080,6 @@
       "source_location": "L1128"
     },
     {
-      "id": "backend_app_api_devices_toggle_device_pip",
-      "label": "toggle_device_pip()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "toggle_device_pip()",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L829"
-    },
-    {
       "id": "backend_app_api_devices_update_device_allowed_cameras",
       "label": "update_device_allowed_cameras()",
       "_callable": true,
@@ -4236,12 +4116,72 @@
       "source_location": "L803"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runspeedandpingtest",
+      "label": ".runSpeedAndPingTest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 21,
+      "community_name": "Models.kt",
+      "file_type": "code",
+      "norm_label": ".runspeedandpingtest()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L688"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
+      "label": ".pingServer()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "SentinelaRepository.kt",
+      "file_type": "code",
+      "norm_label": ".pingserver()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
+      "source_location": "L1441"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardsubsistemasecomandos",
+      "label": "CardSubsistemasEComandos()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "SentinelaRepository.kt",
+      "file_type": "code",
+      "norm_label": "cardsubsistemasecomandos()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2674"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvdiagnosticrow",
+      "label": "TvDiagnosticRow()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "SentinelaRepository.kt",
+      "file_type": "code",
+      "norm_label": "tvdiagnosticrow()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
+      "source_location": "L2791"
+    },
+    {
+      "id": "backend_app_api_events_list_events",
+      "label": "list_events()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "list_events()",
+      "source_file": "backend/app/api/events.py",
+      "source_location": "L33"
+    },
+    {
       "id": "backend_app_core_timezone_get_brasilia_isoformat",
       "label": "get_brasilia_isoformat()",
       "_callable": true,
       "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
+      "community": 24,
+      "community_name": "get_brasilia_now",
       "file_type": "code",
       "norm_label": "get_brasilia_isoformat()",
       "source_file": "backend/app/core/timezone.py",
@@ -4252,8 +4192,8 @@
       "label": "get_brasilia_now()",
       "_callable": true,
       "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
+      "community": 24,
+      "community_name": "get_brasilia_now",
       "file_type": "code",
       "norm_label": "get_brasilia_now()",
       "source_file": "backend/app/core/timezone.py",
@@ -4264,8 +4204,8 @@
       "label": "publish_simulated_event()",
       "_callable": true,
       "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
+      "community": 24,
+      "community_name": "get_brasilia_now",
       "file_type": "code",
       "norm_label": "publish_simulated_event()",
       "source_file": "backend/app/mocks/mock_publisher.py",
@@ -4276,132 +4216,12 @@
       "label": ".log()",
       "_callable": true,
       "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
+      "community": 24,
+      "community_name": "get_brasilia_now",
       "file_type": "code",
       "norm_label": ".log()",
       "source_file": "backend/app/services/audit_service.py",
       "source_location": "L11"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runbandwidthtestsuite",
-      "label": ".runBandwidthTestSuite()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "Models.kt",
-      "file_type": "code",
-      "norm_label": ".runbandwidthtestsuite()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1060"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testsingleconnectionendpoint",
-      "label": ".testSingleConnectionEndpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "Models.kt",
-      "file_type": "code",
-      "norm_label": ".testsingleconnectionendpoint()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L746"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_testvideopipelinestability",
-      "label": ".testVideoPipelineStability()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "Models.kt",
-      "file_type": "code",
-      "norm_label": ".testvideopipelinestability()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L935"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_smartphoneyoutubescreen_phonetoolstab",
-      "label": "PhoneToolsTab()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "Models.kt",
-      "file_type": "code",
-      "norm_label": "phonetoolstab()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt",
-      "source_location": "L1991"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getauditlogs",
-      "label": ".getAuditLogs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": ".getauditlogs()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L639"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_getclientlogs",
-      "label": ".getClientLogs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": ".getclientlogs()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1754"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_gettelemetry",
-      "label": ".getTelemetry()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": ".gettelemetry()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L500"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvlogsviewport",
-      "label": "TvLogsViewport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "tvlogsviewport()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2884"
-    },
-    {
-      "id": "backend_app_services_time_sync_query_ntp_time",
-      "label": "query_ntp_time()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "time_sync.py",
-      "file_type": "code",
-      "norm_label": "query_ntp_time()",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L22"
-    },
-    {
-      "id": "backend_app_services_time_sync_run_time_sync_watchdog",
-      "label": "run_time_sync_watchdog()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 24,
-      "community_name": "time_sync.py",
-      "file_type": "code",
-      "norm_label": "run_time_sync_watchdog()",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L46"
     },
     {
       "id": "backend_app_services_telemetry_telemetryservice_get_cpu_temperature",
@@ -4702,66 +4522,6 @@
       "norm_label": ".reportmetrics()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
       "source_location": "L78"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview",
-      "label": "MseCameraView()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "msecameraview()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L34"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169_onpermissionrequest",
-      "label": ".onPermissionRequest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".onpermissionrequest()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L170"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onpagefinished",
-      "label": ".onPageFinished()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".onpagefinished()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L185"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivederror",
-      "label": ".onReceivedError()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".onreceivederror()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L266"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
-      "label": ".onReceivedSslError()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".onreceivedsslerror()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L176"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_sentinelaremotelogger_flushbatch",
@@ -5352,79 +5112,79 @@
       "source_location": "L94"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_broadcast_event",
-      "label": ".broadcast_event()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_apply_watermark",
+      "label": ".apply_watermark()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": ".broadcast_event()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L49"
+      "norm_label": ".apply_watermark()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L107"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_dispatch_background_alert_tasks",
-      "label": "._dispatch_background_alert_tasks()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_format_event_message",
+      "label": ".format_event_message()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": "._dispatch_background_alert_tasks()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L281"
+      "norm_label": ".format_event_message()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L153"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_dispatch_telegram_video_with_retry",
-      "label": "._dispatch_telegram_video_with_retry()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_get_audit_logs",
+      "label": ".get_audit_logs()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": "._dispatch_telegram_video_with_retry()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L391"
+      "norm_label": ".get_audit_logs()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L32"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_get_mqtt_traffic",
-      "label": ".get_mqtt_traffic()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_get_scaled_font",
+      "label": "._get_scaled_font()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": ".get_mqtt_traffic()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L43"
+      "norm_label": "._get_scaled_font()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L88"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_get_telegram_policy",
-      "label": "._get_telegram_policy()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_get_system_status_text",
+      "label": ".get_system_status_text()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": "._get_telegram_policy()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L70"
+      "norm_label": ".get_system_status_text()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L430"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_handle_frigate_event",
-      "label": ".handle_frigate_event()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_handle_command",
+      "label": ".handle_command()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": ".handle_frigate_event()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L122"
+      "norm_label": ".handle_command()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L537"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_init",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_init",
       "label": ".__init__()",
       "_callable": true,
       "_origin": "ast",
@@ -5432,56 +5192,152 @@
       "community_name": "settings.py",
       "file_type": "code",
       "norm_label": ".__init__()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L25"
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L13"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_mark_processed",
-      "label": "._mark_processed()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_is_configured",
+      "label": ".is_configured()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": "._mark_processed()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L67"
+      "norm_label": ".is_configured()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L36"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_record_mqtt_traffic",
-      "label": ".record_mqtt_traffic()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_is_paused",
+      "label": ".is_paused()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": ".record_mqtt_traffic()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L34"
+      "norm_label": ".is_paused()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L76"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_register_ws_callback",
-      "label": ".register_ws_callback()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_load_credentials_from_db",
+      "label": ".load_credentials_from_db()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": ".register_ws_callback()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L46"
+      "norm_label": ".load_credentials_from_db()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L39"
     },
     {
-      "id": "backend_app_services_mqtt_service_mqttservice_start_listening",
-      "label": ".start_listening()",
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_pause_alerts",
+      "label": ".pause_alerts()",
       "_callable": true,
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": ".start_listening()",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L436"
+      "norm_label": ".pause_alerts()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L85"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_record_audit",
+      "label": ".record_audit()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "code",
+      "norm_label": ".record_audit()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L19"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_send_alert_photo",
+      "label": ".send_alert_photo()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "code",
+      "norm_label": ".send_alert_photo()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L272"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_send_alert_video",
+      "label": ".send_alert_video()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "code",
+      "norm_label": ".send_alert_video()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L343"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_send_document",
+      "label": ".send_document()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "code",
+      "norm_label": ".send_document()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L520"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_send_message",
+      "label": ".send_message()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "code",
+      "norm_label": ".send_message()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L504"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_start_polling",
+      "label": ".start_polling()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "code",
+      "norm_label": ".start_polling()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L632"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_start_polling_task",
+      "label": ".start_polling_task()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "code",
+      "norm_label": ".start_polling_task()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L703"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_telegramvaultservice_test_connection",
+      "label": ".test_connection()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "code",
+      "norm_label": ".test_connection()",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L450"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_src_app_app",
@@ -5698,6 +5554,30 @@
       "norm_label": ".setenabled()",
       "source_file": "ai_studio_imports/sentinela-pro-tv/src/utils/audioFeedback.ts",
       "source_location": "L25"
+    },
+    {
+      "id": "backend_app_api_ws_telemetry_broadcast_loop",
+      "label": "telemetry_broadcast_loop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "telemetry_broadcast_loop()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L99"
+    },
+    {
+      "id": "backend_app_api_ws_websocket_endpoint",
+      "label": "websocket_endpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "websocket_endpoint()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L68"
     },
     {
       "id": "backend_app_api_ws_websocketmanager_broadcast_json",
@@ -6360,18 +6240,6 @@
       "source_location": "L1662"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pingserver",
-      "label": ".pingServer()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".pingserver()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L1441"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_pushlocalsettingstoserver",
       "label": ".pushLocalSettingsToServer()",
       "_callable": true,
@@ -6442,18 +6310,6 @@
       "norm_label": ".resumealerts()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
       "source_location": "L1684"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_runspeedandpingtest",
-      "label": ".runSpeedAndPingTest()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 6,
-      "community_name": "SentinelaRepository",
-      "file_type": "code",
-      "norm_label": ".runspeedandpingtest()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
-      "source_location": "L688"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_sentinelarepository_sendclientlogsbatch",
@@ -6636,18 +6492,6 @@
       "source_location": "L174"
     },
     {
-      "id": "backend_app_api_events_list_events",
-      "label": "list_events()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "events.py",
-      "file_type": "code",
-      "norm_label": "list_events()",
-      "source_file": "backend/app/api/events.py",
-      "source_location": "L33"
-    },
-    {
       "id": "backend_app_api_events_retain_event",
       "label": "retain_event()",
       "_callable": true,
@@ -6670,6 +6514,198 @@
       "norm_label": "sync_events_from_frigate()",
       "source_file": "backend/app/api/events.py",
       "source_location": "L186"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_broadcast_event",
+      "label": ".broadcast_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": ".broadcast_event()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L49"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_dispatch_background_alert_tasks",
+      "label": "._dispatch_background_alert_tasks()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "._dispatch_background_alert_tasks()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L281"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_dispatch_telegram_video_with_retry",
+      "label": "._dispatch_telegram_video_with_retry()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "._dispatch_telegram_video_with_retry()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L391"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_get_mqtt_traffic",
+      "label": ".get_mqtt_traffic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": ".get_mqtt_traffic()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L43"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_get_telegram_policy",
+      "label": "._get_telegram_policy()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "._get_telegram_policy()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L70"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_handle_frigate_event",
+      "label": ".handle_frigate_event()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": ".handle_frigate_event()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L122"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_init",
+      "label": ".__init__()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": ".__init__()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L25"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_mark_processed",
+      "label": "._mark_processed()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "._mark_processed()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L67"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_record_mqtt_traffic",
+      "label": ".record_mqtt_traffic()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": ".record_mqtt_traffic()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L34"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_register_ws_callback",
+      "label": ".register_ws_callback()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": ".register_ws_callback()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L46"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_mqttservice_start_listening",
+      "label": ".start_listening()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": ".start_listening()",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L436"
+    },
+    {
+      "id": "backend_tests_test_backend_test_pip_dnd_check",
+      "label": "test_pip_dnd_check()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "test_pip_dnd_check()",
+      "source_file": "backend/tests/test_backend.py",
+      "source_location": "L44"
+    },
+    {
+      "id": "backend_tests_test_backend_test_scanner_subnets",
+      "label": "test_scanner_subnets()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "test_scanner_subnets()",
+      "source_file": "backend/tests/test_backend.py",
+      "source_location": "L38"
+    },
+    {
+      "id": "backend_tests_test_backend_test_telemetry_service",
+      "label": "test_telemetry_service()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "test_telemetry_service()",
+      "source_file": "backend/tests/test_backend.py",
+      "source_location": "L9"
+    },
+    {
+      "id": "backend_tests_test_backend_test_watermark_generation",
+      "label": "test_watermark_generation()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "test_watermark_generation()",
+      "source_file": "backend/tests/test_backend.py",
+      "source_location": "L19"
+    },
+    {
+      "id": "verify_system_verify_system",
+      "label": "verify_system()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "verify_system()",
+      "source_file": "verify_system.py",
+      "source_location": "L9"
     },
     {
       "id": "frontend_src_app_settings_storage_page_storagesettingspage",
@@ -6732,18 +6768,6 @@
       "source_location": "L2417"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardsubsistemasecomandos",
-      "label": "CardSubsistemasEComandos()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "TvNetflixScreen.kt",
-      "file_type": "code",
-      "norm_label": "cardsubsistemasecomandos()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2674"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardtestedebanda",
       "label": "CardTesteDeBanda()",
       "_callable": true,
@@ -6790,18 +6814,6 @@
       "norm_label": "tvclipplayerdialog()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
       "source_location": "L4473"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvdiagnosticrow",
-      "label": "TvDiagnosticRow()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "TvNetflixScreen.kt",
-      "file_type": "code",
-      "norm_label": "tvdiagnosticrow()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L2791"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvfullscreenlivedialog",
@@ -6898,18 +6910,6 @@
       "norm_label": "tvtoolcard()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
       "source_location": "L2815"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_tvtoolsviewport",
-      "label": "TvToolsViewport()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "TvNetflixScreen.kt",
-      "file_type": "code",
-      "norm_label": "tvtoolsviewport()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
-      "source_location": "L1464"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_hasoverlaypermission",
@@ -7542,7 +7542,7 @@
       "file_type": "code",
       "norm_label": "webrtcplayer",
       "source_file": "frontend/src/components/WebRTCPlayer.tsx",
-      "source_location": "L796"
+      "source_location": "L798"
     },
     {
       "id": "frontend_src_components_websocketprovider",
@@ -7842,37 +7842,114 @@
       "source_location": ""
     },
     {
-      "id": "asyncio",
-      "label": "asyncio",
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
+      "label": "MseCameraView.kt",
       "_origin": "ast",
       "community": 103,
-      "community_name": "asyncio",
+      "community_name": "MseCameraView",
       "file_type": "code",
-      "norm_label": "asyncio",
+      "norm_label": "msecameraview.kt",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L1"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
+      "label": "android",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "android",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "backend_tests_test_backend",
-      "label": "test_backend.py",
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
+      "label": "Modifier",
       "_origin": "ast",
       "community": 103,
-      "community_name": "asyncio",
+      "community_name": "MseCameraView",
       "file_type": "code",
-      "norm_label": "test_backend.py",
-      "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1"
+      "norm_label": "modifier",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "verify_system",
-      "label": "verify_system.py",
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_permissionrequest",
+      "label": "PermissionRequest",
       "_origin": "ast",
       "community": 103,
-      "community_name": "asyncio",
+      "community_name": "MseCameraView",
       "file_type": "code",
-      "norm_label": "verify_system.py",
-      "source_file": "verify_system.py",
-      "source_location": "L1"
+      "norm_label": "permissionrequest",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_sslerrorhandler",
+      "label": "SslErrorHandler",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "sslerrorhandler",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webchromeclient",
+      "label": "WebChromeClient",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webchromeclient",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webview",
+      "label": "WebView",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webview",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webviewclient",
+      "label": "WebViewClient",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webviewclient",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "webresourceerror",
+      "label": "WebResourceError",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webresourceerror",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "webresourcerequest",
+      "label": "WebResourceRequest",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "MseCameraView",
+      "file_type": "code",
+      "norm_label": "webresourcerequest",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_pipposition_bottom_center",
@@ -7963,6 +8040,17 @@
       "source_location": "L104"
     },
     {
+      "id": "backend_app_core_logging_handler",
+      "label": "logging_handler.py",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "logging_handler.py",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L1"
+    },
+    {
       "id": "backend_app_db_session",
       "label": "session.py",
       "_origin": "ast",
@@ -8007,6 +8095,28 @@
       "source_location": ""
     },
     {
+      "id": "backend_app_services_time_sync",
+      "label": "time_sync.py",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "time_sync.py",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "logrecord",
+      "label": "LogRecord",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "code",
+      "norm_label": "logrecord",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "middleware",
       "label": "middleware",
       "_origin": "ast",
@@ -8018,33 +8128,77 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_api_ws",
-      "label": "ws.py",
+      "id": "backend_app_core_logging_handler_rationale_20",
+      "label": "Captures all logging records in memory for real-time API streaming.",
       "_origin": "ast",
-      "community": 106,
-      "community_name": "ws.py",
-      "file_type": "code",
-      "norm_label": "ws.py",
-      "source_file": "backend/app/api/ws.py",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "captures all logging records in memory for real-time api streaming.",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L20"
+    },
+    {
+      "id": "backend_app_services_time_sync_rationale_1",
+      "label": "Sentinela Frigate Pro - Time Synchronization Service Periodically checks server\u2026",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "sentinela frigate pro - time synchronization service periodically checks server...",
+      "source_file": "backend/app/services/time_sync.py",
       "source_location": "L1"
     },
     {
-      "id": "backend_app_api_ws_rationale_100",
-      "label": "Background loop sending hardware telemetry every 5.0 seconds to connected UI\u2026",
+      "id": "backend_app_services_time_sync_rationale_23",
+      "label": "Queries an NTP server and returns epoch timestamp in seconds.",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "queries an ntp server and returns epoch timestamp in seconds.",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "backend_app_services_time_sync_rationale_47",
+      "label": "Background task running once per hour to log and monitor time synchronization.",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "main.py",
+      "file_type": "rationale",
+      "norm_label": "background task running once per hour to log and monitor time synchronization.",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L47"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_com",
+      "label": "com",
       "_origin": "ast",
       "community": 106,
-      "community_name": "ws.py",
-      "file_type": "rationale",
-      "norm_label": "background loop sending hardware telemetry every 5.0 seconds to connected ui...",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L100"
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": "com",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "telemetrydata",
+      "label": "TelemetryData",
+      "_origin": "ast",
+      "community": 106,
+      "community_name": "TvToolsViewport",
+      "file_type": "code",
+      "norm_label": "telemetrydata",
+      "source_file": "",
+      "source_location": ""
     },
     {
       "id": "backend_app_api_scanner",
       "label": "scanner.py",
       "_origin": "ast",
       "community": 107,
-      "community_name": "FastAPI",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
       "norm_label": "scanner.py",
       "source_file": "backend/app/api/scanner.py",
@@ -8055,7 +8209,7 @@
       "label": "BaseModel",
       "_origin": "ast",
       "community": 107,
-      "community_name": "FastAPI",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
       "norm_label": "basemodel",
       "source_file": "",
@@ -8066,20 +8220,9 @@
       "label": "post",
       "_origin": "ast",
       "community": 107,
-      "community_name": "FastAPI",
+      "community_name": "trigger_network_scan",
       "file_type": "code",
       "norm_label": "post",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "fastapi",
-      "label": "FastAPI",
-      "_origin": "ast",
-      "community": 107,
-      "community_name": "FastAPI",
-      "file_type": "code",
-      "norm_label": "fastapi",
       "source_file": "",
       "source_location": ""
     },
@@ -8088,176 +8231,110 @@
       "label": "Triggers concurrent ONVIF Discovery and verified CCTV port scanner.",
       "_origin": "ast",
       "community": 107,
-      "community_name": "FastAPI",
+      "community_name": "trigger_network_scan",
       "file_type": "rationale",
       "norm_label": "triggers concurrent onvif discovery and verified cctv port scanner.",
       "source_file": "backend/app/api/scanner.py",
       "source_location": "L13"
     },
     {
-      "id": "backend_app_services_telegram_vault",
-      "label": "telegram_vault.py",
+      "id": "backend_app_api_devices_py_asyncsession",
+      "label": "AsyncSession",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "code",
-      "norm_label": "telegram_vault.py",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_py_any",
-      "label": "Any",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "code",
-      "norm_label": "any",
+      "norm_label": "asyncsession",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "backend_app_services_telegram_vault_rationale_108",
-      "label": "Applies a professional HUD watermark on the snapshot with dynamic scaling for\u2026",
+      "id": "backend_app_api_devices_py_delete",
+      "label": "delete",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "rationale",
-      "norm_label": "applies a professional hud watermark on the snapshot with dynamic scaling for...",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L108"
+      "community_name": "PairedDevice",
+      "file_type": "code",
+      "norm_label": "delete",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "backend_app_services_telegram_vault_rationale_20",
-      "label": "Appends an event to the in-memory Telegram audit trail.",
+      "id": "backend_app_api_devices_py_get",
+      "label": "get",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "rationale",
-      "norm_label": "appends an event to the in-memory telegram audit trail.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L20"
+      "community_name": "PairedDevice",
+      "file_type": "code",
+      "norm_label": "get",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "backend_app_services_telegram_vault_rationale_282",
-      "label": "Dispatches watermarked snapshot to Telegram using the classic template.",
+      "id": "backend_app_api_devices_rationale_347",
+      "label": "Returns the list of cameras permitted for a specific screen/device.",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "rationale",
-      "norm_label": "dispatches watermarked snapshot to telegram using the classic template.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L282"
+      "norm_label": "returns the list of cameras permitted for a specific screen/device.",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L347"
     },
     {
-      "id": "backend_app_services_telegram_vault_rationale_354",
-      "label": "Dispatches MP4 clip to Telegram using the classic template.",
+      "id": "backend_app_api_devices_rationale_391",
+      "label": "Returns the full granular policy and permissions for a specific device.",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "rationale",
-      "norm_label": "dispatches mp4 clip to telegram using the classic template.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L354"
+      "norm_label": "returns the full granular policy and permissions for a specific device.",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L391"
     },
     {
-      "id": "backend_app_services_telegram_vault_rationale_40",
-      "label": "Loads Bot Token and Chat ID from database if available, or seeds defaults.",
+      "id": "backend_app_api_devices_rationale_474",
+      "label": "Checks real-time online/reachable status for all paired screens. Optimized O(1)\u2026",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "rationale",
-      "norm_label": "loads bot token and chat id from database if available, or seeds defaults.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L40"
+      "norm_label": "checks real-time online/reachable status for all paired screens. optimized o(1)...",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L474"
     },
     {
-      "id": "backend_app_services_telegram_vault_rationale_431",
-      "label": "Formats real-time telemetry into a rich Telegram status message.",
+      "id": "backend_app_api_devices_rationale_830",
+      "label": "Quickly toggle PiP alerts state for a single device with 1-click.",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "rationale",
-      "norm_label": "formats real-time telemetry into a rich telegram status message.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L431"
+      "norm_label": "quickly toggle pip alerts state for a single device with 1-click.",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L830"
     },
     {
-      "id": "backend_app_services_telegram_vault_rationale_451",
-      "label": "Validates bot credentials with Telegram API and sends a confirmation test\u2026",
+      "id": "backend_app_api_devices_rationale_879",
+      "label": "Consolidates duplicate devices with identical IP or Model, retaining the most\u2026",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "rationale",
-      "norm_label": "validates bot credentials with telegram api and sends a confirmation test...",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L451"
+      "norm_label": "consolidates duplicate devices with identical ip or model, retaining the most...",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L879"
     },
     {
-      "id": "backend_app_services_telegram_vault_rationale_505",
-      "label": "Sends a text message to the configured Telegram chat.",
+      "id": "backend_app_api_devices_rationale_922",
+      "label": "Removes all paired devices so fresh real devices can register via heartbeat.",
       "_origin": "ast",
       "community": 11,
-      "community_name": "TelegramVaultService",
+      "community_name": "PairedDevice",
       "file_type": "rationale",
-      "norm_label": "sends a text message to the configured telegram chat.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L505"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_rationale_521",
-      "label": "Sends a document (e.g. database backup) to Telegram.",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "rationale",
-      "norm_label": "sends a document (e.g. database backup) to telegram.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L521"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_rationale_538",
-      "label": "Processes interactive bot commands received via Telegram chat.",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "rationale",
-      "norm_label": "processes interactive bot commands received via telegram chat.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L538"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_rationale_633",
-      "label": "Continuous lightweight long-polling loop for Telegram Bot updates.",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "rationale",
-      "norm_label": "continuous lightweight long-polling loop for telegram bot updates.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L633"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_rationale_704",
-      "label": "Spawns or reuses the background polling task. Credentials are read in-place by\u2026",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "rationale",
-      "norm_label": "spawns or reuses the background polling task. credentials are read in-place by...",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L704"
-    },
-    {
-      "id": "backend_app_services_telegram_vault_rationale_89",
-      "label": "Attempts to load a clean TrueType font, falling back to default.",
-      "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
-      "file_type": "rationale",
-      "norm_label": "attempts to load a clean truetype font, falling back to default.",
-      "source_file": "backend/app/services/telegram_vault.py",
-      "source_location": "L89"
+      "norm_label": "removes all paired devices so fresh real devices can register via heartbeat.",
+      "source_file": "backend/app/api/devices.py",
+      "source_location": "L922"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_data_sentinelapreferences",
@@ -9909,24 +9986,24 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_core_logging_handler",
-      "label": "logging_handler.py",
+      "id": "base",
+      "label": "Base",
       "_origin": "ast",
       "community": 19,
       "community_name": "api/telemetry.py",
       "file_type": "code",
-      "norm_label": "logging_handler.py",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L1"
+      "norm_label": "base",
+      "source_file": "",
+      "source_location": ""
     },
     {
-      "id": "logrecord",
-      "label": "LogRecord",
+      "id": "fastapi",
+      "label": "FastAPI",
       "_origin": "ast",
       "community": 19,
       "community_name": "api/telemetry.py",
       "file_type": "code",
-      "norm_label": "logrecord",
+      "norm_label": "fastapi",
       "source_file": "",
       "source_location": ""
     },
@@ -10041,17 +10118,6 @@
       "source_location": "L523"
     },
     {
-      "id": "backend_app_core_logging_handler_rationale_20",
-      "label": "Captures all logging records in memory for real-time API streaming.",
-      "_origin": "ast",
-      "community": 19,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "captures all logging records in memory for real-time api streaming.",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L20"
-    },
-    {
       "id": "backend_app_core_logging_handler_rationale_30",
       "label": "Returns the most recent lines from the in-memory ring buffer.",
       "_origin": "ast",
@@ -10074,17 +10140,6 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_app_api_devices_py_asyncsession",
-      "label": "AsyncSession",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "asyncsession",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "backend_app_api_devices_py_basemodel",
       "label": "BaseModel",
       "_origin": "ast",
@@ -10092,28 +10147,6 @@
       "community_name": "devices.py",
       "file_type": "code",
       "norm_label": "basemodel",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_devices_py_delete",
-      "label": "delete",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "delete",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_devices_py_get",
-      "label": "get",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "get",
       "source_file": "",
       "source_location": ""
     },
@@ -10147,61 +10180,6 @@
       "community_name": "devices.py",
       "file_type": "code",
       "norm_label": "request",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_core_timezone",
-      "label": "timezone.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "timezone.py",
-      "source_file": "backend/app/core/timezone.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_mocks_mock_publisher",
-      "label": "mock_publisher.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "mock_publisher.py",
-      "source_file": "backend/app/mocks/mock_publisher.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_services_audit_service",
-      "label": "audit_service.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "audit_service.py",
-      "source_file": "backend/app/services/audit_service.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_services_telegram_queue",
-      "label": "telegram_queue.py",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "telegram_queue.py",
-      "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "datetime",
-      "label": "datetime",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "code",
-      "norm_label": "datetime",
       "source_file": "",
       "source_location": ""
     },
@@ -10272,39 +10250,6 @@
       "source_location": "L24"
     },
     {
-      "id": "backend_app_api_devices_rationale_347",
-      "label": "Returns the list of cameras permitted for a specific screen/device.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "returns the list of cameras permitted for a specific screen/device.",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L347"
-    },
-    {
-      "id": "backend_app_api_devices_rationale_391",
-      "label": "Returns the full granular policy and permissions for a specific device.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "returns the full granular policy and permissions for a specific device.",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L391"
-    },
-    {
-      "id": "backend_app_api_devices_rationale_474",
-      "label": "Checks real-time online/reachable status for all paired screens. Optimized O(1)\u2026",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "checks real-time online/reachable status for all paired screens. optimized o(1)...",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L474"
-    },
-    {
       "id": "backend_app_api_devices_rationale_552",
       "label": "Updates complete granular permissions for a paired screen/device.",
       "_origin": "ast",
@@ -10327,39 +10272,6 @@
       "source_location": "L661"
     },
     {
-      "id": "backend_app_api_devices_rationale_830",
-      "label": "Quickly toggle PiP alerts state for a single device with 1-click.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "quickly toggle pip alerts state for a single device with 1-click.",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L830"
-    },
-    {
-      "id": "backend_app_api_devices_rationale_879",
-      "label": "Consolidates duplicate devices with identical IP or Model, retaining the most\u2026",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "consolidates duplicate devices with identical ip or model, retaining the most...",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L879"
-    },
-    {
-      "id": "backend_app_api_devices_rationale_922",
-      "label": "Removes all paired devices so fresh real devices can register via heartbeat.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "removes all paired devices so fresh real devices can register via heartbeat.",
-      "source_file": "backend/app/api/devices.py",
-      "source_location": "L922"
-    },
-    {
       "id": "backend_app_api_devices_rationale_958",
       "label": "Receives physical execution confirmation and rich telemetry from the Android TV\u2026",
       "_origin": "ast",
@@ -10369,50 +10281,6 @@
       "norm_label": "receives physical execution confirmation and rich telemetry from the android tv...",
       "source_file": "backend/app/api/devices.py",
       "source_location": "L958"
-    },
-    {
-      "id": "backend_app_core_timezone_rationale_16",
-      "label": "Retorna o timestamp ISO 8601 correspondente ao fuso de Bras\u00edlia.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "retorna o timestamp iso 8601 correspondente ao fuso de brasilia.",
-      "source_file": "backend/app/core/timezone.py",
-      "source_location": "L16"
-    },
-    {
-      "id": "backend_app_core_timezone_rationale_8",
-      "label": "Retorna o hor\u00e1rio atual estritamente calibrado no fuso de Bras\u00edlia\u2026",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "retorna o horario atual estritamente calibrado no fuso de brasilia...",
-      "source_file": "backend/app/core/timezone.py",
-      "source_location": "L8"
-    },
-    {
-      "id": "backend_app_mocks_mock_publisher_rationale_15",
-      "label": "Publishes a mock Frigate security event to Mosquitto MQTT.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "publishes a mock frigate security event to mosquitto mqtt.",
-      "source_file": "backend/app/mocks/mock_publisher.py",
-      "source_location": "L15"
-    },
-    {
-      "id": "backend_app_services_audit_service_rationale_19",
-      "label": "Records an audit log entry in SQLite asynchronously.",
-      "_origin": "ast",
-      "community": 2,
-      "community_name": "devices.py",
-      "file_type": "rationale",
-      "norm_label": "records an audit log entry in sqlite asynchronously.",
-      "source_file": "backend/app/services/audit_service.py",
-      "source_location": "L19"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_tsconfig",
@@ -10679,17 +10547,6 @@
       "source_location": "L149"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelarepository_kt_com",
-      "label": "com",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "Models.kt",
-      "file_type": "code",
-      "norm_label": "com",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "docs_codespaces_build_guide",
       "label": "CODESPACES_BUILD_GUIDE.md",
       "_origin": "ast",
@@ -10802,7 +10659,7 @@
       "label": "SentinelaRepository.kt",
       "_origin": "ast",
       "community": 23,
-      "community_name": "TvLogsViewport",
+      "community_name": "SentinelaRepository.kt",
       "file_type": "code",
       "norm_label": "sentinelarepository.kt",
       "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaRepository.kt",
@@ -10813,9 +10670,20 @@
       "label": "Context",
       "_origin": "ast",
       "community": 23,
-      "community_name": "TvLogsViewport",
+      "community_name": "SentinelaRepository.kt",
       "file_type": "code",
       "norm_label": "context",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_android",
+      "label": "android",
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "SentinelaRepository.kt",
+      "file_type": "code",
+      "norm_label": "android",
       "source_file": "",
       "source_location": ""
     },
@@ -10824,20 +10692,9 @@
       "label": "HttpURLConnection",
       "_origin": "ast",
       "community": 23,
-      "community_name": "TvLogsViewport",
+      "community_name": "SentinelaRepository.kt",
       "file_type": "code",
       "norm_label": "httpurlconnection",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "telemetrydata",
-      "label": "TelemetryData",
-      "_origin": "ast",
-      "community": 23,
-      "community_name": "TvLogsViewport",
-      "file_type": "code",
-      "norm_label": "telemetrydata",
       "source_file": "",
       "source_location": ""
     },
@@ -10846,55 +10703,132 @@
       "label": "URL",
       "_origin": "ast",
       "community": 23,
-      "community_name": "TvLogsViewport",
+      "community_name": "SentinelaRepository.kt",
       "file_type": "code",
       "norm_label": "url",
       "source_file": "",
       "source_location": ""
     },
     {
-      "id": "backend_app_services_time_sync",
-      "label": "time_sync.py",
+      "id": "backend_app_core_timezone",
+      "label": "timezone.py",
       "_origin": "ast",
       "community": 24,
-      "community_name": "time_sync.py",
+      "community_name": "get_brasilia_now",
       "file_type": "code",
-      "norm_label": "time_sync.py",
-      "source_file": "backend/app/services/time_sync.py",
+      "norm_label": "timezone.py",
+      "source_file": "backend/app/core/timezone.py",
       "source_location": "L1"
     },
     {
-      "id": "backend_app_services_time_sync_rationale_1",
-      "label": "Sentinela Frigate Pro - Time Synchronization Service Periodically checks server\u2026",
+      "id": "backend_app_db_models",
+      "label": "models.py",
       "_origin": "ast",
       "community": 24,
-      "community_name": "time_sync.py",
-      "file_type": "rationale",
-      "norm_label": "sentinela frigate pro - time synchronization service periodically checks server...",
-      "source_file": "backend/app/services/time_sync.py",
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "models.py",
+      "source_file": "backend/app/db/models.py",
       "source_location": "L1"
     },
     {
-      "id": "backend_app_services_time_sync_rationale_23",
-      "label": "Queries an NTP server and returns epoch timestamp in seconds.",
+      "id": "backend_app_mocks_mock_publisher",
+      "label": "mock_publisher.py",
       "_origin": "ast",
       "community": 24,
-      "community_name": "time_sync.py",
-      "file_type": "rationale",
-      "norm_label": "queries an ntp server and returns epoch timestamp in seconds.",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L23"
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "mock_publisher.py",
+      "source_file": "backend/app/mocks/mock_publisher.py",
+      "source_location": "L1"
     },
     {
-      "id": "backend_app_services_time_sync_rationale_47",
-      "label": "Background task running once per hour to log and monitor time synchronization.",
+      "id": "backend_app_services_audit_service",
+      "label": "audit_service.py",
       "_origin": "ast",
       "community": 24,
-      "community_name": "time_sync.py",
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "audit_service.py",
+      "source_file": "backend/app/services/audit_service.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_services_telegram_queue",
+      "label": "telegram_queue.py",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "telegram_queue.py",
+      "source_file": "backend/app/services/telegram_queue.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "datetime",
+      "label": "datetime",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "datetime",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_api_events_rationale_41",
+      "label": "Fetches real historical events from Frigate NVR (single source of truth) with\u2026",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
       "file_type": "rationale",
-      "norm_label": "background task running once per hour to log and monitor time synchronization.",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L47"
+      "norm_label": "fetches real historical events from frigate nvr (single source of truth) with...",
+      "source_file": "backend/app/api/events.py",
+      "source_location": "L41"
+    },
+    {
+      "id": "backend_app_core_timezone_rationale_16",
+      "label": "Retorna o timestamp ISO 8601 correspondente ao fuso de Bras\u00edlia.",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "rationale",
+      "norm_label": "retorna o timestamp iso 8601 correspondente ao fuso de brasilia.",
+      "source_file": "backend/app/core/timezone.py",
+      "source_location": "L16"
+    },
+    {
+      "id": "backend_app_core_timezone_rationale_8",
+      "label": "Retorna o hor\u00e1rio atual estritamente calibrado no fuso de Bras\u00edlia\u2026",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "rationale",
+      "norm_label": "retorna o horario atual estritamente calibrado no fuso de brasilia...",
+      "source_file": "backend/app/core/timezone.py",
+      "source_location": "L8"
+    },
+    {
+      "id": "backend_app_mocks_mock_publisher_rationale_15",
+      "label": "Publishes a mock Frigate security event to Mosquitto MQTT.",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "rationale",
+      "norm_label": "publishes a mock frigate security event to mosquitto mqtt.",
+      "source_file": "backend/app/mocks/mock_publisher.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "backend_app_services_audit_service_rationale_19",
+      "label": "Records an audit log entry in SQLite asynchronously.",
+      "_origin": "ast",
+      "community": 24,
+      "community_name": "get_brasilia_now",
+      "file_type": "rationale",
+      "norm_label": "records an audit log entry in sqlite asynchronously.",
+      "source_file": "backend/app/services/audit_service.py",
+      "source_location": "L19"
     },
     {
       "id": "frontend_package",
@@ -12070,17 +12004,6 @@
       "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_context",
-      "label": "Context",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "context",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_intent",
       "label": "Intent",
       "_origin": "ast",
@@ -12137,94 +12060,6 @@
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_webviewclient",
-      "label": "WebViewClient",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webviewclient",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
-      "label": "MseCameraView.kt",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "msecameraview.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
-      "label": "android",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "android",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
-      "label": "Modifier",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "modifier",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_permissionrequest",
-      "label": "PermissionRequest",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "permissionrequest",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_sslerrorhandler",
-      "label": "SslErrorHandler",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "sslerrorhandler",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webchromeclient",
-      "label": "WebChromeClient",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webchromeclient",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webview",
-      "label": "WebView",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webview",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webviewclient",
       "label": "WebViewClient",
       "_origin": "ast",
       "community": 3,
@@ -12330,28 +12165,6 @@
       "community_name": "OverlayService",
       "file_type": "code",
       "norm_label": "view",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "webresourceerror",
-      "label": "WebResourceError",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webresourceerror",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "webresourcerequest",
-      "label": "WebResourceRequest",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "webresourcerequest",
       "source_file": "",
       "source_location": ""
     },
@@ -12792,14 +12605,14 @@
       "source_location": "L76"
     },
     {
-      "id": "readme_download_dos_apks_oficiais_v001_000_000_161",
-      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.161`)",
+      "id": "readme_download_dos_apks_oficiais_v001_000_000_162",
+      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.162`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.161`)",
+      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.162`)",
       "source_file": "README.md",
       "source_location": "L23"
     },
@@ -13879,46 +13692,24 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_db_models",
-      "label": "models.py",
+      "id": "backend_app_services_telegram_vault",
+      "label": "telegram_vault.py",
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
-      "norm_label": "models.py",
-      "source_file": "backend/app/db/models.py",
+      "norm_label": "telegram_vault.py",
+      "source_file": "backend/app/services/telegram_vault.py",
       "source_location": "L1"
     },
     {
-      "id": "backend_app_services_mqtt_service",
-      "label": "mqtt_service.py",
-      "_origin": "ast",
-      "community": 38,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "mqtt_service.py",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_services_mqtt_service_py_any",
+      "id": "backend_app_services_telegram_vault_py_any",
       "label": "Any",
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "code",
       "norm_label": "any",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "base",
-      "label": "Base",
-      "_origin": "ast",
-      "community": 38,
-      "community_name": "settings.py",
-      "file_type": "code",
-      "norm_label": "base",
       "source_file": "",
       "source_location": ""
     },
@@ -14022,37 +13813,147 @@
       "source_location": "L695"
     },
     {
-      "id": "backend_app_services_mqtt_service_rationale_291",
-      "label": "Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast\u2026",
+      "id": "backend_app_services_telegram_vault_rationale_108",
+      "label": "Applies a professional HUD watermark on the snapshot with dynamic scaling for\u2026",
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "rationale",
-      "norm_label": "asynchronously handles telegram photo dispatch, db logging, and chromecast...",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L291"
+      "norm_label": "applies a professional hud watermark on the snapshot with dynamic scaling for...",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L108"
     },
     {
-      "id": "backend_app_services_mqtt_service_rationale_437",
-      "label": "Connects to MQTT and runs consumer loop with automatic reconnection.",
+      "id": "backend_app_services_telegram_vault_rationale_20",
+      "label": "Appends an event to the in-memory Telegram audit trail.",
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "rationale",
-      "norm_label": "connects to mqtt and runs consumer loop with automatic reconnection.",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L437"
+      "norm_label": "appends an event to the in-memory telegram audit trail.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L20"
     },
     {
-      "id": "backend_app_services_mqtt_service_rationale_71",
-      "label": "Dynamically loads live Telegram settings with 30s in-memory cache. Zero-latency\u2026",
+      "id": "backend_app_services_telegram_vault_rationale_282",
+      "label": "Dispatches watermarked snapshot to Telegram using the classic template.",
       "_origin": "ast",
       "community": 38,
       "community_name": "settings.py",
       "file_type": "rationale",
-      "norm_label": "dynamically loads live telegram settings with 30s in-memory cache. zero-latency...",
-      "source_file": "backend/app/services/mqtt_service.py",
-      "source_location": "L71"
+      "norm_label": "dispatches watermarked snapshot to telegram using the classic template.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L282"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_354",
+      "label": "Dispatches MP4 clip to Telegram using the classic template.",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "dispatches mp4 clip to telegram using the classic template.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L354"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_40",
+      "label": "Loads Bot Token and Chat ID from database if available, or seeds defaults.",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "loads bot token and chat id from database if available, or seeds defaults.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L40"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_431",
+      "label": "Formats real-time telemetry into a rich Telegram status message.",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "formats real-time telemetry into a rich telegram status message.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L431"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_451",
+      "label": "Validates bot credentials with Telegram API and sends a confirmation test\u2026",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "validates bot credentials with telegram api and sends a confirmation test...",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L451"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_505",
+      "label": "Sends a text message to the configured Telegram chat.",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "sends a text message to the configured telegram chat.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L505"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_521",
+      "label": "Sends a document (e.g. database backup) to Telegram.",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "sends a document (e.g. database backup) to telegram.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L521"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_538",
+      "label": "Processes interactive bot commands received via Telegram chat.",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "processes interactive bot commands received via telegram chat.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L538"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_633",
+      "label": "Continuous lightweight long-polling loop for Telegram Bot updates.",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "continuous lightweight long-polling loop for telegram bot updates.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L633"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_704",
+      "label": "Spawns or reuses the background polling task. Credentials are read in-place by\u2026",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "spawns or reuses the background polling task. credentials are read in-place by...",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L704"
+    },
+    {
+      "id": "backend_app_services_telegram_vault_rationale_89",
+      "label": "Attempts to load a clean TrueType font, falling back to default.",
+      "_origin": "ast",
+      "community": 38,
+      "community_name": "settings.py",
+      "file_type": "rationale",
+      "norm_label": "attempts to load a clean truetype font, falling back to default.",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L89"
     },
     {
       "id": "android_gradlew",
@@ -14499,6 +14400,17 @@
       "source_location": "L25"
     },
     {
+      "id": "backend_app_api_ws",
+      "label": "ws.py",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "ws.py",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L1"
+    },
+    {
       "id": "websocket",
       "label": "WebSocket",
       "_origin": "ast",
@@ -14508,6 +14420,17 @@
       "norm_label": "websocket",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "backend_app_api_ws_rationale_100",
+      "label": "Background loop sending hardware telemetry every 5.0 seconds to connected UI\u2026",
+      "_origin": "ast",
+      "community": 41,
+      "community_name": "WebSocketManager",
+      "file_type": "rationale",
+      "norm_label": "background loop sending hardware telemetry every 5.0 seconds to connected ui...",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L100"
     },
     {
       "id": "agents_workflows_cerebro",
@@ -15716,6 +15639,17 @@
       "source_location": "L1"
     },
     {
+      "id": "asyncio",
+      "label": "asyncio",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "asyncio",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "backend_app_api_events",
       "label": "events.py",
       "_origin": "ast",
@@ -15793,6 +15727,39 @@
       "source_location": ""
     },
     {
+      "id": "backend_app_services_mqtt_service",
+      "label": "mqtt_service.py",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "mqtt_service.py",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_py_any",
+      "label": "Any",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "any",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_tests_test_backend",
+      "label": "test_backend.py",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "test_backend.py",
+      "source_file": "backend/tests/test_backend.py",
+      "source_location": "L1"
+    },
+    {
       "id": "head",
       "label": "head",
       "_origin": "ast",
@@ -15802,6 +15769,17 @@
       "norm_label": "head",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "verify_system",
+      "label": "verify_system.py",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "code",
+      "norm_label": "verify_system.py",
+      "source_file": "verify_system.py",
+      "source_location": "L1"
     },
     {
       "id": "backend_app_api_events_rationale_175",
@@ -15870,17 +15848,6 @@
       "source_location": "L375"
     },
     {
-      "id": "backend_app_api_events_rationale_41",
-      "label": "Fetches real historical events from Frigate NVR (single source of truth) with\u2026",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "events.py",
-      "file_type": "rationale",
-      "norm_label": "fetches real historical events from frigate nvr (single source of truth) with...",
-      "source_file": "backend/app/api/events.py",
-      "source_location": "L41"
-    },
-    {
       "id": "backend_app_api_events_rationale_411",
       "label": "Retrieves operational audit logs (system mutations, alerts, errors).",
       "_origin": "ast",
@@ -15912,6 +15879,39 @@
       "norm_label": "proxies or serves snapshot jpeg image for an event from local disk or frigate...",
       "source_file": "backend/app/api/events.py",
       "source_location": "L583"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_rationale_291",
+      "label": "Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast\u2026",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "rationale",
+      "norm_label": "asynchronously handles telegram photo dispatch, db logging, and chromecast...",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L291"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_rationale_437",
+      "label": "Connects to MQTT and runs consumer loop with automatic reconnection.",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "rationale",
+      "norm_label": "connects to mqtt and runs consumer loop with automatic reconnection.",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L437"
+    },
+    {
+      "id": "backend_app_services_mqtt_service_rationale_71",
+      "label": "Dynamically loads live Telegram settings with 30s in-memory cache. Zero-latency\u2026",
+      "_origin": "ast",
+      "community": 65,
+      "community_name": "events.py",
+      "file_type": "rationale",
+      "norm_label": "dynamically loads live telegram settings with 30s in-memory cache. zero-latency...",
+      "source_file": "backend/app/services/mqtt_service.py",
+      "source_location": "L71"
     },
     {
       "id": "frontend_src_app_settings_storage_page",
@@ -15988,6 +15988,17 @@
       "source_location": "L1"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_context",
+      "label": "Context",
+      "_origin": "ast",
+      "community": 7,
+      "community_name": "TvNetflixScreen.kt",
+      "file_type": "code",
+      "norm_label": "context",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen",
       "label": "TvNetflixScreen.kt",
       "_origin": "ast",
@@ -15997,17 +16008,6 @@
       "norm_label": "tvnetflixscreen.kt",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt",
       "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_android",
-      "label": "android",
-      "_origin": "ast",
-      "community": 7,
-      "community_name": "TvNetflixScreen.kt",
-      "file_type": "code",
-      "norm_label": "android",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_kt_color",
@@ -17558,7 +17558,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udee1\ufe0f matriz de especificacoes e cobertura onp-spec",
       "source_file": "STATE.md",
-      "source_location": "L200"
+      "source_location": "L218"
     },
     {
       "id": "state_pr\u00f3ximos_passos_e_itens_em_aberto",
@@ -17570,7 +17570,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L881"
+      "source_location": "L899"
     },
     {
       "id": "state_resumo_da_sess\u00e3o_atual_v001_000_000_149",
@@ -17582,7 +17582,7 @@
       "node_kind": "heading",
       "norm_label": "resumo da sessao atual (v001.000.000.149)",
       "source_file": "STATE.md",
-      "source_location": "L874"
+      "source_location": "L892"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -17606,7 +17606,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.114 (otimizacao termica, atomicidade e unificacao web)",
       "source_file": "STATE.md",
-      "source_location": "L436"
+      "source_location": "L454"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
@@ -17618,7 +17618,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.115 (correcao da aba cameras nos apks, harmonizacao mse e cache-busting web)",
       "source_file": "STATE.md",
-      "source_location": "L413"
+      "source_location": "L431"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
@@ -17630,7 +17630,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.116 (resolucao de pip na tv, reconciliacao master, capturas hd e desduplicacao de cameras)",
       "source_file": "STATE.md",
-      "source_location": "L400"
+      "source_location": "L418"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
@@ -17642,7 +17642,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.117 (estabilidade multi-dispositivo de pip, zero-cache nginx host & app web)",
       "source_file": "STATE.md",
-      "source_location": "L381"
+      "source_location": "L399"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_126_observabilidade_e_logs_distribu\u00eddos_em_todas_as_abas_cards_bot\u00f5es_pip_zero_loading_flash",
@@ -17654,7 +17654,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.126 (observabilidade e logs distribuidos em todas as abas/cards/botoes & pip zero loading flash)",
       "source_file": "STATE.md",
-      "source_location": "L337"
+      "source_location": "L355"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_127_modo_de_espera_monitoramento_de_detec\u00e7\u00e3o_suspens\u00e3o_de_players_em_background_para_pip",
@@ -17666,7 +17666,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.127 (modo de espera / monitoramento de deteccao & suspensao de players em background para pip)",
       "source_file": "STATE.md",
-      "source_location": "L318"
+      "source_location": "L336"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_129_deduplica\u00e7\u00e3o_de_c\u00e2meras_na_tv_alinhamento_responsivo_de_ui_ux_e_propor\u00e7\u00e3o_din\u00e2mica_16_9_no_smartphone",
@@ -17678,7 +17678,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.129 (deduplicacao de cameras na tv, alinhamento responsivo de ui/ux e proporcao dinamica 16:9 no smartphone)",
       "source_file": "STATE.md",
-      "source_location": "L303"
+      "source_location": "L321"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_130_otimiza\u00e7\u00e3o_global_de_servidores_resolu\u00e7\u00e3o_de_salvamento_temperatura_e_segrega\u00e7\u00e3o_de_pip",
@@ -17690,7 +17690,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.130 (otimizacao global de servidores, resolucao de salvamento/temperatura e segregacao de pip)",
       "source_file": "STATE.md",
-      "source_location": "L285"
+      "source_location": "L303"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_140_otimiza\u00e7\u00e3o_extrema_para_c\u00e2meras_ip_aitek_seg6050bp_e_corre\u00e7\u00e3o_definitiva_do_lag_stutter_mse_24_fps",
@@ -17702,7 +17702,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.140 (otimizacao extrema para cameras ip aitek seg6050bp e correcao definitiva do lag/stutter mse 24 fps)",
       "source_file": "STATE.md",
-      "source_location": "L250"
+      "source_location": "L268"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_141_harmoniza\u00e7\u00e3o_universal_h_264_gop_25_clipes_reais_telegram_e_fim_dos_travamentos_de_30s",
@@ -17714,7 +17714,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.141 (harmonizacao universal h.264, gop 25, clipes reais telegram e fim dos travamentos de 30s)",
       "source_file": "STATE.md",
-      "source_location": "L235"
+      "source_location": "L253"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_150_build_150_otimiza\u00e7\u00e3o_global_do_ecossistema_e_harmoniza\u00e7\u00e3o_multi_plataforma",
@@ -17726,7 +17726,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.150 (build 150) \u2014 otimizacao global do ecossistema e harmonizacao multi-plataforma",
       "source_file": "STATE.md",
-      "source_location": "L160"
+      "source_location": "L178"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
@@ -17738,7 +17738,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.152 (build 152) \u2014 persistencia definitiva de gravacao, resolucao, audio e bitrate",
       "source_file": "STATE.md",
-      "source_location": "L141"
+      "source_location": "L159"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
@@ -17750,7 +17750,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.155 (build 155) \u2014 controle de sensores/hardware onvif, sincronizacao horaria e otimizacao do ecossistema",
       "source_file": "STATE.md",
-      "source_location": "L97"
+      "source_location": "L115"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
@@ -17762,7 +17762,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.156 (build 156) \u2014 correcao definitiva de limpeza ssd, otimizacao termica e cascateamento go2rtc",
       "source_file": "STATE.md",
-      "source_location": "L80"
+      "source_location": "L98"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_157_build_157_deduplica\u00e7\u00e3o_estrita_de_c\u00e2meras_loopback_universal_no_go2rtc_e_otimiza\u00e7\u00e3o_extrema_de_recursos",
@@ -17774,7 +17774,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.157 (build 157) \u2014 deduplicacao estrita de cameras, loopback universal no go2rtc e otimizacao extrema de recursos",
       "source_file": "STATE.md",
-      "source_location": "L67"
+      "source_location": "L85"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
@@ -17786,7 +17786,19 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.159 (build 159) \u2014 desacoplamento de foco na tv, pip 16:9 estrito, controles por camera e otimizacao mobile",
       "source_file": "STATE.md",
-      "source_location": "L36"
+      "source_location": "L54"
+    },
+    {
+      "id": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
+      "label": "\ud83d\udce6 Vers\u00e3o Anterior: v001.000.000.161 (Build 161) \u2014 Resolu\u00e7\u00e3o de Decoder TV, Aspect Ratio 16:9 Estrito e CI/CD Verde",
+      "_origin": "ast",
+      "community": 93,
+      "community_name": "STATE.md \u2014 Mem\u00f3ria Persistente do Projeto",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.161 (build 161) \u2014 resolucao de decoder tv, aspect ratio 16:9 estrito e ci/cd verde",
+      "source_file": "STATE.md",
+      "source_location": "L27"
     },
     {
       "id": "state_vers\u00e3o_atual_v001_000_000_142_ingest\u00e3o_\u00fanica_sub_stream_est\u00e1vel_cascateamento_zero_drop_go2rtc_e_rebuild_backend",
@@ -17798,17 +17810,17 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao atual: v001.000.000.142 (ingestao unica sub-stream estavel, cascateamento zero-drop go2rtc e rebuild backend)",
       "source_file": "STATE.md",
-      "source_location": "L216"
+      "source_location": "L234"
     },
     {
-      "id": "state_vers\u00e3o_atual_v001_000_000_161_build_161_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_aspect_ratio_estrito_e_ci_cd_verde",
-      "label": "\ud83d\udce6 Vers\u00e3o Atual: v001.000.000.161 (Build 161) \u2014 Resolu\u00e7\u00e3o Definitiva de Transmiss\u00f5es, Aspect Ratio Estrito e CI/CD Verde",
+      "id": "state_vers\u00e3o_atual_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
+      "label": "\ud83d\udce6 Vers\u00e3o Atual: v001.000.000.162 (Build 162) \u2014 Resolu\u00e7\u00e3o Definitiva de Transmiss\u00f5es Web 24/7 (Fim do Ciclo de 5 Segundos) e Harmoniza\u00e7\u00e3o Dual-Cam",
       "_origin": "ast",
       "community": 93,
       "community_name": "STATE.md \u2014 Mem\u00f3ria Persistente do Projeto",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce6 versao atual: v001.000.000.161 (build 161) \u2014 resolucao definitiva de transmissoes, aspect ratio estrito e ci/cd verde",
+      "norm_label": "\ud83d\udce6 versao atual: v001.000.000.162 (build 162) \u2014 resolucao definitiva de transmissoes web 24/7 (fim do ciclo de 5 segundos) e harmonizacao dual-cam",
       "source_file": "STATE.md",
       "source_location": "L9"
     },
@@ -17822,7 +17834,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83c\udfaf visao e objetivos atuais",
       "source_file": "STATE.md",
-      "source_location": "L189"
+      "source_location": "L207"
     },
     {
       "id": "agents_skills_onp_spec_driven_references_constituicao_constitui\u00e7\u00e3o_princ\u00edpios_que_a_m\u00e1quina_verifica",
@@ -38894,7 +38906,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "frontend/src/components/WebRTCPlayer.tsx",
-      "source_location": "L796",
+      "source_location": "L798",
       "weight": 1.0
     },
     {
@@ -39570,7 +39582,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_download_dos_apks_oficiais_v001_000_000_161",
+      "target": "readme_download_dos_apks_oficiais_v001_000_000_162",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -40923,13 +40935,24 @@
     },
     {
       "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L115",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
       "target": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L141",
+      "source_location": "L159",
       "weight": 1.0
     },
     {
@@ -40940,7 +40963,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L160",
+      "source_location": "L178",
       "weight": 1.0
     },
     {
@@ -40951,7 +40974,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L189",
+      "source_location": "L207",
       "weight": 1.0
     },
     {
@@ -40962,7 +40985,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L200",
+      "source_location": "L218",
       "weight": 1.0
     },
     {
@@ -40973,7 +40996,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L216",
+      "source_location": "L234",
       "weight": 1.0
     },
     {
@@ -40984,7 +41007,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L235",
+      "source_location": "L253",
       "weight": 1.0
     },
     {
@@ -40995,7 +41018,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L250",
+      "source_location": "L268",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L27",
       "weight": 1.0
     },
     {
@@ -41006,7 +41040,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L285",
+      "source_location": "L303",
       "weight": 1.0
     },
     {
@@ -41017,7 +41051,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L303",
+      "source_location": "L321",
       "weight": 1.0
     },
     {
@@ -41028,7 +41062,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L318",
+      "source_location": "L336",
       "weight": 1.0
     },
     {
@@ -41039,18 +41073,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L337",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L36",
+      "source_location": "L355",
       "weight": 1.0
     },
     {
@@ -41061,7 +41084,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L381",
+      "source_location": "L399",
       "weight": 1.0
     },
     {
@@ -41072,7 +41095,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L400",
+      "source_location": "L418",
       "weight": 1.0
     },
     {
@@ -41083,7 +41106,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L413",
+      "source_location": "L431",
       "weight": 1.0
     },
     {
@@ -41094,7 +41117,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L436",
+      "source_location": "L454",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L54",
       "weight": 1.0
     },
     {
@@ -41105,18 +41139,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L67",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L80",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -41127,7 +41150,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L874",
+      "source_location": "L892",
       "weight": 1.0
     },
     {
@@ -41138,12 +41161,12 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L881",
+      "source_location": "L899",
       "weight": 1.0
     },
     {
       "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_atual_v001_000_000_161_build_161_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_aspect_ratio_estrito_e_ci_cd_verde",
+      "target": "state_vers\u00e3o_atual_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -41154,13 +41177,13 @@
     },
     {
       "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L97",
+      "source_location": "L98",
       "weight": 1.0
     },
     {
@@ -45830,7 +45853,7 @@
       "confidence_score": 0.85,
       "context": "argument",
       "source_file": "frontend/src/components/WebRTCPlayer.tsx",
-      "source_location": "L796",
+      "source_location": "L798",
       "weight": 1.0
     },
     {
@@ -46849,5 +46872,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "35436cb54b5646801ceb6b72f90c850260f83d04"
+  "built_at_commit": "622c5d2891443b088301f497aa16a3be5b05b281"
 }

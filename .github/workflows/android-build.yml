@@ -91,33 +91,38 @@ jobs:
           exit 1
         fi
 
-        echo "### 📋 APKs Encontrados" >> $GITHUB_STEP_SUMMARY
+        echo "### 📋 Estrutura de Saída do Gradle" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
-        find app/build/outputs/apk/ -name "*.apk" -type f >> $GITHUB_STEP_SUMMARY 2>&1 || true
+        find app/build/outputs/ -type f >> $GITHUB_STEP_SUMMARY 2>&1 || true
         echo '```' >> $GITHUB_STEP_SUMMARY
         
         VER="${{ steps.get_version.outputs.version }}"
         DEST="${GITHUB_WORKSPACE}/release-apks"
         mkdir -p "$DEST"
         
-        TV_APK=$(find app/build/outputs/apk -name "*tv*debug*.apk" -type f | head -n 1)
-        PHONE_APK=$(find app/build/outputs/apk -name "*smartphone*debug*.apk" -type f | head -n 1)
+        # Localizar APKs usando find recursivo a partir da pasta app/build/outputs
+        TV_APK=$(find app/build/outputs -type f -name "*tv*debug*.apk" -o -name "*tv*Debug*.apk" | head -n 1)
+        PHONE_APK=$(find app/build/outputs -type f -name "*smartphone*debug*.apk" -o -name "*smartphone*Debug*.apk" | head -n 1)
 
-        if [ -n "$TV_APK" ] && [ -f "$TV_APK" ]; then
-          cp "$TV_APK" "$DEST/sentinela-android-tv-v${VER}.apk"
-          cp "$TV_APK" "$DEST/sentinela-android-tv-latest.apk"
-          echo "✅ TV APK copiado: $TV_APK"
-        else
-          echo "⚠️ TV APK não encontrado!"
+        echo "🔍 TV APK encontrado em: '$TV_APK'"
+        echo "🔍 Smartphone APK encontrado em: '$PHONE_APK'"
+
+        if [ -z "$TV_APK" ] || [ ! -f "$TV_APK" ]; then
+          echo "❌ ERRO CRÍTICO: TV APK não encontrado!"
+          find app/build/outputs/ -type f || true
+          exit 1
         fi
 
-        if [ -n "$PHONE_APK" ] && [ -f "$PHONE_APK" ]; then
-          cp "$PHONE_APK" "$DEST/sentinela-android-smartphone-v${VER}.apk"
-          cp "$PHONE_APK" "$DEST/sentinela-android-smartphone-latest.apk"
-          echo "✅ Smartphone APK copiado: $PHONE_APK"
-        else
-          echo "⚠️ Smartphone APK não encontrado!"
+        if [ -z "$PHONE_APK" ] || [ ! -f "$PHONE_APK" ]; then
+          echo "❌ ERRO CRÍTICO: Smartphone APK não encontrado!"
+          find app/build/outputs/ -type f || true
+          exit 1
         fi
+
+        cp -v "$TV_APK" "$DEST/sentinela-android-tv-v${VER}.apk"
+        cp -v "$TV_APK" "$DEST/sentinela-android-tv-latest.apk"
+        cp -v "$PHONE_APK" "$DEST/sentinela-android-smartphone-v${VER}.apk"
+        cp -v "$PHONE_APK" "$DEST/sentinela-android-smartphone-latest.apk"
         
         echo "### ✅ Release APKs Prontos" >> $GITHUB_STEP_SUMMARY
         echo '```' >> $GITHUB_STEP_SUMMARY
@@ -147,6 +152,7 @@ jobs:
       with:
         name: sentinela-apks-v${{ steps.get_version.outputs.version }}
         path: release-apks/*
+        if-no-files-found: error
 
     - name: Publish to GitHub Releases
       uses: softprops/action-gh-release@v2
@@ -157,6 +163,7 @@ jobs:
         prerelease: false
         make_latest: true
         overwrite: true
+        fail_on_unmatched_files: true
         files: |
           release-apks/sentinela-android-tv-v${{ steps.get_version.outputs.version }}.apk
           release-apks/sentinela-android-smartphone-v${{ steps.get_version.outputs.version }}.apk
@@ -182,11 +189,12 @@ jobs:
             * Confirmação visual e auditoria do reboot seguro do host Ubuntu
             * Controle granular de taxa de quadros e silenciamento por FAB
 
-          ### 🚀 Melhorias Desta Versão (Build 154):
+          ### 🚀 Melhorias Desta Versão (Build 163):
+          - 📦 **Correção Crítica de Distribuição de APKs**: Resolução do pipeline CI/CD garantindo empacotamento, verificação rigorosa de saída e upload imediato dos binários para TV e Smartphone.
+          - ⚡ **Estabilidade Contínua de Streaming Web & PiP**: Resolução definitiva de desconexões de 5 segundos, watchdog suave via `playbackRate`, MSE TCP em conexões WebSocket e zero-cache no Nginx.
           - 🧹 **Purga em Cascata de Câmeras**: Remoção no Frigate config, streams do go2rtc e chamada DELETE REST garantindo desativação instantânea sem streams fantasmas.
           - 📸 **Web PiP & Mosaico 2×2**: Botões de Foto HD (JPG) e Gravação 15s (MP4) direto no cabeçalho do PiP; Mosaico perfeitamente ajustado sem distorção anamórfica.
-          - 🔒 **Invariantes de Ouro Preservadas**: Idempotência total no PiP, watchdog suave via `playbackRate`, MSE TCP e zero-cache no Nginx.
-          - 🛡️ **Governança & Estabilidade**: 100% de aprovação na suíte `onp-spec` (31/31 testes PASS).
+          - 🛡️ **Governança & Estabilidade**: Preservação estrita das 9 Regras de Ouro e 100% de aprovação na suíte `onp-spec`.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
