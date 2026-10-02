@@ -1756,7 +1756,10 @@ object SentinelaRepository {
         } catch (e: Exception) {
             Log.w(TAG, "getClientLogs error: ${e.message}")
         }
-    suspend fun captureSnapshot(cameraName: String): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+        list
+    }
+
+    suspend fun captureSnapshot(cameraName: String): Boolean = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/go2rtc/api/frame.jpeg?src=${cameraName}&t=${System.currentTimeMillis()}")
             val conn = openConnection(url).apply {
@@ -1768,16 +1771,16 @@ object SentinelaRepository {
             if (code in 200..299) {
                 val bytes = conn.inputStream.readBytes()
                 conn.disconnect()
-                return@withContext Pair(true, "Foto 3MP capturada com sucesso (${bytes.size / 1024} KB)")
+                return@withContext true
             }
             conn.disconnect()
-            return@withContext Pair(false, "Erro ao obter snapshot: HTTP $code")
+            return@withContext false
         } catch (e: Exception) {
-            return@withContext Pair(false, "Erro de rede: ${e.message}")
+            return@withContext false
         }
     }
 
-    suspend fun recordClip(cameraName: String, durationSeconds: Int = 10): Pair<Boolean, String> = withContext(Dispatchers.IO) {
+    suspend fun recordClip(cameraName: String, durationSeconds: Int = 10): Boolean = withContext(Dispatchers.IO) {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/go2rtc/api/stream.mp4?src=${cameraName}&duration=${durationSeconds}")
             val conn = openConnection(url).apply {
@@ -1789,12 +1792,12 @@ object SentinelaRepository {
             if (code in 200..299) {
                 val bytes = conn.inputStream.readBytes()
                 conn.disconnect()
-                return@withContext Pair(true, "Clipe de gravação gerado (${bytes.size / 1024} KB)")
+                return@withContext true
             }
             conn.disconnect()
-            return@withContext Pair(false, "Erro ao gravar clipe: HTTP $code")
+            return@withContext false
         } catch (e: Exception) {
-            return@withContext Pair(false, "Erro de gravação: ${e.message}")
+            return@withContext false
         }
     }
 }
