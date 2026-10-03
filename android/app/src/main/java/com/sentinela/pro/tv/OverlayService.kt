@@ -541,9 +541,9 @@ class OverlayService : Service() {
         }
 
         // Dynamically resolve PiP size: override > policy > preferences, and lock into preferences
-        val rawSize = if (!overrideSize.isNullOrBlank()) overrideSize
-                      else if (policy != null && policy.pipDefaultSize.isNotBlank()) policy.pipDefaultSize
-                      else null
+        // v164: global TV prefs are the single source of truth for ALL cameras.
+        // Payload overrides apply only to explicit test PiPs (testId != null).
+        val rawSize = if (testId != null && !overrideSize.isNullOrBlank()) overrideSize else null
         val pipSize = if (!rawSize.isNullOrBlank()) {
             val s = when (rawSize.lowercase()) {
                 "mini", "extra_small" -> PipSize.EXTRA_SMALL
@@ -556,7 +556,6 @@ class OverlayService : Service() {
                 "cinema" -> PipSize.CINEMA
                 else -> prefs.currentPipSize
             }
-            prefs.pipSizeIndex = s.ordinal
             s
         } else {
             prefs.currentPipSize
@@ -578,10 +577,8 @@ class OverlayService : Service() {
             prefs.getCurrentPipPosition(camera)
         }
 
-        val durationSeconds = if (overrideDuration != null && overrideDuration > 0) {
+        val durationSeconds = if (testId != null && overrideDuration != null && overrideDuration > 0) {
             overrideDuration
-        } else if (policy != null && policy.pipDurationSeconds > 0) {
-            policy.pipDurationSeconds
         } else if (prefs.currentPipDuration.seconds > 0) {
             prefs.currentPipDuration.seconds
         } else {

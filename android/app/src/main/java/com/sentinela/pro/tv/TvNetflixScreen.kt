@@ -3432,15 +3432,15 @@ fun TvSettingsViewport(
                     }
 
                     val modes = listOf(
-                        Triple("mse", "🌟 (Recomendado) Ao Vivo Ultra Fluido (MSE / WebRTC)", "Mesmo motor 100% fluido da aba Câmeras: aceleração por hardware GPU, 30 FPS contínuos, zero travamentos e latência mínima."),
-                        Triple("snapshot", "Modo Eco Snapshot", "Atualização por fotos periódicas sequenciais (ideal para conexões muito lentas ou economia de banda)."),
-                        Triple("exoplayer", "ExoPlayer Nativo (HLS)", "Streaming via playlist HLS no reprodutor nativo ExoPlayer.")
+                        Triple("mse", "🌟 Ao Vivo MSE", "Mesmo motor 100% fluido da aba Câmeras: aceleração por hardware GPU, 30 FPS contínuos, zero travamentos e latência mínima."),
+                        Triple("snapshot", "Eco Snapshot", "Atualização por fotos periódicas sequenciais (ideal para conexões muito lentas ou economia de banda)."),
+                        Triple("exoplayer", "ExoPlayer HLS", "Streaming via playlist HLS no reprodutor nativo ExoPlayer.")
                     )
 
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(IntrinsicSize.Min),
+                            .height(54.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         modes.forEachIndexed { idx, (modeKey, modeTitle, modeDesc) ->
@@ -3466,6 +3466,7 @@ fun TvSettingsViewport(
                                     .clickable(interactionSource = interactionSource, indication = null) {
                                         playerMode = modeKey
                                         prefs.pipPlayerMode = modeKey
+                                        settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                         SentinelaRemoteLogger.log(
                                             category = "PIP",
                                             action = "PIP_PLAYER_MODE_CHANGED",
@@ -3477,7 +3478,7 @@ fun TvSettingsViewport(
                                     }
                             ) {
                                 Column(
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                    modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 3.dp),
                                     verticalArrangement = Arrangement.Center
                                 ) {
                                     Row(
@@ -3490,6 +3491,7 @@ fun TvSettingsViewport(
                                             color = if (isSelected) TvColors.NetflixRed else if (isFocused) Color.White else TvColors.TextPrimary,
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.weight(1f),
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )

@@ -107,6 +107,8 @@ async def init_db():
             ("app_version", "VARCHAR(32)"),
             ("device_model", "VARCHAR(64)"),
             ("recent_logs", "TEXT"),
+            ("camera_pip_positions", "TEXT"),
+            ("camera_pip_enabled", "TEXT"),
             ("last_seen", "DATETIME")
         ]
         for col_name, col_def in paired_columns:

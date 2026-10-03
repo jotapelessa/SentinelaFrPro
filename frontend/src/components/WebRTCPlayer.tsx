@@ -347,27 +347,38 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     if (isPaused || !isActivePlayer || streamMode === "monitor") return;
 
     let reconnectWatchdog: NodeJS.Timeout;
-    const WATCHDOG_INTERVAL_MS = 45000; // Heartbeat a cada 45 segundos para estabilidade
+    const WATCHDOG_INTERVAL_MS = 60000; // Heartbeat a cada 60s para máxima estabilidade
 
     const checkStreamHealth = () => {
-      // Se a aba estiver em segundo plano, não força reconexão desnecessária
       if (typeof document !== "undefined" && document.hidden) return;
 
       const activeProbeSrc = getEffectiveSrc();
-      // Executa probe leve no endpoint do go2rtc para aferir liveness da câmera ativa
-      fetch(`/go2rtc/api/streams?src=${encodeURIComponent(activeProbeSrc)}`, { method: "HEAD", signal: AbortSignal.timeout(6000) })
-        .then((res) => {
+      // Probe GET no endpoint da stream para validar existência de producers sem derrubar WebSocket
+      fetch(`/go2rtc/api/streams?src=${encodeURIComponent(activeProbeSrc)}`, { signal: AbortSignal.timeout(8000) })
+        .then(async (res) => {
           if (!res.ok) {
             setStreamStallCount((prev) => prev + 1);
           } else {
-            setStreamStallCount(0);
+            try {
+              const data = await res.json();
+              const sData = data[activeProbeSrc] || {};
+              const prods = sData.producers || [];
+              if (prods.length === 0) {
+                setStreamStallCount((prev) => prev + 1);
+              } else {
+                setStreamStallCount(0);
+              }
+            } catch {
+              // Resposta não JSON ou payload vazio
+              setStreamStallCount(0);
+            }
           }
         })
         .catch(() => {
           setStreamStallCount((prev) => {
             const next = prev + 1;
-            // Exige 4 falhas consecutivas antes de acionar reload para evitar quedas espúrias de 5s
-            if (next >= 4) {
+            // Exige ao menos 5 falhas consecutivas comprovadas antes de acionar reload destrutivo
+            if (next >= 5) {
               setIsWatchdogRecovering(true);
               setKey((k) => k + 1);
               setTimeout(() => setIsWatchdogRecovering(false), 2500);

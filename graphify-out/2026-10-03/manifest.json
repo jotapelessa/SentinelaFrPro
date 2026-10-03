@@ -246,9 +246,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/MainActivity.kt": {
-    "mtime": 1790980378.2772055,
-    "seen": 1791055339.752068,
-    "ast_hash": "6f4ff083a0d1077ccfb263ceca3459b8",
+    "mtime": 1790975073.5427368,
+    "seen": 1790975214.8904572,
+    "ast_hash": "b3d0758341f09bc10bfb59328ad826a3",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/SentinelaApplication.kt": {
@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1791037502.4142733,
-    "seen": 1791055339.752073,
-    "ast_hash": "32bb39de886213c9cdc21503fcf12810",
+    "mtime": 1790974736.3904755,
+    "seen": 1790975214.890461,
+    "ast_hash": "2f86d2bf62ee48f1f3bd8e92e1db5196",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -306,9 +306,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvNetflixScreen.kt": {
-    "mtime": 1791037522.331569,
-    "seen": 1791055339.752074,
-    "ast_hash": "b611f6f0bd4a75f2064b8f1ce10f261d",
+    "mtime": 1790974812.1095726,
+    "seen": 1790975214.890462,
+    "ast_hash": "3713f6bd451f9d569e7f5994a15ff77f",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
@@ -324,9 +324,9 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/SmartphoneYouTubeScreen.kt": {
-    "mtime": 1790979560.710792,
-    "seen": 1791055339.7520761,
-    "ast_hash": "1b732bbcdbc5a448104d67aa5b7e61e3",
+    "mtime": 1790975056.0503263,
+    "seen": 1790975214.890464,
+    "ast_hash": "d8162a23cb2677c50f1894457ccf7aa9",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1791055322.4851239,
-    "seen": 1791055339.752083,
-    "ast_hash": "10ba56180d89ffee2f822a31523255fe",
+    "mtime": 1790979166.6183865,
+    "seen": 1790979207.708127,
+    "ast_hash": "d6d37122d4af18d3fe28e023a3c624e7",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -426,9 +426,9 @@
     "semantic_hash": ""
   },
   "backend/app/db/session.py": {
-    "mtime": 1791036280.2427747,
-    "seen": 1791055339.752085,
-    "ast_hash": "eaa697fef07e22f3d1c58e1e1fb53ae3",
+    "mtime": 1790770305.4490767,
+    "seen": 1790950512.45475,
+    "ast_hash": "d353c57b3e9623fd01608a47d19da5f2",
     "semantic_hash": ""
   },
   "backend/app/main.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1791055330.42939,
-    "seen": 1791055339.752094,
-    "ast_hash": "df3b39c53235af75e2801e49b381b243",
+    "mtime": 1790313268.1619325,
+    "seen": 1790313285.2254112,
+    "ast_hash": "579d0d39b8897e97a4de6eaf27f2e762",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -636,9 +636,9 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1791055262.2371001,
-    "seen": 1791055339.752107,
-    "ast_hash": "244c01cc4d1655049064099fa5952d2a",
+    "mtime": 1790977905.2692218,
+    "seen": 1790978105.1439621,
+    "ast_hash": "80ac2ca9a6bf776d44f5c5b4edbee71a",
     "semantic_hash": ""
   },
   "frontend/src/components/WebSocketProvider.tsx": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1791055312.668306,
-    "seen": 1791055339.752108,
-    "ast_hash": "9bcd784af3bc7c6df50452801a2cae68",
+    "mtime": 1790979155.5956,
+    "seen": 1790979207.708151,
+    "ast_hash": "6ada96ce6c561d12a02ba3be20de56b6",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
