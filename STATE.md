@@ -1,12 +1,29 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-02 19:15 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.163 (Build 163). Correção definitiva do pipeline CI/CD GitHub Actions garantindo a compilação, localização determinística de artefatos com find recursivo a partir de outputs e upload estrito com fail_on_unmatched_files, assegurando a disponibilização dos APKs de TV e Smartphone na página de Releases.
+> **Última Atualização:** 2026-10-03 16:25 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.164 (Build 164). Correção de colunas faltantes no SQLite backend (tabela paired_devices), unificação do tamanho e duração do PiP na TV para ambas as câmeras, botões simétricos de módulo de vídeo na TV com persistência remota no servidor, e proteção do watchdog contra desconexões cíclicas de 5s no player web.
 
 ---
 
-## 📦 Versão Atual: v001.000.000.163 (Build 163) — Correção Crítica de Geração e Publicação de APKs no CI/CD
+## 📦 Versão Atual: v001.000.000.164 (Build 164) — Unificação do PiP TV, Correção de SQLite e Estabilidade do Stream
+- **Data**: 2026-10-03
+- **Objetivo**: Concluir as correções solicitadas para TV, Smartphone, Web e Banco de Dados:
+  1. **Correção de Colunas no Banco SQLite (`session.py` & `models.py`)**:
+     - Resolução do erro 500 no backend: inclusão das colunas `camera_pip_positions` e `camera_pip_enabled` na migração automática de `paired_devices`.
+     - Restauração imediata de `GET /api/devices/`, `GET /api/devices/health` e `POST /api/devices/heartbeat`.
+     - Correção definitiva do Ping da TV, aba Master no Smartphone (2.1) e aba Telas na Web (3.2).
+  2. **Unificação do PiP na Smart TV (`OverlayService.kt` & `TvNetflixScreen.kt`)**:
+     - O tamanho e a duração configurados na TV agora são aplicados de forma consistente para todas as câmeras ativas.
+     - Altura padronizada de 54dp para todos os botões do "Módulo de Vídeo do PiP", com chamada de sincronização remota `pushLocalSettingsToServer`.
+  3. **Otimização do Watchdog Web (`WebRTCPlayer.tsx`)**:
+     - Substituição do probe HEAD agressivo por validação segura via GET JSON no go2rtc, aumentando a janela para 60s e tolerância a 5 falhas, evitando falsos-positivos e recargas do player.
+  4. **Atualização em Produção**:
+     - Banco atualizado no servidor Ubuntu via SQLite ALTER TABLE, código atualizado via `git pull` e containers reiniciados.
+
+---
+
+## 📦 Versão Anterior: v001.000.000.163 (Build 163) — Correção Crítica de Geração e Publicação de APKs no CI/CD
 - **Data**: 2026-10-02
 - **Objetivo**: Garantir que as releases do GitHub Actions gerem e anexem com 100% de confiabilidade os binários `.apk`:
   1. **Resolução de Falha Silenciosa de Coleta no GitHub Actions (`android-build.yml`)**:
