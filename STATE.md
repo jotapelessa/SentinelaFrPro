@@ -1,8 +1,26 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-07 08:06 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.164 (Build 164). Resolução de IP drift decorrente de descontinuidade de link na interface física Gigabit (enp1s0), fixação persistente do IP canônico 192.168.1.247 na interface Wi-Fi via NetworkManager e implantação do Sentinela IP Guard Watchdog (systemd). Hardening do Nginx host com cabeçalhos de segurança DevSecOps (X-Content-Type-Options e X-Frame-Options) e preservação estrita de Zero-Cache.
+> **Última Atualização:** 2026-10-07 08:32 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.164 (Build 164). Adicionada capacidade de exclusão total de vídeos e fotos (100% Wipe) do SSD NVMe em /settings/storage e POST /api/settings/storage/wipe com trava de confirmação ZERAR, proteção opcional de favoritos com estrela, sincronização de SQLite e Frigate NVR. Resolução definitiva de IP drift e hardening do Nginx host.
+
+---
+
+## 💾 Gestão de Armazenamento: Exclusão Total de Vídeos & Fotos (100% Wipe)
+- **Data**: 2026-10-07
+- **Objetivo**: Disponibilizar ferramenta segura e atômica de reset completo de gravações e fotos no SSD NVMe:
+  1. **Backend FastAPI (`POST /api/settings/storage/wipe`)**:
+     - Trava estrita por digitação (`confirmation == "ZERAR"`).
+     - Proteção automática de eventos favoritados com estrela (`include_retained == False` por padrão), com opção de purga absoluta (`include_retained == True`).
+     - Execução assíncrona em background via `asyncio.to_thread` para deleção segura das árvores `recordings/` e `clips/`.
+     - Sincronização atômica do catálogo de eventos do Frigate NVR (`DELETE /api/events`) e banco SQLite (`EventRecord`), além de auditoria em `AuditLog`.
+     - Invalidação instantânea do cache de métricas de disco (`_DIR_SIZE_CACHE`).
+  2. **Frontend Next.js (`/settings/storage`)**:
+     - Card de destaque visual da "Zona Crítica" no rodapé da página.
+     - Modal de confirmação segura com aviso de impacto, checkbox opcional para favoritos, input com trava `"ZERAR"` e feedback em tempo real.
+  3. **Deploy e Validação**:
+     - Build de backend e frontend finalizados e ativos nos containers Docker em produção.
+     - Validação com rejeição a confirmações inválidas e renderização confirmada no host.
 
 ---
 
