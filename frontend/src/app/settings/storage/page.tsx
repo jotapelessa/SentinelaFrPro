@@ -28,6 +28,11 @@ export default function StorageSettingsPage() {
   const [cleaningAction, setCleaningAction] = useState<string | null>(null);
   const [cleanFeedback, setCleanFeedback] = useState<string | null>(null);
 
+  // Estados para Períodos de Limpeza (0 = todas / imediato)
+  const [snapshotDays, setSnapshotDays] = useState<number>(0);
+  const [recordingDays, setRecordingDays] = useState<number>(0);
+  const [allDays, setAllDays] = useState<number>(0);
+
   // Estados para Exclusão Total (100% Wipe)
   const [wipeModalOpen, setWipeModalOpen] = useState(false);
   const [wipeConfirmation, setWipeConfirmation] = useState("");
@@ -249,23 +254,46 @@ export default function StorageSettingsPage() {
           <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 hover:border-cyan-500/40 transition-all flex flex-col justify-between space-y-3">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-slate-200">Fotos Antigas (&gt; 3 dias)</span>
+                <span className="text-sm font-bold text-slate-200">Limpar Fotos / Snapshots</span>
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-cyan-950 text-cyan-400 border border-cyan-800">
                   Fotos HD
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-2">
-                Remove capturas e snapshots temporários não fixados com mais de 3 dias de existência.
+                Remove capturas e snapshots temporários não fixados com estrela.
               </p>
+
+              {/* Seletor de Período */}
+              <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between gap-1 text-[11px]">
+                <span className="text-slate-400 text-[10px] uppercase font-mono font-bold">Período:</span>
+                <div className="flex items-center gap-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+                  {[
+                    { label: "Todas", days: 0 },
+                    { label: "> 1d", days: 1 },
+                    { label: "> 3d", days: 3 },
+                    { label: "> 7d", days: 7 }
+                  ].map((opt) => (
+                    <button
+                      key={opt.days}
+                      type="button"
+                      onClick={() => setSnapshotDays(opt.days)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${snapshotDays === opt.days ? "bg-cyan-500 text-slate-950 shadow-sm" : "text-slate-400 hover:text-slate-200"}`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
+
             <button
               type="button"
               disabled={cleaningAction !== null}
-              onClick={() => handleCleanStorage("snapshots", 3)}
+              onClick={() => handleCleanStorage("snapshots", snapshotDays)}
               className="w-full py-2.5 px-3 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/40 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>{cleaningAction === "snapshots" ? "Limpando Fotos..." : "Limpar Fotos Antigas"}</span>
+              <span>{cleaningAction === "snapshots" ? "Limpando Fotos..." : `Limpar Fotos (${snapshotDays === 0 ? "Todas" : "> " + snapshotDays + "d"})`}</span>
             </button>
           </div>
 
@@ -273,23 +301,46 @@ export default function StorageSettingsPage() {
           <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 hover:border-amber-500/40 transition-all flex flex-col justify-between space-y-3">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-slate-200">Vídeos Antigos (&gt; 3 dias)</span>
+                <span className="text-sm font-bold text-slate-200">Expurgar Vídeos</span>
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-amber-950 text-amber-400 border border-amber-800">
                   Vídeos MP4
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-2">
-                Remove gravações de movimento ordinárias com mais de 3 dias, preservando eventos críticos.
+                Remove gravações MP4 ordinárias do SSD, preservando 100% dos eventos com estrela.
               </p>
+
+              {/* Seletor de Período */}
+              <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between gap-1 text-[11px]">
+                <span className="text-slate-400 text-[10px] uppercase font-mono font-bold">Período:</span>
+                <div className="flex items-center gap-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+                  {[
+                    { label: "Todos", days: 0 },
+                    { label: "> 1d", days: 1 },
+                    { label: "> 3d", days: 3 },
+                    { label: "> 7d", days: 7 }
+                  ].map((opt) => (
+                    <button
+                      key={opt.days}
+                      type="button"
+                      onClick={() => setRecordingDays(opt.days)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${recordingDays === opt.days ? "bg-amber-500 text-slate-950 shadow-sm" : "text-slate-400 hover:text-slate-200"}`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
+
             <button
               type="button"
               disabled={cleaningAction !== null}
-              onClick={() => handleCleanStorage("recordings", 3)}
+              onClick={() => handleCleanStorage("recordings", recordingDays)}
               className="w-full py-2.5 px-3 rounded-lg bg-amber-600/20 hover:bg-amber-600/40 text-amber-300 border border-amber-500/30 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>{cleaningAction === "recordings" ? "Limpando Vídeos..." : "Limpar Vídeos Antigos"}</span>
+              <span>{cleaningAction === "recordings" ? "Limpando Vídeos..." : `Expurgar Vídeos (${recordingDays === 0 ? "Todos" : "> " + recordingDays + "d"})`}</span>
             </button>
           </div>
 
@@ -297,23 +348,46 @@ export default function StorageSettingsPage() {
           <div className="p-4 rounded-xl bg-slate-950/90 border border-slate-800 hover:border-rose-500/40 transition-all flex flex-col justify-between space-y-3">
             <div>
               <div className="flex items-center justify-between">
-                <span className="text-sm font-bold text-slate-200">Limpeza Geral Segura (&gt; 7 dias)</span>
+                <span className="text-sm font-bold text-slate-200">Limpeza de Mídia (Tudo)</span>
                 <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-rose-950 text-rose-400 border border-rose-800">
-                  Completo
+                  Vídeos + Fotos
                 </span>
               </div>
               <p className="text-xs text-slate-400 mt-2">
-                Expurgo completo de mídia ordinária antiga com garantia total de proteção a eventos com estrela.
+                Expurgo simultâneo de vídeos e fotos, mantendo sempre eventos favoritos intactos.
               </p>
+
+              {/* Seletor de Período */}
+              <div className="mt-3 pt-2 border-t border-slate-800/80 flex items-center justify-between gap-1 text-[11px]">
+                <span className="text-slate-400 text-[10px] uppercase font-mono font-bold">Período:</span>
+                <div className="flex items-center gap-1 bg-slate-900 p-0.5 rounded-lg border border-slate-800">
+                  {[
+                    { label: "Tudo", days: 0 },
+                    { label: "> 1d", days: 1 },
+                    { label: "> 3d", days: 3 },
+                    { label: "> 7d", days: 7 }
+                  ].map((opt) => (
+                    <button
+                      key={opt.days}
+                      type="button"
+                      onClick={() => setAllDays(opt.days)}
+                      className={`px-2 py-0.5 rounded text-[10px] font-bold transition-all ${allDays === opt.days ? "bg-rose-500 text-slate-950 shadow-sm" : "text-slate-400 hover:text-slate-200"}`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
+
             <button
               type="button"
               disabled={cleaningAction !== null}
-              onClick={() => handleCleanStorage("all", 7)}
+              onClick={() => handleCleanStorage("all", allDays)}
               className="w-full py-2.5 px-3 rounded-lg bg-rose-600/20 hover:bg-rose-600/40 text-rose-300 border border-rose-500/30 text-xs font-bold transition-all flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer"
             >
               <Trash2 className="w-3.5 h-3.5" />
-              <span>{cleaningAction === "all" ? "Executando..." : "Executar Limpeza Geral"}</span>
+              <span>{cleaningAction === "all" ? "Executando..." : `Limpar Tudo (${allDays === 0 ? "Sem Estrela" : "> " + allDays + "d"})`}</span>
             </button>
           </div>
         </div>

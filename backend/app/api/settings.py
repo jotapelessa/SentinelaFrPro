@@ -577,13 +577,14 @@ def _cached_dir_size(path: str, ttl_seconds: float = 60.0) -> int:
     return size
 
 
-def _purge_recordings(media_base: str, cutoff_ts: float) -> Tuple[int, int]:
-    """Deletes Frigate recording segment folders older than cutoff under recordings/{YYYY-MM-DD}/{HH}."""
+def _purge_recordings(media_base: str, cutoff_ts: float, is_all: bool = False, retained_event_ids: Set[str] = None) -> Tuple[int, int]:
+    """Deletes Frigate recording segment folders older than cutoff or all folders if is_all is True."""
     import os
     import shutil
     import datetime
     freed = 0
     deleted_dirs = 0
+    retained_set = retained_event_ids or set()
     rec_root = os.path.join(media_base, "recordings")
     if not os.path.isdir(rec_root):
         return 0, 0
@@ -591,19 +592,46 @@ def _purge_recordings(media_base: str, cutoff_ts: float) -> Tuple[int, int]:
         date_path = os.path.join(rec_root, date_dir)
         if not os.path.isdir(date_path):
             continue
-        try:
-            # Interpreta o fim do dia da pasta para não rejeitar gravações antigas do mesmo dia
-            d = datetime.datetime.strptime(date_dir, "%Y-%m-%d") + datetime.timedelta(days=1)
-        except ValueError:
-            continue
-        if d.timestamp() > cutoff_ts:
-            continue
-        freed += _dir_size_bytes(date_path)
-        try:
-            shutil.rmtree(date_path, ignore_errors=True)
-            deleted_dirs += 1
-        except Exception:
-            pass
+        if not is_all:
+            try:
+                # Se older_than_days > 0, compara com o fim do dia
+                d = datetime.datetime.strptime(date_dir, "%Y-%m-%d") + datetime.timedelta(days=1)
+                if d.timestamp() > cutoff_ts:
+                    continue
+            except ValueError:
+                continue
+
+        # Se houver retained_set, verifica se há arquivos protegidos nesta pasta
+        has_retained = False
+        if retained_set:
+            for root, _, files in os.walk(date_path):
+                for f in files:
+                    if any(ev_id in f for ev_id in retained_set):
+                        has_retained = True
+                        break
+                if has_retained:
+                    break
+
+        if has_retained:
+            # Apaga individualmente apenas os arquivos não favoritados
+            for root, _, files in os.walk(date_path, topdown=False):
+                for f in files:
+                    fp = os.path.join(root, f)
+                    if not any(ev_id in f for ev_id in retained_set):
+                        try:
+                            st = os.stat(fp)
+                            freed += st.st_size
+                            os.remove(fp)
+                            deleted_dirs += 1
+                        except Exception:
+                            pass
+        else:
+            freed += _dir_size_bytes(date_path)
+            try:
+                shutil.rmtree(date_path, ignore_errors=True)
+                deleted_dirs += 1
+            except Exception:
+                pass
     return freed, deleted_dirs
 
 
@@ -786,14 +814,29 @@ async def clean_server_storage(
 
     media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
 
+    # Fetch retained event IDs if we need to preserve favorites
+    retained_ids: Set[str] = set()
+    if req.exclude_retained:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as c:
+                fav_resp = await c.get(f"{settings.FRIGATE_API_URL}/api/events", params={"favorites": 1, "limit": 1000})
+                if fav_resp.status_code == 200:
+                    for fav in fav_resp.json():
+                        if fav.get("id"):
+                            retained_ids.add(fav["id"])
+        except Exception as e:
+            logger.warning(f"Failed to fetch retained favorites: {e}")
+
+    is_all = (req.older_than_days == 0)
+
     # ---- 1. Direct filesystem purge of recording segments & clips (real space recovery) ----
     try:
         if req.clean_type in ("recordings", "all"):
-            rec_bytes, rec_dirs = await asyncio.to_thread(_purge_recordings, media_base, cutoff_ts)
+            rec_bytes, rec_dirs = await asyncio.to_thread(_purge_recordings, media_base, cutoff_ts, is_all, retained_ids)
             freed_bytes += rec_bytes
             deleted_events_count += rec_dirs
         if req.clean_type in ("snapshots", "all"):
-            clip_bytes, clip_count = await asyncio.to_thread(_purge_clips, media_base, cutoff_ts)
+            clip_bytes, clip_count = await asyncio.to_thread(_purge_clips, media_base, cutoff_ts, is_all, retained_ids)
             freed_bytes += clip_bytes
             deleted_events_count += clip_count
     except Exception as e:
@@ -810,8 +853,10 @@ async def clean_server_storage(
 
         async with httpx.AsyncClient(timeout=10.0) as client:
             while has_more_events:
-                # Fetch events older than cutoff from Frigate
-                params: Dict[str, Any] = {"before": cutoff_ts, "limit": 500}
+                # Fetch events older than cutoff from Frigate (or all events if older_than_days == 0)
+                params: Dict[str, Any] = {"limit": 500}
+                if not is_all:
+                    params["before"] = cutoff_ts
                 resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params=params)
 
                 if resp.status_code != 200:
@@ -824,17 +869,17 @@ async def clean_server_storage(
 
                 candidate_ids = []
                 for ev in events_list:
-                    if req.exclude_retained and ev.get("retain_indefinitely", False):
+                    ev_id = ev.get("id")
+                    if not ev_id:
                         continue
-                    has_clip = ev.get("has_clip", False)
+                    if req.exclude_retained and (ev.get("retain_indefinitely", False) or ev_id in retained_ids):
+                        continue
                     has_snap = ev.get("has_snapshot", False)
 
                     if req.clean_type == "snapshots" and not has_snap:
                         continue
-                    if req.clean_type == "recordings" and not has_clip:
-                        continue
-
-                    candidate_ids.append(ev.get("id"))
+                    # Em gravações ou all, deleta o evento independentemente de has_clip
+                    candidate_ids.append(ev_id)
 
                 if not candidate_ids:
                     # Avoid infinite loops if events are returned but all are retained/filtered out
@@ -964,12 +1009,17 @@ async def wipe_server_storage(
     frigate_deleted = 0
     try:
         async with httpx.AsyncClient(timeout=15.0) as client:
-            params = {"limit": 1000}
-            if not req.include_retained:
-                params["favorites"] = 0
-            ev_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params=params)
-            if ev_resp.status_code == 200:
+            has_more = True
+            while has_more:
+                params = {"limit": 1000}
+                if not req.include_retained:
+                    params["favorites"] = 0
+                ev_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params=params)
+                if ev_resp.status_code != 200:
+                    break
                 events_to_del = ev_resp.json()
+                if not events_to_del:
+                    break
                 sem = asyncio.Semaphore(15)
 
                 async def _del_frigate_ev(ev_id: str):
@@ -985,6 +1035,9 @@ async def wipe_server_storage(
                 tasks = [_del_frigate_ev(ev["id"]) for ev in events_to_del if ev.get("id")]
                 if tasks:
                     await asyncio.gather(*tasks, return_exceptions=True)
+
+                if len(events_to_del) < 1000:
+                    has_more = False
     except Exception as e:
         logger.warning(f"Error purging Frigate events: {e}")
 
