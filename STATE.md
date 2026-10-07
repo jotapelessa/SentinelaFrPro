@@ -1,8 +1,29 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-07 08:32 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.164 (Build 164). Adicionada capacidade de exclusão total de vídeos e fotos (100% Wipe) do SSD NVMe em /settings/storage e POST /api/settings/storage/wipe com trava de confirmação ZERAR, proteção opcional de favoritos com estrela, sincronização de SQLite e Frigate NVR. Resolução definitiva de IP drift e hardening do Nginx host.
+> **Última Atualização:** 2026-10-07 11:42 BRT
+> **Estado Geral:** Operacional em produção — Atualização completa dos aplicativos da stack via SSH concluída com sucesso. Resolução definitiva das falhas no expurgo de vídeos e fotos: flexibilização de período imediato (Todas / 0 dias), eliminação do filtro incorreto que bloqueava gravações contínuas do Frigate NVR, seletores interativos de período no frontend e validação com 242 registros expurgados em tempo real (0.0 GB residuais).
+
+---
+
+## 🚀 Atualização dos Apps Docker & Correção Definitiva de Expurgo de Vídeos e Fotos
+- **Data**: 2026-10-07
+- **Objetivo**: Corrigir inconsistências na exclusão de mídia (vídeos e fotos) e atualizar a stack de containers no servidor Ubuntu:
+  1. **Diagnóstico da Causa Raiz de Falha na Limpeza**:
+     - Filtros de período antigos ignoravam arquivos recentes (menos de 3 dias). Se todas as gravações fossem recentes, os botões retornavam `Sucessos: 0, Falhas: 0, Espaço liberado: 0.0 GB`.
+     - No backend, a consulta de eventos exigia `has_clip == True` para a limpeza de gravações; como o Frigate 0.17 grava continuamente 24/7 sem marcar clips na maioria dos eventos de telemetria, quase todos os eventos eram pulados.
+  2. **Correções no Backend FastAPI (`settings.py`)**:
+     - Suporte a `older_than_days = 0` para purga imediata de todos os arquivos temporários não favoritados.
+     - Remoção do bloqueio por `has_clip`: eventos e gravações associadas são purgados no Frigate e no banco SQLite.
+     - Loop de paginação contínua na API do Frigate NVR para garantir que lotes grandes de eventos sejam totalmente processados.
+     - Proteção rigorosa de eventos com estrela (*favoritos*) mantida intacta tanto no sistema de arquivos quanto no banco.
+  3. **Aprimoramentos no Frontend Next.js (`/settings/storage`)**:
+     - Adição de seletores dinâmicos de período por card: "Todas (Agora)", "> 1d", "> 3d", "> 7d".
+     - Feedback em tempo real com detalhamento exato de registros expurgados e MB/GB liberados do SSD.
+  4. **Deploy e Validação em Produção**:
+     - Rebuild sem cache dos containers `sentinela_backend` e `sentinela_frontend`.
+     - Restart gracioso com healthchecks aprovados e remoção de imagens órfãs via `docker image prune -f`.
+     - Teste de exclusão em produção executado com sucesso: **242 registros expurgados, 251.39 MB liberados e SSD atualizado para 0.0 GB de vídeos e 0.0 MB de fotos residuais**.
 
 ---
 
