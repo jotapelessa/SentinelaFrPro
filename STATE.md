@@ -1,8 +1,28 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-03 16:25 BRT
-> **Estado Geral:** Operacional em produção — Versão v001.000.000.164 (Build 164). Correção de colunas faltantes no SQLite backend (tabela paired_devices), unificação do tamanho e duração do PiP na TV para ambas as câmeras, botões simétricos de módulo de vídeo na TV com persistência remota no servidor, e proteção do watchdog contra desconexões cíclicas de 5s no player web.
+> **Última Atualização:** 2026-10-07 08:06 BRT
+> **Estado Geral:** Operacional em produção — Versão v001.000.000.164 (Build 164). Resolução de IP drift decorrente de descontinuidade de link na interface física Gigabit (enp1s0), fixação persistente do IP canônico 192.168.1.247 na interface Wi-Fi via NetworkManager e implantação do Sentinela IP Guard Watchdog (systemd). Hardening do Nginx host com cabeçalhos de segurança DevSecOps (X-Content-Type-Options e X-Frame-Options) e preservação estrita de Zero-Cache.
+
+---
+
+## 🛡️ Auditoria de Segurança & Infraestrutura: Resiliência de Rede L2/L3 & Hardening Nginx (`sentinela.local`)
+- **Data**: 2026-10-07
+- **Objetivo**: Eliminar falhas de conectividade no cliente Firefox/macOS (`sentinela.local`), prevenir IP drift e reforçar a segurança do proxy reverso:
+  1. **Diagnóstico & Causa Raiz**:
+     - Queda física de link na interface Gigabit cabeada (`enp1s0: NO-CARRIER`), comutando o servidor para Wi-Fi (`wlp2s0`) em DHCP temporário `192.168.1.211`.
+     - Inacessibilidade nos clientes (Mac e TVs) que mantinham o mapeamento estático canônico para `192.168.1.247`.
+  2. **Persistência de Rede & IP Guard Watchdog**:
+     - Configurado `192.168.1.247/24` de forma definitiva na conexão `Katia` do NetworkManager (`nmcli con mod 'Katia' +ipv4.addresses`).
+     - Criado serviço e timer no systemd (`sentinela-ip-guard.timer`, intervalo 30s) para garantir a presença ininterrupta do IP canônico na interface primária default.
+  3. **Hardening do Nginx Host**:
+     - Inclusão dos hostnames `sentinela.local`, `cameras.local`, `frigate.local`, `192.168.1.247` e `192.168.1.211` no bloco `server_name`.
+     - Injeção de cabeçalhos de segurança: `X-Content-Type-Options: nosniff` e `X-Frame-Options: SAMEORIGIN`.
+     - Preservação estrita das regras de Zero-Cache para o streaming e rotas Next.js.
+  4. **Validação de Cliente**:
+     - `ping sentinela.local`: 0% de perda.
+     - `curl -I http://sentinela.local/` e `curl -I http://192.168.1.247/`: HTTP 200 OK.
+
 
 ---
 

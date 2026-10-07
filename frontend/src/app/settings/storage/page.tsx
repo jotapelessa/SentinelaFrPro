@@ -15,7 +15,11 @@ import {
   Server, 
   ArrowLeft,
   Activity,
-  Cpu
+  Cpu,
+  Flame,
+  AlertOctagon,
+  ShieldAlert,
+  X
 } from "lucide-react";
 
 export default function StorageSettingsPage() {
@@ -23,6 +27,12 @@ export default function StorageSettingsPage() {
   const [loading, setLoading] = useState(true);
   const [cleaningAction, setCleaningAction] = useState<string | null>(null);
   const [cleanFeedback, setCleanFeedback] = useState<string | null>(null);
+
+  // Estados para Exclusão Total (100% Wipe)
+  const [wipeModalOpen, setWipeModalOpen] = useState(false);
+  const [wipeConfirmation, setWipeConfirmation] = useState("");
+  const [includeRetained, setIncludeRetained] = useState(false);
+  const [wiping, setWiping] = useState(false);
 
   const fetchStorageStatus = async () => {
     setLoading(true);
@@ -69,6 +79,38 @@ export default function StorageSettingsPage() {
     } finally {
       setCleaningAction(null);
       setTimeout(() => setCleanFeedback(null), 5000);
+    }
+  };
+
+  const handleWipeStorage = async () => {
+    if (wipeConfirmation.trim().toUpperCase() !== "ZERAR") return;
+    setWiping(true);
+    setCleanFeedback(null);
+    try {
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
+      const res = await fetch(`${apiUrl}/settings/storage/wipe`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          confirmation: wipeConfirmation.trim().toUpperCase(),
+          include_retained: includeRetained
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCleanFeedback(`🔥 ${data.message}`);
+        setWipeModalOpen(false);
+        setWipeConfirmation("");
+        setIncludeRetained(false);
+        await fetchStorageStatus();
+      } else {
+        setCleanFeedback(`⚠️ Falha: ${data.detail || "Erro ao processar reset"}`);
+      }
+    } catch (e: any) {
+      setCleanFeedback(`❌ Erro: ${e?.message || "Falha de rede"}`);
+    } finally {
+      setWiping(false);
+      setTimeout(() => setCleanFeedback(null), 8000);
     }
   };
 
@@ -276,6 +318,155 @@ export default function StorageSettingsPage() {
           </div>
         </div>
       </div>
+
+      {/* Danger Zone: 100% Storage Wipe */}
+      <div className="p-6 rounded-2xl bg-gradient-to-br from-rose-950/30 via-slate-900/90 to-slate-950/90 border border-rose-900/50 backdrop-blur-md shadow-2xl space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/30">
+              <Flame className="w-5 h-5 text-rose-500 animate-pulse" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-black text-white">Zona Crítica: Exclusão Total de Mídia (100%)</h3>
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-800 uppercase tracking-wider">
+                  Ação Destrutiva
+                </span>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Remove 100% dos vídeos MP4 (<code className="text-rose-300">recordings/</code>) e fotos HD (<code className="text-rose-300">clips/</code>) do SSD NVMe, liberando espaço de forma instantânea.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setWipeConfirmation("");
+              setIncludeRetained(false);
+              setWipeModalOpen(true);
+            }}
+            className="px-5 py-3 rounded-xl bg-gradient-to-r from-rose-600 to-red-700 hover:from-rose-500 hover:to-red-600 text-white font-bold text-xs uppercase tracking-wider shadow-lg shadow-rose-950/50 border border-rose-500/50 transition-all flex items-center gap-2 self-start sm:self-auto cursor-pointer hover:scale-[1.02] active:scale-[0.98]"
+          >
+            <AlertOctagon className="w-4 h-4" />
+            <span>Resetar Armazenamento (100%)</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Modal de Confirmação Segura com Trava 'ZERAR' */}
+      {wipeModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-fadeIn">
+          <div className="w-full max-w-lg rounded-2xl bg-slate-900 border border-rose-800/80 shadow-2xl shadow-rose-950/80 overflow-hidden space-y-5 p-6 text-slate-200">
+            {/* Header Modal */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/40">
+                  <ShieldAlert className="w-6 h-6 text-rose-500" />
+                </div>
+                <div>
+                  <h4 className="text-lg font-black text-white">Confirmar Reset Total do SSD</h4>
+                  <p className="text-xs text-rose-400 font-mono">Exclusão irreversível de gravações e fotos</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setWipeModalOpen(false)}
+                disabled={wiping}
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-all cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Warning Details */}
+            <div className="space-y-3 text-xs leading-relaxed text-slate-300">
+              <div className="p-3.5 rounded-xl bg-rose-950/40 border border-rose-900/60 space-y-1.5">
+                <p className="font-bold text-rose-200 flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                  Atenção: Todos os arquivos de mídia física serão apagados!
+                </p>
+                <p className="text-[11px] text-slate-300 font-mono">
+                  • Pastas afetadas: <span className="text-white">/media/frigate/recordings</span> e <span className="text-white">/media/frigate/clips</span>.
+                  <br />
+                  • Espaço atual em gravações: <span className="text-amber-300 font-bold">{storageData?.recordings_gb ?? 0} GB</span>.
+                  <br />
+                  • Espaço atual em fotos: <span className="text-cyan-300 font-bold">{storageData?.clips_mb ?? 0} MB</span>.
+                </p>
+              </div>
+
+              {/* Checkbox de Favoritos com Estrela */}
+              <label className="flex items-start gap-3 p-3 rounded-xl bg-slate-950 border border-slate-800 hover:border-slate-700 cursor-pointer transition-all select-none">
+                <input
+                  type="checkbox"
+                  checked={includeRetained}
+                  onChange={(e) => setIncludeRetained(e.target.checked)}
+                  disabled={wiping}
+                  className="mt-0.5 w-4 h-4 rounded text-rose-600 focus:ring-rose-500 focus:ring-offset-slate-900 border-slate-700 bg-slate-900 cursor-pointer"
+                />
+                <div className="text-xs">
+                  <span className="font-bold text-white block">
+                    Incluir e apagar também eventos favoritados com estrela (★)
+                  </span>
+                  <span className="text-slate-400 text-[11px] block mt-0.5">
+                    {includeRetained 
+                      ? "⚠️ ATENÇÃO: Nenhuma gravação será poupada. 100% de todo o histórico será destruído."
+                      : "🛡️ SEGURO: Gravações e fotos que você favoritou com estrela serão 100% preservadas no SSD."}
+                  </span>
+                </div>
+              </label>
+
+              {/* Text Input Confirmation */}
+              <div className="space-y-1.5 pt-1">
+                <label className="block text-xs font-bold text-slate-300">
+                  Para autorizar a exclusão, digite <span className="text-rose-400 font-mono font-black tracking-wider uppercase">ZERAR</span> abaixo:
+                </label>
+                <input
+                  type="text"
+                  value={wipeConfirmation}
+                  onChange={(e) => setWipeConfirmation(e.target.value)}
+                  disabled={wiping}
+                  placeholder="Digite ZERAR"
+                  autoFocus
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-700 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 text-white font-mono font-bold text-center uppercase tracking-widest outline-none transition-all placeholder:text-slate-600"
+                />
+              </div>
+            </div>
+
+            {/* Actions */}
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => setWipeModalOpen(false)}
+                disabled={wiping}
+                className="px-4 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-slate-300 border border-slate-700 transition-all cursor-pointer"
+              >
+                Cancelar
+              </button>
+
+              <button
+                type="button"
+                onClick={handleWipeStorage}
+                disabled={wipeConfirmation.trim().toUpperCase() !== "ZERAR" || wiping}
+                className="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 disabled:opacity-40 disabled:hover:bg-rose-600 text-xs font-black uppercase tracking-wider text-white border border-rose-500/50 shadow-lg shadow-rose-950/60 transition-all flex items-center gap-2 cursor-pointer disabled:cursor-not-allowed"
+              >
+                {wiping ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-white" />
+                    <span>Limpando SSD...</span>
+                  </>
+                ) : (
+                  <>
+                    <Trash2 className="w-4 h-4 text-white" />
+                    <span>Confirmar e Zerar 100%</span>
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

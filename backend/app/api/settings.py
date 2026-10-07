@@ -635,6 +635,77 @@ def _purge_clips(media_base: str, cutoff_ts: float) -> Tuple[int, int]:
     return freed, deleted_files
 
 
+class StorageWipeRequest(BaseModel):
+    confirmation: str
+    include_retained: bool = False
+
+
+def _wipe_recordings_and_clips(media_base: str, retained_event_ids: Set[str] = None) -> Tuple[int, int]:
+    """
+    Purges recordings and clips.
+    If retained_event_ids is provided, files containing those IDs in their name are preserved.
+    Returns (freed_bytes, deleted_count).
+    """
+    import os
+    import shutil
+    freed_bytes = 0
+    deleted_count = 0
+    retained_set = retained_event_ids or set()
+
+    rec_root = os.path.join(media_base, "recordings")
+    clips_root = os.path.join(media_base, "clips")
+
+    # 1. Recordings (folder structure: recordings/{YYYY-MM-DD}/{HH}/{camera}/{mm.ss.mp4})
+    if os.path.isdir(rec_root):
+        for item in os.listdir(rec_root):
+            item_path = os.path.join(rec_root, item)
+            try:
+                if os.path.isdir(item_path):
+                    freed_bytes += _dir_size_bytes(item_path)
+                    shutil.rmtree(item_path, ignore_errors=True)
+                    deleted_count += 1
+                else:
+                    st = os.stat(item_path)
+                    freed_bytes += st.st_size
+                    os.remove(item_path)
+                    deleted_count += 1
+            except Exception:
+                pass
+        os.makedirs(rec_root, exist_ok=True)
+
+    # 2. Clips & Snapshots (files: {camera}-{timestamp}-{id}.jpg / .webp / .mp4)
+    if os.path.isdir(clips_root):
+        for root, dirs, files in os.walk(clips_root, topdown=False):
+            for name in files:
+                fp = os.path.join(root, name)
+                # Check if this clip belongs to a retained event
+                is_retained = False
+                if retained_set:
+                    for ev_id in retained_set:
+                        if ev_id in name:
+                            is_retained = True
+                            break
+                if is_retained:
+                    continue
+                try:
+                    st = os.stat(fp)
+                    freed_bytes += st.st_size
+                    os.remove(fp)
+                    deleted_count += 1
+                except Exception:
+                    pass
+            for d in dirs:
+                dp = os.path.join(root, d)
+                try:
+                    if not os.listdir(dp):
+                        os.rmdir(dp)
+                except Exception:
+                    pass
+        os.makedirs(clips_root, exist_ok=True)
+
+    return freed_bytes, deleted_count
+
+
 
 @router.get("/storage/status")
 async def get_storage_status():
@@ -836,6 +907,122 @@ async def clean_server_storage(
         "freed_mb": freed_mb,
         "message": f"Limpeza concluída! {deleted_events_count} registro(s) expurgados e {freed_gb} GB liberados do SSD."
     }
+
+
+@router.post("/storage/wipe")
+async def wipe_server_storage(
+    req: StorageWipeRequest,
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Performs a 100% wipe/purge of recordings and clips from the NVMe SSD.
+    Requires confirmation == 'ZERAR'.
+    Optionally preserves starred/retained events if include_retained is False.
+    Synchronizes SQLite sentinela.db and Frigate NVR event catalog.
+    """
+    import os
+    import asyncio
+    import httpx
+    from app.db.models import EventRecord
+    from sqlalchemy import delete
+
+    if req.confirmation.strip().upper() != "ZERAR":
+        raise HTTPException(
+            status_code=400,
+            detail="Confirmação inválida. Digite exatamente 'ZERAR' para prosseguir com a exclusão total."
+        )
+
+    client_ip = request.client.host if request and request.client else "unknown"
+    media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
+
+    retained_ids: Set[str] = set()
+
+    # 1. If preserving retained events, fetch their IDs from Frigate
+    if not req.include_retained:
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params={"favorites": 1, "limit": 1000})
+                if resp.status_code == 200:
+                    for ev in resp.json():
+                        if ev.get("id"):
+                            retained_ids.add(ev["id"])
+        except Exception as e:
+            logger.warning(f"Could not fetch retained events from Frigate: {e}")
+
+    # 2. Filesystem wipe
+    try:
+        freed_bytes, deleted_count = await asyncio.to_thread(_wipe_recordings_and_clips, media_base, retained_ids)
+    except Exception as e:
+        logger.error(f"Error wiping filesystem storage: {e}")
+        raise HTTPException(status_code=500, detail=f"Erro ao purgar arquivos do SSD: {e}")
+
+    # Invalidate size cache
+    _DIR_SIZE_CACHE.clear()
+
+    # 3. Synchronize Frigate NVR (Delete events)
+    frigate_deleted = 0
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            params = {"limit": 1000}
+            if not req.include_retained:
+                params["favorites"] = 0
+            ev_resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events", params=params)
+            if ev_resp.status_code == 200:
+                events_to_del = ev_resp.json()
+                sem = asyncio.Semaphore(15)
+
+                async def _del_frigate_ev(ev_id: str):
+                    nonlocal frigate_deleted
+                    async with sem:
+                        try:
+                            d = await client.delete(f"{settings.FRIGATE_API_URL}/api/events/{ev_id}", timeout=5.0)
+                            if d.status_code == 200:
+                                frigate_deleted += 1
+                        except Exception:
+                            pass
+
+                tasks = [_del_frigate_ev(ev["id"]) for ev in events_to_del if ev.get("id")]
+                if tasks:
+                    await asyncio.gather(*tasks, return_exceptions=True)
+    except Exception as e:
+        logger.warning(f"Error purging Frigate events: {e}")
+
+    # 4. Synchronize SQLite sentinela.db
+    try:
+        if req.include_retained:
+            await db.execute(delete(EventRecord))
+        elif retained_ids:
+            await db.execute(delete(EventRecord).where(EventRecord.frigate_event_id.notin_(retained_ids)))
+        else:
+            await db.execute(delete(EventRecord))
+        await db.commit()
+    except Exception as e:
+        logger.warning(f"Error purging SQLite event records: {e}")
+        await db.rollback()
+
+    freed_gb = round(freed_bytes / (1024**3), 2)
+    freed_mb = round(freed_bytes / (1024**2), 2)
+
+    await audit_service.log(
+        action="STORAGE_WIPE_EXECUTED",
+        module="STORAGE",
+        severity="WARNING",
+        details=f"Reset total de SSD executado (Incluir Favoritos: {req.include_retained}). Liberados: {freed_gb} GB ({deleted_count} itens/pastas, {frigate_deleted} eventos Frigate).",
+        client_ip=client_ip
+    )
+
+    return {
+        "status": "success",
+        "include_retained": req.include_retained,
+        "freed_bytes": freed_bytes,
+        "freed_gb": freed_gb,
+        "freed_mb": freed_mb,
+        "deleted_count": deleted_count,
+        "frigate_deleted": frigate_deleted,
+        "message": f"Reset total concluído com sucesso! {freed_gb} GB liberados do SSD NVMe."
+    }
+
 
 
 
