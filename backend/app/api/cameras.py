@@ -51,42 +51,56 @@ def _probe_rtsp_stream_info(rtsp_url: str, timeout: int = 8) -> Optional[Dict[st
     import json
     if not rtsp_url or not rtsp_url.strip().startswith("rtsp://"):
         return None
-    try:
-        cmd = [
-            "ffprobe", "-v", "error",
-            "-rtsp_transport", "tcp",
-            "-analyzeduration", "3000000",
-            "-probesize", "3000000",
-            "-select_streams", "v:0",
-            "-show_entries", "stream=codec_name,width,height,avg_frame_rate",
-            "-of", "json",
-            rtsp_url.strip()
-        ]
-        res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout, text=True)
-        if res.returncode != 0:
-            return None
-        data = json.loads(res.stdout or "{}")
-        streams = data.get("streams") or []
-        if not streams:
-            return None
-        s = streams[0]
-        fps = 0.0
-        fps_raw = s.get("avg_frame_rate") or ""
-        if "/" in fps_raw:
-            num, _, den = fps_raw.partition("/")
-            try:
-                if int(den) > 0 and int(num) > 0:
-                    fps = round(int(num) / int(den), 1)
-            except (ValueError, ZeroDivisionError):
-                pass
-        return {
-            "codec": s.get("codec_name", "unknown"),
-            "width": int(s.get("width") or 0),
-            "height": int(s.get("height") or 0),
-            "fps": fps
-        }
-    except Exception:
-        return None
+
+    clean_url = rtsp_url.strip()
+
+    # Try TCP first, fallback to UDP if needed
+    for transport in ("tcp", "udp"):
+        try:
+            cmd = [
+                "ffprobe", "-v", "error",
+                "-rtsp_transport", transport,
+                "-analyzeduration", "3000000",
+                "-probesize", "3000000",
+                "-select_streams", "v:0",
+                "-show_entries", "stream=codec_name,width,height,avg_frame_rate,r_frame_rate",
+                "-of", "json",
+                clean_url
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=timeout, text=True)
+            if res.returncode != 0:
+                continue
+            data = json.loads(res.stdout or "{}")
+            streams = data.get("streams") or []
+            if not streams:
+                continue
+            s = streams[0]
+            fps = 0.0
+            # Check avg_frame_rate first, fallback to r_frame_rate for cameras returning 0/0
+            for rate_key in ("avg_frame_rate", "r_frame_rate"):
+                fps_raw = s.get(rate_key) or ""
+                if "/" in fps_raw:
+                    num, _, den = fps_raw.partition("/")
+                    try:
+                        if int(den) > 0 and int(num) > 0:
+                            calc_fps = round(int(num) / int(den), 1)
+                            if 1.0 <= calc_fps <= 120.0:
+                                fps = calc_fps
+                                break
+                    except (ValueError, ZeroDivisionError):
+                        pass
+
+            return {
+                "codec": s.get("codec_name", "unknown"),
+                "width": int(s.get("width") or 0),
+                "height": int(s.get("height") or 0),
+                "fps": fps
+            }
+        except Exception:
+            continue
+
+    return None
+
 
 
 class CameraCreate(BaseModel):
@@ -821,6 +835,14 @@ async def get_camera_stream_info(camera_id: str, db: AsyncSession = Depends(get_
     main_url = cam.rtsp_main or ""
     sub_url = cam.rtsp_sub or ""
 
+    # Auto-infer sub_url if missing
+    inferred_sub = False
+    if not sub_url and main_url:
+        candidate_sub = infer_substream_url(main_url)
+        if candidate_sub:
+            sub_url = candidate_sub
+            inferred_sub = True
+
     # Cache probe results for 30s to avoid re-probing on every click
     _STREAM_INFO_CACHE: Dict[str, tuple] = getattr(get_camera_stream_info, "_cache", {})
     cache_key = f"{cam.name}:{main_url}:{sub_url}"
@@ -835,11 +857,21 @@ async def get_camera_stream_info(camera_id: str, db: AsyncSession = Depends(get_
         _STREAM_INFO_CACHE[cache_key] = (time.time(), main_info, sub_info)
         get_camera_stream_info._cache = _STREAM_INFO_CACHE
 
+        # If sub_info succeeded and sub was inferred, persist it to SQLite
+        if sub_info and inferred_sub:
+            try:
+                cam.rtsp_sub = sub_url
+                await db.commit()
+                await db.refresh(cam)
+            except Exception:
+                pass
+
     return {
         "status": "success",
         "camera": cam.name,
         "main": main_info,
-        "sub": sub_info
+        "sub": sub_info,
+        "rtsp_sub": cam.rtsp_sub
     }
 
 @router.post("/{camera_id}/toggle-fallback")
@@ -2128,6 +2160,18 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
     # 1. Update Zones
     if payload.zones is not None:
         cam_data["zones"] = payload.zones
+        zone_keys = list(payload.zones.keys()) if isinstance(payload.zones, dict) else []
+        if zone_keys:
+            # Enforce required_zones on Frigate 0.17 review.alerts and review.detections
+            # so detections outside marked zones do NOT trigger alert notifications
+            cam_data.setdefault("review", {}).setdefault("alerts", {})["required_zones"] = zone_keys
+            cam_data.setdefault("review", {}).setdefault("detections", {})["required_zones"] = zone_keys
+        else:
+            if "review" in cam_data and isinstance(cam_data["review"], dict):
+                if "alerts" in cam_data["review"] and isinstance(cam_data["review"]["alerts"], dict):
+                    cam_data["review"]["alerts"]["required_zones"] = []
+                if "detections" in cam_data["review"] and isinstance(cam_data["review"]["detections"], dict):
+                    cam_data["review"]["detections"]["required_zones"] = []
 
     # 2. Update Motion Mask
     if payload.motion_mask is not None:

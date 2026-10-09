@@ -372,7 +372,8 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
           } else {
             try {
               const data = await res.json();
-              const sData = data[activeProbeSrc] || {};
+              // Quando consultado com ?src=, go2rtc pode retornar o stream diretamente ou chaveado pelo nome
+              const sData = (data && data.producers) ? data : (data[activeProbeSrc] || {});
               const prods = sData.producers || [];
               if (prods.length === 0) {
                 setStreamStallCount((prev) => prev + 1);
@@ -500,7 +501,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     // background=true impede que o go2rtc execute o timer de 5s de desconexão (Regra de Ouro #1/Streaming 24/7)
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,webrtc/tcp&media=video,audio&background=true`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&media=video,audio&background=true`;
       case "mse":
       default:
         return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&media=video,audio&background=true`;

@@ -366,9 +366,9 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1790975092.0171185,
-    "seen": 1790975214.8904672,
-    "ast_hash": "bc2f4f1a4fe203530fbca31db4aee08c",
+    "mtime": 1791545543.0108101,
+    "seen": 1791545889.747045,
+    "ast_hash": "7e0404272e89ca8b09d37c3a2146cdb0",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1791541098.6494012,
-    "seen": 1791541407.109986,
-    "ast_hash": "ef94b83dc08556cd4407bdf740662615",
+    "mtime": 1791545810.0345094,
+    "seen": 1791545889.7470489,
+    "ast_hash": "ff598e3a3932a779cb60e41441ecd550",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1790633663.5858958,
-    "seen": 1790950512.454753,
-    "ast_hash": "7feef4f97fd93a0b59b1ae52d2dd5d7c",
+    "mtime": 1791545697.773791,
+    "seen": 1791545889.7470531,
+    "ast_hash": "b331380427fddebb15a8f2f3a7dbf708",
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1791541111.571123,
-    "seen": 1791541407.109996,
-    "ast_hash": "4ab78383cb34d4ce0f375813b494380d",
+    "mtime": 1791545796.290642,
+    "seen": 1791545889.74706,
+    "ast_hash": "1d6ddd1c8ee3c67d24a5774147c24cbe",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -606,9 +606,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/CameraConfigModal.tsx": {
-    "mtime": 1790947323.103832,
-    "seen": 1790950512.4547682,
-    "ast_hash": "33ba8e900dca41f3dfa9aa1c79c2ffef",
+    "mtime": 1791545661.1748233,
+    "seen": 1791545889.747067,
+    "ast_hash": "1d1df3eb5cb34917520d950c86719fe0",
     "semantic_hash": ""
   },
   "frontend/src/components/CameraMosaic.tsx": {
@@ -636,9 +636,9 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1791540990.801869,
-    "seen": 1791541407.110007,
-    "ast_hash": "8fcbb339c4cc3dd0732f58773a2d9d6b",
+    "mtime": 1791545644.7502239,
+    "seen": 1791545889.747071,
+    "ast_hash": "4aa41aadd1e9644dcf1f06c7be197a80",
     "semantic_hash": ""
   },
   "frontend/src/components/WebSocketProvider.tsx": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791541079.2165196,
-    "seen": 1791541407.110029,
-    "ast_hash": "93f60ce48fd7d56af168ee712a4fcd50",
+    "mtime": 1791545829.397749,
+    "seen": 1791545889.747092,
+    "ast_hash": "a29e0831c5ba449e35ff2e6a0358fb4d",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1791542874.223499,
-    "seen": 1791542951.504686,
-    "ast_hash": "b2227d3e8809a78a92922fd43ed9dfdd",
+    "mtime": 1791545748.6711192,
+    "seen": 1791545889.7470982,
+    "ast_hash": "b9e5ce3b114d2d77450db0227b5bd188",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1791541134.3381553,
-    "seen": 1791541407.110029,
-    "ast_hash": "e65962947c3446675a49c3ccbc8f7260",
+    "mtime": 1791545854.5459576,
+    "seen": 1791545889.747093,
+    "ast_hash": "b29975a4ae3440618f36e0eec00a2182",
     "semantic_hash": ""
   },
   "android/gradlew": {

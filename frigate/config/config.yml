@@ -90,7 +90,7 @@ go2rtc:
     # =========================================================
     # cam_192_168_1_196 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
     # STR-002: Ingestão de MAIN nativo direto da câmera
-    # Aliases em memória (zero TCP loopback, zero deadlock)
+    # Substream nativo 800x448 via UDP (alta eficiência, zero TCP drop)
     # =========================================================
     cam_192_168_1_196:
     - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=2000
@@ -99,7 +99,7 @@ go2rtc:
     cam_192_168_1_196_720p:
     - cam_192_168_1_196
     cam_192_168_1_196_sub:
-    - cam_192_168_1_196
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#transport=udp#backchannel=0
 
     # =========================================================
     # cam_192_168_1_47 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
@@ -111,7 +111,7 @@ go2rtc:
     cam_192_168_1_47_720p:
     - cam_192_168_1_47
     cam_192_168_1_47_sub:
-    - cam_192_168_1_47
+    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#transport=udp#backchannel=0
 
     # Aliases de compatibilidade legada (in-memory)
     camera_principal:
@@ -121,7 +121,7 @@ go2rtc:
     camera_principal_720p:
     - cam_192_168_1_196
     camera_principal_sub:
-    - cam_192_168_1_196
+    - cam_192_168_1_196_sub
 
     camera_secundaria:
     - cam_192_168_1_47
@@ -130,7 +130,7 @@ go2rtc:
     camera_secundaria_720p:
     - cam_192_168_1_47
     camera_secundaria_sub:
-    - cam_192_168_1_47
+    - cam_192_168_1_47_sub
 
     # =========================================================
     # Câmeras DESABILITADAS — streams comentados para não manter

@@ -1,3 +1,4 @@
+import os
 import json
 import asyncio
 import logging
@@ -331,6 +332,18 @@ class MQTTService:
                             snapshot_bytes = resp_latest.content
                 except Exception as e:
                     logger.debug(f"Could not retrieve snapshot: {e}")
+
+            if snapshot_bytes:
+                try:
+                    media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
+                    clips_dir = os.path.join(media_base, "clips")
+                    os.makedirs(clips_dir, exist_ok=True)
+                    snap_path = os.path.join(clips_dir, f"{camera}-{event_id}.jpg")
+                    if not os.path.exists(snap_path):
+                        with open(snap_path, "wb") as f:
+                            f.write(snapshot_bytes)
+                except Exception as e:
+                    logger.debug(f"Could not cache high-res snapshot on disk: {e}")
 
             friendly_name = None
             try:

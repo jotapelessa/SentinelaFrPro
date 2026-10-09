@@ -3874,7 +3874,7 @@
       "file_type": "code",
       "norm_label": ".get_video_duration()",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L406"
+      "source_location": "L432"
     },
     {
       "id": "backend_app_services_frigate_bridge_frigatebridgeservice_has_audio_stream",
@@ -3946,7 +3946,7 @@
       "file_type": "code",
       "norm_label": ".record_live_video()",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L434"
+      "source_location": "L460"
     },
     {
       "id": "backend_app_services_frigate_bridge_frigatebridgeservice_transcode_to_30fps",
@@ -3970,7 +3970,7 @@
       "file_type": "code",
       "norm_label": "._cleanup_disk_item()",
       "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L351"
+      "source_location": "L401"
     },
     {
       "id": "backend_app_services_telegram_queue_telegramvideoqueue_enqueue_event",
@@ -9695,7 +9695,7 @@
       "source_location": "L288"
     },
     {
-      "id": "backend_app_services_frigate_bridge_rationale_407",
+      "id": "backend_app_services_frigate_bridge_rationale_433",
       "label": "Accurately extracts real playback duration of video_bytes using ffprobe in ~2ms.",
       "_origin": "ast",
       "community": 17,
@@ -9703,10 +9703,10 @@
       "file_type": "rationale",
       "norm_label": "accurately extracts real playback duration of video_bytes using ffprobe in ~2ms.",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L407"
+      "source_location": "L433"
     },
     {
-      "id": "backend_app_services_frigate_bridge_rationale_443",
+      "id": "backend_app_services_frigate_bridge_rationale_469",
       "label": "Captures a live video clip directly from the camera stream with constant 30\u2026",
       "_origin": "ast",
       "community": 17,
@@ -9714,7 +9714,7 @@
       "file_type": "rationale",
       "norm_label": "captures a live video clip directly from the camera stream with constant 30...",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L443"
+      "source_location": "L469"
     },
     {
       "id": "backend_app_services_frigate_bridge_rationale_48",
@@ -10025,12 +10025,12 @@
     },
     {
       "id": "backend_app_services_telegram_queue_rationale_289",
-      "label": "FFmpeg pipeline specifically engineered to fix color blotches, green frames,\u2026",
+      "label": "High-performance hardware-accelerated / fast remux pipeline for Telegram alert\u2026",
       "_origin": "ast",
       "community": 19,
       "community_name": "TelegramVideoQueue",
       "file_type": "rationale",
-      "norm_label": "ffmpeg pipeline specifically engineered to fix color blotches, green frames,...",
+      "norm_label": "high-performance hardware-accelerated / fast remux pipeline for telegram alert...",
       "source_file": "backend/app/services/telegram_queue.py",
       "source_location": "L289"
     },
@@ -12819,14 +12819,14 @@
       "source_location": "L76"
     },
     {
-      "id": "readme_download_dos_apks_oficiais_v001_000_000_166",
-      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.166`)",
+      "id": "readme_download_dos_apks_oficiais_v001_000_000_167",
+      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.167`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.166`)",
+      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.167`)",
       "source_file": "README.md",
       "source_location": "L23"
     },
@@ -17640,7 +17640,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 atualizacao dos apps docker & correcao definitiva de expurgo de videos e fotos",
       "source_file": "STATE.md",
-      "source_location": "L54"
+      "source_location": "L68"
     },
     {
       "id": "state_auditoria_de_seguran\u00e7a_infraestrutura_resili\u00eancia_de_rede_l2_l3_hardening_nginx_sentinela_local",
@@ -17652,7 +17652,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udee1\ufe0f auditoria de seguranca & infraestrutura: resiliencia de rede l2/l3 & hardening nginx (`sentinela.local`)",
       "source_file": "STATE.md",
-      "source_location": "L93"
+      "source_location": "L107"
     },
     {
       "id": "state_gest\u00e3o_de_armazenamento_exclus\u00e3o_total_de_v\u00eddeos_fotos_100_wipe",
@@ -17664,7 +17664,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcbe gestao de armazenamento: exclusao total de videos & fotos (100% wipe)",
       "source_file": "STATE.md",
-      "source_location": "L75"
+      "source_location": "L89"
     },
     {
       "id": "state_matriz_de_especifica\u00e7\u00f5es_e_cobertura_onp_spec",
@@ -17676,7 +17676,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udee1\ufe0f matriz de especificacoes e cobertura onp-spec",
       "source_file": "STATE.md",
-      "source_location": "L354"
+      "source_location": "L368"
     },
     {
       "id": "state_pr\u00f3ximos_passos_e_itens_em_aberto",
@@ -17688,7 +17688,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L1035"
+      "source_location": "L1049"
     },
     {
       "id": "state_resumo_da_sess\u00e3o_atual_v001_000_000_149",
@@ -17700,7 +17700,7 @@
       "node_kind": "heading",
       "norm_label": "resumo da sessao atual (v001.000.000.149)",
       "source_file": "STATE.md",
-      "source_location": "L1028"
+      "source_location": "L1042"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -17724,7 +17724,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.114 (otimizacao termica, atomicidade e unificacao web)",
       "source_file": "STATE.md",
-      "source_location": "L590"
+      "source_location": "L604"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
@@ -17736,7 +17736,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.115 (correcao da aba cameras nos apks, harmonizacao mse e cache-busting web)",
       "source_file": "STATE.md",
-      "source_location": "L567"
+      "source_location": "L581"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
@@ -17748,7 +17748,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.116 (resolucao de pip na tv, reconciliacao master, capturas hd e desduplicacao de cameras)",
       "source_file": "STATE.md",
-      "source_location": "L554"
+      "source_location": "L568"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
@@ -17760,7 +17760,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.117 (estabilidade multi-dispositivo de pip, zero-cache nginx host & app web)",
       "source_file": "STATE.md",
-      "source_location": "L535"
+      "source_location": "L549"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_126_observabilidade_e_logs_distribu\u00eddos_em_todas_as_abas_cards_bot\u00f5es_pip_zero_loading_flash",
@@ -17772,7 +17772,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.126 (observabilidade e logs distribuidos em todas as abas/cards/botoes & pip zero loading flash)",
       "source_file": "STATE.md",
-      "source_location": "L491"
+      "source_location": "L505"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_127_modo_de_espera_monitoramento_de_detec\u00e7\u00e3o_suspens\u00e3o_de_players_em_background_para_pip",
@@ -17784,7 +17784,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.127 (modo de espera / monitoramento de deteccao & suspensao de players em background para pip)",
       "source_file": "STATE.md",
-      "source_location": "L472"
+      "source_location": "L486"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_129_deduplica\u00e7\u00e3o_de_c\u00e2meras_na_tv_alinhamento_responsivo_de_ui_ux_e_propor\u00e7\u00e3o_din\u00e2mica_16_9_no_smartphone",
@@ -17796,7 +17796,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.129 (deduplicacao de cameras na tv, alinhamento responsivo de ui/ux e proporcao dinamica 16:9 no smartphone)",
       "source_file": "STATE.md",
-      "source_location": "L457"
+      "source_location": "L471"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_130_otimiza\u00e7\u00e3o_global_de_servidores_resolu\u00e7\u00e3o_de_salvamento_temperatura_e_segrega\u00e7\u00e3o_de_pip",
@@ -17808,7 +17808,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.130 (otimizacao global de servidores, resolucao de salvamento/temperatura e segregacao de pip)",
       "source_file": "STATE.md",
-      "source_location": "L439"
+      "source_location": "L453"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_140_otimiza\u00e7\u00e3o_extrema_para_c\u00e2meras_ip_aitek_seg6050bp_e_corre\u00e7\u00e3o_definitiva_do_lag_stutter_mse_24_fps",
@@ -17820,7 +17820,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.140 (otimizacao extrema para cameras ip aitek seg6050bp e correcao definitiva do lag/stutter mse 24 fps)",
       "source_file": "STATE.md",
-      "source_location": "L404"
+      "source_location": "L418"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_141_harmoniza\u00e7\u00e3o_universal_h_264_gop_25_clipes_reais_telegram_e_fim_dos_travamentos_de_30s",
@@ -17832,7 +17832,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.141 (harmonizacao universal h.264, gop 25, clipes reais telegram e fim dos travamentos de 30s)",
       "source_file": "STATE.md",
-      "source_location": "L389"
+      "source_location": "L403"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_150_build_150_otimiza\u00e7\u00e3o_global_do_ecossistema_e_harmoniza\u00e7\u00e3o_multi_plataforma",
@@ -17844,7 +17844,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.150 (build 150) \u2014 otimizacao global do ecossistema e harmonizacao multi-plataforma",
       "source_file": "STATE.md",
-      "source_location": "L314"
+      "source_location": "L328"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
@@ -17856,7 +17856,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.152 (build 152) \u2014 persistencia definitiva de gravacao, resolucao, audio e bitrate",
       "source_file": "STATE.md",
-      "source_location": "L295"
+      "source_location": "L309"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
@@ -17868,7 +17868,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.155 (build 155) \u2014 controle de sensores/hardware onvif, sincronizacao horaria e otimizacao do ecossistema",
       "source_file": "STATE.md",
-      "source_location": "L251"
+      "source_location": "L265"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
@@ -17880,7 +17880,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.156 (build 156) \u2014 correcao definitiva de limpeza ssd, otimizacao termica e cascateamento go2rtc",
       "source_file": "STATE.md",
-      "source_location": "L234"
+      "source_location": "L248"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_157_build_157_deduplica\u00e7\u00e3o_estrita_de_c\u00e2meras_loopback_universal_no_go2rtc_e_otimiza\u00e7\u00e3o_extrema_de_recursos",
@@ -17892,7 +17892,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.157 (build 157) \u2014 deduplicacao estrita de cameras, loopback universal no go2rtc e otimizacao extrema de recursos",
       "source_file": "STATE.md",
-      "source_location": "L221"
+      "source_location": "L235"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
@@ -17904,7 +17904,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.159 (build 159) \u2014 desacoplamento de foco na tv, pip 16:9 estrito, controles por camera e otimizacao mobile",
       "source_file": "STATE.md",
-      "source_location": "L190"
+      "source_location": "L204"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
@@ -17916,7 +17916,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.161 (build 161) \u2014 resolucao de decoder tv, aspect ratio 16:9 estrito e ci/cd verde",
       "source_file": "STATE.md",
-      "source_location": "L163"
+      "source_location": "L177"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
@@ -17928,7 +17928,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.162 (build 162) \u2014 resolucao definitiva de transmissoes web 24/7 (fim do ciclo de 5 segundos) e harmonizacao dual-cam",
       "source_file": "STATE.md",
-      "source_location": "L145"
+      "source_location": "L159"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_163_build_163_corre\u00e7\u00e3o_cr\u00edtica_de_gera\u00e7\u00e3o_e_publica\u00e7\u00e3o_de_apks_no_ci_cd",
@@ -17940,7 +17940,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.163 (build 163) \u2014 correcao critica de geracao e publicacao de apks no ci/cd",
       "source_file": "STATE.md",
-      "source_location": "L130"
+      "source_location": "L144"
     },
     {
       "id": "state_vers\u00e3o_atual_v001_000_000_142_ingest\u00e3o_\u00fanica_sub_stream_est\u00e1vel_cascateamento_zero_drop_go2rtc_e_rebuild_backend",
@@ -17952,7 +17952,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao atual: v001.000.000.142 (ingestao unica sub-stream estavel, cascateamento zero-drop go2rtc e rebuild backend)",
       "source_file": "STATE.md",
-      "source_location": "L370"
+      "source_location": "L384"
     },
     {
       "id": "state_vers\u00e3o_atual_v001_000_000_164_build_164_unifica\u00e7\u00e3o_do_pip_tv_corre\u00e7\u00e3o_de_sqlite_e_estabilidade_do_stream",
@@ -17964,7 +17964,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao atual: v001.000.000.164 (build 164) \u2014 unificacao do pip tv, correcao de sqlite e estabilidade do stream",
       "source_file": "STATE.md",
-      "source_location": "L113"
+      "source_location": "L127"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_165_estabiliza\u00e7\u00e3o_integral_da_stack_sincroniza\u00e7\u00e3o_pip",
@@ -17976,17 +17976,17 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.165 \u2014 estabilizacao integral da stack & sincronizacao pip",
       "source_file": "STATE.md",
-      "source_location": "L27"
+      "source_location": "L41"
     },
     {
-      "id": "state_vers\u00e3o_v001_000_000_166_grava\u00e7\u00f5es_2304_1296_3mp_25fps_provisionamento_onvif",
-      "label": "\ud83d\ude80 Vers\u00e3o v001.000.000.166 \u2014 Grava\u00e7\u00f5es 2304\u00d71296 (3MP) @ 25fps & Provisionamento ONVIF",
+      "id": "state_vers\u00e3o_v001_000_000_167_estabiliza\u00e7\u00e3o_do_webrtc_720p_elimina\u00e7\u00e3o_de_satura\u00e7\u00e3o_de_cpu",
+      "label": "\ud83d\ude80 Vers\u00e3o v001.000.000.167 \u2014 Estabiliza\u00e7\u00e3o do WebRTC 720p & Elimina\u00e7\u00e3o de Satura\u00e7\u00e3o de CPU",
       "_origin": "ast",
       "community": 93,
       "community_name": "STATE.md \u2014 Mem\u00f3ria Persistente do Projeto",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\ude80 versao v001.000.000.166 \u2014 gravacoes 2304\u00d71296 (3mp) @ 25fps & provisionamento onvif",
+      "norm_label": "\ud83d\ude80 versao v001.000.000.167 \u2014 estabilizacao do webrtc 720p & eliminacao de saturacao de cpu",
       "source_file": "STATE.md",
       "source_location": "L10"
     },
@@ -18000,7 +18000,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83c\udfaf visao e objetivos atuais",
       "source_file": "STATE.md",
-      "source_location": "L343"
+      "source_location": "L357"
     },
     {
       "id": "agents_skills_onp_spec_driven_references_constituicao_constitui\u00e7\u00e3o_princ\u00edpios_que_a_m\u00e1quina_verifica",
@@ -21168,7 +21168,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L459",
+      "source_location": "L485",
       "weight": 1.0
     },
     {
@@ -21180,7 +21180,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L461",
+      "source_location": "L487",
       "weight": 1.0
     },
     {
@@ -21216,7 +21216,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L347",
+      "source_location": "L339",
       "weight": 1.0
     },
     {
@@ -39877,7 +39877,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_download_dos_apks_oficiais_v001_000_000_166",
+      "target": "readme_download_dos_apks_oficiais_v001_000_000_167",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -41230,7 +41230,7 @@
     },
     {
       "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_v001_000_000_166_grava\u00e7\u00f5es_2304_1296_3mp_25fps_provisionamento_onvif",
+      "target": "state_vers\u00e3o_v001_000_000_167_estabiliza\u00e7\u00e3o_do_webrtc_720p_elimina\u00e7\u00e3o_de_satura\u00e7\u00e3o_de_cpu",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -41247,7 +41247,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L1028",
+      "source_location": "L1042",
       "weight": 1.0
     },
     {
@@ -41258,293 +41258,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L1035",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_atual_v001_000_000_164_build_164_unifica\u00e7\u00e3o_do_pip_tv_corre\u00e7\u00e3o_de_sqlite_e_estabilidade_do_stream",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L113",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_163_build_163_corre\u00e7\u00e3o_cr\u00edtica_de_gera\u00e7\u00e3o_e_publica\u00e7\u00e3o_de_apks_no_ci_cd",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L130",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L145",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L163",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L190",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_157_build_157_deduplica\u00e7\u00e3o_estrita_de_c\u00e2meras_loopback_universal_no_go2rtc_e_otimiza\u00e7\u00e3o_extrema_de_recursos",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L221",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L234",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L251",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_v001_000_000_165_estabiliza\u00e7\u00e3o_integral_da_stack_sincroniza\u00e7\u00e3o_pip",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L27",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L295",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_150_build_150_otimiza\u00e7\u00e3o_global_do_ecossistema_e_harmoniza\u00e7\u00e3o_multi_plataforma",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L314",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vis\u00e3o_e_objetivos_atuais",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L343",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_matriz_de_especifica\u00e7\u00f5es_e_cobertura_onp_spec",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L354",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_atual_v001_000_000_142_ingest\u00e3o_\u00fanica_sub_stream_est\u00e1vel_cascateamento_zero_drop_go2rtc_e_rebuild_backend",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L370",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_141_harmoniza\u00e7\u00e3o_universal_h_264_gop_25_clipes_reais_telegram_e_fim_dos_travamentos_de_30s",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L389",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_140_otimiza\u00e7\u00e3o_extrema_para_c\u00e2meras_ip_aitek_seg6050bp_e_corre\u00e7\u00e3o_definitiva_do_lag_stutter_mse_24_fps",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L404",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_130_otimiza\u00e7\u00e3o_global_de_servidores_resolu\u00e7\u00e3o_de_salvamento_temperatura_e_segrega\u00e7\u00e3o_de_pip",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L439",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_129_deduplica\u00e7\u00e3o_de_c\u00e2meras_na_tv_alinhamento_responsivo_de_ui_ux_e_propor\u00e7\u00e3o_din\u00e2mica_16_9_no_smartphone",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L457",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_127_modo_de_espera_monitoramento_de_detec\u00e7\u00e3o_suspens\u00e3o_de_players_em_background_para_pip",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L472",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_126_observabilidade_e_logs_distribu\u00eddos_em_todas_as_abas_cards_bot\u00f5es_pip_zero_loading_flash",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L491",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L535",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_atualiza\u00e7\u00e3o_dos_apps_docker_corre\u00e7\u00e3o_definitiva_de_expurgo_de_v\u00eddeos_e_fotos",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L54",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L554",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L567",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L590",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_gest\u00e3o_de_armazenamento_exclus\u00e3o_total_de_v\u00eddeos_fotos_100_wipe",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L75",
+      "source_location": "L1049",
       "weight": 1.0
     },
     {
@@ -41555,7 +41269,293 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L93",
+      "source_location": "L107",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_atual_v001_000_000_164_build_164_unifica\u00e7\u00e3o_do_pip_tv_corre\u00e7\u00e3o_de_sqlite_e_estabilidade_do_stream",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L127",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_163_build_163_corre\u00e7\u00e3o_cr\u00edtica_de_gera\u00e7\u00e3o_e_publica\u00e7\u00e3o_de_apks_no_ci_cd",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L144",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L159",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L204",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_157_build_157_deduplica\u00e7\u00e3o_estrita_de_c\u00e2meras_loopback_universal_no_go2rtc_e_otimiza\u00e7\u00e3o_extrema_de_recursos",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L235",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L248",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L265",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L309",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_150_build_150_otimiza\u00e7\u00e3o_global_do_ecossistema_e_harmoniza\u00e7\u00e3o_multi_plataforma",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L328",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vis\u00e3o_e_objetivos_atuais",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L357",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_matriz_de_especifica\u00e7\u00f5es_e_cobertura_onp_spec",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L368",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_atual_v001_000_000_142_ingest\u00e3o_\u00fanica_sub_stream_est\u00e1vel_cascateamento_zero_drop_go2rtc_e_rebuild_backend",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L384",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_141_harmoniza\u00e7\u00e3o_universal_h_264_gop_25_clipes_reais_telegram_e_fim_dos_travamentos_de_30s",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L403",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_v001_000_000_165_estabiliza\u00e7\u00e3o_integral_da_stack_sincroniza\u00e7\u00e3o_pip",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_140_otimiza\u00e7\u00e3o_extrema_para_c\u00e2meras_ip_aitek_seg6050bp_e_corre\u00e7\u00e3o_definitiva_do_lag_stutter_mse_24_fps",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L418",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_130_otimiza\u00e7\u00e3o_global_de_servidores_resolu\u00e7\u00e3o_de_salvamento_temperatura_e_segrega\u00e7\u00e3o_de_pip",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L453",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_129_deduplica\u00e7\u00e3o_de_c\u00e2meras_na_tv_alinhamento_responsivo_de_ui_ux_e_propor\u00e7\u00e3o_din\u00e2mica_16_9_no_smartphone",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L471",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_127_modo_de_espera_monitoramento_de_detec\u00e7\u00e3o_suspens\u00e3o_de_players_em_background_para_pip",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L486",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_126_observabilidade_e_logs_distribu\u00eddos_em_todas_as_abas_cards_bot\u00f5es_pip_zero_loading_flash",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L505",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L549",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L568",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L581",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L604",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_atualiza\u00e7\u00e3o_dos_apps_docker_corre\u00e7\u00e3o_definitiva_de_expurgo_de_v\u00eddeos_e_fotos",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L68",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_gest\u00e3o_de_armazenamento_exclus\u00e3o_total_de_v\u00eddeos_fotos_100_wipe",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -43863,18 +43863,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L406",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_app_services_frigate_bridge_frigatebridgeservice",
-      "target": "backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
-      "relation": "method",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L434",
+      "source_location": "L432",
       "weight": 1.0
     },
     {
@@ -43886,6 +43875,17 @@
       "confidence_score": 1.0,
       "source_file": "backend/app/services/frigate_bridge.py",
       "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_services_frigate_bridge_frigatebridgeservice",
+      "target": "backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/services/frigate_bridge.py",
+      "source_location": "L460",
       "weight": 1.0
     },
     {
@@ -44303,7 +44303,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/telegram_queue.py",
-      "source_location": "L351",
+      "source_location": "L401",
       "weight": 1.0
     },
     {
@@ -45528,25 +45528,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_services_frigate_bridge_rationale_407",
+      "source": "backend_app_services_frigate_bridge_rationale_433",
       "target": "backend_app_services_frigate_bridge_frigatebridgeservice_get_video_duration",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L407",
+      "source_location": "L433",
       "weight": 1.0
     },
     {
-      "source": "backend_app_services_frigate_bridge_rationale_443",
+      "source": "backend_app_services_frigate_bridge_rationale_469",
       "target": "backend_app_services_frigate_bridge_frigatebridgeservice_record_live_video",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/frigate_bridge.py",
-      "source_location": "L443",
+      "source_location": "L469",
       "weight": 1.0
     },
     {
@@ -47322,5 +47322,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "33aeaf2cdb4a9faae119d70c006d587b47d98496"
+  "built_at_commit": "319f5e27ea028aa76913037c7fd77ea1334174a9"
 }

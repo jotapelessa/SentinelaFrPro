@@ -135,6 +135,9 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
       if (res.ok) {
         const data = await res.json();
         setStreamInfo({ main: data.main || null, sub: data.sub || null });
+        if (data.rtsp_sub && !rtspSub) {
+          setRtspSub(data.rtsp_sub);
+        }
       }
     } catch (err) {
       console.error("Error probing stream resolution:", err);

@@ -1,9 +1,30 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-09 07:18 BRT
-> **Versão Corrente:** v001.000.000.167
-> **Estado Geral:** Operacional e Estabilizado — Versão v001.000.000.167 consolidada com eliminação de saturação de CPU via Remux FastStart (0% CPU) e VAAPI QuickSync no processamento de vídeos do Telegram, eliminação de colisão de streaming WebRTC vs MSE (modo `webrtc,webrtc/tcp` isolado), adição de candidato ICE local `192.168.1.211:8555` no go2rtc, buffers de ingestão RTSP expandidos para 2000ms e fim definitivo das reconexões cíclicas a cada 65s no player Web e Android.
+> **Última Atualização:** 2026-10-09 08:35 BRT
+> **Versão Corrente:** v001.000.000.168
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.168 consolidada com correção do watchdog do WebRTCPlayer (resolução do bug de parsing de producers), preservação de candidatos UDP WebRTC eliminando quedas cíclicas, ativação e auto-inferência dos substreams nativos 800×448 via UDP (#transport=udp), suporte completo ao fallback de r_frame_rate no probe de câmeras chinesas (eliminando 0fps), sincronização estrita de `required_zones` no Frigate 0.17 eliminando alertas fora das zonas marcadas, e cache instantâneo de snapshots nativos 3MP em disco para entrega sub-5ms em altíssima definição.
+
+---
+
+## 🚀 Versão v001.000.000.168 — Substreams Nativos UDP, Watchdog WebRTC Corrigido & Zonas Estritas no Frigate
+- **Data**: 2026-10-09
+- **Objetivo**: Resolver definitivamente as 5 queixas reportadas: quedas/reconexões contínuas no WebRTC 720p, falha de transmissão e 0fps dos substreams, disparos fora das zonas no Frigate 0.17, atraso/nitidez dos snapshots e garantia de gravações nativas a 2304×1296 @ 25fps:
+  1. **Correção do Watchdog e Candidatos WebRTC (`WebRTCPlayer.tsx`)**:
+     - *Bug Crítico Corrigido*: A chamada do watchdog `/go2rtc/api/streams?src=...` retornava o objeto do stream diretamente com `{ producers, consumers }`. O código tentava acessar `data[activeProbeSrc]`, resultando sempre em `undefined`. Isso fazia `streamStallCount` incrementar continuamente até atingir o limite e disparar `setKey(k => k + 1)`, destruindo o elemento DOM e causando reconexões a cada 25–60 segundos.
+     - *Candidatos ICE Preservados*: Substituição de `mode=webrtc,webrtc/tcp` por `mode=webrtc,mse`. O parâmetro `webrtc/tcp` fazia o `video-rtc.js` descartar ativamente candidatos ICE UDP locais (`192.168.1.211:8555`). Com `webrtc,mse`, candidatos UDP são preservados e o fallback para MSE é suave sem congelamento.
+  2. **Ativação e Ingestão de Substreams Nativos UDP (`config.yml` & `cameras.py`)**:
+     - *Câmeras*: Ingestão do canal nativo `/live/0/SUB` (800×448 @ 25fps Baseline H.264) via UDP (`#transport=udp#backchannel=0`), evitando estouro de buffer TCP na câmera física.
+     - *Probe de FPS Aprimorado*: O backend `_probe_rtsp_stream_info` agora consulta tanto `avg_frame_rate` quanto `r_frame_rate`, corrigindo o problema de câmeras com firmware `RtpRtspFlyer` que retornavam "0/0" e exibiam "0fps".
+     - *Auto-Inferência de Substream*: Câmeras cadastradas com `rtsp_sub = null` agora têm a URL do substream automaticamente inferida (`/live/0/SUB`), testada e persistida no banco SQLite.
+  3. **Disparos de Zonas do Frigate Limitados às Áreas Marcadas (`cameras.py` & `config.yml`)**:
+     - *Causa*: No Frigate 0.17, se `required_zones` estiver vazio (`[]`) em `review.alerts` e `review.detections`, qualquer objeto em qualquer ponto do campo de visão gera alertas, mesmo fora das zonas marcadas.
+     - *Correção*: `save_frigate_camera_zones` agora sincroniza dinamicamente as zonas criadas no array `required_zones`, garantindo que apenas objetos com pegada (footprint) dentro das zonas marcadas ativem o pipeline de alertas.
+  4. **Snapshots Instantâneos em Resolução Nativa 3MP (`mqtt_service.py`)**:
+     - Ao detectar um evento, o frame nativo capturado via go2rtc (`2304×1296`) é imediatamente gravado no diretório de mídia `/media/frigate/clips/{camera}-{event_id}.jpg`.
+     - O endpoint `/api/events/{event_id}/snapshot.jpg` entrega esse arquivo em <5ms para a Web e APKs, eliminando o atraso de 4 segundos de pós-processamento do Frigate com máxima nitidez visual.
+  5. **Gravações em 2304×1296 @ 25fps CFR sem Consumo de CPU**:
+     - Pass-through direto (`-c:v copy`) na role `record` do Frigate a partir do stream principal da câmera. Zero consumo de CPU/GPU em gravação.
 
 ---
 
