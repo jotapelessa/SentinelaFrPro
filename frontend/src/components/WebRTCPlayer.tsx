@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { Maximize2, Minimize2, Radio, RefreshCw, Zap, Settings, ShieldAlert, Activity, Pause, Play, PauseCircle, Loader2 } from "lucide-react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { Maximize2, Minimize2, Radio, RefreshCw, Zap, Settings, ShieldAlert, Activity, Pause, Play, PauseCircle, Loader2, Volume2, VolumeX } from "lucide-react";
 import { Camera, useSentinelaStore } from "@/store/useSentinelaStore";
 import { CameraConfigModal } from "./CameraConfigModal";
 
@@ -252,7 +252,9 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     ? "monitor" 
     : (camera.stream_mode === "webrtc" ? "webrtc" : "mse");
   const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">(initialMode);
-  const [streamQuality, setStreamQuality] = useState<"minima" | "media" | "maxima">((camera.stream_quality as any) || "maxima");
+  const [streamQuality, setStreamQuality] = useState<"minima" | "media">(
+    camera.stream_quality === "minima" ? "minima" : "media"
+  );
   const [ecoFps, setEcoFps] = useState<number>(camera.eco_fps || 2);
   const [key, setKey] = useState(0);
   const [isConfigOpen, setIsConfigOpen] = useState(false);
@@ -262,30 +264,39 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   const [isTogglingPause, setIsTogglingPause] = useState(false);
   const [streamStallCount, setStreamStallCount] = useState(0);
   const [isWatchdogRecovering, setIsWatchdogRecovering] = useState(false);
-  const [isDocumentVisible, setIsDocumentVisible] = useState(true);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [isMuted, setIsMuted] = useState(true);
+  const [volume, setVolume] = useState(0);
 
-  // Global Page Visibility API: Suspend video stream when tab/window is hidden (Regra de Ouro #9)
-  useEffect(() => {
-    if (typeof document === "undefined") return;
-    let resumeTimeout: NodeJS.Timeout;
-    const handleVisibility = () => {
-      clearTimeout(resumeTimeout);
-      if (document.hidden) {
-        setIsDocumentVisible(false);
-      } else {
-        // Staggered resume (120ms debounce) to avoid WebSocket stampede on tab refocus
-        resumeTimeout = setTimeout(() => {
-          setIsDocumentVisible(true);
-        }, 120);
+  const applyAudioSettings = (newMuted: boolean, newVolume: number) => {
+    try {
+      const doc = iframeRef.current?.contentDocument || iframeRef.current?.contentWindow?.document;
+      const video = doc?.querySelector("video");
+      if (video) {
+        video.muted = newMuted;
+        video.volume = newMuted ? 0 : Math.max(0, Math.min(1, newVolume));
       }
-    };
-    setIsDocumentVisible(!document.hidden);
-    document.addEventListener("visibilitychange", handleVisibility);
-    return () => {
-      clearTimeout(resumeTimeout);
-      document.removeEventListener("visibilitychange", handleVisibility);
-    };
-  }, []);
+    } catch {
+      // Cross-origin fallback
+    }
+  };
+
+  const handleToggleMute = () => {
+    const nextMuted = !isMuted;
+    const nextVol = nextMuted ? 0 : (volume > 0 ? volume : 0.8);
+    setIsMuted(nextMuted);
+    setVolume(nextVol);
+    applyAudioSettings(nextMuted, nextVol);
+  };
+
+  const handleVolumeChange = (newVol: number) => {
+    setVolume(newVol);
+    const nextMuted = newVol === 0;
+    setIsMuted(nextMuted);
+    applyAudioSettings(nextMuted, newVol);
+  };
+
+
 
   useEffect(() => {
     setIsPaused(camera.enabled === false);
@@ -298,7 +309,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
       setStreamMode(mode);
     }
     if (camera.stream_quality) {
-      setStreamQuality(camera.stream_quality as "minima" | "media" | "maxima");
+      setStreamQuality(camera.stream_quality === "minima" ? "minima" : "media");
     }
     if (camera.eco_fps) {
       setEcoFps(camera.eco_fps);
@@ -463,7 +474,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     };
   }, [streamMode, cameraSrc, streamQuality, ecoFps, key, isPaused, isActivePlayer]);
 
-  const handleQualityChange = async (newQuality: "minima" | "media" | "maxima") => {
+  const handleQualityChange = async (newQuality: "minima" | "media") => {
     setStreamQuality(newQuality);
     try {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "/api";
@@ -481,8 +492,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 
   const getEffectiveSrc = () => {
     if (streamQuality === "minima") return `${cameraSrc}_sub`;
-    if (streamQuality === "media") return `${cameraSrc}_720p`;
-    return cameraSrc;
+    return `${cameraSrc}_720p`;
   };
 
   const getStreamUrl = () => {
@@ -490,10 +500,10 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     // background=true impede que o go2rtc execute o timer de 5s de desconexão (Regra de Ouro #1/Streaming 24/7)
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&media=video&background=true`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&media=video,audio&background=true`;
       case "mse":
       default:
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&media=video&background=true`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&media=video,audio&background=true`;
     }
   };
 
@@ -612,23 +622,6 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
               </span>
             </div>
           </div>
-        ) : !isDocumentVisible ? (
-          <div className="w-full h-full relative bg-black flex items-center justify-center overflow-hidden select-none">
-            <img
-              src={`/go2rtc/api/frame.jpeg?src=${cameraSrc}`}
-              onError={(e) => {
-                (e.currentTarget as HTMLImageElement).src = `/frigate/api/${cameraSrc}/latest.jpg?h=720`;
-              }}
-              alt={camera.friendly_name || camera.name}
-              className="w-full h-full object-contain opacity-60"
-            />
-            <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2 text-slate-300 z-10">
-              <span className="px-3 py-1 rounded-full bg-cyan-500/20 border border-cyan-500/40 text-cyan-300 font-mono font-bold text-xs tracking-wider">
-                MODO DE ESPERA · MONITORANDO DETECÇÃO
-              </span>
-              <span className="text-[11px] text-slate-400 font-mono">Transmissão suspensa em segundo plano (Zero CPU/GPU)</span>
-            </div>
-          </div>
         ) : streamMode === "monitor" ? (
           <div className="w-full h-full relative bg-black flex items-center justify-center overflow-hidden">
             <img
@@ -647,10 +640,12 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
         ) : (
           <div className="w-full h-full relative bg-black">
             <iframe
+              ref={iframeRef}
               key={`${cameraSrc}-${streamMode}-${key}`}
               src={getStreamUrl()}
               className="w-full h-full border-0 bg-black z-0 relative"
               allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+              onLoad={() => applyAudioSettings(isMuted, volume)}
             />
             {isWatchdogRecovering && (
               <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-2 text-cyan-400 z-20 animate-fadeIn">
@@ -700,12 +695,12 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
                 </button>
               </div>
 
-              {/* Resolution / Quality Switcher Pills */}
+              {/* Resolution / Quality Switcher Pills (Mín 480p and Méd 720p only) */}
               <div className="flex items-center gap-1 bg-black/85 backdrop-blur-md p-1 rounded-xl border border-slate-700/80 shadow-2xl">
                 <button
                   type="button"
                   onClick={() => handleQualityChange("minima")}
-                  title="Qualidade Mínima (480p / Stream SUB econômico)"
+                  title="Qualidade Mínima (480p / Substream econômico)"
                   className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
                     streamQuality === "minima" ? "bg-amber-500 text-obsidian-950 shadow-md shadow-amber-500/30" : "text-slate-400 hover:text-amber-300 hover:bg-slate-800/80"
                   }`}
@@ -716,24 +711,39 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
                 <button
                   type="button"
                   onClick={() => handleQualityChange("media")}
-                  title="Qualidade Média (720p / Transcodificação GPU VAAPI)"
+                  title="Qualidade HD Padrão (720p 30 FPS)"
                   className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
                     streamQuality === "media" ? "bg-sky-500 text-obsidian-950 shadow-md shadow-sky-500/30" : "text-slate-400 hover:text-sky-300 hover:bg-slate-800/80"
                   }`}
                 >
                   Méd (720p)
                 </button>
+              </div>
 
+              {/* Volume / Mute Control (Default volume 0, adjustable) */}
+              <div className="flex items-center gap-1.5 bg-black/85 backdrop-blur-md px-2 py-1 rounded-xl border border-slate-700/80 shadow-2xl">
                 <button
                   type="button"
-                  onClick={() => handleQualityChange("maxima")}
-                  title="Qualidade Máxima (1080p Full HD Pro nativo)"
-                  className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                    streamQuality === "maxima" ? "bg-emerald-500 text-obsidian-950 shadow-md shadow-emerald-500/30" : "text-slate-400 hover:text-emerald-300 hover:bg-slate-800/80"
-                  }`}
+                  onClick={handleToggleMute}
+                  className="p-0.5 text-slate-300 hover:text-cyan-400 transition-colors"
+                  title={isMuted || volume === 0 ? "Áudio Mudo (Clique para ativar)" : `Volume: ${Math.round(volume * 100)}%`}
                 >
-                  Máx (1080p)
+                  {isMuted || volume === 0 ? (
+                    <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+                  ) : (
+                    <Volume2 className="w-3.5 h-3.5 text-cyan-400" />
+                  )}
                 </button>
+                <input
+                  type="range"
+                  min="0"
+                  max="1"
+                  step="0.05"
+                  value={isMuted ? 0 : volume}
+                  onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+                  className="w-14 h-1 accent-cyan-400 bg-slate-700 rounded cursor-pointer"
+                  title={`Volume: ${Math.round((isMuted ? 0 : volume) * 100)}%`}
+                />
               </div>
             </div>
 

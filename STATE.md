@@ -1,8 +1,36 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-07 11:42 BRT
-> **Estado Geral:** Operacional em produção — Atualização completa dos aplicativos da stack via SSH concluída com sucesso. Resolução definitiva das falhas no expurgo de vídeos e fotos: flexibilização de período imediato (Todas / 0 dias), eliminação do filtro incorreto que bloqueava gravações contínuas do Frigate NVR, seletores interativos de período no frontend e validação com 242 registros expurgados em tempo real (0.0 GB residuais).
+> **Última Atualização:** 2026-10-09 01:45 BRT
+> **Versão Corrente:** v001.000.000.165
+> **Estado Geral:** Operacional e Estabilizado — Versão v001.000.000.165 consolidada com resolução definitiva de estabilidade em streaming go2rtc (eliminação das quedas a cada 5s por falta de alias 720p e destruição de WebSockets em trocas de aba), harmonização H.264 CFR 720p/MSE, sincronização bidirecional de PiP (tamanho, duração, módulo de vídeo e posições por câmera entre TV, Web e Backend), desbloqueio de permissões de dispositivos pareados no SQLite, e botões de interface de usuário perfeitamente simétricos.
+
+---
+
+## 🚀 Versão v001.000.000.165 — Estabilização Integral da Stack & Sincronização PiP
+- **Data**: 2026-10-09
+- **Objetivo**: Resolver todos os problemas relatados na versão mais recente da stack (Android TV, Smartphone, Web Next.js, FastAPI Core, Frigate 0.17, go2rtc, Nginx e Mosquitto):
+  1. **go2rtc & Frigate NVR (`config.yml` & Nginx)**:
+     - Adição dos aliases obrigatórios `camera_principal_720p`, `camera_principal_main`, `camera_principal_sub`, `camera_secundaria_720p`, `camera_secundaria_main`, `camera_secundaria_sub`.
+     - Fim definitivo do erro 404 e das quedas de 5 segundos nas transmissões 720p.
+     - Separação dos caminhos proxy de câmeras no Nginx (`camera_principal` -> `cam_192_168_1_196`, `camera_secundaria` -> `cam_192_168_1_47`).
+  2. **WebRTCPlayer Next.js (`WebRTCPlayer.tsx`)**:
+     - Remoção da opção/botão de 1080p, mantendo apenas 480p (Mín) e 720p (Méd), alinhando resolução e codecs entre todas as telas.
+     - Adição de controle de áudio nativo integrado à barra de ferramentas: inicia silenciado (volume 0) com slider ajustável e botão mudo.
+     - Remoção da destruição do iframe por troca de abas (`!isDocumentVisible`): transmissão contínua com `background=true` sem congelamento ou reconexão em rajada.
+  3. **Android TV (`OverlayService.kt` & `TvNetflixScreen.kt`)**:
+     - Correção do filtro de `isTestAlert` e verificação estrita de `isCameraPipEnabled`: quando a câmera está configurada com PiP OFF, eventos de movimento ou IA são sumariamente descartados.
+     - Aplicação imediata de overrides de tamanho (`overrideSize`) e duração (`overrideDuration`) recebidos do servidor ou da política web.
+     - Sincronização instantânea das alterações de PiP via controle remoto e clique em badges com o servidor backend (`pushLocalSettingsToServer`).
+     - Equalização simétrica dos botões de Módulo de Vídeo na aba Configurações (altura fixa e foco sem deformação proporcional).
+     - Ferramenta de Ping do Servidor na aba Ferramentas totalmente funcional, medindo latência RTT real via `/health` sem sobrescrever preferências locais.
+  4. **Gestão de Telas Web (`/screens`) & Backend FastAPI (`devices.py` & `pip_gateway.py`)**:
+     - Inclusão e persistência completa de `camera_pip_positions` e `camera_pip_enabled` no payload de permissões e configurações.
+     - Padronização das 8 opções de tamanho e 8 posições de PiP no modal de gerenciamento web idênticas às do Android.
+     - Despacho direcionado por identificador único de TV com verificação prévia de PiP ativo por câmera no `pip_gateway.py`.
+  5. **Smartphone (`SmartphoneYouTubeScreen.kt`) & Resiliência**:
+     - Aumento dos timeouts de consulta de rede para 6500ms, assegurando listagem resiliente de dispositivos pareados na aba Master.
+     - Atualização das permissões dos dispositivos para `allowed` no SQLite do servidor.
 
 ---
 

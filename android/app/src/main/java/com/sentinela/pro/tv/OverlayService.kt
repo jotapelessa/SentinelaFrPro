@@ -221,7 +221,11 @@ class OverlayService : Service() {
                 }
 
                 val isPipTrigger = evType == "pip_alert" || (evType == "FRIGATE_EVENT" && event.optBoolean("active", false)) || isMotionActive
-                if (isPipTrigger) {
+                    val targetType = event.optString("target_type", "")
+                    if (targetType == "web") {
+                        return@collect // Exclusivo para navegadores Web (não renderiza overlay na TV)
+                    }
+
                     val targetIdent = event.optString("target_identifier", "")
                     if (targetIdent.isNotBlank() && targetIdent != prefs.deviceIdentifier) {
                         return@collect // Directed specifically to another device
@@ -230,7 +234,7 @@ class OverlayService : Service() {
                     val testId = if (event.has("test_id")) event.optString("test_id") else null
                     val camera = event.optString("camera", "camera_secundaria")
                     val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
-                    val isTestAlert = evType == "pip_alert" || label.contains("TEST", ignoreCase = true) || label.contains("ALERTA", ignoreCase = true)
+                    val isTestAlert = testId != null || event.optBoolean("is_test", false) || label.contains("TEST", ignoreCase = true)
 
                     // Debounce contra tempestades de eventos para a mesma câmera dentro de 2.5 segundos
                     val now = System.currentTimeMillis()
@@ -296,7 +300,6 @@ class OverlayService : Service() {
                 }
             }
         }
-    }
 
     private fun syncPolicyWithPrefs(policy: DevicePolicy, prefs: SentinelaPreferences) {
         cachedDevicePolicy = policy
@@ -541,11 +544,11 @@ class OverlayService : Service() {
         }
 
         // Dynamically resolve PiP size: override > policy > preferences, and lock into preferences
-        // v164: global TV prefs are the single source of truth for ALL cameras.
-        // Payload overrides apply only to explicit test PiPs (testId != null).
-        val rawSize = if (testId != null && !overrideSize.isNullOrBlank()) overrideSize else null
+        val rawSize = if (!overrideSize.isNullOrBlank()) overrideSize
+                      else if (policy != null && policy.pipDefaultSize.isNotBlank()) policy.pipDefaultSize
+                      else null
         val pipSize = if (!rawSize.isNullOrBlank()) {
-            val s = when (rawSize.lowercase()) {
+            when (rawSize.lowercase()) {
                 "mini", "extra_small" -> PipSize.EXTRA_SMALL
                 "small" -> PipSize.SMALL
                 "medium_small" -> PipSize.MEDIUM_SMALL
@@ -556,7 +559,6 @@ class OverlayService : Service() {
                 "cinema" -> PipSize.CINEMA
                 else -> prefs.currentPipSize
             }
-            s
         } else {
             prefs.currentPipSize
         }
@@ -577,8 +579,10 @@ class OverlayService : Service() {
             prefs.getCurrentPipPosition(camera)
         }
 
-        val durationSeconds = if (testId != null && overrideDuration != null && overrideDuration > 0) {
+        val durationSeconds = if (overrideDuration != null && overrideDuration > 0) {
             overrideDuration
+        } else if (policy != null && policy.pipDurationSeconds > 0) {
+            policy.pipDurationSeconds
         } else if (prefs.currentPipDuration.seconds > 0) {
             prefs.currentPipDuration.seconds
         } else {

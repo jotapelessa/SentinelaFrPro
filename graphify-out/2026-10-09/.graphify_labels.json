@@ -2,7 +2,7 @@
   "0": "MQTTService",
   "1": "useSentinelaStore",
   "2": "devices.py",
-  "3": "OverlayService",
+  "3": "OverlayService.kt",
   "4": "sentinela-pro-tv/src/App.tsx",
   "5": "cameras.py",
   "6": "SentinelaRepository",

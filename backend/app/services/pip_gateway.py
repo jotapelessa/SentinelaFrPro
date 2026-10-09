@@ -92,6 +92,15 @@ class PiPGatewayService:
                     except Exception:
                         pass
 
+                # 1.1 Filter by camera_pip_enabled if configured
+                if camera_name and d.camera_pip_enabled:
+                    try:
+                        enabled_map = json.loads(d.camera_pip_enabled)
+                        if isinstance(enabled_map, dict) and camera_name in enabled_map and not enabled_map[camera_name]:
+                            continue
+                    except Exception:
+                        pass
+
                 # 2. Filter by allowed events / labels if specified
                 if label and d.allowed_events:
                     try:
@@ -133,10 +142,11 @@ class PiPGatewayService:
 
         from app.api.ws import ws_manager
 
-        # 1. Transmissão imediata (<10ms) via WebSocket para navegadores Web (Web Dashboard / PiP Multi-Abas)
+        # 1. Transmissão imediata (<10ms) via WebSocket para navegadores Web (Web Dashboard)
         try:
             await ws_manager.broadcast_json({
                 "type": "pip_alert",
+                "target_type": "web",
                 "camera": camera_name,
                 "label": label,
                 "snapshot_url": snapshot_url,
@@ -163,7 +173,25 @@ class PiPGatewayService:
                 ident = dev.get("device_identifier")
                 if ident and ws_manager.is_device_connected(ident):
                     # Dispositivo está ativamente conectado ao app Sentinela (overlay nativo).
-                    # Não disparamos Google Cast nem REST legado para evitar conflito de media receiver.
+                    # Enviamos diretamente para a conexão deste dispositivo
+                    target_ws = ws_manager.get_device_connection(ident)
+                    if target_ws:
+                        try:
+                            await target_ws.send_text(json.dumps({
+                                "type": "pip_alert",
+                                "target_identifier": ident,
+                                "camera": camera_name,
+                                "label": label,
+                                "snapshot_url": snapshot_url,
+                                "stream_url": stream_url or f"/go2rtc/stream.html?src={camera_name}&mode=mse&media=video",
+                                "duration": dev.get("pip_duration_seconds", duration_seconds),
+                                "pip_size": dev.get("pip_default_size", "medium"),
+                                "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
+                            }))
+                            results.append({"device": dev["name"], "ip": target_ip, "status": "delivered", "protocol": "sentinela_app_ws"})
+                            continue
+                        except Exception as e:
+                            logger.debug(f"Failed direct WS send to {ident}: {e}")
                     results.append({"device": dev["name"], "ip": target_ip, "status": "delivered", "protocol": "sentinela_app_ws"})
                     continue
 

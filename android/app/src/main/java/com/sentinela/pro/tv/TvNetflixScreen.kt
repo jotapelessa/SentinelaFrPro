@@ -528,6 +528,7 @@ fun TvCamerasViewport(
 ) {
     val context = LocalContext.current
     val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
+    val camScope = rememberCoroutineScope()
     var isFullscreenLiveOpen by remember { mutableStateOf(false) }
     val isPipOverlayActive by com.sentinela.pro.tv.OverlayService.isPipShowing.collectAsState()
     val isAppInForeground by com.sentinela.pro.SentinelaApplication.isAppInForeground.collectAsState()
@@ -917,6 +918,7 @@ fun TvCamerasViewport(
                                         val nextState = !isPipCamEnabled
                                         isPipCamEnabled = nextState
                                         prefs.setCameraPipEnabled(camera.id, nextState)
+                                        camScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                         SentinelaRemoteLogger.log(
                                             category = "PIP",
                                             action = "CAMERA_PIP_TOGGLED",
@@ -1001,6 +1003,7 @@ fun TvCamerasViewport(
                                     val nextState = !isPipCamEnabled
                                     isPipCamEnabled = nextState
                                     prefs.setCameraPipEnabled(camera.id, nextState)
+                                    camScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
                                     SentinelaRemoteLogger.log(
                                         category = "PIP",
                                         action = "CAMERA_PIP_TOGGLED",
@@ -2742,9 +2745,15 @@ fun CardSubsistemasEComandos(
                         val (ok, msg) = com.sentinela.pro.network.SentinelaRepository.pingServer(
                             context = context,
                             deviceType = "android_tv",
-                            recentLogs = listOf("Smart TV Sentinela Online", "Resolução 1080p/4K", "Decoder HW Ativo")
+                            recentLogs = listOf("Smart TV Sentinela Online", "Resolução 720p/4K", "Decoder HW Ativo")
                         )
                         isPinging = false
+                        SentinelaRemoteLogger.log(
+                            category = "TOOLS",
+                            action = "PING_SERVER_EXECUTED",
+                            severity = if (ok) "INFO" else "WARNING",
+                            message = msg
+                        )
                         onTriggerFeedback(msg)
                         Toast.makeText(context, msg, Toast.LENGTH_LONG).show()
                     }
@@ -3440,7 +3449,7 @@ fun TvSettingsViewport(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(54.dp),
+                            .height(48.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         modes.forEachIndexed { idx, (modeKey, modeTitle, modeDesc) ->
@@ -3462,7 +3471,7 @@ fun TvSettingsViewport(
                                             true
                                         } else false
                                     }
-                                    .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.CameraCard)
+                                    .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.CameraCard, scaleAmount = 1.0f)
                                     .clickable(interactionSource = interactionSource, indication = null) {
                                         playerMode = modeKey
                                         prefs.pipPlayerMode = modeKey
@@ -3477,9 +3486,9 @@ fun TvSettingsViewport(
                                         Toast.makeText(context, "Modo do Player: $modeTitle", Toast.LENGTH_SHORT).show()
                                     }
                             ) {
-                                Column(
-                                    modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp, vertical = 3.dp),
-                                    verticalArrangement = Arrangement.Center
+                                Box(
+                                    modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
+                                    contentAlignment = Alignment.Center
                                 ) {
                                     Row(
                                         modifier = Modifier.fillMaxWidth(),
@@ -3491,11 +3500,12 @@ fun TvSettingsViewport(
                                             color = if (isSelected) TvColors.NetflixRed else if (isFocused) Color.White else TvColors.TextPrimary,
                                             fontSize = 10.sp,
                                             fontWeight = FontWeight.Bold,
-                                            modifier = Modifier.weight(1f),
+                                            modifier = Modifier.weight(1f, fill = false),
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )
                                         if (isSelected) {
+                                            Spacer(modifier = Modifier.width(4.dp))
                                             Surface(shape = TvShapes.StatusPill, color = TvColors.NetflixRed) {
                                                 Text("ATIVO", color = Color.White, fontSize = 7.sp, fontWeight = FontWeight.Black, modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp))
                                             }

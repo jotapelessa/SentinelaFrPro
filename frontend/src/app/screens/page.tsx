@@ -29,6 +29,8 @@ interface PairedDevice {
   pip_default_size?: string;
   pip_duration_seconds?: number;
   pip_position?: string;
+  camera_pip_positions?: Record<string, string>;
+  camera_pip_enabled?: Record<string, boolean>;
   stream_quality?: string;
   is_master_admin?: boolean;
   mac_address?: string;
@@ -1420,7 +1422,10 @@ export default function ScreensPage() {
                         <option value="TOP_LEFT">Superior Esquerdo</option>
                         <option value="BOTTOM_RIGHT">Inferior Direito</option>
                         <option value="BOTTOM_LEFT">Inferior Esquerdo</option>
-                        <option value="CENTER">Centro da Tela</option>
+                        <option value="TOP_CENTER">Superior Centro</option>
+                        <option value="BOTTOM_CENTER">Inferior Centro</option>
+                        <option value="CENTER_LEFT">Centro Esquerdo</option>
+                        <option value="CENTER_RIGHT">Centro Direito</option>
                       </select>
                     </div>
 
@@ -1431,12 +1436,14 @@ export default function ScreensPage() {
                         onChange={(e) => setManagingDevice({ ...managingDevice, pip_default_size: e.target.value })}
                         className="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl p-2 text-xs focus:outline-none focus:border-cyan-500"
                       >
-                        <option value="mini">Mini (20%)</option>
-                        <option value="small">Pequeno (28%)</option>
-                        <option value="medium_small">Médio Pequeno (32%)</option>
-                        <option value="medium">Médio Padrão (38%)</option>
-                        <option value="large">Grande (50%)</option>
-                        <option value="split">Split Screen (50%)</option>
+                        <option value="extra_small">Extra Pequeno (320x180)</option>
+                        <option value="small">Pequeno (480x270)</option>
+                        <option value="medium_small">Médio Pequeno (640x360)</option>
+                        <option value="medium">Médio Padrão (800x450)</option>
+                        <option value="medium_large">Médio Grande (960x540)</option>
+                        <option value="large">Grande (1120x630)</option>
+                        <option value="extra_large">Extra Grande (1280x720)</option>
+                        <option value="cinema">Cinema (1440x810)</option>
                       </select>
                     </div>
 
@@ -1678,6 +1685,8 @@ export default function ScreensPage() {
                             pip_default_size: managingDevice.pip_default_size || "medium",
                             pip_duration_seconds: managingDevice.pip_duration_seconds || 10,
                             pip_position: managingDevice.pip_position || "TOP_RIGHT",
+                            camera_pip_positions: managingDevice.camera_pip_positions || {},
+                            camera_pip_enabled: managingDevice.camera_pip_enabled || {},
                             stream_quality: managingDevice.stream_quality || "1080p"
                           })
                         });

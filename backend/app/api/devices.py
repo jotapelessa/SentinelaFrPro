@@ -156,6 +156,8 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
             "pip_default_size": d.pip_default_size or "medium",
             "pip_duration_seconds": d.pip_duration_seconds or 10,
             "pip_position": d.pip_position or "TOP_RIGHT",
+            "camera_pip_positions": json.loads(d.camera_pip_positions) if d.camera_pip_positions else {},
+            "camera_pip_enabled": json.loads(d.camera_pip_enabled) if d.camera_pip_enabled else {},
             "stream_quality": d.stream_quality or "1080p",
             "is_master_admin": bool(d.is_master_admin),
             "last_seen": d.last_seen.isoformat() if d.last_seen else None,
@@ -311,6 +313,8 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         "pip_default_size": dev.pip_default_size or "medium",
         "pip_duration_seconds": dev.pip_duration_seconds or 10,
         "pip_position": dev.pip_position or "TOP_RIGHT",
+        "camera_pip_positions": json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {},
+        "camera_pip_enabled": json.loads(dev.camera_pip_enabled) if dev.camera_pip_enabled else {},
         "stream_quality": dev.stream_quality or "1080p",
         "is_master_admin": bool(dev.is_master_admin),
         "last_seen": dev.last_seen.isoformat() if dev.last_seen else None

@@ -114,8 +114,21 @@ go2rtc:
     # Aliases de compatibilidade legada
     camera_principal:
     - rtsp://127.0.0.1:8554/cam_192_168_1_196
+    camera_principal_main:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196
+    camera_principal_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+    camera_principal_sub:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+
     camera_secundaria:
     - rtsp://127.0.0.1:8554/cam_192_168_1_47
+    camera_secundaria_main:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_47
+    camera_secundaria_720p:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
+    camera_secundaria_sub:
+    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
 
     # =========================================================
     # Câmeras DESABILITADAS — streams comentados para não manter

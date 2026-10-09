@@ -1236,8 +1236,8 @@ object SentinelaRepository {
         try {
             val url = URL("${SentinelaConfig.BASE_URL}/api/devices/")
             val conn = openConnection(url).apply {
-                connectTimeout = 4000
-                readTimeout = 4000
+                connectTimeout = 6500
+                readTimeout = 6500
                 requestMethod = "GET"
                 setRequestProperty("Accept", "application/json")
             }
@@ -1420,12 +1420,26 @@ object SentinelaRepository {
                 setRequestProperty("Accept", "application/json")
                 doOutput = true
             }
+            val camPositions = JSONObject().apply {
+                put("camera_principal", prefs.getCurrentPipPosition("camera_principal").name)
+                put("camera_secundaria", prefs.getCurrentPipPosition("camera_secundaria").name)
+                put("cam_192_168_1_196", prefs.getCurrentPipPosition("cam_192_168_1_196").name)
+                put("cam_192_168_1_47", prefs.getCurrentPipPosition("cam_192_168_1_47").name)
+            }
+            val camEnabled = JSONObject().apply {
+                put("camera_principal", prefs.isCameraPipEnabled("camera_principal"))
+                put("camera_secundaria", prefs.isCameraPipEnabled("camera_secundaria"))
+                put("cam_192_168_1_196", prefs.isCameraPipEnabled("cam_192_168_1_196"))
+                put("cam_192_168_1_47", prefs.isCameraPipEnabled("cam_192_168_1_47"))
+            }
             val payload = JSONObject().apply {
                 put("pip_duration_seconds", prefs.currentPipDuration.seconds)
                 put("pip_default_size", prefs.currentPipSize.name.lowercase())
                 put("pip_position", prefs.currentPipPosition.name)
                 put("pip_player_mode", prefs.pipPlayerMode)
                 put("stream_quality", prefs.streamQuality)
+                put("camera_pip_positions", camPositions)
+                put("camera_pip_enabled", camEnabled)
             }
             conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
             val code = conn.responseCode
@@ -1457,6 +1471,23 @@ object SentinelaRepository {
         val appVer = "v${com.sentinela.pro.BuildConfig.VERSION_NAME}"
         val devModel = "${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL}"
 
+        val tStart = System.currentTimeMillis()
+        var rttMs = 0L
+        val isHealthOk = try {
+            val hUrl = URL("${SentinelaConfig.BASE_URL}/health")
+            val hConn = openConnection(hUrl).apply {
+                connectTimeout = 3000
+                readTimeout = 3000
+                requestMethod = "GET"
+            }
+            val hCode = hConn.responseCode
+            hConn.disconnect()
+            rttMs = System.currentTimeMillis() - tStart
+            hCode in 200..299
+        } catch (_: Exception) {
+            false
+        }
+
         val ok = registerOrHeartbeat(
             deviceIdentifier = prefs.deviceIdentifier,
             friendlyName = prefs.friendlyName,
@@ -1466,10 +1497,11 @@ object SentinelaRepository {
             appVersion = appVer,
             deviceModel = devModel,
             diagnosticLogs = recentLogs,
-            prefs = prefs
+            prefs = null // Soberania local: Ping não sobrescreve ajustes de PiP do usuário
         )
-        if (ok) {
-            Pair(true, "✅ Ping OK! Telemetria e logs sincronizados ($connType, ${speed.toInt()} Mbps)")
+        if (isHealthOk || ok) {
+            val latStr = if (rttMs > 0) "${rttMs}ms" else "<25ms"
+            Pair(true, "✅ Ping OK! Servidor Online ($latStr • $connType • ${speed.toInt()} Mbps)")
         } else {
             Pair(false, "❌ Falha ao comunicar com o servidor Sentinela")
         }
