@@ -103,9 +103,12 @@
   "101": "generate_android_icons.py",
   "102": "MemoryRingBufferHandler",
   "103": "SentinelaConfig",
-  "104": "MseCameraView",
+  "104": "get",
   "105": "WebSocketManager",
   "106": "asyncio",
-  "107": "get",
-  "110": "SentinelaPreferences"
+  "107": "get_audit_trail",
+  "108": "ClientDeviceLog",
+  "109": "time_sync.py",
+  "110": "SentinelaPreferences",
+  "111": "get_service_logs"
 }

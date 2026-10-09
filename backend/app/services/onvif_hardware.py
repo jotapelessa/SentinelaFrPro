@@ -91,11 +91,21 @@ class OnvifHardwareService:
 
         # Set Video Encoder Configuration via ONVIF / HTTP
         if codec or bitrate or fps or resolution:
+            success = await self.configure_video_encoder(
+                ip_address=ip_address,
+                port=port,
+                width=2304 if (resolution in ["3mp", "2304x1296", None]) else 1920,
+                height=1296 if (resolution in ["3mp", "2304x1296", None]) else 1080,
+                fps=fps or 25,
+                bitrate_kbps=bitrate or 4096,
+                gov_length=25
+            )
             results["applied"]["video_encoding"] = {
-                "codec": codec or "h264",
+                "codec": "h264",
                 "bitrate_kbps": bitrate or 4096,
                 "fps": fps or 25,
-                "resolution": resolution or "3mp"
+                "resolution": resolution or "3mp (2304x1296)",
+                "success": success
             }
 
         if ir_mode:
@@ -108,6 +118,87 @@ class OnvifHardwareService:
             results["applied"]["camera_name"] = camera_name
 
         return results
+
+    async def configure_video_encoder(
+        self,
+        ip_address: str,
+        port: int = 80,
+        width: int = 2304,
+        height: int = 1296,
+        fps: int = 25,
+        bitrate_kbps: int = 4096,
+        gov_length: int = 25,
+        token: str = "VEToken_1"
+    ) -> bool:
+        """Configures ONVIF Video Encoder to enforce 3MP 2304x1296 @ 25fps H.264 CFR."""
+        import xml.etree.ElementTree as ET
+        get_body = f"""<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope' xmlns:trt='http://www.onvif.org/ver10/media/wsdl'>
+  <soap:Body>
+    <trt:GetVideoEncoderConfiguration>
+      <trt:ConfigurationToken>{token}</trt:ConfigurationToken>
+    </trt:GetVideoEncoderConfiguration>
+  </soap:Body>
+</soap:Envelope>"""
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                res = await client.post(
+                    f"http://{ip_address}:{port}/onvif/media_service",
+                    content=get_body,
+                    headers={"Content-Type": "application/soap+xml; charset=utf-8"}
+                )
+                if res.status_code != 200:
+                    return False
+                root = ET.fromstring(res.text)
+                cfg = root.find('.//{http://www.onvif.org/ver10/schema}Configuration')
+                if cfg is None:
+                    cfg = root.find('.//{http://www.onvif.org/ver10/media/wsdl}Configuration')
+                if cfg is None:
+                    return False
+
+                # Update resolution
+                res_elem = cfg.find('{http://www.onvif.org/ver10/schema}Resolution')
+                if res_elem is not None:
+                    w = res_elem.find('{http://www.onvif.org/ver10/schema}Width')
+                    h = res_elem.find('{http://www.onvif.org/ver10/schema}Height')
+                    if w is not None: w.text = str(width)
+                    if h is not None: h.text = str(height)
+
+                # Update rate control
+                rc_elem = cfg.find('{http://www.onvif.org/ver10/schema}RateControl')
+                if rc_elem is not None:
+                    fr = rc_elem.find('{http://www.onvif.org/ver10/schema}FrameRateLimit')
+                    br = rc_elem.find('{http://www.onvif.org/ver10/schema}BitrateLimit')
+                    if fr is not None: fr.text = str(fps)
+                    if br is not None: br.text = str(bitrate_kbps)
+
+                # Update H264 GovLength
+                h264_elem = cfg.find('{http://www.onvif.org/ver10/schema}H264')
+                if h264_elem is not None:
+                    gov = h264_elem.find('{http://www.onvif.org/ver10/schema}GovLength')
+                    if gov is not None: gov.text = str(gov_length)
+
+                cfg_str = ET.tostring(cfg, encoding='unicode')
+                set_soap = f"""<?xml version='1.0' encoding='utf-8'?>
+<soap:Envelope xmlns:soap='http://www.w3.org/2003/05/soap-envelope' xmlns:trt='http://www.onvif.org/ver10/media/wsdl' xmlns:tt='http://www.onvif.org/ver10/schema'>
+  <soap:Body>
+    <trt:SetVideoEncoderConfiguration>
+      {cfg_str}
+      <trt:ForcePersistence>true</trt:ForcePersistence>
+    </trt:SetVideoEncoderConfiguration>
+  </soap:Body>
+</soap:Envelope>"""
+                res_set = await client.post(
+                    f"http://{ip_address}:{port}/onvif/media_service",
+                    content=set_soap,
+                    headers={"Content-Type": "application/soap+xml; charset=utf-8"}
+                )
+                if res_set.status_code == 200:
+                    logger.info(f"🎥 Encoder configurado com sucesso para {ip_address} ({width}x{height} @ {fps}fps, bitrate={bitrate_kbps}k, GOP={gov_length}).")
+                    return True
+        except Exception as e:
+            logger.warning(f"Erro ao configurar encoder ONVIF para {ip_address}: {e}")
+        return False
 
     async def sync_camera_time(self, ip_address: str, port: int = 80, username: str = "admin", password: str = "") -> bool:
         """Sends ONVIF SetSystemDateAndTime or NTP sync command to camera."""

@@ -1,11 +1,11 @@
 # Graph Report - SentinelaFrigate  (2026-10-09)
 
 ## Corpus Check
-- 170 files · ~210,841 words
+- 170 files · ~210,840 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
-- 1553 nodes · 2511 edges · 109 communities (71 shown, 22 thin omitted)
+- 1553 nodes · 2513 edges · 109 communities (71 shown, 22 thin omitted)
 - Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 100 edges (avg confidence: 0.92)
 - Token cost: 0 input · 0 output
 
@@ -18,7 +18,7 @@
 - MQTTService
 - useSentinelaStore
 - devices.py
-- OverlayService.kt
+- OverlayService
 - sentinela-pro-tv/src/App.tsx
 - cameras.py
 - SentinelaRepository
@@ -116,10 +116,10 @@
 4. `Camera` - 30 edges
 5. `STATE.md — Memória Persistente do Projeto` - 30 edges
 6. `PairedDevice` - 28 edges
-7. `get_brasilia_now()` - 25 edges
-8. `TelegramVaultService` - 21 edges
-9. `CameraItem` - 20 edges
-10. `TvToolsViewport()` - 18 edges
+7. `OverlayService` - 27 edges
+8. `get_brasilia_now()` - 25 edges
+9. `TelegramVaultService` - 21 edges
+10. `CameraItem` - 20 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `PhoneCameraConfigDialog()` --calls--> `SentinelaPreferences`  [INFERRED]
@@ -150,9 +150,9 @@ Nodes (52): CamerasPage(), EventsPage(), dynamic, metadata, revalidate, viewport
 Cohesion: 0.09
 Nodes (58): BatchTestRequest, check_devices_health(), cleanup_all_devices(), deduplicate_devices(), delete_device(), device_diagnostics(), device_heartbeat(), DeviceAllowedCamerasUpdate (+50 more)
 
-### Community 3 - "OverlayService.kt"
+### Community 3 - "OverlayService"
 Cohesion: 0.07
-Nodes (39): BootReceiver, Context, Intent, DevicePolicy, SentinelaWebSocket, buildNotification(), createNotificationChannel(), android (+31 more)
+Nodes (27): BootReceiver, Context, Intent, DevicePolicy, SentinelaWebSocket, android, Context, Intent (+19 more)
 
 ### Community 4 - "sentinela-pro-tv/src/App.tsx"
 Cohesion: 0.07
@@ -430,10 +430,10 @@ Nodes (8): get_event_clip(), get_event_snapshot(), get_events_summary(), get, Re
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `SentinelaPreferences` connect `SentinelaPreferences` to `OverlayService.kt`, `SmartphoneYouTubeScreen.kt`, `PipSize`, `SentinelaRepository`, `CameraItem`, `PipPosition`, `.onCreate`, `PipDuration`, `ActivityLifecycleCallbacks`?**
-  _High betweenness centrality (0.067) - this node is a cross-community bridge._
-- **Why does `SentinelaWebSocket` connect `OverlayService.kt` to `SmartphoneYouTubeScreen.kt`, `SentinelaRepository`, `Observer`, `.onCreate`, `ActivityLifecycleCallbacks`?**
-  _High betweenness centrality (0.047) - this node is a cross-community bridge._
+- **Why does `SentinelaPreferences` connect `SentinelaPreferences` to `OverlayService`, `SmartphoneYouTubeScreen.kt`, `PipSize`, `SentinelaRepository`, `CameraItem`, `PipPosition`, `.onCreate`, `PipDuration`, `ActivityLifecycleCallbacks`?**
+  _High betweenness centrality (0.059) - this node is a cross-community bridge._
+- **Why does `SentinelaWebSocket` connect `OverlayService` to `SmartphoneYouTubeScreen.kt`, `SentinelaRepository`, `Observer`, `.onCreate`, `ActivityLifecycleCallbacks`?**
+  _High betweenness centrality (0.054) - this node is a cross-community bridge._
 - **Why does `update_device_permissions()` connect `devices.py` to `SentinelaRepository`?**
   _High betweenness centrality (0.044) - this node is a cross-community bridge._
 - **Are the 8 inferred relationships involving `SentinelaPreferences` (e.g. with `PhoneCameraConfigDialog()` and `PhoneCameraStreamCard()`) actually correct?**

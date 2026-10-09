@@ -1,9 +1,26 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-09 01:45 BRT
-> **Versão Corrente:** v001.000.000.165
-> **Estado Geral:** Operacional e Estabilizado — Versão v001.000.000.165 consolidada com resolução definitiva de estabilidade em streaming go2rtc (eliminação das quedas a cada 5s por falta de alias 720p e destruição de WebSockets em trocas de aba), harmonização H.264 CFR 720p/MSE, sincronização bidirecional de PiP (tamanho, duração, módulo de vídeo e posições por câmera entre TV, Web e Backend), desbloqueio de permissões de dispositivos pareados no SQLite, e botões de interface de usuário perfeitamente simétricos.
+> **Última Atualização:** 2026-10-09 06:30 BRT
+> **Versão Corrente:** v001.000.000.166
+> **Estado Geral:** Operacional e Estabilizado — Versão v001.000.000.166 consolidada com gravação de detecções travada nativamente na resolução do Fluxo Principal 2304×1296 (3MP) a 25.0 fps H.264 CFR (GOP=25), provisionamento automático contínuo de hardware via ONVIF SOAP (`SetVideoEncoderConfiguration` em `onvif_hardware.py`), eliminação de sobrecarga de CPU/transcodificação através de stream copy nativo (`-c:v copy`), atualização dos registros na tabela `cameras` do SQLite e integridade ponta-a-ponta em produção.
+
+---
+
+## 🚀 Versão v001.000.000.166 — Gravações 2304×1296 (3MP) @ 25fps & Provisionamento ONVIF
+- **Data**: 2026-10-09
+- **Objetivo**: Homologação e fixação definitiva das gravações de detecção em resolução 3MP nativa (2304×1296) a 25fps em conformidade com as diretrizes de performance e regras de ouro de codec:
+  1. **Auditoria de Hardware & Codec**:
+     - Câmeras físicas AITEK SEG6050BP (`192.168.1.196` e `192.168.1.47`) inspecionadas via ONVIF SOAP.
+     - Confirmação de que o hardware aceita estritamente `H264` para o encoder RTSP (chamadas H.265 rejeitadas com erro de configuração inexistente).
+     - Homologado `2304×1296 @ 25fps CFR` com GOP=25 (1s), garantindo 0% de sobrecarga de CPU no NVR (stream copy nativo) e compatibilidade universal com Web (MSE), Android TV e Celular.
+  2. **Provisionamento Automático (`onvif_hardware.py`)**:
+     - Implementado o método `configure_video_encoder` que envia `SetVideoEncoderConfiguration` via SOAP, travando dinamicamente `Width: 2304`, `Height: 1296`, `FrameRateLimit: 25`, `GovLength: 25` e `BitrateLimit: 4096`.
+  3. **Sincronização no SQLite (`sentinela.db`)**:
+     - Registros das câmeras ativas atualizados com `resolution = '3MP (2304x1296)'`, `record_fps = 25`, `detect_fps = 5`.
+  4. **Validação Forense no Servidor Ubuntu**:
+     - Segmentos de gravação gerados pelo Frigate inspecionados com `ffprobe`, atestando `width: 2304, height: 1296, fps: 25/1` para ambas as câmeras físicas.
+     - Containers backend e frontend reconstruídos e operando com status HEALTHY.
 
 ---
 
