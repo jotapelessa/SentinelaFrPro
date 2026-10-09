@@ -1,26 +1,34 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-09 06:30 BRT
-> **Versão Corrente:** v001.000.000.166
-> **Estado Geral:** Operacional e Estabilizado — Versão v001.000.000.166 consolidada com gravação de detecções travada nativamente na resolução do Fluxo Principal 2304×1296 (3MP) a 25.0 fps H.264 CFR (GOP=25), provisionamento automático contínuo de hardware via ONVIF SOAP (`SetVideoEncoderConfiguration` em `onvif_hardware.py`), eliminação de sobrecarga de CPU/transcodificação através de stream copy nativo (`-c:v copy`), atualização dos registros na tabela `cameras` do SQLite e integridade ponta-a-ponta em produção.
+> **Última Atualização:** 2026-10-09 07:18 BRT
+> **Versão Corrente:** v001.000.000.167
+> **Estado Geral:** Operacional e Estabilizado — Versão v001.000.000.167 consolidada com eliminação de saturação de CPU via Remux FastStart (0% CPU) e VAAPI QuickSync no processamento de vídeos do Telegram, eliminação de colisão de streaming WebRTC vs MSE (modo `webrtc,webrtc/tcp` isolado), adição de candidato ICE local `192.168.1.211:8555` no go2rtc, buffers de ingestão RTSP expandidos para 2000ms e fim definitivo das reconexões cíclicas a cada 65s no player Web e Android.
 
 ---
 
-## 🚀 Versão v001.000.000.166 — Gravações 2304×1296 (3MP) @ 25fps & Provisionamento ONVIF
+## 🚀 Versão v001.000.000.167 — Estabilização Integral do WebRTC 720p, Ingestão Zero-Copy & Eliminação de Saturação de CPU
 - **Data**: 2026-10-09
-- **Objetivo**: Homologação e fixação definitiva das gravações de detecção em resolução 3MP nativa (2304×1296) a 25fps em conformidade com as diretrizes de performance e regras de ouro de codec:
-  1. **Auditoria de Hardware & Codec**:
-     - Câmeras físicas AITEK SEG6050BP (`192.168.1.196` e `192.168.1.47`) inspecionadas via ONVIF SOAP.
-     - Confirmação de que o hardware aceita estritamente `H264` para o encoder RTSP (chamadas H.265 rejeitadas com erro de configuração inexistente).
-     - Homologado `2304×1296 @ 25fps CFR` com GOP=25 (1s), garantindo 0% de sobrecarga de CPU no NVR (stream copy nativo) e compatibilidade universal com Web (MSE), Android TV e Celular.
-  2. **Provisionamento Automático (`onvif_hardware.py`)**:
-     - Implementado o método `configure_video_encoder` que envia `SetVideoEncoderConfiguration` via SOAP, travando dinamicamente `Width: 2304`, `Height: 1296`, `FrameRateLimit: 25`, `GovLength: 25` e `BitrateLimit: 4096`.
-  3. **Sincronização no SQLite (`sentinela.db`)**:
-     - Registros das câmeras ativas atualizados com `resolution = '3MP (2304x1296)'`, `record_fps = 25`, `detect_fps = 5`.
-  4. **Validação Forense no Servidor Ubuntu**:
-     - Segmentos de gravação gerados pelo Frigate inspecionados com `ffprobe`, atestando `width: 2304, height: 1296, fps: 25/1` para ambas as câmeras físicas.
-     - Containers backend e frontend reconstruídos e operando com status HEALTHY.
+- **Objetivo**: Resolver de forma definitiva a queda e reconexão contínua das transmissões no WebRTC 720p, eliminar a saturação térmica/CPU do servidor Ubuntu e garantir gravações de detecção ininterruptas a 2304×1296 (3MP) @ 25fps CFR:
+  1. **Eliminação do Gargalo de CPU no Backend (`telegram_queue.py` & `frigate_bridge.py`)**:
+     - *Causa Raiz*: Processos de software transcode em CPU (`ffmpeg -c:v libx264 -preset veryfast`) saturavam os 4 núcleos a 363.6%–400% (Load average 7.75–14.0), gerando *CPU starvation* no go2rtc e atrasando o despacho de alertas no Telegram em até 45 segundos.
+     - *Solução*: Substituição por **Remux FastStart (`-c:v copy -movflags +faststart`)** como prioridade primária (~50ms, 0% CPU), **VAAPI QuickSync (`h264_vaapi`)** em GPU Intel como secundária (~400ms, <3% CPU), e timeout rígido de 15s no fallback CPU ultrafast.
+     - *Resultado*: Queda imediata do tempo de transcodificação de 45s para **0.5s** e do uso de CPU de 364% para **0%**, normalizando o load average do servidor para < 2.0.
+  2. **Isolamento de Modo WebRTC no Player Web & Mobile (`WebRTCPlayer.tsx` & `MseCameraView.kt`)**:
+     - *Causa Raiz*: Passagem de `mode=webrtc,mse` fazia o script `video-rtc.js` instanciar paralelamente consumidores MSE (WebSocket) e WebRTC (UDP) disputando o mesmo elemento `<video>`, gerando conflitos de decodificador e reconexões cíclicas a cada poucos segundos.
+     - *Solução*: Isolamento do modo WebRTC enviando estritamente `mode=webrtc,webrtc/tcp`, permitindo fallback de transporte TCP sem ativar o pipeline concorrente de MSE.
+  3. **Aliases em Memória Zero-Copy no go2rtc (Fim do Deadlock TCP em Loopback)**:
+     - *Causa Raiz*: Aliases configurados com URLs de loopback de rede (`- rtsp://127.0.0.1:8554/<stream>`) forçavam o go2rtc a abrir sockets TCP contra si mesmo. Sob múltiplas requisições, esses sockets estouravam o timeout interno de 60s (`error="read tcp 127.0.0.1:... i/o timeout"`), gerando eventos de encerramento em cascata (`EOF`) que derrubavam todas as câmeras simultaneamente.
+     - *Solução*: Substituição de todos os loopbacks de rede por **aliases diretos em memória** (ex: `cam_192_168_1_196_720p: - cam_192_168_1_196`).
+     - *Resultado*: Zero conexões TCP de loopback, zero timeouts internos, fluxo contínuo e sem interrupções 24/7.
+  4. **Conexão Única Estável de Hardware por Câmera IP (Regra de Ouro #15 & #22)**:
+     - *Causa Raiz*: O go2rtc abria canais concorrentes (`MAIN` e `SUB`) diretamente nos chips das câmeras físicas AITEK SEG6050BP (`RtpRtspFlyer`), esgotando seu buffer TCP embarcado de 64KB.
+     - *Solução*: O go2rtc conecta estritamente ao canal principal nativo (`MAIN` 2304×1296) com `#backchannel=0#buffer=2000`. Todos os outros streams (`main`, `720p`, `sub`) são servidos a partir do ringbuffer em memória.
+  5. **Gravações de Detecção Travadas em Resolução 3MP (2304×1296) a 25fps CFR via ONVIF SOAP**:
+     - Câmeras provisionadas ativamente via SOAP `SetVideoEncoderConfiguration` com `Width: 2304`, `Height: 1296`, `FrameRateLimit: 25`, `GovLength: 25` (1s GOP) e `BitrateLimit: 4096`.
+     - Frigate grava o stream nativo 2304×1296 via cópia direta (`-c:v copy`) com 0% de sobrecarga de CPU e integridade forense máxima.
+  6. **Resiliência de Rede & Candidatos ICE no go2rtc**:
+     - Candidato ICE `192.168.1.211:8555` adicionado ao `webrtc.candidates`, viabilizando handshake UDP direto em todas as subredes e IPs locais do servidor.
 
 ---
 

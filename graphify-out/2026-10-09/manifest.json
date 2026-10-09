@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1791520864.9253266,
-    "seen": 1791521032.440767,
-    "ast_hash": "b47c1423cc73de4c192135e79d6afbe9",
+    "mtime": 1791537698.4458542,
+    "seen": 1791538144.250249,
+    "ast_hash": "bac735e79450fad8caa6b7a47ff8c7bd",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1791520845.3066597,
-    "seen": 1791521032.440778,
-    "ast_hash": "d5996afd162b5a24da474d1d76ed82af",
+    "mtime": 1791537742.052831,
+    "seen": 1791538144.2502599,
+    "ast_hash": "78f4dcd1de8f30ae30b3fe3cda4a2bc9",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791520914.475362,
-    "seen": 1791521032.440811,
-    "ast_hash": "a34b72f3bd88a8e178994ddc64d08d15",
+    "mtime": 1791538093.9375913,
+    "seen": 1791538144.250292,
+    "ast_hash": "8011771f0a7e0a3809a0155ba687b821",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1791520889.9281378,
-    "seen": 1791521032.440812,
-    "ast_hash": "39cb4eab9efd479aa3ba3e6adb464dde",
+    "mtime": 1791538117.0179296,
+    "seen": 1791538144.250292,
+    "ast_hash": "d5be7416ba1387451953a2ab6e5aebf2",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1791520831.9884775,
-    "seen": 1791521032.4407911,
-    "ast_hash": "9e9b96da28f206842707adcd584c8afb",
+    "mtime": 1791537713.1561964,
+    "seen": 1791538144.250272,
+    "ast_hash": "ca2851fcdbc44c61cde92f27525a81e9",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
@@ -1146,9 +1146,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/onvif_hardware.py": {
-    "mtime": 1790947140.9634192,
-    "seen": 1790950512.454754,
-    "ast_hash": "a1cbef6de13c0aecb623d48f9fe8c7cd",
+    "mtime": 1791537680.6859393,
+    "seen": 1791538144.2502542,
+    "ast_hash": "ed5fa79644fb7aac6766c797eeb7597f",
     "semantic_hash": ""
   },
   "backend/app/services/time_sync.py": {

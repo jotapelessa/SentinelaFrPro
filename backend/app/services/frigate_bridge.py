@@ -322,7 +322,50 @@ class FrigateBridgeService:
             has_audio = self._has_audio_stream(in_file)
             audio_args = ["-c:a", "aac", "-b:a", "128k"] if has_audio else ["-an"]
 
-            # 1. Primary: Intel QSV hardware transcode at a clean constant frame rate
+            # 1. Primary: Lossless video stream copy with +faststart (instant, 0% CPU overhead)
+            cmd_copy = [
+                "ffmpeg", "-y",
+                "-fflags", "+genpts+discardcorrupt",
+                "-i", in_file,
+                "-c:v", "copy",
+                *audio_args,
+                "-movflags", "+faststart",
+                out_file
+            ]
+            proc_copy = subprocess.run(cmd_copy, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
+            if proc_copy.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
+                with open(out_file, "rb") as f:
+                    fast_bytes = f.read()
+                if self.has_video_stream(fast_bytes):
+                    logger.info(f"✅ Vídeo otimizado para Telegram (Stream Copy): {len(video_bytes)} -> {len(fast_bytes)} bytes em 0% CPU")
+                    return fast_bytes
+
+            # 2. Secondary: Intel VAAPI hardware transcode at a clean constant frame rate
+            if os.path.exists("/dev/dri/renderD128"):
+                cmd_vaapi = [
+                    "ffmpeg", "-y",
+                    "-fflags", "+genpts+discardcorrupt",
+                    "-hwaccel", "vaapi",
+                    "-vaapi_device", "/dev/dri/renderD128",
+                    "-i", in_file,
+                    "-vf", "format=nv12,hwupload",
+                    *audio_args,
+                    "-r", str(out_fps),
+                    "-c:v", "h264_vaapi",
+                    "-b:v", "4000k",
+                    "-maxrate", "4000k",
+                    "-movflags", "+faststart",
+                    out_file
+                ]
+                proc_vaapi = subprocess.run(cmd_vaapi, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
+                if proc_vaapi.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
+                    with open(out_file, "rb") as f:
+                        smooth_bytes = f.read()
+                    if self.has_video_stream(smooth_bytes):
+                        logger.info(f"✅ Vídeo otimizado para Telegram (VAAPI): {len(video_bytes)} -> {len(smooth_bytes)} bytes em {out_fps} FPS CFR")
+                        return smooth_bytes
+
+            # 3. Tertiary: Intel QSV hardware transcode
             cmd_qsv = [
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
@@ -340,7 +383,7 @@ class FrigateBridgeService:
                 "-movflags", "+faststart",
                 out_file
             ]
-            proc = subprocess.run(cmd_qsv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=60)
+            proc = subprocess.run(cmd_qsv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=20)
             if proc.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
                 with open(out_file, "rb") as f:
                     smooth_bytes = f.read()
@@ -348,7 +391,7 @@ class FrigateBridgeService:
                     logger.info(f"✅ Vídeo otimizado para Telegram (QSV): {len(video_bytes)} -> {len(smooth_bytes)} bytes em {out_fps} FPS CFR")
                     return smooth_bytes
 
-            # 2. Software fallback: libx264 veryfast, high quality, universally compatible
+            # 4. Software fallback: libx264 ultrafast capped at 15s timeout
             cmd_x264 = [
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
@@ -357,40 +400,23 @@ class FrigateBridgeService:
                 *audio_args,
                 "-r", str(out_fps),
                 "-c:v", "libx264",
-                "-preset", "veryfast",
-                "-crf", "20",
+                "-preset", "ultrafast",
+                "-crf", "24",
                 "-pix_fmt", "yuv420p",
                 "-profile:v", "main",
                 "-g", str(out_fps * 2),
-                "-maxrate", "6000k",
+                "-maxrate", "4000k",
                 "-bufsize", "8000k",
                 "-movflags", "+faststart",
                 out_file
             ]
-            proc_x264 = subprocess.run(cmd_x264, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=90)
+            proc_x264 = subprocess.run(cmd_x264, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=15)
             if proc_x264.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
                 with open(out_file, "rb") as f:
                     smooth_bytes = f.read()
                 if self.has_video_stream(smooth_bytes):
                     logger.info(f"✅ Vídeo otimizado para Telegram (libx264): {len(video_bytes)} -> {len(smooth_bytes)} bytes em {out_fps} FPS CFR")
                     return smooth_bytes
-
-            # 3. Last resort: lossless video stream copy with AAC audio and +faststart
-            cmd_copy = [
-                "ffmpeg", "-y",
-                "-fflags", "+genpts+discardcorrupt",
-                "-i", in_file,
-                "-c:v", "copy",
-                *audio_args,
-                "-movflags", "+faststart",
-                out_file
-            ]
-            proc_copy = subprocess.run(cmd_copy, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=10)
-            if proc_copy.returncode == 0 and os.path.exists(out_file) and os.path.getsize(out_file) > 5000:
-                with open(out_file, "rb") as f:
-                    fast_bytes = f.read()
-                if self.has_video_stream(fast_bytes):
-                    return fast_bytes
         except Exception as e:
             logger.warning(f"Error preparing clip for Telegram: {e}")
         finally:

@@ -47,7 +47,7 @@ fun MseCameraView(
         val modeQuery = when (streamMode.lowercase()) {
             "eco" -> "mode=mjpeg"
             "mse" -> "mode=mse&media=video"
-            "webrtc" -> "mode=webrtc,mse&media=video"
+            "webrtc" -> "mode=webrtc,webrtc/tcp&media=video"
             else -> "mode=mse&media=video"
         }
         "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&${modeQuery}&width=100%"

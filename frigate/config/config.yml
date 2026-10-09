@@ -84,51 +84,53 @@ snapshots:
   quality: 98
   height: 1080
 go2rtc:
+  log:
+    rtsp: trace
   streams:
     # =========================================================
     # cam_192_168_1_196 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
-    # STR-002: Ingestão de MAIN e SUB nativos da câmera em H.264 CFR
-    # Restream direto via loopback para Frigate e Clientes Web/TV/Mobile
+    # STR-002: Ingestão de MAIN nativo direto da câmera
+    # Aliases em memória (zero TCP loopback, zero deadlock)
     # =========================================================
     cam_192_168_1_196:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=1000
+    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=2000
     cam_192_168_1_196_main:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196
+    - cam_192_168_1_196
     cam_192_168_1_196_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+    - cam_192_168_1_196
     cam_192_168_1_196_sub:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#buffer=1000
+    - cam_192_168_1_196
 
     # =========================================================
     # cam_192_168_1_47 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
     # =========================================================
     cam_192_168_1_47:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#buffer=1000
+    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#buffer=2000
     cam_192_168_1_47_main:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_47
+    - cam_192_168_1_47
     cam_192_168_1_47_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
+    - cam_192_168_1_47
     cam_192_168_1_47_sub:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#buffer=1000
+    - cam_192_168_1_47
 
-    # Aliases de compatibilidade legada
+    # Aliases de compatibilidade legada (in-memory)
     camera_principal:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196
+    - cam_192_168_1_196
     camera_principal_main:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196
+    - cam_192_168_1_196
     camera_principal_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+    - cam_192_168_1_196
     camera_principal_sub:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+    - cam_192_168_1_196
 
     camera_secundaria:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_47
+    - cam_192_168_1_47
     camera_secundaria_main:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_47
+    - cam_192_168_1_47
     camera_secundaria_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
+    - cam_192_168_1_47
     camera_secundaria_sub:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
+    - cam_192_168_1_47
 
     # =========================================================
     # Câmeras DESABILITADAS — streams comentados para não manter
@@ -147,6 +149,7 @@ go2rtc:
     candidates:
     - 100.93.129.91:8555
     - 192.168.1.247:8555
+    - 192.168.1.211:8555
     - stun:8555
     - stun:stun.l.google.com:19302
 cameras:

@@ -329,6 +329,19 @@
       "source_location": "L19"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket_sentinelawebsocket",
+      "label": "SentinelaWebSocket",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "SentinelaConfig",
+      "file_type": "code",
+      "norm_label": "sentinelawebsocket",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt",
+      "source_location": "L22"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig",
       "label": "SentinelaConfig",
       "_callable": true,
@@ -342,32 +355,6 @@
       "source_location": "L8"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169",
-      "label": "WebChromeClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webchromeclient",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L169"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175",
-      "label": "WebViewClient",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webviewclient",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L175"
-    },
-    {
       "id": "backend_app_api_ws_websocketmanager",
       "label": "WebSocketManager",
       "_callable": true,
@@ -379,6 +366,19 @@
       "norm_label": "websocketmanager",
       "source_file": "backend/app/api/ws.py",
       "source_location": "L13"
+    },
+    {
+      "id": "backend_app_db_models_clientdevicelog",
+      "label": "ClientDeviceLog",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
+      "file_type": "code",
+      "norm_label": "clientdevicelog",
+      "source_file": "backend/app/db/models.py",
+      "source_location": "L110"
     },
     {
       "id": "backend_app_services_telegram_vault_telegramvaultservice",
@@ -823,17 +823,17 @@
       "source_location": "L98"
     },
     {
-      "id": "backend_app_db_models_clientdevicelog",
-      "label": "ClientDeviceLog",
+      "id": "backend_app_db_models_eventrecord",
+      "label": "EventRecord",
       "_callable": true,
       "_callable_class": true,
       "_origin": "ast",
       "community": 23,
       "community_name": "get_brasilia_now",
       "file_type": "code",
-      "norm_label": "clientdevicelog",
+      "norm_label": "eventrecord",
       "source_file": "backend/app/db/models.py",
-      "source_location": "L110"
+      "source_location": "L38"
     },
     {
       "id": "backend_app_services_audit_service_auditservice",
@@ -901,19 +901,6 @@
       "source_location": "L17"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket_sentinelawebsocket",
-      "label": "SentinelaWebSocket",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "sentinelawebsocket",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt",
-      "source_location": "L22"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice",
       "label": "OverlayService",
       "_callable": true,
@@ -964,6 +951,32 @@
       "norm_label": "pipmetricsbridge",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
       "source_location": "L73"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169",
+      "label": "WebChromeClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webchromeclient",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L169"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175",
+      "label": "WebViewClient",
+      "_callable": true,
+      "_callable_class": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webviewclient",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L175"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_clientlogentry",
@@ -1915,19 +1928,6 @@
       "source_location": "L26"
     },
     {
-      "id": "backend_app_db_models_eventrecord",
-      "label": "EventRecord",
-      "_callable": true,
-      "_callable_class": true,
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "events.py",
-      "file_type": "code",
-      "norm_label": "eventrecord",
-      "source_file": "backend/app/db/models.py",
-      "source_location": "L38"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_data_models_cameraitem",
       "label": "CameraItem",
       "_callable": true,
@@ -2833,6 +2833,18 @@
       "source_location": "L21"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket_sentinelawebsocket_connectandlisten",
+      "label": ".connectAndListen()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "SentinelaConfig",
+      "file_type": "code",
+      "norm_label": ".connectandlisten()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt",
+      "source_location": "L53"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaconfig_sentinelaconfig_getgo2rtcframeurl",
       "label": ".getGo2rtcFrameUrl()",
       "_callable": true,
@@ -2869,64 +2881,88 @@
       "source_location": "L13"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview",
-      "label": "MseCameraView()",
+      "id": "backend_app_api_telemetry_download_diagnostic_logs",
+      "label": "download_diagnostic_logs()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": "MseCameraView",
+      "community_name": "get",
       "file_type": "code",
-      "norm_label": "msecameraview()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L34"
+      "norm_label": "download_diagnostic_logs()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L255"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169_onpermissionrequest",
-      "label": ".onPermissionRequest()",
+      "id": "backend_app_api_telemetry_get_detailed_stats",
+      "label": "get_detailed_stats()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": "MseCameraView",
+      "community_name": "get",
       "file_type": "code",
-      "norm_label": ".onpermissionrequest()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L170"
+      "norm_label": "get_detailed_stats()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L31"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onpagefinished",
-      "label": ".onPageFinished()",
+      "id": "backend_app_api_telemetry_get_frigate_deep_status",
+      "label": "get_frigate_deep_status()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": "MseCameraView",
+      "community_name": "get",
       "file_type": "code",
-      "norm_label": ".onpagefinished()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L185"
+      "norm_label": "get_frigate_deep_status()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L24"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivederror",
-      "label": ".onReceivedError()",
+      "id": "backend_app_api_telemetry_get_system_diagnostics",
+      "label": "get_system_diagnostics()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": "MseCameraView",
+      "community_name": "get",
       "file_type": "code",
-      "norm_label": ".onreceivederror()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L266"
+      "norm_label": "get_system_diagnostics()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L43"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
-      "label": ".onReceivedSslError()",
+      "id": "backend_app_api_telemetry_get_telemetry",
+      "label": "get_telemetry()",
       "_callable": true,
       "_origin": "ast",
       "community": 104,
-      "community_name": "MseCameraView",
+      "community_name": "get",
       "file_type": "code",
-      "norm_label": ".onreceivedsslerror()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
-      "source_location": "L176"
+      "norm_label": "get_telemetry()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L15"
+    },
+    {
+      "id": "backend_app_api_ws_telemetry_broadcast_loop",
+      "label": "telemetry_broadcast_loop()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "telemetry_broadcast_loop()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L99"
+    },
+    {
+      "id": "backend_app_api_ws_websocket_endpoint",
+      "label": "websocket_endpoint()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "websocket_endpoint()",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L68"
     },
     {
       "id": "backend_app_api_ws_websocketmanager_broadcast_json",
@@ -3085,12 +3121,24 @@
       "source_location": "L9"
     },
     {
+      "id": "backend_app_api_events_get_audit_trail",
+      "label": "get_audit_trail()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "get_audit_trail",
+      "file_type": "code",
+      "norm_label": "get_audit_trail()",
+      "source_file": "backend/app/api/events.py",
+      "source_location": "L405"
+    },
+    {
       "id": "backend_app_api_events_get_event_clip",
       "label": "get_event_clip()",
       "_callable": true,
       "_origin": "ast",
       "community": 107,
-      "community_name": "get",
+      "community_name": "get_audit_trail",
       "file_type": "code",
       "norm_label": "get_event_clip()",
       "source_file": "backend/app/api/events.py",
@@ -3102,7 +3150,7 @@
       "_callable": true,
       "_origin": "ast",
       "community": 107,
-      "community_name": "get",
+      "community_name": "get_audit_trail",
       "file_type": "code",
       "norm_label": "get_event_snapshot()",
       "source_file": "backend/app/api/events.py",
@@ -3114,11 +3162,71 @@
       "_callable": true,
       "_origin": "ast",
       "community": 107,
-      "community_name": "get",
+      "community_name": "get_audit_trail",
       "file_type": "code",
       "norm_label": "get_events_summary()",
       "source_file": "backend/app/api/events.py",
       "source_location": "L174"
+    },
+    {
+      "id": "backend_app_api_telemetry_clear_client_device_logs",
+      "label": "clear_client_device_logs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
+      "file_type": "code",
+      "norm_label": "clear_client_device_logs()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L519"
+    },
+    {
+      "id": "backend_app_api_telemetry_get_audit_logs",
+      "label": "get_audit_logs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
+      "file_type": "code",
+      "norm_label": "get_audit_logs()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L347"
+    },
+    {
+      "id": "backend_app_api_telemetry_get_client_device_logs",
+      "label": "get_client_device_logs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
+      "file_type": "code",
+      "norm_label": "get_client_device_logs()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L474"
+    },
+    {
+      "id": "backend_app_services_time_sync_query_ntp_time",
+      "label": "query_ntp_time()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "time_sync.py",
+      "file_type": "code",
+      "norm_label": "query_ntp_time()",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L22"
+    },
+    {
+      "id": "backend_app_services_time_sync_run_time_sync_watchdog",
+      "label": "run_time_sync_watchdog()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "time_sync.py",
+      "file_type": "code",
+      "norm_label": "run_time_sync_watchdog()",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L46"
     },
     {
       "id": "backend_app_services_telegram_vault_telegramvaultservice_apply_watermark",
@@ -3469,6 +3577,42 @@
       "source_location": "L21"
     },
     {
+      "id": "backend_app_api_telemetry_fetch_docker_container_logs",
+      "label": "fetch_docker_container_logs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 111,
+      "community_name": "get_service_logs",
+      "file_type": "code",
+      "norm_label": "fetch_docker_container_logs()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L105"
+    },
+    {
+      "id": "backend_app_api_telemetry_get_service_logs",
+      "label": "get_service_logs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 111,
+      "community_name": "get_service_logs",
+      "file_type": "code",
+      "norm_label": "get_service_logs()",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L129"
+    },
+    {
+      "id": "backend_app_core_logging_handler_get_backend_logs",
+      "label": "get_backend_logs()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 111,
+      "community_name": "get_service_logs",
+      "file_type": "code",
+      "norm_label": "get_backend_logs()",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L29"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_toentity",
       "label": "toEntity()",
       "_callable": true,
@@ -3613,30 +3757,6 @@
       "source_location": "L139"
     },
     {
-      "id": "backend_app_api_ws_telemetry_broadcast_loop",
-      "label": "telemetry_broadcast_loop()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "telemetry_broadcast_loop()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L99"
-    },
-    {
-      "id": "backend_app_api_ws_websocket_endpoint",
-      "label": "websocket_endpoint()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "websocket_endpoint()",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L68"
-    },
-    {
       "id": "backend_app_db_session_get_db",
       "label": "get_db()",
       "_callable": true,
@@ -3707,30 +3827,6 @@
       "norm_label": "root()",
       "source_file": "backend/app/main.py",
       "source_location": "L127"
-    },
-    {
-      "id": "backend_app_services_time_sync_query_ntp_time",
-      "label": "query_ntp_time()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "query_ntp_time()",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L22"
-    },
-    {
-      "id": "backend_app_services_time_sync_run_time_sync_watchdog",
-      "label": "run_time_sync_watchdog()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "run_time_sync_watchdog()",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L46"
     },
     {
       "id": "backend_app_services_frigate_bridge_frigatebridgeservice_check_connectivity",
@@ -4261,126 +4357,6 @@
       "source_location": "L807"
     },
     {
-      "id": "backend_app_api_telemetry_clear_client_device_logs",
-      "label": "clear_client_device_logs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "clear_client_device_logs()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L519"
-    },
-    {
-      "id": "backend_app_api_telemetry_download_diagnostic_logs",
-      "label": "download_diagnostic_logs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "download_diagnostic_logs()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L255"
-    },
-    {
-      "id": "backend_app_api_telemetry_fetch_docker_container_logs",
-      "label": "fetch_docker_container_logs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "fetch_docker_container_logs()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L105"
-    },
-    {
-      "id": "backend_app_api_telemetry_get_audit_logs",
-      "label": "get_audit_logs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "get_audit_logs()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L347"
-    },
-    {
-      "id": "backend_app_api_telemetry_get_client_device_logs",
-      "label": "get_client_device_logs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "get_client_device_logs()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L474"
-    },
-    {
-      "id": "backend_app_api_telemetry_get_detailed_stats",
-      "label": "get_detailed_stats()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "get_detailed_stats()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L31"
-    },
-    {
-      "id": "backend_app_api_telemetry_get_frigate_deep_status",
-      "label": "get_frigate_deep_status()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "get_frigate_deep_status()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L24"
-    },
-    {
-      "id": "backend_app_api_telemetry_get_service_logs",
-      "label": "get_service_logs()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "get_service_logs()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L129"
-    },
-    {
-      "id": "backend_app_api_telemetry_get_system_diagnostics",
-      "label": "get_system_diagnostics()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "get_system_diagnostics()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L43"
-    },
-    {
-      "id": "backend_app_api_telemetry_get_telemetry",
-      "label": "get_telemetry()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "get_telemetry()",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L15"
-    },
-    {
       "id": "backend_app_api_telemetry_ingest_client_logs",
       "label": "ingest_client_logs()",
       "_callable": true,
@@ -4405,16 +4381,16 @@
       "source_location": "L36"
     },
     {
-      "id": "backend_app_core_logging_handler_get_backend_logs",
-      "label": "get_backend_logs()",
+      "id": "backend_app_api_events_list_events",
+      "label": "list_events()",
       "_callable": true,
       "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
+      "community": 23,
+      "community_name": "get_brasilia_now",
       "file_type": "code",
-      "norm_label": "get_backend_logs()",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L29"
+      "norm_label": "list_events()",
+      "source_file": "backend/app/api/events.py",
+      "source_location": "L33"
     },
     {
       "id": "backend_app_core_timezone_get_brasilia_isoformat",
@@ -4559,18 +4535,6 @@
       "norm_label": ".onreceive()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/BootReceiver.kt",
       "source_location": "L13"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket_sentinelawebsocket_connectandlisten",
-      "label": ".connectAndListen()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".connectandlisten()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt",
-      "source_location": "L53"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_buildnotification",
@@ -4753,18 +4717,6 @@
       "source_location": "L304"
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_triggerpip",
-      "label": ".triggerPiP()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": ".triggerpip()",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
-      "source_location": "L385"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_pipmetricsbridge_reportmetrics",
       "label": ".reportMetrics()",
       "_callable": true,
@@ -4775,6 +4727,66 @@
       "norm_label": ".reportmetrics()",
       "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
       "source_location": "L78"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview",
+      "label": "MseCameraView()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "msecameraview()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L34"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webchromeclient_l169_onpermissionrequest",
+      "label": ".onPermissionRequest()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": ".onpermissionrequest()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L170"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onpagefinished",
+      "label": ".onPageFinished()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": ".onpagefinished()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L185"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivederror",
+      "label": ".onReceivedError()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": ".onreceivederror()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L266"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_msecameraview_object_webviewclient_l175_onreceivedsslerror",
+      "label": ".onReceivedSslError()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": ".onreceivedsslerror()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L176"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_logging_sentinelaremotelogger_sentinelaremotelogger_flushbatch",
@@ -6073,6 +6085,18 @@
       "source_location": "L1777"
     },
     {
+      "id": "backend_app_services_onvif_hardware_onvifhardwareservice_configure_video_encoder",
+      "label": ".configure_video_encoder()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "OnvifHardwareService",
+      "file_type": "code",
+      "norm_label": ".configure_video_encoder()",
+      "source_file": "backend/app/services/onvif_hardware.py",
+      "source_location": "L122"
+    },
+    {
       "id": "backend_app_services_onvif_hardware_onvifhardwareservice_get_camera_hardware_config",
       "label": ".get_camera_hardware_config()",
       "_callable": true,
@@ -6106,7 +6130,7 @@
       "file_type": "code",
       "norm_label": ".sync_camera_time()",
       "source_file": "backend/app/services/onvif_hardware.py",
-      "source_location": "L112"
+      "source_location": "L203"
     },
     {
       "id": "opencode_plugins_graphify_graphifyplugin",
@@ -6517,6 +6541,18 @@
       "source_location": "L1345"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_overlayservice_triggerpip",
+      "label": ".triggerPiP()",
+      "_callable": true,
+      "_origin": "ast",
+      "community": 6,
+      "community_name": "SentinelaRepository",
+      "file_type": "code",
+      "norm_label": ".triggerpip()",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt",
+      "source_location": "L385"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_tvnetflixscreen_cardestabilidadedevideo",
       "label": "CardEstabilidadeDeVideo()",
       "_callable": true,
@@ -6803,30 +6839,6 @@
       "norm_label": "delete_events_by_date()",
       "source_file": "backend/app/api/events.py",
       "source_location": "L320"
-    },
-    {
-      "id": "backend_app_api_events_get_audit_trail",
-      "label": "get_audit_trail()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "events.py",
-      "file_type": "code",
-      "norm_label": "get_audit_trail()",
-      "source_file": "backend/app/api/events.py",
-      "source_location": "L405"
-    },
-    {
-      "id": "backend_app_api_events_list_events",
-      "label": "list_events()",
-      "_callable": true,
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "events.py",
-      "file_type": "code",
-      "norm_label": "list_events()",
-      "source_file": "backend/app/api/events.py",
-      "source_location": "L33"
     },
     {
       "id": "backend_app_api_events_retain_event",
@@ -7912,6 +7924,17 @@
       "source_location": "L20"
     },
     {
+      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket",
+      "label": "SentinelaWebSocket.kt",
+      "_origin": "ast",
+      "community": 103,
+      "community_name": "SentinelaConfig",
+      "file_type": "code",
+      "norm_label": "sentinelawebsocket.kt",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt",
+      "source_location": "L1"
+    },
+    {
       "id": "android_app_src_main_java_com_sentinela_pro_sentinelaconfig",
       "label": "SentinelaConfig.kt",
       "_origin": "ast",
@@ -7934,114 +7957,70 @@
       "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
-      "label": "MseCameraView.kt",
+      "id": "backend_app_api_telemetry_py_get",
+      "label": "get",
       "_origin": "ast",
       "community": 104,
-      "community_name": "MseCameraView",
+      "community_name": "get",
       "file_type": "code",
-      "norm_label": "msecameraview.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "norm_label": "get",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_api_telemetry_rationale_25",
+      "label": "Returns deep connectivity status with Frigate NVR REST API, MQTT bus, go2rtc\u2026",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "get",
+      "file_type": "rationale",
+      "norm_label": "returns deep connectivity status with frigate nvr rest api, mqtt bus, go2rtc...",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L25"
+    },
+    {
+      "id": "backend_app_api_telemetry_rationale_256",
+      "label": "Compiles a complete diagnostic report (.txt) of all services for one-click\u2026",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "get",
+      "file_type": "rationale",
+      "norm_label": "compiles a complete diagnostic report (.txt) of all services for one-click...",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L256"
+    },
+    {
+      "id": "backend_app_api_telemetry_rationale_32",
+      "label": "Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe\u2026",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "get",
+      "file_type": "rationale",
+      "norm_label": "returns real-time hardware telemetry, per-core cpu, ram breakdown, nvme...",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L32"
+    },
+    {
+      "id": "backend_app_api_telemetry_rationale_44",
+      "label": "Detailed hardware diagnostics for Intel Jasper Lake N5105 / VAAPI.",
+      "_origin": "ast",
+      "community": 104,
+      "community_name": "get",
+      "file_type": "rationale",
+      "norm_label": "detailed hardware diagnostics for intel jasper lake n5105 / vaapi.",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L44"
+    },
+    {
+      "id": "backend_app_api_ws",
+      "label": "ws.py",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "WebSocketManager",
+      "file_type": "code",
+      "norm_label": "ws.py",
+      "source_file": "backend/app/api/ws.py",
       "source_location": "L1"
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
-      "label": "android",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "android",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
-      "label": "Modifier",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "modifier",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_permissionrequest",
-      "label": "PermissionRequest",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "permissionrequest",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_sslerrorhandler",
-      "label": "SslErrorHandler",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "sslerrorhandler",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webchromeclient",
-      "label": "WebChromeClient",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webchromeclient",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webview",
-      "label": "WebView",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webview",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webviewclient",
-      "label": "WebViewClient",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webviewclient",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "webresourceerror",
-      "label": "WebResourceError",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webresourceerror",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "webresourcerequest",
-      "label": "WebResourceRequest",
-      "_origin": "ast",
-      "community": 104,
-      "community_name": "MseCameraView",
-      "file_type": "code",
-      "norm_label": "webresourcerequest",
-      "source_file": "",
-      "source_location": ""
     },
     {
       "id": "websocket",
@@ -8053,6 +8032,17 @@
       "norm_label": "websocket",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "backend_app_api_ws_rationale_100",
+      "label": "Background loop sending hardware telemetry every 5.0 seconds to connected UI\u2026",
+      "_origin": "ast",
+      "community": 105,
+      "community_name": "WebSocketManager",
+      "file_type": "rationale",
+      "norm_label": "background loop sending hardware telemetry every 5.0 seconds to connected ui...",
+      "source_file": "backend/app/api/ws.py",
+      "source_location": "L100"
     },
     {
       "id": "asyncio",
@@ -8092,7 +8082,7 @@
       "label": "get",
       "_origin": "ast",
       "community": 107,
-      "community_name": "get",
+      "community_name": "get_audit_trail",
       "file_type": "code",
       "norm_label": "get",
       "source_file": "",
@@ -8103,7 +8093,7 @@
       "label": "head",
       "_origin": "ast",
       "community": 107,
-      "community_name": "get",
+      "community_name": "get_audit_trail",
       "file_type": "code",
       "norm_label": "head",
       "source_file": "",
@@ -8114,18 +8104,29 @@
       "label": "Returns real-time analytics summary directly from Frigate NVR.",
       "_origin": "ast",
       "community": 107,
-      "community_name": "get",
+      "community_name": "get_audit_trail",
       "file_type": "rationale",
       "norm_label": "returns real-time analytics summary directly from frigate nvr.",
       "source_file": "backend/app/api/events.py",
       "source_location": "L175"
     },
     {
+      "id": "backend_app_api_events_rationale_411",
+      "label": "Retrieves operational audit logs (system mutations, alerts, errors).",
+      "_origin": "ast",
+      "community": 107,
+      "community_name": "get_audit_trail",
+      "file_type": "rationale",
+      "norm_label": "retrieves operational audit logs (system mutations, alerts, errors).",
+      "source_file": "backend/app/api/events.py",
+      "source_location": "L411"
+    },
+    {
       "id": "backend_app_api_events_rationale_452",
       "label": "Streams a universally compatible H.264 MP4 video clip with HTTP Range support.\u2026",
       "_origin": "ast",
       "community": 107,
-      "community_name": "get",
+      "community_name": "get_audit_trail",
       "file_type": "rationale",
       "norm_label": "streams a universally compatible h.264 mp4 video clip with http range support....",
       "source_file": "backend/app/api/events.py",
@@ -8136,22 +8137,110 @@
       "label": "Proxies or serves snapshot JPEG image for an event from local disk or Frigate\u2026",
       "_origin": "ast",
       "community": 107,
-      "community_name": "get",
+      "community_name": "get_audit_trail",
       "file_type": "rationale",
       "norm_label": "proxies or serves snapshot jpeg image for an event from local disk or frigate...",
       "source_file": "backend/app/api/events.py",
       "source_location": "L583"
     },
     {
-      "id": "backend_app_services_telegram_vault",
-      "label": "telegram_vault.py",
+      "id": "backend_app_api_telemetry_py_asyncsession",
+      "label": "AsyncSession",
       "_origin": "ast",
-      "community": 11,
-      "community_name": "TelegramVaultService",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
       "file_type": "code",
-      "norm_label": "telegram_vault.py",
-      "source_file": "backend/app/services/telegram_vault.py",
+      "norm_label": "asyncsession",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_api_telemetry_py_delete",
+      "label": "delete",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
+      "file_type": "code",
+      "norm_label": "delete",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "backend_app_api_telemetry_rationale_354",
+      "label": "Returns application audit logs with newest events at the top (DESC order).",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
+      "file_type": "rationale",
+      "norm_label": "returns application audit logs with newest events at the top (desc order).",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L354"
+    },
+    {
+      "id": "backend_app_api_telemetry_rationale_482",
+      "label": "Queries unified client operational telemetry logs with optional filters.",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
+      "file_type": "rationale",
+      "norm_label": "queries unified client operational telemetry logs with optional filters.",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L482"
+    },
+    {
+      "id": "backend_app_api_telemetry_rationale_523",
+      "label": "Deletes client device telemetry logs.",
+      "_origin": "ast",
+      "community": 108,
+      "community_name": "ClientDeviceLog",
+      "file_type": "rationale",
+      "norm_label": "deletes client device telemetry logs.",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L523"
+    },
+    {
+      "id": "backend_app_services_time_sync",
+      "label": "time_sync.py",
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "time_sync.py",
+      "file_type": "code",
+      "norm_label": "time_sync.py",
+      "source_file": "backend/app/services/time_sync.py",
       "source_location": "L1"
+    },
+    {
+      "id": "backend_app_services_time_sync_rationale_1",
+      "label": "Sentinela Frigate Pro - Time Synchronization Service Periodically checks server\u2026",
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "time_sync.py",
+      "file_type": "rationale",
+      "norm_label": "sentinela frigate pro - time synchronization service periodically checks server...",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L1"
+    },
+    {
+      "id": "backend_app_services_time_sync_rationale_23",
+      "label": "Queries an NTP server and returns epoch timestamp in seconds.",
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "time_sync.py",
+      "file_type": "rationale",
+      "norm_label": "queries an ntp server and returns epoch timestamp in seconds.",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L23"
+    },
+    {
+      "id": "backend_app_services_time_sync_rationale_47",
+      "label": "Background task running once per hour to log and monitor time synchronization.",
+      "_origin": "ast",
+      "community": 109,
+      "community_name": "time_sync.py",
+      "file_type": "rationale",
+      "norm_label": "background task running once per hour to log and monitor time synchronization.",
+      "source_file": "backend/app/services/time_sync.py",
+      "source_location": "L47"
     },
     {
       "id": "backend_app_services_telegram_vault_py_any",
@@ -8328,6 +8417,28 @@
       "norm_label": "sharedpreferences",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "backend_app_api_telemetry_rationale_130",
+      "label": "Fetches real-time log lines for the requested service or container.",
+      "_origin": "ast",
+      "community": 111,
+      "community_name": "get_service_logs",
+      "file_type": "rationale",
+      "norm_label": "fetches real-time log lines for the requested service or container.",
+      "source_file": "backend/app/api/telemetry.py",
+      "source_location": "L130"
+    },
+    {
+      "id": "backend_app_core_logging_handler_rationale_30",
+      "label": "Returns the most recent lines from the in-memory ring buffer.",
+      "_origin": "ast",
+      "community": 111,
+      "community_name": "get_service_logs",
+      "file_type": "rationale",
+      "norm_label": "returns the most recent lines from the in-memory ring buffer.",
+      "source_file": "backend/app/core/logging_handler.py",
+      "source_location": "L30"
     },
     {
       "id": "ai_studio_imports_sentinela_pro_tv_package",
@@ -9441,17 +9552,6 @@
       "source_location": "L97"
     },
     {
-      "id": "backend_app_api_ws",
-      "label": "ws.py",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "ws.py",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L1"
-    },
-    {
       "id": "backend_app_db_session",
       "label": "session.py",
       "_origin": "ast",
@@ -9496,17 +9596,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_services_time_sync",
-      "label": "time_sync.py",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "code",
-      "norm_label": "time_sync.py",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L1"
-    },
-    {
       "id": "fastapi",
       "label": "FastAPI",
       "_origin": "ast",
@@ -9527,50 +9616,6 @@
       "norm_label": "middleware",
       "source_file": "",
       "source_location": ""
-    },
-    {
-      "id": "backend_app_api_ws_rationale_100",
-      "label": "Background loop sending hardware telemetry every 5.0 seconds to connected UI\u2026",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "rationale",
-      "norm_label": "background loop sending hardware telemetry every 5.0 seconds to connected ui...",
-      "source_file": "backend/app/api/ws.py",
-      "source_location": "L100"
-    },
-    {
-      "id": "backend_app_services_time_sync_rationale_1",
-      "label": "Sentinela Frigate Pro - Time Synchronization Service Periodically checks server\u2026",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "rationale",
-      "norm_label": "sentinela frigate pro - time synchronization service periodically checks server...",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L1"
-    },
-    {
-      "id": "backend_app_services_time_sync_rationale_23",
-      "label": "Queries an NTP server and returns epoch timestamp in seconds.",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "rationale",
-      "norm_label": "queries an ntp server and returns epoch timestamp in seconds.",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L23"
-    },
-    {
-      "id": "backend_app_services_time_sync_rationale_47",
-      "label": "Background task running once per hour to log and monitor time synchronization.",
-      "_origin": "ast",
-      "community": 16,
-      "community_name": "main.py",
-      "file_type": "rationale",
-      "norm_label": "background task running once per hour to log and monitor time synchronization.",
-      "source_file": "backend/app/services/time_sync.py",
-      "source_location": "L47"
     },
     {
       "id": "backend_app_services_frigate_bridge",
@@ -10485,17 +10530,6 @@
       "source_location": "L1"
     },
     {
-      "id": "backend_app_api_telemetry_py_asyncsession",
-      "label": "AsyncSession",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "asyncsession",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
       "id": "backend_app_api_telemetry_py_basemodel",
       "label": "BaseModel",
       "_origin": "ast",
@@ -10503,28 +10537,6 @@
       "community_name": "api/telemetry.py",
       "file_type": "code",
       "norm_label": "basemodel",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_telemetry_py_delete",
-      "label": "delete",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "delete",
-      "source_file": "",
-      "source_location": ""
-    },
-    {
-      "id": "backend_app_api_telemetry_py_get",
-      "label": "get",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "code",
-      "norm_label": "get",
       "source_file": "",
       "source_location": ""
     },
@@ -10551,61 +10563,6 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_api_telemetry_rationale_130",
-      "label": "Fetches real-time log lines for the requested service or container.",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "fetches real-time log lines for the requested service or container.",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L130"
-    },
-    {
-      "id": "backend_app_api_telemetry_rationale_25",
-      "label": "Returns deep connectivity status with Frigate NVR REST API, MQTT bus, go2rtc\u2026",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "returns deep connectivity status with frigate nvr rest api, mqtt bus, go2rtc...",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L25"
-    },
-    {
-      "id": "backend_app_api_telemetry_rationale_256",
-      "label": "Compiles a complete diagnostic report (.txt) of all services for one-click\u2026",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "compiles a complete diagnostic report (.txt) of all services for one-click...",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L256"
-    },
-    {
-      "id": "backend_app_api_telemetry_rationale_32",
-      "label": "Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe\u2026",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "returns real-time hardware telemetry, per-core cpu, ram breakdown, nvme...",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L32"
-    },
-    {
-      "id": "backend_app_api_telemetry_rationale_354",
-      "label": "Returns application audit logs with newest events at the top (DESC order).",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "returns application audit logs with newest events at the top (desc order).",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L354"
-    },
-    {
       "id": "backend_app_api_telemetry_rationale_37",
       "label": "Runs on-demand stress & performance benchmarks for 1080p, 2K, 4K, IA detection\u2026",
       "_origin": "ast",
@@ -10626,50 +10583,6 @@
       "norm_label": "receives a batch of asynchronous operational telemetry logs from client devices.",
       "source_file": "backend/app/api/telemetry.py",
       "source_location": "L408"
-    },
-    {
-      "id": "backend_app_api_telemetry_rationale_44",
-      "label": "Detailed hardware diagnostics for Intel Jasper Lake N5105 / VAAPI.",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "detailed hardware diagnostics for intel jasper lake n5105 / vaapi.",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L44"
-    },
-    {
-      "id": "backend_app_api_telemetry_rationale_482",
-      "label": "Queries unified client operational telemetry logs with optional filters.",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "queries unified client operational telemetry logs with optional filters.",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L482"
-    },
-    {
-      "id": "backend_app_api_telemetry_rationale_523",
-      "label": "Deletes client device telemetry logs.",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "deletes client device telemetry logs.",
-      "source_file": "backend/app/api/telemetry.py",
-      "source_location": "L523"
-    },
-    {
-      "id": "backend_app_core_logging_handler_rationale_30",
-      "label": "Returns the most recent lines from the in-memory ring buffer.",
-      "_origin": "ast",
-      "community": 21,
-      "community_name": "api/telemetry.py",
-      "file_type": "rationale",
-      "norm_label": "returns the most recent lines from the in-memory ring buffer.",
-      "source_file": "backend/app/core/logging_handler.py",
-      "source_location": "L30"
     },
     {
       "id": "docs_codespaces_build_guide",
@@ -10846,6 +10759,17 @@
       "source_location": "L1"
     },
     {
+      "id": "backend_app_services_telegram_vault",
+      "label": "telegram_vault.py",
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "get_brasilia_now",
+      "file_type": "code",
+      "norm_label": "telegram_vault.py",
+      "source_file": "backend/app/services/telegram_vault.py",
+      "source_location": "L1"
+    },
+    {
       "id": "base",
       "label": "Base",
       "_origin": "ast",
@@ -10866,6 +10790,17 @@
       "norm_label": "datetime",
       "source_file": "",
       "source_location": ""
+    },
+    {
+      "id": "backend_app_api_events_rationale_41",
+      "label": "Fetches real historical events from Frigate NVR (single source of truth) with\u2026",
+      "_origin": "ast",
+      "community": 23,
+      "community_name": "get_brasilia_now",
+      "file_type": "rationale",
+      "norm_label": "fetches real historical events from frigate nvr (single source of truth) with...",
+      "source_file": "backend/app/api/events.py",
+      "source_location": "L41"
     },
     {
       "id": "backend_app_core_timezone_rationale_16",
@@ -12140,17 +12075,6 @@
       "source_location": ""
     },
     {
-      "id": "android_app_src_main_java_com_sentinela_pro_network_sentinelawebsocket",
-      "label": "SentinelaWebSocket.kt",
-      "_origin": "ast",
-      "community": 3,
-      "community_name": "OverlayService",
-      "file_type": "code",
-      "norm_label": "sentinelawebsocket.kt",
-      "source_file": "android/app/src/main/java/com/sentinela/pro/network/SentinelaWebSocket.kt",
-      "source_location": "L1"
-    },
-    {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice",
       "label": "OverlayService.kt",
       "_origin": "ast",
@@ -12240,6 +12164,94 @@
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_overlayservice_kt_webviewclient",
+      "label": "WebViewClient",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webviewclient",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview",
+      "label": "MseCameraView.kt",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "msecameraview.kt",
+      "source_file": "android/app/src/main/java/com/sentinela/pro/ui/components/MseCameraView.kt",
+      "source_location": "L1"
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_android",
+      "label": "android",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "android",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_modifier",
+      "label": "Modifier",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "modifier",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_permissionrequest",
+      "label": "PermissionRequest",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "permissionrequest",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_sslerrorhandler",
+      "label": "SslErrorHandler",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "sslerrorhandler",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webchromeclient",
+      "label": "WebChromeClient",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webchromeclient",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webview",
+      "label": "WebView",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webview",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "android_app_src_main_java_com_sentinela_pro_ui_components_msecameraview_kt_webviewclient",
       "label": "WebViewClient",
       "_origin": "ast",
       "community": 3,
@@ -12345,6 +12357,28 @@
       "community_name": "OverlayService",
       "file_type": "code",
       "norm_label": "view",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "webresourceerror",
+      "label": "WebResourceError",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webresourceerror",
+      "source_file": "",
+      "source_location": ""
+    },
+    {
+      "id": "webresourcerequest",
+      "label": "WebResourceRequest",
+      "_origin": "ast",
+      "community": 3,
+      "community_name": "OverlayService",
+      "file_type": "code",
+      "norm_label": "webresourcerequest",
       "source_file": "",
       "source_location": ""
     },
@@ -12785,14 +12819,14 @@
       "source_location": "L76"
     },
     {
-      "id": "readme_download_dos_apks_oficiais_v001_000_000_165",
-      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.165`)",
+      "id": "readme_download_dos_apks_oficiais_v001_000_000_166",
+      "label": "\ud83d\udce5 Download dos APKs Oficiais (`v001.000.000.166`)",
       "_origin": "ast",
       "community": 32,
       "community_name": "\ud83d\udee1\ufe0f Sentinela Frigate Pro",
       "file_type": "document",
       "node_kind": "heading",
-      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.165`)",
+      "norm_label": "\ud83d\udce5 download dos apks oficiais (`v001.000.000.166`)",
       "source_file": "README.md",
       "source_location": "L23"
     },
@@ -15323,7 +15357,18 @@
       "source_location": ""
     },
     {
-      "id": "backend_app_services_onvif_hardware_rationale_113",
+      "id": "backend_app_services_onvif_hardware_rationale_133",
+      "label": "Configures ONVIF Video Encoder to enforce 3MP 2304x1296 @ 25fps H.264 CFR.",
+      "_origin": "ast",
+      "community": 55,
+      "community_name": "OnvifHardwareService",
+      "file_type": "rationale",
+      "norm_label": "configures onvif video encoder to enforce 3mp 2304x1296 @ 25fps h.264 cfr.",
+      "source_file": "backend/app/services/onvif_hardware.py",
+      "source_location": "L133"
+    },
+    {
+      "id": "backend_app_services_onvif_hardware_rationale_204",
       "label": "Sends ONVIF SetSystemDateAndTime or NTP sync command to camera.",
       "_origin": "ast",
       "community": 55,
@@ -15331,7 +15376,7 @@
       "file_type": "rationale",
       "norm_label": "sends onvif setsystemdateandtime or ntp sync command to camera.",
       "source_file": "backend/app/services/onvif_hardware.py",
-      "source_location": "L113"
+      "source_location": "L204"
     },
     {
       "id": "backend_app_services_onvif_hardware_rationale_22",
@@ -15993,28 +16038,6 @@
       "norm_label": "deletes event and its media permanently from frigate nvr and local sqlite cache.",
       "source_file": "backend/app/api/events.py",
       "source_location": "L375"
-    },
-    {
-      "id": "backend_app_api_events_rationale_41",
-      "label": "Fetches real historical events from Frigate NVR (single source of truth) with\u2026",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "events.py",
-      "file_type": "rationale",
-      "norm_label": "fetches real historical events from frigate nvr (single source of truth) with...",
-      "source_file": "backend/app/api/events.py",
-      "source_location": "L41"
-    },
-    {
-      "id": "backend_app_api_events_rationale_411",
-      "label": "Retrieves operational audit logs (system mutations, alerts, errors).",
-      "_origin": "ast",
-      "community": 65,
-      "community_name": "events.py",
-      "file_type": "rationale",
-      "norm_label": "retrieves operational audit logs (system mutations, alerts, errors).",
-      "source_file": "backend/app/api/events.py",
-      "source_location": "L411"
     },
     {
       "id": "frontend_src_app_settings_storage_page",
@@ -17617,7 +17640,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 atualizacao dos apps docker & correcao definitiva de expurgo de videos e fotos",
       "source_file": "STATE.md",
-      "source_location": "L37"
+      "source_location": "L54"
     },
     {
       "id": "state_auditoria_de_seguran\u00e7a_infraestrutura_resili\u00eancia_de_rede_l2_l3_hardening_nginx_sentinela_local",
@@ -17629,7 +17652,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udee1\ufe0f auditoria de seguranca & infraestrutura: resiliencia de rede l2/l3 & hardening nginx (`sentinela.local`)",
       "source_file": "STATE.md",
-      "source_location": "L76"
+      "source_location": "L93"
     },
     {
       "id": "state_gest\u00e3o_de_armazenamento_exclus\u00e3o_total_de_v\u00eddeos_fotos_100_wipe",
@@ -17641,7 +17664,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcbe gestao de armazenamento: exclusao total de videos & fotos (100% wipe)",
       "source_file": "STATE.md",
-      "source_location": "L58"
+      "source_location": "L75"
     },
     {
       "id": "state_matriz_de_especifica\u00e7\u00f5es_e_cobertura_onp_spec",
@@ -17653,7 +17676,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udee1\ufe0f matriz de especificacoes e cobertura onp-spec",
       "source_file": "STATE.md",
-      "source_location": "L337"
+      "source_location": "L354"
     },
     {
       "id": "state_pr\u00f3ximos_passos_e_itens_em_aberto",
@@ -17665,7 +17688,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L1018"
+      "source_location": "L1035"
     },
     {
       "id": "state_resumo_da_sess\u00e3o_atual_v001_000_000_149",
@@ -17677,7 +17700,7 @@
       "node_kind": "heading",
       "norm_label": "resumo da sessao atual (v001.000.000.149)",
       "source_file": "STATE.md",
-      "source_location": "L1011"
+      "source_location": "L1028"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -17701,7 +17724,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.114 (otimizacao termica, atomicidade e unificacao web)",
       "source_file": "STATE.md",
-      "source_location": "L573"
+      "source_location": "L590"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
@@ -17713,7 +17736,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.115 (correcao da aba cameras nos apks, harmonizacao mse e cache-busting web)",
       "source_file": "STATE.md",
-      "source_location": "L550"
+      "source_location": "L567"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
@@ -17725,7 +17748,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.116 (resolucao de pip na tv, reconciliacao master, capturas hd e desduplicacao de cameras)",
       "source_file": "STATE.md",
-      "source_location": "L537"
+      "source_location": "L554"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
@@ -17737,7 +17760,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.117 (estabilidade multi-dispositivo de pip, zero-cache nginx host & app web)",
       "source_file": "STATE.md",
-      "source_location": "L518"
+      "source_location": "L535"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_126_observabilidade_e_logs_distribu\u00eddos_em_todas_as_abas_cards_bot\u00f5es_pip_zero_loading_flash",
@@ -17749,7 +17772,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.126 (observabilidade e logs distribuidos em todas as abas/cards/botoes & pip zero loading flash)",
       "source_file": "STATE.md",
-      "source_location": "L474"
+      "source_location": "L491"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_127_modo_de_espera_monitoramento_de_detec\u00e7\u00e3o_suspens\u00e3o_de_players_em_background_para_pip",
@@ -17761,7 +17784,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.127 (modo de espera / monitoramento de deteccao & suspensao de players em background para pip)",
       "source_file": "STATE.md",
-      "source_location": "L455"
+      "source_location": "L472"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_129_deduplica\u00e7\u00e3o_de_c\u00e2meras_na_tv_alinhamento_responsivo_de_ui_ux_e_propor\u00e7\u00e3o_din\u00e2mica_16_9_no_smartphone",
@@ -17773,7 +17796,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.129 (deduplicacao de cameras na tv, alinhamento responsivo de ui/ux e proporcao dinamica 16:9 no smartphone)",
       "source_file": "STATE.md",
-      "source_location": "L440"
+      "source_location": "L457"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_130_otimiza\u00e7\u00e3o_global_de_servidores_resolu\u00e7\u00e3o_de_salvamento_temperatura_e_segrega\u00e7\u00e3o_de_pip",
@@ -17785,7 +17808,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.130 (otimizacao global de servidores, resolucao de salvamento/temperatura e segregacao de pip)",
       "source_file": "STATE.md",
-      "source_location": "L422"
+      "source_location": "L439"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_140_otimiza\u00e7\u00e3o_extrema_para_c\u00e2meras_ip_aitek_seg6050bp_e_corre\u00e7\u00e3o_definitiva_do_lag_stutter_mse_24_fps",
@@ -17797,7 +17820,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.140 (otimizacao extrema para cameras ip aitek seg6050bp e correcao definitiva do lag/stutter mse 24 fps)",
       "source_file": "STATE.md",
-      "source_location": "L387"
+      "source_location": "L404"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_141_harmoniza\u00e7\u00e3o_universal_h_264_gop_25_clipes_reais_telegram_e_fim_dos_travamentos_de_30s",
@@ -17809,7 +17832,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.141 (harmonizacao universal h.264, gop 25, clipes reais telegram e fim dos travamentos de 30s)",
       "source_file": "STATE.md",
-      "source_location": "L372"
+      "source_location": "L389"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_150_build_150_otimiza\u00e7\u00e3o_global_do_ecossistema_e_harmoniza\u00e7\u00e3o_multi_plataforma",
@@ -17821,7 +17844,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.150 (build 150) \u2014 otimizacao global do ecossistema e harmonizacao multi-plataforma",
       "source_file": "STATE.md",
-      "source_location": "L297"
+      "source_location": "L314"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
@@ -17833,7 +17856,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.152 (build 152) \u2014 persistencia definitiva de gravacao, resolucao, audio e bitrate",
       "source_file": "STATE.md",
-      "source_location": "L278"
+      "source_location": "L295"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
@@ -17845,7 +17868,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.155 (build 155) \u2014 controle de sensores/hardware onvif, sincronizacao horaria e otimizacao do ecossistema",
       "source_file": "STATE.md",
-      "source_location": "L234"
+      "source_location": "L251"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
@@ -17857,7 +17880,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.156 (build 156) \u2014 correcao definitiva de limpeza ssd, otimizacao termica e cascateamento go2rtc",
       "source_file": "STATE.md",
-      "source_location": "L217"
+      "source_location": "L234"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_157_build_157_deduplica\u00e7\u00e3o_estrita_de_c\u00e2meras_loopback_universal_no_go2rtc_e_otimiza\u00e7\u00e3o_extrema_de_recursos",
@@ -17869,7 +17892,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.157 (build 157) \u2014 deduplicacao estrita de cameras, loopback universal no go2rtc e otimizacao extrema de recursos",
       "source_file": "STATE.md",
-      "source_location": "L204"
+      "source_location": "L221"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
@@ -17881,7 +17904,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.159 (build 159) \u2014 desacoplamento de foco na tv, pip 16:9 estrito, controles por camera e otimizacao mobile",
       "source_file": "STATE.md",
-      "source_location": "L173"
+      "source_location": "L190"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
@@ -17893,7 +17916,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.161 (build 161) \u2014 resolucao de decoder tv, aspect ratio 16:9 estrito e ci/cd verde",
       "source_file": "STATE.md",
-      "source_location": "L146"
+      "source_location": "L163"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
@@ -17905,7 +17928,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.162 (build 162) \u2014 resolucao definitiva de transmissoes web 24/7 (fim do ciclo de 5 segundos) e harmonizacao dual-cam",
       "source_file": "STATE.md",
-      "source_location": "L128"
+      "source_location": "L145"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_163_build_163_corre\u00e7\u00e3o_cr\u00edtica_de_gera\u00e7\u00e3o_e_publica\u00e7\u00e3o_de_apks_no_ci_cd",
@@ -17917,7 +17940,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.163 (build 163) \u2014 correcao critica de geracao e publicacao de apks no ci/cd",
       "source_file": "STATE.md",
-      "source_location": "L113"
+      "source_location": "L130"
     },
     {
       "id": "state_vers\u00e3o_atual_v001_000_000_142_ingest\u00e3o_\u00fanica_sub_stream_est\u00e1vel_cascateamento_zero_drop_go2rtc_e_rebuild_backend",
@@ -17929,7 +17952,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao atual: v001.000.000.142 (ingestao unica sub-stream estavel, cascateamento zero-drop go2rtc e rebuild backend)",
       "source_file": "STATE.md",
-      "source_location": "L353"
+      "source_location": "L370"
     },
     {
       "id": "state_vers\u00e3o_atual_v001_000_000_164_build_164_unifica\u00e7\u00e3o_do_pip_tv_corre\u00e7\u00e3o_de_sqlite_e_estabilidade_do_stream",
@@ -17941,7 +17964,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao atual: v001.000.000.164 (build 164) \u2014 unificacao do pip tv, correcao de sqlite e estabilidade do stream",
       "source_file": "STATE.md",
-      "source_location": "L96"
+      "source_location": "L113"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_165_estabiliza\u00e7\u00e3o_integral_da_stack_sincroniza\u00e7\u00e3o_pip",
@@ -17952,6 +17975,18 @@
       "file_type": "document",
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.165 \u2014 estabilizacao integral da stack & sincronizacao pip",
+      "source_file": "STATE.md",
+      "source_location": "L27"
+    },
+    {
+      "id": "state_vers\u00e3o_v001_000_000_166_grava\u00e7\u00f5es_2304_1296_3mp_25fps_provisionamento_onvif",
+      "label": "\ud83d\ude80 Vers\u00e3o v001.000.000.166 \u2014 Grava\u00e7\u00f5es 2304\u00d71296 (3MP) @ 25fps & Provisionamento ONVIF",
+      "_origin": "ast",
+      "community": 93,
+      "community_name": "STATE.md \u2014 Mem\u00f3ria Persistente do Projeto",
+      "file_type": "document",
+      "node_kind": "heading",
+      "norm_label": "\ud83d\ude80 versao v001.000.000.166 \u2014 gravacoes 2304\u00d71296 (3mp) @ 25fps & provisionamento onvif",
       "source_file": "STATE.md",
       "source_location": "L10"
     },
@@ -17965,7 +18000,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83c\udfaf visao e objetivos atuais",
       "source_file": "STATE.md",
-      "source_location": "L326"
+      "source_location": "L343"
     },
     {
       "id": "agents_skills_onp_spec_driven_references_constituicao_constitui\u00e7\u00e3o_princ\u00edpios_que_a_m\u00e1quina_verifica",
@@ -21302,6 +21337,18 @@
       "context": "call",
       "source_file": "backend/app/services/onvif_hardware.py",
       "source_location": "L89",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_services_onvif_hardware_onvifhardwareservice_set_camera_hardware_config",
+      "target": "backend_app_services_onvif_hardware_onvifhardwareservice_configure_video_encoder",
+      "relation": "calls",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "context": "call",
+      "source_file": "backend/app/services/onvif_hardware.py",
+      "source_location": "L94",
       "weight": 1.0
     },
     {
@@ -39830,7 +39877,7 @@
     },
     {
       "source": "readme_sentinela_frigate_pro",
-      "target": "readme_download_dos_apks_oficiais_v001_000_000_165",
+      "target": "readme_download_dos_apks_oficiais_v001_000_000_166",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -41183,7 +41230,7 @@
     },
     {
       "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_v001_000_000_165_estabiliza\u00e7\u00e3o_integral_da_stack_sincroniza\u00e7\u00e3o_pip",
+      "target": "state_vers\u00e3o_v001_000_000_166_grava\u00e7\u00f5es_2304_1296_3mp_25fps_provisionamento_onvif",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -41200,7 +41247,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L1011",
+      "source_location": "L1028",
       "weight": 1.0
     },
     {
@@ -41211,282 +41258,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L1018",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_163_build_163_corre\u00e7\u00e3o_cr\u00edtica_de_gera\u00e7\u00e3o_e_publica\u00e7\u00e3o_de_apks_no_ci_cd",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L113",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L128",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L146",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L173",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_157_build_157_deduplica\u00e7\u00e3o_estrita_de_c\u00e2meras_loopback_universal_no_go2rtc_e_otimiza\u00e7\u00e3o_extrema_de_recursos",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L204",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L217",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L234",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L278",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_150_build_150_otimiza\u00e7\u00e3o_global_do_ecossistema_e_harmoniza\u00e7\u00e3o_multi_plataforma",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L297",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vis\u00e3o_e_objetivos_atuais",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L326",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_matriz_de_especifica\u00e7\u00f5es_e_cobertura_onp_spec",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L337",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_atual_v001_000_000_142_ingest\u00e3o_\u00fanica_sub_stream_est\u00e1vel_cascateamento_zero_drop_go2rtc_e_rebuild_backend",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L353",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_atualiza\u00e7\u00e3o_dos_apps_docker_corre\u00e7\u00e3o_definitiva_de_expurgo_de_v\u00eddeos_e_fotos",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L37",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_141_harmoniza\u00e7\u00e3o_universal_h_264_gop_25_clipes_reais_telegram_e_fim_dos_travamentos_de_30s",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L372",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_140_otimiza\u00e7\u00e3o_extrema_para_c\u00e2meras_ip_aitek_seg6050bp_e_corre\u00e7\u00e3o_definitiva_do_lag_stutter_mse_24_fps",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L387",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_130_otimiza\u00e7\u00e3o_global_de_servidores_resolu\u00e7\u00e3o_de_salvamento_temperatura_e_segrega\u00e7\u00e3o_de_pip",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L422",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_129_deduplica\u00e7\u00e3o_de_c\u00e2meras_na_tv_alinhamento_responsivo_de_ui_ux_e_propor\u00e7\u00e3o_din\u00e2mica_16_9_no_smartphone",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L440",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_127_modo_de_espera_monitoramento_de_detec\u00e7\u00e3o_suspens\u00e3o_de_players_em_background_para_pip",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L455",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_126_observabilidade_e_logs_distribu\u00eddos_em_todas_as_abas_cards_bot\u00f5es_pip_zero_loading_flash",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L474",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L518",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L537",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L550",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_anterior_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L573",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_gest\u00e3o_de_armazenamento_exclus\u00e3o_total_de_v\u00eddeos_fotos_100_wipe",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L58",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_auditoria_de_seguran\u00e7a_infraestrutura_resili\u00eancia_de_rede_l2_l3_hardening_nginx_sentinela_local",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L76",
+      "source_location": "L1035",
       "weight": 1.0
     },
     {
@@ -41497,7 +41269,293 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L96",
+      "source_location": "L113",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_163_build_163_corre\u00e7\u00e3o_cr\u00edtica_de_gera\u00e7\u00e3o_e_publica\u00e7\u00e3o_de_apks_no_ci_cd",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L130",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L163",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L190",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_157_build_157_deduplica\u00e7\u00e3o_estrita_de_c\u00e2meras_loopback_universal_no_go2rtc_e_otimiza\u00e7\u00e3o_extrema_de_recursos",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L221",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L234",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L251",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_v001_000_000_165_estabiliza\u00e7\u00e3o_integral_da_stack_sincroniza\u00e7\u00e3o_pip",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L27",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L295",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_150_build_150_otimiza\u00e7\u00e3o_global_do_ecossistema_e_harmoniza\u00e7\u00e3o_multi_plataforma",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L314",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vis\u00e3o_e_objetivos_atuais",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L343",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_matriz_de_especifica\u00e7\u00f5es_e_cobertura_onp_spec",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L354",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_atual_v001_000_000_142_ingest\u00e3o_\u00fanica_sub_stream_est\u00e1vel_cascateamento_zero_drop_go2rtc_e_rebuild_backend",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L370",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_141_harmoniza\u00e7\u00e3o_universal_h_264_gop_25_clipes_reais_telegram_e_fim_dos_travamentos_de_30s",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L389",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_140_otimiza\u00e7\u00e3o_extrema_para_c\u00e2meras_ip_aitek_seg6050bp_e_corre\u00e7\u00e3o_definitiva_do_lag_stutter_mse_24_fps",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L404",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_130_otimiza\u00e7\u00e3o_global_de_servidores_resolu\u00e7\u00e3o_de_salvamento_temperatura_e_segrega\u00e7\u00e3o_de_pip",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L439",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_129_deduplica\u00e7\u00e3o_de_c\u00e2meras_na_tv_alinhamento_responsivo_de_ui_ux_e_propor\u00e7\u00e3o_din\u00e2mica_16_9_no_smartphone",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L457",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_127_modo_de_espera_monitoramento_de_detec\u00e7\u00e3o_suspens\u00e3o_de_players_em_background_para_pip",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L472",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_126_observabilidade_e_logs_distribu\u00eddos_em_todas_as_abas_cards_bot\u00f5es_pip_zero_loading_flash",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L491",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L535",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_atualiza\u00e7\u00e3o_dos_apps_docker_corre\u00e7\u00e3o_definitiva_de_expurgo_de_v\u00eddeos_e_fotos",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L54",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L554",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L567",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_anterior_v001_000_000_114_otimiza\u00e7\u00e3o_t\u00e9rmica_atomicidade_e_unifica\u00e7\u00e3o_web",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L590",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_gest\u00e3o_de_armazenamento_exclus\u00e3o_total_de_v\u00eddeos_fotos_100_wipe",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L75",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_auditoria_de_seguran\u00e7a_infraestrutura_resili\u00eancia_de_rede_l2_l3_hardening_nginx_sentinela_local",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L93",
       "weight": 1.0
     },
     {
@@ -43964,13 +44022,24 @@
     },
     {
       "source": "backend_app_services_onvif_hardware_onvifhardwareservice",
+      "target": "backend_app_services_onvif_hardware_onvifhardwareservice_configure_video_encoder",
+      "relation": "method",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/services/onvif_hardware.py",
+      "source_location": "L122",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_services_onvif_hardware_onvifhardwareservice",
       "target": "backend_app_services_onvif_hardware_onvifhardwareservice_sync_camera_time",
       "relation": "method",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/onvif_hardware.py",
-      "source_location": "L112",
+      "source_location": "L203",
       "weight": 1.0
     },
     {
@@ -45525,14 +45594,25 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_services_onvif_hardware_rationale_113",
+      "source": "backend_app_services_onvif_hardware_rationale_133",
+      "target": "backend_app_services_onvif_hardware_onvifhardwareservice_configure_video_encoder",
+      "relation": "rationale_for",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "backend/app/services/onvif_hardware.py",
+      "source_location": "L133",
+      "weight": 1.0
+    },
+    {
+      "source": "backend_app_services_onvif_hardware_rationale_204",
       "target": "backend_app_services_onvif_hardware_onvifhardwareservice_sync_camera_time",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/services/onvif_hardware.py",
-      "source_location": "L113",
+      "source_location": "L204",
       "weight": 1.0
     },
     {
@@ -47242,5 +47322,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "dc52389d79910a4438f14baa74cea3ace0b146cd"
+  "built_at_commit": "33aeaf2cdb4a9faae119d70c006d587b47d98496"
 }
