@@ -285,6 +285,13 @@ class PiPGatewayService:
             if not dev:
                 return {"status": "error", "message": "Dispositivo não encontrado."}
 
+            if dev.permission_status == "blocked" or not dev.allow_pip_alerts:
+                return {
+                    "status": "error",
+                    "confirmed": False,
+                    "message": f"❌ Dispositivo '{dev.friendly_name}' está bloqueado ou com alertas PiP desativados no Sentinela."
+                }
+
             target_ip = dev.tailscale_ip if dev.tailscale_ip else dev.ip_address
             dev_name = dev.friendly_name
 

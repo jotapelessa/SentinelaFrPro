@@ -221,72 +221,104 @@ class OverlayService : Service() {
                 }
 
                 val isPipTrigger = evType == "pip_alert" || (evType == "FRIGATE_EVENT" && event.optBoolean("active", false)) || isMotionActive
-                    val targetType = event.optString("target_type", "")
-                    if (targetType == "web") {
-                        return@collect // Exclusivo para navegadores Web (não renderiza overlay na TV)
-                    }
+                if (!isPipTrigger) {
+                    return@collect
+                }
 
-                    val targetIdent = event.optString("target_identifier", "")
-                    if (targetIdent.isNotBlank() && targetIdent != prefs.deviceIdentifier) {
-                        return@collect // Directed specifically to another device
-                    }
+                val targetType = event.optString("target_type", "")
+                if (targetType == "web") {
+                    return@collect // Exclusivo para navegadores Web (não renderiza overlay na TV)
+                }
 
-                    val testId = if (event.has("test_id")) event.optString("test_id") else null
-                    val camera = event.optString("camera", "camera_secundaria")
-                    val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
-                    val isTestAlert = testId != null || event.optBoolean("is_test", false) || label.contains("TEST", ignoreCase = true)
+                val targetIdent = event.optString("target_identifier", "")
+                if (targetIdent.isNotBlank() && targetIdent != prefs.deviceIdentifier) {
+                    return@collect // Directed specifically to another device
+                }
 
-                    // Debounce contra tempestades de eventos para a mesma câmera dentro de 2.5 segundos
-                    val now = System.currentTimeMillis()
-                    if (!isTestAlert && camera == activePipCamera && (now - lastPipTriggerTimeMs) < 2500L) {
-                        return@collect
-                    }
-                    lastPipTriggerTimeMs = now
+                val testId = if (event.has("test_id")) event.optString("test_id") else null
+                val camera = event.optString("camera", "camera_secundaria")
+                val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
+                val isTestAlert = testId != null || event.optBoolean("is_test", false) || label.contains("TEST", ignoreCase = true)
 
-                    val customSnap = if (event.has("snapshot_url")) event.optString("snapshot_url") else null
-                    val customStream = if (event.has("stream_url")) event.optString("stream_url") else null
-                    val alertPipPos = if (event.has("pip_position")) event.optString("pip_position") else null
-                    val alertPipSize = if (event.has("pip_size")) event.optString("pip_size") else null
-                    val alertDuration = if (event.has("duration")) event.optInt("duration", 0) else 0
-
-                    val isCameraPipActive = prefs.isCameraPipEnabled(camera)
-                    if (!isCameraPipActive && !isTestAlert) {
-                        android.util.Log.i("OverlayService", "PiP ignorado: câmera $camera está com PiP desativado nas preferências.")
-                        return@collect
-                    }
-
-                    val policy = cachedDevicePolicy
-                    if (isTestAlert) {
-                        // Instant rendering for test triggers: 0ms latency, zero blocking HTTP calls
-                        showPiP(camera, label, policy, testId, customSnap, customStream, alertPipPos, alertPipSize, alertDuration)
-                    } else if (policy != null) {
-                        if (policy.permissionStatus == "allowed" && policy.allowPipAlerts) {
-                            val camAllowed = policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
-                            val eventAllowed = policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev: String -> ev.equals(label, ignoreCase = true) }
-                            if (camAllowed && eventAllowed) {
-                                showPiP(camera, label, policy, testId, customSnap, customStream, alertPipPos, alertPipSize, alertDuration)
-                            } else if (testId != null) {
-                                serviceScope.launch {
-                                    SentinelaRepository.sendPipAck(
-                                        prefs.deviceIdentifier, testId, success = false,
-                                        message = "Alerta bloqueado por política de eventos/câmeras"
-                                    )
-                                }
-                            }
-                        } else if (testId != null) {
-                            serviceScope.launch {
-                                SentinelaRepository.sendPipAck(
-                                    prefs.deviceIdentifier, testId, success = false,
-                                    message = "Alertas PiP desativados nas permissões da TV"
-                                )
-                            }
-                        }
-                    } else {
-                        // Immediate fallback using local preferences if policy cache is pending
-                        if (prefs.allowPipAlerts) {
-                            showPiP(camera, label, null, testId, customSnap, customStream, alertPipPos, alertPipSize, alertDuration)
+                // 1. Verificação Estrita de Políticas Remotas (Sentinela Web / Telas)
+                val policy = cachedDevicePolicy
+                if (policy != null && policy.permissionStatus == "blocked") {
+                    android.util.Log.w("OverlayService", "PiP bloqueado: este dispositivo está marcado como BLOQUEADO no Sentinela.")
+                    if (testId != null) {
+                        serviceScope.launch {
+                            SentinelaRepository.sendPipAck(
+                                prefs.deviceIdentifier, testId, success = false,
+                                message = "Dispositivo bloqueado no Sentinela"
+                            )
                         }
                     }
+                    return@collect
+                }
+
+                if (policy != null && !policy.allowPipAlerts) {
+                    android.util.Log.i("OverlayService", "PiP bloqueado: allowPipAlerts é falso na política do Sentinela.")
+                    if (testId != null) {
+                        serviceScope.launch {
+                            SentinelaRepository.sendPipAck(
+                                prefs.deviceIdentifier, testId, success = false,
+                                message = "Alertas PiP desativados nas políticas do dispositivo"
+                            )
+                        }
+                    }
+                    return@collect
+                }
+
+                // 2. Verificação de Preferências Locais da TV
+                if (!prefs.allowPipAlerts) {
+                    android.util.Log.i("OverlayService", "PiP bloqueado: allowPipAlerts está desativado nas preferências locais.")
+                    if (testId != null) {
+                        serviceScope.launch {
+                            SentinelaRepository.sendPipAck(
+                                prefs.deviceIdentifier, testId, success = false,
+                                message = "Alertas PiP desativados nas preferências do app TV"
+                            )
+                        }
+                    }
+                    return@collect
+                }
+
+                // 3. Verificação de Permissão da Câmera Específica
+                val isCameraPipActive = prefs.isCameraPipEnabled(camera)
+                val camAllowedByPolicy = policy == null || policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
+                if (!isCameraPipActive || !camAllowedByPolicy) {
+                    android.util.Log.i("OverlayService", "PiP ignorado: câmera $camera não permitida (local=$isCameraPipActive, policy=$camAllowedByPolicy).")
+                    if (testId != null) {
+                        serviceScope.launch {
+                            SentinelaRepository.sendPipAck(
+                                prefs.deviceIdentifier, testId, success = false,
+                                message = "Câmera $camera com PiP desativado ou não autorizada"
+                            )
+                        }
+                    }
+                    return@collect
+                }
+
+                // Debounce contra tempestades de eventos para a mesma câmera dentro de 2.5 segundos
+                val now = System.currentTimeMillis()
+                if (!isTestAlert && camera == activePipCamera && (now - lastPipTriggerTimeMs) < 2500L) {
+                    return@collect
+                }
+                lastPipTriggerTimeMs = now
+
+                val customSnap = if (event.has("snapshot_url")) event.optString("snapshot_url") else null
+                val customStream = if (event.has("stream_url")) event.optString("stream_url") else null
+                val alertPipPos = if (event.has("pip_position")) event.optString("pip_position") else null
+                val alertPipSize = if (event.has("pip_size")) event.optString("pip_size") else null
+                val alertDuration = if (event.has("duration")) event.optInt("duration", 0) else 0
+
+                val eventAllowed = policy == null || policy.allowedEvents.isEmpty() || policy.allowedEvents.any { ev: String -> ev.equals(label, ignoreCase = true) }
+                if (!eventAllowed && !isTestAlert) {
+                    android.util.Log.i("OverlayService", "PiP ignorado: evento $label não permitido pela política.")
+                    return@collect
+                }
+
+                // Exibir PiP de forma segura
+                showPiP(camera, label, policy, testId, customSnap, customStream, alertPipPos, alertPipSize, alertDuration)
 
                     // Background asynchronous policy refresh (never blocks display)
                     serviceScope.launch {

@@ -1,9 +1,29 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-09 08:35 BRT
-> **Versão Corrente:** v001.000.000.168
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.168 consolidada com correção do watchdog do WebRTCPlayer (resolução do bug de parsing de producers), preservação de candidatos UDP WebRTC eliminando quedas cíclicas, ativação e auto-inferência dos substreams nativos 800×448 via UDP (#transport=udp), suporte completo ao fallback de r_frame_rate no probe de câmeras chinesas (eliminando 0fps), sincronização estrita de `required_zones` no Frigate 0.17 eliminando alertas fora das zonas marcadas, e cache instantâneo de snapshots nativos 3MP em disco para entrega sub-5ms em altíssima definição.
+> **Última Atualização:** 2026-10-09 12:55 BRT
+> **Versão Corrente:** v001.000.000.169
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.169 consolidada com:
+1. Eliminação total de disparos indevidos de PiP Preview no Android TV (`OverlayService.kt`) quando bloqueado ou desativado na tela `/screens` do Sentinela Web (respeitando rigorosamente políticas remotas e preferências locais).
+2. Validação preventiva no backend (`pip_gateway.py` e `mqtt_service.py`) descartando eventos PiP para dispositivos bloqueados ou câmeras desativadas / sem alerta de TV.
+3. Formatação canônica da URL go2rtc com parâmetros repetidos (`&mode=webrtc&mode=mse`), garantindo fallback suave e eliminando quedas cíclicas no WebRTC 720p.
+4. Preservação da ingestão de Substreams nativos 800×448 via UDP (#transport=udp) e gravações em 2304×1296 @ 25fps sem consumo de CPU.
+
+---
+
+## 🚀 Versão v001.000.000.169 — Bloqueio Estrito de PiP em Dispositivos Inativos, Sintaxe Canônica go2rtc WebRTC/MSE & Estabilização Geral
+- **Data**: 2026-10-09
+- **Objetivo**: Corrigir em definitivo o comportamento do PiP Preview no Android TV e estabilizar os players de streaming:
+  1. **Bloqueio Rigoroso de PiP Preview no Android TV (`OverlayService.kt`)**:
+     - *Correção Crítica*: Adicionado `if (!isPipTrigger) return@collect`, impedindo que eventos não-PiP (ex: heartbeats, contagens de objetos e eventos inativos) vazassem para `showPiP`.
+     - *Respeito a Políticas Remotas no Teste/Preview*: Adicionada checagem estrita para `policy.permissionStatus == "blocked"`, `!policy.allowPipAlerts`, `!prefs.allowPipAlerts` e permissões individuais de câmera (`!prefs.isCameraPipEnabled(camera)`). Mesmo se um alerta de teste for disparado, o PiP é imediatamente suprimido se a tela estiver bloqueada ou com PiP desativado no Sentinela.
+  2. **Validação no Backend (`pip_gateway.py` & `mqtt_service.py`)**:
+     - O endpoint de teste (`test_single_device`) agora valida se o dispositivo está com status `"blocked"` ou `allow_pip_alerts == False`, rejeitando a operação na origem.
+     - O processamento de eventos MQTT (`mqtt_service.py`) consulta a política da câmera com cache de 10s e suprime o broadcast do `pip_alert` caso a câmera esteja desabilitada (`enabled == False`) ou com notificações de TV desligadas (`notify_tv == False`).
+  3. **Estabilidade de Conexão WebRTC 720p (`WebRTCPlayer.tsx`)**:
+     - Correção da passagem de parâmetros para o go2rtc: de `mode=webrtc,mse` para a sintaxe canônica `mode=webrtc&mode=mse`. Isso permite que o `video-rtc.js` utilize parâmetros múltiplos corretos para fallback instantâneo para MSE sobre WebSocket caso o handshake ICE UDP sofra jitter, eliminando desconexões a cada poucos segundos.
+  4. **Substreams e Gravação em 2304×1296**:
+     - Substreams 800×448 validados via UDP sem travamento de buffer socket da câmera física. Gravações em 3MP (2304×1296) a 25fps operando em cópia direta (`-c:v copy`) com zero uso de CPU.
 
 ---
 

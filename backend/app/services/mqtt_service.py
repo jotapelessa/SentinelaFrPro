@@ -120,6 +120,35 @@ class MQTTService:
 
         return await fetch_and_cache()
 
+    async def _get_camera_policy(self, camera_name: str) -> Dict[str, Any]:
+        """Obtém status de ativação e notificações da câmera com cache em memória de 10s (Zero-latency)."""
+        now = time.time()
+        if not hasattr(self, '_camera_policy_cache'):
+            self._camera_policy_cache = {}
+            self._camera_policy_cache_time = {}
+
+        if camera_name in self._camera_policy_cache and (now - self._camera_policy_cache_time.get(camera_name, 0)) < 10.0:
+            return self._camera_policy_cache[camera_name]
+
+        policy = {"enabled": True, "notify_tv": True, "notify_telegram": True, "friendly_name": camera_name}
+        try:
+            from app.db.models import Camera
+            async with AsyncSessionLocal() as session:
+                stmt = select(Camera).where((Camera.name == camera_name) | (Camera.ip_address == camera_name))
+                res = await session.execute(stmt)
+                cam = res.scalar_one_or_none()
+                if cam:
+                    policy["enabled"] = bool(cam.enabled)
+                    policy["notify_tv"] = bool(cam.notify_tv)
+                    policy["notify_telegram"] = bool(cam.notify_telegram)
+                    policy["friendly_name"] = cam.friendly_name or camera_name
+        except Exception as e:
+            logger.debug(f"Erro ao buscar política da câmera {camera_name}: {e}")
+
+        self._camera_policy_cache[camera_name] = policy
+        self._camera_policy_cache_time[camera_name] = now
+        return policy
+
     async def handle_frigate_event(self, payload: Dict[str, Any]):
         if not isinstance(payload, dict):
             return
@@ -146,6 +175,12 @@ class MQTTService:
         })
 
         if label not in CRITICAL_LABELS:
+            return
+
+        # Check camera enabled status
+        cam_policy = await self._get_camera_policy(camera)
+        if not cam_policy.get("enabled", True):
+            logger.debug(f"Detecção ignorada: câmera {camera} está desativada no Sentinela.")
             return
 
         # Filter out low-confidence false positives
@@ -188,19 +223,22 @@ class MQTTService:
                 snapshot_url = f"/api/events/{event_id}/snapshot.jpg"
                 stream_url = f"/go2rtc/stream.html?src={camera}&mode=mse&media=video&width=100%"
 
-                # Instant PiP Alert and New Detection messages to Android TV & Web
-                await self.broadcast_event({
-                    "type": "pip_alert",
-                    "camera": camera,
-                    "label": label,
-                    "score": round(score * 100),
-                    "zone": zone_name,
-                    "event_id": event_id,
-                    "snapshot_url": snapshot_url,
-                    "stream_url": stream_url,
-                    "pause_background_player": True,
-                    "standby_monitoring": True
-                })
+                # Instant PiP Alert to Android TV & Web SOMENTE se notify_tv estiver habilitado para esta câmera
+                if cam_policy.get("notify_tv", True):
+                    await self.broadcast_event({
+                        "type": "pip_alert",
+                        "camera": camera,
+                        "label": label,
+                        "score": round(score * 100),
+                        "zone": zone_name,
+                        "event_id": event_id,
+                        "snapshot_url": snapshot_url,
+                        "stream_url": stream_url,
+                        "pause_background_player": True,
+                        "standby_monitoring": True
+                    })
+                else:
+                    logger.debug(f"PiP suprimido para {camera}: notificações de TV desativadas na configuração da câmera.")
 
                 await self.broadcast_event({
                     "type": "NEW_DETECTION",
