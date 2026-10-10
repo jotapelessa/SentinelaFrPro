@@ -220,7 +220,9 @@ class OverlayService : Service() {
                     return@collect
                 }
 
-                val isPipTrigger = evType == "pip_alert" || (evType == "FRIGATE_EVENT" && event.optBoolean("active", false)) || isMotionActive
+                // Somente detecção analítica de objetos, eventos confirmados do Frigate ou pip_alert explícitos disparam PiP
+                // Evita que simples variação de iluminação/pixel (CAMERA_MOTION_STATUS) cause previews intrusivos
+                val isPipTrigger = evType == "pip_alert" || (evType == "FRIGATE_EVENT" && event.optBoolean("active", false)) || (evType == "CAMERA_DETECTION_ACTIVE" && event.optBoolean("active", false))
                 if (!isPipTrigger) {
                     return@collect
                 }
@@ -237,7 +239,7 @@ class OverlayService : Service() {
 
                 val testId = if (event.has("test_id")) event.optString("test_id") else null
                 val camera = event.optString("camera", "camera_secundaria")
-                val label = event.optString("label", if (isMotionActive) "MOVIMENTO" else "DETECÇÃO")
+                val label = event.optString("label", "DETECÇÃO")
                 val isTestAlert = testId != null || event.optBoolean("is_test", false) || label.contains("TEST", ignoreCase = true)
 
                 // 1. Verificação Estrita de Políticas Remotas (Sentinela Web / Telas)
@@ -282,9 +284,15 @@ class OverlayService : Service() {
                     return@collect
                 }
 
-                // 3. Verificação de Permissão da Câmera Específica
+                // 3. Verificação de Permissão da Câmera Específica (com suporte a aliases)
                 val isCameraPipActive = prefs.isCameraPipEnabled(camera)
-                val camAllowedByPolicy = policy == null || policy.allowedCameras.isEmpty() || policy.allowedCameras.contains(camera)
+                val camAllowedByPolicy = policy == null || policy.allowedCameras.isEmpty() || policy.allowedCameras.any {
+                    it.equals(camera, ignoreCase = true) ||
+                    (camera == "cam_192_168_1_196" && it.equals("camera_principal", ignoreCase = true)) ||
+                    (camera == "camera_principal" && it.equals("cam_192_168_1_196", ignoreCase = true)) ||
+                    (camera == "cam_192_168_1_47" && it.equals("camera_secundaria", ignoreCase = true)) ||
+                    (camera == "camera_secundaria" && it.equals("cam_192_168_1_47", ignoreCase = true))
+                }
                 if (!isCameraPipActive || !camAllowedByPolicy) {
                     android.util.Log.i("OverlayService", "PiP ignorado: câmera $camera não permitida (local=$isCameraPipActive, policy=$camAllowedByPolicy).")
                     if (testId != null) {
@@ -337,36 +345,11 @@ class OverlayService : Service() {
         cachedDevicePolicy = policy
         if (policy.friendlyName.isNotBlank()) prefs.friendlyName = policy.friendlyName
         prefs.allowPipAlerts = policy.allowPipAlerts
-        if (policy.pipPosition.isNotBlank()) {
-            try {
-                prefs.pipPositionIndex = PipPosition.valueOf(policy.pipPosition.uppercase()).ordinal
-            } catch (e: Exception) {}
-        }
-        if (policy.pipDefaultSize.isNotBlank()) {
-            when (policy.pipDefaultSize.lowercase()) {
-                "mini", "extra_small" -> prefs.pipSizeIndex = PipSize.EXTRA_SMALL.ordinal
-                "small" -> prefs.pipSizeIndex = PipSize.SMALL.ordinal
-                "medium_small" -> prefs.pipSizeIndex = PipSize.MEDIUM_SMALL.ordinal
-                "medium" -> prefs.pipSizeIndex = PipSize.MEDIUM.ordinal
-                "medium_large" -> prefs.pipSizeIndex = PipSize.MEDIUM_LARGE.ordinal
-                "large" -> prefs.pipSizeIndex = PipSize.LARGE.ordinal
-                "extra_large" -> prefs.pipSizeIndex = PipSize.EXTRA_LARGE.ordinal
-                "cinema" -> prefs.pipSizeIndex = PipSize.CINEMA.ordinal
-            }
-        }
+        // Preserva a soberania das preferências locais do usuário na TV:
+        // Configurações manuais de tamanho, posição e duração feitas na TV não são sobrescritas
+        // por checagens de segundo plano de políticas do servidor.
         if (policy.streamQuality.isNotBlank()) {
             prefs.streamQuality = policy.streamQuality
-        }
-        if (policy.pipDurationSeconds > 0) {
-            when (policy.pipDurationSeconds) {
-                5 -> prefs.pipDurationIndex = PipDuration.D_5S.ordinal
-                10 -> prefs.pipDurationIndex = PipDuration.D_10S.ordinal
-                15 -> prefs.pipDurationIndex = PipDuration.D_15S.ordinal
-                20 -> prefs.pipDurationIndex = PipDuration.D_20S.ordinal
-                30 -> prefs.pipDurationIndex = PipDuration.D_30S.ordinal
-                45 -> prefs.pipDurationIndex = PipDuration.D_45S.ordinal
-                60 -> prefs.pipDurationIndex = PipDuration.D_60S.ordinal
-            }
         }
     }
 
@@ -575,12 +558,12 @@ class OverlayService : Service() {
             return
         }
 
-        // Dynamically resolve PiP size: override > policy > preferences, and lock into preferences
-        val rawSize = if (!overrideSize.isNullOrBlank()) overrideSize
-                      else if (policy != null && policy.pipDefaultSize.isNotBlank()) policy.pipDefaultSize
-                      else null
-        val pipSize = if (!rawSize.isNullOrBlank()) {
-            when (rawSize.lowercase()) {
+        // Resolução consistente de tamanho do PiP:
+        // Se for teste manual com override específico, usa override temporário.
+        // Nos alertas de produção, as preferências do usuário na TV (prefs.currentPipSize)
+        // garantem que todas as câmeras exibam o mesmo tamanho configurado.
+        val pipSize = if (testId != null && !overrideSize.isNullOrBlank()) {
+            when (overrideSize.lowercase()) {
                 "mini", "extra_small" -> PipSize.EXTRA_SMALL
                 "small" -> PipSize.SMALL
                 "medium_small" -> PipSize.MEDIUM_SMALL
@@ -595,14 +578,10 @@ class OverlayService : Service() {
             prefs.currentPipSize
         }
 
-        // Dynamically resolve PiP position: override > policy > camera-specific preferences, and lock into preferences
-        val rawPos = if (!overridePosition.isNullOrBlank()) overridePosition
-                     else if (policy != null && policy.pipPosition.isNotBlank()) policy.pipPosition
-                     else null
-        val pipPos = if (!rawPos.isNullOrBlank()) {
+        // Resolução consistente de posição do PiP:
+        val pipPos = if (testId != null && !overridePosition.isNullOrBlank()) {
             try {
-                val p = PipPosition.valueOf(rawPos.uppercase())
-                prefs.setPipPositionIndex(camera, p.ordinal)
+                val p = PipPosition.valueOf(overridePosition.uppercase())
                 p
             } catch (e: Exception) {
                 prefs.getCurrentPipPosition(camera)
@@ -611,12 +590,13 @@ class OverlayService : Service() {
             prefs.getCurrentPipPosition(camera)
         }
 
-        val durationSeconds = if (overrideDuration != null && overrideDuration > 0) {
+        // Resolução consistente de duração do PiP:
+        val durationSeconds = if (testId != null && overrideDuration != null && overrideDuration > 0) {
             overrideDuration
-        } else if (policy != null && policy.pipDurationSeconds > 0) {
-            policy.pipDurationSeconds
         } else if (prefs.currentPipDuration.seconds > 0) {
             prefs.currentPipDuration.seconds
+        } else if (policy != null && policy.pipDurationSeconds > 0) {
+            policy.pipDurationSeconds
         } else {
             10
         }

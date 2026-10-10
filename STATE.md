@@ -1,15 +1,35 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-09 12:55 BRT
-> **Versão Corrente:** v001.000.000.169
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.169 consolidada com:
-1. Eliminação total de disparos indevidos de PiP Preview no Android TV (`OverlayService.kt`) quando bloqueado ou desativado na tela `/screens` do Sentinela Web (respeitando rigorosamente políticas remotas e preferências locais).
-2. Validação preventiva no backend (`pip_gateway.py` e `mqtt_service.py`) descartando eventos PiP para dispositivos bloqueados ou câmeras desativadas / sem alerta de TV.
-3. Formatação canônica da URL go2rtc com parâmetros repetidos (`&mode=webrtc&mode=mse`), garantindo fallback suave e eliminando quedas cíclicas no WebRTC 720p.
-4. Preservação da ingestão de Substreams nativos 800×448 via UDP (#transport=udp) e gravações em 2304×1296 @ 25fps sem consumo de CPU.
+> **Última Atualização:** 2026-10-10 12:20 BRT
+> **Versão Corrente:** v001.000.000.170
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.170 consolidada com:
+1. Resolução definitiva do teste de conectividade (Ping ao Servidor) no Android TV e ferramentas: rota `/api/health` conectada diretamente e alias canônico `location = /health` adicionado ao Nginx.
+2. Soberania e persistência de preferências de PiP (tamanho, posição, duração) no Android TV: eliminação de sobrescritas indevidas por payloads remotos ou rotinas em segundo plano; dimensões dinâmicas respeitadas em `TvPipFloatingWindow` e botões de configuração ampliados para Leanback D-Pad (36.dp).
+3. Respeito estrito ao estado PiP OFF: resolução simétrica e bidirecional de aliases de câmeras (`cam_192_168_1_196` <-> `camera_principal`), com supressão de disparos intrusivos de simples variação de iluminação (`CAMERA_MOTION_STATUS`).
+4. Streaming Web 100% aderente a políticas de autoplay de navegadores: inicialização silenciosa (`isMuted = true`, `volume = 0`) requisitando `media=video` e negociando áudio estritamente sob demanda do usuário.
+5. Harmonização de resoluções permitidas: opções de 1080p fictícias substituídas pelas capacidades físicas reais do hardware (720p HD Principal, 480p Substream Eco e Nativa 3MP Auto).
 
 ---
+
+## 🚀 Versão v001.000.000.170 — Auditoria Integral: Ping ao Servidor, Soberania de PiP na TV, Áudio e Streaming Web Estabilizado
+- **Data**: 2026-10-10
+- **Objetivo**: Corrigir as causas-raiz identificadas na auditoria completa do ecossistema:
+  1. **Ferramenta de Ping e Contrato de Saúde (`SentinelaRepository.kt` & `nginx/default.conf`)**:
+     - *Causa*: O app Android TV chamava `${BASE_URL}/health`. O Nginx encaminhava `/` para o Next.js (que respondia 404).
+     - *Correção*: `pingServer` agora consulta `${BASE_URL}/api/health` com fallback automático. Adicionado bloco `location = /health` no Nginx roteando diretamente para o FastAPI (`backend:8080/health`).
+  2. **Harmonização e Dimensões do PiP no Android TV (`TvNetflixScreen.kt`, `OverlayService.kt` & `SentinelaPreferences.kt`)**:
+     - *Dimensões Dinâmicas*: `TvPipFloatingWindow` agora vincula largura e altura dinamicamente a `prefs.currentPipSize.width.dp` e `prefs.currentPipSize.height.dp`, alinhando-se na tela de acordo com a posição configurada para a câmera ativa.
+     - *Soberania Local*: Payloads de alerta remotos e chamadas assíncronas a `syncPolicyWithPrefs` não sobrescrevem mais as escolhas do usuário na TV, garantindo que ambas as câmeras compartilhem o mesmo tamanho e comportamento configurados.
+     - *Acessibilidade D-Pad*: Altura dos botões de ajuste de tamanho do PiP nas configurações da TV elevada de 26.dp para 36.dp, eliminando cortes de fonte e distorção visual de foco no Android Leanback.
+  3. **Respeito ao Estado PiP OFF e Resolução de Aliases (`SentinelaPreferences.kt` & `OverlayService.kt`)**:
+     - Implementado `resolveCameraAliases` mapeando bidirecionalmente identificadores de hardware (`cam_192_168_1_196`, `cam_192_168_1_47`) e nomes amigáveis (`camera_principal`, `camera_secundaria`).
+     - Alertas desativados são estritamente respeitados, e eventos brutos de pixel (`CAMERA_MOTION_STATUS`) são ignorados para PiP.
+  4. **Estabilidade de Áudio e Streaming Web (`WebRTCPlayer.tsx`)**:
+     - Player inicia sem áudio (`isMuted = true`, `volume = 0`) requisitando `media=video`, prevenindo rejeição de autoplay pelos navegadores e cancelando loops de reconexão.
+     - Negociação de canal de áudio realizada dinamicamente sob demanda do operador.
+  5. **Paridade de Resoluções Reais (`CameraConfigModal.tsx` & `screens/page.tsx`)**:
+     - Retiradas opções de 1080p inexistentes no sensor da câmera, fixando as opções reais: 720p HD Principal, 480p Substream Eco e Nativa (Auto).
 
 ## 🚀 Versão v001.000.000.169 — Bloqueio Estrito de PiP em Dispositivos Inativos, Sintaxe Canônica go2rtc WebRTC/MSE & Estabilização Geral
 - **Data**: 2026-10-09

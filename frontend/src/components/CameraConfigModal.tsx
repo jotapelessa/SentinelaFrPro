@@ -759,14 +759,13 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                 <div className="flex items-center justify-between">
                   <label className="text-slate-300 font-bold">Qualidade de Stream Ao Vivo:</label>
                   <span className="text-xs font-mono font-bold text-cyan-400 uppercase">
-                    {streamQuality === "minima" ? "Mínima (480p Eco)" : streamQuality === "media" ? "Média (720p VAAPI)" : "Máxima (1080p FHD)"}
+                    {streamQuality === "minima" ? "Mínima (480p Eco)" : "Principal (720p HD)"}
                   </span>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   {[
-                    { id: "minima", label: "Mínima", desc: "480p (Stream SUB)" },
-                    { id: "media", label: "Média", desc: "720p (GPU VAAPI)" },
-                    { id: "maxima", label: "Máxima", desc: "1080p (Sensor Nativo)" }
+                    { id: "minima", label: "Mínima", desc: "480p (Stream SUB Eco)" },
+                    { id: "media", label: "Principal", desc: "720p HD (Stream Principal)" }
                   ].map((q) => (
                     <button
                       key={q.id}
@@ -796,12 +795,11 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
                   <label className="text-slate-300 font-bold">Resolução da Câmera (Stream & Gravação):</label>
                   <span className="text-xs font-mono font-bold text-cyan-400 uppercase">{resolution}</span>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   {[
-                    { id: "720p", label: "720p HD", sub: "1280x720 (Baixa Banda)" },
-                    { id: "1080p", label: "1080p FHD", sub: "1920x1080 (Padrão NVR)" },
-                    { id: "2.5k", label: "2.5K / 5MP", sub: "2560x1440 (Ultra Nitidez)" },
-                    { id: "auto", label: "Nativa (Auto)", sub: "Sensor Direto" }
+                    { id: "480p", label: "480p Eco", sub: "800x448 (Substream Nativo)" },
+                    { id: "720p", label: "720p HD", sub: "1280x720 (Stream Principal)" },
+                    { id: "auto", label: "Nativa (Auto)", sub: "Sensor Direto (3MP)" }
                   ].map((res) => (
                     <button
                       key={res.id}

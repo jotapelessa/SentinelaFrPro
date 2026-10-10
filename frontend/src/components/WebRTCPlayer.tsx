@@ -286,6 +286,10 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     const nextVol = nextMuted ? 0 : (volume > 0 ? volume : 0.8);
     setIsMuted(nextMuted);
     setVolume(nextVol);
+    if (!nextMuted && iframeRef.current) {
+      // Re-requisita stream com track de áudio sob demanda do usuário
+      iframeRef.current.src = getStreamUrl(true);
+    }
     applyAudioSettings(nextMuted, nextVol);
   };
 
@@ -496,16 +500,18 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     return `${cameraSrc}_720p`;
   };
 
-  const getStreamUrl = () => {
+  const getStreamUrl = (forceAudio?: boolean) => {
     const activeSrc = getEffectiveSrc();
+    const withAudio = forceAudio !== undefined ? forceAudio : !isMuted;
+    const mediaParam = withAudio ? "media=video,audio" : "media=video";
     // background=true impede que o go2rtc execute o timer de 5s de desconexão (Regra de Ouro #1/Streaming 24/7)
     // Usar parâmetros separados (&mode=webrtc&mode=mse) para que o go2rtc faça fallback gracioso sem derrubar o player
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc&mode=mse&media=video,audio&background=true`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc&mode=mse&${mediaParam}&background=true`;
       case "mse":
       default:
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&media=video,audio&background=true`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&${mediaParam}&background=true`;
     }
   };
 

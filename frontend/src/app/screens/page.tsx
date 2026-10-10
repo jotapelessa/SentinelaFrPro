@@ -1128,7 +1128,7 @@ export default function ScreensPage() {
                         ? "bg-amber-500/10 border-amber-500/30 text-amber-300"
                         : "bg-cyan-500/10 border-cyan-500/30 text-cyan-300"
                     }`}>
-                      📺 {device.stream_quality === "720p" ? "720p HD" : "1080p FHD"}
+                      📺 {device.stream_quality === "480p" ? "480p Eco" : "720p HD"}
                     </span>
                     {device.app_version && (
                       <span className="px-2 py-0.5 rounded-lg bg-indigo-500/10 border border-indigo-500/30 text-[10px] font-mono text-indigo-300 font-bold">
@@ -1402,12 +1402,12 @@ export default function ScreensPage() {
                     <div>
                       <span className="text-slate-400 block text-[10px] mb-1 font-bold">Qualidade do Vídeo:</span>
                       <select
-                        value={managingDevice.stream_quality || "1080p"}
+                        value={managingDevice.stream_quality || "720p"}
                         onChange={(e) => setManagingDevice({ ...managingDevice, stream_quality: e.target.value })}
                         className="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl p-2 text-xs focus:outline-none focus:border-cyan-500"
                       >
-                        <option value="1080p">1080p (Full HD)</option>
-                        <option value="720p">720p (HD Eco)</option>
+                        <option value="720p">720p (Stream Principal HD)</option>
+                        <option value="480p">480p (Substream Eco)</option>
                       </select>
                     </div>
 
@@ -1687,7 +1687,7 @@ export default function ScreensPage() {
                             pip_position: managingDevice.pip_position || "TOP_RIGHT",
                             camera_pip_positions: managingDevice.camera_pip_positions || {},
                             camera_pip_enabled: managingDevice.camera_pip_enabled || {},
-                            stream_quality: managingDevice.stream_quality || "1080p"
+                            stream_quality: managingDevice.stream_quality || "720p"
                           })
                         });
                         if (!res.ok) {

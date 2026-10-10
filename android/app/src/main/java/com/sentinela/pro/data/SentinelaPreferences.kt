@@ -14,20 +14,51 @@ class SentinelaPreferences(private val context: Context) {
         get() = prefs.getInt("pip_position_index", PipPosition.TOP_RIGHT.ordinal)
         set(value) = prefs.edit().putInt("pip_position_index", value).apply()
 
+    private fun resolveCameraAliases(cameraName: String): List<String> {
+        val lower = cameraName.lowercase().trim()
+        return when (lower) {
+            "camera_principal", "cam_192_168_1_196" -> listOf("camera_principal", "cam_192_168_1_196")
+            "camera_secundaria", "cam_192_168_1_47" -> listOf("camera_secundaria", "cam_192_168_1_47")
+            else -> listOf(lower)
+        }
+    }
+
     fun getPipPositionIndex(cameraName: String): Int {
-        return prefs.getInt("pip_position_index_$cameraName", pipPositionIndex)
+        val aliases = resolveCameraAliases(cameraName)
+        for (alias in aliases) {
+            if (prefs.contains("pip_position_index_$alias")) {
+                return prefs.getInt("pip_position_index_$alias", pipPositionIndex)
+            }
+        }
+        return pipPositionIndex
     }
 
     fun setPipPositionIndex(cameraName: String, value: Int) {
-        prefs.edit().putInt("pip_position_index_$cameraName", value).apply()
+        val editor = prefs.edit()
+        val aliases = resolveCameraAliases(cameraName)
+        for (alias in aliases) {
+            editor.putInt("pip_position_index_$alias", value)
+        }
+        editor.apply()
     }
 
     fun isCameraPipEnabled(cameraName: String): Boolean {
-        return prefs.getBoolean("pip_enabled_camera_$cameraName", true)
+        val aliases = resolveCameraAliases(cameraName)
+        for (alias in aliases) {
+            if (prefs.contains("pip_enabled_camera_$alias")) {
+                return prefs.getBoolean("pip_enabled_camera_$alias", true)
+            }
+        }
+        return true
     }
 
     fun setCameraPipEnabled(cameraName: String, enabled: Boolean) {
-        prefs.edit().putBoolean("pip_enabled_camera_$cameraName", enabled).apply()
+        val editor = prefs.edit()
+        val aliases = resolveCameraAliases(cameraName)
+        for (alias in aliases) {
+            editor.putBoolean("pip_enabled_camera_$alias", enabled)
+        }
+        editor.apply()
     }
 
     var pipDurationIndex: Int

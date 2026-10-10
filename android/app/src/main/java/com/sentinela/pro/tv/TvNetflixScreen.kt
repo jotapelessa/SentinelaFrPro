@@ -272,6 +272,17 @@ fun TvNetflixScreenCore(
                 // Janela Flutuante PiP Dual-Layer com Contagem Regressiva e Moldura Ciano
                 activePipAlert?.let { alert ->
                     if (alert.isVisible) {
+                        val pipPos = prefs.getCurrentPipPosition(alert.camera.id)
+                        val alignModifier = when (pipPos) {
+                            com.sentinela.pro.data.PipPosition.TOP_RIGHT -> Alignment.TopEnd
+                            com.sentinela.pro.data.PipPosition.TOP_LEFT -> Alignment.TopStart
+                            com.sentinela.pro.data.PipPosition.BOTTOM_RIGHT -> Alignment.BottomEnd
+                            com.sentinela.pro.data.PipPosition.BOTTOM_LEFT -> Alignment.BottomStart
+                            com.sentinela.pro.data.PipPosition.TOP_CENTER -> Alignment.TopCenter
+                            com.sentinela.pro.data.PipPosition.BOTTOM_CENTER -> Alignment.BottomCenter
+                            com.sentinela.pro.data.PipPosition.CENTER_LEFT -> Alignment.CenterStart
+                            com.sentinela.pro.data.PipPosition.CENTER_RIGHT -> Alignment.CenterEnd
+                        }
                         TvPipFloatingWindow(
                             alert = alert,
                             focusRequester = pipFocusRequester,
@@ -281,8 +292,8 @@ fun TvNetflixScreenCore(
                                 selectedTab = TvTab.CAMERAS
                             },
                             modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(top = TvDimens.md, end = TvDimens.md)
+                                .align(alignModifier)
+                                .padding(TvDimens.md)
                         )
                     }
                 }
@@ -3570,7 +3581,7 @@ fun TvSettingsViewport(
                                         border = BorderStroke(1.dp, if (isFocused) TvColors.BorderFocused else if (isSelected) TvColors.NetflixRed else TvColors.BorderSubtle),
                                         modifier = Modifier
                                             .weight(1f)
-                                            .height(26.dp)
+                                            .height(36.dp)
                                             .tvDpadFocusable(isFocused = isFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
                                             .clickable(interactionSource = interactionSource, indication = null) {
                                                 sizeIndex = size.ordinal
@@ -3597,7 +3608,7 @@ fun TvSettingsViewport(
                                                 Text(
                                                     text = size.name.replace("_", " "),
                                                     color = if (isSelected || isFocused) Color.White else TvColors.TextSecondary,
-                                                    fontSize = 9.sp,
+                                                    fontSize = 10.sp,
                                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
                                                     maxLines = 1,
                                                     overflow = TextOverflow.Ellipsis
@@ -3606,7 +3617,7 @@ fun TvSettingsViewport(
                                                 Text(
                                                     text = "${size.width}x${size.height}",
                                                     color = if (isSelected) Color.White.copy(alpha = 0.8f) else TvColors.CyberCyan,
-                                                    fontSize = 8.sp,
+                                                    fontSize = 9.sp,
                                                     fontFamily = FontFamily.Monospace
                                                 )
                                             }
@@ -4639,12 +4650,16 @@ fun TvPipFloatingWindow(
     onExpand: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var remainingSeconds by remember { mutableIntStateOf(alert.countdownSeconds) }
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
+    val pipSize = prefs.currentPipSize
+    var remainingSeconds by remember { mutableIntStateOf(if (alert.countdownSeconds > 0) alert.countdownSeconds else (if (prefs.currentPipDuration.seconds > 0) prefs.currentPipDuration.seconds else 10)) }
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
 
     LaunchedEffect(alert.id) {
-        remainingSeconds = alert.countdownSeconds
+        val duration = if (alert.countdownSeconds > 0) alert.countdownSeconds else (if (prefs.currentPipDuration.seconds > 0) prefs.currentPipDuration.seconds else 10)
+        remainingSeconds = duration
         while (remainingSeconds > 0) {
             delay(1000)
             remainingSeconds -= 1
@@ -4658,8 +4673,8 @@ fun TvPipFloatingWindow(
         border = BorderStroke(2.dp, if (isFocused) TvColors.BorderFocused else TvColors.BorderHighlight),
         shadowElevation = 16.dp,
         modifier = modifier
-            .width(TvDimens.PipWidth)
-            .height(TvDimens.PipHeight)
+            .width(pipSize.width.dp)
+            .height(pipSize.height.dp)
             .focusRequester(focusRequester)
             .tvDpadFocusable(
                 isFocused = isFocused,

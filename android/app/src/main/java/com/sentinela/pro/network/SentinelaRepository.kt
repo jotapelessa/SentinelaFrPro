@@ -1474,7 +1474,7 @@ object SentinelaRepository {
         val tStart = System.currentTimeMillis()
         var rttMs = 0L
         val isHealthOk = try {
-            val hUrl = URL("${SentinelaConfig.BASE_URL}/health")
+            val hUrl = URL("${SentinelaConfig.BASE_URL}/api/health")
             val hConn = openConnection(hUrl).apply {
                 connectTimeout = 3000
                 readTimeout = 3000
@@ -1483,9 +1483,34 @@ object SentinelaRepository {
             val hCode = hConn.responseCode
             hConn.disconnect()
             rttMs = System.currentTimeMillis() - tStart
-            hCode in 200..299
+            if (hCode in 200..299) {
+                true
+            } else {
+                // Fallback legado para /health
+                val fallbackUrl = URL("${SentinelaConfig.BASE_URL}/health")
+                val fallbackConn = openConnection(fallbackUrl).apply {
+                    connectTimeout = 2000
+                    readTimeout = 2000
+                    requestMethod = "GET"
+                }
+                val fbCode = fallbackConn.responseCode
+                fallbackConn.disconnect()
+                fbCode in 200..299
+            }
         } catch (_: Exception) {
-            false
+            try {
+                val fallbackUrl = URL("${SentinelaConfig.BASE_URL}/health")
+                val fallbackConn = openConnection(fallbackUrl).apply {
+                    connectTimeout = 2000
+                    readTimeout = 2000
+                    requestMethod = "GET"
+                }
+                val fbCode = fallbackConn.responseCode
+                fallbackConn.disconnect()
+                fbCode in 200..299
+            } catch (_: Exception) {
+                false
+            }
         }
 
         val ok = registerOrHeartbeat(
