@@ -1,9 +1,9 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-10 12:20 BRT
-> **Versão Corrente:** v001.000.000.170
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.170 consolidada com:
+> **Última Atualização:** 2026-10-10 13:15 BRT
+> **Versão Corrente:** v001.000.000.170 (Implantada no Servidor Ubuntu 192.168.1.211)
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.170 consolidada e implantada em produção no servidor Ubuntu com:
 1. Resolução definitiva do teste de conectividade (Ping ao Servidor) no Android TV e ferramentas: rota `/api/health` conectada diretamente e alias canônico `location = /health` adicionado ao Nginx.
 2. Soberania e persistência de preferências de PiP (tamanho, posição, duração) no Android TV: eliminação de sobrescritas indevidas por payloads remotos ou rotinas em segundo plano; dimensões dinâmicas respeitadas em `TvPipFloatingWindow` e botões de configuração ampliados para Leanback D-Pad (36.dp).
 3. Respeito estrito ao estado PiP OFF: resolução simétrica e bidirecional de aliases de câmeras (`cam_192_168_1_196` <-> `camera_principal`), com supressão de disparos intrusivos de simples variação de iluminação (`CAMERA_MOTION_STATUS`).
