@@ -1,4 +1,5 @@
 import os
+import time
 import json
 import asyncio
 import logging
@@ -70,7 +71,6 @@ class MQTTService:
 
     async def _get_telegram_policy(self) -> Dict[str, Any]:
         """Dynamically loads live Telegram settings with 30s in-memory cache. Zero-latency updates."""
-        import time
         if hasattr(self, '_tg_policy_cache') and self._tg_policy_cache:
             if (time.time() - self._tg_policy_cache_time) < 30.0:
                 return self._tg_policy_cache

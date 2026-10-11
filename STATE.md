@@ -9,6 +9,7 @@
 3. Resolução de erro 404 nos substreams do go2rtc / Frigate detect: remoção da diretiva inexistente `#transport=udp` que causava `Get "udp": unsupported protocol scheme ""` e crashes a cada 10s no ffmpeg de detecção. Fluxos de detecção operando a `800x448 @ 25fps` nativos com zero consumo desnecessário de CPU.
 4. Restauração e calibração das detecções e alertas do Telegram: limiares do Frigate calibrados para `threshold: 0.68` e `motion: 18` com resolução nativa `800x448`, eliminando a supressão severa de 0.95 no host.
 5. Resiliência de entrega do Telegram com fallback em modo texto caso frames de snapshot sofram buffering momentâneo no go2rtc.
+6. Resolução da entrega de vídeos e fotos no Telegram: correção de `NameError: name 'time' is not defined` em `mqtt_service.py` que impedia o processamento de eventos MQTT do Frigate e bloqueava a fila de vídeos `TelegramVideoQueue`.
 
 ---
 
