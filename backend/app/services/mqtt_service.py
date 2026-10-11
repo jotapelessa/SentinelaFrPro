@@ -332,44 +332,29 @@ class MQTTService:
             snapshot_bytes = None
             async with httpx.AsyncClient(timeout=6.0) as client:
                 try:
-                    # 1. Native-resolution main-stream frame via go2rtc (highest quality, 1080p Full HD)
-                    sources = [camera, f"{camera}_720p", "camera_secundaria", "camera_principal"]
-                    for src in sources:
-                        try:
-                            g_resp = await client.get(f"{settings.GO2RTC_API_URL}/api/frame.jpeg?src={src}")
-                            if g_resp.status_code == 200 and len(g_resp.content) > 5000:
-                                snapshot_bytes = g_resp.content
-                                break
-                        except Exception:
-                            continue
-
-                    # Quick 150ms backoff retry on go2rtc if stream was momentarily buffering
-                    if not snapshot_bytes:
-                        await asyncio.sleep(0.15)
-                        try:
-                            g_resp = await client.get(f"{settings.GO2RTC_API_URL}/api/frame.jpeg?src={camera}")
-                            if g_resp.status_code == 200 and len(g_resp.content) > 5000:
-                                snapshot_bytes = g_resp.content
-                        except Exception:
-                            pass
-
-                    # 2. Event snapshot in high quality (full sensor frame, clean copy, 1080p)
-                    if not snapshot_bytes:
+                    # 1. Snapshot nativo de evento em alta definição diretamente do Frigate NVR (Zero-Impact no go2rtc)
+                    # Não consultar go2rtc (/api/frame.jpeg) durante detecções para não pausar/travar pacotes RTP/WebRTC ao vivo
+                    for attempt in range(2):
                         resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?crop=0&quality=98")
                         if resp.status_code == 200 and len(resp.content) > 2000:
                             snapshot_bytes = resp.content
-                        else:
-                            resp_ev = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?quality=98")
-                            if resp_ev.status_code == 200 and len(resp_ev.content) > 2000:
-                                snapshot_bytes = resp_ev.content
+                            break
+                        if attempt == 0:
+                            await asyncio.sleep(0.25)
 
-                    # 3. Native current camera frame fallback
+                    # 2. Snapshot do evento sem filtro crop (fallback)
+                    if not snapshot_bytes:
+                        resp_ev = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?quality=98")
+                        if resp_ev.status_code == 200 and len(resp_ev.content) > 2000:
+                            snapshot_bytes = resp_ev.content
+
+                    # 3. Frame mais recente da câmera no Frigate NVR (fallback)
                     if not snapshot_bytes:
                         resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg?h=1080")
                         if resp_latest.status_code == 200 and len(resp_latest.content) > 2000:
                             snapshot_bytes = resp_latest.content
                 except Exception as e:
-                    logger.debug(f"Could not retrieve snapshot: {e}")
+                    logger.debug(f"Could not retrieve snapshot from Frigate: {e}")
 
             if snapshot_bytes:
                 try:

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useRef, useCallback } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { X, Maximize2, ShieldAlert, Radio, PictureInPicture2, ExternalLink } from "lucide-react";
 import { useSentinelaStore } from "@/store/useSentinelaStore";
 
@@ -17,6 +18,8 @@ interface PipAlertData {
 }
 
 export const WebPipAlertModal: React.FC = () => {
+  const pathname = usePathname();
+  const isCamerasView = pathname === "/cameras" || pathname === "/";
   const isWebPipEnabled = useSentinelaStore((state) => state.isWebPipEnabled);
   const [activeAlert, setActiveAlert] = useState<PipAlertData | null>(null);
   const [timeLeft, setTimeLeft] = useState<number>(12);
@@ -317,16 +320,44 @@ export const WebPipAlertModal: React.FC = () => {
         </div>
       </div>
 
-      {/* Viewport 16:9 do Stream ao Vivo */}
-      <div className="relative aspect-video w-full bg-black">
-        <iframe
-          ref={iframeRef}
-          src={streamSrc}
-          className="w-full h-full border-0 pointer-events-auto"
-          allow="autoplay; fullscreen; picture-in-picture"
-          title={`PiP ${activeAlert.camera}`}
-        />
-        <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-slate-300 flex items-center gap-1 font-mono">
+      {/* Viewport 16:9 do Stream ao Vivo ou Snapshot Idempotente na tela de Câmeras */}
+      <div className="relative aspect-video w-full bg-black overflow-hidden">
+        {isCamerasView ? (
+          <div className="w-full h-full relative flex items-center justify-center bg-slate-950">
+            {activeAlert.snapshot_url ? (
+              <img
+                src={activeAlert.snapshot_url}
+                alt={`Alerta ${activeAlert.camera}`}
+                className="w-full h-full object-cover opacity-90"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = `/go2rtc/api/frame.jpeg?src=${encodeURIComponent(activeAlert.camera)}`;
+                }}
+              />
+            ) : (
+              <img
+                src={`/go2rtc/api/frame.jpeg?src=${encodeURIComponent(activeAlert.camera)}`}
+                alt={`Alerta ${activeAlert.camera}`}
+                className="w-full h-full object-cover opacity-90"
+              />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 pointer-events-none" />
+            <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[10px] text-cyan-300 font-mono">
+              <span className="flex items-center gap-1 bg-black/75 px-2 py-0.5 rounded border border-cyan-500/30">
+                <Radio className="w-2.5 h-2.5 text-cyan-400 animate-pulse" />
+                Ao Vivo no Mosaico
+              </span>
+            </div>
+          </div>
+        ) : (
+          <iframe
+            ref={iframeRef}
+            src={streamSrc}
+            className="w-full h-full border-0 pointer-events-auto"
+            allow="autoplay; fullscreen; picture-in-picture"
+            title={`PiP ${activeAlert.camera}`}
+          />
+        )}
+        <div className="absolute top-2 left-2 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded text-[10px] text-slate-300 flex items-center gap-1 font-mono z-10">
           <Radio className="w-2.5 h-2.5 text-emerald-400 animate-pulse" />
           {activeAlert.camera}
         </div>

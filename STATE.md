@@ -15,6 +15,10 @@
    - Correção em `WebRTCPlayer.tsx`: unificado em parâmetro único com modos separados por vírgula (`mode=webrtc,mse`), que é o formato nativo do `video-rtc.js` (`this.mode = 'webrtc,mse'`) para priorizar WebRTC com fallback para MSE sem instanciar elementos extras.
    - Correção em `CameraMosaic.tsx`: unificada a renderização para usar estritamente `activeCamerasList` (câmeras habilitadas e deduplicadas por ID/nome), eliminando renderização de câmeras cruas (`cameras`).
    - Auditoria nos apps móveis: Confirmado que nos aplicativos Android TV (`OverlayService.kt`) e Smartphone (`MseCameraView.kt`, `MobileGridScreen.kt`) não havia o problema, pois já utilizavam query strings com parâmetro único (`mode=mse&media=video` ou `mode=webrtc,webrtc/tcp&media=video`) e deduplicação estrita via `.filter { it.enabled }.distinctBy { it.name }`.
+8. Isolamento Estrito do Pipeline de Streaming ao Vivo WebRTC (Zero-Impact Live Edge):
+   - Causa-raiz: O backend (`mqtt_service.py`) requisitava repetidamente `GET /api/frame.jpeg?src=...` no go2rtc para gerar fotos do Telegram na chegada de detecções. No go2rtc, extrair JPEGs de fluxos RTSP 3MP sem decodificador dedicado causava pausas de despacho de pacotes RTP/WebRTC na rede. Simultaneamente, o `WebPipAlertModal` montava um iframe de streaming concorrente mesmo na rota `/cameras`, colidindo com os decodificadores de hardware locais e congelando simultaneamente os players das duas câmeras por 2 a 5 segundos com subsequente reconexão destrutiva.
+   - Correção no backend (`mqtt_service.py`): Desacoplamento total de snapshots do go2rtc. As fotos de alerta são consumidas estritamente dos endpoints em cache nativo do Frigate NVR (`/api/events/{event_id}/snapshot.jpg` e `/api/{camera}/latest.jpg`). O go2rtc opera 100% focado na transmissão ininterrupta de vídeo ao vivo.
+   - Correção no frontend (`WebPipAlertModal.tsx`): Idempotência estrita implementada com `usePathname()`. Quando o usuário já estiver na rota de câmeras (`/cameras` ou `/`), o modal exibe o card de alerta com snapshot estático sem carregar iframe concorrente de streaming de vídeo.
 
 ---
 
