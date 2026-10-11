@@ -94,6 +94,7 @@ fun TvNetflixScreenCore(
     onRefresh: () -> Unit = {}
 ) {
     val context = LocalContext.current
+    val prefs = remember(context) { com.sentinela.pro.data.SentinelaPreferences(context) }
     var selectedTab by remember { mutableStateOf(TvTab.CAMERAS) }
     var focusedCameraIndex by remember { mutableIntStateOf(0) }
     var selectedCameraId by remember(cameras) { mutableStateOf(cameras.firstOrNull()?.id) }
@@ -282,6 +283,7 @@ fun TvNetflixScreenCore(
                             com.sentinela.pro.data.PipPosition.BOTTOM_CENTER -> Alignment.BottomCenter
                             com.sentinela.pro.data.PipPosition.CENTER_LEFT -> Alignment.CenterStart
                             com.sentinela.pro.data.PipPosition.CENTER_RIGHT -> Alignment.CenterEnd
+                            else -> Alignment.TopEnd
                         }
                         TvPipFloatingWindow(
                             alert = alert,

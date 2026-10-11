@@ -401,15 +401,24 @@ class MQTTService:
             allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
             telegram_ok = False
 
-            if snapshot_bytes and send_mode in ["both", "photo_only"] and label in allowed_tg_events:
-                telegram_ok = await telegram_vault_service.send_alert_photo(
-                    image_bytes=snapshot_bytes,
-                    camera_name=camera,
-                    label=label,
-                    zone=zone_name,
-                    score=score,
-                    friendly_name=friendly_name
-                )
+            if send_mode in ["both", "photo_only"] and label in allowed_tg_events:
+                if snapshot_bytes:
+                    telegram_ok = await telegram_vault_service.send_alert_photo(
+                        image_bytes=snapshot_bytes,
+                        camera_name=camera,
+                        label=label,
+                        zone=zone_name,
+                        score=score,
+                        friendly_name=friendly_name
+                    )
+                else:
+                    caption = telegram_vault_service.format_event_message(
+                        camera=friendly_name or camera,
+                        label=label,
+                        score=score,
+                        zone=zone_name
+                    )
+                    telegram_ok = await telegram_vault_service.send_message(caption)
 
             pip_res = await pip_gateway_service.dispatch_pip_alert(
                 camera_name=camera,

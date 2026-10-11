@@ -259,7 +259,7 @@ cameras:
       - dog
       filters:
         person:
-          threshold: 0.7
+          threshold: 0.68
     motion:
       # STR-004: threshold calibrado em 18 (STATE.md v140 — perdeu eventos sutis com 25)
       threshold: 18
@@ -334,7 +334,7 @@ cameras:
       - dog
       filters:
         person:
-          threshold: 0.7
+          threshold: 0.68
     motion:
       threshold: 18
     record:

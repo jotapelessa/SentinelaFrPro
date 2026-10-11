@@ -1,14 +1,28 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-10 13:15 BRT
-> **Versão Corrente:** v001.000.000.170 (Implantada no Servidor Ubuntu 192.168.1.211)
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.170 consolidada e implantada em produção no servidor Ubuntu com:
-1. Resolução definitiva do teste de conectividade (Ping ao Servidor) no Android TV e ferramentas: rota `/api/health` conectada diretamente e alias canônico `location = /health` adicionado ao Nginx.
-2. Soberania e persistência de preferências de PiP (tamanho, posição, duração) no Android TV: eliminação de sobrescritas indevidas por payloads remotos ou rotinas em segundo plano; dimensões dinâmicas respeitadas em `TvPipFloatingWindow` e botões de configuração ampliados para Leanback D-Pad (36.dp).
-3. Respeito estrito ao estado PiP OFF: resolução simétrica e bidirecional de aliases de câmeras (`cam_192_168_1_196` <-> `camera_principal`), com supressão de disparos intrusivos de simples variação de iluminação (`CAMERA_MOTION_STATUS`).
-4. Streaming Web 100% aderente a políticas de autoplay de navegadores: inicialização silenciosa (`isMuted = true`, `volume = 0`) requisitando `media=video` e negociando áudio estritamente sob demanda do usuário.
-5. Harmonização de resoluções permitidas: opções de 1080p fictícias substituídas pelas capacidades físicas reais do hardware (720p HD Principal, 480p Substream Eco e Nativa 3MP Auto).
+> **Última Atualização:** 2026-10-11 11:35 BRT
+> **Versão Corrente:** v001.000.000.171
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.171 consolidada com:
+1. Desbloqueio e recuperação total do pipeline de CI/CD do Android no GitHub Actions: resolução do erro de compilação Kotlin (`TvNetflixScreenCore` - referência a `prefs` e enum `PipPosition`), restaurando a geração automática dos APKs para TV e Smartphone e a publicação de releases.
+2. Sincronização atômica da versão web: constante `APP_VERSION` em `version.ts` unificada com `package.json` e `config.py` para `001.000.000.171`, eliminando a exibição residual de versões antigas no rodapé de `sentinela.local`.
+3. Restauração e calibração das detecções e alertas do Telegram: limiares do Frigate calibrados para `threshold: 0.68` e `motion: 18` com resolução nativa `800x448`, eliminando a supressão severa de 0.95 no host.
+4. Resiliência de entrega do Telegram com fallback em modo texto caso frames de snapshot sofram buffering momentâneo no go2rtc.
+
+---
+
+## 🚀 Versão v001.000.000.171 — Correção do Build dos APKs no GitHub Actions, Versão Web Unificada e Restauração de Alertas no Telegram
+- **Data**: 2026-10-11
+- **Objetivo**: Resolver as causas-raiz identificadas na auditoria completa de 11/10/2026:
+  1. **Desbloqueio do Build dos APKs (`TvNetflixScreen.kt`)**:
+     - *Causa*: O runner do GitHub Actions quebrou com `e: Unresolved reference: prefs` em `TvNetflixScreenCore`, interrompendo o pipeline antes do upload e publicação da release.
+     - *Correção*: Instanciado `val prefs = remember(context) { SentinelaPreferences(context) }` e adicionada ramificação `else -> Alignment.TopEnd` exaustiva para `PipPosition`.
+  2. **Unificação da Versão Web (`version.ts`, `package.json`, `config.py`, `version.properties`)**:
+     - *Causa*: `frontend/src/constants/version.ts` estava congelado em `001.000.000.166`, exibindo versão desatualizada no rodapé e headers.
+     - *Correção*: Sincronizado para `001.000.000.171` em todos os repositórios e compilado no bundle Next.js.
+  3. **Restauração de Detecções e Notificações no Telegram (`config.yml` & `mqtt_service.py`)**:
+     - *Causa*: O Frigate no host Ubuntu estava com threshold de pessoa em `0.95` e movimento em `50`, suprimindo 99.9% dos eventos antes do MQTT.
+     - *Correção*: Calibração precisa para `threshold: 0.68`, movimento `18` e resolução `800x448` nativa do substream UDP. Adicionado fallback de texto imediato no `mqtt_service.py` caso o download de imagem sofra timeout.
 
 ---
 
