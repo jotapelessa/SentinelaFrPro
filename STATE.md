@@ -1,13 +1,14 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-11 11:35 BRT
+> **Última Atualização:** 2026-10-11 12:45 BRT
 > **Versão Corrente:** v001.000.000.171
 > **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.171 consolidada com:
 1. Desbloqueio e recuperação total do pipeline de CI/CD do Android no GitHub Actions: resolução do erro de compilação Kotlin (`TvNetflixScreenCore` - referência a `prefs` e enum `PipPosition`), restaurando a geração automática dos APKs para TV e Smartphone e a publicação de releases.
 2. Sincronização atômica da versão web: constante `APP_VERSION` em `version.ts` unificada com `package.json` e `config.py` para `001.000.000.171`, eliminando a exibição residual de versões antigas no rodapé de `sentinela.local`.
-3. Restauração e calibração das detecções e alertas do Telegram: limiares do Frigate calibrados para `threshold: 0.68` e `motion: 18` com resolução nativa `800x448`, eliminando a supressão severa de 0.95 no host.
-4. Resiliência de entrega do Telegram com fallback em modo texto caso frames de snapshot sofram buffering momentâneo no go2rtc.
+3. Resolução de erro 404 nos substreams do go2rtc / Frigate detect: remoção da diretiva inexistente `#transport=udp` que causava `Get "udp": unsupported protocol scheme ""` e crashes a cada 10s no ffmpeg de detecção. Fluxos de detecção operando a `800x448 @ 25fps` nativos com zero consumo desnecessário de CPU.
+4. Restauração e calibração das detecções e alertas do Telegram: limiares do Frigate calibrados para `threshold: 0.68` e `motion: 18` com resolução nativa `800x448`, eliminando a supressão severa de 0.95 no host.
+5. Resiliência de entrega do Telegram com fallback em modo texto caso frames de snapshot sofram buffering momentâneo no go2rtc.
 
 ---
 

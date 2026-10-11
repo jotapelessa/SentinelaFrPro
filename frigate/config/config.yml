@@ -99,7 +99,7 @@ go2rtc:
     cam_192_168_1_196_720p:
     - cam_192_168_1_196
     cam_192_168_1_196_sub:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#transport=udp#backchannel=0
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
 
     # =========================================================
     # cam_192_168_1_47 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
@@ -111,7 +111,7 @@ go2rtc:
     cam_192_168_1_47_720p:
     - cam_192_168_1_47
     cam_192_168_1_47_sub:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#transport=udp#backchannel=0
+    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0
 
     # Aliases de compatibilidade legada (in-memory)
     camera_principal:
