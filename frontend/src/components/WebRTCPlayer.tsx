@@ -505,10 +505,10 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     const withAudio = forceAudio !== undefined ? forceAudio : !isMuted;
     const mediaParam = withAudio ? "media=video,audio" : "media=video";
     // background=true impede que o go2rtc execute o timer de 5s de desconexão (Regra de Ouro #1/Streaming 24/7)
-    // Usar parâmetros separados (&mode=webrtc&mode=mse) para que o go2rtc faça fallback gracioso sem derrubar o player
+    // Usar parâmetro único com modos separados por vírgula (mode=webrtc,mse). Chaves repetidas (&mode=webrtc&mode=mse) fazem o stream.html instanciar 2 tags <video-stream> no mesmo iframe, duplicando a transmissão na tela.
     switch (streamMode) {
       case "webrtc":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc&mode=mse&${mediaParam}&background=true`;
+        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&${mediaParam}&background=true`;
       case "mse":
       default:
         return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&${mediaParam}&background=true`;

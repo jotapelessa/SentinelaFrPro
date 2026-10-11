@@ -229,7 +229,7 @@ export const CameraMosaic: React.FC = () => {
       </div>
 
       {/* Empty State */}
-      {cameras.length === 0 && (
+      {activeCamerasList.length === 0 && (
         <div className="p-12 text-center rounded-2xl glass-panel border border-slate-800 space-y-4 bg-slate-950/40">
           <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 flex items-center justify-center mx-auto">
             <Video className="w-8 h-8" />
@@ -264,7 +264,7 @@ export const CameraMosaic: React.FC = () => {
       )}
 
       {/* Cameras View (Spotlight vs Grid) - SINGLE PLAYER POLICY ENFORCED */}
-      {cameras.length > 0 && (
+      {activeCamerasList.length > 0 && (
         spotlightCamera ? (
           <div className="w-full space-y-3">
             <WebRTCPlayer
@@ -285,9 +285,9 @@ export const CameraMosaic: React.FC = () => {
         ) : (
           <div className="space-y-4">
             {/* Camera switcher bar (single live stream) */}
-            {cameras.length > 1 && (
+            {activeCamerasList.length > 1 && (
               <div className="flex items-center gap-2 flex-wrap">
-                {cameras.map((camera) => {
+                {activeCamerasList.map((camera) => {
                   const camId = camera.id || camera.name;
                   const isActive = activeStreamingCameraId === camId;
                   return (
@@ -308,18 +308,18 @@ export const CameraMosaic: React.FC = () => {
               </div>
             )}
 
-            {cameras.length === 1 ? (
+            {activeCamerasList.length === 1 ? (
               <div className="grid grid-cols-1 gap-4">
                 <WebRTCPlayer
-                  camera={cameras[0]}
+                  camera={activeCamerasList[0]}
                   isActivePlayer={true}
-                  onToggleSpotlight={() => setSpotlightCamera(cameras[0])}
+                  onToggleSpotlight={() => setSpotlightCamera(activeCamerasList[0])}
                   onCameraUpdated={fetchCameras}
                 />
               </div>
-            ) : cameras.length <= 4 ? (
+            ) : activeCamerasList.length <= 4 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full auto-rows-fr">
-                {cameras.map((camera) => {
+                {activeCamerasList.map((camera) => {
                   const camId = camera.id || camera.name;
                   return (
                     <div key={camId} className="w-full h-full min-h-[280px] sm:min-h-[340px] flex flex-col">
@@ -339,7 +339,7 @@ export const CameraMosaic: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full auto-rows-fr">
-                {cameras.map((camera) => {
+                {activeCamerasList.map((camera) => {
                   const camId = camera.id || camera.name;
                   return (
                     <div key={camId} className="w-full aspect-video min-h-[240px]">

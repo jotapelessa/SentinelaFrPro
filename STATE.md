@@ -10,6 +10,11 @@
 4. Restauração e calibração das detecções e alertas do Telegram: limiares do Frigate calibrados para `threshold: 0.68` e `motion: 18` com resolução nativa `800x448`, eliminando a supressão severa de 0.95 no host.
 5. Resiliência de entrega do Telegram com fallback em modo texto caso frames de snapshot sofram buffering momentâneo no go2rtc.
 6. Resolução da entrega de vídeos e fotos no Telegram: correção de `NameError: name 'time' is not defined` em `mqtt_service.py` que impedia o processamento de eventos MQTT do Frigate e bloqueava a fila de vídeos `TelegramVideoQueue`.
+7. Resolução definitiva de duplicação de transmissões WebRTC 720p no Web Dashboard:
+   - Causa-raiz: O script nativo do go2rtc `stream.html` processa `params.getAll('mode')`. Ao receber chaves repetidas (`&mode=webrtc&mode=mse`), o script expande a lista de streams com `streams.push(streams[0])` e instancia dois elementos `<video-stream>` no mesmo iframe (um WebRTC e um MSE). Com duas câmeras, isso gerava 4 transmissões na tela (duas de cada câmera).
+   - Correção em `WebRTCPlayer.tsx`: unificado em parâmetro único com modos separados por vírgula (`mode=webrtc,mse`), que é o formato nativo do `video-rtc.js` (`this.mode = 'webrtc,mse'`) para priorizar WebRTC com fallback para MSE sem instanciar elementos extras.
+   - Correção em `CameraMosaic.tsx`: unificada a renderização para usar estritamente `activeCamerasList` (câmeras habilitadas e deduplicadas por ID/nome), eliminando renderização de câmeras cruas (`cameras`).
+   - Auditoria nos apps móveis: Confirmado que nos aplicativos Android TV (`OverlayService.kt`) e Smartphone (`MseCameraView.kt`, `MobileGridScreen.kt`) não havia o problema, pois já utilizavam query strings com parâmetro único (`mode=mse&media=video` ou `mode=webrtc,webrtc/tcp&media=video`) e deduplicação estrita via `.filter { it.enabled }.distinctBy { it.name }`.
 
 ---
 
