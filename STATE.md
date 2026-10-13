@@ -1,24 +1,28 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-11 12:45 BRT
-> **Versão Corrente:** v001.000.000.171
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.171 consolidada com:
-1. Desbloqueio e recuperação total do pipeline de CI/CD do Android no GitHub Actions: resolução do erro de compilação Kotlin (`TvNetflixScreenCore` - referência a `prefs` e enum `PipPosition`), restaurando a geração automática dos APKs para TV e Smartphone e a publicação de releases.
-2. Sincronização atômica da versão web: constante `APP_VERSION` em `version.ts` unificada com `package.json` e `config.py` para `001.000.000.171`, eliminando a exibição residual de versões antigas no rodapé de `sentinela.local`.
-3. Resolução de erro 404 nos substreams do go2rtc / Frigate detect: remoção da diretiva inexistente `#transport=udp` que causava `Get "udp": unsupported protocol scheme ""` e crashes a cada 10s no ffmpeg de detecção. Fluxos de detecção operando a `800x448 @ 25fps` nativos com zero consumo desnecessário de CPU.
-4. Restauração e calibração das detecções e alertas do Telegram: limiares do Frigate calibrados para `threshold: 0.68` e `motion: 18` com resolução nativa `800x448`, eliminando a supressão severa de 0.95 no host.
-5. Resiliência de entrega do Telegram com fallback em modo texto caso frames de snapshot sofram buffering momentâneo no go2rtc.
-6. Resolução da entrega de vídeos e fotos no Telegram: correção de `NameError: name 'time' is not defined` em `mqtt_service.py` que impedia o processamento de eventos MQTT do Frigate e bloqueava a fila de vídeos `TelegramVideoQueue`.
-7. Resolução definitiva de duplicação de transmissões WebRTC 720p no Web Dashboard:
-   - Causa-raiz: O script nativo do go2rtc `stream.html` processa `params.getAll('mode')`. Ao receber chaves repetidas (`&mode=webrtc&mode=mse`), o script expande a lista de streams com `streams.push(streams[0])` e instancia dois elementos `<video-stream>` no mesmo iframe (um WebRTC e um MSE). Com duas câmeras, isso gerava 4 transmissões na tela (duas de cada câmera).
-   - Correção em `WebRTCPlayer.tsx`: unificado em parâmetro único com modos separados por vírgula (`mode=webrtc,mse`), que é o formato nativo do `video-rtc.js` (`this.mode = 'webrtc,mse'`) para priorizar WebRTC com fallback para MSE sem instanciar elementos extras.
-   - Correção em `CameraMosaic.tsx`: unificada a renderização para usar estritamente `activeCamerasList` (câmeras habilitadas e deduplicadas por ID/nome), eliminando renderização de câmeras cruas (`cameras`).
-   - Auditoria nos apps móveis: Confirmado que nos aplicativos Android TV (`OverlayService.kt`) e Smartphone (`MseCameraView.kt`, `MobileGridScreen.kt`) não havia o problema, pois já utilizavam query strings com parâmetro único (`mode=mse&media=video` ou `mode=webrtc,webrtc/tcp&media=video`) e deduplicação estrita via `.filter { it.enabled }.distinctBy { it.name }`.
-8. Isolamento Estrito do Pipeline de Streaming ao Vivo WebRTC (Zero-Impact Live Edge):
-   - Causa-raiz: O backend (`mqtt_service.py`) requisitava repetidamente `GET /api/frame.jpeg?src=...` no go2rtc para gerar fotos do Telegram na chegada de detecções. No go2rtc, extrair JPEGs de fluxos RTSP 3MP sem decodificador dedicado causava pausas de despacho de pacotes RTP/WebRTC na rede. Simultaneamente, o `WebPipAlertModal` montava um iframe de streaming concorrente mesmo na rota `/cameras`, colidindo com os decodificadores de hardware locais e congelando simultaneamente os players das duas câmeras por 2 a 5 segundos com subsequente reconexão destrutiva.
-   - Correção no backend (`mqtt_service.py`): Desacoplamento total de snapshots do go2rtc. As fotos de alerta são consumidas estritamente dos endpoints em cache nativo do Frigate NVR (`/api/events/{event_id}/snapshot.jpg` e `/api/{camera}/latest.jpg`). O go2rtc opera 100% focado na transmissão ininterrupta de vídeo ao vivo.
-   - Correção no frontend (`WebPipAlertModal.tsx`): Idempotência estrita implementada com `usePathname()`. Quando o usuário já estiver na rota de câmeras (`/cameras` ou `/`), o modal exibe o card de alerta com snapshot estático sem carregar iframe concorrente de streaming de vídeo.
+> **Última Atualização:** 2026-10-13 19:35 BRT
+> **Versão Corrente:** v001.000.000.172
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.172 consolidada com:
+1. Diagnóstico e Resolução de Falhas de Entrega no Telegram: Mapeamento de erro HTTP 401 Unauthorized decorrente de token expirado/revogado. Adicionada validação proativa de credenciais via `/getMe`, endpoint `/api/settings/telegram/status`, captura específica de 401 sem laços destrutivos de retentativas e banner visual em tempo real no Web Dashboard (`/settings/telegram`).
+2. Sincronização Atômica de Versão no Web Dashboard (`sentinela.local`): Unificação de `APP_VERSION` em `version.ts`, `package.json`, `config.py` e `version.properties` para `001.000.000.172` com processo de rebuild isolado com `--no-cache` no host Ubuntu.
+3. Desbloqueio e Atualização Contínua de APKs no CI/CD e Codespaces: `android/version.properties` incrementado para `BUILD=172` e `VERSION_NAME=001.000.000.172`. Notas de release do GitHub Actions parametrizadas para a nova versão e script `compile_apk.sh` validado para compilação local no Codespaces.
+4. Harmonização Total de Codecs & Performance: Verificação e garantia de conformidade de todos os fluxos RTSP em H.264 Baseline Profile CBR GOP=25 (1s), substreams 800x448 @ 5fps para OpenVINO GPU, e Zero-Impact Live Edge sem colisão de decodificadores.
+
+---
+
+## 🚀 Versão v001.000.000.172 — Diagnóstico Proativo do Telegram, Versão Web Unificada e Publicação Contínua de APKs
+- **Data**: 2026-10-13
+- **Objetivo**: Resolver as causas-raiz identificadas na auditoria completa de 13/10/2026:
+  1. **Diagnóstico e Resolução do Telegram (`telegram_vault.py` & `settings.py`)**:
+     - *Causa*: O bot token armazenado no SQLite/host retornava `HTTP 401 Unauthorized` na API do Telegram, bloqueando o envio de fotos e vídeos.
+     - *Correção*: Implementado `verify_token` no backend, endpoint `GET /api/settings/telegram/status` e banner de aviso visual na página `/settings/telegram` para guiar a atualização do token via `@BotFather`.
+  2. **Atualização da Versão no sentinela.local (`version.ts`, `package.json`, `config.py`)**:
+     - *Causa*: O build do Next.js continuava em versões passadas se reconstruído com camadas cacheadas do Docker.
+     - *Correção*: Versão elevada para `001.000.000.172` e deploy via SSH com `docker compose build --no-cache frontend`.
+  3. **Geração Automática de APKs (`android/version.properties` & `android-build.yml`)**:
+     - *Causa*: O arquivo `version.properties` estava parado em 171, impedindo a geração de novas tags e releases para os APKs de TV e Smartphone.
+     - *Correção*: Versão elevada para 172 com geração automática de artefatos no GitHub Actions e documentação de build para Codespaces.
 
 ---
 

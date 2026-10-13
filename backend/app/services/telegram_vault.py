@@ -15,6 +15,9 @@ class TelegramVaultService:
         self.chat_id = settings.TELEGRAM_CHAT_ID
         self.pause_until: Optional[datetime.datetime] = None
         self._audit_logs: List[Dict[str, Any]] = []
+        self.auth_status: str = "unknown"
+        self.last_auth_error: Optional[str] = None
+        self.bot_username: Optional[str] = None
 
     def record_audit(self, action: str, details: Dict[str, Any], success: bool, error: Optional[str] = None):
         """Appends an event to the in-memory Telegram audit trail."""
@@ -35,6 +38,49 @@ class TelegramVaultService:
     @property
     def is_configured(self) -> bool:
         return bool(self.bot_token and self.chat_id)
+
+    async def verify_token(self, token: Optional[str] = None) -> Dict[str, Any]:
+        """Probes Telegram getMe to verify bot token validity."""
+        test_token = token or self.bot_token
+        if not test_token:
+            self.auth_status = "unconfigured"
+            self.last_auth_error = "Bot Token não configurado"
+            return {"valid": False, "status": "unconfigured", "message": "Bot Token não configurado"}
+        try:
+            async with httpx.AsyncClient(timeout=6.0) as client:
+                res = await client.get(f"https://api.telegram.org/bot{test_token}/getMe")
+                if res.status_code == 200:
+                    bot_data = res.json().get("result", {})
+                    self.auth_status = "healthy"
+                    self.last_auth_error = None
+                    self.bot_username = bot_data.get("username")
+                    return {
+                        "valid": True,
+                        "status": "healthy",
+                        "username": self.bot_username,
+                        "first_name": bot_data.get("first_name"),
+                        "message": f"Autenticado como @{self.bot_username}"
+                    }
+                elif res.status_code == 401:
+                    self.auth_status = "unauthorized"
+                    self.last_auth_error = "Token inválido ou revogado no BotFather (HTTP 401 Unauthorized)"
+                    return {
+                        "valid": False,
+                        "status": "unauthorized",
+                        "message": "Token inválido ou revogado no BotFather (HTTP 401 Unauthorized)"
+                    }
+                else:
+                    self.auth_status = "error"
+                    self.last_auth_error = f"Erro na API do Telegram (HTTP {res.status_code})"
+                    return {
+                        "valid": False,
+                        "status": "error",
+                        "message": f"Telegram retornou HTTP {res.status_code}"
+                    }
+        except Exception as e:
+            self.auth_status = "network_error"
+            self.last_auth_error = f"Falha de conexão com api.telegram.org: {e}"
+            return {"valid": False, "status": "network_error", "message": str(e)}
 
     async def load_credentials_from_db(self):
         """Loads Bot Token and Chat ID from database if available, or seeds defaults."""
@@ -317,6 +363,13 @@ class TelegramVaultService:
                             logger.info("✅ Foto de alerta entregue com sucesso ao Telegram!")
                             self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone, "size_bytes": len(image_bytes)}, True)
                             return True
+                        elif resp.status_code == 401:
+                            self.auth_status = "unauthorized"
+                            self.last_auth_error = "Token inválido ou revogado no BotFather (HTTP 401 Unauthorized)"
+                            err = f"HTTP 401: {resp.text}"
+                            logger.error(f"❌ Telegram sendPhoto falhou por falta de autorização (401). Verifique o Token no BotFather!")
+                            self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, err)
+                            return False
                         elif resp.status_code == 429:
                             retry_after = int(resp.json().get("parameters", {}).get("retry_after", 3))
                             logger.warning(f"Telegram Rate Limit (429). Aguardando {retry_after}s...")
@@ -401,6 +454,13 @@ class TelegramVaultService:
                             logger.info("✅ Vídeo MP4 entregue com sucesso ao Telegram!")
                             self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "zone": zone, "duration_s": duration_s, "size_bytes": len(video_bytes)}, True)
                             return True
+                        elif resp.status_code == 401:
+                            self.auth_status = "unauthorized"
+                            self.last_auth_error = "Token inválido ou revogado no BotFather (HTTP 401 Unauthorized)"
+                            err = f"HTTP 401: {resp.text}"
+                            logger.error(f"❌ Telegram sendVideo falhou por falta de autorização (401). Verifique o Token no BotFather!")
+                            self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
+                            return False
                         elif resp.status_code == 429:
                             retry_after = int(resp.json().get("parameters", {}).get("retry_after", 3))
                             logger.warning(f"Telegram Rate Limit (429). Aguardando {retry_after}s...")

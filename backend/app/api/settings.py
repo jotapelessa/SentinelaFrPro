@@ -126,21 +126,27 @@ async def update_telegram_config(config: TelegramConfigUpdate, request: Request,
             db.add(SystemSetting(key=k, value=v))
     await db.commit()
 
-    # Restart interactive polling task with new credentials
-    if clean_token and clean_chat_id:
+    # Immediate token validation
+    val_res = await telegram_vault_service.verify_token(clean_token)
+
+    # Restart interactive polling task with new credentials if valid
+    if clean_token and clean_chat_id and val_res.get("valid", False):
         telegram_vault_service.start_polling_task()
 
     await audit_service.log(
         action="TELEGRAM_CONFIG_SAVED",
         module="TELEGRAM",
-        severity="SUCCESS",
-        details=f"Parâmetros de mídia do Telegram salvos (Duração: {clip_dur}s, Resolução: {snap_res}, Qualidade: {vid_qual}, Áudio: {inc_audio}, Modo: {send_md}).",
+        severity="SUCCESS" if val_res.get("valid", False) else "WARNING",
+        details=f"Parâmetros do Telegram salvos (Status: {val_res.get('status')}, Mensagem: {val_res.get('message')}).",
         client_ip=request.client.host if request.client else "unknown"
     )
 
     return {
         "status": "updated",
         "configured": telegram_vault_service.is_configured,
+        "auth_status": telegram_vault_service.auth_status,
+        "auth_message": val_res.get("message"),
+        "is_valid": val_res.get("valid", False),
         "bot_token": clean_token,
         "chat_id": clean_chat_id,
         "clip_duration_seconds": int(clip_dur),
@@ -148,6 +154,22 @@ async def update_telegram_config(config: TelegramConfigUpdate, request: Request,
         "video_quality": vid_qual,
         "include_audio": config.include_audio,
         "send_mode": send_md
+    }
+
+
+@router.get("/telegram/status")
+async def get_telegram_status():
+    """Returns current real-time authentication status of the Telegram bot."""
+    if not telegram_vault_service.is_configured:
+        await telegram_vault_service.load_credentials_from_db()
+    
+    val = await telegram_vault_service.verify_token()
+    return {
+        "configured": telegram_vault_service.is_configured,
+        "auth_status": telegram_vault_service.auth_status,
+        "last_auth_error": telegram_vault_service.last_auth_error,
+        "bot_username": telegram_vault_service.bot_username,
+        "validation": val
     }
 
 

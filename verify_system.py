@@ -52,18 +52,23 @@ async def verify_system():
         results.append(("Sentinela Backend API", "OFFLINE", f"Não foi possível conectar em {backend_url}: {e}"))
 
     # 4. Telegram Bot API
-    token = os.getenv("TELEGRAM_BOT_TOKEN", "8857963953:AAFsPQ965S6IgoEaWPkTghMbf6Qv6YCWu0E")
-    chat_id = os.getenv("TELEGRAM_CHAT_ID", "-1003995215102")
-    try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            res = await client.get(f"https://api.telegram.org/bot{token}/getMe")
-            if res.status_code == 200:
-                bot_info = res.json().get("result", {})
-                results.append(("Telegram Cloud Vault", "ONLINE", f"Bot @{bot_info.get('username')} autenticado com sucesso"))
-            else:
-                results.append(("Telegram Cloud Vault", "ERRO", f"Token inválido ou rejeitado pela API do Telegram: {res.text}"))
-    except Exception as e:
-        results.append(("Telegram Cloud Vault", "OFFLINE", f"Erro de rede ao contatar Telegram: {e}"))
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+    chat_id = os.getenv("TELEGRAM_CHAT_ID", "").strip()
+    if not token:
+        results.append(("Telegram Cloud Vault", "AVISO", "TELEGRAM_BOT_TOKEN não definido no ambiente."))
+    else:
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                res = await client.get(f"https://api.telegram.org/bot{token}/getMe")
+                if res.status_code == 200:
+                    bot_info = res.json().get("result", {})
+                    results.append(("Telegram Cloud Vault", "ONLINE", f"Bot @{bot_info.get('username')} autenticado com sucesso"))
+                elif res.status_code == 401:
+                    results.append(("Telegram Cloud Vault", "ERRO", "Token inválido/revogado no Telegram (HTTP 401 Unauthorized)"))
+                else:
+                    results.append(("Telegram Cloud Vault", "ERRO", f"Telegram retornou HTTP {res.status_code}: {res.text}"))
+        except Exception as e:
+            results.append(("Telegram Cloud Vault", "OFFLINE", f"Erro de rede ao contatar Telegram: {e}"))
 
     # 5. FFmpeg Binary
     try:

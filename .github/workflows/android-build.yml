@@ -189,12 +189,12 @@ jobs:
             * Confirmação visual e auditoria do reboot seguro do host Ubuntu
             * Controle granular de taxa de quadros e silenciamento por FAB
 
-          ### 🚀 Melhorias Desta Versão (Build 163):
-          - 📦 **Correção Crítica de Distribuição de APKs**: Resolução do pipeline CI/CD garantindo empacotamento, verificação rigorosa de saída e upload imediato dos binários para TV e Smartphone.
-          - ⚡ **Estabilidade Contínua de Streaming Web & PiP**: Resolução definitiva de desconexões de 5 segundos, watchdog suave via `playbackRate`, MSE TCP em conexões WebSocket e zero-cache no Nginx.
-          - 🧹 **Purga em Cascata de Câmeras**: Remoção no Frigate config, streams do go2rtc e chamada DELETE REST garantindo desativação instantânea sem streams fantasmas.
-          - 📸 **Web PiP & Mosaico 2×2**: Botões de Foto HD (JPG) e Gravação 15s (MP4) direto no cabeçalho do PiP; Mosaico perfeitamente ajustado sem distorção anamórfica.
-          - 🛡️ **Governança & Estabilidade**: Preservação estrita das 9 Regras de Ouro e 100% de aprovação na suíte `onp-spec`.
+          ### 🚀 Melhorias Desta Versão (Build ${{ steps.get_version.outputs.version }}):
+          - 📦 **Distribuição Contínua de APKs**: Pipeline de CI/CD automatizado com empacotamento simultâneo para Android TV e Smartphone.
+          - 🔔 **Validação e Diagnóstico do Telegram**: Adicionada detecção preventiva de status de bot token (HTTP 401) com feedback visual claro no painel e resiliência total na entrega de fotos e vídeos.
+          - ⚡ **Zero-Impact Live Edge**: Desacoplamento de snapshots do go2rtc consumidos exclusivamente do cache nativo do Frigate NVR, eliminando engasgos no WebRTC ao vivo.
+          - 📺 **Streaming & PiP Harmonizados**: Suporte a MSE TCP em WebSockets para Android TV e Smartphone, sem duplicação de streams e com deduplicação estrita de câmeras ativas.
+          - 🛡️ **Governança & Estabilidade**: Conformidade integral com as 9 Regras de Ouro e versão sincronizada em todo o ecossistema.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

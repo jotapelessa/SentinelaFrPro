@@ -390,9 +390,9 @@
     "semantic_hash": "345f8b332456cb48b154b6bce875d426"
   },
   "backend/app/api/settings.py": {
-    "mtime": 1791383446.7015119,
-    "seen": 1791521032.4407659,
-    "ast_hash": "ac6cf78f8949d54a0db418df2bd2af1c",
+    "mtime": 1791930728.4935958,
+    "seen": 1791930890.526541,
+    "ast_hash": "0e5c80e50aef0557d6dc444fac8d5e59",
     "semantic_hash": ""
   },
   "backend/app/api/telemetry.py": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1791729329.0861216,
-    "seen": 1791729555.7553332,
-    "ast_hash": "597c357011174207dcf10febfea1a019",
+    "mtime": 1791930578.398728,
+    "seen": 1791930890.5265431,
+    "ast_hash": "434f2133fc8c138b1e992376e5270d27",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -456,9 +456,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1791729394.0153124,
-    "seen": 1791729555.755338,
-    "ast_hash": "2cde171ad6c3097a18d61f89e1445d86",
+    "mtime": 1791745462.1956122,
+    "seen": 1791930890.526547,
+    "ast_hash": "58e1f14c587478bdb9a8ef8f509b93c3",
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
@@ -474,9 +474,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/telegram_vault.py": {
-    "mtime": 1790340630.8087933,
-    "seen": 1790950512.454756,
-    "ast_hash": "154fb94431ce1b8cc69bf401dfd3334e",
+    "mtime": 1791930705.003099,
+    "seen": 1791930890.52655,
+    "ast_hash": "551fb4d18ef1c2f259c994ca1af994e8",
     "semantic_hash": ""
   },
   "backend/app/services/telemetry.py": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1791729315.9870756,
-    "seen": 1791729555.755344,
-    "ast_hash": "3a340970fe04b9d4823ce70735753f2d",
+    "mtime": 1791930560.898366,
+    "seen": 1791930890.5265532,
+    "ast_hash": "4ba2d19ce4d61e0a9b7cec4a70210149",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -594,9 +594,9 @@
     "semantic_hash": ""
   },
   "frontend/src/app/settings/telegram/page.tsx": {
-    "mtime": 1788716936.061773,
-    "seen": 1788717056.334972,
-    "ast_hash": "e46b6c74162fb7ccdd7df162085a2465",
+    "mtime": 1791930800.9394977,
+    "seen": 1791930890.52656,
+    "ast_hash": "cd33601666ec0abf6ba88069714e5aec",
     "semantic_hash": ""
   },
   "frontend/src/components/AlertToast.tsx": {
@@ -612,9 +612,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/CameraMosaic.tsx": {
-    "mtime": 1790951271.4236186,
-    "seen": 1790951524.611676,
-    "ast_hash": "6a75ea7e7876fc189aa373eb08a6d661",
+    "mtime": 1791740508.4257174,
+    "seen": 1791930890.526562,
+    "ast_hash": "4dcedee748490f71f5a4194d0d5412d0",
     "semantic_hash": ""
   },
   "frontend/src/components/Header.tsx": {
@@ -636,9 +636,9 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1791645439.0810597,
-    "seen": 1791645882.2213702,
-    "ast_hash": "b52b63b1a9b403da4575857ffcadfc74",
+    "mtime": 1791740472.6444144,
+    "seen": 1791930890.526565,
+    "ast_hash": "6b84226eb7348f2890634ca4b3cde175",
     "semantic_hash": ""
   },
   "frontend/src/components/WebSocketProvider.tsx": {
@@ -702,10 +702,10 @@
     "semantic_hash": "767192d6ee65c497375b382fc35462b7"
   },
   "verify_system.py": {
-    "mtime": 1788179656.9984534,
-    "seen": 1788641395.538292,
-    "ast_hash": "28a8e80482387a757af491a258798329",
-    "semantic_hash": "28a8e80482387a757af491a258798329"
+    "mtime": 1791930821.3166666,
+    "seen": 1791930890.526575,
+    "ast_hash": "ee393176bfa2264462e43752e0d70864",
+    "semantic_hash": ""
   },
   ".agents/rules/execution.md": {
     "mtime": 1788526472.7855158,
@@ -714,9 +714,9 @@
     "semantic_hash": ""
   },
   ".github/workflows/android-build.yml": {
-    "mtime": 1790979138.6045089,
-    "seen": 1790979207.7081642,
-    "ast_hash": "1c146e57b8603ec37f277328b1506642",
+    "mtime": 1791930594.4984052,
+    "seen": 1791930890.5265799,
+    "ast_hash": "120e84cb3c09c8c7a538138fda1a5aab",
     "semantic_hash": ""
   },
   "AGENTS.md": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791729505.2810247,
-    "seen": 1791729555.755376,
-    "ast_hash": "b5b5396c68fa90cd0ee38f1c211a0e0b",
+    "mtime": 1791930616.3706782,
+    "seen": 1791930890.526586,
+    "ast_hash": "33c3f3cfbf3fc9b228ffdc29447e30c0",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1791729349.0199983,
-    "seen": 1791729555.755382,
-    "ast_hash": "0b1970ee51fb12116432cf172fe4296d",
+    "mtime": 1791733456.8496282,
+    "seen": 1791930890.526591,
+    "ast_hash": "117d6976f27ad8ac47706c4a960ff5e8",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1791729477.427491,
-    "seen": 1791729555.7553768,
-    "ast_hash": "a75bad3adfdc1f7182a6e2491418ff17",
+    "mtime": 1791930857.618139,
+    "seen": 1791930890.526586,
+    "ast_hash": "fc14345c730cb47c6dfd48bd5458e6c7",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1791729307.730679,
-    "seen": 1791729555.755357,
-    "ast_hash": "d30414e5f1c42e071aff88b6dc0af91f",
+    "mtime": 1791930546.5409946,
+    "seen": 1791930890.5265658,
+    "ast_hash": "303d10846a667db0d31df3a343e5dd2e",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
@@ -1128,9 +1128,9 @@
     "semantic_hash": ""
   },
   "frontend/src/components/WebPipAlertModal.tsx": {
-    "mtime": 1790793699.334565,
-    "seen": 1790950512.454771,
-    "ast_hash": "b131905ba1476a7ddca2d30d3f3edb2f",
+    "mtime": 1791745509.9297,
+    "seen": 1791930890.5265641,
+    "ast_hash": "2368f4ecc57d1c61040c3d5e0c8ca7c1",
     "semantic_hash": ""
   },
   "docs/CODESPACES_BUILD_GUIDE.md": {

@@ -72,6 +72,14 @@ export default function TelegramSettingsPage() {
     }
   };
 
+  const [authStatus, setAuthStatus] = useState<{
+    configured: boolean;
+    auth_status: string;
+    last_auth_error: string | null;
+    bot_username: string | null;
+    validation?: any;
+  } | null>(null);
+
   const fetchSettings = async () => {
     try {
       const res = await fetch(`${apiUrl}/settings/`);
@@ -85,8 +93,14 @@ export default function TelegramSettingsPage() {
         if (typeof data.include_audio === "boolean") setIncludeAudio(data.include_audio);
         if (data.send_mode) setSendMode(data.send_mode);
       }
+
+      const sRes = await fetch(`${apiUrl}/settings/telegram/status`);
+      if (sRes.ok) {
+        const sData = await sRes.json();
+        setAuthStatus(sData);
+      }
     } catch (e) {
-      console.error("Failed to fetch settings:", e);
+      console.error("Failed to fetch settings or telegram status:", e);
     }
   };
 
@@ -121,13 +135,20 @@ export default function TelegramSettingsPage() {
       });
 
       if (res.ok) {
+        const savedData = await res.json();
         setSaveSuccess(true);
-        setIsError(false);
-        setTelegramStatus("✅ Configurações e parâmetros de mídia salvos com sucesso!");
+        if (savedData.is_valid) {
+          setIsError(false);
+          setTelegramStatus(`✅ Credenciais salvas e autenticadas com sucesso no Telegram!`);
+        } else {
+          setIsError(true);
+          setTelegramStatus(`⚠️ Configurações salvas no Sentinela, mas o Telegram recusou o Bot Token: ${savedData.auth_message || "HTTP 401 Unauthorized"}. Gere um novo token no @BotFather e atualize aqui.`);
+        }
+        fetchSettings();
         setTimeout(() => {
           setSaveSuccess(false);
-          setTelegramStatus(null);
-        }, 5000);
+          if (savedData.is_valid) setTelegramStatus(null);
+        }, 8000);
       } else {
         const errData = await res.json().catch(() => ({ detail: "Erro desconhecido" }));
         setIsError(true);
@@ -306,6 +327,30 @@ export default function TelegramSettingsPage() {
   return (
     <div className="space-y-6">
       
+      {/* Real-time Bot Authentication Alert */}
+      {authStatus && authStatus.auth_status === "unauthorized" && (
+        <div className="p-4 rounded-2xl bg-rose-950/60 border border-rose-500/50 flex items-start gap-3.5 text-rose-200 text-xs shadow-xl backdrop-blur-md">
+          <AlertTriangle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+          <div className="space-y-1">
+            <h4 className="font-bold text-rose-100 text-sm">⚠️ Atenção: Bot Token Não Autorizado (HTTP 401)</h4>
+            <p className="text-slate-300">
+              O Telegram recusou as credenciais atuais. As notificações de intrusão, fotos HD e vídeos estão <strong>bloqueados</strong>. 
+              Por favor, gere ou copie um novo Bot Token válido no <strong>@BotFather</strong> e salve abaixo.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {authStatus && authStatus.auth_status === "healthy" && (
+        <div className="p-3.5 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 flex items-center justify-between text-xs text-emerald-200">
+          <div className="flex items-center gap-2.5">
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+            <span>Telegram Vault Ativo e Conectado: <strong>@{authStatus.bot_username || "Bot"}</strong></span>
+          </div>
+          <span className="text-[11px] text-emerald-400/80 font-mono">200 OK</span>
+        </div>
+      )}
+
       {/* 1. Telegram Credentials & Media Form */}
       <form onSubmit={handleSaveTelegram} className="space-y-6">
         
