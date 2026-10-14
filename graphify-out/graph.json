@@ -17997,7 +17997,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 atualizacao dos apps docker & correcao definitiva de expurgo de videos e fotos",
       "source_file": "STATE.md",
-      "source_location": "L231"
+      "source_location": "L236"
     },
     {
       "id": "state_auditoria_de_seguran\u00e7a_infraestrutura_resili\u00eancia_de_rede_l2_l3_hardening_nginx_sentinela_local",
@@ -18009,7 +18009,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udee1\ufe0f auditoria de seguranca & infraestrutura: resiliencia de rede l2/l3 & hardening nginx (`sentinela.local`)",
       "source_file": "STATE.md",
-      "source_location": "L270"
+      "source_location": "L275"
     },
     {
       "id": "state_gest\u00e3o_de_armazenamento_exclus\u00e3o_total_de_v\u00eddeos_fotos_100_wipe",
@@ -18021,7 +18021,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udcbe gestao de armazenamento: exclusao total de videos & fotos (100% wipe)",
       "source_file": "STATE.md",
-      "source_location": "L252"
+      "source_location": "L257"
     },
     {
       "id": "state_matriz_de_especifica\u00e7\u00f5es_e_cobertura_onp_spec",
@@ -18033,7 +18033,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udee1\ufe0f matriz de especificacoes e cobertura onp-spec",
       "source_file": "STATE.md",
-      "source_location": "L531"
+      "source_location": "L536"
     },
     {
       "id": "state_pr\u00f3ximos_passos_e_itens_em_aberto",
@@ -18045,7 +18045,7 @@
       "node_kind": "heading",
       "norm_label": "\u26a1 proximos passos e itens em aberto",
       "source_file": "STATE.md",
-      "source_location": "L1212"
+      "source_location": "L1217"
     },
     {
       "id": "state_resumo_da_sess\u00e3o_atual_v001_000_000_149",
@@ -18057,7 +18057,7 @@
       "node_kind": "heading",
       "norm_label": "resumo da sessao atual (v001.000.000.149)",
       "source_file": "STATE.md",
-      "source_location": "L1205"
+      "source_location": "L1210"
     },
     {
       "id": "state_state_md_mem\u00f3ria_persistente_do_projeto",
@@ -18081,7 +18081,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.114 (otimizacao termica, atomicidade e unificacao web)",
       "source_file": "STATE.md",
-      "source_location": "L767"
+      "source_location": "L772"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_115_corre\u00e7\u00e3o_da_aba_c\u00e2meras_nos_apks_harmoniza\u00e7\u00e3o_mse_e_cache_busting_web",
@@ -18093,7 +18093,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.115 (correcao da aba cameras nos apks, harmonizacao mse e cache-busting web)",
       "source_file": "STATE.md",
-      "source_location": "L744"
+      "source_location": "L749"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_116_resolu\u00e7\u00e3o_de_pip_na_tv_reconcilia\u00e7\u00e3o_master_capturas_hd_e_desduplica\u00e7\u00e3o_de_c\u00e2meras",
@@ -18105,7 +18105,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.116 (resolucao de pip na tv, reconciliacao master, capturas hd e desduplicacao de cameras)",
       "source_file": "STATE.md",
-      "source_location": "L731"
+      "source_location": "L736"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_117_estabilidade_multi_dispositivo_de_pip_zero_cache_nginx_host_app_web",
@@ -18117,7 +18117,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.117 (estabilidade multi-dispositivo de pip, zero-cache nginx host & app web)",
       "source_file": "STATE.md",
-      "source_location": "L712"
+      "source_location": "L717"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_126_observabilidade_e_logs_distribu\u00eddos_em_todas_as_abas_cards_bot\u00f5es_pip_zero_loading_flash",
@@ -18129,7 +18129,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.126 (observabilidade e logs distribuidos em todas as abas/cards/botoes & pip zero loading flash)",
       "source_file": "STATE.md",
-      "source_location": "L668"
+      "source_location": "L673"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_127_modo_de_espera_monitoramento_de_detec\u00e7\u00e3o_suspens\u00e3o_de_players_em_background_para_pip",
@@ -18141,7 +18141,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.127 (modo de espera / monitoramento de deteccao & suspensao de players em background para pip)",
       "source_file": "STATE.md",
-      "source_location": "L649"
+      "source_location": "L654"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_129_deduplica\u00e7\u00e3o_de_c\u00e2meras_na_tv_alinhamento_responsivo_de_ui_ux_e_propor\u00e7\u00e3o_din\u00e2mica_16_9_no_smartphone",
@@ -18153,7 +18153,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.129 (deduplicacao de cameras na tv, alinhamento responsivo de ui/ux e proporcao dinamica 16:9 no smartphone)",
       "source_file": "STATE.md",
-      "source_location": "L634"
+      "source_location": "L639"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_130_otimiza\u00e7\u00e3o_global_de_servidores_resolu\u00e7\u00e3o_de_salvamento_temperatura_e_segrega\u00e7\u00e3o_de_pip",
@@ -18165,7 +18165,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.130 (otimizacao global de servidores, resolucao de salvamento/temperatura e segregacao de pip)",
       "source_file": "STATE.md",
-      "source_location": "L616"
+      "source_location": "L621"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_140_otimiza\u00e7\u00e3o_extrema_para_c\u00e2meras_ip_aitek_seg6050bp_e_corre\u00e7\u00e3o_definitiva_do_lag_stutter_mse_24_fps",
@@ -18177,7 +18177,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.140 (otimizacao extrema para cameras ip aitek seg6050bp e correcao definitiva do lag/stutter mse 24 fps)",
       "source_file": "STATE.md",
-      "source_location": "L581"
+      "source_location": "L586"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_141_harmoniza\u00e7\u00e3o_universal_h_264_gop_25_clipes_reais_telegram_e_fim_dos_travamentos_de_30s",
@@ -18189,7 +18189,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.141 (harmonizacao universal h.264, gop 25, clipes reais telegram e fim dos travamentos de 30s)",
       "source_file": "STATE.md",
-      "source_location": "L566"
+      "source_location": "L571"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_150_build_150_otimiza\u00e7\u00e3o_global_do_ecossistema_e_harmoniza\u00e7\u00e3o_multi_plataforma",
@@ -18201,7 +18201,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.150 (build 150) \u2014 otimizacao global do ecossistema e harmonizacao multi-plataforma",
       "source_file": "STATE.md",
-      "source_location": "L491"
+      "source_location": "L496"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_152_build_152_persist\u00eancia_definitiva_de_grava\u00e7\u00e3o_resolu\u00e7\u00e3o_\u00e1udio_e_bitrate",
@@ -18213,7 +18213,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.152 (build 152) \u2014 persistencia definitiva de gravacao, resolucao, audio e bitrate",
       "source_file": "STATE.md",
-      "source_location": "L472"
+      "source_location": "L477"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_155_build_155_controle_de_sensores_hardware_onvif_sincroniza\u00e7\u00e3o_hor\u00e1ria_e_otimiza\u00e7\u00e3o_do_ecossistema",
@@ -18225,7 +18225,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.155 (build 155) \u2014 controle de sensores/hardware onvif, sincronizacao horaria e otimizacao do ecossistema",
       "source_file": "STATE.md",
-      "source_location": "L428"
+      "source_location": "L433"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_156_build_156_corre\u00e7\u00e3o_definitiva_de_limpeza_ssd_otimiza\u00e7\u00e3o_t\u00e9rmica_e_cascateamento_go2rtc",
@@ -18237,7 +18237,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.156 (build 156) \u2014 correcao definitiva de limpeza ssd, otimizacao termica e cascateamento go2rtc",
       "source_file": "STATE.md",
-      "source_location": "L411"
+      "source_location": "L416"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_157_build_157_deduplica\u00e7\u00e3o_estrita_de_c\u00e2meras_loopback_universal_no_go2rtc_e_otimiza\u00e7\u00e3o_extrema_de_recursos",
@@ -18249,7 +18249,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.157 (build 157) \u2014 deduplicacao estrita de cameras, loopback universal no go2rtc e otimizacao extrema de recursos",
       "source_file": "STATE.md",
-      "source_location": "L398"
+      "source_location": "L403"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_159_build_159_desacoplamento_de_foco_na_tv_pip_16_9_estrito_controles_por_c\u00e2mera_e_otimiza\u00e7\u00e3o_mobile",
@@ -18261,7 +18261,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.159 (build 159) \u2014 desacoplamento de foco na tv, pip 16:9 estrito, controles por camera e otimizacao mobile",
       "source_file": "STATE.md",
-      "source_location": "L367"
+      "source_location": "L372"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_161_build_161_resolu\u00e7\u00e3o_de_decoder_tv_aspect_ratio_16_9_estrito_e_ci_cd_verde",
@@ -18273,7 +18273,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.161 (build 161) \u2014 resolucao de decoder tv, aspect ratio 16:9 estrito e ci/cd verde",
       "source_file": "STATE.md",
-      "source_location": "L340"
+      "source_location": "L345"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_162_build_162_resolu\u00e7\u00e3o_definitiva_de_transmiss\u00f5es_web_24_7_fim_do_ciclo_de_5_segundos_e_harmoniza\u00e7\u00e3o_dual_cam",
@@ -18285,7 +18285,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.162 (build 162) \u2014 resolucao definitiva de transmissoes web 24/7 (fim do ciclo de 5 segundos) e harmonizacao dual-cam",
       "source_file": "STATE.md",
-      "source_location": "L322"
+      "source_location": "L327"
     },
     {
       "id": "state_vers\u00e3o_anterior_v001_000_000_163_build_163_corre\u00e7\u00e3o_cr\u00edtica_de_gera\u00e7\u00e3o_e_publica\u00e7\u00e3o_de_apks_no_ci_cd",
@@ -18297,7 +18297,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao anterior: v001.000.000.163 (build 163) \u2014 correcao critica de geracao e publicacao de apks no ci/cd",
       "source_file": "STATE.md",
-      "source_location": "L307"
+      "source_location": "L312"
     },
     {
       "id": "state_vers\u00e3o_atual_v001_000_000_142_ingest\u00e3o_\u00fanica_sub_stream_est\u00e1vel_cascateamento_zero_drop_go2rtc_e_rebuild_backend",
@@ -18309,7 +18309,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao atual: v001.000.000.142 (ingestao unica sub-stream estavel, cascateamento zero-drop go2rtc e rebuild backend)",
       "source_file": "STATE.md",
-      "source_location": "L547"
+      "source_location": "L552"
     },
     {
       "id": "state_vers\u00e3o_atual_v001_000_000_164_build_164_unifica\u00e7\u00e3o_do_pip_tv_corre\u00e7\u00e3o_de_sqlite_e_estabilidade_do_stream",
@@ -18321,7 +18321,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\udce6 versao atual: v001.000.000.164 (build 164) \u2014 unificacao do pip tv, correcao de sqlite e estabilidade do stream",
       "source_file": "STATE.md",
-      "source_location": "L290"
+      "source_location": "L295"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_165_estabiliza\u00e7\u00e3o_integral_da_stack_sincroniza\u00e7\u00e3o_pip",
@@ -18333,7 +18333,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.165 \u2014 estabilizacao integral da stack & sincronizacao pip",
       "source_file": "STATE.md",
-      "source_location": "L204"
+      "source_location": "L209"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_167_estabiliza\u00e7\u00e3o_integral_do_webrtc_720p_ingest\u00e3o_zero_copy_elimina\u00e7\u00e3o_de_satura\u00e7\u00e3o_de_cpu",
@@ -18345,7 +18345,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.167 \u2014 estabilizacao integral do webrtc 720p, ingestao zero-copy & eliminacao de saturacao de cpu",
       "source_file": "STATE.md",
-      "source_location": "L179"
+      "source_location": "L184"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_168_substreams_nativos_udp_watchdog_webrtc_corrigido_zonas_estritas_no_frigate",
@@ -18357,7 +18357,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.168 \u2014 substreams nativos udp, watchdog webrtc corrigido & zonas estritas no frigate",
       "source_file": "STATE.md",
-      "source_location": "L158"
+      "source_location": "L163"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_169_bloqueio_estrito_de_pip_em_dispositivos_inativos_sintaxe_can\u00f4nica_go2rtc_webrtc_mse_estabiliza\u00e7\u00e3o_geral",
@@ -18369,7 +18369,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.169 \u2014 bloqueio estrito de pip em dispositivos inativos, sintaxe canonica go2rtc webrtc/mse & estabilizacao geral",
       "source_file": "STATE.md",
-      "source_location": "L142"
+      "source_location": "L147"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_170_auditoria_integral_ping_ao_servidor_soberania_de_pip_na_tv_\u00e1udio_e_streaming_web_estabilizado",
@@ -18381,7 +18381,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.170 \u2014 auditoria integral: ping ao servidor, soberania de pip na tv, audio e streaming web estabilizado",
       "source_file": "STATE.md",
-      "source_location": "L123"
+      "source_location": "L128"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_171_corre\u00e7\u00e3o_do_build_dos_apks_no_github_actions_vers\u00e3o_web_unificada_e_restaura\u00e7\u00e3o_de_alertas_no_telegram",
@@ -18393,7 +18393,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.171 \u2014 correcao do build dos apks no github actions, versao web unificada e restauracao de alertas no telegram",
       "source_file": "STATE.md",
-      "source_location": "L108"
+      "source_location": "L113"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_172_diagn\u00f3stico_proativo_do_telegram_vers\u00e3o_web_unificada_e_publica\u00e7\u00e3o_cont\u00ednua_de_apks",
@@ -18405,7 +18405,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.172 \u2014 diagnostico proativo do telegram, versao web unificada e publicacao continua de apks",
       "source_file": "STATE.md",
-      "source_location": "L104"
+      "source_location": "L109"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_173_otimiza\u00e7\u00e3o_de_performance_tv_mobile_corre\u00e7\u00e3o_de_alertas_telegram_release_pipeline",
@@ -18417,7 +18417,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.173 \u2014 otimizacao de performance tv/mobile, correcao de alertas telegram & release pipeline",
       "source_file": "STATE.md",
-      "source_location": "L84"
+      "source_location": "L89"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_174_corre\u00e7\u00e3o_do_telegram_otimiza\u00e7\u00e3o_t\u00e9rmica_cpu_central_de_downloads_de_apks_sincroniza\u00e7\u00e3o_de_produ\u00e7\u00e3o",
@@ -18429,7 +18429,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.174 \u2014 correcao do telegram, otimizacao termica/cpu, central de downloads de apks & sincronizacao de producao",
       "source_file": "STATE.md",
-      "source_location": "L65"
+      "source_location": "L70"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_175_aliases_go2rtc_v\u00e1lidos_webrtc_720p_web_default_gerenciamento_de_energia_telegram_3mp_nativo",
@@ -18441,7 +18441,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83d\ude80 versao v001.000.000.175 \u2014 aliases go2rtc validos, webrtc 720p web default, gerenciamento de energia & telegram 3mp nativo",
       "source_file": "STATE.md",
-      "source_location": "L39"
+      "source_location": "L44"
     },
     {
       "id": "state_vers\u00e3o_v001_000_000_176_sincroniza\u00e7\u00e3o_hor\u00e1ria_bras\u00edlia_utc_3_zonas_estritas_no_frigate_otimiza\u00e7\u00e3o_t\u00e9rmica_polling_mobile",
@@ -18465,7 +18465,7 @@
       "node_kind": "heading",
       "norm_label": "\ud83c\udfaf visao e objetivos atuais",
       "source_file": "STATE.md",
-      "source_location": "L520"
+      "source_location": "L525"
     },
     {
       "id": "agents_workflows_graphify",
@@ -42409,7 +42409,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L104",
+      "source_location": "L109",
       "weight": 1.0
     },
     {
@@ -42420,7 +42420,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L108",
+      "source_location": "L113",
       "weight": 1.0
     },
     {
@@ -42431,7 +42431,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L1205",
+      "source_location": "L1210",
       "weight": 1.0
     },
     {
@@ -42442,7 +42442,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L1212",
+      "source_location": "L1217",
       "weight": 1.0
     },
     {
@@ -42453,7 +42453,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L123",
+      "source_location": "L128",
       "weight": 1.0
     },
     {
@@ -42464,7 +42464,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L142",
+      "source_location": "L147",
       "weight": 1.0
     },
     {
@@ -42475,7 +42475,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L158",
+      "source_location": "L163",
       "weight": 1.0
     },
     {
@@ -42497,7 +42497,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L179",
+      "source_location": "L184",
       "weight": 1.0
     },
     {
@@ -42508,7 +42508,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L204",
+      "source_location": "L209",
       "weight": 1.0
     },
     {
@@ -42519,7 +42519,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L231",
+      "source_location": "L236",
       "weight": 1.0
     },
     {
@@ -42530,7 +42530,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L252",
+      "source_location": "L257",
       "weight": 1.0
     },
     {
@@ -42541,7 +42541,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L270",
+      "source_location": "L275",
       "weight": 1.0
     },
     {
@@ -42552,7 +42552,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L290",
+      "source_location": "L295",
       "weight": 1.0
     },
     {
@@ -42563,7 +42563,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L307",
+      "source_location": "L312",
       "weight": 1.0
     },
     {
@@ -42574,7 +42574,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L322",
+      "source_location": "L327",
       "weight": 1.0
     },
     {
@@ -42585,7 +42585,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L340",
+      "source_location": "L345",
       "weight": 1.0
     },
     {
@@ -42596,18 +42596,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L367",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_v001_000_000_175_aliases_go2rtc_v\u00e1lidos_webrtc_720p_web_default_gerenciamento_de_energia_telegram_3mp_nativo",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L39",
+      "source_location": "L372",
       "weight": 1.0
     },
     {
@@ -42618,7 +42607,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L398",
+      "source_location": "L403",
       "weight": 1.0
     },
     {
@@ -42629,7 +42618,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L411",
+      "source_location": "L416",
       "weight": 1.0
     },
     {
@@ -42640,7 +42629,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L428",
+      "source_location": "L433",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_v001_000_000_175_aliases_go2rtc_v\u00e1lidos_webrtc_720p_web_default_gerenciamento_de_energia_telegram_3mp_nativo",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -42651,7 +42651,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L472",
+      "source_location": "L477",
       "weight": 1.0
     },
     {
@@ -42662,7 +42662,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L491",
+      "source_location": "L496",
       "weight": 1.0
     },
     {
@@ -42673,7 +42673,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L520",
+      "source_location": "L525",
       "weight": 1.0
     },
     {
@@ -42684,7 +42684,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L531",
+      "source_location": "L536",
       "weight": 1.0
     },
     {
@@ -42695,7 +42695,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L547",
+      "source_location": "L552",
       "weight": 1.0
     },
     {
@@ -42706,7 +42706,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L566",
+      "source_location": "L571",
       "weight": 1.0
     },
     {
@@ -42717,7 +42717,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L581",
+      "source_location": "L586",
       "weight": 1.0
     },
     {
@@ -42728,7 +42728,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L616",
+      "source_location": "L621",
       "weight": 1.0
     },
     {
@@ -42739,7 +42739,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L634",
+      "source_location": "L639",
       "weight": 1.0
     },
     {
@@ -42750,18 +42750,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L649",
-      "weight": 1.0
-    },
-    {
-      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
-      "target": "state_vers\u00e3o_v001_000_000_174_corre\u00e7\u00e3o_do_telegram_otimiza\u00e7\u00e3o_t\u00e9rmica_cpu_central_de_downloads_de_apks_sincroniza\u00e7\u00e3o_de_produ\u00e7\u00e3o",
-      "relation": "contains",
-      "_origin": "ast",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "STATE.md",
-      "source_location": "L65",
+      "source_location": "L654",
       "weight": 1.0
     },
     {
@@ -42772,7 +42761,18 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L668",
+      "source_location": "L673",
+      "weight": 1.0
+    },
+    {
+      "source": "state_state_md_mem\u00f3ria_persistente_do_projeto",
+      "target": "state_vers\u00e3o_v001_000_000_174_corre\u00e7\u00e3o_do_telegram_otimiza\u00e7\u00e3o_t\u00e9rmica_cpu_central_de_downloads_de_apks_sincroniza\u00e7\u00e3o_de_produ\u00e7\u00e3o",
+      "relation": "contains",
+      "_origin": "ast",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "STATE.md",
+      "source_location": "L70",
       "weight": 1.0
     },
     {
@@ -42783,7 +42783,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L712",
+      "source_location": "L717",
       "weight": 1.0
     },
     {
@@ -42794,7 +42794,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L731",
+      "source_location": "L736",
       "weight": 1.0
     },
     {
@@ -42805,7 +42805,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L744",
+      "source_location": "L749",
       "weight": 1.0
     },
     {
@@ -42816,7 +42816,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L767",
+      "source_location": "L772",
       "weight": 1.0
     },
     {
@@ -42827,7 +42827,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "STATE.md",
-      "source_location": "L84",
+      "source_location": "L89",
       "weight": 1.0
     },
     {
@@ -48759,5 +48759,5 @@
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "2995409cd68ade67d725c8d16313a3206b535dd1"
+  "built_at_commit": "b2b7bd307673e585842b9ea03a8d7c68e8dea48e"
 }

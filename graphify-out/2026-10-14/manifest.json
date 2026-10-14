@@ -366,9 +366,9 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1791994311.1943455,
-    "seen": 1791994592.77642,
-    "ast_hash": "3b62492799861c4be5f594b2dc396b24",
+    "mtime": 1791995856.8894324,
+    "seen": 1791996142.782411,
+    "ast_hash": "3573074c934ee3ea9d3408281f01381e",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
@@ -456,9 +456,9 @@
     "semantic_hash": "8f2d8e9b515cac0773819ec1faa166f9"
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1791994359.865494,
-    "seen": 1791994592.776428,
-    "ast_hash": "3461cfa3849aa9f502b48461dd85e607",
+    "mtime": 1791995973.661335,
+    "seen": 1791996142.782419,
+    "ast_hash": "a6b1243e0bdc40a74935e753809d2b08",
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
@@ -486,9 +486,9 @@
     "semantic_hash": "2b96bb012c232336e6df92435a9a422a"
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1791994554.4493358,
-    "seen": 1791994592.776433,
-    "ast_hash": "8eadc256e25e33b29005822e76618967",
+    "mtime": 1791996118.6788998,
+    "seen": 1791996142.782423,
+    "ast_hash": "3a04c9a0794bc108ff0cb60c32483532",
     "semantic_hash": ""
   },
   "compile_apk.sh": {
@@ -780,8 +780,8 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1791983603.8736846,
-    "seen": 1791984466.491394,
+    "mtime": 1791996099.440111,
+    "seen": 1791996142.782463,
     "ast_hash": "7c3fdcfc7181f81360babba73d8cc119",
     "semantic_hash": ""
   },
@@ -1146,9 +1146,9 @@
     "semantic_hash": "ed7d02d33f082cd31956d97b95d7c0c8"
   },
   "backend/app/services/onvif_hardware.py": {
-    "mtime": 1791994027.918645,
-    "seen": 1791994592.776429,
-    "ast_hash": "4e26931ed337d50fd5f3a2cf4ec00bfc",
+    "mtime": 1791995801.7568398,
+    "seen": 1791996142.782419,
+    "ast_hash": "fa2e6488762e28a2ad61200729ed992d",
     "semantic_hash": ""
   },
   "backend/app/services/time_sync.py": {
