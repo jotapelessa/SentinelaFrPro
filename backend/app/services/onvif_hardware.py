@@ -43,41 +43,49 @@ class OnvifHardwareService:
                 if cand not in ["127.0.0.1", "0.0.0.0"]:
                     return cand
 
-        try:
-            from app.db.session import AsyncSessionLocal
-            from app.db.models import Camera
-            from sqlalchemy import select
+        if camera_name:
+            try:
+                from app.db.session import AsyncSessionLocal
+                from app.db.models import Camera
+                from sqlalchemy import select
 
-            async with AsyncSessionLocal() as session:
-                stmt = select(Camera)
-                if camera_name:
-                    stmt = stmt.where((Camera.name == camera_name) | (Camera.friendly_name == camera_name))
-                res = await session.execute(stmt)
-                cams = res.scalars().all()
-                for c in cams:
-                    if c.ip_address and c.ip_address not in ["127.0.0.1", "localhost", "frigate", "0.0.0.0"]:
-                        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', c.ip_address)
-                        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
-                            return m.group(1)
-                    if c.rtsp_main:
-                        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', c.rtsp_main)
-                        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
-                            return m.group(1)
-                    if c.name:
-                        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', c.name)
-                        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
-                            return m.group(1)
-                        m2 = re.search(r'(\d{1,3})_(\d{1,3})_(\d{1,3})_(\d{1,3})', c.name)
-                        if m2:
-                            cand = f"{m2.group(1)}.{m2.group(2)}.{m2.group(3)}.{m2.group(4)}"
-                            if cand not in ["127.0.0.1", "0.0.0.0"]:
-                                return cand
-        except Exception as e:
-            logger.debug(f"Falha ao resolver IP real via DB: {e}")
+                async with AsyncSessionLocal() as session:
+                    stmt = select(Camera).where(
+                        (Camera.name == camera_name) | (Camera.friendly_name == camera_name)
+                    )
+                    res = await session.execute(stmt)
+                    cam = res.scalar_one_or_none()
+                    if cam:
+                        if cam.ip_address and cam.ip_address not in ["127.0.0.1", "localhost", "frigate", "0.0.0.0"]:
+                            m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', cam.ip_address)
+                            if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                                return m.group(1)
+                        if cam.rtsp_main:
+                            m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', cam.rtsp_main)
+                            if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                                return m.group(1)
+                        if cam.name:
+                            m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', cam.name)
+                            if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                                return m.group(1)
+                            m2 = re.search(r'(\d{1,3})_(\d{1,3})_(\d{1,3})_(\d{1,3})', cam.name)
+                            if m2:
+                                cand = f"{m2.group(1)}.{m2.group(2)}.{m2.group(3)}.{m2.group(4)}"
+                                if cand not in ["127.0.0.1", "0.0.0.0"]:
+                                    return cand
+            except Exception as e:
+                logger.debug(f"Falha ao resolver IP real via DB: {e}")
 
         return None
 
-    async def get_camera_hardware_config(self, ip_address: str, port: int = 80, username: str = "admin", password: str = "") -> Dict[str, Any]:
+    async def get_camera_hardware_config(
+        self,
+        ip_address: str,
+        port: int = 80,
+        username: str = "admin",
+        password: str = "",
+        camera_name: Optional[str] = None
+    ) -> Dict[str, Any]:
         """Probes camera hardware parameters via ONVIF/HTTP."""
         config = {
             "codec": "h264",
@@ -92,7 +100,7 @@ class OnvifHardwareService:
             "reachable": False
         }
         
-        real_ip = await self.resolve_camera_ip(ip_address)
+        real_ip = await self.resolve_camera_ip(ip_address, camera_name)
         if real_ip:
             ip_address = real_ip
 

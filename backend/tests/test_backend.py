@@ -204,3 +204,115 @@ async def test_mqtt_skip_video_outside_zone():
         # Should NOT dispatch video
         mock_video.assert_not_called()
 
+        # Payload of event end with unconfigured zone (e.g. rua)
+        payload_unconfigured = {
+            "type": "end",
+            "after": {
+                "id": "evt_test_unconfigured",
+                "camera": "cam_test",
+                "label": "person",
+                "current_zones": ["rua"],
+                "entered_zones": []
+            }
+        }
+        await mqtt_service.handle_frigate_event(payload_unconfigured)
+        mock_video.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_mqtt_policy_ignores_motion_masks():
+    from unittest.mock import patch, AsyncMock
+    from app.services.mqtt_service import mqtt_service
+    import json
+
+    class DummyCam:
+        enabled = True
+        notify_tv = True
+        notify_telegram = True
+        friendly_name = "Cam Mask Only"
+        zones = json.dumps([
+            {"id": "mask_1", "name": "Mascara", "slug": "motion_mask", "type": "mask", "points": [{"x": 0.1, "y": 0.1}, {"x": 0.2, "y": 0.2}, {"x": 0.3, "y": 0.3}]}
+        ])
+
+    with patch("app.db.session.AsyncSessionLocal") as mock_session_cls:
+        mock_session = AsyncMock()
+        mock_session_cls.return_value.__aenter__.return_value = mock_session
+        mock_result = AsyncMock()
+        mock_result.scalar_one_or_none.return_value = DummyCam()
+        mock_session.execute.return_value = mock_result
+
+        # Invalidate cache
+        mqtt_service._camera_policy_cache.clear()
+        policy = await mqtt_service._get_camera_policy("test_cam_mask")
+        assert policy["has_zones"] is False
+        assert policy["configured_zones"] == []
+
+
+@pytest.mark.asyncio
+async def test_resolve_camera_ip_safety():
+    from app.services.onvif_hardware import onvif_hardware_service
+
+    # Generic loopback without camera_name must return None (never pick random camera)
+    res_none = await onvif_hardware_service.resolve_camera_ip("127.0.0.1", None)
+    assert res_none is None
+
+    # Name containing IP
+    res_name = await onvif_hardware_service.resolve_camera_ip(None, "cam_192_168_1_47")
+    assert res_name == "192.168.1.47"
+
+    # RTSP url containing IP
+    res_rtsp = await onvif_hardware_service.resolve_camera_ip("rtsp://admin:pass@192.168.1.196:554/live")
+    assert res_rtsp == "192.168.1.196"
+
+
+@pytest.mark.asyncio
+async def test_sync_camera_to_frigate_zones_mask_filtering():
+    from unittest.mock import patch, AsyncMock
+    from app.api.cameras import sync_camera_to_frigate
+    from app.db.models import Camera
+    import json
+
+    cam = Camera(
+        name="cam_192_168_1_196",
+        friendly_name="Principal",
+        rtsp_main="rtsp://admin:admin@192.168.1.196:554/live/0/MAIN",
+        rtsp_sub="rtsp://admin:admin@192.168.1.196:554/live/0/SUB",
+        enabled=True,
+        zones=json.dumps([
+            {
+                "id": "zone_cx",
+                "name": "Cx",
+                "slug": "cx",
+                "type": "zone",
+                "points": [{"x": 0.1, "y": 0.2}, {"x": 0.3, "y": 0.4}, {"x": 0.5, "y": 0.6}]
+            },
+            {
+                "id": "mask_test",
+                "name": "Mascara",
+                "slug": "motion_mask",
+                "type": "mask",
+                "points": [{"x": 0.7, "y": 0.8}, {"x": 0.8, "y": 0.9}, {"x": 0.9, "y": 0.9}]
+            }
+        ])
+    )
+
+    captured_cfg = {}
+    async def mock_save(cfg, path):
+        captured_cfg.update(cfg)
+        return True
+
+    with patch("app.api.cameras.get_frigate_config_path", return_value="/fake/nonexistent/config.yml"), \
+         patch("app.api.cameras._save_yaml_config_atomic", side_effect=mock_save), \
+         patch("httpx.AsyncClient.put", AsyncMock()):
+        await sync_camera_to_frigate(cam)
+
+    cam_entry = captured_cfg["cameras"]["cam_192_168_1_196"]
+    # Only "cx" must be in required_zones, NOT "motion_mask"
+    assert cam_entry["review"]["alerts"]["required_zones"] == ["cx"]
+    assert cam_entry["review"]["detections"]["required_zones"] == ["cx"]
+    # cam_entry["zones"] must be hydrated with cx
+    assert "cx" in cam_entry["zones"]
+    # motion mask must be set under motion.mask
+    assert "mask" in cam_entry["motion"]
+
+

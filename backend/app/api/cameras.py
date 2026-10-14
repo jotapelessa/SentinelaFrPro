@@ -1679,23 +1679,54 @@ async def sync_camera_to_frigate(cam: Camera):
 
     # 7. Garantir review labels e sincronizar required_zones com base nas zonas configuradas
     configured_zone_names = []
+    detect_w = cam_block.get("detect", {}).get("width", 800) if isinstance(cam_block.get("detect"), dict) else 800
+    detect_h = cam_block.get("detect", {}).get("height", 448) if isinstance(cam_block.get("detect"), dict) else 448
+
     if getattr(cam, "zones", None):
         try:
             import json
             pz = json.loads(cam.zones)
             if isinstance(pz, list):
-                for z in pz:
+                converted_zones = {}
+                motion_masks = []
+                for idx, z in enumerate(pz):
                     if isinstance(z, dict):
-                        z_slug = z.get("slug") or z.get("name") or z.get("zone_name") or z.get("id")
+                        z_type = z.get("type", "zone")
+                        pts = z.get("points", [])
+                        if z_type == "mask":
+                            if len(pts) >= 3:
+                                coord_str = ",".join(f"{round(p.get('x', 0) * detect_w)},{round(p.get('y', 0) * detect_h)}" for p in pts)
+                                motion_masks.append(coord_str)
+                            continue
+                        
+                        z_slug = z.get("slug") or z.get("name") or z.get("zone_name") or f"zona_{idx + 1}"
                         if z_slug:
                             clean_name = str(z_slug).strip().replace(" ", "_").lower()
                             if clean_name and clean_name not in configured_zone_names:
                                 configured_zone_names.append(clean_name)
+                            if len(pts) >= 3:
+                                coord_str = ",".join(f"{round(p.get('x', 0) * detect_w)},{round(p.get('y', 0) * detect_h)}" for p in pts)
+                                converted_zones[clean_name] = {
+                                    "coordinates": coord_str,
+                                    "objects": z.get("objects", ["person", "car", "motorcycle", "dog", "cat", "bicycle"])
+                                }
+
+                # Se cam_block ainda não tiver zonas estruturadas em yaml, hidrata a partir do SQLite
+                if "zones" not in cam_block or not cam_block["zones"]:
+                    if converted_zones:
+                        cam_block["zones"] = converted_zones
+                if motion_masks and ("motion" not in cam_block or not cam_block.get("motion", {}).get("mask")):
+                    if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
+                        cam_block["motion"] = {}
+                    cam_block["motion"]["mask"] = motion_masks[0] if len(motion_masks) == 1 else " ".join(motion_masks)
+
             elif isinstance(pz, dict):
-                for z_slug in pz.keys():
+                for z_slug, z_val in pz.items():
                     clean_name = str(z_slug).strip().replace(" ", "_").lower()
                     if clean_name and clean_name not in configured_zone_names:
                         configured_zone_names.append(clean_name)
+                if "zones" not in cam_block or not cam_block["zones"]:
+                    cam_block["zones"] = pz
         except Exception as e:
             logger.debug(f"Erro ao parsear zonas do SQLite para required_zones: {e}")
 
@@ -1902,14 +1933,21 @@ async def get_camera_hardware_config(camera_id: str, db: AsyncSession = Depends(
         res = await db.execute(stmt)
         cam = res.scalar_one_or_none()
     
+    cam_name = cam.name if cam else camera_id
     cam_ip = cam.ip_address if cam else None
     if not cam_ip or cam_ip in ["127.0.0.1", "localhost", "frigate"]:
         detected_ip = extract_camera_ip(cam.rtsp_main if cam else None, cam.name if cam else camera_id)
         if detected_ip:
             cam_ip = detected_ip
+            if cam:
+                try:
+                    cam.ip_address = detected_ip
+                    await db.commit()
+                except Exception:
+                    pass
     ip = cam_ip or (camera_id if "." in camera_id else "127.0.0.1")
     port = cam.onvif_port if cam and cam.onvif_port else 80
-    return await onvif_hardware_service.get_camera_hardware_config(ip_address=ip, port=port)
+    return await onvif_hardware_service.get_camera_hardware_config(ip_address=ip, port=port, camera_name=cam_name)
 
 @router.post("/{camera_id}/hardware-config")
 async def update_camera_hardware_config(camera_id: str, payload: CameraHardwareConfigPayload, request: Request, db: AsyncSession = Depends(get_db)):
@@ -1925,11 +1963,18 @@ async def update_camera_hardware_config(camera_id: str, payload: CameraHardwareC
         res = await db.execute(stmt)
         cam = res.scalar_one_or_none()
 
+    cam_name = cam.name if cam else camera_id
     cam_ip = cam.ip_address if cam else None
     if not cam_ip or cam_ip in ["127.0.0.1", "localhost", "frigate"]:
         detected_ip = extract_camera_ip(cam.rtsp_main if cam else None, cam.name if cam else camera_id)
         if detected_ip:
             cam_ip = detected_ip
+            if cam:
+                try:
+                    cam.ip_address = detected_ip
+                    await db.commit()
+                except Exception:
+                    pass
     ip = cam_ip or (camera_id if "." in camera_id else "127.0.0.1")
     port = cam.onvif_port if cam and cam.onvif_port else 80
 
@@ -1940,7 +1985,7 @@ async def update_camera_hardware_config(camera_id: str, payload: CameraHardwareC
         bitrate=payload.bitrate,
         fps=payload.fps,
         resolution=payload.resolution,
-        camera_name=payload.camera_name,
+        camera_name=payload.camera_name or cam_name,
         ir_mode=payload.ir_mode,
         white_led=payload.white_led,
         sync_time=payload.sync_time if payload.sync_time is not None else True

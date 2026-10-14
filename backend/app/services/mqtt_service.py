@@ -32,6 +32,8 @@ class MQTTService:
         # BE-002: deque O(1) vs list.insert(0) O(n)
         self._mqtt_traffic: deque = deque(maxlen=200)
         self._video_transcode_lock = asyncio.Semaphore(1)
+        self._camera_policy_cache: Dict[str, Any] = {}
+        self._camera_policy_cache_time: Dict[str, float] = {}
 
     def record_mqtt_traffic(self, topic: str, payload_summary: Dict[str, Any]):
         entry = {
@@ -153,17 +155,23 @@ class MQTTService:
                         try:
                             import json
                             pz = json.loads(cam.zones)
-                            if isinstance(pz, list) and len(pz) > 0:
+                            valid_zones = []
+                            if isinstance(pz, list):
+                                for z in pz:
+                                    if isinstance(z, dict):
+                                        if z.get("type") == "mask":
+                                            continue
+                                        z_name = (z.get("slug") or z.get("name") or str(z.get("id", ""))).strip().replace(" ", "_").lower()
+                                        if z_name:
+                                            valid_zones.append(z_name)
+                            elif isinstance(pz, dict):
+                                for k in pz.keys():
+                                    z_name = str(k).strip().replace(" ", "_").lower()
+                                    if z_name:
+                                        valid_zones.append(z_name)
+                            if valid_zones:
                                 policy["has_zones"] = True
-                                policy["configured_zones"] = [
-                                    (z.get("slug") or z.get("name") or str(z.get("id", ""))).strip().replace(" ", "_").lower()
-                                    for z in pz if isinstance(z, dict)
-                                ]
-                            elif isinstance(pz, dict) and len(pz) > 0:
-                                policy["has_zones"] = True
-                                policy["configured_zones"] = [
-                                    str(k).strip().replace(" ", "_").lower() for k in pz.keys()
-                                ]
+                                policy["configured_zones"] = valid_zones
                         except Exception:
                             pass
         except Exception as e:
@@ -313,9 +321,9 @@ class MQTTService:
                 allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
 
                 if notify_tg and send_mode in ["both", "video_only"] and label in allowed_tg_events:
-                    # Se a câmera possui zonas configuradas e o evento ocorreu fora delas (zone_name nulo/vazio),
+                    # Se a câmera possui zonas configuradas e o evento ocorreu fora delas (zone_name nulo/vazio ou zona não configurada),
                     # descarta o download pesado do clipe MP4 para eliminar saturação de CPU e superaquecimento
-                    if cam_policy.get("has_zones") and not zone_name:
+                    if cam_policy.get("has_zones") and (not zone_name or (cam_policy.get("configured_zones") and zone_name.strip().replace(" ", "_").lower() not in cam_policy["configured_zones"])):
                         logger.debug(f"Descartando download de clipe MP4 para {camera}: evento fora das zonas configuradas (zona: {zone_name}).")
                         return
 
