@@ -126,22 +126,21 @@ class FrigateBridgeService:
         2. Local FFmpeg RTSP snapshot (native resolution)
         3. Frigate latest.jpg (detect stream, fallback)
         """
-        # Channel 1: go2rtc main-stream frame (native resolution)
-        sources = [camera_name] if camera_name else ["camera_secundaria", "camera_principal"]
-        for src in sources:
+        # Channel 1: Frigate latest.jpg (em memória HTTP rápido do NVR, zero impacto no go2rtc live edge)
+        for cam in sources:
             try:
-                async with httpx.AsyncClient(timeout=3.5) as client:
-                    res = await client.get(f"{self.go2rtc_url}/api/frame.jpeg?src={src}")
+                async with httpx.AsyncClient(timeout=2.5) as client:
+                    res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
                     if res.status_code == 200 and len(res.content) > 1000:
                         return res.content
             except Exception:
                 pass
 
-        # Channel 2: Frigate latest.jpg (em memória HTTP rápido, zero fork de subprocesso FFmpeg)
-        for cam in sources:
+        # Channel 2: go2rtc frame.jpeg (fallback secundário)
+        for src in sources:
             try:
-                async with httpx.AsyncClient(timeout=2.5) as client:
-                    res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
+                async with httpx.AsyncClient(timeout=3.5) as client:
+                    res = await client.get(f"{self.go2rtc_url}/api/frame.jpeg?src={src}")
                     if res.status_code == 200 and len(res.content) > 1000:
                         return res.content
             except Exception:

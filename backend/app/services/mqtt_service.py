@@ -465,7 +465,7 @@ class MQTTService:
         # Verification happens in memory via self._processed_videos and persistently via EventRecord.video_sent
         try:
             async with AsyncSessionLocal() as session:
-                ev_stmt = select(EventRecord).where(EventRecord.event_id == event_id)
+                ev_stmt = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
                 ev_res = await session.execute(ev_stmt)
                 ev_rec = ev_res.scalar_one_or_none()
                 if ev_rec and ev_rec.video_sent:

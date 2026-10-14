@@ -6,7 +6,7 @@ import {
   Tv, Tablet, Smartphone, Play, Plus, Trash2, Check, AlertCircle,
   RefreshCw, X, Radio, Camera, ShieldCheck, ShieldAlert, Wifi, WifiOff,
   Cast, Info, Sliders, Search, Copy, Cpu, Activity, Bell, BellOff,
-  Sparkles, Monitor, CheckCircle2, Clock
+  Sparkles, Monitor, CheckCircle2, Clock, Download
 } from "lucide-react";
 import { ClientDeviceLogsTerminal } from "@/components/ClientDeviceLogsTerminal";
 import { APP_VERSION } from "@/constants/version";
@@ -1242,31 +1242,86 @@ export default function ScreensPage() {
         </div>
       )}
 
-      {/* Guide Card */}
-      <div className="p-5 rounded-3xl glass-panel border border-slate-800/80 text-xs space-y-3">
-        <h3 className="font-extrabold text-slate-200 flex items-center gap-2">
-          <Radio className="w-4 h-4 text-cyan-400" />
-          Guia de Integração e Protocolos de Entrega PiP:
-        </h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-slate-400">
-          <div className="p-4 rounded-2xl bg-obsidian-950/70 border border-slate-800/80 space-y-1.5">
-            <strong className="text-slate-200 block font-bold flex items-center gap-2">
-              <Tv className="w-4 h-4 text-cyan-400" />
-              Android TV / Google TV / Fire TV (App Nativo APK):
-            </strong>
-            <p className="text-[11px] leading-relaxed">
-              Instale o aplicativo oficial <strong>SentinelaPro Android TV</strong> ou apps compatíveis como <strong>PiP-Up</strong>. O gateway injeta o stream H.264 do Frigate diretamente no overlay flutuante via porta local ou WebSocket seguro.
+      {/* Guide Card & APK Download Hub */}
+      <div className="p-5 rounded-3xl glass-panel border border-slate-800/80 text-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/80 pb-3">
+          <h3 className="font-extrabold text-slate-200 flex items-center gap-2">
+            <Radio className="w-4 h-4 text-cyan-400" />
+            Central de Aplicativos & Protocolos de Entrega PiP:
+          </h3>
+          <span className="text-[11px] font-mono text-cyan-400 font-semibold">
+            Versão Oficial: {APP_VERSION}
+          </span>
+        </div>
+
+        {/* APK Download Direct Action Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="p-4 rounded-2xl bg-cyan-950/20 border border-cyan-800/40 space-y-3">
+            <div className="flex items-center justify-between">
+              <strong className="text-cyan-300 block font-bold flex items-center gap-2 text-xs">
+                <Tv className="w-4 h-4 text-cyan-400" />
+                App Nativo Android TV / Google TV / Fire TV:
+              </strong>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+                v{APP_VERSION}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Overlay flutuante PiP instantâneo com D-Pad Leanback, 24 FPS MSE sobre WebSocket e zero saturação do hardware decodificador.
             </p>
+            <div className="flex items-center gap-2 pt-1">
+              <a
+                href={`/api/settings/downloads/apk/tv`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 border border-cyan-500/40 font-semibold text-[11px] transition"
+              >
+                <Download className="w-3.5 h-3.5 text-cyan-400" />
+                Baixar APK TV
+              </a>
+              <a
+                href={`https://github.com/jotapelessa/SentinelaFrPro/releases/download/v${APP_VERSION}/sentinela-android-tv-v${APP_VERSION}.apk`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[10px] text-slate-500 hover:text-cyan-400 underline transition"
+              >
+                GitHub Mirror
+              </a>
+            </div>
           </div>
 
-          <div className="p-4 rounded-2xl bg-obsidian-950/70 border border-slate-800/80 space-y-1.5">
-            <strong className="text-slate-200 block font-bold flex items-center gap-2">
-              <Cast className="w-4 h-4 text-indigo-400" />
-              Google Chromecast / Google Nest Hub / DLNA:
-            </strong>
-            <p className="text-[11px] leading-relaxed">
-              O Sentinela conecta-se diretamente ao protocolo Cast do receptor, iniciando a transmissão ao vivo instantaneamente no momento da detecção de eventos e retornando à programação anterior.
+          <div className="p-4 rounded-2xl bg-indigo-950/20 border border-indigo-800/40 space-y-3">
+            <div className="flex items-center justify-between">
+              <strong className="text-indigo-300 block font-bold flex items-center gap-2 text-xs">
+                <Smartphone className="w-4 h-4 text-indigo-400" />
+                App Nativo Smartphone & Tablet:
+              </strong>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                v{APP_VERSION}
+              </span>
+            </div>
+            <p className="text-[11px] text-slate-400 leading-relaxed">
+              Central Master VIP com feed vertical estilo YouTube, zoom dinâmico de 1x a 5x e gestão unificada de resolução remota.
             </p>
+            <div className="flex items-center gap-2 pt-1">
+              <a
+                href={`/api/settings/downloads/apk/smartphone`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/40 font-semibold text-[11px] transition"
+              >
+                <Download className="w-3.5 h-3.5 text-indigo-400" />
+                Baixar APK Mobile
+              </a>
+              <a
+                href={`https://github.com/jotapelessa/SentinelaFrPro/releases/download/v${APP_VERSION}/sentinela-android-smartphone-v${APP_VERSION}.apk`}
+                target="_blank"
+                rel="noreferrer"
+                className="text-[10px] text-slate-500 hover:text-indigo-400 underline transition"
+              >
+                GitHub Mirror
+              </a>
+            </div>
           </div>
         </div>
       </div>

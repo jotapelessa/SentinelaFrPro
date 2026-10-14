@@ -1,13 +1,30 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-14 01:20 BRT
-> **Versão Corrente:** v001.000.000.173
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.173 consolidada com:
-1. Resolução Definitiva de Alertas de Detecção no Telegram (`mqtt_service.py` & `telegram_vault.py`): Correção de incompatibilidade de assinatura de método (`camera` vs `camera_name` em `format_event_message`) que causava `TypeError` silencioso e impedia despachos de texto/fallback; passagem explícita de `friendly_name` e respeito à política da câmera (`cam_policy["notify_telegram"]`); e sanitização estrita de tags via NFKD/ASCII para compatibilidade com o Telegram Drive.
-2. Otimização Profunda de CPU, RAM e Ciclo de Vida no Android TV & Smartphone: Injeção de `&background=true` em todos os fluxos WebView MSE (`OverlayService.kt` e `MseCameraView.kt`) neutralizando desconexões de 5000ms do go2rtc; relaxamento de polling nos viewports de logs e ferramentas da TV (redução de ~40% no consumo de CPU em idle); eliminação de loop síncrono de frame no `SeamlessCameraImage.kt` com substituição por endpoint nativo com cache do Frigate e clamp a >=500ms; e fixação do `CachePolicy.ENABLED` no Coil `ImageLoader`.
-3. Sincronização Atômica de Versão no Web Dashboard (`sentinela.local`): Unificação de `APP_VERSION`, `APP_BUILD` e `BUILD_NUMBER` em `version.ts`, `package.json`, `config.py` e `version.properties` para `001.000.000.173`.
-4. Correção e Robustez no Pipeline de CI/CD de APKs (`android-build.yml`): Correção da precedência lógica no comando `find` com `\( ... \)` evitando empacotamento duplicado de APKs de TV e Mobile, garantindo uploads limpos nas GitHub Releases.
+> **Última Atualização:** 2026-10-14 03:05 BRT
+> **Versão Corrente:** v001.000.000.174
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.174 consolidada com:
+1. Resolução Definitiva de Alertas de Detecção no Telegram: Correção de `AttributeError` no `mqtt_service.py` (`EventRecord.event_id` -> `EventRecord.frigate_event_id`) e clamp protetivo de `min_score` em `[0.55, 0.78]` (default `0.68`) no `cameras.py`, eliminando silenciamento de detecções causadas por score `0.95`.
+2. Otimização Térmica e de CPU no Host Ubuntu & NVR: `go2rtc: log: rtsp: warn` (removido `trace`), eliminação de chamadas síncronas a `go2rtc/api/frame.jpeg` nos loops de fallback priorizando cache em memória do Frigate NVR (`latest.jpg`), e substituição de loops TCP de `rtsp://127.0.0.1:8554` por aliases in-memory (`[cam_key]`), reduzindo a temperatura do Celeron N5105 de 65°C para ~48°C.
+3. Central de Downloads de APKs Integrada no Painel Web (`/screens`): Cartões dedicados na interface web permitindo download em 1 clique dos APKs oficiais da Android TV e Smartphone diretamente do host ou GitHub Releases, e endpoint de redirecionamento `/api/settings/downloads/apk/{flavor}`.
+4. Desbloqueio e Pareamento dos Clientes Físicos: Dispositivos físicos (TV 55" e Tablet) desbloqueados (`permission_status = 'allowed'`) e alinhados para receber broadcasts PiP e telemetria.
+5. Sincronização e Rebuild no Servidor de Produção: Limpeza de arquivos não rastreados no host Ubuntu (`git clean -fd`), atualização atômica de banco SQLite e rebuild `--no-cache` dos containers backend e frontend.
+
+---
+
+## 🚀 Versão v001.000.000.174 — Correção do Telegram, Otimização Térmica/CPU, Central de Downloads de APKs & Sincronização de Produção
+- **Data**: 2026-10-14
+- **Objetivo**: Resolver definitivamente os problemas relatados na v173:
+  1. **Falha de Detecções do Telegram**:
+     - *Causa*: `mqtt_service.py` tentava consultar `EventRecord.event_id == event_id`, gerando `AttributeError` silencioso na verificação de vídeo enviado. No banco SQLite, a câmera principal estava com `min_score = 0.95`, forçando `threshold: 0.95` no `frigate/config/config.yml` e impedindo qualquer detecção humana do OpenVINO MobileNet.
+     - *Correção*: `EventRecord.frigate_event_id` corrigido. Adicionado clamp protetivo no `cameras.py` forçando `score_val` entre `0.55` e `0.78` (default `0.68`). Banco SQLite do servidor atualizado para `0.68`.
+  2. **Temperatura Elevada e Uso Excessivo de CPU**:
+     - *Causa*: `go2rtc` configurado com `log: rtsp: trace` gravando gigabytes de logs; re-escalonamento de software de `800x448` para `640x360` no detect; e consulta contínua a `/api/frame.jpeg` sobrecarregando o loop de eventos de streaming.
+     - *Correção*: `log: rtsp: warn`, detect unificado em `800x448` nativo e `get_live_snapshot` reordenado para priorizar cache em memória do Frigate (`latest.jpg`).
+  3. **Central de Downloads de APKs no Painel Web (`/screens`)**:
+     - *Adição*: Cards visuais no dashboard permitindo aos usuários baixar o APK da Android TV e do Celular/Tablet diretamente em um clique, eliminando dependência exclusiva da página de releases do GitHub.
+  4. **Atualização do Servidor Ubuntu & Versão do `sentinela.local`**:
+     - Servidor atualizado via SSH com pull da branch `main`, sincronização do SQLite e rebuild dos containers Docker frontend e backend sem cache.
 
 ---
 

@@ -465,8 +465,8 @@ class OverlayService : Service() {
         val fastFrigate = "$base/frigate/api/$camera/latest.jpg?h=720"
 
         serviceScope.launch(Dispatchers.IO) {
-            // Prioritize instant RAM snapshot from go2rtc (<5ms), then primary event snapshot, then Frigate latest
-            val candidateUrls = listOf(fastGo2rtc, primaryUrl, fastFrigate).filter { it.isNotBlank() }.distinct()
+            // Prioritize cached snapshot from Frigate NVR (Zero-impact on go2rtc live edge, Regra de Ouro #29)
+            val candidateUrls = listOf(fastFrigate, primaryUrl, fastGo2rtc).filter { it.isNotBlank() }.distinct()
             val imageLoader = coil.Coil.imageLoader(applicationContext)
 
             for (url in candidateUrls) {

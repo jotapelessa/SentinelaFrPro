@@ -70,6 +70,8 @@ async def get_settings(db: AsyncSession = Depends(get_db)):
     pip_gateway_service._dnd_end_hour = dnd_end_val
 
     return {
+        "app_version": settings.APP_VERSION,
+        "app_build": getattr(settings, "BUILD_NUMBER", 174),
         "telegram_configured": bool(saved_token and saved_chat_id),
         "bot_token": saved_token,
         "chat_id": saved_chat_id,
@@ -86,6 +88,19 @@ async def get_settings(db: AsyncSession = Depends(get_db)):
         "dnd_start_hour": dnd_start_val,
         "dnd_end_hour": dnd_end_val
     }
+
+@router.get("/downloads/apk/{flavor}")
+async def download_apk(flavor: str):
+    """Provides direct redirect to download the latest Android APK for TV or Smartphone."""
+    from fastapi.responses import RedirectResponse
+    flavor_clean = flavor.lower().strip()
+    tag = f"v{settings.APP_VERSION}"
+    if "tv" in flavor_clean:
+        target_apk = f"sentinela-android-tv-{tag}.apk"
+    else:
+        target_apk = f"sentinela-android-smartphone-{tag}.apk"
+    redirect_url = f"https://github.com/jotapelessa/SentinelaFrPro/releases/download/{tag}/{target_apk}"
+    return RedirectResponse(url=redirect_url, status_code=302)
 
 from app.services.audit_service import audit_service
 from fastapi import Request

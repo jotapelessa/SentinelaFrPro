@@ -85,7 +85,7 @@ snapshots:
   height: 1080
 go2rtc:
   log:
-    rtsp: trace
+    rtsp: warn
   streams:
     # =========================================================
     # cam_192_168_1_196 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)

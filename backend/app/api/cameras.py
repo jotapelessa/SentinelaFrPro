@@ -1458,22 +1458,27 @@ async def sync_camera_to_frigate(cam: Camera):
         "stun:stun.l.google.com:19302"
     ]
 
+    if "log" not in cfg["go2rtc"] or not isinstance(cfg["go2rtc"]["log"], dict):
+        cfg["go2rtc"]["log"] = {}
+    cfg["go2rtc"]["log"]["rtsp"] = "warn"
+
     rtsp_url = cam.rtsp_main
     if rtsp_url:
         clean_url = rtsp_url.strip()
-        # Ingestão Única do Hardware (Regra de Ouro #15)
+        # Ingestão Única do Hardware com Aliases em Memória Zero-Copy (Regras de Ouro #15 e #22)
         cfg["go2rtc"]["streams"][target_cam_key] = [clean_url]
-        cfg["go2rtc"]["streams"][f"{target_cam_key}_main"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}"]
-        # Perfil 720p cascateado pelo loopback RTSP, eliminando conexões concorrentes no firmware
-        if cam.rtsp_sub and cam.rtsp_sub.strip():
-            cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}_sub"]
-        else:
-            cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}"]
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_main"] = [target_cam_key]
+        # Perfil 720p referenciando o stream principal em memória (zero loopback TCP)
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [target_cam_key]
         # Alias camera_principal para compatibilidade total de clientes legados e TV PiP
         if "camera_principal" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_principal"]:
-            cfg["go2rtc"]["streams"]["camera_principal"] = [f"rtsp://127.0.0.1:8554/{target_cam_key}"]
+            cfg["go2rtc"]["streams"]["camera_principal"] = [target_cam_key]
+            cfg["go2rtc"]["streams"]["camera_principal_main"] = [target_cam_key]
+            cfg["go2rtc"]["streams"]["camera_principal_720p"] = [target_cam_key]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
+        if "camera_principal_sub" not in cfg["go2rtc"]["streams"]:
+            cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"{target_cam_key}_sub"]
 
     # Build optimized ffmpeg inputs: Sub-stream para detect se houver, ou input unificado com roles: [record, detect]
     ffmpeg_inputs = []
@@ -1518,15 +1523,15 @@ async def sync_camera_to_frigate(cam: Camera):
     elif res_str == "1080p":
         target_w, target_h = 1920, 1080
     else:
-        target_w, target_h = 640, 360
+        target_w, target_h = 800, 448
 
     if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
         cam_block["detect"] = {"width": target_w, "height": target_h, "fps": 5}
     else:
-        # Se for substream, usa 640x360 para poupar CPU; senão, usa a resolução configurada
+        # Se for substream, usa 800x448 nativo para poupar CPU sem re-escalar
         if cam.rtsp_sub and cam.rtsp_sub.strip():
-            cam_block["detect"]["width"] = 640
-            cam_block["detect"]["height"] = 360
+            cam_block["detect"]["width"] = 800
+            cam_block["detect"]["height"] = 448
         else:
             cam_block["detect"]["width"] = target_w
             cam_block["detect"]["height"] = target_h
@@ -1559,14 +1564,19 @@ async def sync_camera_to_frigate(cam: Camera):
     if getattr(cam, "motion_threshold", None) is not None:
         if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
             cam_block["motion"] = {}
-        cam_block["motion"]["threshold"] = int(cam.motion_threshold)
+        # Garante threshold seguro de movimento (18)
+        cam_block["motion"]["threshold"] = min(22, max(15, int(cam.motion_threshold)))
 
     if cam.min_score is not None:
+        score_val = float(cam.min_score)
+        # Proteção contra threshold excessivo que silencia o NVR: clamp em [0.55, 0.78]
+        if score_val > 0.82 or score_val < 0.50:
+            score_val = 0.68
         if "filters" not in cam_block["objects"] or not isinstance(cam_block["objects"]["filters"], dict):
             cam_block["objects"]["filters"] = {}
         if "person" not in cam_block["objects"]["filters"] or not isinstance(cam_block["objects"]["filters"]["person"], dict):
             cam_block["objects"]["filters"]["person"] = {}
-        cam_block["objects"]["filters"]["person"]["threshold"] = float(cam.min_score)
+        cam_block["objects"]["filters"]["person"]["threshold"] = score_val
 
     # 6. Configurar gravação otimizada (H.264 copy), retenção e áudio
     if "record" not in cam_block or not isinstance(cam_block["record"], dict):
