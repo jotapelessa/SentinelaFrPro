@@ -95,8 +95,8 @@ async def list_events(
                         "type": media_type,
                         "zone": zone_val,
                         "zones": zones,
-                        "snapshot_url": f"/frigate/api/events/{event_id}/snapshot.jpg",
-                        "snapshot_clean_url": f"/frigate/api/events/{event_id}/snapshot.jpg?clean=1",
+                        "snapshot_url": f"/api/events/{event_id}/snapshot.jpg",
+                        "snapshot_clean_url": f"/api/events/{event_id}/snapshot.jpg?clean=1",
                         "clip_url": f"/api/events/{event_id}/clip.mp4",
                         "has_clip": is_clip,
                         "has_snapshot": item.get("has_snapshot", True),
@@ -158,8 +158,8 @@ async def list_events(
             "type": "video" if ev.has_clip else "photo",
             "zone": ev.zone,
             "zones": [ev.zone] if ev.zone else [],
-            "snapshot_url": f"/frigate/api/events/{ev.frigate_event_id}/snapshot.jpg" if ev.frigate_event_id else None,
-            "snapshot_clean_url": f"/frigate/api/events/{ev.frigate_event_id}/snapshot.jpg?clean=1" if ev.frigate_event_id else None,
+            "snapshot_url": f"/api/events/{ev.frigate_event_id}/snapshot.jpg" if ev.frigate_event_id else None,
+            "snapshot_clean_url": f"/api/events/{ev.frigate_event_id}/snapshot.jpg?clean=1" if ev.frigate_event_id else None,
             "clip_url": f"/api/events/{ev.frigate_event_id}/clip.mp4" if ev.frigate_event_id else None,
             "has_clip": ev.has_clip,
             "has_snapshot": ev.has_snapshot,
@@ -581,23 +581,40 @@ async def get_event_clip(event_id: str, download: bool = False):
 @router.head("/{event_id}/snapshot.jpg")
 async def get_event_snapshot(event_id: str, clean: int = 0):
     """
-    Proxies or serves snapshot JPEG image for an event from local disk or Frigate NVR.
-    Guarantees fast, reliable delivery for Android app and Web UI.
+    Proxies or serves snapshot JPEG or WebP image for an event from local disk or Frigate NVR.
+    Supports clean full-res 3MP snapshots (clean=1) and annotated bounding boxes (clean=0).
+    Guarantees fast, reliable delivery with proper Content-Type and caching headers.
     """
     media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
     clips_dir = os.path.join(media_base, "clips")
     
     # 1. Check local media directory
     if os.path.exists(clips_dir):
-        for fname in os.listdir(clips_dir):
-            if event_id in fname and fname.endswith(".jpg"):
+        try:
+            entries = os.listdir(clips_dir)
+            if clean:
+                # Clean snapshot: search for {event_id}*-clean.webp or {event_id}*-clean.jpg / jpeg
+                webp_clean = [f for f in entries if event_id in f and "-clean" in f and f.endswith(".webp")]
+                jpg_clean = [f for f in entries if event_id in f and "-clean" in f and (f.endswith(".jpg") or f.endswith(".jpeg"))]
+                candidates = webp_clean + jpg_clean
+            else:
+                # Standard snapshot: search for {event_id}*.jpg or {event_id}*.webp (prefer without -clean)
+                jpg_normal = [f for f in entries if event_id in f and "-clean" not in f and (f.endswith(".jpg") or f.endswith(".jpeg"))]
+                webp_normal = [f for f in entries if event_id in f and "-clean" not in f and f.endswith(".webp")]
+                any_match = [f for f in entries if event_id in f and (f.endswith(".jpg") or f.endswith(".jpeg") or f.endswith(".webp"))]
+                candidates = jpg_normal + webp_normal if (jpg_normal or webp_normal) else any_match
+
+            for fname in candidates:
                 fpath = os.path.join(clips_dir, fname)
-                if os.path.getsize(fpath) > 200:
+                if os.path.isfile(fpath) and os.path.getsize(fpath) > 200:
+                    media_type = "image/webp" if fname.endswith(".webp") else "image/jpeg"
                     return FileResponse(
                         fpath,
-                        media_type="image/jpeg",
+                        media_type=media_type,
                         headers={"Cache-Control": "public, max-age=86400"}
                     )
+        except Exception as e:
+            logger.debug(f"Error checking disk clips directory for event {event_id}: {e}")
 
     # 2. Proxy directly to Frigate NVR
     try:
@@ -607,9 +624,11 @@ async def get_event_snapshot(event_id: str, clean: int = 0):
         async with httpx.AsyncClient(timeout=8.0) as client:
             resp = await client.get(url)
             if resp.status_code == 200:
+                c_type = resp.headers.get("content-type", "image/jpeg").lower()
+                media_type = "image/webp" if "webp" in c_type else "image/jpeg"
                 return Response(
                     content=resp.content,
-                    media_type="image/jpeg",
+                    media_type=media_type,
                     headers={"Cache-Control": "public, max-age=86400"}
                 )
     except Exception as e:

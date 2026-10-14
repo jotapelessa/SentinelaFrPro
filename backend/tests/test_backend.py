@@ -316,3 +316,148 @@ async def test_sync_camera_to_frigate_zones_mask_filtering():
     assert "mask" in cam_entry["motion"]
 
 
+@pytest.mark.asyncio
+async def test_sync_camera_3mp_unified_inputs_and_streams():
+    from unittest.mock import patch, AsyncMock
+    from app.api.cameras import sync_camera_to_frigate
+    from app.db.models import Camera
+    import json
+
+    cam = Camera(
+        name="cam_192_168_1_196",
+        friendly_name="Principal 3MP",
+        rtsp_main="rtsp://admin:admin@192.168.1.196:554/live/0/MAIN",
+        rtsp_sub="rtsp://admin:admin@192.168.1.196:554/live/0/SUB",
+        resolution="3mp",
+        enabled=True,
+        zones=json.dumps([
+            {
+                "id": "zone_garagem",
+                "name": "Garagem",
+                "slug": "garagem",
+                "type": "zone",
+                "points": [{"x": 0.5, "y": 0.5}, {"x": 1.0, "y": 1.0}, {"x": 0.5, "y": 1.0}]
+            }
+        ])
+    )
+
+    captured_cfg = {}
+    async def mock_save(cfg, path):
+        captured_cfg.update(cfg)
+        return True
+
+    with patch("app.api.cameras.get_frigate_config_path", return_value="/fake/nonexistent/config.yml"), \
+         patch("app.api.cameras._save_yaml_config_atomic", side_effect=mock_save), \
+         patch("httpx.AsyncClient.put", AsyncMock()):
+        await sync_camera_to_frigate(cam)
+
+    cam_entry = captured_cfg["cameras"]["cam_192_168_1_196"]
+    streams = captured_cfg["go2rtc"]["streams"]
+
+    # 1. Detect must be 2304x1296 @ 5fps
+    assert cam_entry["detect"]["width"] == 2304
+    assert cam_entry["detect"]["height"] == 1296
+    assert cam_entry["detect"]["fps"] == 5
+
+    # 2. Snapshots must be quality 100, height 1296, clean_copy True
+    assert cam_entry["snapshots"]["quality"] == 100
+    assert cam_entry["snapshots"]["height"] == 1296
+    assert cam_entry["snapshots"]["clean_copy"] is True
+    assert cam_entry["snapshots"]["bounding_box"] is True
+
+    # 3. Single consolidated ffmpeg input with roles [record, detect]
+    assert len(cam_entry["ffmpeg"]["inputs"]) == 1
+    input_item = cam_entry["ffmpeg"]["inputs"][0]
+    assert input_item["path"] == "rtsp://127.0.0.1:8554/cam_192_168_1_196"
+    assert input_item["roles"] == ["record", "detect"]
+
+    # 4. Zero-copy sub alias in go2rtc
+    assert streams["cam_192_168_1_196_sub"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+
+    # 5. Zones scaled to 2304x1296 base
+    garagem_coords = cam_entry["zones"]["garagem"]["coordinates"]
+    # 0.5 * 2304 = 1152, 0.5 * 1296 = 648
+    assert "1152,648" in garagem_coords
+    assert "2304,1296" in garagem_coords
+
+
+@pytest.mark.asyncio
+async def test_get_event_snapshot_webp_and_clean(tmp_path):
+    import os
+    from unittest.mock import patch, AsyncMock
+    from app.api.events import get_event_snapshot
+    from app.core.config import settings
+
+    clips_dir = tmp_path / "clips"
+    clips_dir.mkdir(parents=True)
+
+    # 1. Clean WebP file
+    clean_webp = clips_dir / "cam_test-1728000000.123456-clean.webp"
+    clean_webp.write_bytes(b"RIFF....WEBP" + b"\x00" * 300)
+
+    # 2. Standard JPEG file
+    standard_jpg = clips_dir / "cam_test-1728000000.123456.jpg"
+    standard_jpg.write_bytes(b"\xff\xd8\xff\xe0" + b"\x00" * 300)
+
+    with patch.object(settings, "MEDIA_DIR", str(tmp_path)):
+        # When clean=1: should serve clean.webp
+        resp_clean = await get_event_snapshot("1728000000.123456", clean=1)
+        assert resp_clean.media_type == "image/webp"
+
+        # When clean=0: should serve standard .jpg
+        resp_std = await get_event_snapshot("1728000000.123456", clean=0)
+        assert resp_std.media_type == "image/jpeg"
+
+    # 3. Fallback to Frigate proxy when file is not on disk
+    with patch.object(settings, "MEDIA_DIR", str(tmp_path / "empty")), \
+         patch("httpx.AsyncClient.get") as mock_get:
+        mock_resp = AsyncMock()
+        mock_resp.status_code = 200
+        mock_resp.content = b"TEST_IMG_CONTENT"
+        mock_resp.headers = {"content-type": "image/webp"}
+        mock_get.return_value = mock_resp
+
+        proxy_resp = await get_event_snapshot("9999999999.000000", clean=1)
+        assert proxy_resp.media_type == "image/webp"
+        assert proxy_resp.body == b"TEST_IMG_CONTENT"
+
+
+@pytest.mark.asyncio
+async def test_list_events_canonical_snapshot_urls():
+    from unittest.mock import patch, AsyncMock, MagicMock
+    from app.api.events import list_events
+
+    mock_events_json = [
+        {
+            "id": "1728000000.999999",
+            "camera": "cam_192_168_1_196",
+            "label": "person",
+            "top_score": 0.88,
+            "start_time": 1728000000.0,
+            "end_time": 1728000015.0,
+            "has_clip": True,
+            "has_snapshot": True,
+            "zones": ["entrada"]
+        }
+    ]
+
+    mock_db = AsyncMock()
+    mock_db.add = MagicMock()
+    mock_res = MagicMock()
+    mock_res.scalar_one_or_none.return_value = None
+    mock_db.execute = AsyncMock(return_value=mock_res)
+
+    with patch("httpx.AsyncClient.get") as mock_get:
+        mock_resp = MagicMock()
+        mock_resp.status_code = 200
+        mock_resp.json.return_value = mock_events_json
+        mock_get.return_value = mock_resp
+
+        results = await list_events(limit=10, db=mock_db)
+        assert len(results) == 1
+        ev = results[0]
+        assert ev["snapshot_url"] == "/api/events/1728000000.999999/snapshot.jpg"
+        assert ev["snapshot_clean_url"] == "/api/events/1728000000.999999/snapshot.jpg?clean=1"
+
+
+

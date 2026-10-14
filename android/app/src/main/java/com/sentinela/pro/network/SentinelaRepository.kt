@@ -460,9 +460,18 @@ object SentinelaRepository {
 
                     val id = obj.optString("id", "$i")
                     val label = obj.optString("label", "Movimento")
-                    val score = obj.optInt("score", 0)
-                    val timestamp = obj.optString("timestamp", "")
-                    val snapshotUrl = "${SentinelaConfig.BASE_URL}/frigate/api/events/$id/snapshot.jpg?clean=1&h=1080"
+                    val rawCleanUrl = obj.optString("snapshot_clean_url")
+                    val rawSnapUrl = obj.optString("snapshot_url")
+                    val snapshotCleanUrl = if (rawCleanUrl.isNotBlank()) {
+                        if (rawCleanUrl.startsWith("http")) rawCleanUrl else "${SentinelaConfig.BASE_URL}$rawCleanUrl"
+                    } else {
+                        "${SentinelaConfig.BASE_URL}/api/events/$id/snapshot.jpg?clean=1"
+                    }
+                    val snapshotUrl = if (rawSnapUrl.isNotBlank()) {
+                        if (rawSnapUrl.startsWith("http")) rawSnapUrl else "${SentinelaConfig.BASE_URL}$rawSnapUrl"
+                    } else {
+                        "${SentinelaConfig.BASE_URL}/api/events/$id/snapshot.jpg"
+                    }
                     val clipUrl = "${SentinelaConfig.BASE_URL}/frigate/api/events/$id/clip.mp4"
                     val hasClip = obj.optBoolean("has_clip", true)
                     val retained = obj.optBoolean("retained", false)
@@ -479,6 +488,7 @@ object SentinelaRepository {
                             score = score,
                             timestamp = timestamp,
                             snapshotUrl = snapshotUrl,
+                            snapshotCleanUrl = snapshotCleanUrl,
                             clipUrl = clipUrl,
                             hasClip = hasClip,
                             retained = retained,

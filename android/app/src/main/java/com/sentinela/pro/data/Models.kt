@@ -17,6 +17,7 @@ data class CaptureEvent(
     val score: Int = 0,
     val timestamp: String = "",
     val snapshotUrl: String = "",
+    val snapshotCleanUrl: String = "",
     val clipUrl: String = "",
     val hasClip: Boolean = true,
     val retained: Boolean = false,

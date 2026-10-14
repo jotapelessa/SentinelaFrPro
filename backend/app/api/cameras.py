@@ -130,7 +130,7 @@ class CameraCreate(BaseModel):
     ip_address: Optional[str] = None
     onvif_port: Optional[int] = 80
     enabled: Optional[bool] = True
-    resolution: Optional[str] = "1080p"
+    resolution: Optional[str] = "3mp"
     bitrate: Optional[int] = 2048
     stream_mode: Optional[str] = "webrtc"
     stream_quality: Optional[str] = "maxima"
@@ -1512,49 +1512,33 @@ async def sync_camera_to_frigate(cam: Camera):
     rtsp_url = cam.rtsp_main
     if rtsp_url:
         clean_url = rtsp_url.strip()
-        # Ingestão Única do Hardware com Aliases em Memória Zero-Copy (Regras de Ouro #15 e #22)
+        # Ingestão Única do Hardware com Aliases em Memória Zero-Copy (Regras de Ouro #12 e #15)
         cfg["go2rtc"]["streams"][target_cam_key] = [clean_url]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-        # Perfil 720p referenciando o stream principal via restream ffmpeg
         cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-        # Alias camera_principal para compatibilidade total de clientes legados e TV PiP
+        # Sub-stream em memória zero-copy (elimina concorrência TCP de socket e timeouts de 65s)
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+
+        # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
         if "camera_principal" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_principal"]:
             cfg["go2rtc"]["streams"]["camera_principal"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
         elif target_cam_key != "cam_192_168_1_196":
             if "camera_secundaria" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_secundaria"]:
                 cfg["go2rtc"]["streams"]["camera_secundaria"] = [f"ffmpeg:{target_cam_key}#video=copy"]
                 cfg["go2rtc"]["streams"]["camera_secundaria_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
                 cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-    if cam.rtsp_sub and cam.rtsp_sub.strip():
-        cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
-        if "camera_principal_sub" not in cfg["go2rtc"]["streams"]:
-            cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{target_cam_key}_sub#video=copy"]
-        elif target_cam_key != "cam_192_168_1_196":
-            if "camera_secundaria_sub" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_secundaria_sub"]:
-                cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{target_cam_key}_sub#video=copy"]
+                cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
 
-    # Build optimized ffmpeg inputs: Sub-stream para detect se houver, ou input unificado com roles: [record, detect]
-    ffmpeg_inputs = []
-    if cam.rtsp_sub and cam.rtsp_sub.strip():
-        ffmpeg_inputs.append({
-            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}_sub",
-            "input_args": "preset-rtsp-restream",
-            "roles": ["detect"]
-        })
-        ffmpeg_inputs.append({
-            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
-            "input_args": "preset-rtsp-restream",
-            "roles": ["record"]
-        })
-    else:
-        # Input UNIFICADO: previne execução de dois demuxers FFmpeg concorrentes (queda de ~45% CPU e 5-10°C de temperatura)
-        ffmpeg_inputs.append({
-            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
-            "input_args": "preset-rtsp-restream",
-            "roles": ["record", "detect"]
-        })
+    # Build UNIFIED ffmpeg input: Consolidate roles: ["record", "detect"] on the main stream
+    # Eliminates dual demuxer processes and prevents camera TCP socket saturation (Regras de Ouro #12 e #15)
+    ffmpeg_inputs = [{
+        "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
+        "input_args": "preset-rtsp-restream",
+        "roles": ["record", "detect"]
+    }]
 
     if target_cam_key not in cfg["cameras"] or not isinstance(cfg["cameras"][target_cam_key], dict):
         cfg["cameras"][target_cam_key] = {}
@@ -1569,38 +1553,45 @@ async def sync_camera_to_frigate(cam: Camera):
     cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
 
     # 2. Configurar detect otimizado para H.264 e sincronizado com resolução (limite estrito de 5 FPS para controle térmico)
-    # Mapeamento de resolução de detecção para manter proporção nativa e poupar CPU
-    res_str = (getattr(cam, "resolution", "1080p") or "1080p").lower()
-    if res_str == "720p":
+    # Mapeamento de resolução de detecção para manter proporção nativa e máxima nitidez forense 3MP
+    res_str = (getattr(cam, "resolution", "3mp") or "3mp").lower()
+    is_3mp_or_high_res = (
+        res_str in ("auto", "3mp", "2304x1296", "3-mp", "2304", "1296")
+        or (cam.rtsp_main and any(token in str(cam.rtsp_main) for token in ("/live/0/MAIN", "2304", "1296", "MAIN")))
+    )
+
+    if is_3mp_or_high_res:
+        target_w, target_h = 2304, 1296
+    elif res_str == "720p":
         target_w, target_h = 1280, 720
     elif res_str == "2.5k":
         target_w, target_h = 2560, 1440
     elif res_str == "1080p":
         target_w, target_h = 1920, 1080
-    else:
+    elif res_str in ("800x448", "sub"):
         target_w, target_h = 800, 448
+    else:
+        target_w, target_h = 2304, 1296
 
     if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
         cam_block["detect"] = {"width": target_w, "height": target_h, "fps": 5}
     else:
-        # Se for substream, usa 800x448 nativo para poupar CPU sem re-escalar
-        if cam.rtsp_sub and cam.rtsp_sub.strip():
-            cam_block["detect"]["width"] = 800
-            cam_block["detect"]["height"] = 448
-        else:
-            cam_block["detect"]["width"] = target_w
-            cam_block["detect"]["height"] = target_h
+        cam_block["detect"]["width"] = target_w
+        cam_block["detect"]["height"] = target_h
 
     cam_block["detect"]["enabled"] = bool(cam.enabled)
     # Controle térmico estrito: detecção de IA limitada a 5 FPS para manter SoC Intel abaixo de 58°C
     configured_fps = int(cam.detect_fps) if getattr(cam, "detect_fps", None) is not None else 5
     cam_block["detect"]["fps"] = min(5, max(1, configured_fps))
 
-    # 3. Configurar snapshots
+    # 3. Configurar snapshots nativos 3MP (2304x1296) com qualidade 100 e clean_copy
     if "snapshots" not in cam_block or not isinstance(cam_block["snapshots"], dict):
         cam_block["snapshots"] = {}
     cam_block["snapshots"]["enabled"] = bool(cam.enabled)
+    cam_block["snapshots"]["clean_copy"] = True
     cam_block["snapshots"]["bounding_box"] = True
+    cam_block["snapshots"]["quality"] = 100
+    cam_block["snapshots"]["height"] = 1296
 
     # 4. Configurar objetos e tracking
     default_track_objs = ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"]
@@ -1679,8 +1670,8 @@ async def sync_camera_to_frigate(cam: Camera):
 
     # 7. Garantir review labels e sincronizar required_zones com base nas zonas configuradas
     configured_zone_names = []
-    detect_w = cam_block.get("detect", {}).get("width", 800) if isinstance(cam_block.get("detect"), dict) else 800
-    detect_h = cam_block.get("detect", {}).get("height", 448) if isinstance(cam_block.get("detect"), dict) else 448
+    detect_w = cam_block.get("detect", {}).get("width", 2304) if isinstance(cam_block.get("detect"), dict) else 2304
+    detect_h = cam_block.get("detect", {}).get("height", 1296) if isinstance(cam_block.get("detect"), dict) else 1296
 
     if getattr(cam, "zones", None):
         try:
@@ -2280,8 +2271,8 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
     if "live" in cam_data:
         del cam_data["live"]
 
-    detect_w = cam_data.get("detect", {}).get("width", 1280) if isinstance(cam_data.get("detect"), dict) else 1280
-    detect_h = cam_data.get("detect", {}).get("height", 720) if isinstance(cam_data.get("detect"), dict) else 720
+    detect_w = cam_data.get("detect", {}).get("width", 2304) if isinstance(cam_data.get("detect"), dict) else 2304
+    detect_h = cam_data.get("detect", {}).get("height", 1296) if isinstance(cam_data.get("detect"), dict) else 1296
 
     # Auto-convert raw_items if sent directly from Frontend
     if payload.raw_items is not None and payload.zones is None:

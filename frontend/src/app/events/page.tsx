@@ -664,7 +664,7 @@ export default function EventsPage() {
                             setSelectedEvent(ev);
                           }
                         }}
-                        className="h-44 bg-obsidian-950 relative overflow-hidden flex items-center justify-center cursor-pointer"
+                        className="aspect-video w-full bg-obsidian-950 relative overflow-hidden flex items-center justify-center cursor-pointer"
                       >
                         <img
                           src={ev.snapshot_url || "/placeholder-camera.jpg"}
@@ -753,6 +753,19 @@ export default function EventsPage() {
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
+
+                            {/* Clean Snapshot Action */}
+                            <a
+                              href={ev.snapshot_clean_url || `/api/events/${ev.id}/snapshot.jpg?clean=1`}
+                              download={`snapshot_${ev.camera}_${ev.id}_clean.jpg`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-400 hover:text-cyan-400 border border-slate-700 transition-all"
+                              title="Baixar Foto Limpa em Resolução Máxima (3MP)"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Eye className="w-3.5 h-3.5" />
+                            </a>
 
                             {/* Open Clip */}
                             <button
@@ -1369,8 +1382,10 @@ export default function EventsPage() {
 
                 {/* Download Clean Snapshot */}
                 <a
-                  href={selectedEvent.snapshot_clean_url || `/frigate/api/events/${selectedEvent.id}/snapshot.jpg?clean=1`}
-                  download={`snapshot_${selectedEvent.camera}_${selectedEvent.id}.jpg`}
+                  href={selectedEvent.snapshot_clean_url || `/api/events/${selectedEvent.id}/snapshot.jpg?clean=1`}
+                  download={`snapshot_${selectedEvent.camera}_${selectedEvent.id}_clean.jpg`}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition-all"
                 >
                   <Eye className="w-3.5 h-3.5 text-cyan-400" />

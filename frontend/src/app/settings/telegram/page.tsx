@@ -470,6 +470,7 @@ export default function TelegramSettingsPage() {
                 onChange={(e) => setSnapshotResolution(e.target.value)}
                 className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs font-semibold text-white focus:outline-none focus:border-cyan-500"
               >
+                <option value="3mp">3MP Nativo 2304×1296 (Máxima Nitidez Forense)</option>
                 <option value="1080p">Full HD 1080p (Nítido & Balanceado)</option>
                 <option value="720p">HD 720p (Envio Leve e Rápido)</option>
                 <option value="original">Original da Câmera (4K / 2K Nativo)</option>

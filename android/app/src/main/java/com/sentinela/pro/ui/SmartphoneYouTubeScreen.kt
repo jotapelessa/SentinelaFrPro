@@ -885,8 +885,8 @@ fun PhoneCapturesTab() {
                                     .height(130.dp)
                                     .background(Color.Black)
                             ) {
-                                val photoUrl = ev.snapshotUrl.ifBlank {
-                                    "${SentinelaConfig.BASE_URL}/frigate/api/events/${ev.id}/snapshot.jpg?clean=1&h=1080"
+                                val photoUrl = ev.snapshotCleanUrl.ifBlank { ev.snapshotUrl }.ifBlank {
+                                    "${SentinelaConfig.BASE_URL}/api/events/${ev.id}/snapshot.jpg?clean=1"
                                 }
                                 val imageLoader = remember { coil.Coil.imageLoader(context) }
                                 AsyncImage(
@@ -3262,8 +3262,8 @@ fun PhonePhotoViewerDialog(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                val highResUrl = event.snapshotUrl.ifBlank {
-                    "${SentinelaConfig.BASE_URL}/frigate/api/events/${event.id}/snapshot.jpg?clean=1&h=1080"
+                val highResUrl = event.snapshotCleanUrl.ifBlank { event.snapshotUrl }.ifBlank {
+                    "${SentinelaConfig.BASE_URL}/api/events/${event.id}/snapshot.jpg?clean=1"
                 }
                 val context = LocalContext.current
                 val imageLoader = remember { coil.Coil.imageLoader(context) }

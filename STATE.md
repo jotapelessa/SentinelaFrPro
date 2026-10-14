@@ -1,16 +1,37 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-14 13:15 BRT
-> **Versão Corrente:** v001.000.000.176
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.176 consolidada com:
-1. Sincronização Horária de Câmeras (Brasília UTC-3 / CST+03:00): Envio rigoroso de `<tds:UTCDateTime>` em UTC e `<tt:TZ>CST+03:00</tt:TZ>` via ONVIF SOAP na inicialização e a cada 1 hora para todas as câmeras ativas, garantindo integridade forense do carimbo de tela (OSD).
-2. Resolução Dinâmica de IP de Hardware: Extração automática de endereço IP real a partir do `rtsp_main` ou `name` via regex, eliminando dependência de fallbacks hardcoded ou simulação quando `ip_address` no SQLite for nulo ou local.
-3. Sincronização Estrita de Zonas no Frigate (`review.alerts.required_zones`): População automática de `required_zones` e `detections.required_zones` com as zonas cadastradas no SQLite, restringindo os alertas e clipes do Frigate 0.17 aos quadrantes delimitados pelo operador.
-4. Descarte Térmico de Vídeos Telegram Fora de Zona: Eliminação do enfileiramento pesado de clipes MP4 para eventos ocorridos fora das zonas ativas configuradas, aliviando o uso de CPU e normalizando a temperatura do servidor.
-5. Desacoplamento de Reinício do Frigate: Remoção de `stream_quality` dos campos relevantes para restart do Frigate, permitindo ajustes de visualização instantâneos sem interromper o NVR.
-6. Correção de Broadcast WebSocket: Substituição da chamada falha a `pip_gateway_service.broadcast_event` por `ws_manager.broadcast_json({"type": "CAMERA_CONFIG_CHANGED", ...})`.
-7. Otimização de Bateria e Rede no Smartphone: Intervalos de polling de telemetria HTTP no Android Mobile elevados de 2.000ms para 8.000ms.
+> **Última Atualização:** 2026-10-14 17:35 BRT
+> **Versão Corrente:** v001.000.000.177
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.177 consolidada com:
+1. Ingestão Unificada go2rtc (MAIN 3MP 2304x1296): Ingestão direta exclusiva do fluxo MAIN de cada câmera física (`rtsp://admin:admin@<ip>:554/live/0/MAIN#backchannel=0#buffer=2000`). Sub-streams e aliases operando em memória via zero-copy (`ffmpeg:<stream>#video=copy`), eliminando saturação de socket TCP do hardware e prevenindo falhas de 65s por i/o timeout.
+2. Consolidação de Demuxers Frigate (`roles: [record, detect]`): Input unificado único por câmera para gravação e detecção, eliminando processos concorrentes de demuxing FFmpeg e aliviando a CPU/temperatura.
+3. Detecção e Snapshots em 3MP Nativo (2304x1296): `detect.width = 2304`, `detect.height = 1296`, `detect.fps = 5`, `snapshots.quality = 100`, `snapshots.height = 1296` e `snapshots.clean_copy = true`. Re-escalonamento de zonas do SQLite para a matriz 2304x1296.
+4. Suporte WebP e Roteamento Canônico de Snapshots: `get_event_snapshot` com busca local em `/media/frigate/clips/` para `{id}*-clean.webp` ou `{id}*-clean.jpg` com `media_type` apropriado, e fallback transparente para o proxy Frigate. URLs canônicas `/api/events/{id}/snapshot.jpg` e `snapshot_clean_url`.
+5. Telegram 3MP Forense & Seleção no Frontend: Adicionada opção `3MP Nativo 2304×1296 (Máxima Nitidez Forense)` nas configurações do Telegram, marca d'água com dimensionamento proporcional e suporte a `sendDocument` sem compressão.
+6. Ajuste de Proporção 16:9 (`aspect-video`) e Foto Limpa na Web e Android: Cards de eventos ajustados com `aspect-video` e `object-cover`, links diretos para Foto Limpa em 3MP, e consumo de `snapshot_clean_url` no Android sem downscale arbitrário para 1080p.
+
+---
+
+## 🚀 Versão v001.000.000.177 — Snapshots 3MP Nativos (2304x1296), Ingestão Única RTSP, Suporte WebP & Foto Limpa
+- **Data**: 2026-10-14
+- **Objetivo**: Elevar a qualidade forense para 3MP nativo sem saturação de hardware, unificar fluxos RTSP e disponibilizar fotos limpas sem anotações:
+  1. **Ingestão Única e Aliases Zero-Copy no go2rtc (`frigate/config/config.yml` & `cameras.py`)**:
+     - *Causa*: Conectar concorrentemente aos canais MAIN e SUB das câmeras físicas saturava o buffer TCP do firmware `RtpRtspFlyer`, gerando desconexões cíclicas e timeouts de 65s.
+     - *Correção*: Apenas o canal MAIN 3MP nativo é ingerido pelo go2rtc (`#buffer=2000#backchannel=0`). Todos os demais aliases (incluindo `_sub`) são derivados via `ffmpeg:<cam>#video=copy` sem nova conexão TCP de rede.
+  2. **Unificação de Demuxer FFmpeg no Frigate (`config.yml` & `cameras.py`)**:
+     - *Causa*: O uso de inputs separados para record e detect executava dois pipelines FFmpeg simultâneos por câmera.
+     - *Correção*: Consolidado em um único input com `roles: [record, detect]`, cortando o número de processos FFmpeg pela metade.
+  3. **Detecção e Snapshots em 3MP Nativo 2304x1296 (`config.yml` & `cameras.py`)**:
+     - *Correção*: `detect.width = 2304`, `detect.height = 1296`, `detect.fps = 5`, `snapshots.quality = 100`, `snapshots.height = 1296` e `snapshots.clean_copy = true`. Coordenadas de zonas normalizadas `[0..1]` re-escaladas para 2304x1296.
+  4. **Entrega de Snapshots com Suporte a WebP e Cache (`events.py`)**:
+     - *Correção*: `get_event_snapshot` inspeciona `/media/frigate/clips/` servindo arquivos WebP (`image/webp`) ou JPEG (`image/jpeg`) com cabeçalhos de cache, suportando `clean=1` para imagens sem caixa delimitadora. URLs canônicas `/api/events/{id}/snapshot.jpg` e `snapshot_clean_url` entregues na API.
+  5. **Configuração Telegram e Envio Forense (`telegram_vault.py` & `settings/telegram/page.tsx`)**:
+     - *Correção*: Opção `3MP Nativo 2304×1296` adicionada ao frontend, preservando marca d'água proporcional e despacho de documentos 3MP a 300 DPI sem compressão do Telegram.
+  6. **Interface Web e Clientes Android (`events/page.tsx`, `SentinelaRepository.kt`, `SmartphoneYouTubeScreen.kt`)**:
+     - *Correção*: Miniaturas de eventos com `aspect-video` e `object-cover`, botões para download de Foto Limpa 3MP no feed e modal, e consumo direto de `snapshot_clean_url` e `snapshot_url` no Android eliminando downscales legados para 1080p.
+  7. **Unificação de Versão 001.000.000.177 (Build 177)**:
+     - Sincronização em `android/version.properties`, `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts` e `README.md`.
 
 ---
 

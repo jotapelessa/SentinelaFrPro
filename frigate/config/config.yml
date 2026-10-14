@@ -81,7 +81,7 @@ snapshots:
   clean_copy: true
   timestamp: true
   bounding_box: true
-  quality: 98
+  quality: 100
   height: 1296
 go2rtc:
   log:
@@ -89,8 +89,8 @@ go2rtc:
   streams:
     # =========================================================
     # cam_192_168_1_196 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
-    # STR-002: Ingestão de MAIN nativo direto da câmera
-    # Substream nativo 800x448 via UDP (alta eficiência, zero TCP drop)
+    # STR-002: Ingestão única de MAIN nativo direto da câmera
+    # Aliases em memória zero-copy (zero concorrência de socket TCP)
     # =========================================================
     cam_192_168_1_196:
     - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=2000
@@ -99,7 +99,7 @@ go2rtc:
     cam_192_168_1_196_720p:
     - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_sub:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
+    - ffmpeg:cam_192_168_1_196#video=copy
 
     # =========================================================
     # cam_192_168_1_47 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
@@ -111,7 +111,7 @@ go2rtc:
     cam_192_168_1_47_720p:
     - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_sub:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0
+    - ffmpeg:cam_192_168_1_47#video=copy
 
     # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
     camera_principal:
@@ -121,7 +121,7 @@ go2rtc:
     camera_principal_720p:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_sub:
-    - ffmpeg:cam_192_168_1_196_sub#video=copy
+    - ffmpeg:cam_192_168_1_196#video=copy
 
     camera_secundaria:
     - ffmpeg:cam_192_168_1_47#video=copy
@@ -130,7 +130,7 @@ go2rtc:
     camera_secundaria_720p:
     - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_sub:
-    - ffmpeg:cam_192_168_1_47_sub#video=copy
+    - ffmpeg:cam_192_168_1_47#video=copy
 
     # =========================================================
     # Câmeras DESABILITADAS — streams comentados para não manter
@@ -229,28 +229,24 @@ cameras:
     ffmpeg:
       hwaccel_args: preset-vaapi
       inputs:
-      # STR-002: MAIN stream — usado exclusivamente para gravação HD (Regra de Ouro #12/#15)
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_196
         input_args: preset-rtsp-restream
         roles:
         - record
-      # STR-001: sub-stream 800x448 via loopback — exclusivo para detecção OpenVINO
-      # Reduz carga GPU de detecção em ~70% vs 1920x1080 anterior
-      - path: rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
-        input_args: preset-rtsp-restream
-        roles:
         - detect
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
-      # STR-001: 800x448 alinhado ao sub-stream — modelo SSD MobileNet V2 aceita 300x300 max
-      width: 800
-      height: 448
+      width: 2304
+      height: 1296
       fps: 5
       enabled: true
     snapshots:
       enabled: true
+      clean_copy: true
       bounding_box: true
+      quality: 100
+      height: 1296
     objects:
       track:
       - person
@@ -312,20 +308,20 @@ cameras:
         input_args: preset-rtsp-restream
         roles:
         - record
-      - path: rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
-        input_args: preset-rtsp-restream
-        roles:
         - detect
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
-      width: 800
-      height: 448
+      width: 2304
+      height: 1296
       fps: 5
       enabled: true
     snapshots:
       enabled: true
+      clean_copy: true
       bounding_box: true
+      quality: 100
+      height: 1296
     objects:
       track:
       - person
