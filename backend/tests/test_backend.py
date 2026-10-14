@@ -68,32 +68,75 @@ async def test_watermark_high_quality_dpi():
 
 @pytest.mark.asyncio
 async def test_go2rtc_alias_sanitization():
-    # Test sanitization logic from cameras.py
+    from app.api.cameras import sanitize_frigate_config
+
     cfg = {
         "go2rtc": {
             "streams": {
                 "cam_192_168_1_196": ["rtsp://192.168.1.196:554/live/0/MAIN"],
                 "cam_192_168_1_196_main": "cam_192_168_1_196",
                 "cam_192_168_1_196_720p": ["cam_192_168_1_196"],
-                "camera_principal": ["cam_192_168_1_196"]
+                "camera_principal": ["cam_192_168_1_196"],
+                "empty_alias": "",
+                "whitespace_alias": "   ",
+                "null_alias": None,
+                "list_with_mixed": ["   ", "valid_target", "ffmpeg:cam_192_168_1_196#video=copy"]
             }
         }
     }
-    for s_name, s_val in list(cfg["go2rtc"]["streams"].items()):
-        if isinstance(s_val, str) and not s_val.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
-            target = s_val.strip()
-            cfg["go2rtc"]["streams"][s_name] = [f"ffmpeg:{target}#video=copy"]
-        elif isinstance(s_val, list):
-            new_list = []
-            for item in s_val:
-                if isinstance(item, str) and not item.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
-                    target = item.strip()
-                    new_list.append(f"ffmpeg:{target}#video=copy")
-                else:
-                    new_list.append(item)
-            cfg["go2rtc"]["streams"][s_name] = new_list
+    sanitized = sanitize_frigate_config(cfg)
+    streams = sanitized["go2rtc"]["streams"]
+    assert streams["cam_192_168_1_196_main"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+    assert streams["cam_192_168_1_196_720p"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+    assert streams["camera_principal"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+    assert streams["empty_alias"] == []
+    assert streams["whitespace_alias"] == []
+    assert streams["null_alias"] == []
+    assert streams["list_with_mixed"] == ["ffmpeg:valid_target#video=copy", "ffmpeg:cam_192_168_1_196#video=copy"]
 
-    assert cfg["go2rtc"]["streams"]["cam_192_168_1_196_main"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
-    assert cfg["go2rtc"]["streams"]["cam_192_168_1_196_720p"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
-    assert cfg["go2rtc"]["streams"]["camera_principal"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+@pytest.mark.asyncio
+async def test_telegram_send_alert_photo_document():
+    from unittest.mock import patch, AsyncMock
+    from PIL import Image
+    import io
+
+    img = Image.new("RGB", (320, 240), color=(10, 10, 10))
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG")
+
+    telegram_vault_service.bot_token = "123456:TEST_TOKEN"
+    telegram_vault_service.chat_id = "-100123456"
+
+    with patch("httpx.AsyncClient.post") as mock_post:
+        mock_resp = AsyncMock()
+        mock_resp.status_code = 200
+        mock_post.return_value = mock_resp
+
+        ok = await telegram_vault_service.send_alert_photo(
+            image_bytes=buf.getvalue(),
+            camera_name="cam_192_168_1_196",
+            label="person",
+            as_document=True
+        )
+        assert ok is True
+        call_args, call_kwargs = mock_post.call_args
+        assert "sendDocument" in call_args[0]
+        assert "document" in call_kwargs["files"]
+        filename = call_kwargs["files"]["document"][0]
+        assert filename == "cam_192_168_1_196_person_3mp.jpg"
+
+@pytest.mark.asyncio
+async def test_power_endpoints():
+    import httpx
+    from app.main import app
+
+    transport = httpx.ASGITransport(app=app)
+    async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        r1 = await client.post("/api/settings/power/restart-app")
+        assert r1.status_code == 200
+        assert r1.json()["status"] == "success"
+
+        r2 = await client.post("/api/settings/power/reboot-server")
+        assert r2.status_code == 200
+        assert r2.json()["status"] == "success"
 

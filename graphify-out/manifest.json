@@ -366,9 +366,9 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1791983565.0687988,
-    "seen": 1791984466.491339,
-    "ast_hash": "1ded6f8a75c9cc68df795646383861b1",
+    "mtime": 1791986121.58517,
+    "seen": 1791986395.951127,
+    "ast_hash": "ac4351ae4ee7cd3adab09fb19d59966a",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
@@ -390,9 +390,9 @@
     "semantic_hash": "345f8b332456cb48b154b6bce875d426"
   },
   "backend/app/api/settings.py": {
-    "mtime": 1791984060.787788,
-    "seen": 1791984466.491341,
-    "ast_hash": "7cabaef79e7a9a6abf25a284ff482a62",
+    "mtime": 1791986170.3955686,
+    "seen": 1791986395.9511292,
+    "ast_hash": "ad15fdebe2b04748cc0f69060a62719f",
     "semantic_hash": ""
   },
   "backend/app/api/telemetry.py": {
@@ -456,9 +456,9 @@
     "semantic_hash": "8f2d8e9b515cac0773819ec1faa166f9"
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1791983653.7396817,
-    "seen": 1791984466.4913468,
-    "ast_hash": "56dacac16a3a5407b41d38e167214fb9",
+    "mtime": 1791986217.8535388,
+    "seen": 1791986395.951135,
+    "ast_hash": "a1da57820c88ee3a54318c7a0d6a8af0",
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
@@ -474,9 +474,9 @@
     "semantic_hash": "1fe9b7130fb2d2094a4126ebfb0fdac5"
   },
   "backend/app/services/telegram_vault.py": {
-    "mtime": 1791983708.3081703,
-    "seen": 1791984466.49135,
-    "ast_hash": "910dcac7069820121ec397da0cf1df5b",
+    "mtime": 1791986202.9002995,
+    "seen": 1791986395.951137,
+    "ast_hash": "12c34ca69d9665f947afbe7212481d7f",
     "semantic_hash": ""
   },
   "backend/app/services/telemetry.py": {
@@ -486,9 +486,9 @@
     "semantic_hash": "2b96bb012c232336e6df92435a9a422a"
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1791984129.2594838,
-    "seen": 1791984466.4913511,
-    "ast_hash": "643a836e13a1060e3fe547a28bb5da1e",
+    "mtime": 1791986281.4239614,
+    "seen": 1791986395.951139,
+    "ast_hash": "dd56f842d176f884caba4e10161896da",
     "semantic_hash": ""
   },
   "compile_apk.sh": {
@@ -636,9 +636,9 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1791983855.9531758,
-    "seen": 1791984466.491366,
-    "ast_hash": "54f7f7c7818e888a162640716583a2a3",
+    "mtime": 1791986141.14259,
+    "seen": 1791986395.9511511,
+    "ast_hash": "e9c51e52994202559a0bd739a0a58e1b",
     "semantic_hash": ""
   },
   "frontend/src/components/WebSocketProvider.tsx": {

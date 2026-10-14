@@ -1197,16 +1197,26 @@ def sanitize_frigate_config(cfg: dict) -> dict:
 
     # 4. Sanitize go2rtc stream definitions (use valid ffmpeg restream syntax for aliases)
     for s_name, s_val in list(cfg["go2rtc"]["streams"].items()):
-        if isinstance(s_val, str) and not s_val.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
-            target = s_val.strip()
-            cfg["go2rtc"]["streams"][s_name] = [f"ffmpeg:{target}#video=copy"]
+        if s_val is None:
+            cfg["go2rtc"]["streams"][s_name] = []
+        elif isinstance(s_val, str):
+            if not s_val.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
+                target = s_val.strip()
+                if target:
+                    cfg["go2rtc"]["streams"][s_name] = [f"ffmpeg:{target}#video=copy"]
+                else:
+                    cfg["go2rtc"]["streams"][s_name] = []
         elif isinstance(s_val, list):
             new_list = []
             for item in s_val:
-                if isinstance(item, str) and not item.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
-                    target = item.strip()
-                    new_list.append(f"ffmpeg:{target}#video=copy")
-                else:
+                if isinstance(item, str):
+                    if not item.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
+                        target = item.strip()
+                        if target:
+                            new_list.append(f"ffmpeg:{target}#video=copy")
+                    else:
+                        new_list.append(item)
+                elif item is not None:
                     new_list.append(item)
             cfg["go2rtc"]["streams"][s_name] = new_list
 
@@ -1469,10 +1479,18 @@ async def sync_camera_to_frigate(cam: Camera):
             cfg["go2rtc"]["streams"]["camera_principal"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+        elif target_cam_key != "cam_192_168_1_196":
+            if "camera_secundaria" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_secundaria"]:
+                cfg["go2rtc"]["streams"]["camera_secundaria"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+                cfg["go2rtc"]["streams"]["camera_secundaria_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+                cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
     if cam.rtsp_sub and cam.rtsp_sub.strip():
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [cam.rtsp_sub.strip()]
         if "camera_principal_sub" not in cfg["go2rtc"]["streams"]:
             cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{target_cam_key}_sub#video=copy"]
+        elif target_cam_key != "cam_192_168_1_196":
+            if "camera_secundaria_sub" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_secundaria_sub"]:
+                cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{target_cam_key}_sub#video=copy"]
 
     # Build optimized ffmpeg inputs: Sub-stream para detect se houver, ou input unificado com roles: [record, detect]
     ffmpeg_inputs = []

@@ -366,10 +366,10 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1791957531.3353932,
-    "seen": 1791980638.757438,
-    "ast_hash": "1095167a4f0067cc5b2d804c4541d104",
-    "semantic_hash": "1095167a4f0067cc5b2d804c4541d104"
+    "mtime": 1791983565.0687988,
+    "seen": 1791984466.491339,
+    "ast_hash": "1ded6f8a75c9cc68df795646383861b1",
+    "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
     "mtime": 1791519847.2998288,
@@ -390,10 +390,10 @@
     "semantic_hash": "345f8b332456cb48b154b6bce875d426"
   },
   "backend/app/api/settings.py": {
-    "mtime": 1791957552.506838,
-    "seen": 1791980638.7574568,
-    "ast_hash": "3e28c713f3c495fcdd9aa54768db4480",
-    "semantic_hash": "3e28c713f3c495fcdd9aa54768db4480"
+    "mtime": 1791984060.787788,
+    "seen": 1791984466.491341,
+    "ast_hash": "7cabaef79e7a9a6abf25a284ff482a62",
+    "semantic_hash": ""
   },
   "backend/app/api/telemetry.py": {
     "mtime": 1789660035.5790796,
@@ -408,10 +408,10 @@
     "semantic_hash": "4f8d139bb2dd3d4eaecf75d8d4406840"
   },
   "backend/app/core/config.py": {
-    "mtime": 1791957475.1398385,
-    "seen": 1791980638.757459,
-    "ast_hash": "9a0d73d5d9de65944f0922a1c0a827a1",
-    "semantic_hash": "9a0d73d5d9de65944f0922a1c0a827a1"
+    "mtime": 1791984047.408573,
+    "seen": 1791984466.491343,
+    "ast_hash": "bdc55a579c0fca1b7ff48c982bf7c4ca",
+    "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
     "mtime": 1788141238.8786209,
@@ -456,10 +456,10 @@
     "semantic_hash": "8f2d8e9b515cac0773819ec1faa166f9"
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1791957492.313638,
-    "seen": 1791980638.7574809,
-    "ast_hash": "8191b4cd887ec0934807bc3acace74ab",
-    "semantic_hash": "8191b4cd887ec0934807bc3acace74ab"
+    "mtime": 1791983653.7396817,
+    "seen": 1791984466.4913468,
+    "ast_hash": "56dacac16a3a5407b41d38e167214fb9",
+    "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
     "mtime": 1791561144.899116,
@@ -474,10 +474,10 @@
     "semantic_hash": "1fe9b7130fb2d2094a4126ebfb0fdac5"
   },
   "backend/app/services/telegram_vault.py": {
-    "mtime": 1791951061.8715537,
-    "seen": 1791980638.757484,
-    "ast_hash": "9be0868f3a7e48033c052fd3cbfa5a02",
-    "semantic_hash": "9be0868f3a7e48033c052fd3cbfa5a02"
+    "mtime": 1791983708.3081703,
+    "seen": 1791984466.49135,
+    "ast_hash": "910dcac7069820121ec397da0cf1df5b",
+    "semantic_hash": ""
   },
   "backend/app/services/telemetry.py": {
     "mtime": 1789637525.8928292,
@@ -486,10 +486,10 @@
     "semantic_hash": "2b96bb012c232336e6df92435a9a422a"
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1788523523.5215342,
-    "seen": 1788641395.5382779,
-    "ast_hash": "07b66f630ab450787e401f7e866ad557",
-    "semantic_hash": "07b66f630ab450787e401f7e866ad557"
+    "mtime": 1791984129.2594838,
+    "seen": 1791984466.4913511,
+    "ast_hash": "643a836e13a1060e3fe547a28bb5da1e",
+    "semantic_hash": ""
   },
   "compile_apk.sh": {
     "mtime": 1789128256.8627846,
@@ -510,10 +510,10 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1791957439.8962517,
-    "seen": 1791980638.757528,
-    "ast_hash": "1c544675c1ba6b8ebf242bfeab049208",
-    "semantic_hash": "1c544675c1ba6b8ebf242bfeab049208"
+    "mtime": 1791984020.7201872,
+    "seen": 1791984466.491353,
+    "ast_hash": "247a94e5c45ce961126f5da1cf3af111",
+    "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
     "mtime": 1788121439.1657917,
@@ -564,16 +564,16 @@
     "semantic_hash": "5aacd07155def437f24b88f9d8058692"
   },
   "frontend/src/app/settings/diagnostics/page.tsx": {
-    "mtime": 1788297656.5091693,
-    "seen": 1788641395.538284,
-    "ast_hash": "2952fe0ef2cfd4199f98a4f78ca852fb",
-    "semantic_hash": "2952fe0ef2cfd4199f98a4f78ca852fb"
+    "mtime": 1791984001.501334,
+    "seen": 1791984466.4913568,
+    "ast_hash": "a54f6955ac87079679ebdcbc05e1d6a7",
+    "semantic_hash": ""
   },
   "frontend/src/app/settings/layout.tsx": {
-    "mtime": 1788605217.2386832,
-    "seen": 1788641395.538284,
-    "ast_hash": "0d48d7f55e87dc49b0f215569055de19",
-    "semantic_hash": "0d48d7f55e87dc49b0f215569055de19"
+    "mtime": 1791983943.969668,
+    "seen": 1791984466.491358,
+    "ast_hash": "dbd29d5b5a1935a34b90459f04f5b5d0",
+    "semantic_hash": ""
   },
   "frontend/src/app/settings/logs/page.tsx": {
     "mtime": 1789318418.2408364,
@@ -582,10 +582,10 @@
     "semantic_hash": "a3e4c4f36c24ff1d51b55f1ae2883b8c"
   },
   "frontend/src/app/settings/page.tsx": {
-    "mtime": 1789648436.6911614,
-    "seen": 1791980638.757649,
-    "ast_hash": "b5a9e4e289463f874c294dadd1280574",
-    "semantic_hash": "b5a9e4e289463f874c294dadd1280574"
+    "mtime": 1791983974.2486467,
+    "seen": 1791984466.491359,
+    "ast_hash": "ef21920f6bbe253f8c31c2dee34f4e4b",
+    "semantic_hash": ""
   },
   "frontend/src/app/settings/storage/page.tsx": {
     "mtime": 1791383565.913303,
@@ -606,10 +606,10 @@
     "semantic_hash": "6540dca4ff82ac713b47f54289c86d5a"
   },
   "frontend/src/components/CameraConfigModal.tsx": {
-    "mtime": 1791645514.4648883,
-    "seen": 1791980638.757652,
-    "ast_hash": "0764b277114886998efa3626bc546601",
-    "semantic_hash": "0764b277114886998efa3626bc546601"
+    "mtime": 1791983879.6890721,
+    "seen": 1791984466.491362,
+    "ast_hash": "fb265fd1d908c24abaf0d649ddc4420d",
+    "semantic_hash": ""
   },
   "frontend/src/components/CameraMosaic.tsx": {
     "mtime": 1791740508.4257174,
@@ -636,10 +636,10 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1791740472.6444144,
-    "seen": 1791980638.75767,
-    "ast_hash": "6b84226eb7348f2890634ca4b3cde175",
-    "semantic_hash": "6b84226eb7348f2890634ca4b3cde175"
+    "mtime": 1791983855.9531758,
+    "seen": 1791984466.491366,
+    "ast_hash": "54f7f7c7818e888a162640716583a2a3",
+    "semantic_hash": ""
   },
   "frontend/src/components/WebSocketProvider.tsx": {
     "mtime": 1790277602.5713263,
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791957717.7020152,
-    "seen": 1791957819.6520529,
-    "ast_hash": "ab77702c3b4e1fadc045594f7af57b62",
+    "mtime": 1791984080.5525982,
+    "seen": 1791984466.491389,
+    "ast_hash": "03e3c7cb23acd1586f65c62af80f47b8",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1790770061.6981874,
-    "seen": 1790950512.454797,
-    "ast_hash": "87053a31ff57db7c8eb2c56813fe6a98",
+    "mtime": 1791983631.0022178,
+    "seen": 1791984466.491393,
+    "ast_hash": "28676cb51bd32ef49478c5b5fcfa0f3b",
     "semantic_hash": ""
   },
   "docs/ARQUITETURA_E_API.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1791957697.1952007,
-    "seen": 1791957819.6520588,
-    "ast_hash": "65b686a46526a04b451ca3098afa0fd7",
+    "mtime": 1791983603.8736846,
+    "seen": 1791984466.491394,
+    "ast_hash": "7c3fdcfc7181f81360babba73d8cc119",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1791979742.9306645,
-    "seen": 1791979770.931624,
-    "ast_hash": "8d6a885a8c19b16c5c3406e9fcc5a971",
+    "mtime": 1791984451.0189657,
+    "seen": 1791984466.491389,
+    "ast_hash": "79008668e37aa719e660c93261809578",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,10 +1104,10 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1791957453.76894,
-    "seen": 1791980638.757686,
-    "ast_hash": "037c9f5308b975063d1929d755764039",
-    "semantic_hash": "037c9f5308b975063d1929d755764039"
+    "mtime": 1791984033.9049923,
+    "seen": 1791984466.4913669,
+    "ast_hash": "caaa5177b9fbef8aefabdd97c42b1b11",
+    "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
     "mtime": 1791540898.7666674,
@@ -1156,5 +1156,11 @@
     "seen": 1791980638.757486,
     "ast_hash": "a2f550347082c4a2c9ade31b0e6c6bdb",
     "semantic_hash": "a2f550347082c4a2c9ade31b0e6c6bdb"
+  },
+  "frontend/src/app/settings/power/page.tsx": {
+    "mtime": 1791983918.8965282,
+    "seen": 1791984466.49136,
+    "ast_hash": "db9a398a216f88462d9f0e309e315110",
+    "semantic_hash": ""
   }
 }

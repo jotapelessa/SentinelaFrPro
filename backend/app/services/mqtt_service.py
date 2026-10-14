@@ -358,7 +358,7 @@ class MQTTService:
 
                     # 3. Frame mais recente da câmera no Frigate NVR (fallback nativo 3MP 2304x1296 sem downscale)
                     if not snapshot_bytes:
-                        resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg?h=1296")
+                        resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg?h=1296&quality=100")
                         if resp_latest.status_code == 200 and len(resp_latest.content) > 2000:
                             snapshot_bytes = resp_latest.content
                 except Exception as e:

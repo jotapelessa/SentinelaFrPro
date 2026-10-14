@@ -190,7 +190,7 @@ class TelegramVaultService:
                 scale *= 0.85
                 resized = image.resize((max(1, int(width * scale)), max(1, int(height * scale))), Image.LANCZOS)
                 buf = io.BytesIO()
-                resized.save(buf, format="JPEG", quality=90, subsampling=0)
+                resized.save(buf, format="JPEG", quality=90, subsampling=0, dpi=(300, 300))
                 data = buf.getvalue()
 
             return data
@@ -404,7 +404,7 @@ class TelegramVaultService:
         except Exception as e:
             err = str(e)
             logger.error(f"❌ Erro de rede ao enviar foto para o Telegram: {err}")
-            self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, err)
+            self.record_audit(audit_action, {"camera": camera_name, "label": label, "zone": zone, "as_document": as_document}, False, err)
             return False
 
     async def send_alert_video(

@@ -367,12 +367,29 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     const checkStreamHealth = () => {
       if (typeof document !== "undefined" && document.hidden) return;
 
+      const triggerReload = () => {
+        setIsWatchdogRecovering(true);
+        setKey((k) => k + 1);
+        setTimeout(() => setIsWatchdogRecovering(false), 2500);
+      };
+
+      const handleStall = () => {
+        setStreamStallCount((prev) => {
+          const next = prev + 1;
+          if (next >= 5) {
+            triggerReload();
+            return 0;
+          }
+          return next;
+        });
+      };
+
       const activeProbeSrc = getEffectiveSrc();
       // Probe GET no endpoint da stream para validar existência de producers sem derrubar WebSocket
       fetch(`/go2rtc/api/streams?src=${encodeURIComponent(activeProbeSrc)}`, { signal: AbortSignal.timeout(8000) })
         .then(async (res) => {
           if (!res.ok) {
-            setStreamStallCount((prev) => prev + 1);
+            handleStall();
           } else {
             try {
               const data = await res.json();
@@ -380,7 +397,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
               const sData = (data && data.producers) ? data : (data[activeProbeSrc] || {});
               const prods = sData.producers || [];
               if (prods.length === 0) {
-                setStreamStallCount((prev) => prev + 1);
+                handleStall();
               } else {
                 setStreamStallCount(0);
               }
@@ -391,17 +408,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
           }
         })
         .catch(() => {
-          setStreamStallCount((prev) => {
-            const next = prev + 1;
-            // Exige ao menos 5 falhas consecutivas comprovadas antes de acionar reload destrutivo
-            if (next >= 5) {
-              setIsWatchdogRecovering(true);
-              setKey((k) => k + 1);
-              setTimeout(() => setIsWatchdogRecovering(false), 2500);
-              return 0;
-            }
-            return next;
-          });
+          handleStall();
         });
     };
 

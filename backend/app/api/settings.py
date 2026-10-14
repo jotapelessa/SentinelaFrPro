@@ -1155,16 +1155,20 @@ async def restart_app_containers(request: Request):
             except Exception as e:
                 logger.error(f"Falha ao comunicar com docker.sock: {e}")
 
-        # Fallback to shell command
+        # Fallback to shell command (using curl with docker.sock or docker CLI)
         for c in ancillary_containers:
             try:
-                p = await asyncio.create_subprocess_shell(f"docker restart {c}")
+                p = await asyncio.create_subprocess_shell(
+                    f"curl -s -X POST --unix-socket /var/run/docker.sock http://localhost/v1.41/containers/{c}/restart?t=5 2>/dev/null || docker restart {c}"
+                )
                 await p.communicate()
             except Exception:
                 pass
         await asyncio.sleep(1.0)
         try:
-            p = await asyncio.create_subprocess_shell("docker restart sentinela_backend")
+            p = await asyncio.create_subprocess_shell(
+                "curl -s -X POST --unix-socket /var/run/docker.sock http://localhost/v1.41/containers/sentinela_backend/restart?t=5 2>/dev/null || docker restart sentinela_backend"
+            )
             await p.communicate()
         except Exception:
             pass
@@ -1227,7 +1231,13 @@ async def reboot_server_host(request: Request):
                 logger.error(f"Erro ao disparar reboot do host via docker.sock: {ex}")
 
         if not reboot_triggered:
-            reboot_cmd = "docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -i -n -p reboot || sudo /sbin/reboot || sudo reboot || /sbin/reboot || reboot || systemctl reboot"
+            reboot_cmd = (
+                "curl -s -X POST --unix-socket /var/run/docker.sock -H 'Content-Type: application/json' "
+                "-d '{\"Image\":\"alpine\",\"Cmd\":[\"nsenter\",\"-t\",\"1\",\"-m\",\"-u\",\"-i\",\"-n\",\"-p\",\"reboot\"],\"HostConfig\":{\"Privileged\":true,\"PidMode\":\"host\",\"AutoRemove\":true}}' "
+                "http://localhost/v1.41/containers/create 2>/dev/null || "
+                "docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -i -n -p reboot || "
+                "sudo /sbin/reboot || sudo reboot || /sbin/reboot || reboot || systemctl reboot"
+            )
             try:
                 p = await asyncio.create_subprocess_shell(reboot_cmd)
                 await p.communicate()
