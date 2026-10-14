@@ -33,6 +33,11 @@
      - *Correção*: Polling de telemetria HTTP espaçado de 2s para 8s, economizando tráfego de rede e bateria do dispositivo móvel.
   6. **Unificação de Versão 001.000.000.176 (Build 176)**:
      - Sincronização em `android/version.properties`, `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts` e `README.md`.
+  7. **Auditoria de Robustez e Correções Críticas Pós-Revisão (v176)**:
+     - *Filtro Estrito de Máscaras vs Zonas (`cameras.py` & `mqtt_service.py`)*: Máscaras de movimento (`type: "mask"`) foram devidamente segregadas de zonas reais (`type: "zone"`). As máscaras nunca entram em `required_zones` nem marcam `has_zones=True` indevidamente, eliminando o descarte errôneo de vídeos para câmeras com apenas máscara. O Frigate hidrata automaticamente `cam_block["zones"]` e `motion.mask` a partir do SQLite.
+     - *Segurança de Resolução de IP (`onvif_hardware.py`)*: `resolve_camera_ip` corrigido para nunca retornar uma câmera aleatória do banco se `camera_name` for nulo ao receber IPs genéricos. Suporte a `camera_name` em `get_camera_hardware_config` e persistência transparente no banco.
+     - *Descarte de Clipes Fora de Zona (`mqtt_service.py`)*: Detecções com zonas não listadas nas zonas ativas da câmera também descartam o download de vídeo, garantindo integridade térmica do servidor.
+     - *Configuração Canônica do Test Suite (`pytest.ini` & `test_backend.py`)*: Adicionado `pytest.ini` na raiz definindo `pythonpath = backend`, permitindo execução imediata de `pytest backend/tests/` (14/14 testes aprovados).
 
 ---
 
