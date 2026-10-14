@@ -53,6 +53,7 @@ export interface SecurityEvent {
   retained?: boolean;
   box?: number[];
   data?: Record<string, any>;
+  type?: string;
 }
 
 export interface AuditLogItem {

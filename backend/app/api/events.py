@@ -581,15 +581,22 @@ async def get_event_clip(event_id: str, download: bool = False):
 @router.head("/{event_id}/snapshot.jpg")
 @router.get("/{event_id}/snapshot.webp")
 @router.head("/{event_id}/snapshot.webp")
-async def get_event_snapshot(event_id: str, clean: Union[int, str, bool] = 0):
+async def get_event_snapshot(
+    event_id: str,
+    clean: Union[int, str, bool] = 0,
+    request: Request = None
+):
     """
     Proxies or serves snapshot JPEG or WebP image for an event from local disk or Frigate NVR.
     Supports clean full-res 3MP snapshots (clean=1) and annotated bounding boxes (clean=0).
     Guarantees fast, reliable delivery with proper Content-Type and caching headers.
+    When a .jpg URL is requested and the source is WebP, converts in-memory to JPEG via PIL
+    to prevent MIME type mismatches and strictly comply with nosniff headers.
     """
     media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
     clips_dir = os.path.join(media_base, "clips")
     is_clean = str(clean).lower() in ("1", "true", "yes", "clean") if clean else False
+    is_jpg_request = bool(request and request.url.path.endswith((".jpg", ".jpeg")))
     
     # 1. Check local media directory
     if os.path.exists(clips_dir):
@@ -610,6 +617,21 @@ async def get_event_snapshot(event_id: str, clean: Union[int, str, bool] = 0):
             for fname in candidates:
                 fpath = os.path.join(clips_dir, fname)
                 if os.path.isfile(fpath) and os.path.getsize(fpath) > 200:
+                    if is_jpg_request and fname.endswith(".webp"):
+                        try:
+                            from PIL import Image
+                            import io
+                            img = Image.open(fpath).convert("RGB")
+                            buf = io.BytesIO()
+                            img.save(buf, format="JPEG", quality=95)
+                            return Response(
+                                content=buf.getvalue(),
+                                media_type="image/jpeg",
+                                headers={"Cache-Control": "public, max-age=86400"}
+                            )
+                        except Exception as e:
+                            logger.debug(f"PIL conversion of {fpath} to JPEG failed: {e}")
+
                     media_type = "image/webp" if fname.endswith(".webp") else "image/jpeg"
                     return FileResponse(
                         fpath,
@@ -628,6 +650,21 @@ async def get_event_snapshot(event_id: str, clean: Union[int, str, bool] = 0):
             resp = await client.get(url)
             if resp.status_code == 200:
                 c_type = resp.headers.get("content-type", "image/jpeg").lower()
+                if is_jpg_request and "webp" in c_type:
+                    try:
+                        from PIL import Image
+                        import io
+                        img = Image.open(io.BytesIO(resp.content)).convert("RGB")
+                        buf = io.BytesIO()
+                        img.save(buf, format="JPEG", quality=95)
+                        return Response(
+                            content=buf.getvalue(),
+                            media_type="image/jpeg",
+                            headers={"Cache-Control": "public, max-age=86400"}
+                        )
+                    except Exception as e:
+                        logger.debug(f"PIL conversion of Frigate proxy WebP to JPEG failed: {e}")
+
                 media_type = "image/webp" if "webp" in c_type else "image/jpeg"
                 return Response(
                     content=resp.content,

@@ -81,6 +81,8 @@ class MQTTService:
             policy = {
                 "send_mode": "both",
                 "clip_duration_seconds": 15,
+                "snapshot_resolution": "3mp",
+                "send_document": True,
                 "allowed_events": ["person", "car", "motorcycle", "bus", "truck", "dog", "cat"],
                 "cooldown_seconds": 5.0
             }
@@ -91,6 +93,8 @@ class MQTTService:
                         SystemSetting.key.in_([
                             "telegram_send_mode",
                             "telegram_clip_duration_seconds",
+                            "telegram_snapshot_resolution",
+                            "telegram_send_document",
                             "telegram_allowed_events",
                             "telegram_cooldown_seconds"
                         ])
@@ -101,6 +105,10 @@ class MQTTService:
                             policy["send_mode"] = s.value.lower()
                         elif s.key == "telegram_clip_duration_seconds" and s.value:
                             policy["clip_duration_seconds"] = max(10, int(s.value))
+                        elif s.key == "telegram_snapshot_resolution" and s.value:
+                            policy["snapshot_resolution"] = s.value.lower()
+                        elif s.key == "telegram_send_document" and s.value:
+                            policy["send_document"] = s.value.lower() in ("true", "1", "yes")
                         elif s.key == "telegram_allowed_events" and s.value:
                             try:
                                 policy["allowed_events"] = json.loads(s.value)
@@ -436,7 +444,12 @@ class MQTTService:
 
             if notify_tg and send_mode in ["both", "photo_only"] and label in allowed_tg_events:
                 if snapshot_bytes:
-                    send_as_doc = bool(tg_policy.get("send_document", False) or tg_policy.get("snapshot_as_document", False))
+                    snap_res = str(tg_policy.get("snapshot_resolution", "3mp")).lower()
+                    send_as_doc = bool(
+                        tg_policy.get("send_document", True)
+                        or snap_res in ("3mp", "2304x1296", "maxima")
+                        or tg_policy.get("snapshot_as_document", False)
+                    )
                     telegram_ok = await telegram_vault_service.send_alert_photo(
                         image_bytes=snapshot_bytes,
                         camera_name=camera,

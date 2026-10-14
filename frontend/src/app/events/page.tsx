@@ -1312,49 +1312,66 @@ export default function EventsPage() {
               </div>
             </div>
 
-            {/* Video Player */}
-            <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-inner">
-              <video
-                key={selectedEvent.id}
-                ref={videoRef}
-                src={`/frigate/api/events/${selectedEvent.id}/clip.mp4`}
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  const fallback = selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`;
-                  if (target.src !== fallback && !target.src.endsWith(fallback)) {
-                    target.src = fallback;
-                    target.play().catch(() => {});
-                  }
-                }}
-                controls
-                autoPlay
-                playsInline
-                preload="metadata"
-                className="w-full h-full object-contain"
-              >
-                Seu navegador não suporta reprodução MP4.
-              </video>
+            {/* Media Player / HD 3MP Viewer */}
+            <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-inner flex items-center justify-center">
+              {(!selectedEvent.has_clip || selectedEvent.type === "photo") ? (
+                <img
+                  key={selectedEvent.id}
+                  src={selectedEvent.snapshot_clean_url || selectedEvent.snapshot_url || `/api/events/${selectedEvent.id}/snapshot.jpg?clean=1`}
+                  alt={`${selectedEvent.label} - ${selectedEvent.camera}`}
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <video
+                  key={selectedEvent.id}
+                  ref={videoRef}
+                  src={selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`}
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    const fallback = `/frigate/api/events/${selectedEvent.id}/clip.mp4`;
+                    if (target.src !== fallback && !target.src.endsWith(fallback)) {
+                      target.src = fallback;
+                      target.load();
+                      target.play().catch(() => {});
+                    }
+                  }}
+                  controls
+                  autoPlay
+                  playsInline
+                  preload="metadata"
+                  className="w-full h-full object-contain"
+                >
+                  Seu navegador não suporta reprodução MP4.
+                </video>
+              )}
             </div>
 
             {/* Playback Controls & Direct Media Downloads */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-              {/* Playback Speed Switcher */}
-              <div className="flex items-center gap-1.5 bg-obsidian-950 p-1 rounded-xl border border-slate-800 text-xs font-mono">
-                <span className="text-slate-500 px-2 text-[10px]">Velocidade:</span>
-                {[0.5, 1, 1.5, 2].map((spd) => (
-                  <button
-                    key={spd}
-                    onClick={() => changePlaybackSpeed(spd)}
-                    className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
-                      playbackSpeed === spd
-                        ? "bg-cyan-500 text-obsidian-950 shadow"
-                        : "text-slate-400 hover:text-slate-200"
-                    }`}
-                  >
-                    {spd}x
-                  </button>
-                ))}
-              </div>
+              {/* Playback Speed Switcher (only for video clips) */}
+              {selectedEvent.has_clip && selectedEvent.type !== "photo" ? (
+                <div className="flex items-center gap-1.5 bg-obsidian-950 p-1 rounded-xl border border-slate-800 text-xs font-mono">
+                  <span className="text-slate-500 px-2 text-[10px]">Velocidade:</span>
+                  {[0.5, 1, 1.5, 2].map((spd) => (
+                    <button
+                      key={spd}
+                      onClick={() => changePlaybackSpeed(spd)}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-all ${
+                        playbackSpeed === spd
+                          ? "bg-cyan-500 text-obsidian-950 shadow"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      {spd}x
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-cyan-950/40 border border-cyan-800/40 rounded-xl text-xs font-mono text-cyan-300">
+                  <Eye className="w-3.5 h-3.5 text-cyan-400" />
+                  <span>Foto Forense HD (3MP Nativo 2304×1296)</span>
+                </div>
+              )}
 
               {/* Action Buttons */}
               <div className="flex items-center gap-2">
@@ -1389,18 +1406,20 @@ export default function EventsPage() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 font-semibold text-xs border border-slate-700 transition-all"
                 >
                   <Eye className="w-3.5 h-3.5 text-cyan-400" />
-                  <span>Foto Limpa</span>
+                  <span>Foto Limpa 3MP</span>
                 </a>
 
                 {/* Download Video Clip */}
-                <a
-                  href={selectedEvent.clip_url ? `${selectedEvent.clip_url}?download=1` : `/api/events/${selectedEvent.id}/clip.mp4?download=1`}
-                  download={`clip_${selectedEvent.camera}_${selectedEvent.id}.mp4`}
-                  className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all"
-                >
-                  <Download className="w-4 h-4" />
-                  <span>Baixar Clipe MP4</span>
-                </a>
+                {selectedEvent.has_clip && selectedEvent.type !== "photo" && (
+                  <a
+                    href={selectedEvent.clip_url ? `${selectedEvent.clip_url}?download=1` : `/api/events/${selectedEvent.id}/clip.mp4?download=1`}
+                    download={`clip_${selectedEvent.camera}_${selectedEvent.id}.mp4`}
+                    className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Baixar Clipe MP4</span>
+                  </a>
+                )}
               </div>
             </div>
           </div>

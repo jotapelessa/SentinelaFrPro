@@ -20,10 +20,11 @@ class TelegramConfigUpdate(BaseModel):
     bot_token: str
     chat_id: str
     clip_duration_seconds: Optional[int] = 15
-    snapshot_resolution: Optional[str] = "1080p"
+    snapshot_resolution: Optional[str] = "3mp"
     video_quality: Optional[str] = "balanced"
     include_audio: Optional[bool] = True
     send_mode: Optional[str] = "both"
+    send_document: Optional[bool] = True
 
 class PauseAlertsRequest(BaseModel):
     minutes: int = 60
@@ -48,7 +49,8 @@ async def get_settings(db: AsyncSession = Depends(get_db)):
     saved_token = all_settings.get("telegram_bot_token") or telegram_vault_service.bot_token or ""
     saved_chat_id = all_settings.get("telegram_chat_id") or telegram_vault_service.chat_id or ""
     clip_dur = int(all_settings.get("telegram_clip_duration_seconds", "15"))
-    snap_res = all_settings.get("telegram_snapshot_resolution", "1080p")
+    snap_res = all_settings.get("telegram_snapshot_resolution", "3mp")
+    send_doc = all_settings.get("telegram_send_document", "true").lower() == "true"
     vid_qual = all_settings.get("telegram_video_quality", "balanced")
     inc_audio = all_settings.get("telegram_include_audio", "true").lower() == "true"
     send_md = all_settings.get("telegram_send_mode", "both")
@@ -71,13 +73,14 @@ async def get_settings(db: AsyncSession = Depends(get_db)):
 
     return {
         "app_version": settings.APP_VERSION,
-        "app_build": getattr(settings, "BUILD_NUMBER", 175),
+        "app_build": getattr(settings, "BUILD_NUMBER", 178),
         "telegram_configured": bool(saved_token and saved_chat_id),
         "bot_token": saved_token,
         "chat_id": saved_chat_id,
         "telegram_chat_id": saved_chat_id,
         "clip_duration_seconds": clip_dur,
         "snapshot_resolution": snap_res,
+        "send_document": send_doc,
         "video_quality": vid_qual,
         "include_audio": inc_audio,
         "send_mode": send_md,
@@ -110,10 +113,11 @@ async def update_telegram_config(config: TelegramConfigUpdate, request: Request,
     clean_token = config.bot_token.strip()
     clean_chat_id = config.chat_id.strip()
     clip_dur = str(config.clip_duration_seconds or 15)
-    snap_res = str(config.snapshot_resolution or "1080p")
+    snap_res = str(config.snapshot_resolution or "3mp")
     vid_qual = str(config.video_quality or "balanced")
     inc_audio = "true" if config.include_audio else "false"
     send_md = str(config.send_mode or "both")
+    send_doc = "true" if config.send_document is not False else "false"
 
     settings.TELEGRAM_BOT_TOKEN = clean_token
     settings.TELEGRAM_CHAT_ID = clean_chat_id
@@ -127,6 +131,7 @@ async def update_telegram_config(config: TelegramConfigUpdate, request: Request,
         ("telegram_chat_id", clean_chat_id),
         ("telegram_clip_duration_seconds", clip_dur),
         ("telegram_snapshot_resolution", snap_res),
+        ("telegram_send_document", send_doc),
         ("telegram_video_quality", vid_qual),
         ("telegram_include_audio", inc_audio),
         ("telegram_send_mode", send_md)
@@ -287,6 +292,17 @@ async def test_telegram_photo(
             detail=f"Não foi possível capturar a foto ao vivo da câmera '{friendly_name}'. Verifique o stream RTSP/go2rtc."
         )
 
+    # Read send_document and snapshot_resolution settings from DB
+    from app.db.models import SystemSetting
+    stmt_set = select(SystemSetting)
+    res_set = await db.execute(stmt_set)
+    db_settings = {s.key: s.value for s in res_set.scalars().all()}
+    snap_res_val = db_settings.get("telegram_snapshot_resolution", "3mp").lower()
+    send_as_doc = (
+        db_settings.get("telegram_send_document", "true").lower() in ("true", "1", "yes")
+        or snap_res_val in ("3mp", "2304x1296", "maxima")
+    )
+
     ok = await telegram_vault_service.send_alert_photo(
         image_bytes=snapshot_bytes,
         camera_name=cam_name,
@@ -294,7 +310,8 @@ async def test_telegram_photo(
         zone="Entrada Principal",
         score=0.97,
         friendly_name=friendly_name,
-        ignore_pause=True
+        ignore_pause=True,
+        as_document=send_as_doc
     )
 
     await audit_service.log(

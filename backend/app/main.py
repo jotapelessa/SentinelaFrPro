@@ -43,6 +43,12 @@ async def lifespan(app: FastAPI):
     from app.services.telegram_vault import telegram_vault_service
     await telegram_vault_service.load_credentials_from_db()
 
+    # Reconcile cameras with Frigate NVR and go2rtc (ensuring both cameras and zero-copy aliases exist)
+    from app.api.cameras import reconcile_cameras_with_frigate
+    try:
+        await reconcile_cameras_with_frigate()
+    except Exception as e:
+        logger.warning(f"Initial camera reconciliation skipped or delayed: {e}")
 
     # Start Background MQTT Listener
     mqtt_task = asyncio.create_task(mqtt_service.start_listening())

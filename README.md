@@ -2,9 +2,9 @@
 
 <div align="center">
 
-![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.177-06B6D4?style=for-the-badge&logo=android&logoColor=white)
+![Versão](https://img.shields.io/badge/Versão-SentinelaPro.001.000.000.178-06B6D4?style=for-the-badge&logo=android&logoColor=white)
 ![Build](https://img.shields.io/badge/Status-Estável-emerald?style=for-the-badge)
-![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.177-success?style=for-the-badge&logo=github)
+![GitHub Releases](https://img.shields.io/badge/GitHub_Releases-v001.000.000.178-success?style=for-the-badge&logo=github)
 ![Frigate](https://img.shields.io/badge/Frigate_NVR-v0.17--0882103-blue?style=for-the-badge)
 ![go2rtc](https://img.shields.io/badge/go2rtc-v1.9.10--WebRTC-orange?style=for-the-badge)
 ![OpenVINO](https://img.shields.io/badge/OpenVINO-2024.5.0-purple?style=for-the-badge)
@@ -20,18 +20,18 @@ O **SentinelaFrigate PRO** é um sistema completo de videomonitoramento de níve
 
 ---
 
-## 📥 Download dos APKs Oficiais (`v001.000.000.177`)
+## 📥 Download dos APKs Oficiais (`v001.000.000.178`)
 
-Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.177):
+Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.com/jotapelessa/SentinelaFrPro/releases/tag/v001.000.000.178):
 
-* 📺 **[Download Android TV APK (v001.000.000.177)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.177/sentinela-android-tv-v001.000.000.177.apk)**  
-  *(Ou baixe a versão contínua mais recente: [`sentinela-android-tv-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.177/sentinela-android-tv-latest.apk))*
-* 📱 **[Download Smartphone / Tablet APK (v001.000.000.177)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.177/sentinela-android-smartphone-v001.000.000.177.apk)**  
-  *(Ou baixe a versão contínua mais recente: [`sentinela-android-smartphone-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.177/sentinela-android-smartphone-latest.apk))*
+* 📺 **[Download Android TV APK (v001.000.000.178)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.178/sentinela-android-tv-v001.000.000.178.apk)**  
+  *(Ou baixe a versão contínua mais recente: [`sentinela-android-tv-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.178/sentinela-android-tv-latest.apk))*
+* 📱 **[Download Smartphone / Tablet APK (v001.000.000.178)](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.178/sentinela-android-smartphone-v001.000.000.178.apk)**  
+  *(Ou baixe a versão contínua mais recente: [`sentinela-android-smartphone-latest.apk`](https://github.com/jotapelessa/SentinelaFrPro/releases/download/v001.000.000.178/sentinela-android-smartphone-latest.apk))*
 
 ---
 
-## 📱 Aplicativos Nativos Android (`v001.000.000.177`)
+## 📱 Aplicativos Nativos Android (`v001.000.000.178`)
 
 ### 📺 1. Android TV 55" (Layout Horizontal Estilo Netflix)
 * **Aba 1 • Câmeras**: Spotlight imersivo com navegação D-Pad, carrossel dinâmico e alternância para tela cheia instantânea.
@@ -73,9 +73,10 @@ Baixe os aplicativos diretamente na página de [GitHub Releases](https://github.
 
 ---
 
-## 🚀 Como Compilar os APKs no GitHub Codespaces
+## 🚀 Como Compilar no GitHub Codespaces
 
-1. Abra o terminal no seu GitHub Codespaces:
+### 📱 1. Compilação dos APKs Android
+Abra o terminal no seu GitHub Codespaces:
 ```bash
 cd /workspaces/SentinelaFrPro
 
@@ -89,15 +90,32 @@ git pull origin main
 ./compile_apk.sh tv          # Só Android TV
 ./compile_apk.sh smartphone  # Só Smartphone
 ./compile_apk.sh both        # TV + Smartphone (explícito)
+
+# Compilação direta via Gradle:
+cd android && ./gradlew assembleDebug && cd ..
 ```
 
-2. O script detecta e instala automaticamente o JDK 17 e aceita as licenças do Android SDK se necessário. Aguarde o Gradle baixar as dependências (primeira execução ~5min).
+O script detecta e instala automaticamente o JDK 17 e aceita as licenças do Android SDK se necessário. Aguarde o Gradle baixar as dependências (primeira execução ~5min).
 
-3. Ao final, os APKs são gerados na **raiz do repositório** com o nome versionado:
-   - `sentinela.android.tv.<versão>.apk`
-   - `sentinela.android.smartphone.<versão>.apk`
+Ao final, os APKs são gerados na **raiz do repositório** com o nome versionado:
+- `sentinela.android.tv.001.000.000.178.apk`
+- `sentinela.android.smartphone.001.000.000.178.apk`
 
-4. Para baixar: clique com o botão direito no arquivo `.apk` no painel esquerdo do VS Code e selecione **Download...**
+Para baixar: clique com o botão direito no arquivo `.apk` no painel esquerdo do VS Code e selecione **Download...**
+
+### 🌐 2. Compilação e Validação do Frontend (Next.js)
+```bash
+cd /workspaces/SentinelaFrPro/frontend
+npm install
+npm run build
+```
+
+### 🐳 3. Compilação e Execução dos Contêineres Docker
+```bash
+cd /workspaces/SentinelaFrPro
+docker compose build --no-cache frontend backend
+docker compose up -d
+```
 
 ---
 

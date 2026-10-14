@@ -1452,7 +1452,7 @@ async def _save_yaml_config_atomic(cfg: dict, config_path: Optional[str] = None)
         _YAML_CONFIG_TIME = 0.0
         return written_any
 
-async def sync_camera_to_frigate(cam: Camera):
+async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     import os
     import yaml
     import json
@@ -1520,17 +1520,23 @@ async def sync_camera_to_frigate(cam: Camera):
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
 
         # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
+        if target_cam_key in ("cam_192_168_1_196", "camera_principal"):
+            cfg["go2rtc"]["streams"]["camera_principal"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_principal_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_principal_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+        elif target_cam_key in ("cam_192_168_1_47", "camera_secundaria"):
+            cfg["go2rtc"]["streams"]["camera_secundaria"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_secundaria_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+
+        # Garantir aliases legados padrão se ausentes
         if "camera_principal" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_principal"]:
             cfg["go2rtc"]["streams"]["camera_principal"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-        elif target_cam_key != "cam_192_168_1_196":
-            if "camera_secundaria" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_secundaria"]:
-                cfg["go2rtc"]["streams"]["camera_secundaria"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-                cfg["go2rtc"]["streams"]["camera_secundaria_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-                cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-                cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
 
     # Build UNIFIED ffmpeg input: Consolidate roles: ["record", "detect"] on the main stream
     # Eliminates dual demuxer processes and prevents camera TCP socket saturation (Regras de Ouro #12 e #15)
@@ -1746,13 +1752,25 @@ async def sync_camera_to_frigate(cam: Camera):
 
     await _save_yaml_config_atomic(cfg, config_path)
 
-    # Registrar dinamicamente o stream no go2rtc via API PUT com parâmetros name e src para streaming imediato sem esperar restart
+    # Sincronização e registro dinâmico completo de todos os streams e aliases no go2rtc via API PUT
     if rtsp_url:
         try:
             async with httpx.AsyncClient(timeout=3.0) as client:
                 await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": target_cam_key, "src": rtsp_url.strip()})
-                if cam.rtsp_sub and cam.rtsp_sub.strip():
-                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_sub", "src": cam.rtsp_sub.strip()})
+                await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_sub", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+
+                if target_cam_key in ("cam_192_168_1_196", "camera_principal"):
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_sub", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                elif target_cam_key in ("cam_192_168_1_47", "camera_secundaria"):
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_sub", "src": f"ffmpeg:{target_cam_key}#video=copy"})
         except Exception as e:
             logger.debug(f"Dynamic go2rtc stream registration skipped or pending restart: {e}")
 
@@ -1776,20 +1794,50 @@ async def sync_camera_to_frigate(cam: Camera):
     except Exception as e:
         logger.debug(f"Frigate DB sanitization skipped: {e}")
 
-    # Salva e recarrega de forma autoritativa no Frigate via API oficial
+    # Salva e recarrega de forma autoritativa no Frigate via API oficial apenas quando explicitamente solicitado
+    if restart_frigate:
+        try:
+            cfg_sanitized = sanitize_frigate_config(cfg)
+            updated_yaml = yaml.dump(cfg_sanitized, default_flow_style=False, allow_unicode=True, sort_keys=False)
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                save_resp = await client.post(
+                    f"{settings.FRIGATE_API_URL}/api/config/save?save_option=restart",
+                    content=updated_yaml,
+                    headers={"Content-Type": "text/plain"}
+                )
+                if save_resp.status_code != 200:
+                    await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+        except Exception as e:
+            logger.warning(f"Failed to trigger Frigate config save/restart: {e}")
+
+
+async def reconcile_cameras_with_frigate():
+    """
+    Idempotent reconciler that reads all active cameras (enabled=1) from SQLite sentinela.db,
+    ensures Frigate config.yml contains both/all active cameras with zero-copy aliases
+    and 3MP detect/snapshots, and dynamically registers all streams and aliases
+    in go2rtc via PUT /api/streams without restarting the Frigate container unnecessarily.
+    """
+    logger.info("🛡️ [RECONCILER] Reconciliando câmeras ativas com Frigate NVR e go2rtc...")
     try:
-        cfg_sanitized = sanitize_frigate_config(cfg)
-        updated_yaml = yaml.dump(cfg_sanitized, default_flow_style=False, allow_unicode=True, sort_keys=False)
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            save_resp = await client.post(
-                f"{settings.FRIGATE_API_URL}/api/config/save?save_option=restart",
-                content=updated_yaml,
-                headers={"Content-Type": "text/plain"}
-            )
-            if save_resp.status_code != 200:
-                await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+        from app.db.session import AsyncSessionLocal
+        from app.db.models import Camera as DBCamera
+        async with AsyncSessionLocal() as session:
+            stmt = select(DBCamera).where(DBCamera.enabled == True)
+            res = await session.execute(stmt)
+            active_cams = res.scalars().all()
+
+            if not active_cams:
+                logger.info("ℹ️ [RECONCILER] Nenhuma câmera ativa encontrada no SQLite.")
+                return
+
+            for c in active_cams:
+                logger.info(f"🎥 [RECONCILER] Reconciliando câmera ativa: {c.name} ({c.ip_address})")
+                await sync_camera_to_frigate(c, restart_frigate=False)
+
+        logger.info(f"✅ [RECONCILER] {len(active_cams)} câmeras ativas reconciliadas com sucesso!")
     except Exception as e:
-        logger.warning(f"Failed to trigger Frigate config save/restart: {e}")
+        logger.warning(f"⚠️ [RECONCILER] Erro na reconciliação de câmeras com Frigate: {e}")
 
 
 async def remove_camera_from_frigate(cam_name: str):

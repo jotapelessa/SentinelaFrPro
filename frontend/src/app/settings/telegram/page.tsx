@@ -5,6 +5,7 @@ import {
   Send, 
   Check, 
   Shield, 
+  ShieldCheck, 
   BellRing, 
   Play, 
   Terminal, 
@@ -33,7 +34,8 @@ export default function TelegramSettingsPage() {
   
   // Media Customization State
   const [clipDuration, setClipDuration] = useState<number>(15);
-  const [snapshotResolution, setSnapshotResolution] = useState<string>("1080p");
+  const [snapshotResolution, setSnapshotResolution] = useState<string>("3mp");
+  const [sendDocument, setSendDocument] = useState<boolean>(true);
   const [videoQuality, setVideoQuality] = useState<string>("balanced");
   const [includeAudio, setIncludeAudio] = useState<boolean>(true);
   const [sendMode, setSendMode] = useState<string>("both");
@@ -89,6 +91,7 @@ export default function TelegramSettingsPage() {
         if (data.chat_id) setChatId(data.chat_id);
         if (data.clip_duration_seconds) setClipDuration(data.clip_duration_seconds);
         if (data.snapshot_resolution) setSnapshotResolution(data.snapshot_resolution);
+        if (typeof data.send_document === "boolean") setSendDocument(data.send_document);
         if (data.video_quality) setVideoQuality(data.video_quality);
         if (typeof data.include_audio === "boolean") setIncludeAudio(data.include_audio);
         if (data.send_mode) setSendMode(data.send_mode);
@@ -123,6 +126,7 @@ export default function TelegramSettingsPage() {
         chat_id: chatId.trim(),
         clip_duration_seconds: clipDuration,
         snapshot_resolution: snapshotResolution,
+        send_document: sendDocument,
         video_quality: videoQuality,
         include_audio: includeAudio,
         send_mode: sendMode
@@ -530,6 +534,30 @@ export default function TelegramSettingsPage() {
                   <div
                     className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
                       includeAudio ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {/* Document Uncompressed 3MP Toggle */}
+              <div className="flex items-center justify-between pt-2 border-t border-slate-800">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-cyan-400" />
+                  <div>
+                    <span className="text-xs font-semibold text-slate-300 block">Envio Forense como Documento</span>
+                    <span className="text-[10px] text-slate-400 block">Ignora a compressão do Telegram e preserva 3MP (2304×1296)</span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSendDocument(!sendDocument)}
+                  className={`w-11 h-6 flex items-center rounded-full p-1 transition-colors ${
+                    sendDocument ? "bg-cyan-500" : "bg-slate-800"
+                  }`}
+                >
+                  <div
+                    className={`bg-white w-4 h-4 rounded-full shadow-md transform transition-transform ${
+                      sendDocument ? "translate-x-5" : "translate-x-0"
                     }`}
                   />
                 </button>

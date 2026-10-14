@@ -1,15 +1,34 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-14 17:35 BRT
-> **Versão Corrente:** v001.000.000.177
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.177 consolidada com:
-1. Ingestão Unificada go2rtc (MAIN 3MP 2304x1296): Ingestão direta exclusiva do fluxo MAIN de cada câmera física (`rtsp://admin:admin@<ip>:554/live/0/MAIN#backchannel=0#buffer=2000`). Sub-streams e aliases operando em memória via zero-copy (`ffmpeg:<stream>#video=copy`), eliminando saturação de socket TCP do hardware e prevenindo falhas de 65s por i/o timeout.
-2. Consolidação de Demuxers Frigate (`roles: [record, detect]`): Input unificado único por câmera para gravação e detecção, eliminando processos concorrentes de demuxing FFmpeg e aliviando a CPU/temperatura.
-3. Detecção e Snapshots em 3MP Nativo (2304x1296): `detect.width = 2304`, `detect.height = 1296`, `detect.fps = 5`, `snapshots.quality = 100`, `snapshots.height = 1296` e `snapshots.clean_copy = true`. Re-escalonamento de zonas do SQLite para a matriz 2304x1296.
-4. Suporte WebP e Roteamento Canônico de Snapshots: `get_event_snapshot` com busca local em `/media/frigate/clips/` para `{id}*-clean.webp` ou `{id}*-clean.jpg` com `media_type` apropriado, e fallback transparente para o proxy Frigate. URLs canônicas `/api/events/{id}/snapshot.jpg` e `snapshot_clean_url`.
-5. Telegram 3MP Forense & Seleção no Frontend: Adicionada opção `3MP Nativo 2304×1296 (Máxima Nitidez Forense)` nas configurações do Telegram, marca d'água com dimensionamento proporcional e suporte a `sendDocument` sem compressão.
-6. Ajuste de Proporção 16:9 (`aspect-video`) e Foto Limpa na Web e Android: Cards de eventos ajustados com `aspect-video` e `object-cover`, links diretos para Foto Limpa em 3MP, e consumo de `snapshot_clean_url` no Android sem downscale arbitrário para 1080p.
+> **Última Atualização:** 2026-10-14 19:50 BRT
+> **Versão Corrente:** v001.000.000.178
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.178 consolidada com:
+1. Reconciliação Dinâmica Dual-Camera go2rtc: Inicialização e sincronização inteligente que registra ambas as câmeras ativas (`cam_192_168_1_196` e `cam_192_168_1_47`) e todos os seus aliases (`camera_principal`, `camera_secundaria`, `_main`, `_720p`, `_sub`) diretamente na API do go2rtc sem necessidade de reinicialização disruptiva do contêiner Frigate.
+2. Despacho Forense Telegram 3MP via Documento: Bypass da compressão de 1280px da Cloud do Telegram via `sendDocument` (`telegram_send_document = 'true'`), preservando os 3MP completos (2304x1296) a 300 DPI sem artefatos.
+3. Conversão Dinâmica WebP para JPEG (`nosniff` Compliance): `get_event_snapshot` converte em memória via Pillow imagens legadas/clips WebP para JPEG genuíno (`image/jpeg`) quando requisitado via extensão `.jpg`, eliminando o erro de bloqueio de imagens nos navegadores causado pelo cabeçalho `X-Content-Type-Options: nosniff`.
+4. Player Forense e Resiliente de Eventos (`/events`): Renderização condicional inteligente de fotos forenses 3MP em tags `<img>` e vídeos com reload automático no handler de fallback `onError`.
+5. Unificação Completa de Versão 001.000.000.178 (Build 178) em todos os módulos (Android, Frontend, Backend, Docker).
+
+---
+
+## 🚀 Versão v001.000.000.178 — Reconciliação Dinâmica Dual-Camera go2rtc, Telegram 3MP Document Bypass, Conversão WebP-JPEG nosniff e Player Forense
+- **Data**: 2026-10-14
+- **Objetivo**: Corrigir a transmissão restrita a uma única câmera, eliminar a compressão para 448x800/1280px em fotos do Telegram/Eventos e resolver falha de carregamento de mídia na página de eventos:
+  1. **Reconciliação Dinâmica de Câmeras no go2rtc (`backend/app/api/cameras.py` & `backend/app/main.py`)**:
+     - *Causa*: O arquivo `config.yml` do Frigate no servidor Ubuntu continha apenas uma câmera definida após testes manuais, e o go2rtc não recebia as rotas dinâmicas da segunda câmera sem um restart completo.
+     - *Correção*: Implementado `reconcile_cameras_with_frigate()` invocado no startup lifespan do FastAPI e `sync_camera_to_frigate()` idempotente que lê todas as câmeras ativas no SQLite e registra dinamicamente no go2rtc (`PUT /api/streams`) ambas as câmeras e seus aliases (`camera_principal`, `camera_secundaria`, `_main`, `_720p`, `_sub`) via zero-copy.
+  2. **Telegram 3MP Forense com Document Bypass (`mqtt_service.py`, `settings.py`, `db/session.py`)**:
+     - *Causa*: O Telegram Cloud comprime qualquer foto enviada via `sendPhoto` para no máximo 1280px, perdendo a nitidez 3MP original de 2304x1296.
+     - *Correção*: Adicionada flag `telegram_send_document` e opção padrão de resolução `3mp` no SQLite. Quando selecionado 3MP ou Document Bypass, a imagem é transmitida como documento não-comprimido, mantendo 100% da resolução 2304x1296 para perícia forense.
+  3. **Compatibilidade MIME nosniff em Snapshots (`events.py`)**:
+     - *Causa*: O Frigate salvava snapshots em `/media/frigate/clips/` no formato `.webp`. Ao servir sob a rota `/api/events/{id}/snapshot.jpg`, o navegador recebia `Content-Type: image/webp`, ativando a proteção de segurança `X-Content-Type-Options: nosniff` do Nginx e impedindo a renderização visual da imagem.
+     - *Correção*: Se a rota solicitada terminar em `.jpg` ou `.jpeg` e a fonte em disco for WebP, a API converte em memória via Pillow para JPEG genuíno (`image/jpeg`), respeitando estritamente o header `nosniff`.
+  4. **Player de Mídia Resiliente no Frontend (`frontend/src/app/events/page.tsx`)**:
+     - *Causa*: Eventos do tipo foto renderizavam uma tag `<video>` quebrada; falhas de carregamento de clipes no player de vídeo não invocavam `target.load()` antes de `play()`.
+     - *Correção*: Renderização condicional com `<img>` para eventos de snapshot ou sem clipe, e recarregamento com `target.load()` no fallback de clipe para `/frigate/api/events/{id}/clip.mp4`.
+  5. **Sincronização de Versão 001.000.000.178**:
+     - Atualizados: `android/version.properties` (BUILD=178, VERSION_NAME=001.000.000.178), `backend/app/core/config.py` (VERSION=001.000.000.178, BUILD_NUMBER=178), `frontend/package.json` (001.000.000.178), `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
 
 ---
 

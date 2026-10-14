@@ -118,3 +118,14 @@ async def init_db():
             except Exception:
                 pass
 
+        # Garantir configurações padrão para Telegram 3MP Nativo e Envio como Documento
+        try:
+            from sqlalchemy import text
+            await conn.execute(text("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('telegram_snapshot_resolution', '3mp');"))
+            await conn.execute(text("INSERT OR IGNORE INTO system_settings (key, value) VALUES ('telegram_send_document', 'true');"))
+            await conn.execute(text("UPDATE system_settings SET value = '3mp' WHERE key = 'telegram_snapshot_resolution' AND value = '1080p';"))
+            await conn.execute(text("UPDATE system_settings SET value = 'true' WHERE key = 'telegram_send_document' AND (value IS NULL OR value = '');"))
+        except Exception:
+            pass
+
+
