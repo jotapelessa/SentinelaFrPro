@@ -43,6 +43,54 @@ def query_ntp_time(server: str, timeout: float = 3.0) -> float | None:
     return None
 
 
+async def sync_all_cameras_time():
+    """Syncs system time to all active cameras via ONVIF SOAP (Brasília UTC-3)."""
+    try:
+        import re
+        from app.db.session import AsyncSessionLocal
+        from app.db.models import Camera
+        from app.services.onvif_hardware import onvif_hardware_service
+        from sqlalchemy import select
+
+        async with AsyncSessionLocal() as session:
+            res = await session.execute(select(Camera).where(Camera.enabled == True))
+            cams = res.scalars().all()
+            for c in cams:
+                ip = c.ip_address
+                if not ip or ip in ["127.0.0.1", "localhost", "frigate"]:
+                    extracted = None
+                    if c.rtsp_main:
+                        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', c.rtsp_main)
+                        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                            extracted = m.group(1)
+                    if not extracted and c.name:
+                        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', c.name)
+                        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                            extracted = m.group(1)
+                        else:
+                            m2 = re.search(r'(\d{1,3})_(\d{1,3})_(\d{1,3})_(\d{1,3})', c.name)
+                            if m2:
+                                cand = f"{m2.group(1)}.{m2.group(2)}.{m2.group(3)}.{m2.group(4)}"
+                                if cand not in ["127.0.0.1", "0.0.0.0"]:
+                                    extracted = cand
+                    if extracted:
+                        ip = extracted
+                        try:
+                            c.ip_address = ip
+                            await session.commit()
+                        except Exception:
+                            pass
+
+                if ip and ip not in ["127.0.0.1", "localhost", "frigate"]:
+                    await onvif_hardware_service.sync_camera_time(
+                        ip_address=ip,
+                        port=c.onvif_port or 80,
+                        camera_name=c.name
+                    )
+    except Exception as cam_sync_err:
+        logger.debug(f"Erro ao sincronizar relógio com câmeras: {cam_sync_err}")
+
+
 async def run_time_sync_watchdog():
     """Background task running once per hour to log and monitor time synchronization."""
     logger.info("🕒 Sentinela Time Sync Watchdog iniciado (America/Sao_Paulo).")
@@ -79,27 +127,11 @@ async def run_time_sync_watchdog():
                         f"✅ Sincronização de horário OK: {local_dt.strftime('%Y-%m-%d %H:%M:%S %Z')} | "
                         f"NTP drift: {drift_ms:.1f}ms ({used_server})"
                     )
-
-                # Sync time to all registered cameras every hour
-                try:
-                    from app.db.session import AsyncSessionLocal
-                    from app.db.models import Camera
-                    from app.services.onvif_hardware import onvif_hardware_service
-                    from sqlalchemy import select
-                    async with AsyncSessionLocal() as session:
-                        res = await session.execute(select(Camera).where(Camera.enabled == True))
-                        cams = res.scalars().all()
-                        for c in cams:
-                            if c.ip_address and c.ip_address not in ["127.0.0.1", "localhost", "frigate"]:
-                                await onvif_hardware_service.sync_camera_time(
-                                    ip_address=c.ip_address,
-                                    port=c.onvif_port or 80
-                                )
-                except Exception as cam_sync_err:
-                    logger.debug(f"Erro ao sincronizar relógio com câmeras: {cam_sync_err}")
-
             else:
                 logger.warning(f"⚠️ Servidores NTP inacessíveis no momento. Hora local: {local_dt.strftime('%Y-%m-%d %H:%M:%S %Z')}")
+
+            # Sincroniza o relógio de todas as câmeras ativas via ONVIF SOAP na inicialização e a cada 1 hora
+            await sync_all_cameras_time()
                 
         except Exception as e:
             logger.error(f"Erro no watchdog de sincronização de horário: {e}", exc_info=True)

@@ -2005,7 +2005,7 @@ fun PhoneToolsTab() {
             runCatching {
                 liveTelemetry = SentinelaRepository.getTelemetry()
             }
-            delay(2000L)
+            delay(8000L)
         }
     }
 
@@ -2461,7 +2461,7 @@ fun PhoneLogsTab() {
     LaunchedEffect(Unit) {
         while (isActive) {
             runCatching { telemetry = SentinelaRepository.getTelemetry() }
-            delay(2000L)
+            delay(8000L)
         }
     }
 

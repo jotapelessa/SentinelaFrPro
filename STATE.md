@@ -1,15 +1,38 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-14 10:30 BRT
-> **Versão Corrente:** v001.000.000.175
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.175 consolidada com:
-1. Aliases Canônicos go2rtc: Correção de erro `unsupported scheme` no go2rtc 1.9.10+ padronizando todos os aliases e restreams como `ffmpeg:<cam>#video=copy` no gerador de configuração do backend (`cameras.py`) e no `frigate/config/config.yml`.
-2. WebRTC 720p Padrão & Remoção de MSE no Web Dashboard: Migração completa da interface web desktop para WebRTC nativo (`mode=webrtc`), eliminando botões e referências a MSE nas telas de câmeras e modais de configuração, mantendo MSE ativo nos clientes Android.
-3. Resiliência de DNS & Docker Socket Writable: Inclusão de servidores DNS estáticos (`1.1.1.1`, `8.8.8.8`) nos serviços `backend` e `frigate` no `docker-compose.yml`, prevenindo erros `[Errno -3]` de resolução do Telegram; montagem de `/var/run/docker.sock` em modo leitura e escrita para operações do host.
-4. Gerenciamento de Energia & Reinício Host/App: Nova página dedicada `/settings/power` e endpoints `POST /api/settings/power/restart-app` e `POST /api/settings/power/reboot-server` com diálogo de confirmação seguro.
-5. Maximização Forense de Snapshots Telegram 3MP: Resolução nativa de 3MP (`?h=1296&quality=100`) sem downscale forçado, marca d'água com compressão JPEG qualidade 100, densidade de 300 DPI e croma 4:4:4 (`subsampling=0`), e suporte a envio de arquivos em formato original (`as_document`).
-6. Diagnóstico e Sincronização Geral: Atualização de labels de diagnóstico ("2 Câmeras Físicas (16 Perfis/Aliases no Hub)") e unificação de versão `001.000.000.175` em todos os submódulos.
+> **Última Atualização:** 2026-10-14 13:15 BRT
+> **Versão Corrente:** v001.000.000.176
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.176 consolidada com:
+1. Sincronização Horária de Câmeras (Brasília UTC-3 / CST+03:00): Envio rigoroso de `<tds:UTCDateTime>` em UTC e `<tt:TZ>CST+03:00</tt:TZ>` via ONVIF SOAP na inicialização e a cada 1 hora para todas as câmeras ativas, garantindo integridade forense do carimbo de tela (OSD).
+2. Resolução Dinâmica de IP de Hardware: Extração automática de endereço IP real a partir do `rtsp_main` ou `name` via regex, eliminando dependência de fallbacks hardcoded ou simulação quando `ip_address` no SQLite for nulo ou local.
+3. Sincronização Estrita de Zonas no Frigate (`review.alerts.required_zones`): População automática de `required_zones` e `detections.required_zones` com as zonas cadastradas no SQLite, restringindo os alertas e clipes do Frigate 0.17 aos quadrantes delimitados pelo operador.
+4. Descarte Térmico de Vídeos Telegram Fora de Zona: Eliminação do enfileiramento pesado de clipes MP4 para eventos ocorridos fora das zonas ativas configuradas, aliviando o uso de CPU e normalizando a temperatura do servidor.
+5. Desacoplamento de Reinício do Frigate: Remoção de `stream_quality` dos campos relevantes para restart do Frigate, permitindo ajustes de visualização instantâneos sem interromper o NVR.
+6. Correção de Broadcast WebSocket: Substituição da chamada falha a `pip_gateway_service.broadcast_event` por `ws_manager.broadcast_json({"type": "CAMERA_CONFIG_CHANGED", ...})`.
+7. Otimização de Bateria e Rede no Smartphone: Intervalos de polling de telemetria HTTP no Android Mobile elevados de 2.000ms para 8.000ms.
+
+---
+
+## 🚀 Versão v001.000.000.176 — Sincronização Horária Brasília (UTC-3), Zonas Estritas no Frigate, Otimização Térmica & Polling Mobile
+- **Data**: 2026-10-14
+- **Objetivo**: Corrigir desalinhamento de relógio nas câmeras físicas, suprimir processamento inútil de vídeos fora de zonas, normalizar a temperatura do host e otimizar bateria nos celulares:
+  1. **Sincronização de Relógio de Câmeras via ONVIF SOAP (`onvif_hardware.py` & `time_sync.py`)**:
+     - *Causa*: Câmeras IP perdiam horário após reinicializações elétricas e ficavam com UTC defasado ou local time injetado erroneamente no nó UTCDateTime.
+     - *Correção*: `sync_camera_time` agora despacha `<tds:UTCDateTime>` em UTC legítimo (`datetime.timezone.utc`) acompanhado de `<tt:TZ>CST+03:00</tt:TZ>`. O watchdog periódico sincroniza todas as câmeras ativas na inicialização e a cada 1 hora.
+  2. **Extração Automática de IP de Hardware (`onvif_hardware.py` & `cameras.py`)**:
+     - *Causa*: Câmeras com `ip_address` nulo ou `127.0.0.1` caíam em modo "simulated" ou tentavam conexões de loopback.
+     - *Correção*: Regex inteligente extrai automaticamente o IP real a partir da URL RTSP ou nome da câmera (`cam_192_168_1_196`), persistindo o endereço correto no banco.
+  3. **Zonas Estritas de Alerta no Frigate 0.17 (`cameras.py`)**:
+     - *Causa*: `sync_camera_to_frigate` recriava o bloco `review.alerts.required_zones = []`, permitindo que movimentos na calçada ou rua gerassem alertas indevidos.
+     - *Correção*: Leitura autoritativa de `cam.zones` populando dinamicamente `required_zones` em `review.alerts` e `review.detections`.
+  4. **Proteção Térmica e de CPU no Telegram (`mqtt_service.py`)**:
+     - *Causa*: Carros e pedestres na rua geravam encerramento de eventos com download e processamento de MP4s pesados no servidor.
+     - *Correção*: Se a câmera possui zonas ativas configuradas e o evento ocorreu fora delas (`zone_name` nulo), o download e enfileiramento de MP4 para o Telegram é sumariamente descartado.
+  5. **Otimização do Smartphone Android (`SmartphoneYouTubeScreen.kt`)**:
+     - *Correção*: Polling de telemetria HTTP espaçado de 2s para 8s, economizando tráfego de rede e bateria do dispositivo móvel.
+  6. **Unificação de Versão 001.000.000.176 (Build 176)**:
+     - Sincronização em `android/version.properties`, `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts` e `README.md`.
 
 ---
 

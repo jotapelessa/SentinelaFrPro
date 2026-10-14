@@ -45,6 +45,25 @@ def infer_substream_url(main_url: str) -> Optional[str]:
     return None
 
 
+def extract_camera_ip(rtsp_url: Optional[str] = None, name: Optional[str] = None) -> Optional[str]:
+    """Extracts a real IPv4 address from an RTSP URL or camera name via regex."""
+    import re
+    if rtsp_url:
+        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', rtsp_url)
+        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+            return m.group(1)
+    if name:
+        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', name)
+        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+            return m.group(1)
+        m2 = re.search(r'(\d{1,3})_(\d{1,3})_(\d{1,3})_(\d{1,3})', name)
+        if m2:
+            cand = f"{m2.group(1)}.{m2.group(2)}.{m2.group(3)}.{m2.group(4)}"
+            if cand not in ["127.0.0.1", "0.0.0.0"]:
+                return cand
+    return None
+
+
 def _probe_rtsp_stream_info(rtsp_url: str, timeout: int = 8) -> Optional[Dict[str, Any]]:
     """Probes an RTSP stream via ffprobe and returns codec, resolution and frame rate."""
     import subprocess
@@ -243,13 +262,14 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
 
                 zones_json_str = json.dumps(parsed_zone_items) if parsed_zone_items else None
 
+                detected_ip = extract_camera_ip(rtsp_url, cam_name) or "127.0.0.1"
                 if not existing:
                     friendly = "Câmera Principal" if cam_name == "camera_principal" else cam_name.replace("_", " ").title()
                     new_c = Camera(
                         name=cam_name,
                         friendly_name=friendly,
                         rtsp_main=rtsp_url,
-                        ip_address="192.168.1.6" if ("192_168_1_6" in cam_name or cam_name == "camera_principal") else "127.0.0.1",
+                        ip_address=detected_ip,
                         onvif_port=80,
                         enabled=cam_cfg.get("enabled", True),
                         zones=zones_json_str
@@ -263,6 +283,10 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
                     if not existing.rtsp_main or existing.rtsp_main.startswith("rtsp://frigate"):
                         existing.rtsp_main = rtsp_url
                         db_changed = True
+                    if not existing.ip_address or existing.ip_address in ["127.0.0.1", "localhost", "frigate"]:
+                        if detected_ip and detected_ip != "127.0.0.1":
+                            existing.ip_address = detected_ip
+                            db_changed = True
 
         # Purge any DB cameras that are neither in Frigate config nor recently created in DB
         if isinstance(frigate_cams, dict) and len(frigate_cams) > 0:
@@ -405,13 +429,14 @@ async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends
                     res_c = await db.execute(stmt)
                     existing = res_c.scalar_one_or_none()
 
+                    detected_ip = extract_camera_ip(rtsp_url, cam_name) or "127.0.0.1"
                     if not existing:
                         friendly = "Câmera Principal" if cam_name == "camera_principal" else cam_name.replace("_", " ").title()
                         new_c = Camera(
                             name=cam_name,
                             friendly_name=friendly,
                             rtsp_main=rtsp_url,
-                            ip_address="192.168.1.6" if "192_168_1_6" in cam_name or cam_name == "camera_principal" else "127.0.0.1",
+                            ip_address=detected_ip,
                             onvif_port=80,
                             enabled=cam_cfg.get("enabled", True),
                             zones=zones_json_str
@@ -422,6 +447,9 @@ async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends
                         existing.enabled = cam_cfg.get("enabled", True)
                         if not existing.rtsp_main or existing.rtsp_main.startswith("rtsp://frigate"):
                             existing.rtsp_main = rtsp_url
+                        if not existing.ip_address or existing.ip_address in ["127.0.0.1", "localhost", "frigate"]:
+                            if detected_ip and detected_ip != "127.0.0.1":
+                                existing.ip_address = detected_ip
                         if zones_json_str:
                             existing.zones = zones_json_str
                         synced_count += 1
@@ -470,6 +498,12 @@ async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Dep
             existing_cam.onvif_port = cam.onvif_port
         if cam.enabled is not None:
             existing_cam.enabled = cam.enabled
+        if cam.ip_address and cam.ip_address not in ["127.0.0.1", "localhost", "frigate"]:
+            existing_cam.ip_address = cam.ip_address
+        elif not existing_cam.ip_address or existing_cam.ip_address in ["127.0.0.1", "localhost", "frigate"]:
+            detected_ip = extract_camera_ip(cam.rtsp_main or existing_cam.rtsp_main, cam.name or existing_cam.name)
+            if detected_ip:
+                existing_cam.ip_address = detected_ip
             
         await db.commit()
         await db.refresh(existing_cam)
@@ -492,12 +526,18 @@ async def add_camera(cam: CameraCreate, request: Request, db: AsyncSession = Dep
     if not sub_url and cam.rtsp_main:
         sub_url = infer_substream_url(cam.rtsp_main)
 
+    cam_ip = cam.ip_address
+    if not cam_ip or cam_ip in ["127.0.0.1", "localhost", "frigate"]:
+        detected_ip = extract_camera_ip(cam.rtsp_main, cam.name)
+        if detected_ip:
+            cam_ip = detected_ip
+
     db_cam = Camera(
         name=cam.name,
         friendly_name=cam.friendly_name or cam.name,
         rtsp_main=cam.rtsp_main,
         rtsp_sub=sub_url,
-        ip_address=cam.ip_address,
+        ip_address=cam_ip or "127.0.0.1",
         onvif_port=cam.onvif_port or 80,
         enabled=cam.enabled if cam.enabled is not None else True
     )
@@ -589,7 +629,7 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
     frigate_relevant_fields = {
         "rtsp_main", "rtsp_sub", "enabled", "zones", "objects_to_track",
         "min_score", "detect_fps", "motion_threshold", "record_mode", "record_retain_days",
-        "bitrate", "resolution", "record_fps", "record_audio", "stream_quality"
+        "bitrate", "resolution", "record_fps", "record_audio"
     }
     if real_changes.keys() & frigate_relevant_fields:
         # Sync RTSP and camera state asynchronously in background to ensure instant API return (<100ms)
@@ -598,14 +638,17 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
 
     # Disparo de notificação broadcast em tempo real para todos os clientes conectados (TVs, Smartphone, Web)
     try:
-        from app.services.pip_gateway import pip_gateway_service
+        from app.api.ws import manager as ws_manager
         import asyncio
-        asyncio.create_task(pip_gateway_service.broadcast_event({
+        asyncio.create_task(ws_manager.broadcast_json({
             "type": "CAMERA_CONFIG_CHANGED",
-            "camera": cam.name,
-            "friendly_name": cam.friendly_name,
-            "resolution": getattr(cam, "resolution", "1080p"),
-            "stream_mode": getattr(cam, "stream_mode", "mse")
+            "data": {
+                "camera_id": camera_id,
+                "camera": cam.name,
+                "friendly_name": cam.friendly_name,
+                "resolution": getattr(cam, "resolution", "1080p"),
+                "stream_mode": getattr(cam, "stream_mode", "mse")
+            }
         }))
     except Exception as e:
         logger.warning(f"Failed to broadcast CAMERA_CONFIG_CHANGED: {e}")
@@ -1634,12 +1677,48 @@ async def sync_camera_to_frigate(cam: Camera):
         # Se record_audio for falso, silencia o áudio (-an) para prevenir crash fatal com pcm_mulaw em contêiner MP4
         cam_block["ffmpeg"]["output_args"]["record"] = "preset-record-generic"
 
-    # 7. Garantir review labels
+    # 7. Garantir review labels e sincronizar required_zones com base nas zonas configuradas
+    configured_zone_names = []
+    if getattr(cam, "zones", None):
+        try:
+            import json
+            pz = json.loads(cam.zones)
+            if isinstance(pz, list):
+                for z in pz:
+                    if isinstance(z, dict):
+                        z_slug = z.get("slug") or z.get("name") or z.get("zone_name") or z.get("id")
+                        if z_slug:
+                            clean_name = str(z_slug).strip().replace(" ", "_").lower()
+                            if clean_name and clean_name not in configured_zone_names:
+                                configured_zone_names.append(clean_name)
+            elif isinstance(pz, dict):
+                for z_slug in pz.keys():
+                    clean_name = str(z_slug).strip().replace(" ", "_").lower()
+                    if clean_name and clean_name not in configured_zone_names:
+                        configured_zone_names.append(clean_name)
+        except Exception as e:
+            logger.debug(f"Erro ao parsear zonas do SQLite para required_zones: {e}")
+
+    # Fallback/merge com zonas já declaradas no cam_block do Frigate
+    if "zones" in cam_block and isinstance(cam_block["zones"], dict):
+        for z_key in cam_block["zones"].keys():
+            clean_name = str(z_key).strip().replace(" ", "_").lower()
+            if clean_name and clean_name not in configured_zone_names:
+                configured_zone_names.append(clean_name)
+
     if "review" not in cam_block or not isinstance(cam_block["review"], dict):
-        cam_block["review"] = {
-            "alerts": {"labels": ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"], "required_zones": []},
-            "detections": {"labels": ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"], "required_zones": []}
-        }
+        cam_block["review"] = {}
+
+    default_labels = ["person", "car", "motorcycle", "bus", "dog", "cat", "bicycle"]
+    if "alerts" not in cam_block["review"] or not isinstance(cam_block["review"]["alerts"], dict):
+        cam_block["review"]["alerts"] = {"labels": default_labels, "required_zones": configured_zone_names}
+    else:
+        cam_block["review"]["alerts"]["required_zones"] = configured_zone_names
+
+    if "detections" not in cam_block["review"] or not isinstance(cam_block["review"]["detections"], dict):
+        cam_block["review"]["detections"] = {"labels": default_labels, "required_zones": configured_zone_names}
+    else:
+        cam_block["review"]["detections"]["required_zones"] = configured_zone_names
 
     if "live" in cam_block:
         del cam_block["live"]
@@ -1823,7 +1902,12 @@ async def get_camera_hardware_config(camera_id: str, db: AsyncSession = Depends(
         res = await db.execute(stmt)
         cam = res.scalar_one_or_none()
     
-    ip = cam.ip_address if cam else (camera_id if "." in camera_id else "192.168.1.6")
+    cam_ip = cam.ip_address if cam else None
+    if not cam_ip or cam_ip in ["127.0.0.1", "localhost", "frigate"]:
+        detected_ip = extract_camera_ip(cam.rtsp_main if cam else None, cam.name if cam else camera_id)
+        if detected_ip:
+            cam_ip = detected_ip
+    ip = cam_ip or (camera_id if "." in camera_id else "127.0.0.1")
     port = cam.onvif_port if cam and cam.onvif_port else 80
     return await onvif_hardware_service.get_camera_hardware_config(ip_address=ip, port=port)
 
@@ -1841,7 +1925,12 @@ async def update_camera_hardware_config(camera_id: str, payload: CameraHardwareC
         res = await db.execute(stmt)
         cam = res.scalar_one_or_none()
 
-    ip = cam.ip_address if cam else (camera_id if "." in camera_id else "192.168.1.6")
+    cam_ip = cam.ip_address if cam else None
+    if not cam_ip or cam_ip in ["127.0.0.1", "localhost", "frigate"]:
+        detected_ip = extract_camera_ip(cam.rtsp_main if cam else None, cam.name if cam else camera_id)
+        if detected_ip:
+            cam_ip = detected_ip
+    ip = cam_ip or (camera_id if "." in camera_id else "127.0.0.1")
     port = cam.onvif_port if cam and cam.onvif_port else 80
 
     result = await onvif_hardware_service.set_camera_hardware_config(

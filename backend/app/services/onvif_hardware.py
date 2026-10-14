@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 import httpx
 from typing import Dict, Any, Optional
 
@@ -18,6 +19,64 @@ class OnvifHardwareService:
     - OSD Name: On-screen camera title.
     """
 
+    async def resolve_camera_ip(self, ip_address: Optional[str], camera_name: Optional[str] = None) -> Optional[str]:
+        """
+        Extracts real IP address from regex or queries SQLite if IP is null/localhost/frigate.
+        """
+        if ip_address:
+            m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', ip_address)
+            if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                return m.group(1)
+            m2 = re.search(r'(\d{1,3})_(\d{1,3})_(\d{1,3})_(\d{1,3})', ip_address)
+            if m2:
+                cand = f"{m2.group(1)}.{m2.group(2)}.{m2.group(3)}.{m2.group(4)}"
+                if cand not in ["127.0.0.1", "0.0.0.0"]:
+                    return cand
+
+        if camera_name:
+            m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', camera_name)
+            if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                return m.group(1)
+            m2 = re.search(r'(\d{1,3})_(\d{1,3})_(\d{1,3})_(\d{1,3})', camera_name)
+            if m2:
+                cand = f"{m2.group(1)}.{m2.group(2)}.{m2.group(3)}.{m2.group(4)}"
+                if cand not in ["127.0.0.1", "0.0.0.0"]:
+                    return cand
+
+        try:
+            from app.db.session import AsyncSessionLocal
+            from app.db.models import Camera
+            from sqlalchemy import select
+
+            async with AsyncSessionLocal() as session:
+                stmt = select(Camera)
+                if camera_name:
+                    stmt = stmt.where((Camera.name == camera_name) | (Camera.friendly_name == camera_name))
+                res = await session.execute(stmt)
+                cams = res.scalars().all()
+                for c in cams:
+                    if c.ip_address and c.ip_address not in ["127.0.0.1", "localhost", "frigate", "0.0.0.0"]:
+                        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', c.ip_address)
+                        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                            return m.group(1)
+                    if c.rtsp_main:
+                        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', c.rtsp_main)
+                        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                            return m.group(1)
+                    if c.name:
+                        m = re.search(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})', c.name)
+                        if m and m.group(1) not in ["127.0.0.1", "0.0.0.0"]:
+                            return m.group(1)
+                        m2 = re.search(r'(\d{1,3})_(\d{1,3})_(\d{1,3})_(\d{1,3})', c.name)
+                        if m2:
+                            cand = f"{m2.group(1)}.{m2.group(2)}.{m2.group(3)}.{m2.group(4)}"
+                            if cand not in ["127.0.0.1", "0.0.0.0"]:
+                                return cand
+        except Exception as e:
+            logger.debug(f"Falha ao resolver IP real via DB: {e}")
+
+        return None
+
     async def get_camera_hardware_config(self, ip_address: str, port: int = 80, username: str = "admin", password: str = "") -> Dict[str, Any]:
         """Probes camera hardware parameters via ONVIF/HTTP."""
         config = {
@@ -33,6 +92,10 @@ class OnvifHardwareService:
             "reachable": False
         }
         
+        real_ip = await self.resolve_camera_ip(ip_address)
+        if real_ip:
+            ip_address = real_ip
+
         if not ip_address or ip_address in ["127.0.0.1", "localhost", "frigate"]:
             return config
 
@@ -66,6 +129,11 @@ class OnvifHardwareService:
         Applies hardware configurations to the IP camera.
         Enforces H.264 CFR 25fps for maximum streaming stability across all clients.
         """
+        if not ip_address or ip_address in ["127.0.0.1", "localhost", "frigate"]:
+            real_ip = await self.resolve_camera_ip(ip_address, camera_name)
+            if real_ip:
+                ip_address = real_ip
+
         results = {
             "ip_address": ip_address,
             "status": "success",
@@ -86,7 +154,7 @@ class OnvifHardwareService:
 
         # Construct ONVIF SOAP Envelope for Date/Time synchronization (Brasília UTC-3)
         if sync_time:
-            await self.sync_camera_time(ip_address, port, username, password)
+            await self.sync_camera_time(ip_address, port, username, password, camera_name=camera_name)
             results["applied"]["time_sync"] = "America/Sao_Paulo (UTC-3)"
 
         # Set Video Encoder Configuration via ONVIF / HTTP
@@ -200,25 +268,29 @@ class OnvifHardwareService:
             logger.warning(f"Erro ao configurar encoder ONVIF para {ip_address}: {e}")
         return False
 
-    async def sync_camera_time(self, ip_address: str, port: int = 80, username: str = "admin", password: str = "") -> bool:
+    async def sync_camera_time(self, ip_address: str, port: int = 80, username: str = "admin", password: str = "", camera_name: Optional[str] = None) -> bool:
         """Sends ONVIF SetSystemDateAndTime or NTP sync command to camera."""
+        if not ip_address or ip_address in ["127.0.0.1", "localhost", "frigate"]:
+            real_ip = await self.resolve_camera_ip(ip_address, camera_name)
+            if real_ip:
+                ip_address = real_ip
+
         if not ip_address or ip_address in ["127.0.0.1", "localhost", "frigate"]:
             return True
         try:
             # Construct ONVIF SetSystemDateAndTime SOAP call
             import datetime
-            from zoneinfo import ZoneInfo
-            now = datetime.datetime.now(ZoneInfo("America/Sao_Paulo"))
+            utc_now = datetime.datetime.now(datetime.timezone.utc)
             soap_body = f"""<?xml version="1.0" encoding="utf-8"?>
 <soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns:tds="http://www.onvif.org/ver10/device/wsdl" xmlns:tt="http://www.onvif.org/ver10/schema">
   <soap:Body>
     <tds:SetSystemDateAndTime>
       <tds:DateTimeType>Manual</tds:DateTimeType>
       <tds:DaylightSavings>false</tds:DaylightSavings>
-      <tds:TimeZone><tt:TZ>BRT3</tt:TZ></tds:TimeZone>
+      <tds:TimeZone><tt:TZ>CST+03:00</tt:TZ></tds:TimeZone>
       <tds:UTCDateTime>
-        <tt:Time><tt:Hour>{now.hour}</tt:Hour><tt:Minute>{now.minute}</tt:Minute><tt:Second>{now.second}</tt:Second></tt:Time>
-        <tt:Date><tt:Year>{now.year}</tt:Year><tt:Month>{now.month}</tt:Month><tt:Day>{now.day}</tt:Day></tt:Date>
+        <tt:Time><tt:Hour>{utc_now.hour}</tt:Hour><tt:Minute>{utc_now.minute}</tt:Minute><tt:Second>{utc_now.second}</tt:Second></tt:Time>
+        <tt:Date><tt:Year>{utc_now.year}</tt:Year><tt:Month>{utc_now.month}</tt:Month><tt:Day>{utc_now.day}</tt:Day></tt:Date>
       </tds:UTCDateTime>
     </tds:SetSystemDateAndTime>
   </soap:Body>
@@ -230,7 +302,7 @@ class OnvifHardwareService:
                     headers={"Content-Type": "application/soap+xml; charset=utf-8"}
                 )
                 if resp.status_code in [200, 201]:
-                    logger.info(f"🕒 Horário sincronizado na câmera {ip_address} via ONVIF.")
+                    logger.info(f"🕒 Horário sincronizado na câmera {ip_address} via ONVIF (Brasília UTC-3 / CST+03:00).")
                     return True
         except Exception as e:
             logger.debug(f"Falha ao enviar ONVIF SetSystemDateAndTime para {ip_address}: {e}")

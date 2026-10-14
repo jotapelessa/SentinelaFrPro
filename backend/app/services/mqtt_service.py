@@ -130,7 +130,14 @@ class MQTTService:
         if camera_name in self._camera_policy_cache and (now - self._camera_policy_cache_time.get(camera_name, 0)) < 10.0:
             return self._camera_policy_cache[camera_name]
 
-        policy = {"enabled": True, "notify_tv": True, "notify_telegram": True, "friendly_name": camera_name}
+        policy = {
+            "enabled": True,
+            "notify_tv": True,
+            "notify_telegram": True,
+            "friendly_name": camera_name,
+            "has_zones": False,
+            "configured_zones": []
+        }
         try:
             from app.db.models import Camera
             async with AsyncSessionLocal() as session:
@@ -142,6 +149,23 @@ class MQTTService:
                     policy["notify_tv"] = bool(cam.notify_tv)
                     policy["notify_telegram"] = bool(cam.notify_telegram)
                     policy["friendly_name"] = cam.friendly_name or camera_name
+                    if cam.zones:
+                        try:
+                            import json
+                            pz = json.loads(cam.zones)
+                            if isinstance(pz, list) and len(pz) > 0:
+                                policy["has_zones"] = True
+                                policy["configured_zones"] = [
+                                    (z.get("slug") or z.get("name") or str(z.get("id", ""))).strip().replace(" ", "_").lower()
+                                    for z in pz if isinstance(z, dict)
+                                ]
+                            elif isinstance(pz, dict) and len(pz) > 0:
+                                policy["has_zones"] = True
+                                policy["configured_zones"] = [
+                                    str(k).strip().replace(" ", "_").lower() for k in pz.keys()
+                                ]
+                        except Exception:
+                            pass
         except Exception as e:
             logger.debug(f"Erro ao buscar política da câmera {camera_name}: {e}")
 
@@ -289,6 +313,12 @@ class MQTTService:
                 allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
 
                 if notify_tg and send_mode in ["both", "video_only"] and label in allowed_tg_events:
+                    # Se a câmera possui zonas configuradas e o evento ocorreu fora delas (zone_name nulo/vazio),
+                    # descarta o download pesado do clipe MP4 para eliminar saturação de CPU e superaquecimento
+                    if cam_policy.get("has_zones") and not zone_name:
+                        logger.debug(f"Descartando download de clipe MP4 para {camera}: evento fora das zonas configuradas (zona: {zone_name}).")
+                        return
+
                     if event_id in self._processed_videos:
                         logger.debug(f"Video para evento {event_id} já enviado. Ignorando evento de FIM duplicado.")
                         return

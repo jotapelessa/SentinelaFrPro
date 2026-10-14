@@ -140,3 +140,67 @@ async def test_power_endpoints():
         assert r2.status_code == 200
         assert r2.json()["status"] == "success"
 
+@pytest.mark.asyncio
+async def test_extract_camera_ip():
+    from app.api.cameras import extract_camera_ip
+    assert extract_camera_ip("rtsp://admin:pass@192.168.1.196:554/live/0/MAIN") == "192.168.1.196"
+    assert extract_camera_ip(name="cam_192_168_1_47") == "192.168.1.47"
+    assert extract_camera_ip("rtsp://127.0.0.1:8554/live", "camera_principal") is None
+    assert extract_camera_ip(None, None) is None
+
+@pytest.mark.asyncio
+async def test_sync_camera_time_utc_payload():
+    from unittest.mock import patch, AsyncMock
+    from app.services.onvif_hardware import onvif_hardware_service
+
+    with patch("httpx.AsyncClient.post") as mock_post:
+        mock_resp = AsyncMock()
+        mock_resp.status_code = 200
+        mock_post.return_value = mock_resp
+
+        ok = await onvif_hardware_service.sync_camera_time("192.168.1.196", port=80)
+        assert ok is True
+        call_args, call_kwargs = mock_post.call_args
+        content = call_kwargs.get("content", "")
+        assert "<tt:TZ>CST+03:00</tt:TZ>" in content
+        assert "<tds:UTCDateTime>" in content
+        assert "http://192.168.1.196:80/onvif/device_service" in call_args[0]
+
+@pytest.mark.asyncio
+async def test_mqtt_skip_video_outside_zone():
+    from unittest.mock import patch, AsyncMock
+    from app.services.mqtt_service import mqtt_service
+
+    # Policy with zones configured
+    mock_policy = {
+        "enabled": True,
+        "notify_telegram": True,
+        "notify_tv": True,
+        "friendly_name": "Test Cam",
+        "has_zones": True,
+        "configured_zones": ["garagem"]
+    }
+    mock_tg = {
+        "send_mode": "both",
+        "allowed_events": ["person"]
+    }
+
+    with patch.object(mqtt_service, "_get_camera_policy", AsyncMock(return_value=mock_policy)), \
+         patch.object(mqtt_service, "_get_telegram_policy", AsyncMock(return_value=mock_tg)), \
+         patch.object(mqtt_service, "_dispatch_telegram_video_with_retry") as mock_video:
+        
+        # Payload of event end with empty zones
+        payload = {
+            "type": "end",
+            "after": {
+                "id": "evt_test_outside",
+                "camera": "cam_test",
+                "label": "person",
+                "current_zones": [],
+                "entered_zones": []
+            }
+        }
+        await mqtt_service.handle_frigate_event(payload)
+        # Should NOT dispatch video
+        mock_video.assert_not_called()
+

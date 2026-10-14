@@ -60,6 +60,7 @@ class WebSocketManager:
             self.disconnect(conn)
 
 ws_manager = WebSocketManager()
+manager = ws_manager
 
 # Hook MQTT service broadcast to WS manager
 mqtt_service.register_ws_callback(ws_manager.broadcast_json)
