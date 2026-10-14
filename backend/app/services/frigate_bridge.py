@@ -126,13 +126,27 @@ class FrigateBridgeService:
         2. Local FFmpeg RTSP snapshot (native resolution)
         3. Frigate latest.jpg (detect stream, fallback)
         """
+        # Define source candidates and aliases
+        sources = [camera_name] if camera_name else ["camera_principal"]
+        if camera_name == "cam_192_168_1_196" and "camera_principal" not in sources:
+            sources.append("camera_principal")
+        elif camera_name == "camera_principal" and "cam_192_168_1_196" not in sources:
+            sources.append("cam_192_168_1_196")
+        elif camera_name == "cam_192_168_1_47" and "camera_secundaria" not in sources:
+            sources.append("camera_secundaria")
+        elif camera_name == "camera_secundaria" and "cam_192_168_1_47" not in sources:
+            sources.append("cam_192_168_1_47")
+
         # Channel 1: Frigate latest.jpg (em memória HTTP rápido do NVR, zero impacto no go2rtc live edge)
         for cam in sources:
             try:
                 async with httpx.AsyncClient(timeout=2.5) as client:
-                    res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
+                    res = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg?h=1296&quality=100")
                     if res.status_code == 200 and len(res.content) > 1000:
                         return res.content
+                    res_std = await client.get(f"{self.frigate_url}/api/{cam}/latest.jpg")
+                    if res_std.status_code == 200 and len(res_std.content) > 1000:
+                        return res_std.content
             except Exception:
                 pass
 

@@ -1,34 +1,39 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-14 19:50 BRT
+> **Última Atualização:** 2026-10-14 20:30 BRT
 > **Versão Corrente:** v001.000.000.178
 > **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.178 consolidada com:
-1. Reconciliação Dinâmica Dual-Camera go2rtc: Inicialização e sincronização inteligente que registra ambas as câmeras ativas (`cam_192_168_1_196` e `cam_192_168_1_47`) e todos os seus aliases (`camera_principal`, `camera_secundaria`, `_main`, `_720p`, `_sub`) diretamente na API do go2rtc sem necessidade de reinicialização disruptiva do contêiner Frigate.
-2. Despacho Forense Telegram 3MP via Documento: Bypass da compressão de 1280px da Cloud do Telegram via `sendDocument` (`telegram_send_document = 'true'`), preservando os 3MP completos (2304x1296) a 300 DPI sem artefatos.
+1. Reconciliação Dinâmica Dual-Camera go2rtc & Auto-Restart do NVR: Inicialização e sincronização inteligente que registra ambas as câmeras ativas (`cam_192_168_1_196` e `cam_192_168_1_47`) e todos os seus aliases (`camera_principal`, `camera_secundaria`, `_main`, `_720p`, `_sub`) diretamente na API do go2rtc; e dispara reinício automático do Frigate se o NVR em execução estiver sem algum processo de captura de câmera ativa.
+2. Despacho Forense Telegram 3MP via Documento: Bypass da compressão de 1280px da Cloud do Telegram via `sendDocument` (`telegram_send_document = 'true'`), preservando os 3MP completos (2304x1296) a 300 DPI sem artefatos. Correção crítica de `sources` em `frigate_bridge.py` eliminando erro 500 no endpoint de teste.
 3. Conversão Dinâmica WebP para JPEG (`nosniff` Compliance): `get_event_snapshot` converte em memória via Pillow imagens legadas/clips WebP para JPEG genuíno (`image/jpeg`) quando requisitado via extensão `.jpg`, eliminando o erro de bloqueio de imagens nos navegadores causado pelo cabeçalho `X-Content-Type-Options: nosniff`.
-4. Player Forense e Resiliente de Eventos (`/events`): Renderização condicional inteligente de fotos forenses 3MP em tags `<img>` e vídeos com reload automático no handler de fallback `onError`.
-5. Unificação Completa de Versão 001.000.000.178 (Build 178) em todos os módulos (Android, Frontend, Backend, Docker).
+4. Player Forense e Resiliente de Eventos (`/events`): Renderização condicional inteligente com comutador duplo `[🎥 Clipe de Vídeo]` / `[📸 Foto Forense 3MP]`, com fallback automático transparente para foto nativa 3MP em caso de falha de carregamento de vídeo, e tratamento `onError` resiliente em miniaturas de eventos com fallback para `/frigate/api/events/...`.
+5. Estabilidade de Streaming Android TV (`TvDesignTokens.kt`): Parâmetro `&background=true` integrado nas URLs MSE de câmeras, neutralizando o timeout de 5000ms do `video-rtc.js` nas Smart TVs.
+6. Unificação Completa de Versão 001.000.000.178 (Build 178) em todos os módulos (Android, Frontend, Backend, Docker).
 
 ---
 
 ## 🚀 Versão v001.000.000.178 — Reconciliação Dinâmica Dual-Camera go2rtc, Telegram 3MP Document Bypass, Conversão WebP-JPEG nosniff e Player Forense
 - **Data**: 2026-10-14
 - **Objetivo**: Corrigir a transmissão restrita a uma única câmera, eliminar a compressão para 448x800/1280px em fotos do Telegram/Eventos e resolver falha de carregamento de mídia na página de eventos:
-  1. **Reconciliação Dinâmica de Câmeras no go2rtc (`backend/app/api/cameras.py` & `backend/app/main.py`)**:
-     - *Causa*: O arquivo `config.yml` do Frigate no servidor Ubuntu continha apenas uma câmera definida após testes manuais, e o go2rtc não recebia as rotas dinâmicas da segunda câmera sem um restart completo.
-     - *Correção*: Implementado `reconcile_cameras_with_frigate()` invocado no startup lifespan do FastAPI e `sync_camera_to_frigate()` idempotente que lê todas as câmeras ativas no SQLite e registra dinamicamente no go2rtc (`PUT /api/streams`) ambas as câmeras e seus aliases (`camera_principal`, `camera_secundaria`, `_main`, `_720p`, `_sub`) via zero-copy.
-  2. **Telegram 3MP Forense com Document Bypass (`mqtt_service.py`, `settings.py`, `db/session.py`)**:
-     - *Causa*: O Telegram Cloud comprime qualquer foto enviada via `sendPhoto` para no máximo 1280px, perdendo a nitidez 3MP original de 2304x1296.
-     - *Correção*: Adicionada flag `telegram_send_document` e opção padrão de resolução `3mp` no SQLite. Quando selecionado 3MP ou Document Bypass, a imagem é transmitida como documento não-comprimido, mantendo 100% da resolução 2304x1296 para perícia forense.
+  1. **Reconciliação Dinâmica de Câmeras no go2rtc & Auto-Restart (`backend/app/api/cameras.py` & `backend/app/main.py`)**:
+     - *Causa*: O arquivo `config.yml` do Frigate no servidor Ubuntu continha apenas uma câmera definida após testes manuais, e o go2rtc não recebia as rotas dinâmicas da segunda câmera sem um restart completo. Além disso, `import re` ausente gerava exceção interna que silenciava a detecção de reinício.
+     - *Correção*: Implementado `reconcile_cameras_with_frigate()` com verificação ativa de câmeras em execução via `GET /api/config`. Se qualquer câmera ativa do SQLite estiver ausente nos processos de captura do Frigate, dispara `POST /api/restart` automaticamente.
+  2. **Telegram 3MP Forense com Document Bypass & Correção de `sources` (`frigate_bridge.py`, `mqtt_service.py`, `settings.py`)**:
+     - *Causa*: `get_live_snapshot()` referenciou `sources` sem definição, gerando `NameError: name 'sources' is not defined` e HTTP 500 no teste de foto. O Telegram Cloud também comprimia fotos para 1280px via `sendPhoto`.
+     - *Correção*: Definido `sources` com suporte a aliases de câmera, adicionada requisição em 3MP nativo `?h=1296&quality=100` e flag `telegram_send_document` para despacho como documento não-comprimido a 300 DPI.
   3. **Compatibilidade MIME nosniff em Snapshots (`events.py`)**:
      - *Causa*: O Frigate salvava snapshots em `/media/frigate/clips/` no formato `.webp`. Ao servir sob a rota `/api/events/{id}/snapshot.jpg`, o navegador recebia `Content-Type: image/webp`, ativando a proteção de segurança `X-Content-Type-Options: nosniff` do Nginx e impedindo a renderização visual da imagem.
      - *Correção*: Se a rota solicitada terminar em `.jpg` ou `.jpeg` e a fonte em disco for WebP, a API converte em memória via Pillow para JPEG genuíno (`image/jpeg`), respeitando estritamente o header `nosniff`.
-  4. **Player de Mídia Resiliente no Frontend (`frontend/src/app/events/page.tsx`)**:
-     - *Causa*: Eventos do tipo foto renderizavam uma tag `<video>` quebrada; falhas de carregamento de clipes no player de vídeo não invocavam `target.load()` antes de `play()`.
-     - *Correção*: Renderização condicional com `<img>` para eventos de snapshot ou sem clipe, e recarregamento com `target.load()` no fallback de clipe para `/frigate/api/events/{id}/clip.mp4`.
-  5. **Sincronização de Versão 001.000.000.178**:
+  4. **Player de Mídia Resiliente e Dual-Mode no Frontend (`frontend/src/app/events/page.tsx`)**:
+     - *Causa*: Eventos do tipo foto renderizavam uma tag `<video>` quebrada; falhas de carregamento de clipes no player de vídeo não invocavam `target.load()` antes de `play()`, e miniaturas com erro eram ocultadas sem tentativa de fallback.
+     - *Correção*: Seletor interativo `[🎥 Clipe de Vídeo]` / `[📸 Foto Forense 3MP]`, comutação automática em caso de erro de vídeo para a foto 3MP nativa, e miniaturas com fallback inteligente para `/frigate/api/events/{id}/snapshot.jpg`.
+  5. **Streaming MSE Resiliente em Android TV (`TvDesignTokens.kt`)**:
+     - Adicionado parâmetro `&background=true` em `CameraItem.toEntity()`, neutralizando `DISCONNECT_TIMEOUT = 5000` em Smart TVs (Regras de Ouro #18 e #31).
+  6. **Sincronização de Versão 001.000.000.178**:
      - Atualizados: `android/version.properties` (BUILD=178, VERSION_NAME=001.000.000.178), `backend/app/core/config.py` (VERSION=001.000.000.178, BUILD_NUMBER=178), `frontend/package.json` (001.000.000.178), `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
+  7. **Cobertura de Testes Automatizados**:
+     - 22 testes unitários em `backend/tests/test_backend.py` 100% aprovados, incluindo testes para expansão de `sources` 3MP em `frigate_bridge` e disparo de restart automático em `reconcile_cameras_with_frigate`.
 
 ---
 

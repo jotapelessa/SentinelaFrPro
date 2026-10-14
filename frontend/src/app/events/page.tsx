@@ -40,6 +40,8 @@ export default function EventsPage() {
   const [loadingEvents, setLoadingEvents] = useState<boolean>(false);
   const [selectedEvent, setSelectedEvent] = useState<SecurityEvent | null>(null);
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
+  const [mediaViewMode, setMediaViewMode] = useState<"video" | "snapshot">("video");
+  const [videoError, setVideoError] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Multi-selection & Batch Deletion state
@@ -316,6 +318,13 @@ export default function EventsPage() {
     }
   };
 
+  // Open modal with dynamic media mode detection
+  const openEventModal = (ev: SecurityEvent) => {
+    setSelectedEvent(ev);
+    setVideoError(false);
+    setMediaViewMode(ev.has_clip && ev.type !== "photo" ? "video" : "snapshot");
+  };
+
   // Sequential event jumping in modal
   const handleNavigateEvent = (direction: "prev" | "next") => {
     if (!selectedEvent || filteredEvents.length === 0) return;
@@ -323,9 +332,9 @@ export default function EventsPage() {
     if (currentIndex === -1) return;
 
     if (direction === "prev" && currentIndex > 0) {
-      setSelectedEvent(filteredEvents[currentIndex - 1]);
+      openEventModal(filteredEvents[currentIndex - 1]);
     } else if (direction === "next" && currentIndex < filteredEvents.length - 1) {
-      setSelectedEvent(filteredEvents[currentIndex + 1]);
+      openEventModal(filteredEvents[currentIndex + 1]);
     }
   };
 
@@ -661,7 +670,7 @@ export default function EventsPage() {
                             e.stopPropagation();
                             toggleSelectEvent(String(ev.id));
                           } else {
-                            setSelectedEvent(ev);
+                            openEventModal(ev);
                           }
                         }}
                         className="aspect-video w-full bg-obsidian-950 relative overflow-hidden flex items-center justify-center cursor-pointer"
@@ -671,7 +680,13 @@ export default function EventsPage() {
                           alt="Snapshot"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
-                            (e.target as HTMLElement).style.display = "none";
+                            const target = e.currentTarget;
+                            const fallback = `/frigate/api/events/${ev.id}/snapshot.jpg`;
+                            if (target.src !== fallback && !target.src.endsWith(fallback)) {
+                              target.src = fallback;
+                            } else {
+                              target.style.display = "none";
+                            }
                           }}
                         />
 
@@ -767,12 +782,12 @@ export default function EventsPage() {
                               <Eye className="w-3.5 h-3.5" />
                             </a>
 
-                            {/* Open Clip */}
+                            {/* Open Clip / Photo */}
                             <button
-                              onClick={() => setSelectedEvent(ev)}
+                              onClick={() => openEventModal(ev)}
                               className="px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all"
                             >
-                              Ver Clipe
+                              {ev.has_clip && ev.type !== "photo" ? "Ver Clipe" : "Ver Foto"}
                             </button>
                           </div>
                         </div>
@@ -912,7 +927,7 @@ export default function EventsPage() {
                           if (bin.total > 0) {
                             setSelectedHourFilter(selectedHourFilter === bin.hour ? null : bin.hour);
                             if (bin.events.length > 0 && selectedHourFilter !== bin.hour) {
-                              setSelectedEvent(bin.events[0]);
+                              openEventModal(bin.events[0]);
                             }
                           }
                         }}
@@ -1312,18 +1327,65 @@ export default function EventsPage() {
               </div>
             </div>
 
+            {/* Mode Switcher & Fallback Banner */}
+            {selectedEvent.has_clip && selectedEvent.type !== "photo" && (
+              <div className="flex items-center justify-between bg-obsidian-950 p-1.5 rounded-xl border border-slate-800">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    onClick={() => {
+                      setVideoError(false);
+                      setMediaViewMode("video");
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                      mediaViewMode === "video" && !videoError
+                        ? "bg-cyan-500 text-obsidian-950 shadow"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <Video className="w-3.5 h-3.5" />
+                    <span>Clipe de Vídeo</span>
+                  </button>
+                  <button
+                    onClick={() => setMediaViewMode("snapshot")}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+                      mediaViewMode === "snapshot" || videoError
+                        ? "bg-cyan-500 text-obsidian-950 shadow"
+                        : "text-slate-400 hover:text-slate-200"
+                    }`}
+                  >
+                    <Eye className="w-3.5 h-3.5" />
+                    <span>Foto Forense 3MP</span>
+                  </button>
+                </div>
+
+                {videoError && (
+                  <span className="text-[11px] text-amber-400 flex items-center gap-1 font-mono pr-2">
+                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                    Vídeo indisponível (exibindo foto 3MP nativa)
+                  </span>
+                )}
+              </div>
+            )}
+
             {/* Media Player / HD 3MP Viewer */}
             <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-inner flex items-center justify-center">
-              {(!selectedEvent.has_clip || selectedEvent.type === "photo") ? (
+              {(!selectedEvent.has_clip || selectedEvent.type === "photo" || mediaViewMode === "snapshot" || videoError) ? (
                 <img
-                  key={selectedEvent.id}
+                  key={`img-${selectedEvent.id}`}
                   src={selectedEvent.snapshot_clean_url || selectedEvent.snapshot_url || `/api/events/${selectedEvent.id}/snapshot.jpg?clean=1`}
                   alt={`${selectedEvent.label} - ${selectedEvent.camera}`}
                   className="w-full h-full object-contain"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    const fallback = `/frigate/api/events/${selectedEvent.id}/snapshot.jpg`;
+                    if (target.src !== fallback && !target.src.endsWith(fallback)) {
+                      target.src = fallback;
+                    }
+                  }}
                 />
               ) : (
                 <video
-                  key={selectedEvent.id}
+                  key={`vid-${selectedEvent.id}`}
                   ref={videoRef}
                   src={selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`}
                   onError={(e) => {
@@ -1333,6 +1395,9 @@ export default function EventsPage() {
                       target.src = fallback;
                       target.load();
                       target.play().catch(() => {});
+                    } else {
+                      setVideoError(true);
+                      setMediaViewMode("snapshot");
                     }
                   }}
                   controls
@@ -1349,7 +1414,7 @@ export default function EventsPage() {
             {/* Playback Controls & Direct Media Downloads */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               {/* Playback Speed Switcher (only for video clips) */}
-              {selectedEvent.has_clip && selectedEvent.type !== "photo" ? (
+              {selectedEvent.has_clip && selectedEvent.type !== "photo" && mediaViewMode === "video" && !videoError ? (
                 <div className="flex items-center gap-1.5 bg-obsidian-950 p-1 rounded-xl border border-slate-800 text-xs font-mono">
                   <span className="text-slate-500 px-2 text-[10px]">Velocidade:</span>
                   {[0.5, 1, 1.5, 2].map((spd) => (

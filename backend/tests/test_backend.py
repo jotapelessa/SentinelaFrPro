@@ -557,6 +557,78 @@ async def test_sync_camera_overwrites_existing_zones_with_3mp_coordinates():
     assert "230,259" in updated_coords
     assert "1152,778" in updated_coords
 
+@pytest.mark.asyncio
+async def test_frigate_bridge_get_live_snapshot_sources():
+    from app.services.frigate_bridge import frigate_bridge
+    from unittest.mock import patch, AsyncMock
+    import httpx
+
+    fake_jpeg = b"\xff\xd8\xff\xe0" + b"A" * 2000
+    mock_resp = httpx.Response(200, content=fake_jpeg)
+
+    with patch("httpx.AsyncClient.get", AsyncMock(return_value=mock_resp)) as mock_get:
+        snap = await frigate_bridge.get_live_snapshot("cam_192_168_1_196")
+        assert snap == fake_jpeg
+        assert mock_get.called
+        # Verify requested 3MP native query
+        called_url = str(mock_get.call_args[0][0])
+        assert "cam_192_168_1_196/latest.jpg?h=1296&quality=100" in called_url
+
+@pytest.mark.asyncio
+async def test_reconcile_cameras_with_frigate_restart_trigger():
+    from app.api.cameras import reconcile_cameras_with_frigate
+    from app.db.models import Camera
+    from unittest.mock import patch, AsyncMock
+    import httpx
+
+    fake_cams = [
+        Camera(name="cam_192_168_1_196", enabled=True, ip_address="192.168.1.196", rtsp_main="rtsp://..."),
+        Camera(name="cam_192_168_1_47", enabled=True, ip_address="192.168.1.47", rtsp_main="rtsp://...")
+    ]
+
+    # Running Frigate config only has cam_192_168_1_196 (missing cam_192_168_1_47)
+    frigate_running_cfg = {
+        "cameras": {
+            "cam_192_168_1_196": {"enabled": True}
+        }
+    }
+
+    class FakeResult:
+        def scalars(self):
+            return self
+        def all(self):
+            return fake_cams
+
+    mock_db = AsyncMock()
+    mock_db.execute.return_value = FakeResult()
+
+    mock_config_resp = httpx.Response(200, json=frigate_running_cfg)
+    mock_restart_resp = httpx.Response(200, json={"status": "restarted"})
+
+    post_calls = []
+    async def mock_http_get(url, *args, **kwargs):
+        if "/api/config" in str(url):
+            return mock_config_resp
+        return httpx.Response(200, json={})
+
+    async def mock_http_post(url, *args, **kwargs):
+        post_calls.append(str(url))
+        if "/api/restart" in str(url):
+            return mock_restart_resp
+        return httpx.Response(200, json={})
+
+    with patch("app.db.session.AsyncSessionLocal") as mock_session_ctx, \
+         patch("app.api.cameras.sync_camera_to_frigate", AsyncMock()), \
+         patch("httpx.AsyncClient.get", side_effect=mock_http_get), \
+         patch("httpx.AsyncClient.post", side_effect=mock_http_post):
+        
+        mock_session_ctx.return_value.__aenter__.return_value = mock_db
+        await reconcile_cameras_with_frigate()
+
+        # Verify restart was triggered because cam_192_168_1_47 was missing
+        assert any("/api/restart" in u for u in post_calls)
+
+
 
 
 

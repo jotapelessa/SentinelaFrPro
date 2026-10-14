@@ -7,6 +7,7 @@ import logging
 import datetime
 import os
 import asyncio
+import re
 import yaml
 import httpx
 from app.core.config import settings
@@ -1531,13 +1532,6 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
             cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
 
-        # Garantir aliases legados padrão se ausentes
-        if "camera_principal" not in cfg["go2rtc"]["streams"] or not cfg["go2rtc"]["streams"]["camera_principal"]:
-            cfg["go2rtc"]["streams"]["camera_principal"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_principal_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_principal_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-
     # Build UNIFIED ffmpeg input: Consolidate roles: ["record", "detect"] on the main stream
     # Eliminates dual demuxer processes and prevents camera TCP socket saturation (Regras de Ouro #12 e #15)
     ffmpeg_inputs = [{
@@ -1817,6 +1811,7 @@ async def reconcile_cameras_with_frigate():
     ensures Frigate config.yml contains both/all active cameras with zero-copy aliases
     and 3MP detect/snapshots, and dynamically registers all streams and aliases
     in go2rtc via PUT /api/streams without restarting the Frigate container unnecessarily.
+    If Frigate is running but missing any active camera, it triggers a reload/restart.
     """
     logger.info("🛡️ [RECONCILER] Reconciliando câmeras ativas com Frigate NVR e go2rtc...")
     try:
@@ -1834,6 +1829,33 @@ async def reconcile_cameras_with_frigate():
             for c in active_cams:
                 logger.info(f"🎥 [RECONCILER] Reconciliando câmera ativa: {c.name} ({c.ip_address})")
                 await sync_camera_to_frigate(c, restart_frigate=False)
+
+        # Check if Frigate's running config is missing any active camera
+        needs_restart = False
+        try:
+            async with httpx.AsyncClient(timeout=4.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/config")
+                if resp.status_code == 200:
+                    frigate_cfg = resp.json()
+                    running_cams = frigate_cfg.get("cameras", {})
+                    for c in active_cams:
+                        cam_key = re.sub(r'[^a-zA-Z0-9_]', '_', (c.name or "").strip().lower())
+                        if cam_key not in running_cams or not running_cams[cam_key].get("enabled", True):
+                            logger.warning(f"⚠️ [RECONCILER] Câmera ativa '{cam_key}' ausente ou desativada no Frigate NVR. Reinício necessário.")
+                            needs_restart = True
+                            break
+                else:
+                    needs_restart = True
+        except Exception as e:
+            logger.debug(f"[RECONCILER] Não foi possível consultar config em execução do Frigate: {e}")
+
+        if needs_restart:
+            try:
+                logger.info("🔄 [RECONCILER] Reiniciando Frigate NVR para ativar todas as câmeras...")
+                async with httpx.AsyncClient(timeout=10.0) as client:
+                    await client.post(f"{settings.FRIGATE_API_URL}/api/restart")
+            except Exception as e:
+                logger.warning(f"⚠️ [RECONCILER] Falha ao disparar reinício do Frigate: {e}")
 
         logger.info(f"✅ [RECONCILER] {len(active_cams)} câmeras ativas reconciliadas com sucesso!")
     except Exception as e:

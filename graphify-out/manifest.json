@@ -312,10 +312,10 @@
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/theme/TvDesignTokens.kt": {
-    "mtime": 1790974904.7877042,
-    "seen": 1791980638.757393,
-    "ast_hash": "4bd6f4006916a0d14bbc80c2e4802606",
-    "semantic_hash": "4bd6f4006916a0d14bbc80c2e4802606"
+    "mtime": 1792020012.5068707,
+    "seen": 1792020510.213557,
+    "ast_hash": "042f7f3b3a58bb243d6362de731d39ad",
+    "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/ui/MobileGridScreen.kt": {
     "mtime": 1790951325.3604455,
@@ -366,9 +366,9 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1792017647.1449215,
-    "seen": 1792018328.598228,
-    "ast_hash": "e24bffbba44604a12eae66f1831773f4",
+    "mtime": 1792020421.0481071,
+    "seen": 1792020510.213562,
+    "ast_hash": "cf290bcaf8b3c5a10c0b60feeb22a689",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
@@ -450,10 +450,10 @@
     "semantic_hash": "70c2595edece3deef4e5b0126a55685e"
   },
   "backend/app/services/frigate_bridge.py": {
-    "mtime": 1791957570.8208542,
-    "seen": 1791980638.75748,
-    "ast_hash": "8f2d8e9b515cac0773819ec1faa166f9",
-    "semantic_hash": "8f2d8e9b515cac0773819ec1faa166f9"
+    "mtime": 1792019923.8175755,
+    "seen": 1792020510.21357,
+    "ast_hash": "66aec4f14f359f7874fbfddc86f3119f",
+    "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
     "mtime": 1792017718.7669759,
@@ -486,9 +486,9 @@
     "semantic_hash": "2b96bb012c232336e6df92435a9a422a"
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1792011365.002228,
-    "seen": 1792011411.304575,
-    "ast_hash": "ddc6a5bb81eebaaea900055ac7f4326c",
+    "mtime": 1792020477.531071,
+    "seen": 1792020510.213574,
+    "ast_hash": "93665f00e266440486647332ace7826c",
     "semantic_hash": ""
   },
   "compile_apk.sh": {
@@ -534,9 +534,9 @@
     "semantic_hash": "a2e23740e629dbcbceffb73293be9a80"
   },
   "frontend/src/app/events/page.tsx": {
-    "mtime": 1792017866.8509471,
-    "seen": 1792018328.5982451,
-    "ast_hash": "b8aa1446c03d90b8d9f708277cd17c79",
+    "mtime": 1792020256.2304466,
+    "seen": 1792020510.213578,
+    "ast_hash": "e2636faf4f92b7e8ee641a3bb84d3cdc",
     "semantic_hash": ""
   },
   "frontend/src/app/layout.tsx": {
