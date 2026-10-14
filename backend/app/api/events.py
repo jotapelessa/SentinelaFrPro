@@ -579,7 +579,9 @@ async def get_event_clip(event_id: str, download: bool = False):
 
 @router.get("/{event_id}/snapshot.jpg")
 @router.head("/{event_id}/snapshot.jpg")
-async def get_event_snapshot(event_id: str, clean: int = 0):
+@router.get("/{event_id}/snapshot.webp")
+@router.head("/{event_id}/snapshot.webp")
+async def get_event_snapshot(event_id: str, clean: Union[int, str, bool] = 0):
     """
     Proxies or serves snapshot JPEG or WebP image for an event from local disk or Frigate NVR.
     Supports clean full-res 3MP snapshots (clean=1) and annotated bounding boxes (clean=0).
@@ -587,12 +589,13 @@ async def get_event_snapshot(event_id: str, clean: int = 0):
     """
     media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
     clips_dir = os.path.join(media_base, "clips")
+    is_clean = str(clean).lower() in ("1", "true", "yes", "clean") if clean else False
     
     # 1. Check local media directory
     if os.path.exists(clips_dir):
         try:
             entries = os.listdir(clips_dir)
-            if clean:
+            if is_clean:
                 # Clean snapshot: search for {event_id}*-clean.webp or {event_id}*-clean.jpg / jpeg
                 webp_clean = [f for f in entries if event_id in f and "-clean" in f and f.endswith(".webp")]
                 jpg_clean = [f for f in entries if event_id in f and "-clean" in f and (f.endswith(".jpg") or f.endswith(".jpeg"))]
@@ -619,7 +622,7 @@ async def get_event_snapshot(event_id: str, clean: int = 0):
     # 2. Proxy directly to Frigate NVR
     try:
         url = f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg"
-        if clean:
+        if is_clean:
             url += "?clean=1"
         async with httpx.AsyncClient(timeout=8.0) as client:
             resp = await client.get(url)

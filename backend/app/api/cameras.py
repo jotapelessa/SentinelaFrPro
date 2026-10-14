@@ -226,8 +226,8 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
                         rtsp_url = g_stream.split("#")[0]
 
                 # Parse Zones
-                detect_w = cam_cfg.get("detect", {}).get("width", 1280) if isinstance(cam_cfg.get("detect"), dict) else 1280
-                detect_h = cam_cfg.get("detect", {}).get("height", 720) if isinstance(cam_cfg.get("detect"), dict) else 720
+                detect_w = cam_cfg.get("detect", {}).get("width", 2304) if isinstance(cam_cfg.get("detect"), dict) else 2304
+                detect_h = cam_cfg.get("detect", {}).get("height", 1296) if isinstance(cam_cfg.get("detect"), dict) else 1296
                 cam_zones = cam_cfg.get("zones", {})
                 parsed_zone_items = []
 
@@ -388,8 +388,8 @@ async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends
 
                     # Parse zones from Frigate
                     cam_zones = cam_cfg.get("zones", {})
-                    detect_w = cam_cfg.get("detect", {}).get("width", 1280)
-                    detect_h = cam_cfg.get("detect", {}).get("height", 720)
+                    detect_w = cam_cfg.get("detect", {}).get("width", 2304)
+                    detect_h = cam_cfg.get("detect", {}).get("height", 1296)
                     
                     parsed_zone_items = []
                     if isinstance(cam_zones, dict):
@@ -1702,11 +1702,10 @@ async def sync_camera_to_frigate(cam: Camera):
                                     "objects": z.get("objects", ["person", "car", "motorcycle", "dog", "cat", "bicycle"])
                                 }
 
-                # Se cam_block ainda não tiver zonas estruturadas em yaml, hidrata a partir do SQLite
-                if "zones" not in cam_block or not cam_block["zones"]:
-                    if converted_zones:
-                        cam_block["zones"] = converted_zones
-                if motion_masks and ("motion" not in cam_block or not cam_block.get("motion", {}).get("mask")):
+                # Atualiza e re-escala zonas e máscaras a partir do SQLite (fonte da verdade)
+                if converted_zones:
+                    cam_block["zones"] = converted_zones
+                if motion_masks:
                     if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
                         cam_block["motion"] = {}
                     cam_block["motion"]["mask"] = motion_masks[0] if len(motion_masks) == 1 else " ".join(motion_masks)
@@ -1716,7 +1715,7 @@ async def sync_camera_to_frigate(cam: Camera):
                     clean_name = str(z_slug).strip().replace(" ", "_").lower()
                     if clean_name and clean_name not in configured_zone_names:
                         configured_zone_names.append(clean_name)
-                if "zones" not in cam_block or not cam_block["zones"]:
+                if pz:
                     cam_block["zones"] = pz
         except Exception as e:
             logger.debug(f"Erro ao parsear zonas do SQLite para required_zones: {e}")
@@ -2020,7 +2019,7 @@ def get_frigate_config_path() -> str:
             return c
     return "/config/config.yml"
 
-def parse_frigate_coordinates(raw_coords: Any, width: int = 1280, height: int = 720) -> List[Dict[str, float]]:
+def parse_frigate_coordinates(raw_coords: Any, width: int = 2304, height: int = 1296) -> List[Dict[str, float]]:
     """
     Parses various Frigate coordinate representations into normalized {x: 0..1, y: 0..1} points.
     Supports comma-separated strings, space-separated pairs, list of ints/floats, or list of strings.
@@ -2123,8 +2122,8 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
 
     cam_data = cameras_cfg.get(target_cam_key, {}) if isinstance(cameras_cfg, dict) else {}
 
-    detect_w = cam_data.get("detect", {}).get("width", 1280) if isinstance(cam_data.get("detect"), dict) else 1280
-    detect_h = cam_data.get("detect", {}).get("height", 720) if isinstance(cam_data.get("detect"), dict) else 720
+    detect_w = cam_data.get("detect", {}).get("width", 2304) if isinstance(cam_data.get("detect"), dict) else 2304
+    detect_h = cam_data.get("detect", {}).get("height", 1296) if isinstance(cam_data.get("detect"), dict) else 1296
 
     raw_zones = cam_data.get("zones", {}) if isinstance(cam_data, dict) else {}
     motion_mask = cam_data.get("motion", {}).get("mask", "") if isinstance(cam_data.get("motion"), dict) else ""

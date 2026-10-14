@@ -32,6 +32,13 @@
      - *Correção*: Miniaturas de eventos com `aspect-video` e `object-cover`, botões para download de Foto Limpa 3MP no feed e modal, e consumo direto de `snapshot_clean_url` e `snapshot_url` no Android eliminando downscales legados para 1080p.
   7. **Unificação de Versão 001.000.000.177 (Build 177)**:
      - Sincronização em `android/version.properties`, `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts` e `README.md`.
+  8. **Auditoria de Robustez e Correções Críticas Pós-Revisão (v177)**:
+     - *Coordenadas de Zonas e Máscaras 2304x1296 no `config.yml`*: Hidratadas e fixadas as zonas ativas (`cx` na 196 e `jjdgjgdf` na 47) e máscaras de movimento escaladas na matriz 2304x1296, restaurando o isolamento de zonas contra falsos positivos externos.
+     - *Preservação e Sobrescrita Atômica de Zonas em 3MP (`cameras.py`)*: `sync_camera_to_frigate` corrigido para sempre aplicar as zonas convertidas do SQLite (`cam_block["zones"] = converted_zones`), eliminando a retenção de coordenadas obsoletas em 800x448.
+     - *Resolução Padrão de Detecção e Coordenadas (`cameras.py`)*: Atualizados fallbacks de `detect_w/detect_h` e `parse_frigate_coordinates` de 1280x720 para 2304x1296.
+     - *Roteamento e Robustez de Snapshots (`events.py`)*: Adicionadas rotas `/api/events/{event_id}/snapshot.webp` e parser flexível de query param `clean` aceitando strings booleanas (`clean="true"`, `"1"`), prevenindo erros 422.
+     - *Atualização Final do Android TV (`TvNetflixScreen.kt`)*: Substituído último fallback legado `h=1080` para `h=1296` no visualizador de snapshots em tela cheia da Smart TV.
+     - *Testes Automatizados Expandidos (`test_backend.py`)*: Adicionados 3 novos testes cobrindo parsing de clean, atualização de zonas em 3MP e cálculo padrão de coordenadas, elevando suite para 20/20 aprovados.
 
 ---
 

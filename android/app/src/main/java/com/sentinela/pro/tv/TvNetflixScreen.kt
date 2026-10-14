@@ -4515,7 +4515,7 @@ fun TvClipPlayerDialog(
             "${SentinelaConfig.BASE_URL}/api/events/${clip.id}/snapshot.jpg".takeIf { !clip.id.startsWith("live_") && !clip.id.startsWith("rec_") },
             "${SentinelaConfig.BASE_URL}/frigate/api/events/${clip.id}/snapshot.jpg".takeIf { !clip.id.startsWith("live_") && !clip.id.startsWith("rec_") },
             "${SentinelaConfig.BASE_URL}/go2rtc/api/frame.jpeg?src=${clip.cameraId}",
-            "${SentinelaConfig.BASE_URL}/frigate/api/${clip.cameraId}/latest.jpg?h=1080"
+            "${SentinelaConfig.BASE_URL}/frigate/api/${clip.cameraId}/latest.jpg?h=1296"
         )
     }
     var currentCandidateIndex by remember(clip) { mutableIntStateOf(0) }

@@ -460,4 +460,103 @@ async def test_list_events_canonical_snapshot_urls():
         assert ev["snapshot_clean_url"] == "/api/events/1728000000.999999/snapshot.jpg?clean=1"
 
 
+@pytest.mark.asyncio
+async def test_get_event_snapshot_clean_flexible_param(tmp_path):
+    from unittest.mock import patch
+    from app.api.events import get_event_snapshot
+    from app.core.config import settings
+
+    clips_dir = tmp_path / "clips"
+    clips_dir.mkdir(parents=True)
+
+    clean_webp = clips_dir / "cam_test-1728000000.555555-clean.webp"
+    clean_webp.write_bytes(b"RIFF....WEBP" + b"\x00" * 300)
+
+    std_jpg = clips_dir / "cam_test-1728000000.555555.jpg"
+    std_jpg.write_bytes(b"\xff\xd8\xff\xe0" + b"\x00" * 300)
+
+    with patch.object(settings, "MEDIA_DIR", str(tmp_path)):
+        # Passing clean="true" as string
+        resp1 = await get_event_snapshot("1728000000.555555", clean="true")
+        assert resp1.media_type == "image/webp"
+
+        # Passing clean=True as bool
+        resp2 = await get_event_snapshot("1728000000.555555", clean=True)
+        assert resp2.media_type == "image/webp"
+
+        # Passing clean="0" as string
+        resp3 = await get_event_snapshot("1728000000.555555", clean="0")
+        assert resp3.media_type == "image/jpeg"
+
+
+def test_parse_frigate_coordinates_defaults_to_2304x1296():
+    from app.api.cameras import parse_frigate_coordinates
+
+    # Points at 50% and 100% of 2304x1296
+    pts = parse_frigate_coordinates("1152,648,2304,1296")
+    assert len(pts) == 2
+    assert pts[0]["x"] == 0.5
+    assert pts[0]["y"] == 0.5
+    assert pts[1]["x"] == 1.0
+    assert pts[1]["y"] == 1.0
+
+
+@pytest.mark.asyncio
+async def test_sync_camera_overwrites_existing_zones_with_3mp_coordinates():
+    from unittest.mock import patch, AsyncMock
+    from app.api.cameras import sync_camera_to_frigate
+    from app.db.models import Camera
+    import json
+
+    # Pre-existing camera block with old 800x448 coordinates
+    initial_cfg = {
+        "cameras": {
+            "cam_192_168_1_196": {
+                "zones": {
+                    "cx": {
+                        "coordinates": "100,100,200,200",
+                        "objects": ["person"]
+                    }
+                }
+            }
+        },
+        "go2rtc": {"streams": {}}
+    }
+
+    cam = Camera(
+        name="cam_192_168_1_196",
+        friendly_name="Principal 3MP",
+        rtsp_main="rtsp://admin:admin@192.168.1.196:554/live/0/MAIN",
+        resolution="3mp",
+        enabled=True,
+        zones=json.dumps([
+            {
+                "id": "zone_cx",
+                "name": "Cx",
+                "slug": "cx",
+                "type": "zone",
+                "points": [{"x": 0.1, "y": 0.2}, {"x": 0.3, "y": 0.4}, {"x": 0.5, "y": 0.6}]
+            }
+        ])
+    )
+
+    captured_cfg = {}
+    async def mock_save(cfg, path):
+        captured_cfg.update(cfg)
+        return True
+
+    with patch("app.api.cameras.get_frigate_config_path", return_value="/fake/cfg.yml"), \
+         patch("os.path.exists", return_value=True), \
+         patch("builtins.open", patch("yaml.safe_load", return_value=initial_cfg)), \
+         patch("app.api.cameras._save_yaml_config_atomic", side_effect=mock_save), \
+         patch("httpx.AsyncClient.put", AsyncMock()):
+        await sync_camera_to_frigate(cam)
+
+    # Must be updated to 2304x1296 scaled coordinates: 0.1*2304=230, 0.2*1296=259...
+    updated_coords = captured_cfg["cameras"]["cam_192_168_1_196"]["zones"]["cx"]["coordinates"]
+    assert "230,259" in updated_coords
+    assert "1152,778" in updated_coords
+
+
+
 

@@ -256,9 +256,19 @@ cameras:
       filters:
         person:
           threshold: 0.68
+    zones:
+      cx:
+        coordinates: 230,259,691,518,1152,778
+        objects:
+        - person
+        - car
+        - motorcycle
+        - dog
+        - cat
+        - bicycle
     motion:
-      # STR-004: threshold calibrado em 18 (STATE.md v140 — perdeu eventos sutis com 25)
       threshold: 18
+      mask: 1613,1037,1843,1166,2074,1166
     record:
       enabled: true
       motion:
@@ -287,7 +297,8 @@ cameras:
         - dog
         - cat
         - bicycle
-        required_zones: []
+        required_zones:
+        - cx
       detections:
         labels:
         - person
@@ -297,7 +308,8 @@ cameras:
         - dog
         - cat
         - bicycle
-        required_zones: []
+        required_zones:
+        - cx
 
   cam_192_168_1_47:
     enabled: true
@@ -331,8 +343,16 @@ cameras:
       filters:
         person:
           threshold: 0.68
+    zones:
+      jjdgjgdf:
+        coordinates: 751,328,1475,171,2274,496,2292,1275,707,1267
+        objects:
+        - person
+        - car
+        - motorcycle
     motion:
       threshold: 18
+      mask: 735,332,714,26,1412,14,2283,34,2286,474,1475,154,14,14,18,1275,682,1262,723,340,691,32
     record:
       enabled: true
       motion:
@@ -361,7 +381,8 @@ cameras:
         - dog
         - cat
         - bicycle
-        required_zones: []
+        required_zones:
+        - jjdgjgdf
       detections:
         labels:
         - person
@@ -371,7 +392,8 @@ cameras:
         - dog
         - cat
         - bicycle
-        required_zones: []
+        required_zones:
+        - jjdgjgdf
 
   cam_192_168_1_200:
     enabled: false
