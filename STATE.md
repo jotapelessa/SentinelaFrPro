@@ -31,6 +31,11 @@
      - *Correção*: Removido downscale forçado `?h=1080`, aplicando `?h=1296&quality=100`. Marca d'água salva em JPEG qualidade 100, 300 DPI e 4:4:4 chroma (`subsampling=0`). Suporte a despacho via `sendDocument` para envio sem compressão no Telegram.
   6. **Sincronização de Release e Unificação da Versão**:
      - Atualizada versão para `001.000.000.175` em `android/version.properties`, `frontend/package.json`, `frontend/src/constants/version.ts`, `backend/app/core/config.py` e documentação.
+  7. **Auditoria de Robustez e Correções Críticas Pós-Revisão**:
+     - *Watchdog Stall Recovery*: Unificado o método `handleStall()` no `WebRTCPlayer.tsx` para garantir que respostas HTTP com erro ou streams com zero producers (`prods.length === 0`) também acionem recarga automática após 5 falhas consecutivas, e não apenas erros de rede.
+     - *Sanitização de Aliases*: Prevenção de geração de `ffmpeg:#video=copy` para streams nulos, vazios ou com espaços em branco no `backend/app/api/cameras.py`.
+     - *Fallback Docker Socket*: Implementado fallback com `curl --unix-socket /var/run/docker.sock` para os endpoints de energia em ambientes onde o binário CLI do Docker não está instalado.
+     - *Suite de Testes*: Eliminação de testes espelhados por chamadas reais a `sanitize_frigate_config` cobrindo edge cases, além de novos testes automatizados para os endpoints `/api/settings/power/*` e envio de documentos no Telegram.
 
 ---
 
