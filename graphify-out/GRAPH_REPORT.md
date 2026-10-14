@@ -1,7 +1,7 @@
 # Graph Report - SentinelaFrigate  (2026-10-14)
 
 ## Corpus Check
-- 170 files · ~215,506 words
+- 170 files · ~215,630 words
 - Verdict: corpus is large enough that graph structure adds value.
 
 ## Summary
@@ -10,7 +10,7 @@
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `ce7d7f59`
+- Built from commit: `4395f423`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 

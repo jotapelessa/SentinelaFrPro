@@ -9,6 +9,7 @@
 3. Central de Downloads de APKs Integrada no Painel Web (`/screens`): Cartões dedicados na interface web permitindo download em 1 clique dos APKs oficiais da Android TV e Smartphone diretamente do host ou GitHub Releases, e endpoint de redirecionamento `/api/settings/downloads/apk/{flavor}`.
 4. Desbloqueio e Pareamento dos Clientes Físicos: Dispositivos físicos (TV 55" e Tablet) desbloqueados (`permission_status = 'allowed'`) e alinhados para receber broadcasts PiP e telemetria.
 5. Sincronização e Rebuild no Servidor de Produção: Limpeza de arquivos não rastreados no host Ubuntu (`git clean -fd`), atualização atômica de banco SQLite e rebuild `--no-cache` dos containers backend e frontend.
+6. Otimização de Boot & Resolução Instantânea mDNS (`sentinela.local`): Inserção de `optional: true` na interface `enp1s0` no Netplan (eliminando atraso de 120s no boot), ativação de `allow-interfaces=enp1s0,wlp2s0` no Avahi e remoção de publicadores conflitantes, reduzindo a latência de resolução de 5.005s para 11ms.
 
 ---
 
@@ -25,6 +26,9 @@
      - *Adição*: Cards visuais no dashboard permitindo aos usuários baixar o APK da Android TV e do Celular/Tablet diretamente em um clique, eliminando dependência exclusiva da página de releases do GitHub.
   4. **Atualização do Servidor Ubuntu & Versão do `sentinela.local`**:
      - Servidor atualizado via SSH com pull da branch `main`, sincronização do SQLite e rebuild dos containers Docker frontend e backend sem cache.
+  5. **Resolução de Conectividade do Firefox & Boot Ultrarrápido**:
+     - *Causa*: O serviço `systemd-networkd-wait-online.service` travava a subida do Nginx por 120s esperando link na porta Ethernet desconectada (`enp1s0: NO-CARRIER`), e o `avahi-daemon` ignorava a interface Wi-Fi `wlp2s0`, causando timeout de 5 segundos nas consultas mDNS do Firefox.
+     - *Correção*: `optional: true` adicionado na interface `enp1s0` no Netplan, Avahi habilitado para `enp1s0,wlp2s0` e serviço redundante desativado. Resolução de `sentinela.local` caiu de 5s para 11ms, e o tempo de boot caiu para ~12s.
 
 ---
 
