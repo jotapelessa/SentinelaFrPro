@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
             val loader = coil.ImageLoader.Builder(this)
                 .okHttpClient(okHttpClient)
                 .diskCachePolicy(coil.request.CachePolicy.DISABLED)
-                .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
+                .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
                 .build()
 
             coil.Coil.setImageLoader(loader)
@@ -98,7 +98,8 @@ class MainActivity : ComponentActivity() {
             val coroutineScope = rememberCoroutineScope()
             var cameras by remember { 
                 mutableStateOf(listOf(
-                    CameraItem("camera_secundaria", "Câmera IP ONVIF (192.168.1.6)")
+                    CameraItem("cam_192_168_1_196", "Câmera Principal"),
+                    CameraItem("cam_192_168_1_47", "Câmera Secundária")
                 )) 
             }
 

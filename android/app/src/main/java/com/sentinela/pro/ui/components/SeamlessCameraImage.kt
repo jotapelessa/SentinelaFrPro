@@ -105,11 +105,12 @@ fun SeamlessCameraImage(
         while (isActive) {
             val loopStart = System.currentTimeMillis()
             val now = loopStart
-            val primaryUrl = SentinelaConfig.getGo2rtcFrameUrl(cameraName, now)
+            // STR-009 / Regra de Ouro #29: Usar exclusivamente snapshot leve nativo do Frigate NVR (Zero-Impact no go2rtc)
+            val primaryUrl = SentinelaConfig.getSnapshotUrl(cameraName, now, height = 480)
 
             val request = ImageRequest.Builder(context)
                 .data(primaryUrl)
-                .memoryCachePolicy(CachePolicy.DISABLED)
+                .memoryCachePolicy(CachePolicy.ENABLED)
                 .diskCachePolicy(CachePolicy.DISABLED)
                 .allowHardware(false)
                 .build()
@@ -130,34 +131,7 @@ fun SeamlessCameraImage(
                     }
                 }
             } catch (e: Exception) {
-                // Ignore and try fallback
-            }
-
-            // Fallback to Frigate snapshot if go2rtc frame failed
-            if (!decoded) {
-                try {
-                    val fallbackUrl = SentinelaConfig.getSnapshotUrl(cameraName, now, height = 480)
-                    val fallbackReq = ImageRequest.Builder(context)
-                        .data(fallbackUrl)
-                        .memoryCachePolicy(CachePolicy.DISABLED)
-                        .diskCachePolicy(CachePolicy.DISABLED)
-                        .allowHardware(false)
-                        .build()
-                    val result = withContext(Dispatchers.IO) {
-                        imageLoader.execute(fallbackReq)
-                    }
-                    if (result is SuccessResult) {
-                        val drawable = result.drawable
-                        if (drawable is BitmapDrawable) {
-                            currentBitmap = drawable.bitmap
-                            hasError = false
-                            isInitialLoading = false
-                            decoded = true
-                        }
-                    }
-                } catch (e: Exception) {
-                    // Fail silently, keep currentBitmap
-                }
+                // Ignore and keep currentBitmap
             }
 
             if (!decoded && currentBitmap == null) {
@@ -165,7 +139,8 @@ fun SeamlessCameraImage(
             }
 
             val elapsed = System.currentTimeMillis() - loopStart
-            val sleepTime = (refreshIntervalMs - elapsed).coerceIn(10L, refreshIntervalMs)
+            val safeInterval = maxOf(refreshIntervalMs, 500L)
+            val sleepTime = (safeInterval - elapsed).coerceIn(100L, safeInterval)
             delay(sleepTime)
         }
     }

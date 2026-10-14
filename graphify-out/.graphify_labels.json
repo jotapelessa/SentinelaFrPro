@@ -1,5 +1,4 @@
 {
-  "0": "get_brasilia_now",
   "1": "useSentinelaStore",
   "2": "devices.py",
   "3": "OverlayService",
@@ -18,11 +17,9 @@
   "16": "MQTTService",
   "17": "FrigateBridgeService",
   "18": "Histórias",
-  "19": "TelegramVideoQueue",
   "20": "compilerOptions",
   "21": "X509TrustManager",
   "22": "🛠️ Guia de Compilação do Sentinela Frigate Pro no GitHub Codespaces",
-  "23": "WebSocketManager",
   "24": "PipDuration",
   "25": "dependencies",
   "26": "Histórias",
@@ -64,7 +61,7 @@
   "62": "next-env.d.ts",
   "63": "postcss.config.mjs",
   "64": "backup/page.tsx",
-  "65": "events.py",
+  "65": "get_brasilia_now",
   "66": "storage/page.tsx",
   "67": "telegram/page.tsx",
   "68": "tailwind.config.ts",
@@ -101,9 +98,7 @@
   "99": "telegram-vault/tasks.md",
   "100": "next",
   "101": "generate_android_icons.py",
-  "103": "trigger_network_scan",
   "104": "api/telemetry.py",
-  "105": "main.py",
-  "107": "MemoryRingBufferHandler",
+  "105": "WebSocketManager",
   "110": "SentinelaPreferences"
 }

@@ -1630,13 +1630,13 @@ fun TvToolsViewport(
     var isCalibratingBandwidth by remember { mutableStateOf(false) }
     var feedbackMessage by remember { mutableStateOf<String?>(null) }
 
-    // Live telemetry update loop a cada 2s
+    // Live telemetry update loop a cada 4s (otimizado para menor consumo de rede/CPU)
     LaunchedEffect(Unit) {
         while (isActive) {
             runCatching {
                 liveTelemetry = com.sentinela.pro.network.SentinelaRepository.getTelemetry()
             }
-            delay(2000L)
+            delay(4000L)
         }
     }
 
@@ -2916,36 +2916,36 @@ fun TvLogsViewport(
     var selectedLevel by remember { mutableStateOf("TODOS") }
     val levels = listOf("TODOS", "CRITICAL", "WARN", "INFO", "SUCCESS")
 
-    // Polling de telemetria a cada 2s
+    // Polling de telemetria a cada 4s (otimizado para menor carga de CPU)
     LaunchedEffect(Unit) {
         while (isActive) {
             runCatching {
                 telemetry = com.sentinela.pro.network.SentinelaRepository.getTelemetry()
             }
-            delay(2000L)
+            delay(4000L)
         }
     }
 
-    // Polling de logs de auditoria do servidor a cada 10s
+    // Polling de logs de auditoria do servidor a cada 12s
     LaunchedEffect(Unit) {
         runCatching {
             serverLogs = com.sentinela.pro.network.SentinelaRepository.getAuditLogs()
         }
         while (isActive) {
-            delay(10000L)
+            delay(12000L)
             runCatching {
                 serverLogs = com.sentinela.pro.network.SentinelaRepository.getAuditLogs()
             }
         }
     }
 
-    // Polling de logs remotos de clientes/aparelhos a cada 4s
+    // Polling de logs remotos de clientes/aparelhos a cada 8s
     LaunchedEffect(Unit) {
         runCatching {
             clientLogs = com.sentinela.pro.network.SentinelaRepository.getClientLogs(limit = 200)
         }
         while (isActive) {
-            delay(4000L)
+            delay(8000L)
             runCatching {
                 clientLogs = com.sentinela.pro.network.SentinelaRepository.getClientLogs(limit = 200)
             }

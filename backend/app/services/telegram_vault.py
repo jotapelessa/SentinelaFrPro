@@ -1,7 +1,9 @@
 import io
+import re
 import httpx
 import logging
 import datetime
+import unicodedata
 from PIL import Image, ImageDraw, ImageFont
 from typing import Optional, Dict, Any, List
 from app.core.config import settings
@@ -241,8 +243,14 @@ class TelegramVaultService:
         months = ["janeiro", "fevereiro", "marco", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"]
         mes_nome = months[now.month - 1]
         
+        def clean_tag(text: str) -> str:
+            nfkd = unicodedata.normalize('NFKD', str(text))
+            ascii_text = nfkd.encode('ASCII', 'ignore').decode('ASCII')
+            slug = re.sub(r'[^a-zA-Z0-9_]', '_', ascii_text.strip().lower())
+            return re.sub(r'_+', '_', slug).strip('_')
+
         cam_display = friendly_name or camera_name
-        cam_slug = camera_name.lower().replace(" ", "_").replace("-", "_")
+        cam_slug = clean_tag(camera_name)
         
         size_mb = size_bytes / (1024 * 1024) if size_bytes > 0 else 0.0
         size_str = f"{size_mb:.2f} MB" if size_mb > 0 else "0.85 MB"
@@ -262,22 +270,22 @@ class TelegramVaultService:
         ano_num = now.strftime("%Y")
         d_tag = f"d{dia_num}_{mes_num}_{ano_num}"
         full_date_tag = f"{dia_num}_{mes_num}_{ano_num}"
-        mes_ano = f"{mes_nome[:3]}{ano_num}"
-        dia_sem_tag = weekday_str.lower().split("-")[0].replace("á", "a").replace("ç", "c").replace("é", "e")
+        mes_ano = f"{clean_tag(mes_nome[:3])}{ano_num}"
+        dia_sem_tag = clean_tag(weekday_str.lower().split("-")[0])
         
         tags = [
             f"#{ano_num}",
             f"#{full_date_tag}",
             f"#{mes_ano}",
-            f"#{mes_nome}",
-            f"#{mes_nome}{ano_num}",
+            f"#{clean_tag(mes_nome)}",
+            f"#{clean_tag(mes_nome)}{ano_num}",
             f"#ano{ano_num}",
             f"#{cam_slug}",
             f"#{d_tag}",
             f"#dia{dia_num}",
             f"#h{hour:02d}",
             f"#mes{mes_num}",
-            f"#{label.lower()}",
+            f"#{clean_tag(label)}",
             f"#{dia_sem_tag}",
             "#seguranca",
             "#sentinela",
@@ -286,8 +294,9 @@ class TelegramVaultService:
         ]
 
         if zone and zone.strip():
-            z_slug = zone.lower().replace(" ", "_").replace("-", "_")
-            tags.append(f"#{z_slug}")
+            z_slug = clean_tag(zone)
+            if z_slug:
+                tags.append(f"#{z_slug}")
         
         seen = set()
         unique_tags = []

@@ -662,8 +662,8 @@ class OverlayService : Service() {
         val streamCamera = if (resolvedCamera.endsWith("_720p")) resolvedCamera else "${resolvedCamera}_720p"
         val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
             "eco" -> "mode=mjpeg"
-            "webrtc" -> "mode=webrtc&media=video"
-            else -> "mode=mse&media=video"
+            "webrtc" -> "mode=webrtc,mse&media=video&background=true"
+            else -> "mode=mse&media=video&background=true"
         }
         val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${streamCamera}&${streamModeParam}&width=100%")
         val streamUrl = if (baseStreamUrl.contains("stream.html")) {

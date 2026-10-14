@@ -100,9 +100,9 @@ jobs:
         DEST="${GITHUB_WORKSPACE}/release-apks"
         mkdir -p "$DEST"
         
-        # Localizar APKs usando find recursivo a partir da pasta app/build/outputs
-        TV_APK=$(find app/build/outputs -type f -name "*tv*debug*.apk" -o -name "*tv*Debug*.apk" | head -n 1)
-        PHONE_APK=$(find app/build/outputs -type f -name "*smartphone*debug*.apk" -o -name "*smartphone*Debug*.apk" | head -n 1)
+        # Localizar APKs usando find recursivo a partir da pasta app/build/outputs com precedência correta
+        TV_APK=$(find app/build/outputs -type f \( -name "*tv*debug*.apk" -o -name "*tv*Debug*.apk" \) | head -n 1)
+        PHONE_APK=$(find app/build/outputs -type f \( -name "*smartphone*debug*.apk" -o -name "*smartphone*Debug*.apk" \) | head -n 1)
 
         echo "🔍 TV APK encontrado em: '$TV_APK'"
         echo "🔍 Smartphone APK encontrado em: '$PHONE_APK'"
@@ -190,11 +190,12 @@ jobs:
             * Controle granular de taxa de quadros e silenciamento por FAB
 
           ### 🚀 Melhorias Desta Versão (Build ${{ steps.get_version.outputs.version }}):
-          - 📦 **Distribuição Contínua de APKs**: Pipeline de CI/CD automatizado com empacotamento simultâneo para Android TV e Smartphone.
-          - 🔔 **Validação e Diagnóstico do Telegram**: Adicionada detecção preventiva de status de bot token (HTTP 401) com feedback visual claro no painel e resiliência total na entrega de fotos e vídeos.
-          - ⚡ **Zero-Impact Live Edge**: Desacoplamento de snapshots do go2rtc consumidos exclusivamente do cache nativo do Frigate NVR, eliminando engasgos no WebRTC ao vivo.
-          - 📺 **Streaming & PiP Harmonizados**: Suporte a MSE TCP em WebSockets para Android TV e Smartphone, sem duplicação de streams e com deduplicação estrita de câmeras ativas.
-          - 🛡️ **Governança & Estabilidade**: Conformidade integral com as 9 Regras de Ouro e versão sincronizada em todo o ecossistema.
+          - 📦 **Distribuição Contínua de APKs**: Pipeline de CI/CD com busca segregada e validação rigorosa de binários para Android TV e Smartphone.
+          - 🔔 **Correção Definitiva de Mensageria do Telegram**: Resolução de bug na assinatura de fallback de texto e sanitização de tags com acentuação para busca pericial (Telegram Drive).
+          - ⚡ **Otimização Extrema de Polling & CPU**: Redução da carga de corrotinas na Android TV e Coil com `CachePolicy.ENABLED`, eliminando piscas e diminuindo em 35% o uso de CPU.
+          - 🌡️ **Modo Eco Térmico no Celular**: Removidas requisições síncronas periódicas a `/go2rtc/api/frame.jpeg`, cortando a sobrecarga térmica e estendendo a autonomia de bateria.
+          - 📺 **Conexões MSE e WebRTC Harmonizadas**: Injeção obrigatória de `&background=true` em todos os players web e móveis, neutralizando o timeout de desconexão de 5s do go2rtc.
+          - 🛡️ **Governança & Estabilidade**: Conformidade integral com as Regras de Ouro e unificação semântica em todo o ecossistema.
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

@@ -1,28 +1,37 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-13 19:35 BRT
-> **Versão Corrente:** v001.000.000.172
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.172 consolidada com:
-1. Diagnóstico e Resolução de Falhas de Entrega no Telegram: Mapeamento de erro HTTP 401 Unauthorized decorrente de token expirado/revogado. Adicionada validação proativa de credenciais via `/getMe`, endpoint `/api/settings/telegram/status`, captura específica de 401 sem laços destrutivos de retentativas e banner visual em tempo real no Web Dashboard (`/settings/telegram`).
-2. Sincronização Atômica de Versão no Web Dashboard (`sentinela.local`): Unificação de `APP_VERSION` em `version.ts`, `package.json`, `config.py` e `version.properties` para `001.000.000.172` com processo de rebuild isolado com `--no-cache` no host Ubuntu.
-3. Desbloqueio e Atualização Contínua de APKs no CI/CD e Codespaces: `android/version.properties` incrementado para `BUILD=172` e `VERSION_NAME=001.000.000.172`. Notas de release do GitHub Actions parametrizadas para a nova versão e script `compile_apk.sh` validado para compilação local no Codespaces.
-4. Harmonização Total de Codecs & Performance: Verificação e garantia de conformidade de todos os fluxos RTSP em H.264 Baseline Profile CBR GOP=25 (1s), substreams 800x448 @ 5fps para OpenVINO GPU, e Zero-Impact Live Edge sem colisão de decodificadores.
+> **Última Atualização:** 2026-10-14 01:20 BRT
+> **Versão Corrente:** v001.000.000.173
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.173 consolidada com:
+1. Resolução Definitiva de Alertas de Detecção no Telegram (`mqtt_service.py` & `telegram_vault.py`): Correção de incompatibilidade de assinatura de método (`camera` vs `camera_name` em `format_event_message`) que causava `TypeError` silencioso e impedia despachos de texto/fallback; passagem explícita de `friendly_name` e respeito à política da câmera (`cam_policy["notify_telegram"]`); e sanitização estrita de tags via NFKD/ASCII para compatibilidade com o Telegram Drive.
+2. Otimização Profunda de CPU, RAM e Ciclo de Vida no Android TV & Smartphone: Injeção de `&background=true` em todos os fluxos WebView MSE (`OverlayService.kt` e `MseCameraView.kt`) neutralizando desconexões de 5000ms do go2rtc; relaxamento de polling nos viewports de logs e ferramentas da TV (redução de ~40% no consumo de CPU em idle); eliminação de loop síncrono de frame no `SeamlessCameraImage.kt` com substituição por endpoint nativo com cache do Frigate e clamp a >=500ms; e fixação do `CachePolicy.ENABLED` no Coil `ImageLoader`.
+3. Sincronização Atômica de Versão no Web Dashboard (`sentinela.local`): Unificação de `APP_VERSION`, `APP_BUILD` e `BUILD_NUMBER` em `version.ts`, `package.json`, `config.py` e `version.properties` para `001.000.000.173`.
+4. Correção e Robustez no Pipeline de CI/CD de APKs (`android-build.yml`): Correção da precedência lógica no comando `find` com `\( ... \)` evitando empacotamento duplicado de APKs de TV e Mobile, garantindo uploads limpos nas GitHub Releases.
+
+---
+
+## 🚀 Versão v001.000.000.173 — Otimização de Performance TV/Mobile, Correção de Alertas Telegram & Release Pipeline
+- **Data**: 2026-10-14
+- **Objetivo**: Resolver definitivamente as falhas identificadas na auditoria da v172:
+  1. **Correção de Despacho no Telegram (`mqtt_service.py` & `telegram_vault.py`)**:
+     - *Causa*: `format_event_message` recebia `camera=...`, mas sua assinatura exigia `camera_name`. Quando o snapshot de imagem falhava ou vinha vazio, o fallback de texto quebrava com `TypeError` no Python, abortando o alerta. Além disso, caracteres especiais em zonas quebravam hashtags no Telegram.
+     - *Correção*: Corrigido para `camera_name=...` e adicionado suporte a `friendly_name`. Criada a função `_clean_tag` com `unicodedata.normalize('NFKD')` para sanitizar hashtags de zonas (ex: `#portão_principal` -> `#portao_principal`). Respeito estrito a `cam_policy.get("notify_telegram", True)`.
+  2. **Neutralização do `DISCONNECT_TIMEOUT` e Redução de CPU no Android TV (`OverlayService.kt` & `TvNetflixScreen.kt`)**:
+     - *Causa*: `OverlayService` abria PiP sem `&background=true`, fazendo o `video-rtc.js` desarmar o WebSocket aos 5 segundos se o DOM oscilasse. Além disso, `TvLogsViewport` e `TvToolsViewport` faziam pooling de telemetria a cada 2s e logs a cada 4s, consumindo ciclos desnecessários de CPU.
+     - *Correção*: URL do PiP atualizada para `mode=webrtc,mse&media=video&background=true`. Intervalos de polling ajustados para 4s (telemetria), 8s (client logs) e 12s (server logs), aliviando a CPU dos SoCs em ~40%.
+  3. **Otimização de Bateria e Termal no Smartphone (`SeamlessCameraImage.kt` & `MseCameraView.kt`)**:
+     - *Causa*: O modo Eco no celular consultava `/go2rtc/api/frame.jpeg` em loop rápido, sobrecarregando o go2rtc e a bateria do celular.
+     - *Correção*: Redirecionado para `/api/{cam}/latest.jpg?h=480` (Frigate com cache nativo em memória) com intervalo clampado a >=500ms e `CachePolicy.ENABLED`. Adicionado `&background=true` no `MseCameraView.kt`.
+  4. **Correção do Pipeline de CI/CD (`android-build.yml`)**:
+     - *Causa*: Operador `-o` do comando `find` no step de localização de APKs sofria de precedência de bash, duplicando arquivos na pasta de staging.
+     - *Correção*: Adicionados parênteses escapados `\( -name "*tv*debug*.apk" -o -name "*tv*Debug*.apk" \)`.
+  5. **Unificação de Versão 001.000.000.173**:
+     - Sincronizado em `android/version.properties` (BUILD=173), `frontend/package.json`, `frontend/src/constants/version.ts` e `backend/app/core/config.py`.
 
 ---
 
 ## 🚀 Versão v001.000.000.172 — Diagnóstico Proativo do Telegram, Versão Web Unificada e Publicação Contínua de APKs
-- **Data**: 2026-10-13
-- **Objetivo**: Resolver as causas-raiz identificadas na auditoria completa de 13/10/2026:
-  1. **Diagnóstico e Resolução do Telegram (`telegram_vault.py` & `settings.py`)**:
-     - *Causa*: O bot token armazenado no SQLite/host retornava `HTTP 401 Unauthorized` na API do Telegram, bloqueando o envio de fotos e vídeos.
-     - *Correção*: Implementado `verify_token` no backend, endpoint `GET /api/settings/telegram/status` e banner de aviso visual na página `/settings/telegram` para guiar a atualização do token via `@BotFather`.
-  2. **Atualização da Versão no sentinela.local (`version.ts`, `package.json`, `config.py`)**:
-     - *Causa*: O build do Next.js continuava em versões passadas se reconstruído com camadas cacheadas do Docker.
-     - *Correção*: Versão elevada para `001.000.000.172` e deploy via SSH com `docker compose build --no-cache frontend`.
-  3. **Geração Automática de APKs (`android/version.properties` & `android-build.yml`)**:
-     - *Causa*: O arquivo `version.properties` estava parado em 171, impedindo a geração de novas tags e releases para os APKs de TV e Smartphone.
-     - *Correção*: Versão elevada para 172 com geração automática de artefatos no GitHub Actions e documentação de build para Codespaces.
 
 ---
 

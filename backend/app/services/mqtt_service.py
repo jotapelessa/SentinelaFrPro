@@ -261,7 +261,8 @@ class MQTTService:
                         score=score,
                         zone_name=zone_name,
                         snapshot_url=snapshot_url,
-                        tg_policy=tg_policy
+                        tg_policy=tg_policy,
+                        cam_policy=cam_policy
                     )
                 )
 
@@ -274,6 +275,11 @@ class MQTTService:
             })
 
             if event_id:
+                cam_policy = await self._get_camera_policy(camera)
+                if not cam_policy.get("enabled", True):
+                    return
+                notify_tg = cam_policy.get("notify_telegram", True)
+
                 start_t = after.get("start_time", 0)
                 end_t = after.get("end_time", 0)
                 configured_dur = tg_policy.get("clip_duration_seconds", 15)
@@ -282,25 +288,26 @@ class MQTTService:
                 send_mode = tg_policy.get("send_mode", "both")
                 allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
 
-                if send_mode in ["both", "video_only"] and label in allowed_tg_events:
+                if notify_tg and send_mode in ["both", "video_only"] and label in allowed_tg_events:
                     if event_id in self._processed_videos:
                         logger.debug(f"Video para evento {event_id} já enviado. Ignorando evento de FIM duplicado.")
                         return
                     
                     self._processed_videos[event_id] = True
-                    friendly_name = None
-                    try:
-                        from app.db.models import Camera
-                        async with AsyncSessionLocal() as session:
-                            cam_stmt = select(Camera).where(
-                                (Camera.name == camera) | (Camera.ip_address == camera)
-                            )
-                            cam_res = await session.execute(cam_stmt)
-                            cam_obj = cam_res.scalar_one_or_none()
-                            if cam_obj and cam_obj.friendly_name:
-                                friendly_name = cam_obj.friendly_name
-                    except Exception:
-                        pass
+                    friendly_name = cam_policy.get("friendly_name")
+                    if not friendly_name or friendly_name == camera:
+                        try:
+                            from app.db.models import Camera
+                            async with AsyncSessionLocal() as session:
+                                cam_stmt = select(Camera).where(
+                                    (Camera.name == camera) | (Camera.ip_address == camera)
+                                )
+                                cam_res = await session.execute(cam_stmt)
+                                cam_obj = cam_res.scalar_one_or_none()
+                                if cam_obj and cam_obj.friendly_name:
+                                    friendly_name = cam_obj.friendly_name
+                        except Exception:
+                            pass
 
                     # Launch resilient background retry task to deliver MP4 video to Telegram
                     asyncio.create_task(
@@ -325,7 +332,8 @@ class MQTTService:
         score: float,
         zone_name: Optional[str],
         snapshot_url: str,
-        tg_policy: Dict[str, Any]
+        tg_policy: Dict[str, Any],
+        cam_policy: Optional[Dict[str, Any]] = None
     ):
         """Asynchronously handles Telegram photo dispatch, DB logging, and Chromecast without blocking PiP."""
         try:
@@ -368,25 +376,27 @@ class MQTTService:
                 except Exception as e:
                     logger.debug(f"Could not cache high-res snapshot on disk: {e}")
 
-            friendly_name = None
-            try:
-                from app.db.models import Camera
-                async with AsyncSessionLocal() as session:
-                    cam_stmt = select(Camera).where(
-                        (Camera.name == camera) | (Camera.ip_address == camera)
-                    )
-                    cam_res = await session.execute(cam_stmt)
-                    cam_obj = cam_res.scalar_one_or_none()
-                    if cam_obj and cam_obj.friendly_name:
-                        friendly_name = cam_obj.friendly_name
-            except Exception:
-                pass
+            friendly_name = cam_policy.get("friendly_name") if cam_policy else None
+            if not friendly_name or friendly_name == camera:
+                try:
+                    from app.db.models import Camera
+                    async with AsyncSessionLocal() as session:
+                        cam_stmt = select(Camera).where(
+                            (Camera.name == camera) | (Camera.ip_address == camera)
+                        )
+                        cam_res = await session.execute(cam_stmt)
+                        cam_obj = cam_res.scalar_one_or_none()
+                        if cam_obj and cam_obj.friendly_name:
+                            friendly_name = cam_obj.friendly_name
+                except Exception:
+                    pass
 
+            notify_tg = cam_policy.get("notify_telegram", True) if cam_policy else True
             send_mode = tg_policy.get("send_mode", "both")
             allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
             telegram_ok = False
 
-            if send_mode in ["both", "photo_only"] and label in allowed_tg_events:
+            if notify_tg and send_mode in ["both", "photo_only"] and label in allowed_tg_events:
                 if snapshot_bytes:
                     telegram_ok = await telegram_vault_service.send_alert_photo(
                         image_bytes=snapshot_bytes,
@@ -398,7 +408,8 @@ class MQTTService:
                     )
                 else:
                     caption = telegram_vault_service.format_event_message(
-                        camera=friendly_name or camera,
+                        camera_name=camera,
+                        friendly_name=friendly_name,
                         label=label,
                         score=score,
                         zone=zone_name
