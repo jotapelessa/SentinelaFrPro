@@ -82,7 +82,7 @@ snapshots:
   timestamp: true
   bounding_box: true
   quality: 98
-  height: 1080
+  height: 1296
 go2rtc:
   log:
     rtsp: warn
@@ -95,9 +95,9 @@ go2rtc:
     cam_192_168_1_196:
     - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=2000
     cam_192_168_1_196_main:
-    - cam_192_168_1_196
+    - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_720p:
-    - cam_192_168_1_196
+    - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_sub:
     - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
 
@@ -107,30 +107,30 @@ go2rtc:
     cam_192_168_1_47:
     - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#buffer=2000
     cam_192_168_1_47_main:
-    - cam_192_168_1_47
+    - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_720p:
-    - cam_192_168_1_47
+    - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_sub:
     - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0
 
-    # Aliases de compatibilidade legada (in-memory)
+    # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
     camera_principal:
-    - cam_192_168_1_196
+    - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_main:
-    - cam_192_168_1_196
+    - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_720p:
-    - cam_192_168_1_196
+    - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_sub:
-    - cam_192_168_1_196_sub
+    - ffmpeg:cam_192_168_1_196_sub#video=copy
 
     camera_secundaria:
-    - cam_192_168_1_47
+    - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_main:
-    - cam_192_168_1_47
+    - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_720p:
-    - cam_192_168_1_47
+    - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_sub:
-    - cam_192_168_1_47_sub
+    - ffmpeg:cam_192_168_1_47_sub#video=copy
 
     # =========================================================
     # Câmeras DESABILITADAS — streams comentados para não manter

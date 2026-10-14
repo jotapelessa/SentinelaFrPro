@@ -16,7 +16,8 @@ import {
   ShieldCheck,
   ExternalLink,
   Video,
-  Shield
+  Shield,
+  Power
 } from "lucide-react";
 
 import { useSentinelaStore } from "@/store/useSentinelaStore";
@@ -71,6 +72,13 @@ export default function SettingsLayout({
       icon: Tv,
       desc: "Smart TVs TCL, Android & Web",
       color: "text-teal-400"
+    },
+    {
+      name: "Gerenciamento de Energia",
+      href: "/settings/power",
+      icon: Power,
+      desc: "Reiniciar app ou host Ubuntu",
+      color: "text-rose-400"
     },
   ];
 

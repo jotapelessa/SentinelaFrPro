@@ -1,15 +1,36 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-14 03:05 BRT
-> **Versão Corrente:** v001.000.000.174
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.174 consolidada com:
-1. Resolução Definitiva de Alertas de Detecção no Telegram: Correção de `AttributeError` no `mqtt_service.py` (`EventRecord.event_id` -> `EventRecord.frigate_event_id`) e clamp protetivo de `min_score` em `[0.55, 0.78]` (default `0.68`) no `cameras.py`, eliminando silenciamento de detecções causadas por score `0.95`.
-2. Otimização Térmica e de CPU no Host Ubuntu & NVR: `go2rtc: log: rtsp: warn` (removido `trace`), eliminação de chamadas síncronas a `go2rtc/api/frame.jpeg` nos loops de fallback priorizando cache em memória do Frigate NVR (`latest.jpg`), e substituição de loops TCP de `rtsp://127.0.0.1:8554` por aliases in-memory (`[cam_key]`), reduzindo a temperatura do Celeron N5105 de 65°C para ~48°C.
-3. Central de Downloads de APKs Integrada no Painel Web (`/screens`): Cartões dedicados na interface web permitindo download em 1 clique dos APKs oficiais da Android TV e Smartphone diretamente do host ou GitHub Releases, e endpoint de redirecionamento `/api/settings/downloads/apk/{flavor}`.
-4. Desbloqueio e Pareamento dos Clientes Físicos: Dispositivos físicos (TV 55" e Tablet) desbloqueados (`permission_status = 'allowed'`) e alinhados para receber broadcasts PiP e telemetria.
-5. Sincronização e Rebuild no Servidor de Produção: Limpeza de arquivos não rastreados no host Ubuntu (`git clean -fd`), atualização atômica de banco SQLite e rebuild `--no-cache` dos containers backend e frontend.
-6. Otimização de Boot & Resolução Instantânea mDNS (`sentinela.local`): Inserção de `optional: true` na interface `enp1s0` no Netplan (eliminando atraso de 120s no boot), ativação de `allow-interfaces=enp1s0,wlp2s0` no Avahi e remoção de publicadores conflitantes, reduzindo a latência de resolução de 5.005s para 11ms.
+> **Última Atualização:** 2026-10-14 10:30 BRT
+> **Versão Corrente:** v001.000.000.175
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.175 consolidada com:
+1. Aliases Canônicos go2rtc: Correção de erro `unsupported scheme` no go2rtc 1.9.10+ padronizando todos os aliases e restreams como `ffmpeg:<cam>#video=copy` no gerador de configuração do backend (`cameras.py`) e no `frigate/config/config.yml`.
+2. WebRTC 720p Padrão & Remoção de MSE no Web Dashboard: Migração completa da interface web desktop para WebRTC nativo (`mode=webrtc`), eliminando botões e referências a MSE nas telas de câmeras e modais de configuração, mantendo MSE ativo nos clientes Android.
+3. Resiliência de DNS & Docker Socket Writable: Inclusão de servidores DNS estáticos (`1.1.1.1`, `8.8.8.8`) nos serviços `backend` e `frigate` no `docker-compose.yml`, prevenindo erros `[Errno -3]` de resolução do Telegram; montagem de `/var/run/docker.sock` em modo leitura e escrita para operações do host.
+4. Gerenciamento de Energia & Reinício Host/App: Nova página dedicada `/settings/power` e endpoints `POST /api/settings/power/restart-app` e `POST /api/settings/power/reboot-server` com diálogo de confirmação seguro.
+5. Maximização Forense de Snapshots Telegram 3MP: Resolução nativa de 3MP (`?h=1296&quality=100`) sem downscale forçado, marca d'água com compressão JPEG qualidade 100, densidade de 300 DPI e croma 4:4:4 (`subsampling=0`), e suporte a envio de arquivos em formato original (`as_document`).
+6. Diagnóstico e Sincronização Geral: Atualização de labels de diagnóstico ("2 Câmeras Físicas (16 Perfis/Aliases no Hub)") e unificação de versão `001.000.000.175` em todos os submódulos.
+
+---
+
+## 🚀 Versão v001.000.000.175 — Aliases go2rtc Válidos, WebRTC 720p Web Default, Gerenciamento de Energia & Telegram 3MP Nativo
+- **Data**: 2026-10-14
+- **Objetivo**: Corrigir bugs de streaming e resolução DNS, modernizar a interface desktop e maximizar a qualidade forense de alertas:
+  1. **Correção de Aliases no go2rtc 1.9.10+ (`backend/app/api/cameras.py` & `frigate/config/config.yml`)**:
+     - *Causa*: O go2rtc 1.9.10+ lançava o erro fatal `unsupported scheme: cam_192_168_1_196` para aliases simples sem esquema sob a chave `streams:`.
+     - *Correção*: Todos os aliases internos (`_main`, `_720p`, `camera_principal*`) foram convertidos para a sintaxe canônica `ffmpeg:<stream>#video=copy`, garantindo restreams instantâneos com zero overhead de CPU.
+  2. **Exclusividade WebRTC 720p no Web Dashboard (`WebRTCPlayer.tsx` & `CameraConfigModal.tsx`)**:
+     - *Causa*: O modo MSE no navegador desktop apresentava latência residual e controles redundantes quando comparado ao WebRTC de baixa latência (<50ms).
+     - *Correção*: Removido seletor de MSE do web dashboard e modal de configurações de câmera; WebRTC 720p estabelecido como modo único padrão no desktop. (Suporte MSE mantido estritamente para Android TV e Mobile).
+  3. **Resiliência DNS e Docker Socket no `docker-compose.yml`**:
+     - *Causa*: Falhas transitórias no resolver local geravam `[Errno -3] Temporary failure in name resolution` ao despachar mensagens para `api.telegram.org`. O socket do Docker estava montado como `:ro`, impedindo reinício de containers pelo backend.
+     - *Correção*: Configurados servidores DNS estáticos redundantes (`1.1.1.1`, `8.8.8.8`) nos containers `backend` e `frigate`. Socket `/var/run/docker.sock` montado em modo leitura/escrita.
+  4. **Página e Endpoints de Gerenciamento de Energia (`/settings/power`)**:
+     - *Adição*: Rota e tela com dois cartões de ação operacional: "Reiniciar Aplicação (Containers)" e "Reiniciar Servidor (Host Ubuntu)" com modais de confirmação e endpoints seguros `POST /api/settings/power/restart-app` e `POST /api/settings/power/reboot-server`.
+  5. **Snapshots de Alerta em 3MP Nativo com 300 DPI (`mqtt_service.py` & `telegram_vault.py`)**:
+     - *Correção*: Removido downscale forçado `?h=1080`, aplicando `?h=1296&quality=100`. Marca d'água salva em JPEG qualidade 100, 300 DPI e 4:4:4 chroma (`subsampling=0`). Suporte a despacho via `sendDocument` para envio sem compressão no Telegram.
+  6. **Sincronização de Release e Unificação da Versão**:
+     - Atualizada versão para `001.000.000.175` em `android/version.properties`, `frontend/package.json`, `frontend/src/constants/version.ts`, `backend/app/core/config.py` e documentação.
 
 ---
 

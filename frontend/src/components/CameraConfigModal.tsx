@@ -697,7 +697,7 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
               {/* Modo de Transmissão ao Vivo */}
               <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-3">
                 <label className="block text-slate-300 font-bold">Modo Padrão de Visualização Ao Vivo:</label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setStreamMode("eco")}
@@ -711,24 +711,13 @@ export const CameraConfigModal: React.FC<CameraConfigModalProps> = ({ camera, on
 
                   <button
                     type="button"
-                    onClick={() => setStreamMode("mse")}
-                    className={`p-2.5 rounded-xl border text-center transition-all ${
-                      streamMode === "mse" ? "bg-cyan-500/10 border-cyan-500/50 text-cyan-300" : "bg-slate-800/80 border-slate-700 text-slate-400"
-                    }`}
-                  >
-                    <strong className="block text-white font-bold text-xs">MSE (24 FPS)</strong>
-                    <span className="text-[9px] text-slate-400">Fluxo contínuo fluido</span>
-                  </button>
-
-                  <button
-                    type="button"
                     onClick={() => setStreamMode("webrtc")}
                     className={`p-2.5 rounded-xl border text-center transition-all ${
-                      streamMode === "webrtc" ? "bg-cyan-500/10 border-cyan-500/50 text-cyan-300" : "bg-slate-800/80 border-slate-700 text-slate-400"
+                      streamMode === "webrtc" || streamMode === "mse" ? "bg-cyan-500/10 border-cyan-500/50 text-cyan-300" : "bg-slate-800/80 border-slate-700 text-slate-400"
                     }`}
                   >
-                    <strong className="block text-white font-bold text-xs">WebRTC (&lt;50ms)</strong>
-                    <span className="text-[9px] text-slate-400">Ultra-baixa latência</span>
+                    <strong className="block text-white font-bold text-xs">WebRTC 720p (&lt;50ms)</strong>
+                    <span className="text-[9px] text-slate-400">Ultra-baixa latência nativa</span>
                   </button>
                 </div>
 

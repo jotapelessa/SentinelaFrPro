@@ -165,7 +165,7 @@ const CameraHeaderHUD = React.memo(({
         ) : (
           <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 font-bold flex items-center gap-1">
             <Zap className="w-2.5 h-2.5 text-cyan-400" />
-            LIVE (WebRTC / MSE)
+            LIVE (WebRTC 720p)
           </span>
         )}
 
@@ -250,8 +250,8 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 }) => {
   const initialMode = (camera.stream_mode === "eco" || camera.stream_mode === "monitor") 
     ? "monitor" 
-    : (camera.stream_mode === "webrtc" ? "webrtc" : "mse");
-  const [streamMode, setStreamMode] = useState<"monitor" | "webrtc" | "mse">(initialMode);
+    : "webrtc";
+  const [streamMode, setStreamMode] = useState<"monitor" | "webrtc">(initialMode);
   const [streamQuality, setStreamQuality] = useState<"minima" | "media">(
     camera.stream_quality === "minima" ? "minima" : "media"
   );
@@ -309,7 +309,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   // Sincronizar dinamicamente modo de stream, qualidade e FPS quando a câmera for editada
   useEffect(() => {
     if (camera.stream_mode) {
-      const mode = (camera.stream_mode === "eco" || camera.stream_mode === "monitor") ? "monitor" : (camera.stream_mode === "webrtc" ? "webrtc" : "mse");
+      const mode = (camera.stream_mode === "eco" || camera.stream_mode === "monitor") ? "monitor" : "webrtc";
       setStreamMode(mode);
     }
     if (camera.stream_quality) {
@@ -505,14 +505,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     const withAudio = forceAudio !== undefined ? forceAudio : !isMuted;
     const mediaParam = withAudio ? "media=video,audio" : "media=video";
     // background=true impede que o go2rtc execute o timer de 5s de desconexão (Regra de Ouro #1/Streaming 24/7)
-    // Usar parâmetro único com modos separados por vírgula (mode=webrtc,mse). Chaves repetidas (&mode=webrtc&mode=mse) fazem o stream.html instanciar 2 tags <video-stream> no mesmo iframe, duplicando a transmissão na tela.
-    switch (streamMode) {
-      case "webrtc":
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&${mediaParam}&background=true`;
-      case "mse":
-      default:
-        return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse&${mediaParam}&background=true`;
-    }
+    return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc&${mediaParam}&background=true`;
   };
 
   const [isCapturing, setIsCapturing] = useState(false);
@@ -689,17 +682,6 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
                 >
                   <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "webrtc" ? "bg-obsidian-950" : "bg-cyan-400"}`} />
                   <span>WebRTC</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setStreamMode("mse")}
-                  className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all flex items-center gap-1 ${
-                    streamMode === "mse" ? "bg-purple-500 text-white shadow-md shadow-purple-500/30" : "text-slate-400 hover:text-purple-300 hover:bg-slate-800/80"
-                  }`}
-                >
-                  <span className={`w-1.5 h-1.5 rounded-full ${streamMode === "mse" ? "bg-white" : "bg-purple-400"}`} />
-                  <span>MSE</span>
                 </button>
               </div>
 

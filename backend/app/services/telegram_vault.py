@@ -179,8 +179,8 @@ class TelegramVaultService:
             draw.text((18, text_y), hud_text, fill=(255, 255, 255), font=font)
 
             out_buf = io.BytesIO()
-            # Maximum JPEG quality with full 4:4:4 chroma (subsampling=0) to preserve crisp edges
-            image.save(out_buf, format="JPEG", quality=98, subsampling=0, dpi=(300, 300))
+            # Maximum JPEG quality 100 with full 4:4:4 chroma (subsampling=0) and 300 DPI to preserve crisp native 3MP edges
+            image.save(out_buf, format="JPEG", quality=100, subsampling=0, dpi=(300, 300))
             data = out_buf.getvalue()
 
             # Keep the photo under Telegram's ~9.5MB limit while preserving max native resolution
@@ -332,9 +332,10 @@ class TelegramVaultService:
         zone: Optional[str] = None,
         score: float = 0.0,
         friendly_name: Optional[str] = None,
-        ignore_pause: bool = False
+        ignore_pause: bool = False,
+        as_document: bool = False
     ) -> bool:
-        """Dispatches watermarked snapshot to Telegram using the classic template."""
+        """Dispatches watermarked snapshot to Telegram using the classic template or high-res uncompressed document."""
         if not self.is_configured:
             await self.load_credentials_from_db()
 
@@ -358,26 +359,30 @@ class TelegramVaultService:
             is_video=False
         )
 
-        url = f"https://api.telegram.org/bot{self.bot_token}/sendPhoto"
+        url = f"https://api.telegram.org/bot{self.bot_token}/sendDocument" if as_document else f"https://api.telegram.org/bot{self.bot_token}/sendPhoto"
+        file_field = "document" if as_document else "photo"
+        file_name = f"{camera_name}_{label}_3mp.jpg" if as_document else "snapshot.jpg"
+        audit_action = "SEND_DOCUMENT" if as_document else "SEND_PHOTO"
+
         try:
-            logger.info(f"📤 Enviando foto de alerta para o Telegram ({self.chat_id})...")
+            logger.info(f"📤 Enviando foto de alerta ({'Documento 3MP' if as_document else 'Foto'}) para o Telegram ({self.chat_id})...")
             import asyncio
             for attempt in range(3):
                 try:
-                    async with httpx.AsyncClient(timeout=15.0) as client:
-                        files = {"photo": ("snapshot.jpg", watermarked, "image/jpeg")}
+                    async with httpx.AsyncClient(timeout=20.0) as client:
+                        files = {file_field: (file_name, watermarked, "image/jpeg")}
                         data = {"chat_id": self.chat_id, "caption": caption}
                         resp = await client.post(url, data=data, files=files)
                         if resp.status_code == 200:
-                            logger.info("✅ Foto de alerta entregue com sucesso ao Telegram!")
-                            self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone, "size_bytes": len(image_bytes)}, True)
+                            logger.info(f"✅ Foto de alerta ({'Documento' if as_document else 'Foto'}) entregue com sucesso ao Telegram!")
+                            self.record_audit(audit_action, {"camera": camera_name, "label": label, "zone": zone, "size_bytes": len(image_bytes), "as_document": as_document}, True)
                             return True
                         elif resp.status_code == 401:
                             self.auth_status = "unauthorized"
                             self.last_auth_error = "Token inválido ou revogado no BotFather (HTTP 401 Unauthorized)"
                             err = f"HTTP 401: {resp.text}"
-                            logger.error(f"❌ Telegram sendPhoto falhou por falta de autorização (401). Verifique o Token no BotFather!")
-                            self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, err)
+                            logger.error(f"❌ Telegram {audit_action} falhou por falta de autorização (401). Verifique o Token no BotFather!")
+                            self.record_audit(audit_action, {"camera": camera_name, "label": label, "zone": zone}, False, err)
                             return False
                         elif resp.status_code == 429:
                             retry_after = int(resp.json().get("parameters", {}).get("retry_after", 3))
@@ -386,13 +391,13 @@ class TelegramVaultService:
                             continue
                         else:
                             err = f"HTTP {resp.status_code}: {resp.text}"
-                            logger.error(f"❌ Telegram sendPhoto falhou ({err})")
-                            self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, err)
+                            logger.error(f"❌ Telegram {audit_action} falhou ({err})")
+                            self.record_audit(audit_action, {"camera": camera_name, "label": label, "zone": zone}, False, err)
                             return False
                 except httpx.RequestError as req_err:
                     logger.warning(f"Erro de rede ao enviar foto para Telegram na tentativa {attempt+1}: {req_err}")
                     if attempt == 2:
-                        self.record_audit("SEND_PHOTO", {"camera": camera_name, "label": label, "zone": zone}, False, str(req_err))
+                        self.record_audit(audit_action, {"camera": camera_name, "label": label, "zone": zone}, False, str(req_err))
                         return False
                     await asyncio.sleep(2 * (attempt + 1))
             return False

@@ -48,3 +48,52 @@ async def test_pip_dnd_check():
     pip_gateway_service._dnd_end_hour = 24
     assert pip_gateway_service.is_in_dnd() is True
     pip_gateway_service._dnd_enabled = False
+
+@pytest.mark.asyncio
+async def test_watermark_high_quality_dpi():
+    from PIL import Image
+    import io
+    img = Image.new("RGB", (2304, 1296), color=(40, 40, 40))
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG", quality=100, dpi=(300, 300))
+    watermarked = telegram_vault_service.apply_watermark(
+        image_bytes=buf.getvalue(),
+        camera_name="cam_192_168_1_196",
+        label="person",
+        zone="entrada"
+    )
+    result_img = Image.open(io.BytesIO(watermarked))
+    assert result_img.size == (2304, 1296)
+    assert result_img.info.get("dpi") == (300, 300)
+
+@pytest.mark.asyncio
+async def test_go2rtc_alias_sanitization():
+    # Test sanitization logic from cameras.py
+    cfg = {
+        "go2rtc": {
+            "streams": {
+                "cam_192_168_1_196": ["rtsp://192.168.1.196:554/live/0/MAIN"],
+                "cam_192_168_1_196_main": "cam_192_168_1_196",
+                "cam_192_168_1_196_720p": ["cam_192_168_1_196"],
+                "camera_principal": ["cam_192_168_1_196"]
+            }
+        }
+    }
+    for s_name, s_val in list(cfg["go2rtc"]["streams"].items()):
+        if isinstance(s_val, str) and not s_val.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
+            target = s_val.strip()
+            cfg["go2rtc"]["streams"][s_name] = [f"ffmpeg:{target}#video=copy"]
+        elif isinstance(s_val, list):
+            new_list = []
+            for item in s_val:
+                if isinstance(item, str) and not item.startswith(("rtsp://", "http://", "https://", "ffmpeg:", "exec:", "echo:", "#")):
+                    target = item.strip()
+                    new_list.append(f"ffmpeg:{target}#video=copy")
+                else:
+                    new_list.append(item)
+            cfg["go2rtc"]["streams"][s_name] = new_list
+
+    assert cfg["go2rtc"]["streams"]["cam_192_168_1_196_main"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+    assert cfg["go2rtc"]["streams"]["cam_192_168_1_196_720p"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+    assert cfg["go2rtc"]["streams"]["camera_principal"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+

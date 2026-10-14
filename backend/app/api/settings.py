@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, Body, Request
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, Tuple, Set
 import logging
@@ -71,7 +71,7 @@ async def get_settings(db: AsyncSession = Depends(get_db)):
 
     return {
         "app_version": settings.APP_VERSION,
-        "app_build": getattr(settings, "BUILD_NUMBER", 174),
+        "app_build": getattr(settings, "BUILD_NUMBER", 175),
         "telegram_configured": bool(saved_token and saved_chat_id),
         "bot_token": saved_token,
         "chat_id": saved_chat_id,
@@ -1112,6 +1112,134 @@ async def wipe_server_storage(
         "frigate_deleted": frigate_deleted,
         "message": f"Reset total concluído com sucesso! {freed_gb} GB liberados do SSD NVMe."
     }
+
+# ==============================================================================
+# GERENCIAMENTO DE ENERGIA & REINICIALIZAÇÃO (APP & HOST UBUNTU)
+# ==============================================================================
+
+@router.post("/power/restart-app")
+async def restart_app_containers(request: Request):
+    """Restarts application docker containers (frigate, frontend, nginx, and backend) via /var/run/docker.sock."""
+    import os
+    import asyncio
+    import httpx
+
+    client_ip = request.client.host if request.client else "unknown"
+    await audit_service.log(
+        action="APP_CONTAINERS_RESTART",
+        module="SYSTEM",
+        severity="WARNING",
+        details="Reinicialização dos contêineres da aplicação solicitada via painel de configurações.",
+        client_ip=client_ip
+    )
+
+    async def _do_restart():
+        await asyncio.sleep(0.5)
+        ancillary_containers = ["sentinela_frigate", "sentinela_frontend", "sentinela_nginx"]
+        sock_path = "/var/run/docker.sock"
+        if os.path.exists(sock_path):
+            try:
+                transport = httpx.AsyncHTTPTransport(uds=sock_path)
+                async with httpx.AsyncClient(transport=transport, timeout=15.0) as client:
+                    for c in ancillary_containers:
+                        try:
+                            await client.post(f"http://localhost/v1.41/containers/{c}/restart?t=5")
+                        except Exception as ex:
+                            logger.warning(f"Erro ao reiniciar {c} via docker.sock: {ex}")
+                    await asyncio.sleep(1.0)
+                    try:
+                        await client.post("http://localhost/v1.41/containers/sentinela_backend/restart?t=5")
+                    except Exception as ex:
+                        logger.warning(f"Erro ao reiniciar sentinela_backend via docker.sock: {ex}")
+                return
+            except Exception as e:
+                logger.error(f"Falha ao comunicar com docker.sock: {e}")
+
+        # Fallback to shell command
+        for c in ancillary_containers:
+            try:
+                p = await asyncio.create_subprocess_shell(f"docker restart {c}")
+                await p.communicate()
+            except Exception:
+                pass
+        await asyncio.sleep(1.0)
+        try:
+            p = await asyncio.create_subprocess_shell("docker restart sentinela_backend")
+            await p.communicate()
+        except Exception:
+            pass
+
+    asyncio.create_task(_do_restart())
+    return {
+        "status": "success",
+        "message": "Comando de reinicialização dos contêineres enviado com sucesso. Os serviços reiniciarão em instantes."
+    }
+
+@router.post("/power/reboot-server")
+async def reboot_server_host(request: Request):
+    """Reboots the host Ubuntu server using an nsenter docker container or system reboot."""
+    import os
+    import asyncio
+    import httpx
+
+    client_ip = request.client.host if request.client else "unknown"
+    await audit_service.log(
+        action="SERVER_HOST_REBOOT",
+        module="SYSTEM",
+        severity="CRITICAL",
+        details="Reinicialização do servidor host Ubuntu solicitada via painel de configurações.",
+        client_ip=client_ip
+    )
+
+    async def _do_reboot():
+        await asyncio.sleep(1.0)
+        sock_path = "/var/run/docker.sock"
+        reboot_triggered = False
+
+        if os.path.exists(sock_path):
+            try:
+                transport = httpx.AsyncHTTPTransport(uds=sock_path)
+                async with httpx.AsyncClient(transport=transport, timeout=30.0) as client:
+                    create_payload = {
+                        "Image": "alpine",
+                        "Cmd": ["nsenter", "-t", "1", "-m", "-u", "-i", "-n", "-p", "reboot"],
+                        "HostConfig": {
+                            "Privileged": True,
+                            "PidMode": "host",
+                            "AutoRemove": True
+                        }
+                    }
+                    res = await client.post("http://localhost/v1.41/containers/create", json=create_payload)
+                    if res.status_code == 404:
+                        try:
+                            await client.post("http://localhost/v1.41/images/create?fromImage=alpine:latest")
+                            res = await client.post("http://localhost/v1.41/containers/create", json=create_payload)
+                        except Exception as pe:
+                            logger.warning(f"Erro ao baixar imagem alpine via docker.sock: {pe}")
+
+                    if res.status_code in (200, 201):
+                        c_id = res.json().get("Id")
+                        if c_id:
+                            await client.post(f"http://localhost/v1.41/containers/{c_id}/start")
+                            reboot_triggered = True
+                            logger.info("Host reboot disparado com sucesso via container nsenter!")
+            except Exception as ex:
+                logger.error(f"Erro ao disparar reboot do host via docker.sock: {ex}")
+
+        if not reboot_triggered:
+            reboot_cmd = "docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -i -n -p reboot || sudo /sbin/reboot || sudo reboot || /sbin/reboot || reboot || systemctl reboot"
+            try:
+                p = await asyncio.create_subprocess_shell(reboot_cmd)
+                await p.communicate()
+            except Exception as e:
+                logger.error(f"Erro ao executar reinicialização do host via subprocess: {e}")
+
+    asyncio.create_task(_do_reboot())
+    return {
+        "status": "success",
+        "message": "Comando de reinicialização do servidor enviado com sucesso. O servidor reiniciará em instantes."
+    }
+
 
 
 

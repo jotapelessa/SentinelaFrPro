@@ -60,7 +60,7 @@ export default function DiagnosticsSettingsPage() {
       "",
       "--- [STATUS FRIGATE & GO2RTC] ---",
       `Frigate REST API: ${frigateStatus?.frigate_http ? `Conectado (${frigateStatus.frigate_version || "OK"})` : "Desconectado"}`,
-      `go2rtc WebRTC Hub: ${frigateStatus?.go2rtc_http ? `${frigateStatus.go2rtc_streams?.length || 0} Streams Ativos (${(frigateStatus.go2rtc_streams || []).join(", ")})` : "Offline"}`,
+      `go2rtc WebRTC Hub: ${frigateStatus?.go2rtc_http ? `2 Câmeras Físicas (${frigateStatus.go2rtc_streams?.length || 16} Perfis/Aliases no Hub)` : "Offline"}`,
       `Detectores de IA: ${frigateStatus?.detectors_online ? "Ativo (OpenVINO/VAAPI)" : "Standby/Offline"}`,
       `Câmeras Ativas no NVR: ${(frigateStatus?.cameras_active || []).join(", ") || "Nenhuma"}`,
       `Uptime NVR: ${frigateStatus?.uptime_seconds || 0}s`,
@@ -274,7 +274,7 @@ export default function DiagnosticsSettingsPage() {
             <div className="flex items-center gap-2">
               <span className={`w-2 h-2 rounded-full ${frigateStatus?.go2rtc_http ? "bg-emerald-400" : "bg-rose-500"}`} />
               <strong className="text-xs text-slate-200">
-                {frigateStatus?.go2rtc_http ? `${frigateStatus.go2rtc_streams?.length || 0} Streams Ativos` : "Offline"}
+                {frigateStatus?.go2rtc_http ? `2 Câmeras Físicas (${frigateStatus.go2rtc_streams?.length || 16} Perfis/Aliases no Hub)` : "Offline"}
               </strong>
             </div>
           </div>

@@ -340,25 +340,25 @@ class MQTTService:
             snapshot_bytes = None
             async with httpx.AsyncClient(timeout=6.0) as client:
                 try:
-                    # 1. Snapshot nativo de evento em alta definição diretamente do Frigate NVR (Zero-Impact no go2rtc)
+                    # 1. Snapshot nativo de evento em máxima resolução 3MP diretamente do Frigate NVR (Zero-Impact no go2rtc)
                     # Não consultar go2rtc (/api/frame.jpeg) durante detecções para não pausar/travar pacotes RTP/WebRTC ao vivo
                     for attempt in range(2):
-                        resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?crop=0&quality=98")
+                        resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?crop=0&quality=100")
                         if resp.status_code == 200 and len(resp.content) > 2000:
                             snapshot_bytes = resp.content
                             break
                         if attempt == 0:
                             await asyncio.sleep(0.25)
 
-                    # 2. Snapshot do evento sem filtro crop (fallback)
+                    # 2. Snapshot do evento sem filtro crop (fallback 3MP)
                     if not snapshot_bytes:
-                        resp_ev = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?quality=98")
+                        resp_ev = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?quality=100")
                         if resp_ev.status_code == 200 and len(resp_ev.content) > 2000:
                             snapshot_bytes = resp_ev.content
 
-                    # 3. Frame mais recente da câmera no Frigate NVR (fallback)
+                    # 3. Frame mais recente da câmera no Frigate NVR (fallback nativo 3MP 2304x1296 sem downscale)
                     if not snapshot_bytes:
-                        resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg?h=1080")
+                        resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg?h=1296")
                         if resp_latest.status_code == 200 and len(resp_latest.content) > 2000:
                             snapshot_bytes = resp_latest.content
                 except Exception as e:
@@ -398,13 +398,15 @@ class MQTTService:
 
             if notify_tg and send_mode in ["both", "photo_only"] and label in allowed_tg_events:
                 if snapshot_bytes:
+                    send_as_doc = bool(tg_policy.get("send_document", False) or tg_policy.get("snapshot_as_document", False))
                     telegram_ok = await telegram_vault_service.send_alert_photo(
                         image_bytes=snapshot_bytes,
                         camera_name=camera,
                         label=label,
                         zone=zone_name,
                         score=score,
-                        friendly_name=friendly_name
+                        friendly_name=friendly_name,
+                        as_document=send_as_doc
                     )
                 else:
                     caption = telegram_vault_service.format_event_message(

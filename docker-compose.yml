@@ -32,6 +32,9 @@ services:
       - FRIGATE_MQTT_USER=${FRIGATE_MQTT_USER:-frigate}
       - FRIGATE_MQTT_PASSWORD=${FRIGATE_MQTT_PASSWORD}
       - LIBVA_DRIVER_NAME=iHD
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     depends_on:
       mosquitto:
         condition: service_healthy
@@ -82,8 +85,11 @@ services:
       - ./backend/data:/app/data
       - ./frigate/storage:/media/frigate
       - ./frigate/config:/config
-      # SEC-003: socket Docker exposto apenas read-only. Avaliar migração para socket-proxy.
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      # Socket Docker para reinicialização de containers e reboot de host
+      - /var/run/docker.sock:/var/run/docker.sock
+    dns:
+      - 1.1.1.1
+      - 8.8.8.8
     environment:
       - TZ=America/Sao_Paulo
       - LIBVA_DRIVER_NAME=iHD

@@ -131,6 +131,12 @@ export default function SettingsHubPage() {
       desc: "Terminal interativo para visualização de logs do Sentinela Core, Frigate NVR e go2rtc.",
       badge: "Depuração em Tempo Real"
     },
+    {
+      title: "⚡ Gerenciamento de Energia & Reinício",
+      href: "/settings/power",
+      desc: "Reinicie os contêineres Docker da aplicação ou o servidor físico Ubuntu com segurança.",
+      badge: "Operações de Host"
+    },
   ];
 
   return (
@@ -363,7 +369,7 @@ export default function SettingsHubPage() {
           </button>
         </div>
         <p className="text-xs text-slate-400">
-          Abre automaticamente uma janela flutuante com streaming ao vivo (MSE) no canto da tela quando detecções de segurança ou testes de câmeras ocorrerem no navegador.
+          Abre automaticamente uma janela flutuante com streaming ao vivo (WebRTC) no canto da tela quando detecções de segurança ou testes de câmeras ocorrerem no navegador.
         </p>
       </div>
 
