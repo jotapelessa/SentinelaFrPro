@@ -227,6 +227,22 @@ class TelegramVideoQueue:
                 f"Dur={final_duration:.1f}s). Enviando ao Telegram..."
             )
 
+            # Check telegram_send_document setting
+            send_doc = True
+            try:
+                from app.db.models import SystemSetting
+                async with AsyncSessionLocal() as session:
+                    s_stmt = select(SystemSetting).where(SystemSetting.key == "telegram_send_document")
+                    s_res = await session.execute(s_stmt)
+                    s_obj = s_res.scalar_one_or_none()
+                    if s_obj and s_obj.value:
+                        send_doc = s_obj.value.lower() in ("true", "1", "yes")
+            except Exception as e:
+                logger.debug(f"Could not load telegram_send_document: {e}")
+
+            # Fetch thumbnail bytes for visual interactive card in Telegram
+            thumb_bytes = await self._fetch_thumbnail_bytes(camera, event_id)
+
             # 5. Send via Telegram Vault Service
             sent_ok = await telegram_vault_service.send_alert_video(
                 video_bytes=clean_video,
@@ -235,7 +251,9 @@ class TelegramVideoQueue:
                 zone=item.zone_name,
                 duration_s=final_duration,
                 score=item.score,
-                friendly_name=item.friendly_name
+                friendly_name=item.friendly_name,
+                as_document=send_doc,
+                thumbnail_bytes=thumb_bytes
             )
 
             if sent_ok:
@@ -260,6 +278,44 @@ class TelegramVideoQueue:
             )
         finally:
             self._cleanup_disk_item(disk_file)
+
+    async def _fetch_thumbnail_bytes(self, camera: str, event_id: str) -> Optional[bytes]:
+        """Fetches JPEG thumbnail bytes for the event from disk or Frigate API."""
+        possible_paths = [
+            f"/media/frigate/clips/{camera}-{event_id}.jpg",
+            f"/media/frigate/clips/{camera}-{event_id}.webp",
+            f"/media/frigate/clips/{event_id}.jpg",
+            f"/media/frigate/clips/{event_id}.webp",
+        ]
+        for p in possible_paths:
+            if os.path.exists(p) and os.path.getsize(p) > 500:
+                try:
+                    with open(p, "rb") as f:
+                        raw = f.read()
+                    if p.endswith(".webp") or raw.startswith(b"RIFF"):
+                        from PIL import Image
+                        import io
+                        img = Image.open(io.BytesIO(raw))
+                        buf = io.BytesIO()
+                        img.convert("RGB").save(buf, format="JPEG", quality=85)
+                        return buf.getvalue()
+                    return raw
+                except Exception as e:
+                    logger.debug(f"Failed to read local thumbnail {p}: {e}")
+
+        # Fallback to Frigate API
+        try:
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?quality=100")
+                if resp.status_code == 200 and len(resp.content) > 1000:
+                    return resp.content
+                resp_latest = await client.get(f"{settings.FRIGATE_API_URL}/api/{camera}/latest.jpg?h=720&quality=85")
+                if resp_latest.status_code == 200 and len(resp_latest.content) > 1000:
+                    return resp_latest.content
+        except Exception as e:
+            logger.debug(f"Could not fetch thumbnail from Frigate API for event {event_id}: {e}")
+
+        return None
 
     async def _fetch_clip_with_retries(self, item: TelegramEventItem) -> Optional[bytes]:
         """Tries to download the extended range clip from Frigate with incremental delays."""

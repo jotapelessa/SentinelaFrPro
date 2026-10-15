@@ -382,6 +382,19 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
             detail=f"Não foi possível capturar o vídeo ao vivo da câmera '{friendly_name}'. Verifique o stream RTSP/go2rtc."
         )
 
+    send_doc = False
+    try:
+        async with AsyncSessionLocal() as session:
+            s_stmt = select(SystemSetting).where(SystemSetting.key == "telegram_send_document")
+            s_res = await session.execute(s_stmt)
+            s_obj = s_res.scalar_one_or_none()
+            if s_obj and s_obj.value:
+                send_doc = s_obj.value.lower() in ("true", "1", "yes")
+    except Exception as e:
+        logger.debug(f"Could not load telegram_send_document: {e}")
+
+    thumb_bytes = await frigate_bridge.get_live_snapshot(camera_name=cam_name, width=640)
+
     ok = await telegram_vault_service.send_alert_video(
         video_bytes=video_bytes,
         camera_name=cam_name,
@@ -389,7 +402,9 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
         duration_s=float(duration_s),
         score=0.98,
         friendly_name=friendly_name,
-        ignore_pause=True
+        ignore_pause=True,
+        as_document=send_doc,
+        thumbnail_bytes=thumb_bytes
     )
 
     await audit_service.log(

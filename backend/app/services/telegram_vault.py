@@ -416,9 +416,11 @@ class TelegramVaultService:
         duration_s: float = 0.0,
         score: float = 0.0,
         friendly_name: Optional[str] = None,
-        ignore_pause: bool = False
+        ignore_pause: bool = False,
+        as_document: bool = False,
+        thumbnail_bytes: Optional[bytes] = None
     ) -> bool:
-        """Dispatches MP4 clip to Telegram using the classic template."""
+        """Dispatches MP4 clip to Telegram using video stream or uncompressed 3MP document with thumbnail."""
         if not self.is_configured:
             await self.load_credentials_from_db()
 
@@ -430,7 +432,10 @@ class TelegramVaultService:
             logger.info("Telegram alerts currently paused, skipping video.")
             return False
 
-        url = f"https://api.telegram.org/bot{self.bot_token}/sendVideo"
+        url = f"https://api.telegram.org/bot{self.bot_token}/sendDocument" if as_document else f"https://api.telegram.org/bot{self.bot_token}/sendVideo"
+        file_field = "document" if as_document else "video"
+        file_name = f"{camera_name}_{label}_3mp.mp4" if as_document else "event.mp4"
+        audit_action = "SEND_DOCUMENT_VIDEO" if as_document else "SEND_VIDEO"
         
         # Probe exact real playback duration of video_bytes using ffprobe
         try:
@@ -451,29 +456,50 @@ class TelegramVaultService:
             size_bytes=len(video_bytes),
             is_video=True
         )
+
+        # Prepare thumbnail if provided (Telegram Bot API requirement: JPEG, width/height <= 320, size < 200KB)
+        prepared_thumb = None
+        if thumbnail_bytes:
+            try:
+                from PIL import Image
+                import io
+                img = Image.open(io.BytesIO(thumbnail_bytes))
+                img.thumbnail((320, 320))
+                thumb_io = io.BytesIO()
+                img.convert("RGB").save(thumb_io, format="JPEG", quality=85)
+                prepared_thumb = thumb_io.getvalue()
+            except Exception as e:
+                logger.debug(f"Could not resize thumbnail for telegram video: {e}")
+                prepared_thumb = thumbnail_bytes
+
         try:
-            logger.info(f"📤 Enviando vídeo MP4 de alerta para o Telegram ({self.chat_id}, {len(video_bytes)} bytes)...")
+            logger.info(f"📤 Enviando vídeo MP4 de alerta ({'Documento 3MP' if as_document else 'Vídeo'}) para o Telegram ({self.chat_id}, {len(video_bytes)} bytes)...")
             import asyncio
             for attempt in range(3):
                 try:
                     async with httpx.AsyncClient(timeout=60.0) as client:
-                        files = {"video": ("event.mp4", video_bytes, "video/mp4")}
+                        files = {file_field: (file_name, video_bytes, "video/mp4")}
+                        if prepared_thumb:
+                            files["thumbnail"] = ("thumb.jpg", prepared_thumb, "image/jpeg")
+
                         data = {
                             "chat_id": self.chat_id,
-                            "caption": caption,
-                            "supports_streaming": "true"
+                            "caption": caption
                         }
+                        if not as_document:
+                            data["supports_streaming"] = "true"
+
                         resp = await client.post(url, data=data, files=files)
                         if resp.status_code == 200:
-                            logger.info("✅ Vídeo MP4 entregue com sucesso ao Telegram!")
-                            self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "zone": zone, "duration_s": duration_s, "size_bytes": len(video_bytes)}, True)
+                            logger.info(f"✅ Vídeo MP4 ({'Documento 3MP' if as_document else 'Vídeo'}) entregue com sucesso ao Telegram!")
+                            self.record_audit(audit_action, {"camera": camera_name, "label": label, "zone": zone, "duration_s": duration_s, "size_bytes": len(video_bytes), "as_document": as_document}, True)
                             return True
                         elif resp.status_code == 401:
                             self.auth_status = "unauthorized"
                             self.last_auth_error = "Token inválido ou revogado no BotFather (HTTP 401 Unauthorized)"
                             err = f"HTTP 401: {resp.text}"
-                            logger.error(f"❌ Telegram sendVideo falhou por falta de autorização (401). Verifique o Token no BotFather!")
-                            self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
+                            logger.error(f"❌ Telegram {audit_action} falhou por falta de autorização (401). Verifique o Token no BotFather!")
+                            self.record_audit(audit_action, {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
                             return False
                         elif resp.status_code == 429:
                             retry_after = int(resp.json().get("parameters", {}).get("retry_after", 3))
@@ -482,21 +508,21 @@ class TelegramVaultService:
                             continue
                         else:
                             err = f"HTTP {resp.status_code}: {resp.text}"
-                            logger.error(f"❌ Telegram sendVideo falhou ({err})")
-                            self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
+                            logger.error(f"❌ Telegram {audit_action} falhou ({err})")
+                            self.record_audit(audit_action, {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
                             return False
                 except httpx.RequestError as req_err:
                     logger.warning(f"Erro de rede ao enviar vídeo para Telegram na tentativa {attempt+1}: {req_err}")
                     if attempt == 2:
-                        self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, str(req_err))
+                        self.record_audit(audit_action, {"camera": camera_name, "label": label, "duration_s": duration_s}, False, str(req_err))
                         return False
                     await asyncio.sleep(2 * (attempt + 1))
                     
             return False
         except Exception as e:
             err = str(e)
-            logger.error(f"❌ Erro de rede ao enviar vídeo para o Telegram: {err}")
-            self.record_audit("SEND_VIDEO", {"camera": camera_name, "label": label, "duration_s": duration_s}, False, err)
+            logger.error(f"❌ Erro ao enviar vídeo para o Telegram: {err}")
+            self.record_audit(audit_action, {"camera": camera_name, "label": label, "duration_s": duration_s, "as_document": as_document}, False, err)
             return False
 
 

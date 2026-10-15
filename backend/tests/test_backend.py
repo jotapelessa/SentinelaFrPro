@@ -629,6 +629,96 @@ async def test_reconcile_cameras_with_frigate_restart_trigger():
         assert any("/api/restart" in u for u in post_calls)
 
 
+@pytest.mark.asyncio
+async def test_mqtt_allow_video_if_already_processed_even_without_zone():
+    from unittest.mock import patch, AsyncMock
+    from app.services.mqtt_service import mqtt_service
+
+    # Policy with zones configured
+    mock_policy = {
+        "enabled": True,
+        "notify_telegram": True,
+        "notify_tv": True,
+        "friendly_name": "Test Cam",
+        "has_zones": True,
+        "configured_zones": ["garagem"]
+    }
+    mock_tg = {
+        "send_mode": "both",
+        "allowed_events": ["person"],
+        "clip_duration_seconds": 15
+    }
+
+    # Simulate that the event previously generated a photo/alert
+    test_evt_id = "evt_qualified_alert_123"
+    mqtt_service._processed_events[test_evt_id] = True
+
+    with patch.object(mqtt_service, "_get_camera_policy", AsyncMock(return_value=mock_policy)), \
+         patch.object(mqtt_service, "_get_telegram_policy", AsyncMock(return_value=mock_tg)), \
+         patch.object(mqtt_service, "_dispatch_telegram_video_with_retry", AsyncMock()) as mock_video:
+        
+        # Payload of event end with empty zones (e.g. object left the zone before end)
+        payload = {
+            "type": "end",
+            "after": {
+                "id": test_evt_id,
+                "camera": "cam_test",
+                "label": "person",
+                "current_zones": [],
+                "entered_zones": []
+            }
+        }
+        await mqtt_service.handle_frigate_event(payload)
+        # MUST dispatch video because event was already qualified
+        mock_video.assert_called_once()
+
+
+@pytest.mark.asyncio
+async def test_telegram_send_alert_video_document_with_thumbnail():
+    import httpx
+    from unittest.mock import patch, AsyncMock
+    from app.services.telegram_vault import telegram_vault_service
+
+    telegram_vault_service.bot_token = "123456:FAKE_TOKEN"
+    telegram_vault_service.chat_id = "-100123456789"
+
+    mock_resp = httpx.Response(200, json={"ok": True, "result": {"message_id": 999}})
+    
+    posted_urls = []
+    posted_files = {}
+
+    async def mock_post(url, *args, **kwargs):
+        posted_urls.append(str(url))
+        if "files" in kwargs:
+            posted_files.update(kwargs["files"])
+        return mock_resp
+
+    fake_video = b"\x00\x00\x00\x1cftypisom" + b"A" * 1024
+    fake_thumb = b"\xff\xd8\xff\xe0\x00\x10JFIF" + b"B" * 512
+
+    with patch("httpx.AsyncClient.post", side_effect=mock_post):
+        success = await telegram_vault_service.send_alert_video(
+            video_bytes=fake_video,
+            camera_name="cam_garagem",
+            label="person",
+            zone="entrada",
+            duration_s=20.0,
+            score=0.95,
+            friendly_name="Garagem Principal",
+            ignore_pause=True,
+            as_document=True,
+            thumbnail_bytes=fake_thumb
+        )
+
+        assert success is True
+        assert any("sendDocument" in u for u in posted_urls)
+        assert "document" in posted_files
+        assert posted_files["document"][0] == "cam_garagem_person_3mp.mp4"
+        assert "thumbnail" in posted_files
+        assert posted_files["thumbnail"][0] == "thumb.jpg"
+
+
+
 
 
 

@@ -33,7 +33,7 @@ export default function EventsPage() {
   const [filterCamera, setFilterCamera] = useState<string>("all");
   const [filterLabel, setFilterLabel] = useState<string>("all");
   const [filterFavorites, setFilterFavorites] = useState<boolean>(false);
-  const [selectedDate, setSelectedDate] = useState<string>(() => getLocalDateString(new Date()));
+  const [selectedDate, setSelectedDate] = useState<string>("all");
   const [selectedHourFilter, setSelectedHourFilter] = useState<number | null>(null);
   const [selectedPeriod, setSelectedPeriod] = useState<"all" | "madrugada" | "manha" | "tarde" | "noite">("all");
 
@@ -141,7 +141,7 @@ export default function EventsPage() {
       if (isNaN(evDate.getTime())) return true;
       const evDateStr = getLocalDateString(evDate);
       
-      if (selectedDate && evDateStr !== selectedDate) {
+      if (selectedDate && selectedDate !== "all" && evDateStr !== selectedDate) {
         return false;
       }
       
@@ -171,7 +171,7 @@ export default function EventsPage() {
       if (isNaN(evDate.getTime())) return;
       const evDateStr = getLocalDateString(evDate);
 
-      if (selectedDate && evDateStr !== selectedDate) return;
+      if (selectedDate && selectedDate !== "all" && evDateStr !== selectedDate) return;
 
       const h = evDate.getHours();
       if (h >= 0 && h < 24) {
@@ -339,6 +339,11 @@ export default function EventsPage() {
   };
 
   // Quick Date Selectors
+  const setDateAll = () => {
+    setSelectedDate("all");
+    setSelectedHourFilter(null);
+  };
+
   const setDateToday = () => {
     setSelectedDate(getLocalDateString(new Date()));
     setSelectedHourFilter(null);
@@ -603,10 +608,25 @@ export default function EventsPage() {
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
                     {selectedHourFilter !== null
                       ? `Nenhuma gravação registrada às ${String(selectedHourFilter).padStart(2, "0")}:00h.`
+                      : selectedDate !== "all"
+                      ? `Nenhuma gravação para ${selectedDate === getLocalDateString(new Date()) ? "hoje" : selectedDate}. Clique abaixo para ver todas as evidências salvas.`
                       : "Assim que pessoas ou veículos cruzarem os perímetros das câmeras, as evidências serão exibidas aqui."}
                   </p>
                 </div>
-                <div className="flex items-center justify-center gap-3">
+                <div className="flex items-center justify-center gap-3 flex-wrap">
+                  {selectedDate !== "all" && (
+                    <button
+                      onClick={() => {
+                        setSelectedDate("all");
+                        setSelectedHourFilter(null);
+                        setSelectedPeriod("all");
+                      }}
+                      className="px-4 py-2 rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-300 font-bold text-xs border border-cyan-500/40 shadow-lg shadow-cyan-500/10 inline-flex items-center gap-2 transition-all"
+                    >
+                      <Zap className="w-4 h-4 text-cyan-400" />
+                      <span>⚡ Ver Todas as Evidências Gravadas</span>
+                    </button>
+                  )}
                   {selectedHourFilter !== null && (
                     <button
                       onClick={() => setSelectedHourFilter(null)}
@@ -685,7 +705,8 @@ export default function EventsPage() {
                             if (target.src !== fallback && !target.src.endsWith(fallback)) {
                               target.src = fallback;
                             } else {
-                              target.style.display = "none";
+                              target.onerror = null;
+                              target.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100%25' height='100%25' viewBox='0 0 400 225'%3E%3Crect width='100%25' height='100%25' fill='%230b0f19'/%3E%3Cg fill='%23334155' transform='translate(180,85)'%3E%3Cpath d='M32 8H24.8l-3.6-4H10.8L7.2 8H0v24h32V8zm-16 20c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z'/%3E%3C/g%3E%3Ctext x='50%25' y='68%25' dominant-baseline='middle' text-anchor='middle' fill='%2364748b' font-family='sans-serif' font-size='12' font-weight='600'%3EEvidência Gravada%3C/text%3E%3C/svg%3E";
                             }
                           }}
                         />
@@ -825,6 +846,16 @@ export default function EventsPage() {
                 <div className="flex items-center gap-1.5 flex-wrap">
                   <div className="flex items-center gap-1 bg-obsidian-950 p-0.5 rounded-lg border border-slate-800 text-xs">
                     <button
+                      onClick={setDateAll}
+                      className={`px-2.5 py-1 rounded font-semibold transition-all ${
+                        selectedDate === "all"
+                          ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
+                    >
+                      Todas / Recentes
+                    </button>
+                    <button
                       onClick={setDateToday}
                       className={`px-2.5 py-1 rounded font-semibold transition-all ${
                         selectedDate === getLocalDateString(new Date())
@@ -836,7 +867,15 @@ export default function EventsPage() {
                     </button>
                     <button
                       onClick={setDateYesterday}
-                      className="px-2.5 py-1 rounded font-semibold text-slate-400 hover:text-slate-200 transition-all"
+                      className={`px-2.5 py-1 rounded font-semibold transition-all ${
+                        selectedDate === (() => {
+                          const yest = new Date();
+                          yest.setDate(yest.getDate() - 1);
+                          return getLocalDateString(yest);
+                        })()
+                          ? "bg-cyan-500/20 text-cyan-300 border border-cyan-500/40"
+                          : "text-slate-400 hover:text-slate-200"
+                      }`}
                     >
                       Ontem
                     </button>
@@ -846,9 +885,9 @@ export default function EventsPage() {
                     <CalendarDays className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
                     <input
                       type="date"
-                      value={selectedDate}
+                      value={selectedDate === "all" ? "" : selectedDate}
                       onChange={(e) => {
-                        setSelectedDate(e.target.value);
+                        setSelectedDate(e.target.value || "all");
                         setSelectedHourFilter(null);
                       }}
                       className="w-full bg-transparent text-xs font-mono text-slate-200 focus:outline-none cursor-pointer"
@@ -1387,18 +1426,10 @@ export default function EventsPage() {
                 <video
                   key={`vid-${selectedEvent.id}`}
                   ref={videoRef}
-                  src={selectedEvent.clip_url || `/api/events/${selectedEvent.id}/clip.mp4`}
-                  onError={(e) => {
-                    const target = e.currentTarget;
-                    const fallback = `/frigate/api/events/${selectedEvent.id}/clip.mp4`;
-                    if (target.src !== fallback && !target.src.endsWith(fallback)) {
-                      target.src = fallback;
-                      target.load();
-                      target.play().catch(() => {});
-                    } else {
-                      setVideoError(true);
-                      setMediaViewMode("snapshot");
-                    }
+                  src={`/api/events/${selectedEvent.id}/clip.mp4`}
+                  onError={() => {
+                    setVideoError(true);
+                    setMediaViewMode("snapshot");
                   }}
                   controls
                   autoPlay
@@ -1477,7 +1508,7 @@ export default function EventsPage() {
                 {/* Download Video Clip */}
                 {selectedEvent.has_clip && selectedEvent.type !== "photo" && (
                   <a
-                    href={selectedEvent.clip_url ? `${selectedEvent.clip_url}?download=1` : `/api/events/${selectedEvent.id}/clip.mp4?download=1`}
+                    href={`/api/events/${selectedEvent.id}/clip.mp4?download=1`}
                     download={`clip_${selectedEvent.camera}_${selectedEvent.id}.mp4`}
                     className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-obsidian-950 font-bold text-xs shadow-lg shadow-cyan-500/20 transition-all"
                   >

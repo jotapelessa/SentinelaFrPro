@@ -1,15 +1,31 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-14 20:30 BRT
-> **Versão Corrente:** v001.000.000.178
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.178 consolidada com:
-1. Reconciliação Dinâmica Dual-Camera go2rtc & Auto-Restart do NVR: Inicialização e sincronização inteligente que registra ambas as câmeras ativas (`cam_192_168_1_196` e `cam_192_168_1_47`) e todos os seus aliases (`camera_principal`, `camera_secundaria`, `_main`, `_720p`, `_sub`) diretamente na API do go2rtc; e dispara reinício automático do Frigate se o NVR em execução estiver sem algum processo de captura de câmera ativa.
-2. Despacho Forense Telegram 3MP via Documento: Bypass da compressão de 1280px da Cloud do Telegram via `sendDocument` (`telegram_send_document = 'true'`), preservando os 3MP completos (2304x1296) a 300 DPI sem artefatos. Correção crítica de `sources` em `frigate_bridge.py` eliminando erro 500 no endpoint de teste.
-3. Conversão Dinâmica WebP para JPEG (`nosniff` Compliance): `get_event_snapshot` converte em memória via Pillow imagens legadas/clips WebP para JPEG genuíno (`image/jpeg`) quando requisitado via extensão `.jpg`, eliminando o erro de bloqueio de imagens nos navegadores causado pelo cabeçalho `X-Content-Type-Options: nosniff`.
-4. Player Forense e Resiliente de Eventos (`/events`): Renderização condicional inteligente com comutador duplo `[🎥 Clipe de Vídeo]` / `[📸 Foto Forense 3MP]`, com fallback automático transparente para foto nativa 3MP em caso de falha de carregamento de vídeo, e tratamento `onError` resiliente em miniaturas de eventos com fallback para `/frigate/api/events/...`.
-5. Estabilidade de Streaming Android TV (`TvDesignTokens.kt`): Parâmetro `&background=true` integrado nas URLs MSE de câmeras, neutralizando o timeout de 5000ms do `video-rtc.js` nas Smart TVs.
-6. Unificação Completa de Versão 001.000.000.178 (Build 178) em todos os módulos (Android, Frontend, Backend, Docker).
+> **Última Atualização:** 2026-10-15 02:25 BRT
+> **Versão Corrente:** v001.000.000.179
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.179 consolidada com:
+1. Restauração do Envio de Vídeos em 3MP sem Compressão no Telegram: Em `mqtt_service.py`, eventos qualificados que geraram foto nunca são descartados no evento de `end` por ausência/divergência de zona; e em `telegram_vault.py`/`telegram_queue.py`, envio de clipe MP4 em 3MP nativo não-comprimido via `sendDocument` com miniatura JPEG anexada para card visual interativo com botão de play no chat.
+2. Painel Web de Eventos Flexível e Resiliente (`/events`): Seletor de data com opção "Todas as Datas / Recentes" (`selectedDate = "all"`), botão de ação rápida `[⚡ Ver Todas as Evidências Gravadas]` no estado vazio, player de vídeo apontando estritamente para a rota autoritativa `/api/events/{id}/clip.mp4` e placeholder SVG elegante nos cards de evento.
+3. Clientes Android TV e Mobile Estabilizados: `SentinelaRepository.kt` com `clip_url` autoritativo para `/api/events/$id/clip.mp4` e `OverlayService.kt` com polling de snapshot para `latest.jpg?h=720` com intervalo suave de 600ms.
+4. Sincronização Unificada de Versão 001.000.000.179 (Build 179) em todo o ecossistema.
+
+---
+
+## 🚀 Versão v001.000.000.179 — Vídeos Telegram 3MP Não-Comprimidos via sendDocument, Zonas em 'end', Player Autoritativo e Filtro Todas as Datas
+- **Data**: 2026-10-15
+- **Objetivo**: Restaurar a entrega de vídeos de detecção no Telegram em 3MP sem descarte por zonas em `end`, eliminar a compressão em nuvem de vídeos pelo Telegram via `sendDocument` com thumbnail, corrigir player de eventos web e otimizar clientes Android:
+  1. **Backend Telegram — Restauração do Envio de Vídeos e Bypass de Descarte de Zona (`mqtt_service.py`, `telegram_vault.py`, `telegram_queue.py`)**:
+     - *Causa*: No evento MQTT `type == 'end'`, Frigate frequentemente reporta `current_zones: []` porque o alvo já saiu da área de detecção. O descarte cego por ausência de zona impedia o envio de vídeos para eventos que já haviam disparado foto/alerta legítimo. Além disso, `sendVideo` sofria compressão pesada na nuvem do Telegram.
+     - *Correção*: Em `mqtt_service.py`, se `(event_id in self._processed_events)`, o vídeo é qualificado e transmitido. Em `telegram_vault.py`, `send_alert_video()` suporta `as_document=True` e `thumbnail_bytes` (redimensionado para <=320px e <200KB conforme padrão Bot API), despachando via `sendDocument` com mime `video/mp4` e nome `{camera}_{label}_3mp.mp4`. Em `telegram_queue.py`, implementado `_fetch_thumbnail_bytes` para extração do snapshot do disco ou API.
+  2. **Frontend Web de Eventos Resiliente e Flexível (`frontend/src/app/events/page.tsx`)**:
+     - *Causa*: A seleção fixa da data de hoje exibia tela vazia em dias sem gravações recentes; o modal tentava fallback para rota 404 `/frigate/...`; e miniaturas quebradas eram ocultadas com `display: none`.
+     - *Correção*: Adicionada opção e inicialização padrão com "Todas as Datas / Recentes" (`selectedDate = "all"`), botão de ação rápida `[⚡ Ver Todas as Evidências Gravadas]` no estado vazio, rota autoritativa `/api/events/${selectedEvent.id}/clip.mp4` no player e placeholder SVG elegante nos cards.
+  3. **Android TV & Mobile (`SentinelaRepository.kt` & `OverlayService.kt`)**:
+     - *Correção*: `clip_url` direcionado para `/api/events/$id/clip.mp4` (não `/frigate/...`). Polling estático em `OverlayService.kt` apontando para `/frigate/api/{cam}/latest.jpg?h=720` com intervalo de 600ms, poupando CPU do host e eliminando jitter.
+  4. **Sincronização de Versão 001.000.000.179 (Build 179)**:
+     - Atualizados: `android/version.properties` (BUILD=179, VERSION_NAME=001.000.000.179), `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
+  5. **Cobertura de Testes**:
+     - 24 testes unitários automatizados 100% aprovados em `backend/tests/test_backend.py`.
 
 ---
 

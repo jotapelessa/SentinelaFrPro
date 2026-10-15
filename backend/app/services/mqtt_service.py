@@ -329,10 +329,20 @@ class MQTTService:
                 allowed_tg_events = tg_policy.get("allowed_events", list(CRITICAL_LABELS))
 
                 if notify_tg and send_mode in ["both", "video_only"] and label in allowed_tg_events:
-                    # Se a câmera possui zonas configuradas e o evento ocorreu fora delas (zone_name nulo/vazio ou zona não configurada),
-                    # descarta o download pesado do clipe MP4 para eliminar saturação de CPU e superaquecimento
-                    if cam_policy.get("has_zones") and (not zone_name or (cam_policy.get("configured_zones") and zone_name.strip().replace(" ", "_").lower() not in cam_policy["configured_zones"])):
-                        logger.debug(f"Descartando download de clipe MP4 para {camera}: evento fora das zonas configuradas (zona: {zone_name}).")
+                    # Se o evento já gerou alerta/foto (qualificado como relevante em 'new'/'update'),
+                    # NUNCA descartar o vídeo por ausência ou divergência de zona no evento de 'end'.
+                    # Permitir envio se: (event_id in self._processed_events) OU câmera sem zonas OU zona compatível.
+                    has_zones = cam_policy.get("has_zones", False)
+                    zone_matched = False
+                    if not has_zones:
+                        zone_matched = True
+                    elif zone_name and cam_policy.get("configured_zones") and zone_name.strip().replace(" ", "_").lower() in cam_policy["configured_zones"]:
+                        zone_matched = True
+
+                    already_processed = event_id in self._processed_events
+
+                    if not (already_processed or zone_matched):
+                        logger.debug(f"Descartando download de clipe MP4 para {camera}: evento fora das zonas configuradas (zona: {zone_name}) e não qualificado previamente.")
                         return
 
                     if event_id in self._processed_videos:

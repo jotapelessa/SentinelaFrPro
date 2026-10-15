@@ -1099,7 +1099,7 @@ class OverlayService : Service() {
                 val imageLoader = coil.Coil.imageLoader(applicationContext)
                 while (isActive) {
                     try {
-                        val refreshSnapUrl = "$base/go2rtc/api/frame.jpeg?src=${resolvedCamera}&t=${System.currentTimeMillis()}"
+                        val refreshSnapUrl = "$base/frigate/api/${resolvedCamera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
                         val req = coil.request.ImageRequest.Builder(applicationContext)
                             .data(refreshSnapUrl)
                             .size(targetW, targetH)
@@ -1118,8 +1118,8 @@ class OverlayService : Service() {
                     } catch (e: Exception) {
                         // Ignore transient network errors
                     }
-                    // Sequential throttle: wait 350ms AFTER previous frame completes
-                    delay(350L)
+                    // Sequential throttle: wait >= 600ms AFTER previous frame completes to spare host CPU and eliminate jitter
+                    delay(600L)
                 }
             }
         } else {

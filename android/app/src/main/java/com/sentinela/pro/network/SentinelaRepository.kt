@@ -472,7 +472,12 @@ object SentinelaRepository {
                     } else {
                         "${SentinelaConfig.BASE_URL}/api/events/$id/snapshot.jpg"
                     }
-                    val clipUrl = "${SentinelaConfig.BASE_URL}/frigate/api/events/$id/clip.mp4"
+                    val rawClipUrl = obj.optString("clip_url")
+                    val clipUrl = if (rawClipUrl.isNotBlank() && !rawClipUrl.contains("/frigate/")) {
+                        if (rawClipUrl.startsWith("http")) rawClipUrl else "${SentinelaConfig.BASE_URL}$rawClipUrl"
+                    } else {
+                        "${SentinelaConfig.BASE_URL}/api/events/$id/clip.mp4"
+                    }
                     val hasClip = obj.optBoolean("has_clip", true)
                     val retained = obj.optBoolean("retained", false)
                     val duration = if (obj.has("duration") && !obj.isNull("duration")) obj.optDouble("duration") else null
