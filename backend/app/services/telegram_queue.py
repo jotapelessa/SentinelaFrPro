@@ -310,9 +310,12 @@ class TelegramVideoQueue:
                 except Exception as e:
                     logger.debug(f"Failed to read local thumbnail {p}: {e}")
 
-        # Fallback to Frigate API
+        # Fallback to Frigate API (prioritizing native 3.5 KB thumbnail)
         try:
             async with httpx.AsyncClient(timeout=5.0) as client:
+                resp_thumb = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/thumbnail.jpg")
+                if resp_thumb.status_code == 200 and len(resp_thumb.content) > 100:
+                    return resp_thumb.content
                 resp = await client.get(f"{settings.FRIGATE_API_URL}/api/events/{event_id}/snapshot.jpg?quality=100")
                 if resp.status_code == 200 and len(resp.content) > 1000:
                     return resp.content

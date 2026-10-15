@@ -333,15 +333,27 @@ class FrigateBridgeService:
             # Clean timestamp baseline from PTS-STARTPTS, preserving real event duration
             vf = "setpts=PTS-STARTPTS"
             has_audio = self._has_audio_stream(in_file)
-            audio_args = ["-c:a", "aac", "-b:a", "128k"] if has_audio else ["-an"]
+            if has_audio:
+                input_args = ["-i", in_file]
+                audio_args = ["-c:a", "aac", "-b:a", "128k"]
+                extra_args = []
+            else:
+                input_args = [
+                    "-i", in_file,
+                    "-f", "lavfi",
+                    "-i", "anullsrc=channel_layout=stereo:sample_rate=44100"
+                ]
+                audio_args = ["-c:a", "aac", "-b:a", "32k"]
+                extra_args = ["-shortest"]
 
             # 1. Primary: Lossless video stream copy with +faststart (instant, 0% CPU overhead)
             cmd_copy = [
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
-                "-i", in_file,
+                *input_args,
                 "-c:v", "copy",
                 *audio_args,
+                *extra_args,
                 "-movflags", "+faststart",
                 out_file
             ]
@@ -360,9 +372,10 @@ class FrigateBridgeService:
                     "-fflags", "+genpts+discardcorrupt",
                     "-hwaccel", "vaapi",
                     "-vaapi_device", "/dev/dri/renderD128",
-                    "-i", in_file,
+                    *input_args,
                     "-vf", "format=nv12,hwupload",
                     *audio_args,
+                    *extra_args,
                     "-r", str(out_fps),
                     "-c:v", "h264_vaapi",
                     "-b:v", "4000k",
@@ -383,9 +396,10 @@ class FrigateBridgeService:
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
                 "-hwaccel", "qsv",
-                "-i", in_file,
+                *input_args,
                 "-vf", vf,
                 *audio_args,
+                *extra_args,
                 "-r", str(out_fps),
                 "-c:v", "h264_qsv",
                 "-profile:v", "main",
@@ -408,9 +422,10 @@ class FrigateBridgeService:
             cmd_x264 = [
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
-                "-i", in_file,
+                *input_args,
                 "-vf", vf,
                 *audio_args,
+                *extra_args,
                 "-r", str(out_fps),
                 "-c:v", "libx264",
                 "-preset", "ultrafast",

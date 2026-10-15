@@ -709,11 +709,16 @@ async def get_event_thumbnail(event_id: str):
     Returns native Frigate 3.5 KB JPEG thumbnail with in-memory LRU caching and 7-day browser cache.
     Reduces network traffic from 192 MB to ~355 KB on event grid views.
     """
+    thumb_headers = {
+        "Cache-Control": "public, max-age=604800, immutable",
+        "Accept-Ranges": "bytes"
+    }
+
     if event_id in _THUMBNAIL_CACHE:
         return Response(
             content=_THUMBNAIL_CACHE[event_id],
             media_type="image/jpeg",
-            headers={"Cache-Control": "public, max-age=604800, immutable"}
+            headers=thumb_headers
         )
 
     # 1. Fetch native 3.5 KB thumbnail from Frigate NVR
@@ -725,7 +730,7 @@ async def get_event_thumbnail(event_id: str):
                 return Response(
                     content=resp.content,
                     media_type="image/jpeg",
-                    headers={"Cache-Control": "public, max-age=604800, immutable"}
+                    headers=thumb_headers
                 )
     except Exception as e:
         logger.debug(f"Could not fetch native thumbnail from Frigate for {event_id}: {e}")
@@ -744,7 +749,7 @@ async def get_event_thumbnail(event_id: str):
                         return Response(
                             content=thumb_bytes,
                             media_type="image/jpeg",
-                            headers={"Cache-Control": "public, max-age=604800, immutable"}
+                            headers=thumb_headers
                         )
         except Exception as e:
             logger.debug(f"Error checking disk snapshot for thumbnail fallback: {e}")
@@ -759,7 +764,7 @@ async def get_event_thumbnail(event_id: str):
                 return Response(
                     content=thumb_bytes,
                     media_type="image/jpeg",
-                    headers={"Cache-Control": "public, max-age=604800, immutable"}
+                    headers=thumb_headers
                 )
     except Exception as e:
         logger.warning(f"Error creating thumbnail fallback for event {event_id}: {e}")

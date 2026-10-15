@@ -347,9 +347,12 @@ class MQTTService:
                                 stmt_rec = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
                                 res_rec = await session.execute(stmt_rec)
                                 ev_db = res_rec.scalar_one_or_none()
-                                if ev_db and (ev_db.telegram_notified or ev_db.has_snapshot):
-                                    already_processed = True
-                                    self._mark_processed(event_id)
+                                if ev_db:
+                                    if getattr(ev_db, "video_sent", False):
+                                        self._processed_videos[event_id] = True
+                                    if ev_db.telegram_notified or ev_db.has_snapshot:
+                                        already_processed = True
+                                        self._mark_processed(event_id)
                         except Exception as e:
                             logger.debug(f"Erro ao verificar persistencia de evento qualificado {event_id}: {e}")
 
