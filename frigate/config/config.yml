@@ -251,7 +251,10 @@ cameras:
       - person
       - car
       - motorcycle
+      - bus
       - dog
+      - cat
+      - bicycle
       filters:
         person:
           threshold: 0.68
@@ -340,7 +343,10 @@ cameras:
       - person
       - car
       - motorcycle
+      - bus
       - dog
+      - cat
+      - bicycle
       filters:
         person:
           threshold: 0.68
