@@ -390,9 +390,9 @@
     "semantic_hash": "345f8b332456cb48b154b6bce875d426"
   },
   "backend/app/api/settings.py": {
-    "mtime": 1792041318.128095,
-    "seen": 1792041827.637237,
-    "ast_hash": "61e4fcaff8d415210c1ade28680a144e",
+    "mtime": 1792042520.1589494,
+    "seen": 1792043089.1101289,
+    "ast_hash": "f72b4419f2871ea8bf74f3d292169d7e",
     "semantic_hash": ""
   },
   "backend/app/api/telemetry.py": {
@@ -450,9 +450,9 @@
     "semantic_hash": "70c2595edece3deef4e5b0126a55685e"
   },
   "backend/app/services/frigate_bridge.py": {
-    "mtime": 1792019923.8175755,
-    "seen": 1792020510.21357,
-    "ast_hash": "66aec4f14f359f7874fbfddc86f3119f",
+    "mtime": 1792042253.975699,
+    "seen": 1792043089.110136,
+    "ast_hash": "f565d73cd6afc69619be6b89aeef6969",
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
@@ -474,9 +474,9 @@
     "semantic_hash": "1fe9b7130fb2d2094a4126ebfb0fdac5"
   },
   "backend/app/services/telegram_vault.py": {
-    "mtime": 1792041264.9947278,
-    "seen": 1792041827.637247,
-    "ast_hash": "04d847d59c252dfdf984c577ded75b06",
+    "mtime": 1792042963.8474379,
+    "seen": 1792043089.1101398,
+    "ast_hash": "d86f1bb4fd83a0db9043f10364f7bcb4",
     "semantic_hash": ""
   },
   "backend/app/services/telemetry.py": {
@@ -486,9 +486,9 @@
     "semantic_hash": "2b96bb012c232336e6df92435a9a422a"
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1792041343.2091265,
-    "seen": 1792041827.637249,
-    "ast_hash": "e58c28d80a05947da3626c55d4c3e8c0",
+    "mtime": 1792042993.10079,
+    "seen": 1792043089.110142,
+    "ast_hash": "2c060cba672ef50012becd09f01822b5",
     "semantic_hash": ""
   },
   "compile_apk.sh": {
@@ -1110,9 +1110,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
-    "mtime": 1792041305.9236786,
-    "seen": 1792041827.637246,
-    "ast_hash": "03b895c264a604dacb337fa77a8e0bbf",
+    "mtime": 1792043038.4435582,
+    "seen": 1792043089.110139,
+    "ast_hash": "cbe9a8078f1b918882931836e2c653ef",
     "semantic_hash": ""
   },
   ".agents/workflows/cerebro.md": {

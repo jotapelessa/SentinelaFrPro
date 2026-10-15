@@ -693,13 +693,21 @@ async def test_telegram_send_alert_video_document_with_thumbnail():
             posted_files.update(kwargs["files"])
         return mock_resp
 
+    from PIL import Image
+    import io
+
+    # Generate a real 64x64 valid JPEG image
+    img = Image.new("RGB", (64, 64), color=(0, 128, 255))
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG")
+    valid_thumb = buf.getvalue()
+
     fake_video = b"\x00\x00\x00\x1cftypisom" + b"A" * 1024
-    fake_thumb = b"\xff\xd8\xff\xe0\x00\x10JFIF" + b"B" * 512
 
     with patch("httpx.AsyncClient.post", side_effect=mock_post):
         success = await telegram_vault_service.send_alert_video(
             video_bytes=fake_video,
-            camera_name="cam_garagem",
+            camera_name="cam garagem",
             label="person",
             zone="entrada",
             duration_s=20.0,
@@ -707,7 +715,7 @@ async def test_telegram_send_alert_video_document_with_thumbnail():
             friendly_name="Garagem Principal",
             ignore_pause=True,
             as_document=True,
-            thumbnail_bytes=fake_thumb
+            thumbnail_bytes=valid_thumb
         )
 
         assert success is True
@@ -716,6 +724,61 @@ async def test_telegram_send_alert_video_document_with_thumbnail():
         assert posted_files["document"][0] == "cam_garagem_person_3mp.mp4"
         assert "thumbnail" in posted_files
         assert posted_files["thumbnail"][0] == "thumb.jpg"
+
+
+@pytest.mark.asyncio
+async def test_telegram_send_alert_video_corrupted_thumbnail_fallback():
+    import httpx
+    from unittest.mock import patch
+    from app.services.telegram_vault import telegram_vault_service
+
+    telegram_vault_service.bot_token = "123456:FAKE_TOKEN"
+    telegram_vault_service.chat_id = "-100123456789"
+
+    mock_resp = httpx.Response(200, json={"ok": True, "result": {"message_id": 1000}})
+    posted_files = {}
+
+    async def mock_post(url, *args, **kwargs):
+        if "files" in kwargs:
+            posted_files.update(kwargs["files"])
+        return mock_resp
+
+    fake_video = b"\x00\x00\x00\x1cftypisom" + b"A" * 1024
+    corrupted_thumb = b"CORRUPTED_BYTES_NOT_AN_IMAGE_12345678"
+
+    with patch("httpx.AsyncClient.post", side_effect=mock_post):
+        success = await telegram_vault_service.send_alert_video(
+            video_bytes=fake_video,
+            camera_name="cam_portao",
+            label="person",
+            duration_s=15.0,
+            ignore_pause=True,
+            as_document=True,
+            thumbnail_bytes=corrupted_thumb
+        )
+
+        assert success is True
+        assert "document" in posted_files
+        # Thumbnail must be safely omitted when bytes are corrupted to avoid Telegram 400 Bad Request
+        assert "thumbnail" not in posted_files
+
+
+@pytest.mark.asyncio
+async def test_fetch_thumbnail_bytes_with_custom_media_dir(tmp_path):
+    from unittest.mock import patch
+    from app.services.telegram_queue import telegram_video_queue
+    from app.core.config import settings
+
+    clips_dir = tmp_path / "clips"
+    clips_dir.mkdir(parents=True)
+    test_snap = clips_dir / "cam_test-evt_custom_dir_1.jpg"
+    test_snap.write_bytes(b"\xff\xd8\xff\xe0" + b"A" * 1000)
+
+    with patch.object(settings, "MEDIA_DIR", str(tmp_path)):
+        thumb_bytes = await telegram_video_queue._fetch_thumbnail_bytes("cam_test", "evt_custom_dir_1")
+        assert thumb_bytes is not None
+        assert len(thumb_bytes) > 500
+
 
 
 

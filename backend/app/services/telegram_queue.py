@@ -23,7 +23,7 @@ from app.services.audit_service import audit_service
 logger = logging.getLogger(__name__)
 
 # BE-004: usar volume persistente montado em vez de /tmp (tmpfs — apagado em restart)
-QUEUE_DIR = "/app/data/event_queue"
+QUEUE_DIR = os.getenv("QUEUE_DIR", "/app/data/event_queue" if os.path.exists("/app/data") else "/tmp/event_queue")
 
 @dataclass
 class TelegramEventItem:
@@ -55,7 +55,12 @@ class TelegramVideoQueue:
         self._queue: asyncio.Queue[TelegramEventItem] = asyncio.Queue()
         self._worker_task: Optional[asyncio.Task] = None
         self._running = False
-        os.makedirs(QUEUE_DIR, exist_ok=True)
+        global QUEUE_DIR
+        try:
+            os.makedirs(QUEUE_DIR, exist_ok=True)
+        except Exception:
+            QUEUE_DIR = "/tmp/event_queue"
+            os.makedirs(QUEUE_DIR, exist_ok=True)
 
     def start(self):
         if not self._running:
@@ -281,11 +286,13 @@ class TelegramVideoQueue:
 
     async def _fetch_thumbnail_bytes(self, camera: str, event_id: str) -> Optional[bytes]:
         """Fetches JPEG thumbnail bytes for the event from disk or Frigate API."""
+        media_base = getattr(settings, "MEDIA_DIR", "/media/frigate")
+        clips_dir = os.path.join(media_base, "clips")
         possible_paths = [
-            f"/media/frigate/clips/{camera}-{event_id}.jpg",
-            f"/media/frigate/clips/{camera}-{event_id}.webp",
-            f"/media/frigate/clips/{event_id}.jpg",
-            f"/media/frigate/clips/{event_id}.webp",
+            os.path.join(clips_dir, f"{camera}-{event_id}.jpg"),
+            os.path.join(clips_dir, f"{camera}-{event_id}.webp"),
+            os.path.join(clips_dir, f"{event_id}.jpg"),
+            os.path.join(clips_dir, f"{event_id}.webp"),
         ]
         for p in possible_paths:
             if os.path.exists(p) and os.path.getsize(p) > 500:

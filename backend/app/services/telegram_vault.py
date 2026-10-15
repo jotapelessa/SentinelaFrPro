@@ -434,7 +434,9 @@ class TelegramVaultService:
 
         url = f"https://api.telegram.org/bot{self.bot_token}/sendDocument" if as_document else f"https://api.telegram.org/bot{self.bot_token}/sendVideo"
         file_field = "document" if as_document else "video"
-        file_name = f"{camera_name}_{label}_3mp.mp4" if as_document else "event.mp4"
+        clean_cam = camera_name.strip().replace(" ", "_")
+        clean_lbl = label.strip().replace(" ", "_")
+        file_name = f"{clean_cam}_{clean_lbl}_3mp.mp4" if as_document else "event.mp4"
         audit_action = "SEND_DOCUMENT_VIDEO" if as_document else "SEND_VIDEO"
         
         # Probe exact real playback duration of video_bytes using ffprobe
@@ -467,10 +469,14 @@ class TelegramVaultService:
                 img.thumbnail((320, 320))
                 thumb_io = io.BytesIO()
                 img.convert("RGB").save(thumb_io, format="JPEG", quality=85)
-                prepared_thumb = thumb_io.getvalue()
+                prepared = thumb_io.getvalue()
+                if len(prepared) <= 200 * 1024:
+                    prepared_thumb = prepared
+                else:
+                    logger.debug(f"Thumbnail exceeded 200KB limit ({len(prepared)} bytes), omitting thumbnail")
             except Exception as e:
                 logger.debug(f"Could not resize thumbnail for telegram video: {e}")
-                prepared_thumb = thumbnail_bytes
+                prepared_thumb = None
 
         try:
             logger.info(f"📤 Enviando vídeo MP4 de alerta ({'Documento 3MP' if as_document else 'Vídeo'}) para o Telegram ({self.chat_id}, {len(video_bytes)} bytes)...")
