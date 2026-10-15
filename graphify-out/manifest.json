@@ -366,9 +366,9 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1792020421.0481071,
-    "seen": 1792020510.213562,
-    "ast_hash": "cf290bcaf8b3c5a10c0b60feeb22a689",
+    "mtime": 1792066939.4566112,
+    "seen": 1792067270.186341,
+    "ast_hash": "c8d0931e86e45b0c46e27365c6f34e73",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
@@ -408,9 +408,9 @@
     "semantic_hash": ""
   },
   "backend/app/core/config.py": {
-    "mtime": 1792050059.4670486,
-    "seen": 1792050217.0762591,
-    "ast_hash": "26aef30241b4f2a7345e628d5d75408c",
+    "mtime": 1792067084.5139096,
+    "seen": 1792067270.1863449,
+    "ast_hash": "63ec45cd13c54462953998739b63670b",
     "semantic_hash": ""
   },
   "backend/app/core/logging_handler.py": {
@@ -486,9 +486,9 @@
     "semantic_hash": "2b96bb012c232336e6df92435a9a422a"
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1792051545.0746055,
-    "seen": 1792051665.4999628,
-    "ast_hash": "99534fda78a44ccff5f9a1446bef0a79",
+    "mtime": 1792067034.2923977,
+    "seen": 1792067270.186354,
+    "ast_hash": "46f18d5a6daf367fc382e884c3e3dbd0",
     "semantic_hash": ""
   },
   "compile_apk.sh": {
@@ -510,9 +510,9 @@
     "semantic_hash": "da52332e183fca3a32ce010abf68f2c8"
   },
   "frontend/package.json": {
-    "mtime": 1792050052.6879764,
-    "seen": 1792050217.07627,
-    "ast_hash": "bd451f402541ead9906980479c51206b",
+    "mtime": 1792067060.0616264,
+    "seen": 1792067270.186356,
+    "ast_hash": "fe2f5ff835e4bf481b2414963e495157",
     "semantic_hash": ""
   },
   "frontend/postcss.config.mjs": {
@@ -726,9 +726,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792050093.2983456,
-    "seen": 1792050217.076304,
-    "ast_hash": "91bbd7d2ad4172e09cc0eaacf3bf4e3f",
+    "mtime": 1792067135.2058885,
+    "seen": 1792067270.186389,
+    "ast_hash": "adbf497795df28bd3b50257cea817bb3",
     "semantic_hash": ""
   },
   "ai_studio_imports/sentinela-pro-mobile-nvr/README.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1792011240.2970064,
-    "seen": 1792011411.304615,
-    "ast_hash": "e943dff06fc7d63e28866631d4058693",
+    "mtime": 1792066721.7920008,
+    "seen": 1792067270.186393,
+    "ast_hash": "7a6b7318a5f9970a5eff23a1c64870c6",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1792051642.2773077,
-    "seen": 1792051665.4999979,
-    "ast_hash": "fa07ea0c4ae6e3c4a506e83d5db86bf8",
+    "mtime": 1792067169.7011292,
+    "seen": 1792067270.186389,
+    "ast_hash": "6f1f92eb77f95bd26c1071c108fa7087",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1104,9 +1104,9 @@
     "semantic_hash": ""
   },
   "frontend/src/constants/version.ts": {
-    "mtime": 1792050046.7492983,
-    "seen": 1792050217.076284,
-    "ast_hash": "3106fa2d3636656f2c113757e2391fdd",
+    "mtime": 1792067070.6296377,
+    "seen": 1792067270.1863701,
+    "ast_hash": "59bf44698c6f47224e175e37abd20105",
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {

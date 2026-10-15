@@ -227,8 +227,8 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
                         rtsp_url = g_stream.split("#")[0]
 
                 # Parse Zones
-                detect_w = cam_cfg.get("detect", {}).get("width", 2304) if isinstance(cam_cfg.get("detect"), dict) else 2304
-                detect_h = cam_cfg.get("detect", {}).get("height", 1296) if isinstance(cam_cfg.get("detect"), dict) else 1296
+                detect_w = cam_cfg.get("detect", {}).get("width", 1280) if isinstance(cam_cfg.get("detect"), dict) else 1280
+                detect_h = cam_cfg.get("detect", {}).get("height", 720) if isinstance(cam_cfg.get("detect"), dict) else 720
                 cam_zones = cam_cfg.get("zones", {})
                 parsed_zone_items = []
 
@@ -318,8 +318,8 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
         cam_stat = frigate_stats.get(c.name, {})
         f_cam_cfg = frigate_cams.get(c.name, {}) if isinstance(frigate_cams, dict) else {}
         detect_cfg = f_cam_cfg.get("detect", {}) if isinstance(f_cam_cfg, dict) else {}
-        detect_w = detect_cfg.get("width", 640) if isinstance(detect_cfg, dict) else 640
-        detect_h = detect_cfg.get("height", 360) if isinstance(detect_cfg, dict) else 360
+        detect_w = detect_cfg.get("width", 1280) if isinstance(detect_cfg, dict) else 1280
+        detect_h = detect_cfg.get("height", 720) if isinstance(detect_cfg, dict) else 720
 
         cam_dict = {
             "id": c.id,
@@ -389,8 +389,8 @@ async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends
 
                     # Parse zones from Frigate
                     cam_zones = cam_cfg.get("zones", {})
-                    detect_w = cam_cfg.get("detect", {}).get("width", 2304)
-                    detect_h = cam_cfg.get("detect", {}).get("height", 1296)
+                    detect_w = cam_cfg.get("detect", {}).get("width", 1280)
+                    detect_h = cam_cfg.get("detect", {}).get("height", 720)
                     
                     parsed_zone_items = []
                     if isinstance(cam_zones, dict):
@@ -1199,10 +1199,16 @@ def sanitize_frigate_config(cfg: dict) -> dict:
     # 3. Guarantee Motion, Snapshots, Objects defaults (Optimized for Intel N5105)
     if "motion" not in cfg or not isinstance(cfg["motion"], dict):
         cfg["motion"] = {
-            "threshold": 25,
-            "contour_area": 15,
+            "threshold": 22,
+            "contour_area": 80,
             "improve_contrast": False
         }
+    else:
+        cfg["motion"]["improve_contrast"] = False
+        if not cfg["motion"].get("threshold"):
+            cfg["motion"]["threshold"] = 22
+        if not cfg["motion"].get("contour_area"):
+            cfg["motion"]["contour_area"] = 80
 
     if "objects" not in cfg or not isinstance(cfg["objects"], dict):
         cfg["objects"] = {
@@ -1285,21 +1291,31 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 }
             ]
 
-        # 3. Guarantee detect block (tuned for Intel N5105 low-power, 5 FPS)
+        # 3. Guarantee detect block (tuned for Intel N5105 low-power HD nativo, 5 FPS)
         if "detect" not in cam_cfg or not isinstance(cam_cfg["detect"], dict):
             cam_cfg["detect"] = {
                 "enabled": True,
-                "width": 640,
-                "height": 360,
+                "width": 1280,
+                "height": 720,
                 "fps": 5
             }
         else:
             if "width" not in cam_cfg["detect"]:
-                cam_cfg["detect"]["width"] = 640
+                cam_cfg["detect"]["width"] = 1280
             if "height" not in cam_cfg["detect"]:
-                cam_cfg["detect"]["height"] = 360
+                cam_cfg["detect"]["height"] = 720
             if "fps" not in cam_cfg["detect"]:
                 cam_cfg["detect"]["fps"] = 5
+
+        # Guarantee motion anti-ruído block for camera
+        if "motion" not in cam_cfg or not isinstance(cam_cfg["motion"], dict):
+            cam_cfg["motion"] = {
+                "threshold": 22,
+                "contour_area": 80,
+                "improve_contrast": False
+            }
+        else:
+            cam_cfg["motion"]["improve_contrast"] = False
 
         # 4. Guarantee record block syntax for Frigate 0.17 (no retain/events under record)
         if "record" not in cam_cfg or not isinstance(cam_cfg["record"], dict):
@@ -1552,26 +1568,14 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     cam_block["ffmpeg"]["hwaccel_args"] = "preset-vaapi"
     cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
 
-    # 2. Configurar detect otimizado para H.264 e sincronizado com resolução (limite estrito de 5 FPS para controle térmico)
-    # Mapeamento de resolução de detecção para manter proporção nativa e máxima nitidez forense 3MP
+    # 2. Configurar detect desacoplado em 1280x720 HD nativo (Alternativa B)
+    # Gravação permanece no stream físico nativo 3MP (2304x1296), enquanto a malha de detecção
+    # utiliza escalonamento VAAPI em 1280x720 para aliviar barramento PCIe e reduzir carga térmica
     res_str = (getattr(cam, "resolution", "3mp") or "3mp").lower()
-    is_3mp_or_high_res = (
-        res_str in ("auto", "3mp", "2304x1296", "3-mp", "2304", "1296")
-        or (cam.rtsp_main and any(token in str(cam.rtsp_main) for token in ("/live/0/MAIN", "2304", "1296", "MAIN")))
-    )
-
-    if is_3mp_or_high_res:
-        target_w, target_h = 2304, 1296
-    elif res_str == "720p":
-        target_w, target_h = 1280, 720
-    elif res_str == "2.5k":
-        target_w, target_h = 2560, 1440
-    elif res_str == "1080p":
-        target_w, target_h = 1920, 1080
-    elif res_str in ("800x448", "sub"):
+    if res_str in ("800x448", "sub"):
         target_w, target_h = 800, 448
     else:
-        target_w, target_h = 2304, 1296
+        target_w, target_h = 1280, 720
 
     if "detect" not in cam_block or not isinstance(cam_block["detect"], dict):
         cam_block["detect"] = {"width": target_w, "height": target_h, "fps": 5}
@@ -1606,12 +1610,16 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
         except Exception:
             pass
 
-    # 5. Configurar threshold de movimento e filtros de score
+    # 5. Configurar threshold de movimento e filtros de score (anti-ruído e economia de CPU)
+    if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
+        cam_block["motion"] = {}
+    cam_block["motion"]["improve_contrast"] = False
+    if "contour_area" not in cam_block["motion"]:
+        cam_block["motion"]["contour_area"] = 80
     if getattr(cam, "motion_threshold", None) is not None:
-        if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
-            cam_block["motion"] = {}
-        # Garante threshold seguro de movimento (18)
-        cam_block["motion"]["threshold"] = min(22, max(15, int(cam.motion_threshold)))
+        cam_block["motion"]["threshold"] = min(30, max(15, int(cam.motion_threshold)))
+    else:
+        cam_block["motion"]["threshold"] = 22
 
     if cam.min_score is not None:
         score_val = float(cam.min_score)
@@ -1670,8 +1678,8 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
 
     # 7. Garantir review labels e sincronizar required_zones com base nas zonas configuradas
     configured_zone_names = []
-    detect_w = cam_block.get("detect", {}).get("width", 2304) if isinstance(cam_block.get("detect"), dict) else 2304
-    detect_h = cam_block.get("detect", {}).get("height", 1296) if isinstance(cam_block.get("detect"), dict) else 1296
+    detect_w = cam_block.get("detect", {}).get("width", 1280) if isinstance(cam_block.get("detect"), dict) else 1280
+    detect_h = cam_block.get("detect", {}).get("height", 720) if isinstance(cam_block.get("detect"), dict) else 720
 
     if getattr(cam, "zones", None):
         try:
@@ -2089,7 +2097,7 @@ def get_frigate_config_path() -> str:
             return c
     return "/config/config.yml"
 
-def parse_frigate_coordinates(raw_coords: Any, width: int = 2304, height: int = 1296) -> List[Dict[str, float]]:
+def parse_frigate_coordinates(raw_coords: Any, width: int = 1280, height: int = 720) -> List[Dict[str, float]]:
     """
     Parses various Frigate coordinate representations into normalized {x: 0..1, y: 0..1} points.
     Supports comma-separated strings, space-separated pairs, list of ints/floats, or list of strings.
@@ -2192,8 +2200,8 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
 
     cam_data = cameras_cfg.get(target_cam_key, {}) if isinstance(cameras_cfg, dict) else {}
 
-    detect_w = cam_data.get("detect", {}).get("width", 2304) if isinstance(cam_data.get("detect"), dict) else 2304
-    detect_h = cam_data.get("detect", {}).get("height", 1296) if isinstance(cam_data.get("detect"), dict) else 1296
+    detect_w = cam_data.get("detect", {}).get("width", 1280) if isinstance(cam_data.get("detect"), dict) else 1280
+    detect_h = cam_data.get("detect", {}).get("height", 720) if isinstance(cam_data.get("detect"), dict) else 720
 
     raw_zones = cam_data.get("zones", {}) if isinstance(cam_data, dict) else {}
     motion_mask = cam_data.get("motion", {}).get("mask", "") if isinstance(cam_data.get("motion"), dict) else ""
@@ -2340,8 +2348,8 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
     if "live" in cam_data:
         del cam_data["live"]
 
-    detect_w = cam_data.get("detect", {}).get("width", 2304) if isinstance(cam_data.get("detect"), dict) else 2304
-    detect_h = cam_data.get("detect", {}).get("height", 1296) if isinstance(cam_data.get("detect"), dict) else 1296
+    detect_w = cam_data.get("detect", {}).get("width", 1280) if isinstance(cam_data.get("detect"), dict) else 1280
+    detect_h = cam_data.get("detect", {}).get("height", 720) if isinstance(cam_data.get("detect"), dict) else 720
 
     # Auto-convert raw_items if sent directly from Frontend
     if payload.raw_items is not None and payload.zones is None:

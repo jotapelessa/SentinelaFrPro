@@ -34,10 +34,9 @@ detectors:
       input_pixel_format: bgr
       path: /openvino-model/ssdlite_mobilenet_v2.xml
 motion:
-  # STR-004: threshold calibrado em 18 (STATE.md v140). 25 perdeu eventos sutis.
-  threshold: 18
-  contour_area: 20
-  improve_contrast: true
+  threshold: 22
+  contour_area: 80
+  improve_contrast: false
 objects:
   track:
   - person
@@ -237,8 +236,8 @@ cameras:
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
-      width: 2304
-      height: 1296
+      width: 1280
+      height: 720
       fps: 5
       enabled: true
     snapshots:
@@ -258,7 +257,7 @@ cameras:
           threshold: 0.68
     zones:
       cx:
-        coordinates: 230,259,691,518,1152,778
+        coordinates: 128,144,384,288,640,432
         objects:
         - person
         - car
@@ -267,8 +266,10 @@ cameras:
         - cat
         - bicycle
     motion:
-      threshold: 18
-      mask: 1613,1037,1843,1166,2074,1166
+      threshold: 22
+      contour_area: 80
+      improve_contrast: false
+      mask: 896,576,1024,648,1152,648
     record:
       enabled: true
       motion:
@@ -324,8 +325,8 @@ cameras:
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
-      width: 2304
-      height: 1296
+      width: 1280
+      height: 720
       fps: 5
       enabled: true
     snapshots:
@@ -345,14 +346,16 @@ cameras:
           threshold: 0.68
     zones:
       jjdgjgdf:
-        coordinates: 751,328,1475,171,2274,496,2292,1275,707,1267
+        coordinates: 417,182,819,95,1263,276,1273,708,393,704
         objects:
         - person
         - car
         - motorcycle
     motion:
-      threshold: 18
-      mask: 735,332,714,26,1412,14,2283,34,2286,474,1475,154,14,14,18,1275,682,1262,723,340,691,32
+      threshold: 22
+      contour_area: 80
+      improve_contrast: false
+      mask: 408,184,397,14,784,8,1268,19,1270,263,819,86,8,8,10,708,379,701,402,189,384,18
     record:
       enabled: true
       motion:

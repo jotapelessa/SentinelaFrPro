@@ -354,12 +354,12 @@ async def test_sync_camera_3mp_unified_inputs_and_streams():
     cam_entry = captured_cfg["cameras"]["cam_192_168_1_196"]
     streams = captured_cfg["go2rtc"]["streams"]
 
-    # 1. Detect must be 2304x1296 @ 5fps
-    assert cam_entry["detect"]["width"] == 2304
-    assert cam_entry["detect"]["height"] == 1296
+    # 1. Detect must be 1280x720 @ 5fps (Alternativa B HD nativo)
+    assert cam_entry["detect"]["width"] == 1280
+    assert cam_entry["detect"]["height"] == 720
     assert cam_entry["detect"]["fps"] == 5
 
-    # 2. Snapshots must be quality 100, height 1296, clean_copy True
+    # 2. Snapshots must be quality 100, height 1296, clean_copy True (Preservação 3MP nativo)
     assert cam_entry["snapshots"]["quality"] == 100
     assert cam_entry["snapshots"]["height"] == 1296
     assert cam_entry["snapshots"]["clean_copy"] is True
@@ -374,11 +374,11 @@ async def test_sync_camera_3mp_unified_inputs_and_streams():
     # 4. Zero-copy sub alias in go2rtc
     assert streams["cam_192_168_1_196_sub"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
 
-    # 5. Zones scaled to 2304x1296 base
+    # 5. Zones scaled to 1280x720 base
     garagem_coords = cam_entry["zones"]["garagem"]["coordinates"]
-    # 0.5 * 2304 = 1152, 0.5 * 1296 = 648
-    assert "1152,648" in garagem_coords
-    assert "2304,1296" in garagem_coords
+    # 0.5 * 1280 = 640, 0.5 * 720 = 360
+    assert "640,360" in garagem_coords
+    assert "1280,720" in garagem_coords
 
 
 @pytest.mark.asyncio
@@ -489,11 +489,11 @@ async def test_get_event_snapshot_clean_flexible_param(tmp_path):
         assert resp3.media_type == "image/jpeg"
 
 
-def test_parse_frigate_coordinates_defaults_to_2304x1296():
+def test_parse_frigate_coordinates_defaults_to_1280x720():
     from app.api.cameras import parse_frigate_coordinates
 
-    # Points at 50% and 100% of 2304x1296
-    pts = parse_frigate_coordinates("1152,648,2304,1296")
+    # Points at 50% and 100% of 1280x720
+    pts = parse_frigate_coordinates("640,360,1280,720")
     assert len(pts) == 2
     assert pts[0]["x"] == 0.5
     assert pts[0]["y"] == 0.5
@@ -552,10 +552,10 @@ async def test_sync_camera_overwrites_existing_zones_with_3mp_coordinates():
          patch("httpx.AsyncClient.put", AsyncMock()):
         await sync_camera_to_frigate(cam)
 
-    # Must be updated to 2304x1296 scaled coordinates: 0.1*2304=230, 0.2*1296=259...
+    # Must be updated to 1280x720 scaled coordinates: 0.1*1280=128, 0.2*720=144...
     updated_coords = captured_cfg["cameras"]["cam_192_168_1_196"]["zones"]["cx"]["coordinates"]
-    assert "230,259" in updated_coords
-    assert "1152,778" in updated_coords
+    assert "128,144" in updated_coords
+    assert "640,432" in updated_coords
 
 @pytest.mark.asyncio
 async def test_frigate_bridge_get_live_snapshot_sources():
@@ -1065,6 +1065,61 @@ async def test_get_event_thumbnail_endpoint_accept_ranges_header():
         assert resp.status_code == 200
         assert resp.headers["accept-ranges"] == "bytes"
         assert resp.headers["cache-control"] == "public, max-age=604800, immutable"
+
+
+@pytest.mark.asyncio
+async def test_thermal_optimization_alternativa_b_1280x720_and_no_contrast_filter():
+    from unittest.mock import patch, AsyncMock
+    from app.api.cameras import sync_camera_to_frigate, sanitize_frigate_config
+    from app.db.models import Camera
+
+    # 1. Test sanitize_frigate_config enforces improve_contrast: false and threshold 22, contour_area 80
+    raw_cfg = {
+        "motion": {"improve_contrast": True, "threshold": 18, "contour_area": 20},
+        "cameras": {
+            "cam_test": {
+                "motion": {"improve_contrast": True}
+            }
+        }
+    }
+    sanitized = sanitize_frigate_config(raw_cfg)
+    assert sanitized["motion"]["improve_contrast"] is False
+    assert sanitized["motion"]["threshold"] == 18 # Preserves existing if set
+    assert sanitized["cameras"]["cam_test"]["motion"]["improve_contrast"] is False
+    assert sanitized["cameras"]["cam_test"]["detect"]["width"] == 1280
+    assert sanitized["cameras"]["cam_test"]["detect"]["height"] == 720
+
+    # 2. Test sync_camera_to_frigate decouples 3MP physical resolution from 1280x720 detect mesh
+    cam = Camera(
+        name="cam_thermal_test",
+        friendly_name="Thermal Cam",
+        rtsp_main="rtsp://admin:admin@192.168.1.196:554/live/0/MAIN",
+        resolution="3mp",
+        enabled=True
+    )
+    captured = {}
+    async def mock_save(cfg, path):
+        captured.update(cfg)
+        return True
+
+    with patch("app.api.cameras.get_frigate_config_path", return_value="/fake/cfg.yml"), \
+         patch("app.api.cameras._save_yaml_config_atomic", side_effect=mock_save), \
+         patch("httpx.AsyncClient.put", AsyncMock()):
+        await sync_camera_to_frigate(cam)
+
+    entry = captured["cameras"]["cam_thermal_test"]
+    # Detect grid decoupled to 1280x720 (VAAPI hardware scale in VRAM)
+    assert entry["detect"]["width"] == 1280
+    assert entry["detect"]["height"] == 720
+    assert entry["detect"]["fps"] == 5
+    # Snapshots and recordings remain 3MP (2304x1296)
+    assert entry["snapshots"]["height"] == 1296
+    assert entry["snapshots"]["quality"] == 100
+    # Motion filter improve_contrast is strictly False to eliminate eq=gamma=1.4 CPU penalty
+    assert entry["motion"]["improve_contrast"] is False
+    assert entry["motion"]["contour_area"] == 80
+    assert entry["motion"]["threshold"] == 22
+
 
 
 

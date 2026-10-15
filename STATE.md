@@ -1,15 +1,31 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-15 04:40 BRT
-> **Versão Corrente:** v001.000.000.180
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.180 consolidada com:
-1. Prevenção de Vídeos GIF no Telegram & Injeção de Áudio Silencioso AAC: Injeção de faixa de áudio silenciosa estéreo AAC (`anullsrc`) em vídeos de câmeras sem microfone no remux/transcode de `telegram_queue.py`, garantindo que o Telegram Bot API reproduza o clipe em tela cheia com barra de controle e som nativo em vez de looping silencioso como Animação/GIF; janela de download resiliente expandida para `[2.0, 4.0, 7.0, 10.0]` (23s) com timeout de 45s; e recuperação em banco SQLite de eventos qualificados em `mqtt_service.py` no evento de `end`.
-2. Endpoint Nativo de Miniaturas Ultraleves (`GET /api/events/{id}/thumbnail.jpg`): Proxy transparente para o endpoint nativo do Frigate (~3.5 KB vs 1.92 MB de snapshot), cache em memória LRU (1000 itens), cache HTTP de 7 dias no cliente (`max-age=604800, immutable`) e processamento não-bloqueante de redimensionamento Pillow em pool de threads (`asyncio.to_thread`).
-3. Otimização de Performance no Frontend Web (`/events`): Consumo de `thumbnail_url` com `loading="lazy"` e `decoding="async"`, desbloqueio dos controles de clipe para eventos gravados e retry inteligente no player de vídeo antes do fallback para foto estática.
-4. Nginx Media Block dedicado: Roteamento regex com `proxy_buffering off`, suporte a byte-ranges (`Accept-Ranges bytes`) e eliminação do header global `no-store` em respostas parciais HTTP 206 de vídeo e cache de miniaturas.
-5. Otimização de Memória nos Clientes Android (TV & Smartphone): `thumbnailUrl` integrado a `CaptureEvent`, consumido no carrossel do `TvNetflixScreen.kt` e nos cards de fotos de `SmartphoneYouTubeScreen.kt`, eliminando picos de consumo de memória RAM ao listar 60 eventos.
-6. Sincronização Unificada de Versão 001.000.000.180 (Build 180) em todo o ecossistema e 33 testes aprovados (cobrindo remux silencioso em telegram_queue e frigate_bridge, supressão de duplicatas via video_sent no SQLite, priorização de thumbnail de 3.5 KB e headers Accept-Ranges).
+> **Última Atualização:** 2026-10-15 09:30 BRT
+> **Versão Corrente:** v001.000.000.181
+> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.181 consolidada com:
+1. Alternativa B (1280×720 HD Nativo) para Detecção de IA: Malha de detecção desacoplada da resolução do sensor físico, operando em 1280×720 @ 5fps com escalonamento por hardware GPU Intel via VAAPI (`scale_vaapi=w=1280:h=720`) antes do `hwdownload`, aliviando a largura de banda do barramento PCIe de 44.8 MB/s para 13.8 MB/s.
+2. Desativação do Filtro de Software CPU (`improve_contrast: false`): Eliminação do filtro ffmpeg `eq=gamma=1.4:gamma_weight=0.5` que processava todos os quadros descarregados na CPU do host, poupando 24% de processamento contínuo.
+3. Recalibração Anti-Ruído de Movimento: Calibração em `motion.threshold: 22` e `motion.contour_area: 80` para ambas as câmeras ativas (`cam_192_168_1_196` e `cam_192_168_1_47`), eliminando inferências falsas no escuro e suspendendo o OpenVINO SSD MobileNet V2 quando a cena está estática.
+4. Preservação Estrita de Evidências em 3MP Nativo (2304×1296): A role `record` do Frigate e os clipes do Telegram continuam consumindo o stream nativo 3MP em passagem direta (`-c:v copy`), assegurando máxima nitidez forense com zero sobrecarga de CPU/GPU.
+5. Sincronização Unificada de Versão 001.000.000.181 (Build 181) em todo o ecossistema e 34 testes automatizados 100% aprovados.
+
+---
+
+## 🚀 Versão v001.000.000.181 — Alternativa B (1280×720 HD Nativo), Otimização Térmica VAAPI e Recalibração Anti-Ruído
+- **Data**: 2026-10-15
+- **Objetivo**: Implementar a Alternativa B (1280×720 HD nativo) aprovada pelo usuário para normalização térmica do host Ubuntu (SoC Intel Jasper Lake N5105), eliminando o superaquecimento (76°C–79°C) e a sobrecarga de CPU (151% no Frigate) sem comprometer gravações 3MP nativas:
+  1. **Frigate NVR — Escalonamento VAAPI em Hardware e Fim do Filtro de Contraste (`frigate/config/config.yml`)**:
+     - *Causa*: O Frigate processava a malha de detecção em 2304×1296 YUV (12.2 MB por quadro no SHM) e aplicava o filtro de contraste por software `eq=gamma=1.4` na CPU após o download da VPU. Além disso, o limiar de movimento de 18 pixels com área 20 causava rajadas de 34 inferências/s de IA no escuro.
+     - *Correção*: `detect.width = 1280`, `detect.height = 720`, `detect.fps = 5`; `improve_contrast: false` global e por câmera; `motion.threshold: 22` e `contour_area: 80`. O escalonamento para 720p ocorre na VPU Intel antes do barramento PCIe (`scale_vaapi=w=1280:h=720`), reduzindo o fluxo de dados em 69% (de 44.8 MB/s para 13.8 MB/s).
+  2. **Backend — Desacoplamento de Detecção e Gravação (`backend/app/api/cameras.py`)**:
+     - *Correção*: Desacoplada a malha de detecção (`detect_w=1280, detect_h=720`) da resolução de gravação/sensor (3MP nativo 2304×1296 com snapshots em 1296p e `-c:v copy`). `sanitize_frigate_config` e `sync_camera_to_frigate` forçam `improve_contrast: false` e defaults anti-ruído (`threshold: 22`, `contour_area: 80`).
+  3. **Harmonia Multi-Plataforma Preservada**:
+     - Web Dashboard mantém WebRTC 720p direto do go2rtc; Android TV e Smartphone mantêm MSE com `&background=true`; miniaturas leves de 3.5 KB e vídeos do Telegram continuam operando com áudio silencioso AAC e integridade forense 3MP.
+  4. **Sincronização de Versão 001.000.000.181 (Build 181)**:
+     - Atualizados: `android/version.properties` (BUILD=181, VERSION_NAME=001.000.000.181), `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
+  5. **Cobertura de Testes**:
+     - 34 testes automatizados 100% aprovados em `backend/tests/test_backend.py`.
 
 ---
 

@@ -378,9 +378,9 @@
     "semantic_hash": "23ad13d99de59f80e022c1ff6ff0e6b7"
   },
   "backend/app/api/events.py": {
-    "mtime": 1792049315.7696323,
-    "seen": 1792050217.076257,
-    "ast_hash": "168a46bf2669a32a9046cc33a67278c8",
+    "mtime": 1792051521.256198,
+    "seen": 1792051665.4999511,
+    "ast_hash": "3cc9028651c38db1b57283c73eac6a8d",
     "semantic_hash": ""
   },
   "backend/app/api/scanner.py": {
@@ -450,15 +450,15 @@
     "semantic_hash": "70c2595edece3deef4e5b0126a55685e"
   },
   "backend/app/services/frigate_bridge.py": {
-    "mtime": 1792042253.975699,
-    "seen": 1792043089.110136,
-    "ast_hash": "f565d73cd6afc69619be6b89aeef6969",
+    "mtime": 1792051468.1919,
+    "seen": 1792051665.499958,
+    "ast_hash": "586bf9a202c22ad44bbd7d643b9c4da8",
     "semantic_hash": ""
   },
   "backend/app/services/mqtt_service.py": {
-    "mtime": 1792049195.7204866,
-    "seen": 1792050217.076264,
-    "ast_hash": "4651aa6cf3e73875d34b02c28751116c",
+    "mtime": 1792051497.4417408,
+    "seen": 1792051665.499958,
+    "ast_hash": "f9c19650303870254ff27859072cdd4d",
     "semantic_hash": ""
   },
   "backend/app/services/pip_gateway.py": {
@@ -486,9 +486,9 @@
     "semantic_hash": "2b96bb012c232336e6df92435a9a422a"
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1792049990.335003,
-    "seen": 1792050217.076268,
-    "ast_hash": "a23d738f962168e1aa3411d32f883241",
+    "mtime": 1792051545.0746055,
+    "seen": 1792051665.4999628,
+    "ast_hash": "99534fda78a44ccff5f9a1446bef0a79",
     "semantic_hash": ""
   },
   "compile_apk.sh": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1792050125.1348455,
-    "seen": 1792050217.076305,
-    "ast_hash": "8a6210ae45951a0a0e947ad4358d667f",
+    "mtime": 1792051642.2773077,
+    "seen": 1792051665.4999979,
+    "ast_hash": "fa07ea0c4ae6e3c4a506e83d5db86bf8",
     "semantic_hash": ""
   },
   "android/gradlew": {
@@ -1110,9 +1110,9 @@
     "semantic_hash": ""
   },
   "backend/app/services/telegram_queue.py": {
-    "mtime": 1792049185.4075096,
-    "seen": 1792050217.076266,
-    "ast_hash": "23a43f7fe4d1ed171cd582a08e1da6ea",
+    "mtime": 1792051483.3893752,
+    "seen": 1792051665.49996,
+    "ast_hash": "d50360e029e855c235d32571d84852df",
     "semantic_hash": ""
   },
   ".agents/workflows/cerebro.md": {
