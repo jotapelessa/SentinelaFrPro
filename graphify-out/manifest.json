@@ -768,9 +768,9 @@
     "semantic_hash": ""
   },
   "docker-compose.yml": {
-    "mtime": 1791983631.0022178,
-    "seen": 1791984466.491393,
-    "ast_hash": "28676cb51bd32ef49478c5b5fcfa0f3b",
+    "mtime": 1792067774.9868674,
+    "seen": 1792068240.3266618,
+    "ast_hash": "bf835156abbb0b75c50c17241dc219ad",
     "semantic_hash": ""
   },
   "docs/ARQUITETURA_E_API.md": {
@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1792066721.7920008,
-    "seen": 1792067270.186393,
-    "ast_hash": "7a6b7318a5f9970a5eff23a1c64870c6",
+    "mtime": 1792067625.111457,
+    "seen": 1792068240.326663,
+    "ast_hash": "41d53b8553e37b80c8df667a582361b0",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
