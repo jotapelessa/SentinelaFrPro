@@ -1,13 +1,37 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-15 02:25 BRT
-> **Versão Corrente:** v001.000.000.179
-> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.179 consolidada com:
-1. Restauração do Envio de Vídeos em 3MP sem Compressão no Telegram: Em `mqtt_service.py`, eventos qualificados que geraram foto nunca são descartados no evento de `end` por ausência/divergência de zona; e em `telegram_vault.py`/`telegram_queue.py`, envio de clipe MP4 em 3MP nativo não-comprimido via `sendDocument` com miniatura JPEG anexada para card visual interativo com botão de play no chat.
-2. Painel Web de Eventos Flexível e Resiliente (`/events`): Seletor de data com opção "Todas as Datas / Recentes" (`selectedDate = "all"`), botão de ação rápida `[⚡ Ver Todas as Evidências Gravadas]` no estado vazio, player de vídeo apontando estritamente para a rota autoritativa `/api/events/{id}/clip.mp4` e placeholder SVG elegante nos cards de evento.
-3. Clientes Android TV e Mobile Estabilizados: `SentinelaRepository.kt` com `clip_url` autoritativo para `/api/events/$id/clip.mp4` e `OverlayService.kt` com polling de snapshot para `latest.jpg?h=720` com intervalo suave de 600ms.
-4. Sincronização Unificada de Versão 001.000.000.179 (Build 179) em todo o ecossistema.
+> **Última Atualização:** 2026-10-15 04:40 BRT
+> **Versão Corrente:** v001.000.000.180
+> **Estado Geral:** Operacional, Otimizado e Estabilizado — Versão v001.000.000.180 consolidada com:
+1. Prevenção de Vídeos GIF no Telegram & Injeção de Áudio Silencioso AAC: Injeção de faixa de áudio silenciosa estéreo AAC (`anullsrc`) em vídeos de câmeras sem microfone no remux/transcode de `telegram_queue.py`, garantindo que o Telegram Bot API reproduza o clipe em tela cheia com barra de controle e som nativo em vez de looping silencioso como Animação/GIF; janela de download resiliente expandida para `[2.0, 4.0, 7.0, 10.0]` (23s) com timeout de 45s; e recuperação em banco SQLite de eventos qualificados em `mqtt_service.py` no evento de `end`.
+2. Endpoint Nativo de Miniaturas Ultraleves (`GET /api/events/{id}/thumbnail.jpg`): Proxy transparente para o endpoint nativo do Frigate (~3.5 KB vs 1.92 MB de snapshot), cache em memória LRU (1000 itens), cache HTTP de 7 dias no cliente (`max-age=604800, immutable`) e processamento não-bloqueante de redimensionamento Pillow em pool de threads (`asyncio.to_thread`).
+3. Otimização de Performance no Frontend Web (`/events`): Consumo de `thumbnail_url` com `loading="lazy"` e `decoding="async"`, desbloqueio dos controles de clipe para eventos gravados e retry inteligente no player de vídeo antes do fallback para foto estática.
+4. Nginx Media Block dedicado: Roteamento regex com `proxy_buffering off`, suporte a byte-ranges (`Accept-Ranges bytes`) e eliminação do header global `no-store` em respostas parciais HTTP 206 de vídeo e cache de miniaturas.
+5. Otimização de Memória nos Clientes Android (TV & Smartphone): `thumbnailUrl` integrado a `CaptureEvent`, consumido no carrossel do `TvNetflixScreen.kt` e nos cards de fotos de `SmartphoneYouTubeScreen.kt`, eliminando picos de consumo de memória RAM ao listar 60 eventos.
+6. Sincronização Unificada de Versão 001.000.000.180 (Build 180) em todo o ecossistema e 29 testes aprovados.
+
+---
+
+## 🚀 Versão v001.000.000.180 — Anti-GIF Silent AAC Remux, Miniaturas Ultraleves 3.5KB, Retry Resiliente e Nginx Media Block
+- **Data**: 2026-10-15
+- **Objetivo**: Solucionar a conversão indesejada de vídeos MP4 sem áudio em GIFs animados pelo Telegram Bot API, introduzir rota dedicada de miniaturas ultra-leves (3.5 KB) para reduzir tráfego web/Android, otimizar streaming Nginx com byte-ranges e garantir recuperação de eventos via SQLite:
+  1. **Backend Telegram — Anti-GIF via Silent AAC & Retentativas Estendidas (`telegram_queue.py`, `mqtt_service.py`)**:
+     - *Causa*: Quando uma câmera não tem microfone (ex: `cam_192_168_1_47`), o stream H.264 não possui trilha de áudio. O Telegram Bot API trata vídeos sem áudio como "Animação/GIF", reproduzindo-os em loop mudo sem controles de scrubbing/tempo e sem som. Além disso, gravações em NVMe demoram até 15s para serem segmentadas pelo Frigate.
+     - *Correção*: Em `telegram_queue.py`, se `has_audio = False`, adiciona `-f lavfi -i anullsrc=channel_layout=stereo:sample_rate=44100` e `-c:a aac -b:a 32k -shortest` no remux, VAAPI e CPU fallback. Ampliada a janela de retentativas para `delays = [2.0, 4.0, 7.0, 10.0]` com timeout de 45.0s. Em `mqtt_service.py`, adicionada consulta ao SQLite `EventRecord` no evento de `end` caso a memória local tenha sido reiniciada.
+  2. **Endpoint de Miniaturas Ultraleves & Cache LRU (`backend/app/api/events.py`)**:
+     - *Causa*: O painel web e os apps Android baixavam 60 snapshots forenses em 3MP (1.92 MB cada = ~115 MB de tráfego) para exibir a lista de eventos.
+     - *Correção*: Criado endpoint `GET /api/events/{event_id}/thumbnail.jpg` que obtém a miniatura nativa de 3.5 KB do Frigate ou gera miniatura compacta via Pillow (envolvido em `asyncio.to_thread`). Cache em memória `LRUCache(maxsize=1000)` e cache de navegador de 7 dias (`Cache-Control: public, max-age=604800, immutable`). `list_events` agora expõe `thumbnail_url: /api/events/{event_id}/thumbnail.jpg`.
+  3. **Frontend Web de Eventos Resiliente (`frontend/src/app/events/page.tsx`)**:
+     - *Correção*: Cards de eventos agora renderizam `<img src={ev.thumbnail_url || ev.snapshot_url} loading="lazy" decoding="async" />` com fallback para snapshot. Controles de clipe liberados para eventos gravados (`has_clip !== false`), e `<video>` implementa reconexão suave com até 2 retentativas (`videoRetryCount`) e botão manual "Tentar reproduzir" antes de reverter para foto 3MP.
+  4. **Nginx Media Block (`nginx/default.conf` & host `/etc/nginx/sites-available/default`)**:
+     - *Correção*: Adicionado bloco de regex `location ~* ^/api/events/.*(clip\.mp4|snapshot|thumbnail)` com `proxy_buffering off;` e `add_header Accept-Ranges bytes always;`, impedindo que headers globais `no-store` interfiram no streaming com byte-ranges HTTP 206 e permitindo cache de thumbnails.
+  5. **Android TV & Mobile (`Models.kt`, `SentinelaRepository.kt`, `TvNetflixScreen.kt`, `SmartphoneYouTubeScreen.kt`)**:
+     - *Correção*: Adicionado `thumbnailUrl` em `CaptureEvent`, parseado em `getCaptures()`, e consumido no grid de eventos da TV e do smartphone, economizando centenas de megabytes de RAM e tráfego de rede.
+  6. **Sincronização de Versão 001.000.000.180 (Build 180)**:
+     - Atualizados: `android/version.properties` (BUILD=180, VERSION_NAME=001.000.000.180), `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
+  7. **Cobertura de Testes**:
+     - 29 testes automatizados unitários 100% aprovados em `backend/tests/test_backend.py`.
 
 ---
 

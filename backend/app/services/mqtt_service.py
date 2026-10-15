@@ -340,6 +340,18 @@ class MQTTService:
                         zone_matched = True
 
                     already_processed = event_id in self._processed_events
+                    if not already_processed:
+                        try:
+                            from app.db.models import EventRecord
+                            async with AsyncSessionLocal() as session:
+                                stmt_rec = select(EventRecord).where(EventRecord.frigate_event_id == event_id)
+                                res_rec = await session.execute(stmt_rec)
+                                ev_db = res_rec.scalar_one_or_none()
+                                if ev_db and (ev_db.telegram_notified or ev_db.has_snapshot):
+                                    already_processed = True
+                                    self._mark_processed(event_id)
+                        except Exception as e:
+                            logger.debug(f"Erro ao verificar persistencia de evento qualificado {event_id}: {e}")
 
                     if not (already_processed or zone_matched):
                         logger.debug(f"Descartando download de clipe MP4 para {camera}: evento fora das zonas configuradas (zona: {zone_name}) e não qualificado previamente.")

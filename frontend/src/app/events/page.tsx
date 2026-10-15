@@ -42,6 +42,8 @@ export default function EventsPage() {
   const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
   const [mediaViewMode, setMediaViewMode] = useState<"video" | "snapshot">("video");
   const [videoError, setVideoError] = useState<boolean>(false);
+  const [videoRetryCount, setVideoRetryCount] = useState<number>(0);
+  const [isVideoRetrying, setIsVideoRetrying] = useState<boolean>(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Multi-selection & Batch Deletion state
@@ -322,7 +324,30 @@ export default function EventsPage() {
   const openEventModal = (ev: SecurityEvent) => {
     setSelectedEvent(ev);
     setVideoError(false);
-    setMediaViewMode(ev.has_clip && ev.type !== "photo" ? "video" : "snapshot");
+    setVideoRetryCount(0);
+    setIsVideoRetrying(false);
+    setMediaViewMode(ev.has_clip !== false && ev.type !== "photo" ? "video" : "snapshot");
+  };
+
+  const handleVideoError = () => {
+    if (videoRetryCount < 2) {
+      setIsVideoRetrying(true);
+      setTimeout(() => {
+        setVideoRetryCount((prev) => {
+          const nextCount = prev + 1;
+          if (videoRef.current && selectedEvent) {
+            videoRef.current.src = `/api/events/${selectedEvent.id}/clip.mp4?retry=${nextCount}`;
+            videoRef.current.load();
+            videoRef.current.play().catch(() => {});
+          }
+          return nextCount;
+        });
+        setIsVideoRetrying(false);
+      }, 1500);
+    } else {
+      setVideoError(true);
+      setMediaViewMode("snapshot");
+    }
   };
 
   // Sequential event jumping in modal
@@ -696,12 +721,14 @@ export default function EventsPage() {
                         className="aspect-video w-full bg-obsidian-950 relative overflow-hidden flex items-center justify-center cursor-pointer"
                       >
                         <img
-                          src={ev.snapshot_url || "/placeholder-camera.jpg"}
+                          src={ev.thumbnail_url || ev.snapshot_url || "/placeholder-camera.jpg"}
                           alt="Snapshot"
+                          loading="lazy"
+                          decoding="async"
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                           onError={(e) => {
                             const target = e.currentTarget;
-                            const fallback = `/frigate/api/events/${ev.id}/snapshot.jpg`;
+                            const fallback = ev.snapshot_url || `/frigate/api/events/${ev.id}/snapshot.jpg`;
                             if (target.src !== fallback && !target.src.endsWith(fallback)) {
                               target.src = fallback;
                             } else {
@@ -808,7 +835,7 @@ export default function EventsPage() {
                               onClick={() => openEventModal(ev)}
                               className="px-2.5 py-1 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 text-xs font-bold transition-all"
                             >
-                              {ev.has_clip && ev.type !== "photo" ? "Ver Clipe" : "Ver Foto"}
+                              {ev.has_clip !== false && ev.type !== "photo" ? "Ver Clipe" : "Ver Foto"}
                             </button>
                           </div>
                         </div>
@@ -1367,12 +1394,14 @@ export default function EventsPage() {
             </div>
 
             {/* Mode Switcher & Fallback Banner */}
-            {selectedEvent.has_clip && selectedEvent.type !== "photo" && (
+            {selectedEvent.has_clip !== false && selectedEvent.type !== "photo" && (
               <div className="flex items-center justify-between bg-obsidian-950 p-1.5 rounded-xl border border-slate-800">
                 <div className="flex items-center gap-1.5">
                   <button
                     onClick={() => {
                       setVideoError(false);
+                      setVideoRetryCount(0);
+                      setIsVideoRetrying(false);
                       setMediaViewMode("video");
                     }}
                     className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-all ${
@@ -1398,17 +1427,30 @@ export default function EventsPage() {
                 </div>
 
                 {videoError && (
-                  <span className="text-[11px] text-amber-400 flex items-center gap-1 font-mono pr-2">
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                    Vídeo indisponível (exibindo foto 3MP nativa)
-                  </span>
+                  <div className="flex items-center gap-2 pr-2">
+                    <span className="text-[11px] text-amber-400 flex items-center gap-1 font-mono">
+                      <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
+                      Vídeo indisponível (exibindo foto 3MP nativa)
+                    </span>
+                    <button
+                      onClick={() => {
+                        setVideoError(false);
+                        setVideoRetryCount(0);
+                        setIsVideoRetrying(false);
+                        setMediaViewMode("video");
+                      }}
+                      className="text-[11px] text-cyan-400 hover:text-cyan-300 underline font-semibold cursor-pointer"
+                    >
+                      Tentar reproduzir
+                    </button>
+                  </div>
                 )}
               </div>
             )}
 
             {/* Media Player / HD 3MP Viewer */}
             <div className="aspect-video bg-black rounded-xl overflow-hidden relative shadow-inner flex items-center justify-center">
-              {(!selectedEvent.has_clip || selectedEvent.type === "photo" || mediaViewMode === "snapshot" || videoError) ? (
+              {(selectedEvent.has_clip === false || selectedEvent.type === "photo" || mediaViewMode === "snapshot" || videoError) ? (
                 <img
                   key={`img-${selectedEvent.id}`}
                   src={selectedEvent.snapshot_clean_url || selectedEvent.snapshot_url || `/api/events/${selectedEvent.id}/snapshot.jpg?clean=1`}
@@ -1423,29 +1465,34 @@ export default function EventsPage() {
                   }}
                 />
               ) : (
-                <video
-                  key={`vid-${selectedEvent.id}`}
-                  ref={videoRef}
-                  src={`/api/events/${selectedEvent.id}/clip.mp4`}
-                  onError={() => {
-                    setVideoError(true);
-                    setMediaViewMode("snapshot");
-                  }}
-                  controls
-                  autoPlay
-                  playsInline
-                  preload="metadata"
-                  className="w-full h-full object-contain"
-                >
-                  Seu navegador não suporta reprodução MP4.
-                </video>
+                <>
+                  <video
+                    key={`vid-${selectedEvent.id}`}
+                    ref={videoRef}
+                    src={`/api/events/${selectedEvent.id}/clip.mp4`}
+                    onError={handleVideoError}
+                    controls
+                    autoPlay
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-contain"
+                  >
+                    Seu navegador não suporta reprodução MP4.
+                  </video>
+                  {isVideoRetrying && (
+                    <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-2 text-cyan-400 text-xs font-mono">
+                      <RefreshCw className="w-6 h-6 animate-spin" />
+                      <span>Sincronizando clipe de alta definição...</span>
+                    </div>
+                  )}
+                </>
               )}
             </div>
 
             {/* Playback Controls & Direct Media Downloads */}
             <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
               {/* Playback Speed Switcher (only for video clips) */}
-              {selectedEvent.has_clip && selectedEvent.type !== "photo" && mediaViewMode === "video" && !videoError ? (
+              {selectedEvent.has_clip !== false && selectedEvent.type !== "photo" && mediaViewMode === "video" && !videoError ? (
                 <div className="flex items-center gap-1.5 bg-obsidian-950 p-1 rounded-xl border border-slate-800 text-xs font-mono">
                   <span className="text-slate-500 px-2 text-[10px]">Velocidade:</span>
                   {[0.5, 1, 1.5, 2].map((spd) => (
@@ -1506,7 +1553,7 @@ export default function EventsPage() {
                 </a>
 
                 {/* Download Video Clip */}
-                {selectedEvent.has_clip && selectedEvent.type !== "photo" && (
+                {selectedEvent.has_clip !== false && selectedEvent.type !== "photo" && (
                   <a
                     href={`/api/events/${selectedEvent.id}/clip.mp4?download=1`}
                     download={`clip_${selectedEvent.camera}_${selectedEvent.id}.mp4`}

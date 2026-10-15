@@ -780,6 +780,146 @@ async def test_fetch_thumbnail_bytes_with_custom_media_dir(tmp_path):
         assert len(thumb_bytes) > 500
 
 
+@pytest.mark.asyncio
+async def test_get_event_thumbnail_endpoint():
+    from unittest.mock import patch, AsyncMock
+    from fastapi.testclient import TestClient
+    from app.main import app
+    from app.api.events import _THUMBNAIL_CACHE
+    import httpx
+    from PIL import Image
+    import io
+
+    # Create small valid JPEG
+    img = Image.new("RGB", (175, 100), color=(255, 0, 0))
+    buf = io.BytesIO()
+    img.save(buf, format="JPEG")
+    fake_thumb = buf.getvalue()
+
+    client = TestClient(app)
+    _THUMBNAIL_CACHE.clear()
+
+    mock_resp = httpx.Response(200, content=fake_thumb)
+
+    with patch("httpx.AsyncClient.get", AsyncMock(return_value=mock_resp)) as mock_get:
+        resp = client.get("/api/events/test_event_123/thumbnail.jpg")
+        assert resp.status_code == 200
+        assert resp.headers["content-type"] == "image/jpeg"
+        assert resp.content == fake_thumb
+        assert "test_event_123" in _THUMBNAIL_CACHE
+        assert mock_get.call_count == 1
+
+        # Second call must hit LRU cache without calling upstream Frigate
+        resp2 = client.get("/api/events/test_event_123/thumbnail.jpg")
+        assert resp2.status_code == 200
+        assert resp2.content == fake_thumb
+        assert mock_get.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_telegram_queue_remux_silent_audio_injection():
+    from unittest.mock import patch, mock_open
+    from app.services.telegram_queue import telegram_video_queue
+    from app.services.frigate_bridge import frigate_bridge
+    import subprocess
+
+    captured_cmds = []
+
+    def mock_run(cmd, *args, **kwargs):
+        captured_cmds.append(cmd)
+        return subprocess.CompletedProcess(args=cmd, returncode=0, stdout=b"", stderr=b"")
+
+    fake_video = b"\x00\x00\x00\x1cftypisom" + b"V" * 6000
+
+    m_open = mock_open(read_data=fake_video)
+
+    with patch("subprocess.run", side_effect=mock_run), \
+         patch("os.path.exists", return_value=True), \
+         patch("os.path.getsize", return_value=10000), \
+         patch("builtins.open", m_open):
+
+        # 1. Without audio -> should inject anullsrc silent AAC track
+        with patch.object(frigate_bridge, "_has_audio_stream", return_value=False):
+            await telegram_video_queue._transcode_clean_video(fake_video)
+            assert len(captured_cmds) >= 1
+            cmd_no_audio = captured_cmds[0]
+            assert "anullsrc=channel_layout=stereo:sample_rate=44100" in cmd_no_audio
+            assert "-shortest" in cmd_no_audio
+
+        # 2. With audio -> should NOT inject anullsrc
+        captured_cmds.clear()
+        with patch.object(frigate_bridge, "_has_audio_stream", return_value=True):
+            await telegram_video_queue._transcode_clean_video(fake_video)
+            assert len(captured_cmds) >= 1
+            cmd_with_audio = captured_cmds[0]
+            assert "anullsrc" not in cmd_with_audio
+            assert "-shortest" not in cmd_with_audio
+
+
+@pytest.mark.asyncio
+async def test_mqtt_allow_video_if_recovered_from_sqlite():
+    from unittest.mock import patch, AsyncMock
+    from app.services.mqtt_service import mqtt_service
+    from app.db.models import EventRecord
+
+    mock_policy = {
+        "enabled": True,
+        "notify_telegram": True,
+        "notify_tv": True,
+        "friendly_name": "Test Cam",
+        "has_zones": True,
+        "configured_zones": ["garagem"]
+    }
+    mock_tg = {
+        "send_mode": "both",
+        "allowed_events": ["person"],
+        "clip_duration_seconds": 15
+    }
+
+    test_evt_id = "evt_recovered_sqlite_999"
+    # Ensure memory cache does NOT have it (simulating backend reboot between new and end)
+    mqtt_service._processed_events.pop(test_evt_id, None)
+
+    fake_db_event = EventRecord(
+        frigate_event_id=test_evt_id,
+        camera_name="cam_test",
+        label="person",
+        telegram_notified=True
+    )
+
+    class FakeResult:
+        def scalar_one_or_none(self):
+            return fake_db_event
+
+    mock_db = AsyncMock()
+    mock_db.execute.return_value = FakeResult()
+
+    with patch.object(mqtt_service, "_get_camera_policy", AsyncMock(return_value=mock_policy)), \
+         patch.object(mqtt_service, "_get_telegram_policy", AsyncMock(return_value=mock_tg)), \
+         patch.object(mqtt_service, "_dispatch_telegram_video_with_retry", AsyncMock()) as mock_video, \
+         patch("app.services.mqtt_service.AsyncSessionLocal") as mock_session_ctx:
+
+        mock_session_ctx.return_value.__aenter__.return_value = mock_db
+
+        payload = {
+            "type": "end",
+            "after": {
+                "id": test_evt_id,
+                "camera": "cam_test",
+                "label": "person",
+                "current_zones": [],
+                "entered_zones": []
+            }
+        }
+        await mqtt_service.handle_frigate_event(payload)
+        import asyncio
+        await asyncio.sleep(0.05)
+        # Must have verified SQLite and dispatched video
+        mock_video.assert_called_once()
+        # Memory set must now track it
+        assert mqtt_service._processed_events.get(test_evt_id) is True
+
+
 
 
 

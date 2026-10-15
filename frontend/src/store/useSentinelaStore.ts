@@ -47,6 +47,7 @@ export interface SecurityEvent {
   duration?: number;
   snapshot_url?: string;
   snapshot_clean_url?: string;
+  thumbnail_url?: string;
   clip_url?: string;
   has_clip?: boolean;
   has_snapshot?: boolean;

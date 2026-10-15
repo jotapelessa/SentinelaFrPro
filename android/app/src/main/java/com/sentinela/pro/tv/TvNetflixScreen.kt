@@ -1120,11 +1120,11 @@ fun TvRecordingsViewport(
                         id = event.id,
                         cameraId = event.camera,
                         cameraName = event.camera.replace("_", " ").uppercase(),
-                        duration = "FOTO HD",
+                        duration = event.displayDuration,
                         timestamp = if (event.timestamp.isNotBlank()) event.timestamp else "Hoje, ${14 - (i % 6)}:30",
                         sizeMb = if (event.score > 0) "IA ${(event.score * 100).toInt()}%" else "IA 95%",
-                        thumbnailUrl = event.snapshotUrl,
-                        isVideo = false
+                        thumbnailUrl = event.thumbnailUrl.ifBlank { event.snapshotUrl },
+                        isVideo = !event.isPhoto
                     )
                 }
             }

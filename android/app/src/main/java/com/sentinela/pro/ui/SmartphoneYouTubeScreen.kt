@@ -885,8 +885,8 @@ fun PhoneCapturesTab() {
                                     .height(130.dp)
                                     .background(Color.Black)
                             ) {
-                                val photoUrl = ev.snapshotCleanUrl.ifBlank { ev.snapshotUrl }.ifBlank {
-                                    "${SentinelaConfig.BASE_URL}/api/events/${ev.id}/snapshot.jpg?clean=1"
+                                val photoUrl = ev.thumbnailUrl.ifBlank { ev.snapshotCleanUrl.ifBlank { ev.snapshotUrl } }.ifBlank {
+                                    "${SentinelaConfig.BASE_URL}/api/events/${ev.id}/thumbnail.jpg"
                                 }
                                 val imageLoader = remember { coil.Coil.imageLoader(context) }
                                 AsyncImage(

@@ -325,9 +325,9 @@ class TelegramVideoQueue:
         return None
 
     async def _fetch_clip_with_retries(self, item: TelegramEventItem) -> Optional[bytes]:
-        """Tries to download the extended range clip from Frigate with incremental delays."""
-        delays = [1.0, 2.5, 4.0]
-        async with httpx.AsyncClient(timeout=35.0) as client:
+        """Tries to download the extended range clip from Frigate with incremental delays (23s total window)."""
+        delays = [2.0, 4.0, 7.0, 10.0]
+        async with httpx.AsyncClient(timeout=45.0) as client:
             for attempt, delay in enumerate(delays, start=1):
                 await asyncio.sleep(delay)
                 try:
@@ -354,6 +354,9 @@ class TelegramVideoQueue:
         1. Priority 1: Remux FastStart (-c:v copy -movflags +faststart) -> ~50ms, 0% CPU overhead.
         2. Priority 2: Intel VAAPI hardware acceleration (/dev/dri/renderD128) -> ~400ms, <3% CPU.
         3. Priority 3: Ultrafast software fallback (-preset ultrafast -crf 26) with 15s timeout.
+        
+        Note: When has_audio is False, injects silent stereo AAC track so Telegram Bot API
+        never classifies the MP4 as Animation/GIF.
         """
         in_file = f"/tmp/in_q_{uuid.uuid4().hex[:8]}.mp4"
         out_file = f"/tmp/out_q_{uuid.uuid4().hex[:8]}.mp4"
@@ -363,15 +366,27 @@ class TelegramVideoQueue:
                 f.write(video_bytes)
 
             has_audio = frigate_bridge._has_audio_stream(in_file)
-            audio_args = ["-c:a", "aac", "-b:a", "128k"] if has_audio else ["-an"]
+            if has_audio:
+                input_args = ["-i", in_file]
+                audio_args = ["-c:a", "aac", "-b:a", "128k"]
+                extra_args = []
+            else:
+                input_args = [
+                    "-i", in_file,
+                    "-f", "lavfi",
+                    "-i", "anullsrc=channel_layout=stereo:sample_rate=44100"
+                ]
+                audio_args = ["-c:a", "aac", "-b:a", "32k"]
+                extra_args = ["-shortest"]
 
             # Tentativa 1: Remux cópia direta com faststart (instantâneo, 0% CPU overhead)
             cmd_remux = [
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
-                "-i", in_file,
+                *input_args,
                 "-c:v", "copy",
                 *audio_args,
+                *extra_args,
                 "-movflags", "+faststart",
                 out_file
             ]
@@ -395,12 +410,13 @@ class TelegramVideoQueue:
                     "ffmpeg", "-y",
                     "-hwaccel", "vaapi",
                     "-vaapi_device", "/dev/dri/renderD128",
-                    "-i", in_file,
+                    *input_args,
                     "-vf", "format=nv12,hwupload",
                     "-c:v", "h264_vaapi",
                     "-b:v", "4096k",
                     "-maxrate", "4096k",
                     *audio_args,
+                    *extra_args,
                     "-r", str(target_fps),
                     "-movflags", "+faststart",
                     out_file
@@ -423,9 +439,10 @@ class TelegramVideoQueue:
             cmd_cpu = [
                 "ffmpeg", "-y",
                 "-fflags", "+genpts+discardcorrupt",
-                "-i", in_file,
+                *input_args,
                 "-vf", "setpts=PTS-STARTPTS,format=yuv420p",
                 *audio_args,
+                *extra_args,
                 "-r", str(target_fps),
                 "-c:v", "libx264",
                 "-preset", "ultrafast",

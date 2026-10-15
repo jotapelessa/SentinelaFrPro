@@ -18,6 +18,7 @@ data class CaptureEvent(
     val timestamp: String = "",
     val snapshotUrl: String = "",
     val snapshotCleanUrl: String = "",
+    val thumbnailUrl: String = "",
     val clipUrl: String = "",
     val hasClip: Boolean = true,
     val retained: Boolean = false,
