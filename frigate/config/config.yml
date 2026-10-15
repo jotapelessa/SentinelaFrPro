@@ -14,7 +14,8 @@ logger:
 ffmpeg:
   hwaccel_args: preset-vaapi
   output_args:
-    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
+    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime
+      1 -c:v copy -bsf:v h264_redundant_pps -c:a copy
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
   width: 300
@@ -86,11 +87,6 @@ go2rtc:
   log:
     rtsp: warn
   streams:
-    # =========================================================
-    # cam_192_168_1_196 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
-    # STR-002: Ingestão única de MAIN nativo direto da câmera
-    # Aliases em memória zero-copy (zero concorrência de socket TCP)
-    # =========================================================
     cam_192_168_1_196:
     - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=2000#timeout=60
     cam_192_168_1_196_main:
@@ -99,10 +95,6 @@ go2rtc:
     - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_sub:
     - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#timeout=60
-
-    # =========================================================
-    # cam_192_168_1_47 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
-    # =========================================================
     cam_192_168_1_47:
     - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#buffer=2000#timeout=60
     cam_192_168_1_47_main:
@@ -111,8 +103,6 @@ go2rtc:
     - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_sub:
     - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#timeout=60
-
-    # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
     camera_principal:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_main:
@@ -121,7 +111,6 @@ go2rtc:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_sub:
     - ffmpeg:cam_192_168_1_196_sub#video=copy
-
     camera_secundaria:
     - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_main:
@@ -130,22 +119,8 @@ go2rtc:
     - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_sub:
     - ffmpeg:cam_192_168_1_47_sub#video=copy
-
-    # =========================================================
-    # Câmeras DESABILITADAS — streams comentados para não manter
-    # conexões RTSP ativas (STR-006). Descomentar ao reativar.
-    # =========================================================
-    # cam_192_168_1_189:
-    # - rtsp://admin:admin@192.168.1.189:554/live/0/SUB#backchannel=0
-
-    # cam_192_168_1_200:
-    # - rtsp://admin:admin@192.168.1.200:554/live/0/SUB#backchannel=0
-
-    # cam_192_168_1_93:
-    # - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
-
   webrtc:
-    listen: ":8555"
+    listen: :8555
     candidates:
     - 100.93.129.91:8555
     - 192.168.1.247:8555
@@ -164,7 +139,9 @@ cameras:
         - record
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
+          1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000
+          -avoid_negative_ts make_zero
     detect:
       width: 800
       height: 448
@@ -175,15 +152,20 @@ cameras:
       bounding_box: true
     objects:
       track:
-      - person
-      - car
-      - motorcycle
+      - bus
+      - bicycle
       - dog
+      - motorcycle
+      - cat
+      - car
+      - person
       filters:
         person:
           threshold: 0.7
     motion:
       threshold: 25
+      improve_contrast: false
+      contour_area: 80
     record:
       enabled: true
       motion:
@@ -223,7 +205,6 @@ cameras:
         - cat
         - bicycle
         required_zones: []
-
   cam_192_168_1_196:
     enabled: true
     ffmpeg:
@@ -238,7 +219,9 @@ cameras:
         roles:
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
+          1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000
+          -avoid_negative_ts make_zero
     detect:
       width: 800
       height: 448
@@ -252,19 +235,19 @@ cameras:
       height: 1296
     objects:
       track:
-      - person
-      - car
-      - motorcycle
       - bus
-      - dog
-      - cat
       - bicycle
+      - dog
+      - motorcycle
+      - cat
+      - car
+      - person
       filters:
         person:
           threshold: 0.68
     zones:
       cx:
-        coordinates: 128,144,384,288,640,432
+        coordinates: 80,90,240,179,400,269
         objects:
         - person
         - car
@@ -273,27 +256,27 @@ cameras:
         - cat
         - bicycle
     motion:
-      threshold: 22
+      threshold: 25
       contour_area: 80
       improve_contrast: false
       mask: 560,358,640,403,720,403
     record:
       enabled: true
       motion:
-        days: 14
+        days: 3
       continuous:
         days: 0
       alerts:
         pre_capture: 10
         post_capture: 10
         retain:
-          days: 14
+          days: 3
           mode: active_objects
       detections:
         pre_capture: 10
         post_capture: 10
         retain:
-          days: 14
+          days: 3
           mode: active_objects
     review:
       alerts:
@@ -318,7 +301,6 @@ cameras:
         - bicycle
         required_zones:
         - cx
-
   cam_192_168_1_47:
     enabled: true
     ffmpeg:
@@ -333,7 +315,9 @@ cameras:
         roles:
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
+        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
+          1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000
+          -avoid_negative_ts make_zero
     detect:
       width: 800
       height: 448
@@ -347,19 +331,19 @@ cameras:
       height: 1296
     objects:
       track:
-      - person
-      - car
-      - motorcycle
       - bus
-      - dog
-      - cat
       - bicycle
+      - dog
+      - motorcycle
+      - cat
+      - car
+      - person
       filters:
         person:
           threshold: 0.68
     zones:
       jjdgjgdf:
-        coordinates: 261,113,512,59,789,172,796,440,246,438
+        coordinates: 261,113,512,59,790,172,796,441,246,438
         objects:
         - person
         - car
@@ -368,24 +352,24 @@ cameras:
       threshold: 22
       contour_area: 80
       improve_contrast: false
-      mask: 255,115,248,9,490,5,792,12,794,164,512,54,5,5,6,440,237,436,251,118,240,11
+      mask: 255,115,248,9,490,5,793,12,794,164,512,53,5,5,6,441,237,436,251,117,240,11
     record:
       enabled: true
       motion:
-        days: 14
+        days: 3
       continuous:
         days: 0
       alerts:
         pre_capture: 10
         post_capture: 10
         retain:
-          days: 14
+          days: 3
           mode: active_objects
       detections:
         pre_capture: 10
         post_capture: 10
         retain:
-          days: 14
+          days: 3
           mode: active_objects
     review:
       alerts:
@@ -410,7 +394,6 @@ cameras:
         - bicycle
         required_zones:
         - jjdgjgdf
-
   cam_192_168_1_200:
     enabled: false
     ffmpeg:
@@ -431,22 +414,52 @@ cameras:
       bounding_box: true
     objects:
       track:
-      - person
-      - car
-      - motorcycle
+      - bus
+      - bicycle
       - dog
+      - motorcycle
+      - cat
+      - car
+      - person
       filters:
         person:
           threshold: 0.7
     motion:
       threshold: 25
+      improve_contrast: false
+      contour_area: 80
     record:
       enabled: true
       motion:
         days: 14
       continuous:
         days: 0
-
+      alerts:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+      detections:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+    review:
+      alerts:
+        labels: &id001
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
+        required_zones: []
+      detections:
+        labels: *id001
+        required_zones: []
   cam_192_168_1_93:
     enabled: false
     ffmpeg:
@@ -467,21 +480,50 @@ cameras:
       bounding_box: true
     objects:
       track:
-      - person
-      - car
-      - motorcycle
+      - bus
+      - bicycle
       - dog
+      - motorcycle
+      - cat
+      - car
+      - person
       filters:
         person:
           threshold: 0.7
     motion:
       threshold: 25
+      improve_contrast: false
+      contour_area: 80
     record:
       enabled: true
       motion:
         days: 3
       continuous:
         days: 0
-
+      alerts:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+      detections:
+        pre_capture: 10
+        post_capture: 10
+        retain:
+          days: 14
+          mode: active_objects
+    review:
+      alerts:
+        labels: &id002
+        - person
+        - car
+        - motorcycle
+        - bus
+        - dog
+        - cat
+        - bicycle
+        required_zones: []
+      detections:
+        labels: *id002
+        required_zones: []
 version: 0.17-0
-

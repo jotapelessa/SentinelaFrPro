@@ -780,9 +780,9 @@
     "semantic_hash": ""
   },
   "frigate/config/config.yml": {
-    "mtime": 1792078549.6937861,
-    "seen": 1792078909.7259479,
-    "ast_hash": "7e54b524d0b13aa4a47a394591a2fbe2",
+    "mtime": 1792080755.1544633,
+    "seen": 1792080844.208362,
+    "ast_hash": "06c24f7e9ce4048b9d675ab515188949",
     "semantic_hash": ""
   },
   "implementation_plan.md": {
