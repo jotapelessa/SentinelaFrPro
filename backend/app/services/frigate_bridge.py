@@ -119,7 +119,7 @@ class FrigateBridgeService:
         status["logs"] = self.get_connectivity_logs()
         return status
 
-    async def get_live_snapshot(self, camera_name: str = "camera_principal") -> Optional[bytes]:
+    async def get_live_snapshot(self, camera_name: str = "camera_principal", width: Optional[int] = None, **kwargs) -> Optional[bytes]:
         """
         Retrieves a live JPEG frame at native/main-stream resolution using a multi-channel pipeline:
         1. go2rtc frame.jpeg (main stream, native resolution — highest quality)

@@ -393,7 +393,7 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
     except Exception as e:
         logger.debug(f"Could not load telegram_send_document: {e}")
 
-    thumb_bytes = await frigate_bridge.get_live_snapshot(camera_name=cam_name, width=640)
+    thumb_bytes = await frigate_bridge.get_live_snapshot(camera_name=cam_name)
 
     ok = await telegram_vault_service.send_alert_video(
         video_bytes=video_bytes,
