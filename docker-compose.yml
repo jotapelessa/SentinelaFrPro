@@ -32,6 +32,7 @@ services:
       - FRIGATE_MQTT_USER=${FRIGATE_MQTT_USER:-frigate}
       - FRIGATE_MQTT_PASSWORD=${FRIGATE_MQTT_PASSWORD}
       - LIBVA_DRIVER_NAME=iHD
+      - FFMPEG_DISABLE_GAMMA_EQUALIZER=1
     dns:
       - 1.1.1.1
       - 8.8.8.8
