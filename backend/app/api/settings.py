@@ -382,7 +382,7 @@ async def test_telegram_video(request: Request, payload: Optional[TelegramVideoT
             detail=f"Não foi possível capturar o vídeo ao vivo da câmera '{friendly_name}'. Verifique o stream RTSP/go2rtc."
         )
 
-    send_doc = False
+    send_doc = True
     try:
         async with AsyncSessionLocal() as session:
             s_stmt = select(SystemSetting).where(SystemSetting.key == "telegram_send_document")
