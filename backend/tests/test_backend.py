@@ -354,9 +354,9 @@ async def test_sync_camera_3mp_unified_inputs_and_streams():
     cam_entry = captured_cfg["cameras"]["cam_192_168_1_196"]
     streams = captured_cfg["go2rtc"]["streams"]
 
-    # 1. Detect must be 1280x720 @ 5fps (Alternativa B HD nativo)
-    assert cam_entry["detect"]["width"] == 1280
-    assert cam_entry["detect"]["height"] == 720
+    # 1. Detect must be 800x448 @ 5fps when rtsp_sub is present (CPU < 15% thermal relief)
+    assert cam_entry["detect"]["width"] == 800
+    assert cam_entry["detect"]["height"] == 448
     assert cam_entry["detect"]["fps"] == 5
 
     # 2. Snapshots must be quality 100, height 1296, clean_copy True (Preservação 3MP nativo)
@@ -365,20 +365,21 @@ async def test_sync_camera_3mp_unified_inputs_and_streams():
     assert cam_entry["snapshots"]["clean_copy"] is True
     assert cam_entry["snapshots"]["bounding_box"] is True
 
-    # 3. Single consolidated ffmpeg input with roles [record, detect]
-    assert len(cam_entry["ffmpeg"]["inputs"]) == 1
-    input_item = cam_entry["ffmpeg"]["inputs"][0]
-    assert input_item["path"] == "rtsp://127.0.0.1:8554/cam_192_168_1_196"
-    assert input_item["roles"] == ["record", "detect"]
+    # 3. Dual ffmpeg inputs: record on main 3MP, detect on sub 800x448
+    assert len(cam_entry["ffmpeg"]["inputs"]) == 2
+    inputs_by_role = {tuple(inp["roles"]): inp["path"] for inp in cam_entry["ffmpeg"]["inputs"]}
+    assert inputs_by_role[("record",)] == "rtsp://127.0.0.1:8554/cam_192_168_1_196"
+    assert inputs_by_role[("detect",)] == "rtsp://127.0.0.1:8554/cam_192_168_1_196_sub"
 
-    # 4. Zero-copy sub alias in go2rtc
-    assert streams["cam_192_168_1_196_sub"] == ["ffmpeg:cam_192_168_1_196#video=copy"]
+    # 4. SUB stream with timeout flag in go2rtc
+    assert "timeout=60" in streams["cam_192_168_1_196_sub"][0]
+    assert "live/0/SUB" in streams["cam_192_168_1_196_sub"][0]
 
-    # 5. Zones scaled to 1280x720 base
+    # 5. Zones scaled to 800x448 base
     garagem_coords = cam_entry["zones"]["garagem"]["coordinates"]
-    # 0.5 * 1280 = 640, 0.5 * 720 = 360
-    assert "640,360" in garagem_coords
-    assert "1280,720" in garagem_coords
+    # 0.5 * 800 = 400, 0.5 * 448 = 224
+    assert "400,224" in garagem_coords
+    assert "800,448" in garagem_coords
 
 
 @pytest.mark.asyncio

@@ -25,8 +25,8 @@
   3. **Web Dashboard — Watchdog Local de Vídeo & go2rtc 59s (`WebRTCPlayer.tsx`, `frigate/config/config.yml`, `cameras.py`)**:
      - *Causa*: Sem `webrtc.listen: ":8555"` no go2rtc e sem `#timeout=60` no RTSP, instabilidades de ICE derrubavam o stream após 59s sem erro capturado pelo player.
      - *Correção*: Adicionada amarração `listen: ":8555"` e `#timeout=60`; URL padronizada para `mode=mse,webrtc` (Regra de Ouro #3); implementado watchdog local a cada 500ms verificando estagnação de `currentTime` (>= 3.5s) e `readyState < 2`, forçando reconexão imediata via incremento de chave React (`key`).
-  4. **Servidor NVR — Alívio de CPU via SUB Stream Nativo (`frigate/config/config.yml`)**:
-     - *Correção*: Mapeados streams nativos `/live/0/SUB` (800×448 @ 5fps) para a role `detect`, preservando o stream 3MP nativo em `-c:v copy` para a role `record` e clipes do Telegram. Coordenadas de zonas e máscaras recalculadas para a malha de detecção 800×448.
+  4. **Servidor NVR — Alívio de CPU via SUB Stream Nativo (`frigate/config/config.yml`, `cameras.py`)**:
+     - *Correção*: Mapeados streams nativos `/live/0/SUB` (800×448 @ 5fps) para a role `detect`, preservando o stream 3MP nativo em `-c:v copy` para a role `record` e clipes do Telegram. Coordenadas de zonas e máscaras recalculadas para a malha de detecção 800×448. Atualizado `sync_camera_to_frigate` em `cameras.py` para preservar dinamicamente entradas separadas de gravação (MAIN) e detecção (SUB) em 800x448, impedindo que o reconciliador do backend reverta a configuração.
   5. **Sincronização de Versão 001.000.000.182 (Build 182)**:
      - Atualizados: `android/version.properties` (BUILD=182, VERSION_NAME=001.000.000.182), `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
   6. **Cobertura de Testes**:

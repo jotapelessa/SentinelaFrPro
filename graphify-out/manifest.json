@@ -366,9 +366,9 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1792078581.535162,
-    "seen": 1792078909.725895,
-    "ast_hash": "104f07211dbada37fcf0910259b91546",
+    "mtime": 1792080233.0453887,
+    "seen": 1792080330.126103,
+    "ast_hash": "a10421884a48cc188f34a90286e7168e",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
@@ -486,9 +486,9 @@
     "semantic_hash": "2b96bb012c232336e6df92435a9a422a"
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1792078605.0376081,
-    "seen": 1792078909.7259068,
-    "ast_hash": "a492e60300b5440ce22be876fe2c6810",
+    "mtime": 1792080255.0161211,
+    "seen": 1792080330.126115,
+    "ast_hash": "67f8bfb9ccfb1dc5023eedbe8eca8767",
     "semantic_hash": ""
   },
   "compile_apk.sh": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1792078895.6966887,
-    "seen": 1792078909.725943,
-    "ast_hash": "d6e01b281a739d27e0343ed2c42645c2",
+    "mtime": 1792080381.7447445,
+    "seen": 1792080426.865176,
+    "ast_hash": "43b9030d737b20a3b8b7585a524d8949",
     "semantic_hash": ""
   },
   "android/gradlew": {

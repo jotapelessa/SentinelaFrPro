@@ -1539,34 +1539,65 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     cfg["go2rtc"]["log"]["rtsp"] = "warn"
 
     rtsp_url = cam.rtsp_main
+    sub_url = (cam.rtsp_sub or "").strip()
     if rtsp_url:
         clean_url = rtsp_url.strip()
-        # Ingestão Única do Hardware com Aliases em Memória Zero-Copy (Regras de Ouro #12 e #15)
-        cfg["go2rtc"]["streams"][target_cam_key] = [clean_url]
+        main_source = clean_url
+        if "#timeout=" not in main_source:
+            if "#buffer=" not in main_source and "#backchannel=" not in main_source:
+                main_source = f"{main_source}#backchannel=0#buffer=2000#timeout=60"
+            else:
+                main_source = f"{main_source}#timeout=60"
+
+        cfg["go2rtc"]["streams"][target_cam_key] = [main_source]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-        # Sub-stream em memória zero-copy (elimina concorrência TCP de socket e timeouts de 65s)
-        cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+
+        if sub_url:
+            sub_source = sub_url
+            if "#timeout=" not in sub_source:
+                if "#backchannel=" not in sub_source:
+                    sub_source = f"{sub_source}#backchannel=0#timeout=60"
+                else:
+                    sub_source = f"{sub_source}#timeout=60"
+            cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [sub_source]
+        else:
+            cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
 
         # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
+        sub_alias_target = f"{target_cam_key}_sub" if sub_url else target_cam_key
         if target_cam_key in ("cam_192_168_1_196", "camera_principal"):
             cfg["go2rtc"]["streams"]["camera_principal"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{sub_alias_target}#video=copy"]
         elif target_cam_key in ("cam_192_168_1_47", "camera_secundaria"):
             cfg["go2rtc"]["streams"]["camera_secundaria"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_secundaria_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{sub_alias_target}#video=copy"]
 
-    # Build UNIFIED ffmpeg input: Consolidate roles: ["record", "detect"] on the main stream
-    # Eliminates dual demuxer processes and prevents camera TCP socket saturation (Regras de Ouro #12 e #15)
-    ffmpeg_inputs = [{
-        "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
-        "input_args": "preset-rtsp-restream",
-        "roles": ["record", "detect"]
-    }]
+    # Build ffmpeg inputs:
+    # Se sub_url estiver presente, separa record (MAIN 3MP copy) e detect (SUB 800x448) para alívio térmico
+    if sub_url:
+        ffmpeg_inputs = [
+            {
+                "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
+                "input_args": "preset-rtsp-restream",
+                "roles": ["record"]
+            },
+            {
+                "path": f"rtsp://127.0.0.1:8554/{target_cam_key}_sub",
+                "input_args": "preset-rtsp-restream",
+                "roles": ["detect"]
+            }
+        ]
+    else:
+        ffmpeg_inputs = [{
+            "path": f"rtsp://127.0.0.1:8554/{target_cam_key}",
+            "input_args": "preset-rtsp-restream",
+            "roles": ["record", "detect"]
+        }]
 
     if target_cam_key not in cfg["cameras"] or not isinstance(cfg["cameras"][target_cam_key], dict):
         cfg["cameras"][target_cam_key] = {}
@@ -1580,11 +1611,11 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     cam_block["ffmpeg"]["hwaccel_args"] = "preset-vaapi"
     cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
 
-    # 2. Configurar detect desacoplado em 1280x720 HD nativo (Alternativa B)
-    # Gravação permanece no stream físico nativo 3MP (2304x1296), enquanto a malha de detecção
-    # utiliza escalonamento VAAPI em 1280x720 para aliviar barramento PCIe e reduzir carga térmica
+    # 2. Configurar detect desacoplado:
+    # Se sub_url estiver configurada, consome 800x448 nativo (alívio térmico extremo para <15% CPU)
+    # Se não houver sub, utiliza 1280x720 HD nativo (Alternativa B)
     res_str = (getattr(cam, "resolution", "3mp") or "3mp").lower()
-    if res_str in ("800x448", "sub"):
+    if sub_url or res_str in ("800x448", "sub"):
         target_w, target_h = 800, 448
     else:
         target_w, target_h = 1280, 720
@@ -1682,11 +1713,14 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     if "output_args" not in cam_block["ffmpeg"] or not isinstance(cam_block["ffmpeg"]["output_args"], dict):
         cam_block["ffmpeg"]["output_args"] = {}
 
-    if getattr(cam, "record_audio", False):
+    existing_rec_args = str(cam_block["ffmpeg"]["output_args"].get("record", ""))
+    if "-f segment" in existing_rec_args:
+        pass
+    elif getattr(cam, "record_audio", False):
         cam_block["ffmpeg"]["output_args"]["record"] = "preset-record-generic-audio-aac"
     else:
-        # Se record_audio for falso, silencia o áudio (-an) para prevenir crash fatal com pcm_mulaw em contêiner MP4
-        cam_block["ffmpeg"]["output_args"]["record"] = "preset-record-generic"
+        # Segmentação segura com copy de vídeo e transcode aac de áudio
+        cam_block["ffmpeg"]["output_args"]["record"] = "-f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero"
 
     # 7. Garantir review labels e sincronizar required_zones com base nas zonas configuradas
     configured_zone_names = []

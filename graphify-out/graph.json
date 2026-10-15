@@ -1119,7 +1119,7 @@
       "file_type": "code",
       "norm_label": "camerahardwareconfigpayload",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1992"
+      "source_location": "L2026"
     },
     {
       "id": "backend_app_api_cameras_cameraupdate",
@@ -1145,7 +1145,7 @@
       "file_type": "code",
       "norm_label": "frigatezonespayload",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2092"
+      "source_location": "L2126"
     },
     {
       "id": "backend_app_api_cameras_rtsptestpayload",
@@ -3370,7 +3370,7 @@
       "file_type": "code",
       "norm_label": "test_list_events_canonical_snapshot_urls()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L426"
+      "source_location": "L427"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_tv_theme_tvdesigntokens_toentity",
@@ -3958,7 +3958,7 @@
       "file_type": "code",
       "norm_label": "test_get_event_snapshot_clean_flexible_param()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L464"
+      "source_location": "L465"
     },
     {
       "id": "backend_tests_test_backend_test_get_event_snapshot_webp_and_clean",
@@ -3970,7 +3970,7 @@
       "file_type": "code",
       "norm_label": "test_get_event_snapshot_webp_and_clean()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L385"
+      "source_location": "L386"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_bootreceiver_bootreceiver_onreceive",
@@ -4954,7 +4954,7 @@
       "file_type": "code",
       "norm_label": "delete_camera()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1946"
+      "source_location": "L1980"
     },
     {
       "id": "backend_app_api_cameras_extract_camera_ip",
@@ -4990,7 +4990,7 @@
       "file_type": "code",
       "norm_label": "get_camera_hardware_config()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2003"
+      "source_location": "L2037"
     },
     {
       "id": "backend_app_api_cameras_get_camera_stream_info",
@@ -5014,7 +5014,7 @@
       "file_type": "code",
       "norm_label": "get_frigate_camera_zones()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2161"
+      "source_location": "L2195"
     },
     {
       "id": "backend_app_api_cameras_get_frigate_config_path",
@@ -5026,7 +5026,7 @@
       "file_type": "code",
       "norm_label": "get_frigate_config_path()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2098"
+      "source_location": "L2132"
     },
     {
       "id": "backend_app_api_cameras_infer_substream_url",
@@ -5062,7 +5062,7 @@
       "file_type": "code",
       "norm_label": "parse_frigate_coordinates()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2112"
+      "source_location": "L2146"
     },
     {
       "id": "backend_app_api_cameras_pause_camera",
@@ -5098,7 +5098,7 @@
       "file_type": "code",
       "norm_label": "remove_camera_from_frigate()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1885"
+      "source_location": "L1919"
     },
     {
       "id": "backend_app_api_cameras_resume_camera",
@@ -5122,7 +5122,7 @@
       "file_type": "code",
       "norm_label": "save_frigate_camera_zones()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2298"
+      "source_location": "L2332"
     },
     {
       "id": "backend_app_api_cameras_save_yaml_config_atomic",
@@ -5218,7 +5218,7 @@
       "file_type": "code",
       "norm_label": "update_camera_hardware_config()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2033"
+      "source_location": "L2067"
     },
     {
       "id": "backend_tests_test_backend_test_extract_camera_ip",
@@ -5254,7 +5254,7 @@
       "file_type": "code",
       "norm_label": "test_sync_camera_overwrites_existing_zones_with_720p_coordinates()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L505"
+      "source_location": "L506"
     },
     {
       "id": "backend_tests_test_backend_test_sync_camera_to_frigate_zones_mask_filtering",
@@ -6562,7 +6562,7 @@
       "file_type": "code",
       "norm_label": "reconcile_cameras_with_frigate()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1828"
+      "source_location": "L1862"
     },
     {
       "id": "backend_app_api_cameras_sanitize_frigate_config",
@@ -6586,7 +6586,7 @@
       "file_type": "code",
       "norm_label": "test_fetch_thumbnail_bytes_with_custom_media_dir()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L767"
+      "source_location": "L768"
     },
     {
       "id": "backend_tests_test_backend_test_frigate_bridge_get_live_snapshot_sources",
@@ -6598,7 +6598,7 @@
       "file_type": "code",
       "norm_label": "test_frigate_bridge_get_live_snapshot_sources()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L561"
+      "source_location": "L562"
     },
     {
       "id": "backend_tests_test_backend_test_frigate_bridge_transcode_to_30fps_silent_audio",
@@ -6610,7 +6610,7 @@
       "file_type": "code",
       "norm_label": "test_frigate_bridge_transcode_to_30fps_silent_audio()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L924"
+      "source_location": "L925"
     },
     {
       "id": "backend_tests_test_backend_test_frigate_config_file_sub_detect_and_webrtc_listen",
@@ -6622,7 +6622,7 @@
       "file_type": "code",
       "norm_label": "test_frigate_config_file_sub_detect_and_webrtc_listen()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1174"
+      "source_location": "L1175"
     },
     {
       "id": "backend_tests_test_backend_test_get_device_permitted_cameras_allows_pending_status",
@@ -6634,7 +6634,7 @@
       "file_type": "code",
       "norm_label": "test_get_device_permitted_cameras_allows_pending_status()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1141"
+      "source_location": "L1142"
     },
     {
       "id": "backend_tests_test_backend_test_get_event_thumbnail_endpoint",
@@ -6646,7 +6646,7 @@
       "file_type": "code",
       "norm_label": "test_get_event_thumbnail_endpoint()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L784"
+      "source_location": "L785"
     },
     {
       "id": "backend_tests_test_backend_test_get_event_thumbnail_endpoint_accept_ranges_header",
@@ -6658,7 +6658,7 @@
       "file_type": "code",
       "norm_label": "test_get_event_thumbnail_endpoint_accept_ranges_header()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1044"
+      "source_location": "L1045"
     },
     {
       "id": "backend_tests_test_backend_test_go2rtc_alias_sanitization",
@@ -6682,7 +6682,7 @@
       "file_type": "code",
       "norm_label": "test_mqtt_allow_video_if_already_processed_even_without_zone()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L633"
+      "source_location": "L634"
     },
     {
       "id": "backend_tests_test_backend_test_mqtt_allow_video_if_recovered_from_sqlite",
@@ -6694,7 +6694,7 @@
       "file_type": "code",
       "norm_label": "test_mqtt_allow_video_if_recovered_from_sqlite()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L860"
+      "source_location": "L861"
     },
     {
       "id": "backend_tests_test_backend_test_mqtt_policy_ignores_motion_masks",
@@ -6730,7 +6730,7 @@
       "file_type": "code",
       "norm_label": "test_mqtt_suppress_video_if_already_sent_in_sqlite()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L964"
+      "source_location": "L965"
     },
     {
       "id": "backend_tests_test_backend_test_parse_frigate_coordinates_defaults_to_1280x720",
@@ -6742,7 +6742,7 @@
       "file_type": "code",
       "norm_label": "test_parse_frigate_coordinates_defaults_to_1280x720()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L492"
+      "source_location": "L493"
     },
     {
       "id": "backend_tests_test_backend_test_pip_dnd_check",
@@ -6778,7 +6778,7 @@
       "file_type": "code",
       "norm_label": "test_reconcile_cameras_with_frigate_restart_trigger()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L578"
+      "source_location": "L579"
     },
     {
       "id": "backend_tests_test_backend_test_resolve_camera_ip_safety",
@@ -6826,7 +6826,7 @@
       "file_type": "code",
       "norm_label": "test_telegram_queue_fetch_thumbnail_checks_thumbnail_endpoint_first()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1027"
+      "source_location": "L1028"
     },
     {
       "id": "backend_tests_test_backend_test_telegram_queue_remux_silent_audio_injection",
@@ -6838,7 +6838,7 @@
       "file_type": "code",
       "norm_label": "test_telegram_queue_remux_silent_audio_injection()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L820"
+      "source_location": "L821"
     },
     {
       "id": "backend_tests_test_backend_test_telegram_send_alert_photo_document",
@@ -6862,7 +6862,7 @@
       "file_type": "code",
       "norm_label": "test_telegram_send_alert_video_corrupted_thumbnail_fallback()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L730"
+      "source_location": "L731"
     },
     {
       "id": "backend_tests_test_backend_test_telegram_send_alert_video_document_with_thumbnail",
@@ -6874,7 +6874,7 @@
       "file_type": "code",
       "norm_label": "test_telegram_send_alert_video_document_with_thumbnail()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L677"
+      "source_location": "L678"
     },
     {
       "id": "backend_tests_test_backend_test_telemetry_service",
@@ -6898,7 +6898,7 @@
       "file_type": "code",
       "norm_label": "test_thermal_optimization_alternativa_b_1280x720_and_no_contrast_filter()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1071"
+      "source_location": "L1072"
     },
     {
       "id": "backend_tests_test_backend_test_watermark_generation",
@@ -12889,7 +12889,7 @@
       "source_location": "L146"
     },
     {
-      "id": "backend_app_api_cameras_rationale_2004",
+      "id": "backend_app_api_cameras_rationale_2038",
       "label": "Fetches camera on-board hardware encoder and device settings.",
       "_origin": "ast",
       "community": 30,
@@ -12897,10 +12897,10 @@
       "file_type": "rationale",
       "norm_label": "fetches camera on-board hardware encoder and device settings.",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2004"
+      "source_location": "L2038"
     },
     {
-      "id": "backend_app_api_cameras_rationale_2034",
+      "id": "backend_app_api_cameras_rationale_2068",
       "label": "Applies on-board hardware encoder configurations (codec, bitrate, fps,\u2026",
       "_origin": "ast",
       "community": 30,
@@ -12908,10 +12908,10 @@
       "file_type": "rationale",
       "norm_label": "applies on-board hardware encoder configurations (codec, bitrate, fps,...",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2034"
+      "source_location": "L2068"
     },
     {
-      "id": "backend_app_api_cameras_rationale_2113",
+      "id": "backend_app_api_cameras_rationale_2147",
       "label": "Parses various Frigate coordinate representations into normalized {x: 0..1, y:\u2026",
       "_origin": "ast",
       "community": 30,
@@ -12919,7 +12919,7 @@
       "file_type": "rationale",
       "norm_label": "parses various frigate coordinate representations into normalized {x: 0..1, y:...",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2113"
+      "source_location": "L2147"
     },
     {
       "id": "backend_app_api_cameras_rationale_28",
@@ -15799,7 +15799,7 @@
       "source_location": "L1126"
     },
     {
-      "id": "backend_app_api_cameras_rationale_1829",
+      "id": "backend_app_api_cameras_rationale_1863",
       "label": "Idempotent reconciler that reads all active cameras (enabled=1) from SQLite\u2026",
       "_origin": "ast",
       "community": 51,
@@ -15807,7 +15807,7 @@
       "file_type": "rationale",
       "norm_label": "idempotent reconciler that reads all active cameras (enabled=1) from sqlite...",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1829"
+      "source_location": "L1863"
     },
     {
       "id": "backend_app_api_telemetry_py_get",
@@ -21527,7 +21527,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1974",
+      "source_location": "L2008",
       "weight": 1.0
     },
     {
@@ -21539,7 +21539,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2019",
+      "source_location": "L2053",
       "weight": 1.0
     },
     {
@@ -21563,7 +21563,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2183",
+      "source_location": "L2217",
       "weight": 1.0
     },
     {
@@ -21575,7 +21575,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2238",
+      "source_location": "L2272",
       "weight": 1.0
     },
     {
@@ -21659,7 +21659,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1851",
+      "source_location": "L1885",
       "weight": 1.0
     },
     {
@@ -21671,7 +21671,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1891",
+      "source_location": "L1925",
       "weight": 1.0
     },
     {
@@ -21683,7 +21683,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1926",
+      "source_location": "L1960",
       "weight": 1.0
     },
     {
@@ -21707,7 +21707,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2318",
+      "source_location": "L2352",
       "weight": 1.0
     },
     {
@@ -21719,7 +21719,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2433",
+      "source_location": "L2467",
       "weight": 1.0
     },
     {
@@ -21755,7 +21755,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1767",
+      "source_location": "L1801",
       "weight": 1.0
     },
     {
@@ -21767,7 +21767,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1814",
+      "source_location": "L1848",
       "weight": 1.0
     },
     {
@@ -21863,7 +21863,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2049",
+      "source_location": "L2083",
       "weight": 1.0
     },
     {
@@ -23123,7 +23123,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1166",
+      "source_location": "L1167",
       "weight": 1.0
     },
     {
@@ -23135,7 +23135,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L480",
+      "source_location": "L481",
       "weight": 1.0
     },
     {
@@ -23147,7 +23147,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L404",
+      "source_location": "L405",
       "weight": 1.0
     },
     {
@@ -23171,7 +23171,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L456",
+      "source_location": "L457",
       "weight": 1.0
     },
     {
@@ -23183,7 +23183,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L496",
+      "source_location": "L497",
       "weight": 1.0
     },
     {
@@ -23195,7 +23195,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L626",
+      "source_location": "L627",
       "weight": 1.0
     },
     {
@@ -23219,7 +23219,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L553",
+      "source_location": "L554",
       "weight": 1.0
     },
     {
@@ -23243,7 +23243,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1092",
+      "source_location": "L1093",
       "weight": 1.0
     },
     {
@@ -23255,7 +23255,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1124",
+      "source_location": "L1125",
       "weight": 1.0
     },
     {
@@ -23543,7 +23543,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1945",
+      "source_location": "L1979",
       "weight": 1.0
     },
     {
@@ -23567,7 +23567,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2002",
+      "source_location": "L2036",
       "weight": 1.0
     },
     {
@@ -23591,7 +23591,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2160",
+      "source_location": "L2194",
       "weight": 1.0
     },
     {
@@ -23639,7 +23639,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2297",
+      "source_location": "L2331",
       "weight": 1.0
     },
     {
@@ -23711,7 +23711,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2032",
+      "source_location": "L2066",
       "weight": 1.0
     },
     {
@@ -24611,7 +24611,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L766",
+      "source_location": "L767",
       "weight": 1.0
     },
     {
@@ -24623,7 +24623,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L560",
+      "source_location": "L561",
       "weight": 1.0
     },
     {
@@ -24635,7 +24635,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L923",
+      "source_location": "L924",
       "weight": 1.0
     },
     {
@@ -24647,7 +24647,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1173",
+      "source_location": "L1174",
       "weight": 1.0
     },
     {
@@ -24659,7 +24659,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1140",
+      "source_location": "L1141",
       "weight": 1.0
     },
     {
@@ -24671,7 +24671,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L463",
+      "source_location": "L464",
       "weight": 1.0
     },
     {
@@ -24683,7 +24683,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L384",
+      "source_location": "L385",
       "weight": 1.0
     },
     {
@@ -24695,7 +24695,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L783",
+      "source_location": "L784",
       "weight": 1.0
     },
     {
@@ -24707,7 +24707,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1043",
+      "source_location": "L1044",
       "weight": 1.0
     },
     {
@@ -24731,7 +24731,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L425",
+      "source_location": "L426",
       "weight": 1.0
     },
     {
@@ -24743,7 +24743,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L632",
+      "source_location": "L633",
       "weight": 1.0
     },
     {
@@ -24755,7 +24755,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L859",
+      "source_location": "L860",
       "weight": 1.0
     },
     {
@@ -24791,7 +24791,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L963",
+      "source_location": "L964",
       "weight": 1.0
     },
     {
@@ -24827,7 +24827,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L577",
+      "source_location": "L578",
       "weight": 1.0
     },
     {
@@ -24875,7 +24875,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L504",
+      "source_location": "L505",
       "weight": 1.0
     },
     {
@@ -24911,7 +24911,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1026",
+      "source_location": "L1027",
       "weight": 1.0
     },
     {
@@ -24923,7 +24923,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L819",
+      "source_location": "L820",
       "weight": 1.0
     },
     {
@@ -24947,7 +24947,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L729",
+      "source_location": "L730",
       "weight": 1.0
     },
     {
@@ -24959,7 +24959,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L676",
+      "source_location": "L677",
       "weight": 1.0
     },
     {
@@ -24983,7 +24983,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1070",
+      "source_location": "L1071",
       "weight": 1.0
     },
     {
@@ -29648,7 +29648,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1142",
+      "source_location": "L1143",
       "weight": 1.0
     },
     {
@@ -29660,7 +29660,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1143",
+      "source_location": "L1144",
       "weight": 1.0
     },
     {
@@ -29720,7 +29720,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L388",
+      "source_location": "L389",
       "weight": 1.0
     },
     {
@@ -29732,7 +29732,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L428",
+      "source_location": "L429",
       "weight": 1.0
     },
     {
@@ -29744,7 +29744,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L493",
+      "source_location": "L494",
       "weight": 1.0
     },
     {
@@ -29756,7 +29756,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L579",
+      "source_location": "L580",
       "weight": 1.0
     },
     {
@@ -29780,7 +29780,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L863",
+      "source_location": "L864",
       "weight": 1.0
     },
     {
@@ -32732,7 +32732,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1946",
+      "source_location": "L1980",
       "weight": 1.0
     },
     {
@@ -32744,7 +32744,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1946",
+      "source_location": "L1980",
       "weight": 1.0
     },
     {
@@ -32768,7 +32768,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2003",
+      "source_location": "L2037",
       "weight": 1.0
     },
     {
@@ -32792,7 +32792,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2161",
+      "source_location": "L2195",
       "weight": 1.0
     },
     {
@@ -32816,7 +32816,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2112",
+      "source_location": "L2146",
       "weight": 1.0
     },
     {
@@ -32876,7 +32876,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2298",
+      "source_location": "L2332",
       "weight": 1.0
     },
     {
@@ -32888,7 +32888,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2298",
+      "source_location": "L2332",
       "weight": 1.0
     },
     {
@@ -33020,7 +33020,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2033",
+      "source_location": "L2067",
       "weight": 1.0
     },
     {
@@ -33032,7 +33032,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2033",
+      "source_location": "L2067",
       "weight": 1.0
     },
     {
@@ -33044,7 +33044,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2033",
+      "source_location": "L2067",
       "weight": 1.0
     },
     {
@@ -38534,7 +38534,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1828",
+      "source_location": "L1862",
       "weight": 1.0
     },
     {
@@ -38545,7 +38545,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1885",
+      "source_location": "L1919",
       "weight": 1.0
     },
     {
@@ -38556,7 +38556,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1946",
+      "source_location": "L1980",
       "weight": 1.0
     },
     {
@@ -38567,7 +38567,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1992",
+      "source_location": "L2026",
       "weight": 1.0
     },
     {
@@ -38578,7 +38578,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2003",
+      "source_location": "L2037",
       "weight": 1.0
     },
     {
@@ -38589,7 +38589,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2033",
+      "source_location": "L2067",
       "weight": 1.0
     },
     {
@@ -38600,7 +38600,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2092",
+      "source_location": "L2126",
       "weight": 1.0
     },
     {
@@ -38611,7 +38611,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2098",
+      "source_location": "L2132",
       "weight": 1.0
     },
     {
@@ -38622,7 +38622,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2112",
+      "source_location": "L2146",
       "weight": 1.0
     },
     {
@@ -38633,7 +38633,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2161",
+      "source_location": "L2195",
       "weight": 1.0
     },
     {
@@ -38644,7 +38644,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2298",
+      "source_location": "L2332",
       "weight": 1.0
     },
     {
@@ -40316,7 +40316,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1027",
+      "source_location": "L1028",
       "weight": 1.0
     },
     {
@@ -40327,7 +40327,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1044",
+      "source_location": "L1045",
       "weight": 1.0
     },
     {
@@ -40338,7 +40338,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1071",
+      "source_location": "L1072",
       "weight": 1.0
     },
     {
@@ -40349,7 +40349,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1141",
+      "source_location": "L1142",
       "weight": 1.0
     },
     {
@@ -40360,7 +40360,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1174",
+      "source_location": "L1175",
       "weight": 1.0
     },
     {
@@ -40481,7 +40481,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L385",
+      "source_location": "L386",
       "weight": 1.0
     },
     {
@@ -40492,7 +40492,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L426",
+      "source_location": "L427",
       "weight": 1.0
     },
     {
@@ -40514,7 +40514,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L464",
+      "source_location": "L465",
       "weight": 1.0
     },
     {
@@ -40525,7 +40525,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L492",
+      "source_location": "L493",
       "weight": 1.0
     },
     {
@@ -40536,7 +40536,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L505",
+      "source_location": "L506",
       "weight": 1.0
     },
     {
@@ -40558,7 +40558,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L561",
+      "source_location": "L562",
       "weight": 1.0
     },
     {
@@ -40569,7 +40569,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L578",
+      "source_location": "L579",
       "weight": 1.0
     },
     {
@@ -40580,7 +40580,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L633",
+      "source_location": "L634",
       "weight": 1.0
     },
     {
@@ -40591,7 +40591,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L677",
+      "source_location": "L678",
       "weight": 1.0
     },
     {
@@ -40613,7 +40613,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L730",
+      "source_location": "L731",
       "weight": 1.0
     },
     {
@@ -40624,7 +40624,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L767",
+      "source_location": "L768",
       "weight": 1.0
     },
     {
@@ -40635,7 +40635,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L784",
+      "source_location": "L785",
       "weight": 1.0
     },
     {
@@ -40646,7 +40646,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L820",
+      "source_location": "L821",
       "weight": 1.0
     },
     {
@@ -40657,7 +40657,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L860",
+      "source_location": "L861",
       "weight": 1.0
     },
     {
@@ -40679,7 +40679,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L924",
+      "source_location": "L925",
       "weight": 1.0
     },
     {
@@ -40690,7 +40690,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L964",
+      "source_location": "L965",
       "weight": 1.0
     },
     {
@@ -44582,7 +44582,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1992",
+      "source_location": "L2026",
       "weight": 1.0
     },
     {
@@ -44604,7 +44604,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2092",
+      "source_location": "L2126",
       "weight": 1.0
     },
     {
@@ -47545,47 +47545,47 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_1829",
+      "source": "backend_app_api_cameras_rationale_1863",
       "target": "backend_app_api_cameras_reconcile_cameras_with_frigate",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1829",
+      "source_location": "L1863",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_2004",
+      "source": "backend_app_api_cameras_rationale_2038",
       "target": "backend_app_api_cameras_get_camera_hardware_config",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2004",
+      "source_location": "L2038",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_2034",
+      "source": "backend_app_api_cameras_rationale_2068",
       "target": "backend_app_api_cameras_update_camera_hardware_config",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2034",
+      "source_location": "L2068",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_2113",
+      "source": "backend_app_api_cameras_rationale_2147",
       "target": "backend_app_api_cameras_parse_frigate_coordinates",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2113",
+      "source_location": "L2147",
       "weight": 1.0
     },
     {
@@ -49534,7 +49534,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1949",
+      "source_location": "L1983",
       "weight": 0.8
     },
     {
@@ -49567,7 +49567,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2008",
+      "source_location": "L2042",
       "weight": 0.8
     },
     {
@@ -49589,7 +49589,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2172",
+      "source_location": "L2206",
       "weight": 0.8
     },
     {
@@ -49622,7 +49622,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1841",
+      "source_location": "L1875",
       "weight": 0.8
     },
     {
@@ -49644,7 +49644,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2308",
+      "source_location": "L2342",
       "weight": 0.8
     },
     {
@@ -49699,7 +49699,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2038",
+      "source_location": "L2072",
       "weight": 0.8
     },
     {
@@ -50304,7 +50304,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1148",
+      "source_location": "L1149",
       "weight": 0.8
     },
     {
@@ -50315,7 +50315,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1154",
+      "source_location": "L1155",
       "weight": 0.8
     },
     {
@@ -50326,7 +50326,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L883",
+      "source_location": "L884",
       "weight": 0.8
     },
     {
@@ -50337,7 +50337,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L987",
+      "source_location": "L988",
       "weight": 0.8
     },
     {
@@ -50348,7 +50348,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L585",
+      "source_location": "L586",
       "weight": 0.8
     },
     {
@@ -50370,7 +50370,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L526",
+      "source_location": "L527",
       "weight": 0.8
     },
     {
@@ -50392,10 +50392,10 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1109",
+      "source_location": "L1110",
       "weight": 0.8
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "d8d3dee156aa7b2d0b6cc9b3e4055d77ac5ef8b3"
+  "built_at_commit": "ef24bbeaaa0bb37673e71fee903948e37f206665"
 }
