@@ -502,7 +502,7 @@ def test_parse_frigate_coordinates_defaults_to_1280x720():
 
 
 @pytest.mark.asyncio
-async def test_sync_camera_overwrites_existing_zones_with_3mp_coordinates():
+async def test_sync_camera_overwrites_existing_zones_with_720p_coordinates():
     from unittest.mock import patch, AsyncMock
     from app.api.cameras import sync_camera_to_frigate
     from app.db.models import Camera
@@ -1073,21 +1073,37 @@ async def test_thermal_optimization_alternativa_b_1280x720_and_no_contrast_filte
     from app.api.cameras import sync_camera_to_frigate, sanitize_frigate_config
     from app.db.models import Camera
 
-    # 1. Test sanitize_frigate_config enforces improve_contrast: false and threshold 22, contour_area 80
+    # 1. Test sanitize_frigate_config enforces improve_contrast: false, threshold >= 22, contour_area >= 80,
+    # and reconciles camera objects.track with zones and review labels
     raw_cfg = {
         "motion": {"improve_contrast": True, "threshold": 18, "contour_area": 20},
         "cameras": {
             "cam_test": {
-                "motion": {"improve_contrast": True}
+                "motion": {"improve_contrast": True, "threshold": 15, "contour_area": 10},
+                "zones": {
+                    "z1": {"coordinates": "100,100,200,200", "objects": ["dog"]}
+                },
+                "review": {
+                    "alerts": {"labels": ["person", "bus"]}
+                }
             }
         }
     }
     sanitized = sanitize_frigate_config(raw_cfg)
     assert sanitized["motion"]["improve_contrast"] is False
-    assert sanitized["motion"]["threshold"] == 18 # Preserves existing if set
-    assert sanitized["cameras"]["cam_test"]["motion"]["improve_contrast"] is False
+    assert sanitized["motion"]["threshold"] == 22 # Elevated from 18 to anti-noise floor 22
+    assert sanitized["motion"]["contour_area"] == 80 # Elevated from 20 to anti-noise floor 80
+    cam_test_motion = sanitized["cameras"]["cam_test"]["motion"]
+    assert cam_test_motion["improve_contrast"] is False
+    assert cam_test_motion["threshold"] == 22 # Elevated from 15 to anti-noise floor 22
+    assert cam_test_motion["contour_area"] == 80 # Elevated from 10 to anti-noise floor 80
     assert sanitized["cameras"]["cam_test"]["detect"]["width"] == 1280
     assert sanitized["cameras"]["cam_test"]["detect"]["height"] == 720
+    # Both zone object 'dog' and review label 'bus' must be in objects.track
+    cam_tracks = sanitized["cameras"]["cam_test"]["objects"]["track"]
+    assert "dog" in cam_tracks
+    assert "bus" in cam_tracks
+    assert "person" in cam_tracks
 
     # 2. Test sync_camera_to_frigate decouples 3MP physical resolution from 1280x720 detect mesh
     cam = Camera(

@@ -1205,9 +1205,9 @@ def sanitize_frigate_config(cfg: dict) -> dict:
         }
     else:
         cfg["motion"]["improve_contrast"] = False
-        if not cfg["motion"].get("threshold"):
+        if not cfg["motion"].get("threshold") or cfg["motion"].get("threshold") < 22:
             cfg["motion"]["threshold"] = 22
-        if not cfg["motion"].get("contour_area"):
+        if not cfg["motion"].get("contour_area") or cfg["motion"].get("contour_area") < 80:
             cfg["motion"]["contour_area"] = 80
 
     if "objects" not in cfg or not isinstance(cfg["objects"], dict):
@@ -1316,6 +1316,10 @@ def sanitize_frigate_config(cfg: dict) -> dict:
             }
         else:
             cam_cfg["motion"]["improve_contrast"] = False
+            if not cam_cfg["motion"].get("threshold") or cam_cfg["motion"].get("threshold") < 22:
+                cam_cfg["motion"]["threshold"] = 22
+            if not cam_cfg["motion"].get("contour_area") or cam_cfg["motion"].get("contour_area") < 80:
+                cam_cfg["motion"]["contour_area"] = 80
 
         # 4. Guarantee record block syntax for Frigate 0.17 (no retain/events under record)
         if "record" not in cam_cfg or not isinstance(cam_cfg["record"], dict):
@@ -1414,18 +1418,24 @@ def sanitize_frigate_config(cfg: dict) -> dict:
                 }
             }
 
-        # 7. Guarantee camera objects.track includes all objects from its zones
+        # 7. Guarantee camera objects.track includes all objects from its zones and review alerts/detections
+        req_objs = set()
         if "zones" in cam_cfg and isinstance(cam_cfg["zones"], dict):
-            zone_objs = set()
             for z_name, z_data in cam_cfg["zones"].items():
                 if isinstance(z_data, dict) and "objects" in z_data and isinstance(z_data["objects"], list):
-                    zone_objs.update(z_data["objects"])
-            if zone_objs:
-                if "objects" not in cam_cfg or not isinstance(cam_cfg["objects"], dict):
-                    cam_cfg["objects"] = {}
-                global_tracks = cfg.get("objects", {}).get("track", all_security_labels)
-                existing_track = set(cam_cfg["objects"].get("track", global_tracks))
-                cam_cfg["objects"]["track"] = list(existing_track.union(zone_objs))
+                    req_objs.update(z_data["objects"])
+        if "review" in cam_cfg and isinstance(cam_cfg["review"], dict):
+            for r_type in ("alerts", "detections"):
+                if r_type in cam_cfg["review"] and isinstance(cam_cfg["review"][r_type], dict):
+                    labels = cam_cfg["review"][r_type].get("labels")
+                    if isinstance(labels, list):
+                        req_objs.update(labels)
+        if req_objs:
+            if "objects" not in cam_cfg or not isinstance(cam_cfg["objects"], dict):
+                cam_cfg["objects"] = {}
+            global_tracks = cfg.get("objects", {}).get("track", all_security_labels)
+            existing_track = set(cam_cfg["objects"].get("track", global_tracks))
+            cam_cfg["objects"]["track"] = list(existing_track.union(req_objs))
 
     return cfg
 
@@ -1614,10 +1624,10 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
         cam_block["motion"] = {}
     cam_block["motion"]["improve_contrast"] = False
-    if "contour_area" not in cam_block["motion"]:
+    if "contour_area" not in cam_block["motion"] or cam_block["motion"]["contour_area"] < 80:
         cam_block["motion"]["contour_area"] = 80
     if getattr(cam, "motion_threshold", None) is not None:
-        cam_block["motion"]["threshold"] = min(30, max(15, int(cam.motion_threshold)))
+        cam_block["motion"]["threshold"] = min(30, max(22, int(cam.motion_threshold)))
     else:
         cam_block["motion"]["threshold"] = 22
 
