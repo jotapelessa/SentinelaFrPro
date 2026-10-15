@@ -47,6 +47,7 @@ class OverlayService : Service() {
 
     private var pipImageView: android.widget.ImageView? = null
     private var pipWebView: WebView? = null
+    private var pipMetricsBridge: PipMetricsBridge? = null
     private var pipPlayerView: PlayerView? = null
     private var pipExoPlayer: ExoPlayer? = null
     private var snapshotRefreshJob: Job? = null
@@ -74,7 +75,13 @@ class OverlayService : Service() {
         private val onMetrics: (ttffMs: Long, avgFps: Double, minFps: Double, dropped: Int, stalls: Int, totalFrames: Int) -> Unit,
         private val onFirstFrame: () -> Unit
     ) {
+        @Volatile
         private var firstFrameReported = false
+
+        fun reset() {
+            firstFrameReported = false
+        }
+
         @android.webkit.JavascriptInterface
         fun reportMetrics(ttffMs: Long, avgFps: Double, minFps: Double, dropped: Int, stalls: Int, totalFrames: Int) {
             onMetrics(ttffMs, avgFps, minFps, dropped, stalls, totalFrames)
@@ -220,9 +227,8 @@ class OverlayService : Service() {
                     return@collect
                 }
 
-                // Somente detecção analítica de objetos, eventos confirmados do Frigate ou pip_alert explícitos disparam PiP
-                // Evita que simples variação de iluminação/pixel (CAMERA_MOTION_STATUS) cause previews intrusivos
-                val isPipTrigger = evType == "pip_alert" || (evType == "FRIGATE_EVENT" && event.optBoolean("active", false)) || (evType == "CAMERA_DETECTION_ACTIVE" && event.optBoolean("active", false))
+                // Somente eventos consolidados com cooldown (pip_alert ou FRIGATE_EVENT) disparam PiP
+                val isPipTrigger = evType == "pip_alert" || (evType == "FRIGATE_EVENT" && event.optBoolean("active", false))
                 if (!isPipTrigger) {
                     return@collect
                 }
@@ -659,6 +665,7 @@ class OverlayService : Service() {
         }
 
         activePipCamera = resolvedCamera
+        pipMetricsBridge?.reset()
         val streamCamera = if (resolvedCamera.endsWith("_720p")) resolvedCamera else "${resolvedCamera}_720p"
         val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
             "eco" -> "mode=mjpeg"
@@ -805,28 +812,28 @@ class OverlayService : Service() {
 
                             alpha = 0f // Oculta o WebView até o primeiro frame do vídeo ser renderizado (evita double loading flash)
 
-                            addJavascriptInterface(
-                                PipMetricsBridge(
-                                    onMetrics = { ttff, avgFps, minFps, dropped, stalls, totalFrames ->
-                                        pipTtffMs = ttff
-                                        pipAvgFps = avgFps
-                                        pipMinFps = minFps
-                                        pipDroppedFrames = dropped
-                                        pipStallCount = stalls
-                                        pipTotalFramesRendered = totalFrames
-                                    },
-                                    onFirstFrame = {
-                                        serviceScope.launch(Dispatchers.Main) {
-                                            pipWebView?.animate()?.alpha(1f)?.setDuration(250)?.start()
-                                            // Reduz opacidade do snapshot para não brigar com vídeos de proporções diferentes
-                                            pipImageView?.animate()?.alpha(0f)?.setDuration(350)?.withEndAction {
-                                                pipImageView?.visibility = View.GONE
-                                            }?.start()
-                                        }
+                            val bridge = PipMetricsBridge(
+                                onMetrics = { ttff, avgFps, minFps, dropped, stalls, totalFrames ->
+                                    pipTtffMs = ttff
+                                    pipAvgFps = avgFps
+                                    pipMinFps = minFps
+                                    pipDroppedFrames = dropped
+                                    pipStallCount = stalls
+                                    pipTotalFramesRendered = totalFrames
+                                },
+                                onFirstFrame = {
+                                    serviceScope.launch(Dispatchers.Main) {
+                                        pipWebView?.animate()?.alpha(1f)?.setDuration(250)?.start()
+                                        // Oculta/desativa snapshot para exibir exclusivamente o stream de vídeo ao vivo da câmera
+                                        pipImageView?.animate()?.alpha(0f)?.setDuration(200)?.withEndAction {
+                                            pipImageView?.visibility = View.GONE
+                                            pipImageView?.alpha = 0f
+                                        }?.start()
                                     }
-                                ),
-                                "PipBridge"
+                                }
                             )
+                            pipMetricsBridge = bridge
+                            addJavascriptInterface(bridge, "PipBridge")
 
                             webChromeClient = object : WebChromeClient() {
                                 override fun onPermissionRequest(request: PermissionRequest?) {
@@ -981,6 +988,14 @@ class OverlayService : Service() {
                     pipWebView?.resumeTimers()
                     pipWebView?.loadUrl(streamUrl)
                 }
+                serviceScope.launch(Dispatchers.Main) {
+                    delay(1500L)
+                    if (isPipShowing.value && pipWebView != null) {
+                        pipWebView?.alpha = 1f
+                        pipImageView?.visibility = View.GONE
+                        pipImageView?.alpha = 0f
+                    }
+                }
             } else {
                 when (prefs.pipPlayerMode) {
                     "exoplayer" -> {
@@ -998,6 +1013,7 @@ class OverlayService : Service() {
                         }
                     }
                     else -> {
+                        pipMetricsBridge?.reset()
                         pipImageView?.let { iv ->
                             iv.visibility = View.VISIBLE
                             iv.alpha = 1f
@@ -1008,6 +1024,14 @@ class OverlayService : Service() {
                             onResume()
                             resumeTimers()
                             loadUrl(streamUrl)
+                        }
+                        serviceScope.launch(Dispatchers.Main) {
+                            delay(1500L)
+                            if (isPipShowing.value && pipWebView != null) {
+                                pipWebView?.alpha = 1f
+                                pipImageView?.visibility = View.GONE
+                                pipImageView?.alpha = 0f
+                            }
                         }
                     }
                 }
@@ -1154,6 +1178,8 @@ class OverlayService : Service() {
                 }
             }
             pipWebView = null
+            pipMetricsBridge?.reset()
+            pipMetricsBridge = null
             pipImageView?.setImageDrawable(null)
             overlayView?.let { v ->
                 if (v.parent != null) {

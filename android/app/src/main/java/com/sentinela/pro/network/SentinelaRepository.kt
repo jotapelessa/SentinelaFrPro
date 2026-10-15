@@ -421,7 +421,8 @@ object SentinelaRepository {
         }
 
         if (list.isEmpty()) {
-            list.add(CameraItem("camera_secundaria", "Câmera IP ONVIF (192.168.1.6)", true))
+            list.add(CameraItem("cam_192_168_1_196", "Câmera Principal (192.168.1.196)", true))
+            list.add(CameraItem("cam_192_168_1_47", "Câmera Secundária (192.168.1.47)", true))
         }
         // Retorna apenas câmeras ativas e desduplicadas por nome para evitar múltiplos cards da mesma câmera
         list.filter { it.enabled }.distinctBy { it.name }

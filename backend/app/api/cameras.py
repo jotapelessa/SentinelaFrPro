@@ -1525,9 +1525,11 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
         cfg["go2rtc"]["streams"] = {}
     if "webrtc" not in cfg["go2rtc"] or not isinstance(cfg["go2rtc"]["webrtc"], dict):
         cfg["go2rtc"]["webrtc"] = {}
+    cfg["go2rtc"]["webrtc"]["listen"] = ":8555"
     cfg["go2rtc"]["webrtc"]["candidates"] = [
         "100.93.129.91:8555",
         "192.168.1.247:8555",
+        "192.168.1.211:8555",
         "stun:8555",
         "stun:stun.l.google.com:19302"
     ]

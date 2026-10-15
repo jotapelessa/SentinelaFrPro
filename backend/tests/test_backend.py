@@ -1137,6 +1137,68 @@ async def test_thermal_optimization_alternativa_b_1280x720_and_no_contrast_filte
     assert entry["motion"]["threshold"] == 22
 
 
+@pytest.mark.asyncio
+async def test_get_device_permitted_cameras_allows_pending_status():
+    from app.api.devices import get_device_permitted_cameras
+    from app.db.models import PairedDevice, Camera
+    from unittest.mock import AsyncMock, MagicMock
+
+    # Mock DB session with a pending device and 2 enabled cameras
+    mock_db = AsyncMock()
+    dev = PairedDevice(
+        device_identifier="dev_test_pending_123",
+        friendly_name="TV Teste Pendente",
+        permission_status="pending",
+        allow_live_stream=False # Even if false in DB record when pending, pending devices must get enabled cameras
+    )
+    cam1 = Camera(name="cam_192_168_1_196", friendly_name="Camera Principal", enabled=True)
+    cam2 = Camera(name="cam_192_168_1_47", friendly_name="Camera Secundaria", enabled=True)
+
+    # First call is for PairedDevice, second call is for Cameras
+    res_dev = MagicMock()
+    res_dev.scalar_one_or_none.return_value = dev
+
+    res_cams = MagicMock()
+    res_cams.scalars.return_value.all.return_value = [cam1, cam2]
+
+    mock_db.execute.side_effect = [res_dev, res_cams]
+
+    cameras = await get_device_permitted_cameras("dev_test_pending_123", db=mock_db)
+    assert len(cameras) == 2
+    cam_names = [c["name"] for c in cameras]
+    assert "cam_192_168_1_196" in cam_names
+    assert "cam_192_168_1_47" in cam_names
+
+
+@pytest.mark.asyncio
+async def test_frigate_config_file_sub_detect_and_webrtc_listen():
+    import yaml
+    with open("frigate/config/config.yml", "r") as f:
+        cfg = yaml.safe_load(f)
+
+    # Check go2rtc webrtc listen
+    assert cfg["go2rtc"]["webrtc"]["listen"] == ":8555"
+
+    # Check cam_192_168_1_196 inputs and detect
+    cam1 = cfg["cameras"]["cam_192_168_1_196"]
+    inputs1 = {tuple(inp["roles"]): inp["path"] for inp in cam1["ffmpeg"]["inputs"]}
+    assert ("record",) in inputs1
+    assert ("detect",) in inputs1
+    assert "sub" in inputs1[("detect",)].lower()
+    assert cam1["detect"]["width"] == 800
+    assert cam1["detect"]["height"] == 448
+
+    # Check cam_192_168_1_47 inputs and detect
+    cam2 = cfg["cameras"]["cam_192_168_1_47"]
+    inputs2 = {tuple(inp["roles"]): inp["path"] for inp in cam2["ffmpeg"]["inputs"]}
+    assert ("record",) in inputs2
+    assert ("detect",) in inputs2
+    assert "sub" in inputs2[("detect",)].lower()
+    assert cam2["detect"]["width"] == 800
+    assert cam2["detect"]["height"] == 448
+
+
+
 
 
 

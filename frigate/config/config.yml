@@ -92,25 +92,25 @@ go2rtc:
     # Aliases em memória zero-copy (zero concorrência de socket TCP)
     # =========================================================
     cam_192_168_1_196:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=2000
+    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=2000#timeout=60
     cam_192_168_1_196_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_720p:
     - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_sub:
-    - ffmpeg:cam_192_168_1_196#video=copy
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#timeout=60
 
     # =========================================================
     # cam_192_168_1_47 — CÂMERA ATIVA (AITEK SEG6050BP 3MP)
     # =========================================================
     cam_192_168_1_47:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#buffer=2000
+    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#buffer=2000#timeout=60
     cam_192_168_1_47_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_720p:
     - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_sub:
-    - ffmpeg:cam_192_168_1_47#video=copy
+    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#timeout=60
 
     # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
     camera_principal:
@@ -120,7 +120,7 @@ go2rtc:
     camera_principal_720p:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_sub:
-    - ffmpeg:cam_192_168_1_196#video=copy
+    - ffmpeg:cam_192_168_1_196_sub#video=copy
 
     camera_secundaria:
     - ffmpeg:cam_192_168_1_47#video=copy
@@ -129,7 +129,7 @@ go2rtc:
     camera_secundaria_720p:
     - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_sub:
-    - ffmpeg:cam_192_168_1_47#video=copy
+    - ffmpeg:cam_192_168_1_47_sub#video=copy
 
     # =========================================================
     # Câmeras DESABILITADAS — streams comentados para não manter
@@ -145,6 +145,7 @@ go2rtc:
     # - rtsp://admin:admin@192.168.1.93:554/live/0/SUB#backchannel=0
 
   webrtc:
+    listen: ":8555"
     candidates:
     - 100.93.129.91:8555
     - 192.168.1.247:8555
@@ -232,12 +233,15 @@ cameras:
         input_args: preset-rtsp-restream
         roles:
         - record
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_196_sub
+        input_args: preset-rtsp-restream
+        roles:
         - detect
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
-      width: 1280
-      height: 720
+      width: 800
+      height: 448
       fps: 5
       enabled: true
     snapshots:
@@ -272,7 +276,7 @@ cameras:
       threshold: 22
       contour_area: 80
       improve_contrast: false
-      mask: 896,576,1024,648,1152,648
+      mask: 560,358,640,403,720,403
     record:
       enabled: true
       motion:
@@ -324,12 +328,15 @@ cameras:
         input_args: preset-rtsp-restream
         roles:
         - record
+      - path: rtsp://127.0.0.1:8554/cam_192_168_1_47_sub
+        input_args: preset-rtsp-restream
+        roles:
         - detect
       output_args:
         record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000 -avoid_negative_ts make_zero
     detect:
-      width: 1280
-      height: 720
+      width: 800
+      height: 448
       fps: 5
       enabled: true
     snapshots:
@@ -352,7 +359,7 @@ cameras:
           threshold: 0.68
     zones:
       jjdgjgdf:
-        coordinates: 417,182,819,95,1263,276,1273,708,393,704
+        coordinates: 261,113,512,59,789,172,796,440,246,438
         objects:
         - person
         - car
@@ -361,7 +368,7 @@ cameras:
       threshold: 22
       contour_area: 80
       improve_contrast: false
-      mask: 408,184,397,14,784,8,1268,19,1270,263,819,86,8,8,10,708,379,701,402,189,384,18
+      mask: 255,115,248,9,490,5,792,12,794,164,512,54,5,5,6,440,237,436,251,118,240,11
     record:
       enabled: true
       motion:

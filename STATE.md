@@ -1,14 +1,36 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-15 09:30 BRT
-> **Versão Corrente:** v001.000.000.181
-> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.181 consolidada com:
-1. Alternativa B (1280×720 HD Nativo) para Detecção de IA: Malha de detecção desacoplada da resolução do sensor físico, operando em 1280×720 @ 5fps com escalonamento por hardware GPU Intel via VAAPI (`scale_vaapi=w=1280:h=720`) antes do `hwdownload`, aliviando a largura de banda do barramento PCIe de 44.8 MB/s para 13.8 MB/s.
-2. Desativação do Filtro de Software CPU (`improve_contrast: false`): Eliminação do filtro ffmpeg `eq=gamma=1.4:gamma_weight=0.5` que processava todos os quadros descarregados na CPU do host, poupando 24% de processamento contínuo.
-3. Recalibração Anti-Ruído de Movimento: Calibração em `motion.threshold: 22` e `motion.contour_area: 80` para ambas as câmeras ativas (`cam_192_168_1_196` e `cam_192_168_1_47`), eliminando inferências falsas no escuro e suspendendo o OpenVINO SSD MobileNet V2 quando a cena está estática.
-4. Preservação Estrita de Evidências em 3MP Nativo (2304×1296): A role `record` do Frigate e os clipes do Telegram continuam consumindo o stream nativo 3MP em passagem direta (`-c:v copy`), assegurando máxima nitidez forense com zero sobrecarga de CPU/GPU.
-5. Sincronização Unificada de Versão 001.000.000.181 (Build 181) em todo o ecossistema e 34 testes automatizados 100% aprovados.
+> **Última Atualização:** 2026-10-15 12:40 BRT
+> **Versão Corrente:** v001.000.000.182
+> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.182 consolidada com:
+1. Resolução do Deadlock Booleano no PiP da Android TV (`PipMetricsBridge.reset()`): O `PipMetricsBridge` mantinha `firstFrameReported = true` em views reutilizadas, mantendo `pipWebView.alpha = 0f` eternamente. Adicionado `reset()`, rotina safety de revelação (1.5s), ocultação imediata de `snapImageView` e tamanho padrão de PiP da TV atualizado para Extra Grande (1280×720).
+2. Supressão de Looping de Trigger no PiP: Remoção de `CAMERA_DETECTION_ACTIVE` do `isPipTrigger` em `OverlayService.kt`. Triggers de PiP restritos estritamente a `pip_alert` e `FRIGATE_EVENT` com `active=true`, eliminando loops perpétuos de auto-dismiss.
+3. Permissões de Dispositivos Pareados e Aba Câmeras: `get_device_permitted_cameras` em `devices.py` agora libera câmeras ativas habilitadas mesmo em status `pending` (sem travar por `allow_live_stream`), e fallback de emergência no backend e no Android Repository retorna as câmeras reais (`cam_192_168_1_196` e `cam_192_168_1_47`).
+4. Watchdog Local de Vídeo e Estabilização WebRTC 59s: Em `WebRTCPlayer.tsx`, watchdog verifica `currentTime` e `readyState` a cada 500ms (reconexão automática se congelar >= 3.5s). Query string atualizada para `mode=mse,webrtc` (Regra de Ouro #3). Configuração do Frigate e backend atualizada com `webrtc.listen: ":8555"` e `#timeout=60` em fontes RTSP.
+5. Alívio de CPU e Térmico no NVR via SUB Stream para Detect: Role `detect` consumindo diretamente os streams nativos `/live/0/SUB` (800×448 @ 5fps), mantendo gravações e Telegram em 3MP nativo `-c:v copy`.
+6. Sincronização Unificada de Versão 001.000.000.182 (Build 182) em todo o ecossistema e 36 testes automatizados 100% aprovados.
+
+---
+
+## 🚀 Versão v001.000.000.182 — Deadlock PiP Reset, SUB Detect CPU Relief, Watchdog WebRTC 59s e Permissões TV
+- **Data**: 2026-10-15
+- **Objetivo**: Corrigir o deadlock de vídeo invisível no PiP da Android TV, eliminar loop de trigger por eventos de detecção ativa, restabelecer exibição de câmeras na TV, evitar congelamento do WebRTC após 59s e reduzir a carga de CPU do host com detecção nativa em stream SUB:
+  1. **Android TV PiP — Reset de Bridge, Revealer de Segurança e Tamanho Extra Grande (`OverlayService.kt`, `SentinelaPreferences.kt`)**:
+     - *Causa*: O `PipMetricsBridge` reutilizado mantinha `firstFrameReported = true`. Quando um novo alerta chegava e o `alpha` do WebView era resetado para `0f`, o callback JavaScript `onFirstFrame()` era ignorado pela flag booleana, deixando a tela preta ou com snapshot travado. Além disso, eventos contínuos `CAMERA_DETECTION_ACTIVE` rearmavam ininterruptamente o timer de auto-dismiss.
+     - *Correção*: Adicionado método `reset()` no `PipMetricsBridge` acionado em todo gatilho/exibição de PiP; coroutine de segurança de 1.5s força `alpha = 1f` e oculta a imagem estática; `onFirstFrame()` oculta imediatamente a `snapImageView`; removido `CAMERA_DETECTION_ACTIVE` do `isPipTrigger`; tamanho padrão do PiP da TV alterado para `PipSize.EXTRA_LARGE` (1280×720) com migração automática via flag de preferência.
+  2. **Aba Câmeras da TV & Permissões de Dispositivos (`devices.py`, `SentinelaRepository.kt`)**:
+     - *Causa*: Dispositivos com status `pending` eram barrados por checagem estrita de `allow_live_stream`, e os fallbacks de emergência continham IDs de câmeras legados/fictícios (`camera_1`), impedindo a TV de renderizar os streams ao vivo.
+     - *Correção*: `get_device_permitted_cameras` libera a lista de câmeras ativas habilitadas quando o dispositivo está `pending`. Fallbacks de emergência no backend e no repositório Android atualizados para retornar ambas as câmeras reais (`cam_192_168_1_196` e `cam_192_168_1_47`).
+  3. **Web Dashboard — Watchdog Local de Vídeo & go2rtc 59s (`WebRTCPlayer.tsx`, `frigate/config/config.yml`, `cameras.py`)**:
+     - *Causa*: Sem `webrtc.listen: ":8555"` no go2rtc e sem `#timeout=60` no RTSP, instabilidades de ICE derrubavam o stream após 59s sem erro capturado pelo player.
+     - *Correção*: Adicionada amarração `listen: ":8555"` e `#timeout=60`; URL padronizada para `mode=mse,webrtc` (Regra de Ouro #3); implementado watchdog local a cada 500ms verificando estagnação de `currentTime` (>= 3.5s) e `readyState < 2`, forçando reconexão imediata via incremento de chave React (`key`).
+  4. **Servidor NVR — Alívio de CPU via SUB Stream Nativo (`frigate/config/config.yml`)**:
+     - *Correção*: Mapeados streams nativos `/live/0/SUB` (800×448 @ 5fps) para a role `detect`, preservando o stream 3MP nativo em `-c:v copy` para a role `record` e clipes do Telegram. Coordenadas de zonas e máscaras recalculadas para a malha de detecção 800×448.
+  5. **Sincronização de Versão 001.000.000.182 (Build 182)**:
+     - Atualizados: `android/version.properties` (BUILD=182, VERSION_NAME=001.000.000.182), `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
+  6. **Cobertura de Testes**:
+     - 36 testes automatizados 100% aprovados em `backend/tests/test_backend.py`.
 
 ---
 

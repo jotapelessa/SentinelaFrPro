@@ -419,6 +419,59 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     };
   }, [cameraSrc, streamQuality, isPaused, isActivePlayer, streamMode]);
 
+  // Watchdog Reativo Local no Elemento <video> (Anti-Freeze 59s / Stalling)
+  useEffect(() => {
+    if (isPaused || !isActivePlayer || streamMode === "monitor") return;
+
+    let lastTime = -1;
+    let stallCountMs = 0;
+    const CHECK_INTERVAL_MS = 500; // Avalia a cada 500ms
+
+    const localWatchdogTimer = setInterval(() => {
+      if (typeof document !== "undefined" && document.hidden) return;
+
+      try {
+        const doc = iframeRef.current?.contentDocument || iframeRef.current?.contentWindow?.document;
+        const video = doc?.querySelector("video") as HTMLVideoElement | null;
+        if (video) {
+          const curTime = video.currentTime;
+          const readyState = video.readyState;
+          const isPlaying = !video.paused && !video.ended;
+
+          if (isPlaying) {
+            // Se readyState < 2 (HAVE_CURRENT_DATA) ou currentTime estagnado por mais de 3.5s
+            if (readyState < 2 || (lastTime >= 0 && Math.abs(curTime - lastTime) < 0.02)) {
+              stallCountMs += CHECK_INTERVAL_MS;
+            } else {
+              stallCountMs = 0;
+            }
+            lastTime = curTime;
+
+            if (stallCountMs >= 3500) {
+              console.warn(`[WebRTCPlayer] Watchdog detectou estagnação do stream (${(stallCountMs / 1000).toFixed(1)}s, readyState=${readyState}). Forçando reconexão.`);
+              stallCountMs = 0;
+              lastTime = -1;
+              setIsWatchdogRecovering(true);
+              setKey((k) => k + 1);
+              setTimeout(() => setIsWatchdogRecovering(false), 2500);
+            }
+          } else {
+            // Se o vídeo estiver pausado inesperadamente por autoplay ou buffer
+            if (video.paused && readyState >= 2) {
+              video.play().catch(() => {});
+            }
+          }
+        }
+      } catch {
+        // Fallback para cross-origin ou iframe em transição
+      }
+    }, CHECK_INTERVAL_MS);
+
+    return () => {
+      clearInterval(localWatchdogTimer);
+    };
+  }, [cameraSrc, streamQuality, isPaused, isActivePlayer, streamMode, key]);
+
   // Pipeline de Frame / Snapshot HD Nativo com Failover (AC-029)
   useEffect(() => {
     if (streamMode !== "monitor" || isPaused || !isActivePlayer) return;
@@ -511,8 +564,8 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     const activeSrc = getEffectiveSrc();
     const withAudio = forceAudio !== undefined ? forceAudio : !isMuted;
     const mediaParam = withAudio ? "media=video,audio" : "media=video";
-    // background=true impede que o go2rtc execute o timer de 5s de desconexão (Regra de Ouro #1/Streaming 24/7)
-    return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc&${mediaParam}&background=true`;
+    // Regra de Ouro #3: modo padrão de streaming na Web como mse (com suporte a webrtc) via WebSocket TCP
+    return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse,webrtc&${mediaParam}&background=true`;
   };
 
   const [isCapturing, setIsCapturing] = useState(false);

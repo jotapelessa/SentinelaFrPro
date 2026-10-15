@@ -357,8 +357,8 @@ async def get_device_permitted_cameras(device_identifier: str, db: AsyncSession 
     if dev and dev.permission_status == "blocked":
         return []
 
-    # If live stream is disabled for this device, return empty list
-    if dev and dev.allow_live_stream is False:
+    # If live stream is disabled for this device (and device is not pending), return empty list
+    if dev and dev.permission_status != "pending" and dev.allow_live_stream is False:
         return []
 
     # Get all enabled cameras
@@ -366,12 +366,15 @@ async def get_device_permitted_cameras(device_identifier: str, db: AsyncSession 
     cam_res = await db.execute(cam_stmt)
     all_cams = cam_res.scalars().all()
 
-    # If DB has no cameras, fallback to default camera_principal
+    # If DB has no cameras, fallback to real active cameras
     if not all_cams:
-        return [{"name": "camera_principal", "friendly_name": "Câmera Principal", "enabled": True}]
+        return [
+            {"name": "cam_192_168_1_196", "friendly_name": "Câmera Principal", "enabled": True},
+            {"name": "cam_192_168_1_47", "friendly_name": "Câmera Secundária", "enabled": True}
+        ]
 
-    if not dev or not dev.allowed_cameras:
-        # If no specific camera restriction, return all enabled cameras
+    if not dev or dev.permission_status == "pending" or not dev.allowed_cameras:
+        # If pending or no specific camera restriction, return all enabled cameras
         return [{"name": c.name, "friendly_name": c.friendly_name or c.name, "enabled": c.enabled} for c in all_cams]
 
     try:

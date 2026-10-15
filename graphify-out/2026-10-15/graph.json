@@ -1119,7 +1119,7 @@
       "file_type": "code",
       "norm_label": "camerahardwareconfigpayload",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1980"
+      "source_location": "L1990"
     },
     {
       "id": "backend_app_api_cameras_cameraupdate",
@@ -1145,7 +1145,7 @@
       "file_type": "code",
       "norm_label": "frigatezonespayload",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2080"
+      "source_location": "L2090"
     },
     {
       "id": "backend_app_api_cameras_rtsptestpayload",
@@ -4978,7 +4978,7 @@
       "file_type": "code",
       "norm_label": "delete_camera()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1934"
+      "source_location": "L1944"
     },
     {
       "id": "backend_app_api_cameras_extract_camera_ip",
@@ -5014,7 +5014,7 @@
       "file_type": "code",
       "norm_label": "get_camera_hardware_config()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1991"
+      "source_location": "L2001"
     },
     {
       "id": "backend_app_api_cameras_get_camera_stream_info",
@@ -5038,7 +5038,7 @@
       "file_type": "code",
       "norm_label": "get_frigate_camera_zones()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2149"
+      "source_location": "L2159"
     },
     {
       "id": "backend_app_api_cameras_get_frigate_config_path",
@@ -5050,7 +5050,7 @@
       "file_type": "code",
       "norm_label": "get_frigate_config_path()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2086"
+      "source_location": "L2096"
     },
     {
       "id": "backend_app_api_cameras_infer_substream_url",
@@ -5086,7 +5086,7 @@
       "file_type": "code",
       "norm_label": "parse_frigate_coordinates()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2100"
+      "source_location": "L2110"
     },
     {
       "id": "backend_app_api_cameras_pause_camera",
@@ -5122,7 +5122,7 @@
       "file_type": "code",
       "norm_label": "reconcile_cameras_with_frigate()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1816"
+      "source_location": "L1826"
     },
     {
       "id": "backend_app_api_cameras_remove_camera_from_frigate",
@@ -5134,7 +5134,7 @@
       "file_type": "code",
       "norm_label": "remove_camera_from_frigate()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1873"
+      "source_location": "L1883"
     },
     {
       "id": "backend_app_api_cameras_resume_camera",
@@ -5170,7 +5170,7 @@
       "file_type": "code",
       "norm_label": "save_frigate_camera_zones()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2286"
+      "source_location": "L2296"
     },
     {
       "id": "backend_app_api_cameras_save_yaml_config_atomic",
@@ -5182,7 +5182,7 @@
       "file_type": "code",
       "norm_label": "_save_yaml_config_atomic()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1434"
+      "source_location": "L1444"
     },
     {
       "id": "backend_app_api_cameras_sync_camera_to_frigate",
@@ -5194,7 +5194,7 @@
       "file_type": "code",
       "norm_label": "sync_camera_to_frigate()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1472"
+      "source_location": "L1482"
     },
     {
       "id": "backend_app_api_cameras_sync_cameras_from_frigate",
@@ -5266,7 +5266,7 @@
       "file_type": "code",
       "norm_label": "update_camera_hardware_config()",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2021"
+      "source_location": "L2031"
     },
     {
       "id": "backend_app_api_scanner_trigger_network_scan",
@@ -6949,14 +6949,14 @@
       "source_location": "L320"
     },
     {
-      "id": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_3mp_coordinates",
-      "label": "test_sync_camera_overwrites_existing_zones_with_3mp_coordinates()",
+      "id": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_720p_coordinates",
+      "label": "test_sync_camera_overwrites_existing_zones_with_720p_coordinates()",
       "_callable": true,
       "_origin": "ast",
       "community": 51,
       "community_name": "asyncio",
       "file_type": "code",
-      "norm_label": "test_sync_camera_overwrites_existing_zones_with_3mp_coordinates()",
+      "norm_label": "test_sync_camera_overwrites_existing_zones_with_720p_coordinates()",
       "source_file": "backend/tests/test_backend.py",
       "source_location": "L505"
     },
@@ -12952,7 +12952,7 @@
       "source_location": "L1126"
     },
     {
-      "id": "backend_app_api_cameras_rationale_1435",
+      "id": "backend_app_api_cameras_rationale_1445",
       "label": "Safely writes YAML configuration to disk atomically across host and container\u2026",
       "_origin": "ast",
       "community": 30,
@@ -12960,7 +12960,7 @@
       "file_type": "rationale",
       "norm_label": "safely writes yaml configuration to disk atomically across host and container...",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1435"
+      "source_location": "L1445"
     },
     {
       "id": "backend_app_api_cameras_rationale_146",
@@ -12974,7 +12974,7 @@
       "source_location": "L146"
     },
     {
-      "id": "backend_app_api_cameras_rationale_1817",
+      "id": "backend_app_api_cameras_rationale_1827",
       "label": "Idempotent reconciler that reads all active cameras (enabled=1) from SQLite\u2026",
       "_origin": "ast",
       "community": 30,
@@ -12982,10 +12982,10 @@
       "file_type": "rationale",
       "norm_label": "idempotent reconciler that reads all active cameras (enabled=1) from sqlite...",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1817"
+      "source_location": "L1827"
     },
     {
-      "id": "backend_app_api_cameras_rationale_1992",
+      "id": "backend_app_api_cameras_rationale_2002",
       "label": "Fetches camera on-board hardware encoder and device settings.",
       "_origin": "ast",
       "community": 30,
@@ -12993,10 +12993,10 @@
       "file_type": "rationale",
       "norm_label": "fetches camera on-board hardware encoder and device settings.",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1992"
+      "source_location": "L2002"
     },
     {
-      "id": "backend_app_api_cameras_rationale_2022",
+      "id": "backend_app_api_cameras_rationale_2032",
       "label": "Applies on-board hardware encoder configurations (codec, bitrate, fps,\u2026",
       "_origin": "ast",
       "community": 30,
@@ -13004,10 +13004,10 @@
       "file_type": "rationale",
       "norm_label": "applies on-board hardware encoder configurations (codec, bitrate, fps,...",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2022"
+      "source_location": "L2032"
     },
     {
-      "id": "backend_app_api_cameras_rationale_2101",
+      "id": "backend_app_api_cameras_rationale_2111",
       "label": "Parses various Frigate coordinate representations into normalized {x: 0..1, y:\u2026",
       "_origin": "ast",
       "community": 30,
@@ -13015,7 +13015,7 @@
       "file_type": "rationale",
       "norm_label": "parses various frigate coordinate representations into normalized {x: 0..1, y:...",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2101"
+      "source_location": "L2111"
     },
     {
       "id": "backend_app_api_cameras_rationale_28",
@@ -21455,7 +21455,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1962",
+      "source_location": "L1972",
       "weight": 1.0
     },
     {
@@ -21467,7 +21467,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2007",
+      "source_location": "L2017",
       "weight": 1.0
     },
     {
@@ -21491,7 +21491,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2171",
+      "source_location": "L2181",
       "weight": 1.0
     },
     {
@@ -21503,7 +21503,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2226",
+      "source_location": "L2236",
       "weight": 1.0
     },
     {
@@ -21587,7 +21587,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1839",
+      "source_location": "L1849",
       "weight": 1.0
     },
     {
@@ -21599,7 +21599,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1879",
+      "source_location": "L1889",
       "weight": 1.0
     },
     {
@@ -21611,7 +21611,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1914",
+      "source_location": "L1924",
       "weight": 1.0
     },
     {
@@ -21635,7 +21635,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2306",
+      "source_location": "L2316",
       "weight": 1.0
     },
     {
@@ -21647,7 +21647,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2421",
+      "source_location": "L2431",
       "weight": 1.0
     },
     {
@@ -21659,7 +21659,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1438",
+      "source_location": "L1448",
       "weight": 1.0
     },
     {
@@ -21671,7 +21671,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1479",
+      "source_location": "L1489",
       "weight": 1.0
     },
     {
@@ -21683,7 +21683,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1755",
+      "source_location": "L1765",
       "weight": 1.0
     },
     {
@@ -21695,7 +21695,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1802",
+      "source_location": "L1812",
       "weight": 1.0
     },
     {
@@ -21791,7 +21791,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2037",
+      "source_location": "L2047",
       "weight": 1.0
     },
     {
@@ -23127,7 +23127,7 @@
       "weight": 1.0
     },
     {
-      "source": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_3mp_coordinates",
+      "source": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_720p_coordinates",
       "target": "backend_app_api_cameras_sync_camera_to_frigate",
       "relation": "calls",
       "_origin": "ast",
@@ -23159,7 +23159,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1085",
+      "source_location": "L1092",
       "weight": 1.0
     },
     {
@@ -23171,7 +23171,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1108",
+      "source_location": "L1124",
       "weight": 1.0
     },
     {
@@ -23459,7 +23459,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1933",
+      "source_location": "L1943",
       "weight": 1.0
     },
     {
@@ -23483,7 +23483,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1990",
+      "source_location": "L2000",
       "weight": 1.0
     },
     {
@@ -23507,7 +23507,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2148",
+      "source_location": "L2158",
       "weight": 1.0
     },
     {
@@ -23555,7 +23555,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2285",
+      "source_location": "L2295",
       "weight": 1.0
     },
     {
@@ -23627,7 +23627,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2020",
+      "source_location": "L2030",
       "weight": 1.0
     },
     {
@@ -24759,7 +24759,7 @@
       "weight": 1.0
     },
     {
-      "source": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_3mp_coordinates",
+      "source": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_720p_coordinates",
       "target": "asyncio",
       "relation": "references",
       "_origin": "ast",
@@ -32600,7 +32600,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1934",
+      "source_location": "L1944",
       "weight": 1.0
     },
     {
@@ -32612,7 +32612,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1934",
+      "source_location": "L1944",
       "weight": 1.0
     },
     {
@@ -32636,7 +32636,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1991",
+      "source_location": "L2001",
       "weight": 1.0
     },
     {
@@ -32660,7 +32660,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2149",
+      "source_location": "L2159",
       "weight": 1.0
     },
     {
@@ -32684,7 +32684,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2100",
+      "source_location": "L2110",
       "weight": 1.0
     },
     {
@@ -32744,7 +32744,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2286",
+      "source_location": "L2296",
       "weight": 1.0
     },
     {
@@ -32756,7 +32756,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2286",
+      "source_location": "L2296",
       "weight": 1.0
     },
     {
@@ -32888,7 +32888,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2021",
+      "source_location": "L2031",
       "weight": 1.0
     },
     {
@@ -32900,7 +32900,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2021",
+      "source_location": "L2031",
       "weight": 1.0
     },
     {
@@ -32912,7 +32912,7 @@
       "confidence_score": 1.0,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2021",
+      "source_location": "L2031",
       "weight": 1.0
     },
     {
@@ -38369,7 +38369,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1434",
+      "source_location": "L1444",
       "weight": 1.0
     },
     {
@@ -38391,7 +38391,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1472",
+      "source_location": "L1482",
       "weight": 1.0
     },
     {
@@ -38402,7 +38402,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1816",
+      "source_location": "L1826",
       "weight": 1.0
     },
     {
@@ -38413,7 +38413,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1873",
+      "source_location": "L1883",
       "weight": 1.0
     },
     {
@@ -38424,7 +38424,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1934",
+      "source_location": "L1944",
       "weight": 1.0
     },
     {
@@ -38435,7 +38435,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1980",
+      "source_location": "L1990",
       "weight": 1.0
     },
     {
@@ -38446,7 +38446,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1991",
+      "source_location": "L2001",
       "weight": 1.0
     },
     {
@@ -38457,7 +38457,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2021",
+      "source_location": "L2031",
       "weight": 1.0
     },
     {
@@ -38468,7 +38468,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2080",
+      "source_location": "L2090",
       "weight": 1.0
     },
     {
@@ -38479,7 +38479,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2086",
+      "source_location": "L2096",
       "weight": 1.0
     },
     {
@@ -38490,7 +38490,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2100",
+      "source_location": "L2110",
       "weight": 1.0
     },
     {
@@ -38501,7 +38501,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2149",
+      "source_location": "L2159",
       "weight": 1.0
     },
     {
@@ -38512,7 +38512,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2286",
+      "source_location": "L2296",
       "weight": 1.0
     },
     {
@@ -40376,7 +40376,7 @@
     },
     {
       "source": "backend_tests_test_backend",
-      "target": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_3mp_coordinates",
+      "target": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_720p_coordinates",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -44417,7 +44417,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1980",
+      "source_location": "L1990",
       "weight": 1.0
     },
     {
@@ -44439,7 +44439,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2080",
+      "source_location": "L2090",
       "weight": 1.0
     },
     {
@@ -47347,14 +47347,14 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_1435",
+      "source": "backend_app_api_cameras_rationale_1445",
       "target": "backend_app_api_cameras_save_yaml_config_atomic",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1435",
+      "source_location": "L1445",
       "weight": 1.0
     },
     {
@@ -47369,47 +47369,47 @@
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_1817",
+      "source": "backend_app_api_cameras_rationale_1827",
       "target": "backend_app_api_cameras_reconcile_cameras_with_frigate",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1817",
+      "source_location": "L1827",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_1992",
+      "source": "backend_app_api_cameras_rationale_2002",
       "target": "backend_app_api_cameras_get_camera_hardware_config",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1992",
+      "source_location": "L2002",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_2022",
+      "source": "backend_app_api_cameras_rationale_2032",
       "target": "backend_app_api_cameras_update_camera_hardware_config",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2022",
+      "source_location": "L2032",
       "weight": 1.0
     },
     {
-      "source": "backend_app_api_cameras_rationale_2101",
+      "source": "backend_app_api_cameras_rationale_2111",
       "target": "backend_app_api_cameras_parse_frigate_coordinates",
       "relation": "rationale_for",
       "_origin": "ast",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2101",
+      "source_location": "L2111",
       "weight": 1.0
     },
     {
@@ -49336,7 +49336,7 @@
       "confidence_score": 0.95,
       "context": "parameter_type",
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1472",
+      "source_location": "L1482",
       "weight": 0.8
     },
     {
@@ -49358,7 +49358,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1937",
+      "source_location": "L1947",
       "weight": 0.8
     },
     {
@@ -49391,7 +49391,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1996",
+      "source_location": "L2006",
       "weight": 0.8
     },
     {
@@ -49413,7 +49413,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2160",
+      "source_location": "L2170",
       "weight": 0.8
     },
     {
@@ -49446,7 +49446,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L1829",
+      "source_location": "L1839",
       "weight": 0.8
     },
     {
@@ -49468,7 +49468,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2296",
+      "source_location": "L2306",
       "weight": 0.8
     },
     {
@@ -49523,7 +49523,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/app/api/cameras.py",
-      "source_location": "L2026",
+      "source_location": "L2036",
       "weight": 0.8
     },
     {
@@ -50165,7 +50165,7 @@
       "weight": 0.8
     },
     {
-      "source": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_3mp_coordinates",
+      "source": "backend_tests_test_backend_test_sync_camera_overwrites_existing_zones_with_720p_coordinates",
       "target": "backend_app_db_models_camera",
       "relation": "uses",
       "_origin": "ast",
@@ -50194,10 +50194,10 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1093",
+      "source_location": "L1109",
       "weight": 0.8
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "7559e57cc54dc5e50760e31ef4c5388367ec457a"
+  "built_at_commit": "014640556d8f7676b0c565f10249a003b52bbfbc"
 }

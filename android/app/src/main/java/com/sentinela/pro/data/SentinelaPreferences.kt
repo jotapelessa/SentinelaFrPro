@@ -7,7 +7,13 @@ class SentinelaPreferences(private val context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("sentinela_prefs", Context.MODE_PRIVATE)
 
     var pipSizeIndex: Int
-        get() = prefs.getInt("pip_size_index", PipSize.MEDIUM.ordinal)
+        get() {
+            if (!prefs.getBoolean("pip_size_default_v182", false)) {
+                prefs.edit().putInt("pip_size_index", PipSize.EXTRA_LARGE.ordinal).putBoolean("pip_size_default_v182", true).apply()
+                return PipSize.EXTRA_LARGE.ordinal
+            }
+            return prefs.getInt("pip_size_index", PipSize.EXTRA_LARGE.ordinal)
+        }
         set(value) = prefs.edit().putInt("pip_size_index", value).apply()
 
     var pipPositionIndex: Int
@@ -120,7 +126,7 @@ class SentinelaPreferences(private val context: Context) {
         set(value) = prefs.edit().putLong("refresh_interval_ms", value).apply()
 
     val currentPipSize: PipSize
-        get() = PipSize.values().getOrElse(pipSizeIndex) { PipSize.MEDIUM }
+        get() = PipSize.values().getOrElse(pipSizeIndex) { PipSize.EXTRA_LARGE }
 
     val currentPipPosition: PipPosition
         get() = PipPosition.values().getOrElse(pipPositionIndex) { PipPosition.TOP_RIGHT }
