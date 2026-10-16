@@ -439,6 +439,17 @@ async def test_list_events_canonical_snapshot_urls():
             "has_clip": True,
             "has_snapshot": True,
             "zones": ["entrada"]
+        },
+        {
+            "id": "1728000001.000000",
+            "camera": "cam_192_168_1_196",
+            "label": "car",
+            "score": 95,
+            "start_time": 1728000001.0,
+            "end_time": 1728000016.0,
+            "has_clip": True,
+            "has_snapshot": True,
+            "zones": ["entrada"]
         }
     ]
 
@@ -455,10 +466,13 @@ async def test_list_events_canonical_snapshot_urls():
         mock_get.return_value = mock_resp
 
         results = await list_events(limit=10, db=mock_db)
-        assert len(results) == 1
+        assert len(results) == 2
         ev = results[0]
         assert ev["snapshot_url"] == "/api/events/1728000000.999999/snapshot.jpg"
         assert ev["snapshot_clean_url"] == "/api/events/1728000000.999999/snapshot.jpg?clean=1"
+        assert ev["score"] == 88
+        assert "timestamp" in ev
+        assert results[1]["score"] == 95
 
 
 @pytest.mark.asyncio

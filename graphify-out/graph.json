@@ -6046,7 +6046,7 @@
       "file_type": "code",
       "norm_label": "test_parse_frigate_coordinates_defaults_to_1280x720()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L493"
+      "source_location": "L507"
     },
     {
       "id": "backend_app_services_onvif_hardware_onvifhardwareservice_configure_video_encoder",
@@ -6598,7 +6598,7 @@
       "file_type": "code",
       "norm_label": "test_fetch_thumbnail_bytes_with_custom_media_dir()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L768"
+      "source_location": "L782"
     },
     {
       "id": "backend_tests_test_backend_test_frigate_bridge_get_live_snapshot_sources",
@@ -6610,7 +6610,7 @@
       "file_type": "code",
       "norm_label": "test_frigate_bridge_get_live_snapshot_sources()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L562"
+      "source_location": "L576"
     },
     {
       "id": "backend_tests_test_backend_test_frigate_bridge_transcode_to_30fps_silent_audio",
@@ -6622,7 +6622,7 @@
       "file_type": "code",
       "norm_label": "test_frigate_bridge_transcode_to_30fps_silent_audio()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L925"
+      "source_location": "L939"
     },
     {
       "id": "backend_tests_test_backend_test_frigate_config_file_sub_detect_and_webrtc_listen",
@@ -6634,7 +6634,7 @@
       "file_type": "code",
       "norm_label": "test_frigate_config_file_sub_detect_and_webrtc_listen()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1175"
+      "source_location": "L1189"
     },
     {
       "id": "backend_tests_test_backend_test_get_device_permitted_cameras_allows_pending_status",
@@ -6646,7 +6646,7 @@
       "file_type": "code",
       "norm_label": "test_get_device_permitted_cameras_allows_pending_status()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1142"
+      "source_location": "L1156"
     },
     {
       "id": "backend_tests_test_backend_test_get_event_snapshot_clean_flexible_param",
@@ -6658,7 +6658,7 @@
       "file_type": "code",
       "norm_label": "test_get_event_snapshot_clean_flexible_param()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L465"
+      "source_location": "L479"
     },
     {
       "id": "backend_tests_test_backend_test_get_event_snapshot_webp_and_clean",
@@ -6682,7 +6682,7 @@
       "file_type": "code",
       "norm_label": "test_get_event_thumbnail_endpoint()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L785"
+      "source_location": "L799"
     },
     {
       "id": "backend_tests_test_backend_test_get_event_thumbnail_endpoint_accept_ranges_header",
@@ -6694,7 +6694,7 @@
       "file_type": "code",
       "norm_label": "test_get_event_thumbnail_endpoint_accept_ranges_header()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1045"
+      "source_location": "L1059"
     },
     {
       "id": "backend_tests_test_backend_test_go2rtc_alias_sanitization",
@@ -6730,7 +6730,7 @@
       "file_type": "code",
       "norm_label": "test_mqtt_allow_video_if_already_processed_even_without_zone()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L634"
+      "source_location": "L648"
     },
     {
       "id": "backend_tests_test_backend_test_mqtt_allow_video_if_recovered_from_sqlite",
@@ -6742,7 +6742,7 @@
       "file_type": "code",
       "norm_label": "test_mqtt_allow_video_if_recovered_from_sqlite()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L861"
+      "source_location": "L875"
     },
     {
       "id": "backend_tests_test_backend_test_mqtt_policy_ignores_motion_masks",
@@ -6778,7 +6778,7 @@
       "file_type": "code",
       "norm_label": "test_mqtt_suppress_video_if_already_sent_in_sqlite()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L965"
+      "source_location": "L979"
     },
     {
       "id": "backend_tests_test_backend_test_pip_dnd_check",
@@ -6814,7 +6814,7 @@
       "file_type": "code",
       "norm_label": "test_reconcile_cameras_with_frigate_restart_trigger()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L579"
+      "source_location": "L593"
     },
     {
       "id": "backend_tests_test_backend_test_resolve_camera_ip_safety",
@@ -6862,7 +6862,7 @@
       "file_type": "code",
       "norm_label": "test_telegram_queue_fetch_thumbnail_checks_thumbnail_endpoint_first()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1028"
+      "source_location": "L1042"
     },
     {
       "id": "backend_tests_test_backend_test_telegram_queue_remux_silent_audio_injection",
@@ -6874,7 +6874,7 @@
       "file_type": "code",
       "norm_label": "test_telegram_queue_remux_silent_audio_injection()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L821"
+      "source_location": "L835"
     },
     {
       "id": "backend_tests_test_backend_test_telegram_send_alert_photo_document",
@@ -6898,7 +6898,7 @@
       "file_type": "code",
       "norm_label": "test_telegram_send_alert_video_corrupted_thumbnail_fallback()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L731"
+      "source_location": "L745"
     },
     {
       "id": "backend_tests_test_backend_test_telegram_send_alert_video_document_with_thumbnail",
@@ -6910,7 +6910,7 @@
       "file_type": "code",
       "norm_label": "test_telegram_send_alert_video_document_with_thumbnail()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L678"
+      "source_location": "L692"
     },
     {
       "id": "backend_tests_test_backend_test_telemetry_service",
@@ -7018,7 +7018,7 @@
       "file_type": "code",
       "norm_label": "test_sync_camera_overwrites_existing_zones_with_720p_coordinates()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L506"
+      "source_location": "L520"
     },
     {
       "id": "backend_tests_test_backend_test_sync_camera_to_frigate_zones_mask_filtering",
@@ -7042,7 +7042,7 @@
       "file_type": "code",
       "norm_label": "test_thermal_optimization_alternativa_b_1280x720_and_no_contrast_filter()",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1072"
+      "source_location": "L1086"
     },
     {
       "id": "android_app_src_main_java_com_sentinela_pro_mainactivity_mainactivity_oncreate_object_x509trustmanager_l66_checkclienttrusted",
@@ -23135,7 +23135,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1167",
+      "source_location": "L1181",
       "weight": 1.0
     },
     {
@@ -23147,7 +23147,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L481",
+      "source_location": "L495",
       "weight": 1.0
     },
     {
@@ -23183,7 +23183,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L457",
+      "source_location": "L468",
       "weight": 1.0
     },
     {
@@ -23195,7 +23195,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L497",
+      "source_location": "L511",
       "weight": 1.0
     },
     {
@@ -23207,7 +23207,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L627",
+      "source_location": "L641",
       "weight": 1.0
     },
     {
@@ -23231,7 +23231,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L554",
+      "source_location": "L568",
       "weight": 1.0
     },
     {
@@ -23255,7 +23255,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1093",
+      "source_location": "L1107",
       "weight": 1.0
     },
     {
@@ -23267,7 +23267,7 @@
       "confidence_score": 1.0,
       "context": "call",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1125",
+      "source_location": "L1139",
       "weight": 1.0
     },
     {
@@ -24623,7 +24623,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L767",
+      "source_location": "L781",
       "weight": 1.0
     },
     {
@@ -24635,7 +24635,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L561",
+      "source_location": "L575",
       "weight": 1.0
     },
     {
@@ -24647,7 +24647,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L924",
+      "source_location": "L938",
       "weight": 1.0
     },
     {
@@ -24659,7 +24659,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1174",
+      "source_location": "L1188",
       "weight": 1.0
     },
     {
@@ -24671,7 +24671,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1141",
+      "source_location": "L1155",
       "weight": 1.0
     },
     {
@@ -24683,7 +24683,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L464",
+      "source_location": "L478",
       "weight": 1.0
     },
     {
@@ -24707,7 +24707,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L784",
+      "source_location": "L798",
       "weight": 1.0
     },
     {
@@ -24719,7 +24719,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1044",
+      "source_location": "L1058",
       "weight": 1.0
     },
     {
@@ -24755,7 +24755,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L633",
+      "source_location": "L647",
       "weight": 1.0
     },
     {
@@ -24767,7 +24767,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L860",
+      "source_location": "L874",
       "weight": 1.0
     },
     {
@@ -24803,7 +24803,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L964",
+      "source_location": "L978",
       "weight": 1.0
     },
     {
@@ -24839,7 +24839,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L578",
+      "source_location": "L592",
       "weight": 1.0
     },
     {
@@ -24887,7 +24887,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L505",
+      "source_location": "L519",
       "weight": 1.0
     },
     {
@@ -24923,7 +24923,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1027",
+      "source_location": "L1041",
       "weight": 1.0
     },
     {
@@ -24935,7 +24935,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L820",
+      "source_location": "L834",
       "weight": 1.0
     },
     {
@@ -24959,7 +24959,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L730",
+      "source_location": "L744",
       "weight": 1.0
     },
     {
@@ -24971,7 +24971,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L677",
+      "source_location": "L691",
       "weight": 1.0
     },
     {
@@ -24995,7 +24995,7 @@
       "confidence_score": 1.0,
       "context": "decorator",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1071",
+      "source_location": "L1085",
       "weight": 1.0
     },
     {
@@ -29660,7 +29660,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1143",
+      "source_location": "L1157",
       "weight": 1.0
     },
     {
@@ -29672,7 +29672,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1144",
+      "source_location": "L1158",
       "weight": 1.0
     },
     {
@@ -29756,7 +29756,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L494",
+      "source_location": "L508",
       "weight": 1.0
     },
     {
@@ -29768,7 +29768,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L580",
+      "source_location": "L594",
       "weight": 1.0
     },
     {
@@ -29792,7 +29792,7 @@
       "confidence_score": 1.0,
       "context": "import",
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L864",
+      "source_location": "L878",
       "weight": 1.0
     },
     {
@@ -40328,7 +40328,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1028",
+      "source_location": "L1042",
       "weight": 1.0
     },
     {
@@ -40339,7 +40339,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1045",
+      "source_location": "L1059",
       "weight": 1.0
     },
     {
@@ -40350,7 +40350,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1072",
+      "source_location": "L1086",
       "weight": 1.0
     },
     {
@@ -40361,7 +40361,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1142",
+      "source_location": "L1156",
       "weight": 1.0
     },
     {
@@ -40372,7 +40372,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1175",
+      "source_location": "L1189",
       "weight": 1.0
     },
     {
@@ -40526,7 +40526,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L465",
+      "source_location": "L479",
       "weight": 1.0
     },
     {
@@ -40537,7 +40537,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L493",
+      "source_location": "L507",
       "weight": 1.0
     },
     {
@@ -40548,7 +40548,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L506",
+      "source_location": "L520",
       "weight": 1.0
     },
     {
@@ -40570,7 +40570,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L562",
+      "source_location": "L576",
       "weight": 1.0
     },
     {
@@ -40581,7 +40581,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L579",
+      "source_location": "L593",
       "weight": 1.0
     },
     {
@@ -40592,7 +40592,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L634",
+      "source_location": "L648",
       "weight": 1.0
     },
     {
@@ -40603,7 +40603,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L678",
+      "source_location": "L692",
       "weight": 1.0
     },
     {
@@ -40625,7 +40625,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L731",
+      "source_location": "L745",
       "weight": 1.0
     },
     {
@@ -40636,7 +40636,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L768",
+      "source_location": "L782",
       "weight": 1.0
     },
     {
@@ -40647,7 +40647,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L785",
+      "source_location": "L799",
       "weight": 1.0
     },
     {
@@ -40658,7 +40658,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L821",
+      "source_location": "L835",
       "weight": 1.0
     },
     {
@@ -40669,7 +40669,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L861",
+      "source_location": "L875",
       "weight": 1.0
     },
     {
@@ -40691,7 +40691,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L925",
+      "source_location": "L939",
       "weight": 1.0
     },
     {
@@ -40702,7 +40702,7 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L965",
+      "source_location": "L979",
       "weight": 1.0
     },
     {
@@ -50327,7 +50327,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1149",
+      "source_location": "L1163",
       "weight": 0.8
     },
     {
@@ -50338,7 +50338,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1155",
+      "source_location": "L1169",
       "weight": 0.8
     },
     {
@@ -50349,7 +50349,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L884",
+      "source_location": "L898",
       "weight": 0.8
     },
     {
@@ -50360,7 +50360,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L988",
+      "source_location": "L1002",
       "weight": 0.8
     },
     {
@@ -50371,7 +50371,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L586",
+      "source_location": "L600",
       "weight": 0.8
     },
     {
@@ -50393,7 +50393,7 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L527",
+      "source_location": "L541",
       "weight": 0.8
     },
     {
@@ -50415,10 +50415,10 @@
       "confidence": "INFERRED",
       "confidence_score": 0.95,
       "source_file": "backend/tests/test_backend.py",
-      "source_location": "L1110",
+      "source_location": "L1124",
       "weight": 0.8
     }
   ],
   "hyperedges": [],
-  "built_at_commit": "1f9dee4e8f2df29b40f8da51fd6626d70e7130a0"
+  "built_at_commit": "530655132792137810060a9a7051960d7b0972f9"
 }
