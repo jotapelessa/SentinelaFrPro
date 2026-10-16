@@ -1,15 +1,36 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-15 12:40 BRT
-> **Versão Corrente:** v001.000.000.182
-> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.182 consolidada com:
-1. Resolução do Deadlock Booleano no PiP da Android TV (`PipMetricsBridge.reset()`): O `PipMetricsBridge` mantinha `firstFrameReported = true` em views reutilizadas, mantendo `pipWebView.alpha = 0f` eternamente. Adicionado `reset()`, rotina safety de revelação (1.5s), ocultação imediata de `snapImageView` e tamanho padrão de PiP da TV atualizado para Extra Grande (1280×720).
-2. Supressão de Looping de Trigger no PiP: Remoção de `CAMERA_DETECTION_ACTIVE` do `isPipTrigger` em `OverlayService.kt`. Triggers de PiP restritos estritamente a `pip_alert` e `FRIGATE_EVENT` com `active=true`, eliminando loops perpétuos de auto-dismiss.
-3. Permissões de Dispositivos Pareados e Aba Câmeras: `get_device_permitted_cameras` em `devices.py` agora libera câmeras ativas habilitadas mesmo em status `pending` (sem travar por `allow_live_stream`), e fallback de emergência no backend e no Android Repository retorna as câmeras reais (`cam_192_168_1_196` e `cam_192_168_1_47`).
-4. Watchdog Local de Vídeo e Estabilização WebRTC 59s: Em `WebRTCPlayer.tsx`, watchdog verifica `currentTime` e `readyState` a cada 500ms (reconexão automática se congelar >= 3.5s). Query string atualizada para `mode=mse,webrtc` (Regra de Ouro #3). Configuração do Frigate e backend atualizada com `webrtc.listen: ":8555"` e `#timeout=60` em fontes RTSP.
-5. Alívio de CPU e Térmico no NVR via SUB Stream para Detect: Role `detect` consumindo diretamente os streams nativos `/live/0/SUB` (800×448 @ 5fps), mantendo gravações e Telegram em 3MP nativo `-c:v copy`.
-6. Sincronização Unificada de Versão 001.000.000.182 (Build 182) em todo o ecossistema e 36 testes automatizados 100% aprovados.
+> **Última Atualização:** 2026-10-16 03:30 BRT
+> **Versão Corrente:** v001.000.000.183
+> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.183 consolidada com:
+1. Correção no Repositório Android (`SentinelaRepository.kt`): Reintroduzida a extração tolerante de `score` e `timestamp` no laço de `getCaptures()`, corrigindo a quebra de compilação do Gradle no GitHub Actions (Run #38767291146) por referências não resolvidas.
+2. Correção na Interface TV (`TvNetflixScreen.kt`): Corrigida a interpolação do score nos cards de captura para `sizeMb = if (event.score > 0) "IA ${event.score}%" else "IA 95%"`, eliminando a anomalia visual "IA 8500%".
+3. Sincronização Unificada de Versão 001.000.000.183 (Build 183) em todo o ecossistema (Android, Backend, Frontend, README, STATE).
+4. Cobertura de testes mantida em 100% (36/36 testes aprovados no pytest) e build de produção do Next.js sem erros.
+
+---
+
+## 🚀 Versão v001.000.000.183 — Correção de Compilação CI Android e Formatação de Score de IA na TV
+- **Data**: 2026-10-16
+- **Objetivo**: Corrigir a falha de compilação no pipeline de CI do GitHub Actions (#38767291146) causada por variáveis não declaradas no laço `getCaptures()` e solucionar a anomalia visual de score "IA 8500%" na aba de capturas da Android TV:
+  1. **Repositório Android — Extração Tolerante de Score e Timestamp (`SentinelaRepository.kt`)**:
+     - *Causa*: Na instanciação de `CaptureEvent` dentro do laço `getCaptures()`, os parâmetros `score = score` e `timestamp = timestamp` foram passados sem que as variáveis locais tivessem sido declaradas no bloco, gerando erro de `Unresolved reference: score` e `Unresolved reference: timestamp` no build headless do Gradle.
+     - *Correção*: Reintroduzida a extração tolerante do JSON:
+       ```kotlin
+       val rawScore = obj.optDouble("score", 0.0)
+       val score = if (rawScore > 0.0 && rawScore <= 1.0) (rawScore * 100).toInt() else obj.optInt("score", 0)
+       val timestamp = obj.optString("timestamp", "")
+       ```
+       garantindo compatibilidade tanto com scores normalizados (0.0 a 1.0) quanto inteiros (0 a 100).
+  2. **Android TV — Correção da Anomalia "IA 8500%" (`TvNetflixScreen.kt`)**:
+     - *Causa*: O campo `event.score` já é armazenado como um número inteiro de 0 a 100 (ex: 85 para 85%). Na linha 1125 de `TvNetflixScreen.kt`, a interpolação multiplicava o valor por 100 novamente (`(event.score * 100).toInt()`), exibindo "IA 8500%".
+     - *Correção*: Interpolação simplificada para `"IA ${event.score}%"`, exibindo a porcentagem correta (ex: "IA 85%").
+  3. **Sincronização de Versão 001.000.000.183 (Build 183)**:
+     - Atualizados: `android/version.properties` (BUILD=183, VERSION_NAME=001.000.000.183), `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
+  4. **Cobertura de Testes e Validação**:
+     - 36 testes automatizados 100% aprovados em `backend/tests/test_backend.py`.
+     - Build estático do frontend Next.js 14 compilado com sucesso.
 
 ---
 

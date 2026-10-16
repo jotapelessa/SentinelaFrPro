@@ -461,6 +461,9 @@ object SentinelaRepository {
 
                     val id = obj.optString("id", "$i")
                     val label = obj.optString("label", "Movimento")
+                    val rawScore = obj.optDouble("score", 0.0)
+                    val score = if (rawScore > 0.0 && rawScore <= 1.0) (rawScore * 100).toInt() else obj.optInt("score", 0)
+                    val timestamp = obj.optString("timestamp", "")
                     val rawCleanUrl = obj.optString("snapshot_clean_url")
                     val rawSnapUrl = obj.optString("snapshot_url")
                     val rawThumbUrl = obj.optString("thumbnail_url")
