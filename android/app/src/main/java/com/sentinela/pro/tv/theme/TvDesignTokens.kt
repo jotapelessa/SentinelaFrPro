@@ -167,6 +167,7 @@ data class CameraEntity(
     val location: String = "Área Externa",
     val zone: String = "Perímetro Principal",
     val status: CameraStatus = CameraStatus.ONLINE,
+    val enabled: Boolean = true,
     val thumbnailUrl: String = "",
     val streamUrl: String = "",
     val telemetry: CameraStreamTelemetry = CameraStreamTelemetry(),
@@ -204,8 +205,9 @@ data class LogEntryItem(
 // Helper para converter CameraItem do projeto em CameraEntity
 fun CameraItem.toEntity(index: Int, host: String): CameraEntity {
     val base = com.sentinela.pro.SentinelaConfig.BASE_URL.trimEnd('/')
-    val snapUrl = "$base/go2rtc/api/frame.jpeg?src=${this.name}&t=${System.currentTimeMillis()}"
-    val stream = "$base/go2rtc/stream.html?src=${this.name}&mode=mse,mjpeg&media=video&background=true"
+    val cleanCam = this.name.removeSuffix("_720p").removeSuffix("_sub").removeSuffix("_main")
+    val snapUrl = "$base/frigate/api/${cleanCam}/latest.jpg?h=720"
+    val stream = "$base/go2rtc/stream.html?src=${cleanCam}_720p&mode=webrtc,mse&media=video&background=true"
     return CameraEntity(
         id = this.name,
         name = this.friendlyName.ifBlank { this.name.replace("_", " ").replaceFirstChar { it.uppercase() } },
@@ -213,6 +215,7 @@ fun CameraItem.toEntity(index: Int, host: String): CameraEntity {
         location = "Vigilância Sentinela",
         zone = "Zona 01",
         status = CameraStatus.ONLINE,
+        enabled = this.enabled,
         thumbnailUrl = snapUrl,
         streamUrl = stream,
         telemetry = CameraStreamTelemetry(

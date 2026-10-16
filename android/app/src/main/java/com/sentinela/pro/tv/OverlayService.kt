@@ -48,9 +48,6 @@ class OverlayService : Service() {
     private var pipImageView: android.widget.ImageView? = null
     private var pipWebView: WebView? = null
     private var pipMetricsBridge: PipMetricsBridge? = null
-    private var pipPlayerView: PlayerView? = null
-    private var pipExoPlayer: ExoPlayer? = null
-    private var snapshotRefreshJob: Job? = null
     private var currentOverlayPlayerMode: String? = null
     
     private val serviceJob = SupervisorJob()
@@ -202,6 +199,30 @@ class OverlayService : Service() {
                                         val p = PipPosition.valueOf(cPosStr.uppercase())
                                         prefs.setPipPositionIndex(cKey, p.ordinal)
                                     } catch (_: Exception) {}
+                                }
+                            }
+                        }
+                        if (event.has("camera_pip_sizes")) {
+                            val camSizesObj = event.optJSONObject("camera_pip_sizes")
+                            if (camSizesObj != null) {
+                                val keys = camSizesObj.keys()
+                                while (keys.hasNext()) {
+                                    val cKey = keys.next()
+                                    val cSizeStr = camSizesObj.optString(cKey)
+                                    val sizeIdx = when (cSizeStr.lowercase()) {
+                                        "mini", "extra_small" -> PipSize.EXTRA_SMALL.ordinal
+                                        "small" -> PipSize.SMALL.ordinal
+                                        "medium_small" -> PipSize.MEDIUM_SMALL.ordinal
+                                        "medium" -> PipSize.MEDIUM.ordinal
+                                        "medium_large" -> PipSize.MEDIUM_LARGE.ordinal
+                                        "large" -> PipSize.LARGE.ordinal
+                                        "extra_large" -> PipSize.EXTRA_LARGE.ordinal
+                                        "cinema" -> PipSize.CINEMA.ordinal
+                                        else -> null
+                                    }
+                                    if (sizeIdx != null) {
+                                        prefs.setPipSizeIndex(cKey, sizeIdx)
+                                    }
                                 }
                             }
                         }
@@ -588,8 +609,8 @@ class OverlayService : Service() {
 
         // Resolução consistente de tamanho do PiP:
         // Se for teste manual com override específico, usa override temporário.
-        // Nos alertas de produção, as preferências do usuário na TV (prefs.currentPipSize)
-        // garantem que todas as câmeras exibam o mesmo tamanho configurado.
+        // Nos alertas de produção, as preferências do usuário na TV (prefs.getCurrentPipSize(camera))
+        // garantem suporte a tamanho granular por câmera com fallback para o tamanho padrão.
         val pipSize = if (testId != null && !overrideSize.isNullOrBlank()) {
             when (overrideSize.lowercase()) {
                 "mini", "extra_small" -> PipSize.EXTRA_SMALL
@@ -600,10 +621,10 @@ class OverlayService : Service() {
                 "large" -> PipSize.LARGE
                 "extra_large" -> PipSize.EXTRA_LARGE
                 "cinema" -> PipSize.CINEMA
-                else -> prefs.currentPipSize
+                else -> prefs.getCurrentPipSize(camera)
             }
         } else {
-            prefs.currentPipSize
+            prefs.getCurrentPipSize(camera)
         }
 
         // Resolução consistente de posição do PiP:
@@ -690,11 +711,7 @@ class OverlayService : Service() {
         pipMetricsBridge?.reset()
         val cleanCam = resolvedCamera.removeSuffix("_720p").removeSuffix("_sub").removeSuffix("_main")
         val streamCamera = "${cleanCam}_720p"
-        val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
-            "eco" -> "mode=mjpeg"
-            "webrtc" -> "mode=webrtc,mse&media=video&background=true"
-            else -> "mode=mse,webrtc&media=video&background=true"
-        }
+        val streamModeParam = "mode=webrtc,mse&media=video&background=true"
         val baseStreamUrl = normalizeUrl(null, "/go2rtc/stream.html?src=${streamCamera}&${streamModeParam}&width=100%")
         val streamUrl = if (baseStreamUrl.contains("stream.html")) {
             val baseUrlWithoutQuery = baseStreamUrl.substringBefore("?")
@@ -735,64 +752,8 @@ class OverlayService : Service() {
                     setBackgroundColor(0xFF000000.toInt())
                 }
 
-                when (prefs.pipPlayerMode) {
-                    "exoplayer" -> {
-                        val pv = PlayerView(this).apply {
-                            layoutParams = FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.MATCH_PARENT,
-                                FrameLayout.LayoutParams.MATCH_PARENT
-                            )
-                            useController = false
-                            setBackgroundColor(Color.BLACK)
-                        }
-                        pipPlayerView = pv
-                        inner.addView(pv)
-
-                        val audioAttrs = AudioAttributes.Builder()
-                            .setUsage(C.USAGE_UNKNOWN)
-                            .setContentType(C.AUDIO_CONTENT_TYPE_UNKNOWN)
-                            .build()
-
-                        val lowLatencyLoadControl = DefaultLoadControl.Builder()
-                            .setBufferDurationsMs(
-                                1000, // minBufferMs
-                                2500, // maxBufferMs
-                                500,  // bufferForPlaybackMs
-                                1000  // bufferForPlaybackAfterRebufferMs
-                            )
-                            .build()
-
-                        val player = ExoPlayer.Builder(this)
-                            .setAudioAttributes(audioAttrs, false)
-                            .setLoadControl(lowLatencyLoadControl)
-                            .build()
-                        pipExoPlayer = player
-                        pv.player = player
-                        player.volume = 0f
-                        player.playWhenReady = true
-
-                        val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${streamCamera}")
-                        val mediaItem = MediaItem.fromUri(hlsUrl)
-                        player.setMediaItem(mediaItem)
-                        player.prepare()
-                    }
-                    "snapshot" -> {
-                        // Modo Eco Snapshot: Static base image with sequential polling loop
-                        val snapImageView = android.widget.ImageView(this).apply {
-                            layoutParams = FrameLayout.LayoutParams(
-                                FrameLayout.LayoutParams.MATCH_PARENT,
-                                FrameLayout.LayoutParams.MATCH_PARENT
-                            )
-                            scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
-                        }
-                        pipImageView = snapImageView
-                        inner.addView(snapImageView)
-
-                        loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
-                    }
-                    else -> {
-                        // "mse" (Padrão Recomendado): 100% Live Video Stream via go2rtc WebSocket WebView (sem snapshot/foto estática)
-                        val snapImageView = android.widget.ImageView(this).apply {
+                // 100% Live Video Stream via go2rtc WebRTC 720p hardware-accelerated WebView
+                val snapImageView = android.widget.ImageView(this).apply {
                             layoutParams = FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT
@@ -1004,8 +965,6 @@ class OverlayService : Service() {
                         }
                         pipWebView = wv
                         inner.addView(wv)
-                    }
-                }
 
                 root.addView(inner)
                 overlayView = root
@@ -1017,34 +976,16 @@ class OverlayService : Service() {
                     pipWebView?.loadUrl(streamUrl)
                 }
             } else {
-                when (prefs.pipPlayerMode) {
-                    "exoplayer" -> {
-                        pipExoPlayer?.let { player ->
-                            val hlsUrl = normalizeUrl(customStreamUrl, "/go2rtc/api/stream.m3u8?src=${streamCamera}")
-                            val mediaItem = MediaItem.fromUri(hlsUrl)
-                            player.setMediaItem(mediaItem)
-                            player.prepare()
-                            player.playWhenReady = true
-                        }
-                    }
-                    "snapshot" -> {
-                        pipImageView?.let { iv ->
-                            loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
-                        }
-                    }
-                    else -> {
-                        pipMetricsBridge?.reset()
-                        pipImageView?.apply {
-                            visibility = View.GONE
-                            alpha = 0f
-                        }
-                        pipWebView?.apply {
-                            alpha = 1f
-                            onResume()
-                            resumeTimers()
-                            loadUrl(streamUrl)
-                        }
-                    }
+                pipMetricsBridge?.reset()
+                pipImageView?.apply {
+                    visibility = View.GONE
+                    alpha = 0f
+                }
+                pipWebView?.apply {
+                    alpha = 1f
+                    onResume()
+                    resumeTimers()
+                    loadUrl(streamUrl)
                 }
 
                 if (overlayView?.parent == null) {
@@ -1097,7 +1038,7 @@ class OverlayService : Service() {
                         droppedFrames = pipDroppedFrames,
                         stallCount = pipStallCount,
                         totalFrames = if (pipTotalFramesRendered > 0) pipTotalFramesRendered else 1,
-                        decoder = if (prefs.pipPlayerMode == "exoplayer") "EXOPLAYER_HLS" else "MSE_WEBSOCKET_TCP"
+                        decoder = "WEBRTC_720P_HARDWARE"
                     )
                 }
             }
@@ -1123,45 +1064,6 @@ class OverlayService : Service() {
             return
         }
 
-        if (prefs.pipPlayerMode == "snapshot") {
-            // Sequential Adaptive Snapshot Streamer (Queue=1, Hardware Bitmaps, Downsampled to PiP dimensions)
-            // Eliminates GC pauses and prevents socket queue buildup on Wi-Fi / Tailscale
-            snapshotRefreshJob?.cancel()
-            val targetW = pipSize.width
-            val targetH = pipSize.height
-            snapshotRefreshJob = serviceScope.launch(Dispatchers.IO) {
-                val base = SentinelaConfig.BASE_URL.trimEnd('/')
-                val imageLoader = coil.Coil.imageLoader(applicationContext)
-                while (isActive) {
-                    try {
-                        val refreshSnapUrl = "$base/frigate/api/${resolvedCamera}/latest.jpg?h=720&t=${System.currentTimeMillis()}"
-                        val req = coil.request.ImageRequest.Builder(applicationContext)
-                            .data(refreshSnapUrl)
-                            .size(targetW, targetH)
-                            .allowHardware(true)
-                            .memoryCachePolicy(coil.request.CachePolicy.DISABLED)
-                            .diskCachePolicy(coil.request.CachePolicy.DISABLED)
-                            .build()
-
-                        val res = imageLoader.execute(req)
-                        if (isActive && res is coil.request.SuccessResult) {
-                            val drawable = res.drawable
-                            withContext(Dispatchers.Main) {
-                                pipImageView?.setImageDrawable(drawable)
-                            }
-                        }
-                    } catch (e: Exception) {
-                        // Ignore transient network errors
-                    }
-                    // Sequential throttle: wait >= 600ms AFTER previous frame completes to spare host CPU and eliminate jitter
-                    delay(600L)
-                }
-            }
-        } else {
-            snapshotRefreshJob?.cancel()
-            snapshotRefreshJob = null
-        }
-
         val duration = durationSeconds
         pipJob = serviceScope.launch {
             delay(duration * 1000L)
@@ -1171,12 +1073,6 @@ class OverlayService : Service() {
 
     private fun removePiP() {
         try {
-            snapshotRefreshJob?.cancel()
-            snapshotRefreshJob = null
-            pipExoPlayer?.stop()
-            pipExoPlayer?.release()
-            pipExoPlayer = null
-            pipPlayerView = null
             pipWebView?.let { wv ->
                 try {
                     wv.stopLoading()

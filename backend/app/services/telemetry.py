@@ -14,6 +14,10 @@ class TelemetryService:
         self._last_time = time.time()
         self._cached_temp = 37.5
         self._cached_temp_time = 0.0
+        self._cached_snapshot = None
+        self._cached_snapshot_time = 0.0
+        self._cached_detailed = None
+        self._cached_detailed_time = 0.0
 
     def get_cpu_temperature(self) -> float:
         """
@@ -103,8 +107,11 @@ class TelemetryService:
         except Exception:
             return "Online"
 
-    def get_telemetry_snapshot(self) -> Dict[str, Any]:
+    def get_telemetry_snapshot(self, force: bool = False) -> Dict[str, Any]:
         now = time.time()
+        if not force and self._cached_snapshot is not None and (now - self._cached_snapshot_time < 3.0):
+            return dict(self._cached_snapshot)
+
         dt = max(now - self._last_time, 0.1)
         current_net = psutil.net_io_counters()
 
@@ -127,7 +134,7 @@ class TelemetryService:
 
         cpu_temp = self.get_cpu_temperature()
 
-        return {
+        res = {
             "timestamp": now,
             "uptime": self.get_uptime_string(),
             "cpu": {
@@ -155,6 +162,9 @@ class TelemetryService:
                 "tx_kbs": round(tx_speed, 1)
             }
         }
+        self._cached_snapshot = res
+        self._cached_snapshot_time = now
+        return res
 
     def get_top_processes(self, limit: int = 10) -> List[Dict[str, Any]]:
         """Scans Linux processes and returns top consumers of CPU and RAM."""
@@ -180,9 +190,13 @@ class TelemetryService:
         procs.sort(key=lambda x: (x['cpu_percent'], x['memory_mb']), reverse=True)
         return procs[:limit]
 
-    def get_detailed_stats(self) -> Dict[str, Any]:
+    def get_detailed_stats(self, force: bool = False) -> Dict[str, Any]:
         """Provides an exhaustive statistical overview of the entire system."""
-        snap = self.get_telemetry_snapshot()
+        now = time.time()
+        if not force and self._cached_detailed is not None and (now - self._cached_detailed_time < 3.0):
+            return dict(self._cached_detailed)
+
+        snap = self.get_telemetry_snapshot(force=force)
         mem = psutil.virtual_memory()
         swap = psutil.swap_memory()
         
@@ -214,7 +228,7 @@ class TelemetryService:
         # Top processes
         top_procs = self.get_top_processes(limit=10)
 
-        return {
+        res = {
             "snapshot": snap,
             "cpu_details": {
                 "model": "Intel Celeron N5105 @ 2.00GHz (Jasper Lake)",
@@ -237,6 +251,9 @@ class TelemetryService:
             },
             "processes": top_procs
         }
+        self._cached_detailed = res
+        self._cached_detailed_time = now
+        return res
 
     def run_benchmark(self, bench_type: str) -> Dict[str, Any]:
         """

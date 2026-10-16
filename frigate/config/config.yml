@@ -25,7 +25,7 @@ model:
 detectors:
   ov:
     type: openvino
-    device: GPU
+    device: CPU
     model_path: /openvino-model/ssdlite_mobilenet_v2.xml
     model:
       width: 300
@@ -35,7 +35,7 @@ detectors:
       path: /openvino-model/ssdlite_mobilenet_v2.xml
 motion:
   threshold: 22
-  contour_area: 80
+  contour_area: 120
   improve_contrast: false
 objects:
   track:
@@ -80,34 +80,34 @@ snapshots:
   clean_copy: true
   timestamp: true
   bounding_box: true
-  quality: 100
-  height: 1296
+  quality: 90
+  height: 720
 go2rtc:
   log:
     rtsp: warn
   streams:
     cam_192_168_1_196:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#timeout=60
+    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0
     cam_192_168_1_196_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_720p:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#timeout=60
+    - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_sub:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#timeout=60
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
     cam_192_168_1_47:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#timeout=60
+    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0
     cam_192_168_1_47_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_720p:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#timeout=60
+    - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_sub:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#timeout=60
+    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0
     camera_principal:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_720p:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#timeout=60
+    - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_sub:
     - ffmpeg:cam_192_168_1_196_sub#video=copy
     camera_secundaria:
@@ -115,7 +115,7 @@ go2rtc:
     camera_secundaria_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_720p:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#timeout=60
+    - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_sub:
     - ffmpeg:cam_192_168_1_47_sub#video=copy
   webrtc:
@@ -123,8 +123,6 @@ go2rtc:
     candidates:
     - 100.93.129.91:8555
     - 192.168.1.247:8555
-    - 192.168.1.211:8555
-    - stun:8555
     - stun:stun.l.google.com:19302
 cameras:
   cam_192_168_1_189:

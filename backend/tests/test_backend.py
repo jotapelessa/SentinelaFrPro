@@ -371,8 +371,8 @@ async def test_sync_camera_3mp_unified_inputs_and_streams():
     assert inputs_by_role[("record",)] == "rtsp://127.0.0.1:8554/cam_192_168_1_196"
     assert inputs_by_role[("detect",)] == "rtsp://127.0.0.1:8554/cam_192_168_1_196_sub"
 
-    # 4. SUB stream with timeout flag in go2rtc
-    assert "timeout=60" in streams["cam_192_168_1_196_sub"][0]
+    # 4. SUB stream without timeout=60 in go2rtc (Build 185 fix for 60s socket drop)
+    assert "timeout=60" not in streams["cam_192_168_1_196_sub"][0]
     assert "live/0/SUB" in streams["cam_192_168_1_196_sub"][0]
 
     # 5. Zones scaled to 800x448 base
@@ -1223,6 +1223,46 @@ async def test_frigate_config_file_sub_detect_and_webrtc_listen():
     assert "sub" in inputs2[("detect",)].lower()
     assert cam2["detect"]["width"] == 800
     assert cam2["detect"]["height"] == 448
+
+@pytest.mark.asyncio
+async def test_telemetry_cache_and_thread_offload():
+    from app.services.telemetry import telemetry_service
+    import time
+    
+    t1 = telemetry_service.get_telemetry_snapshot()
+    time.sleep(0.05)
+    t2 = telemetry_service.get_telemetry_snapshot()
+    # Cache within 3.0s should return identical timestamp
+    assert t1["timestamp"] == t2["timestamp"]
+
+    d1 = telemetry_service.get_detailed_stats()
+    time.sleep(0.05)
+    d2 = telemetry_service.get_detailed_stats()
+    assert d1["snapshot"]["timestamp"] == d2["snapshot"]["timestamp"]
+
+@pytest.mark.asyncio
+async def test_camera_pip_sizes_schema_and_models():
+    from app.api.devices import DevicePermissionsUpdate, DeviceSettingsPush
+    from app.db.models import PairedDevice
+    import json
+
+    perms = DevicePermissionsUpdate(
+        camera_pip_sizes={"camera_principal": "CINEMA", "camera_secundaria": "MEDIUM"}
+    )
+    assert perms.camera_pip_sizes["camera_principal"] == "CINEMA"
+
+    push = DeviceSettingsPush(
+        camera_pip_sizes={"camera_principal": "LARGE"}
+    )
+    assert push.camera_pip_sizes["camera_principal"] == "LARGE"
+
+    dev = PairedDevice(
+        device_identifier="tv_living_room",
+        friendly_name="TCL TV",
+        camera_pip_sizes=json.dumps(perms.camera_pip_sizes)
+    )
+    assert json.loads(dev.camera_pip_sizes)["camera_principal"] == "CINEMA"
+
 
 
 

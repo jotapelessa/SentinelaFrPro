@@ -48,6 +48,25 @@ class SentinelaPreferences(private val context: Context) {
         editor.apply()
     }
 
+    fun getPipSizeIndex(cameraName: String): Int {
+        val aliases = resolveCameraAliases(cameraName)
+        for (alias in aliases) {
+            if (prefs.contains("pip_size_index_$alias")) {
+                return prefs.getInt("pip_size_index_$alias", pipSizeIndex)
+            }
+        }
+        return pipSizeIndex
+    }
+
+    fun setPipSizeIndex(cameraName: String, value: Int) {
+        val editor = prefs.edit()
+        val aliases = resolveCameraAliases(cameraName)
+        for (alias in aliases) {
+            editor.putInt("pip_size_index_$alias", value)
+        }
+        editor.apply()
+    }
+
     fun isCameraPipEnabled(cameraName: String): Boolean {
         val aliases = resolveCameraAliases(cameraName)
         for (alias in aliases) {
@@ -80,14 +99,13 @@ class SentinelaPreferences(private val context: Context) {
 
     var pipPlayerMode: String
         get() {
-            val hasMigrated = prefs.getBoolean("pip_mode_migrated_v107", false)
-            if (!hasMigrated) {
-                prefs.edit().putString("pip_player_mode", "mse").putBoolean("pip_mode_migrated_v107", true).apply()
-                return "mse"
+            val mode = prefs.getString("pip_player_mode", "webrtc") ?: "webrtc"
+            if (mode != "webrtc") {
+                prefs.edit().putString("pip_player_mode", "webrtc").apply()
             }
-            return prefs.getString("pip_player_mode", "mse") ?: "mse"
+            return "webrtc"
         }
-        set(value) = prefs.edit().putString("pip_player_mode", value).apply()
+        set(value) = prefs.edit().putString("pip_player_mode", "webrtc").apply()
 
     var deviceIdentifier: String
         get() {
@@ -128,6 +146,10 @@ class SentinelaPreferences(private val context: Context) {
     val currentPipSize: PipSize
         get() = PipSize.values().getOrElse(pipSizeIndex) { PipSize.EXTRA_LARGE }
 
+    fun getCurrentPipSize(cameraName: String): PipSize {
+        return PipSize.values().getOrElse(getPipSizeIndex(cameraName)) { currentPipSize }
+    }
+
     val currentPipPosition: PipPosition
         get() = PipPosition.values().getOrElse(pipPositionIndex) { PipPosition.TOP_RIGHT }
 
@@ -139,7 +161,7 @@ class SentinelaPreferences(private val context: Context) {
         get() = PipDuration.values().getOrElse(pipDurationIndex) { PipDuration.D_15S }
 
     fun getCameraDefaultStreamMode(cameraName: String): String {
-        return prefs.getString("camera_stream_mode_$cameraName", "mse") ?: "mse"
+        return prefs.getString("camera_stream_mode_$cameraName", "webrtc") ?: "webrtc"
     }
 
     fun setCameraDefaultStreamMode(cameraName: String, mode: String) {

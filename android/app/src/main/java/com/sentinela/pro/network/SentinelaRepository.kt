@@ -31,6 +31,7 @@ data class DevicePolicy(
     val streamQuality: String = "1080p",
     val isMasterAdmin: Boolean = false,
     val cameraPipPositions: Map<String, String> = emptyMap(),
+    val cameraPipSizes: Map<String, String> = emptyMap(),
     val cameraPipEnabled: Map<String, Boolean> = emptyMap()
 )
 
@@ -56,6 +57,7 @@ data class RemoteDeviceItem(
     val allowedCameras: List<String> = emptyList(),
     val lastSeen: String? = null,
     val cameraPipPositions: Map<String, String> = emptyMap(),
+    val cameraPipSizes: Map<String, String> = emptyMap(),
     val cameraPipEnabled: Map<String, Boolean> = emptyMap()
 ) {
     val isOnline: Boolean
@@ -130,6 +132,16 @@ object SentinelaRepository {
                     }
                 }
 
+                val camSizesMap = mutableMapOf<String, String>()
+                val camSizesObj = obj.optJSONObject("camera_pip_sizes")
+                if (camSizesObj != null) {
+                    val kIter = camSizesObj.keys()
+                    while (kIter.hasNext()) {
+                        val k = kIter.next()
+                        camSizesMap[k] = camSizesObj.optString(k)
+                    }
+                }
+
                 val camEnabledMap = mutableMapOf<String, Boolean>()
                 val camEnabledObj = obj.optJSONObject("camera_pip_enabled")
                 if (camEnabledObj != null) {
@@ -157,6 +169,7 @@ object SentinelaRepository {
                     streamQuality = obj.optString("stream_quality", "1080p"),
                     isMasterAdmin = obj.optBoolean("is_master_admin", false),
                     cameraPipPositions = camPosMap,
+                    cameraPipSizes = camSizesMap,
                     cameraPipEnabled = camEnabledMap
                 )
             }
@@ -688,7 +701,7 @@ object SentinelaRepository {
                 registerOrHeartbeat(deviceIdentifier, friendlyName ?: "Dispositivo Android", deviceType)
             }
 
-            val pingUrl = URL("${SentinelaConfig.BASE_URL}/api/telemetry/")
+            val pingUrl = URL("${SentinelaConfig.BASE_URL}/health")
             val pingConn = openConnection(pingUrl).apply {
                 connectTimeout = 3000
                 readTimeout = 3000
@@ -1251,6 +1264,15 @@ object SentinelaRepository {
                             devPosMap[k] = devPosObj.optString(k)
                         }
                     }
+                    val devSizesMap = mutableMapOf<String, String>()
+                    val devSizesObj = obj.optJSONObject("camera_pip_sizes")
+                    if (devSizesObj != null) {
+                        val kIter = devSizesObj.keys()
+                        while (kIter.hasNext()) {
+                            val k = kIter.next()
+                            devSizesMap[k] = devSizesObj.optString(k)
+                        }
+                    }
                     val devEnabledMap = mutableMapOf<String, Boolean>()
                     val devEnabledObj = obj.optJSONObject("camera_pip_enabled")
                     if (devEnabledObj != null) {
@@ -1283,6 +1305,7 @@ object SentinelaRepository {
                             allowedCameras = camsList,
                             lastSeen = obj.optString("last_seen").takeIf { it.isNotBlank() },
                             cameraPipPositions = devPosMap,
+                            cameraPipSizes = devSizesMap,
                             cameraPipEnabled = devEnabledMap
                         )
                     )
@@ -1343,6 +1366,7 @@ object SentinelaRepository {
         allowPip: Boolean = true,
         permissionStatus: String = "allowed",
         cameraPipPositions: Map<String, String> = emptyMap(),
+        cameraPipSizes: Map<String, String> = emptyMap(),
         cameraPipEnabled: Map<String, Boolean> = emptyMap()
     ): Pair<Boolean, String> = withContext(Dispatchers.IO) {
         try {
@@ -1361,6 +1385,9 @@ object SentinelaRepository {
             val posObj = JSONObject()
             cameraPipPositions.forEach { (k, v) -> posObj.put(k, v) }
 
+            val sizesObj = JSONObject()
+            cameraPipSizes.forEach { (k, v) -> sizesObj.put(k, v) }
+
             val enabledObj = JSONObject()
             cameraPipEnabled.forEach { (k, v) -> enabledObj.put(k, v) }
 
@@ -1374,6 +1401,7 @@ object SentinelaRepository {
                 put("allow_pip_alerts", allowPip)
                 put("allowed_cameras", camsArr)
                 put("camera_pip_positions", posObj)
+                put("camera_pip_sizes", sizesObj)
                 put("camera_pip_enabled", enabledObj)
             }
             conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }
@@ -1416,6 +1444,12 @@ object SentinelaRepository {
                 put("cam_192_168_1_196", prefs.getCurrentPipPosition("cam_192_168_1_196").name)
                 put("cam_192_168_1_47", prefs.getCurrentPipPosition("cam_192_168_1_47").name)
             }
+            val camSizes = JSONObject().apply {
+                put("camera_principal", prefs.getCurrentPipSize("camera_principal").name)
+                put("camera_secundaria", prefs.getCurrentPipSize("camera_secundaria").name)
+                put("cam_192_168_1_196", prefs.getCurrentPipSize("cam_192_168_1_196").name)
+                put("cam_192_168_1_47", prefs.getCurrentPipSize("cam_192_168_1_47").name)
+            }
             val camEnabled = JSONObject().apply {
                 put("camera_principal", prefs.isCameraPipEnabled("camera_principal"))
                 put("camera_secundaria", prefs.isCameraPipEnabled("camera_secundaria"))
@@ -1429,6 +1463,7 @@ object SentinelaRepository {
                 put("pip_player_mode", prefs.pipPlayerMode)
                 put("stream_quality", prefs.streamQuality)
                 put("camera_pip_positions", camPositions)
+                put("camera_pip_sizes", camSizes)
                 put("camera_pip_enabled", camEnabled)
             }
             conn.outputStream.use { it.write(payload.toString().toByteArray(Charsets.UTF_8)) }

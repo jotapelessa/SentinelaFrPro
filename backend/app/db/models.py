@@ -71,11 +71,12 @@ class PairedDevice(Base):
     allow_pip_alerts = Column(Boolean, default=True) # Permission to receive floating PiP alarm windows
     allow_restart_containers = Column(Boolean, default=False) # Remote container restart permission
     allow_reboot_server = Column(Boolean, default=False) # Remote server reboot permission
-    pip_default_size = Column(String(32), default="medium") # mini, medium, large, split
+    pip_default_size = Column(String(32), default="extra_large") # mini, medium, large, split, extra_large
     pip_duration_seconds = Column(Integer, default=10) # 5, 10, 15, 30
     pip_position = Column(String(32), default="TOP_RIGHT") # TOP_RIGHT, TOP_LEFT, BOTTOM_RIGHT, BOTTOM_LEFT, etc.
     camera_pip_positions = Column(Text, nullable=True) # JSON map e.g. {"cam_1": "TOP_LEFT", "cam_2": "BOTTOM_RIGHT"}
     camera_pip_enabled = Column(Text, nullable=True) # JSON map e.g. {"cam_1": true, "cam_2": false}
+    camera_pip_sizes = Column(Text, nullable=True) # JSON map e.g. {"cam_1": "CINEMA", "cam_2": "MEDIUM"}
     stream_quality = Column(String(16), default="1080p") # 1080p, 720p
     is_master_admin = Column(Boolean, default=False) # Master special permissions for smartphone
     admin_unlocked_at = Column(DateTime, nullable=True)

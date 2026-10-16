@@ -6,7 +6,7 @@ import {
   Tv, Tablet, Smartphone, Play, Plus, Trash2, Check, AlertCircle,
   RefreshCw, X, Radio, Camera, ShieldCheck, ShieldAlert, Wifi, WifiOff,
   Cast, Info, Sliders, Search, Copy, Cpu, Activity, Bell, BellOff,
-  Sparkles, Monitor, CheckCircle2, Clock, Download
+  Sparkles, Monitor, CheckCircle2, Clock, Download, Layout
 } from "lucide-react";
 import { ClientDeviceLogsTerminal } from "@/components/ClientDeviceLogsTerminal";
 import { APP_VERSION } from "@/constants/version";
@@ -30,6 +30,7 @@ interface PairedDevice {
   pip_duration_seconds?: number;
   pip_position?: string;
   camera_pip_positions?: Record<string, string>;
+  camera_pip_sizes?: Record<string, string>;
   camera_pip_enabled?: Record<string, boolean>;
   stream_quality?: string;
   is_master_admin?: boolean;
@@ -180,6 +181,9 @@ export default function ScreensPage() {
                 pip_default_size: detail.pip_default_size || d.pip_default_size,
                 pip_duration_seconds: detail.pip_duration_seconds ?? d.pip_duration_seconds,
                 pip_position: detail.pip_position || d.pip_position,
+                camera_pip_positions: detail.camera_pip_positions || d.camera_pip_positions,
+                camera_pip_sizes: detail.camera_pip_sizes || d.camera_pip_sizes,
+                camera_pip_enabled: detail.camera_pip_enabled || d.camera_pip_enabled,
                 stream_quality: detail.stream_quality || d.stream_quality,
                 allow_pip_alerts: detail.allow_pip_alerts !== undefined ? detail.allow_pip_alerts : d.allow_pip_alerts
               };
@@ -210,6 +214,8 @@ export default function ScreensPage() {
                   last_seen: detail.last_seen || new Date().toISOString(),
                   stream_quality: detail.stream_quality || d.stream_quality,
                   pip_position: detail.pip_position || d.pip_position,
+                  pip_default_size: detail.pip_default_size || d.pip_default_size,
+                  camera_pip_sizes: detail.camera_pip_sizes || d.camera_pip_sizes,
                   pip_duration_seconds: detail.pip_duration_seconds || d.pip_duration_seconds
                 };
               }
@@ -1519,6 +1525,111 @@ export default function ScreensPage() {
                       </select>
                     </div>
                   </div>
+
+                  {/* Granular PiP Size & Position per Camera */}
+                  <div className="pt-2.5 border-t border-slate-800 space-y-2">
+                    <span className="text-slate-300 block text-[11px] font-bold flex items-center gap-1.5">
+                      <Layout className="w-3.5 h-3.5 text-cyan-400" />
+                      Ajuste Granular por Câmera (Tamanho & Posição):
+                    </span>
+                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
+                      {cameras.map((c) => {
+                        const camSizes = managingDevice.camera_pip_sizes || {};
+                        const camPositions = managingDevice.camera_pip_positions || {};
+                        const camEnabled = managingDevice.camera_pip_enabled || {};
+                        const currentSize = camSizes[c.name] || "";
+                        const currentPos = camPositions[c.name] || "";
+                        const isCamPipActive = camEnabled[c.name] !== false;
+
+                        return (
+                          <div key={c.id} className="p-2.5 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <span className="font-mono text-[11px] font-bold text-slate-200">
+                                {c.friendly_name || c.name}
+                              </span>
+                              <label className="flex items-center gap-1.5 cursor-pointer">
+                                <span className="text-[10px] text-slate-400">PiP Ativo</span>
+                                <input
+                                  type="checkbox"
+                                  checked={isCamPipActive}
+                                  onChange={(e) => {
+                                    setManagingDevice({
+                                      ...managingDevice,
+                                      camera_pip_enabled: {
+                                        ...camEnabled,
+                                        [c.name]: e.target.checked
+                                      }
+                                    });
+                                  }}
+                                  className="rounded text-cyan-500 w-3.5 h-3.5"
+                                />
+                              </label>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <span className="text-[9px] text-slate-400 block mb-0.5 font-bold">Tamanho:</span>
+                                <select
+                                  value={currentSize}
+                                  onChange={(e) => {
+                                    const nextSizes = { ...camSizes };
+                                    if (!e.target.value) {
+                                      delete nextSizes[c.name];
+                                    } else {
+                                      nextSizes[c.name] = e.target.value;
+                                    }
+                                    setManagingDevice({
+                                      ...managingDevice,
+                                      camera_pip_sizes: nextSizes
+                                    });
+                                  }}
+                                  className="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg p-1.5 text-[10px] focus:outline-none focus:border-cyan-500 font-mono"
+                                >
+                                  <option value="">Padrão ({managingDevice.pip_default_size || "medium"})</option>
+                                  <option value="extra_small">Extra Pequeno (320x180)</option>
+                                  <option value="small">Pequeno (480x270)</option>
+                                  <option value="medium_small">Médio Pequeno (640x360)</option>
+                                  <option value="medium">Médio Padrão (800x450)</option>
+                                  <option value="medium_large">Médio Grande (960x540)</option>
+                                  <option value="large">Grande (1120x630)</option>
+                                  <option value="extra_large">Extra Grande (1280x720)</option>
+                                  <option value="cinema">Cinema (1440x810)</option>
+                                </select>
+                              </div>
+                              <div>
+                                <span className="text-[9px] text-slate-400 block mb-0.5 font-bold">Posição:</span>
+                                <select
+                                  value={currentPos}
+                                  onChange={(e) => {
+                                    const nextPos = { ...camPositions };
+                                    if (!e.target.value) {
+                                      delete nextPos[c.name];
+                                    } else {
+                                      nextPos[c.name] = e.target.value;
+                                    }
+                                    setManagingDevice({
+                                      ...managingDevice,
+                                      camera_pip_positions: nextPos
+                                    });
+                                  }}
+                                  className="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg p-1.5 text-[10px] focus:outline-none focus:border-cyan-500 font-mono"
+                                >
+                                  <option value="">Padrão ({managingDevice.pip_position || "TOP_RIGHT"})</option>
+                                  <option value="TOP_RIGHT">Superior Direito</option>
+                                  <option value="TOP_LEFT">Superior Esquerdo</option>
+                                  <option value="BOTTOM_RIGHT">Inferior Direito</option>
+                                  <option value="BOTTOM_LEFT">Inferior Esquerdo</option>
+                                  <option value="TOP_CENTER">Superior Centro</option>
+                                  <option value="BOTTOM_CENTER">Inferior Centro</option>
+                                  <option value="CENTER_LEFT">Centro Esquerdo</option>
+                                  <option value="CENTER_RIGHT">Centro Direito</option>
+                                </select>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
                 {/* Granular System Privileges */}
@@ -1741,6 +1852,7 @@ export default function ScreensPage() {
                             pip_duration_seconds: managingDevice.pip_duration_seconds || 10,
                             pip_position: managingDevice.pip_position || "TOP_RIGHT",
                             camera_pip_positions: managingDevice.camera_pip_positions || {},
+                            camera_pip_sizes: managingDevice.camera_pip_sizes || {},
                             camera_pip_enabled: managingDevice.camera_pip_enabled || {},
                             stream_quality: managingDevice.stream_quality || "720p"
                           })

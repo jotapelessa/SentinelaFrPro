@@ -1529,8 +1529,6 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     cfg["go2rtc"]["webrtc"]["candidates"] = [
         "100.93.129.91:8555",
         "192.168.1.247:8555",
-        "192.168.1.211:8555",
-        "stun:8555",
         "stun:stun.l.google.com:19302"
     ]
 
@@ -1542,28 +1540,29 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     sub_url = (cam.rtsp_sub or "").strip()
     if rtsp_url:
         clean_url = rtsp_url.split("#")[0].strip()
-        main_source = f"{clean_url}#backchannel=0#timeout=60"
+        main_source = f"{clean_url}#backchannel=0"
 
         raw_sub = sub_url if sub_url else (clean_url.replace("/MAIN", "/SUB") if "/MAIN" in clean_url else (infer_substream_url(clean_url) or clean_url))
         clean_sub = raw_sub.split("#")[0].strip()
-        sub_source = f"{clean_sub}#backchannel=0#timeout=60"
+        sub_source = f"{clean_sub}#backchannel=0"
 
+        sub_alias_target = f"{target_cam_key}_sub"
         cfg["go2rtc"]["streams"][target_cam_key] = [main_source]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [sub_source]
-        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [sub_source]
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
 
         # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
         sub_alias_target = f"{target_cam_key}_sub"
         if target_cam_key in ("cam_192_168_1_196", "camera_principal"):
             cfg["go2rtc"]["streams"]["camera_principal"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_principal_720p"] = [sub_source]
+            cfg["go2rtc"]["streams"]["camera_principal_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{sub_alias_target}#video=copy"]
         elif target_cam_key in ("cam_192_168_1_47", "camera_secundaria"):
             cfg["go2rtc"]["streams"]["camera_secundaria"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_secundaria_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [sub_source]
+            cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{sub_alias_target}#video=copy"]
 
     # Build ffmpeg inputs:
@@ -1790,26 +1789,26 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     if rtsp_url:
         try:
             clean_url = rtsp_url.split("#")[0].strip()
-            main_stream_src = f"{clean_url}#backchannel=0#timeout=60"
+            main_stream_src = f"{clean_url}#backchannel=0"
             raw_sub = sub_url if sub_url else (clean_url.replace("/MAIN", "/SUB") if "/MAIN" in clean_url else (infer_substream_url(clean_url) or clean_url))
             clean_sub = raw_sub.split("#")[0].strip()
-            sub_stream_src = f"{clean_sub}#backchannel=0#timeout=60"
+            sub_stream_src = f"{clean_sub}#backchannel=0"
 
             async with httpx.AsyncClient(timeout=3.0) as client:
                 await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": target_cam_key, "src": main_stream_src})
                 await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
                 await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_sub", "src": sub_stream_src})
-                await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_720p", "src": sub_stream_src})
+                await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
 
                 if target_cam_key in ("cam_192_168_1_196", "camera_principal"):
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal", "src": f"ffmpeg:{target_cam_key}#video=copy"})
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
-                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_720p", "src": sub_stream_src})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_sub", "src": f"ffmpeg:{target_cam_key}_sub#video=copy"})
                 elif target_cam_key in ("cam_192_168_1_47", "camera_secundaria"):
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria", "src": f"ffmpeg:{target_cam_key}#video=copy"})
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
-                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_720p", "src": sub_stream_src})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_sub", "src": f"ffmpeg:{target_cam_key}_sub#video=copy"})
         except Exception as e:
             logger.debug(f"Dynamic go2rtc stream registration skipped or pending restart: {e}")

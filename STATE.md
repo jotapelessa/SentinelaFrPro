@@ -1,15 +1,41 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-16 04:35 BRT
-> **Versão Corrente:** v001.000.000.184
-> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.184 consolidada com:
-1. **PiP 100% Live Stream sem fotos estáticas (`OverlayService.kt`)**: Removida a exibição de snapshots/fotos estáticas no PiP (`visibility = View.GONE`, `alpha = 1f` imediato). Travessia de Shadow DOM corrigida no `stream.html` do go2rtc (`video-stream -> shadowRoot.querySelector('video')`), permitindo que `requestVideoFrameCallback(onFrame)` registre o primeiro quadro e ative o watchdog suave de live-edge (`playbackRate = 1.08x`).
-2. **Fim do Loop Infinito de PiP (`OverlayService.kt` + `mqtt_service.py` + `pip_gateway.py`)**: PiP restrito estritamente ao evento `pip_alert` (removidos `NEW_DETECTION` e `FRIGATE_EVENT`). Implementado LRU de `processedPipEventIds` (500 eventos) evitando disparos repetidos para o mesmo `event_id`. Removido re-disparo duplicado assíncrono pós-upload do Telegram e elevado o cooldown de detecção contínua para 15s.
-3. **Aba Câmeras da TV com Mosaico Simultâneo (`TvNetflixScreen.kt`)**: Adicionado modo Mosaico Ao Vivo (Grid 2x1 / Multi-view) que exibe todas as câmeras ativas habilitadas simultaneamente com streams MSE em tempo real e foco D-Pad suave. Botão no topo permite alternar instantaneamente entre Mosaico (todas as câmeras) e Destaque (tela única).
-4. **Fim da Queda de 59 Segundos no WebRTC/MSE (`cameras.py` + `WebRTCPlayer.tsx` + `nginx/default.conf`)**: Eliminada a duplicação de URLs RTSP que causava timeout de 60s na câmera física AITEK. Eliminada a sobrescrita em memória de `_sub` no go2rtc. No player Web, corrigido o seletor para inspecionar dentro do Shadow DOM do `video-stream`, reativando o watchdog de live-edge e reconexão automática. Adicionados timeouts de 86400s no proxy do Nginx.
-5. **Alívio Térmico e de CPU no Host Ubuntu (`config.yml` + `cameras.py`)**: A role `detect` do Frigate consome o sub-stream nativo (800x448 @ 5fps) sem re-encoding em CPU, o go2rtc opera sem processos ffmpeg de loopback desnecessários e o `record` opera com preset genérico sem transcodificação contínua de áudio para AAC na CPU.
-6. **Sincronização Global da Versão `001.000.000.184` (Build 184)** e 100% dos testes aprovados (36/36 pytest e build Next.js limpo).
+> **Última Atualização:** 2026-10-16 18:30 BRT
+> **Versão Corrente:** v001.000.000.185
+> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.185 consolidada com:
+1. **Layout TV Redesenhado & WebRTC Lock 720p (`TvNetflixScreen.kt` + `OverlayService.kt`)**: Removido o modo mosaico de 2 colunas. Estabelecida arquitetura de Hero Player (~80% da tela) com LazyRow horizontal no rodapé (~20%) para todas as câmeras ativas habilitadas (`.filter { it.enabled }.distinctBy { it.name }`). O stream do Hero e a janela PiP flutuante foram travados estritamente em WebRTC 720p com aceleração gráfica por hardware MediaCodec (`mode=webrtc,mse&media=video&background=true`). Purgadas completamente as ramificações legadas de ExoPlayer e Snapshot polling (`snapshotRefreshJob`), garantindo 100% vídeo ao vivo e zero fotos estáticas no PiP.
+2. **Navegação D-Pad Fluida nas 5 Abas (`TvNetflixScreen.kt`)**: Corrigida a ergonomia do controle remoto em todas as viewports (Câmeras, Gravações, Ferramentas, Logs e Ajustes). Pressionar `Key.DirectionLeft` nos itens da coluna 0 (chips de câmera, grades de opções, botões e presets) agora retorna imediatamente o foco para a barra lateral esquerda.
+3. **Controle Granular de Tamanho de PiP por Câmera (`camera_pip_sizes`) & Default Extra Grande (1280x720)**: Criada a coluna `camera_pip_sizes` (TEXT/JSON) no modelo SQLite `PairedDevice`, com sincronização bidirecional em tempo real via WebSocket em todas as plataformas (Web `/screens`, Smartphone `DeviceConfigEditDialog` e TV `TvSettingsViewport`). No `OverlayService.kt`, a resolução hierárquica respeita o tamanho individual por câmera configurado no app ou no servidor, padronizando o fallback do ecossistema para `extra_large` (1280×720) em vez de `medium_small`.
+4. **Resolução Definitiva dos Drops de 59s & Fim da Concorrência RTSP Física (`cameras.py` + `config.yml` + `WebRTCPlayer.tsx`)**: Eliminado o deadlock no watchdog do WebRTC onde `stallCountMs` não incrementava se o stream caísse e `readyState < 2`. Em `cameras.py` e `config.yml`, os canais `_720p`, `camera_principal_720p` e `camera_secundaria_720p` foram corrigidos para consumir o restream zero-copy em memória a partir do stream `MAIN` (`ffmpeg:{target_cam_key}#video=copy`), eliminando a abertura concorrente de conexões físicas RTSP ao canal `SUB` que estourava os buffers TCP das câmeras AITEK e causava `unexpected EOF`.
+5. **Otimização de Telemetria e Carga Térmica no Ubuntu**: OpenVINO detector padronizado em `device: CPU`; implementado cache em memória de 3.0s para métricas do sistema (`psutil`) e envelopamento assíncrono em `asyncio.to_thread`, garantindo `/health` < 2ms e `/api/telemetry` < 15ms. Tailscale restaurado no host (`100.93.129.91` / `frigate.tail47a54f.ts.net`).
+6. **Sincronização Global da Versão `001.000.000.185` (Build 185)**: 100% dos 38 testes aprovados no pytest (`backend/tests/test_backend.py`), build Next.js 14 limpo (14/14 páginas estáticas) e compilação dos APKs TV e Smartphone atualizados na raiz do repositório (`sentinela.android.tv.001.000.000.185.apk` e `sentinela.android.smartphone.001.000.000.185.apk`).
+
+---
+
+## 🚀 Versão v001.000.000.185 — Hero Player + LazyRow na TV, D-Pad Fluido nas 5 Abas, WebRTC Lock 720p, PiP Sizes por Câmera e Fim do Deadlock 59s
+- **Data**: 2026-10-16
+- **Objetivo**: Concluir a transição para a arquitetura de visualização Hero Player na Android TV, garantir navegação D-pad contínua e sem bloqueios para a barra lateral, travar a TV em WebRTC 720p hardware, permitir configuração granular de tamanho de PiP por câmera em todo o ecossistema e eliminar o deadlock de recuperação do WebRTC:
+  1. **Android TV — Hero Player 80% + LazyRow 20% & WebRTC Lock 720p (`TvNetflixScreen.kt`)**:
+     - *Causa*: O modo mosaico com 2 colunas dividia a tela verticalmente, comprometendo o monitoramento imersivo e a proporção 16:9 das câmeras. Além disso, o modo MSE sofria com overhead de decodificação na Smart TV.
+     - *Correção*: Removido `isMosaicMode`, seletor de mosaico e grid 2x1. Estabelecido Hero Player superior (~80% da tela) com stream WebRTC 720p acelerado por hardware MediaCodec (`streamMode = "webrtc"`, `preferSubStream = true`), complementado por LazyRow horizontal inferior (~20%) contendo cards 16:9 de todas as câmeras ativas (`.filter { it.enabled }.distinctBy { it.name }`).
+  2. **Android TV — Ergonomia D-Pad Completa nas 5 Abas (`TvNetflixScreen.kt`)**:
+     - *Causa*: Usuários ficavam presos em itens internos das viewports sem conseguir retornar à barra lateral esquerda utilizando `Key.DirectionLeft`.
+     - *Correção*: Interceptação de `Key.DirectionLeft` implementada em todos os elementos da coluna 0 / extremidade esquerda em Câmeras (botão de modo e card 0 do carrossel), Gravações (estado vazio e índice % 3 == 0), Ferramentas (botões de teste e ping), Logs (seletores de fonte) e Ajustes (módulos, seletores de câmeras, grades de tamanho, posição, duração, presets e permissões), chamando `onNavigateLeftToSidebar()`.
+  3. **Multi-Plataforma — Tamanho de PiP Granular por Câmera (`camera_pip_sizes`)**:
+     - *Causa*: Dispositivos de TV podiam ter apenas um tamanho global de PiP para todas as câmeras, impedindo personalização para câmeras com posicionamento ou relevância visual distinta.
+     - *Correção*: Adicionada coluna `camera_pip_sizes` ao SQLite `PairedDevice` com auto-migração em `session.py`; schemas Pydantic atualizados em `devices.py`; resolução no `pip_gateway.py`; controle visual no painel Web (`/screens`) com WebSocket sync; seletor de chips por câmera no diálogo de edição do Smartphone (`SmartphoneYouTubeScreen.kt`); e seletor com persistência local e remota na TV (`TvSettingsViewport` & `OverlayService.kt`).
+  4. **Sentinela Web — Fim do Deadlock no Watchdog de Streaming (`WebRTCPlayer.tsx`)**:
+     - *Causa*: Quando a conexão caía, `video.paused` tornava-se `true` e `readyState` caía abaixo de 2. A lógica anterior só incrementava `stallCountMs` dentro de um bloco `else` que exigia `readyState >= 2`, impedindo que o contador atingisse o limiar de recuperação e congelando o player permanentemente.
+     - *Correção*: Contador de stall desacoplado para avaliar `!isPlaying` independentemente de `readyState`, garantindo acionamento resiliente do recovery handler após estagnação comprovada.
+  5. **Servidor Ubuntu — OpenVINO CPU & Otimização de Telemetria (`config.yml`, `cameras.py`, `telemetry.py`)**:
+     - *Correção*: OpenVINO detector fixado em `device: CPU`; removido `#timeout=60` que forçava quedas de socket no firmware AITEK; candidatos ICE limpos no go2rtc; `psutil` envolvido em `asyncio.to_thread` com cache de 3.0s, atingindo `/health` < 2ms e `/api/telemetry` < 15ms.
+  6. **Sincronização de Versão 001.000.000.185 (Build 185)**:
+     - Atualizados: `android/version.properties` (BUILD=185, VERSION_NAME=001.000.000.185), `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
+  7. **Cobertura e Validação**:
+     - 38 testes automatizados 100% aprovados (`backend/tests/test_backend.py`).
+     - Build do Next.js 14 estático compilado com sucesso.
+     - APKs Android TV e Smartphone compilados e sincronizados na raiz do repositório.
 
 ---
 

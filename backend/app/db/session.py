@@ -94,7 +94,7 @@ async def init_db():
             ("allow_pip_alerts", "BOOLEAN DEFAULT 1"),
             ("allow_restart_containers", "BOOLEAN DEFAULT 0"),
             ("allow_reboot_server", "BOOLEAN DEFAULT 0"),
-            ("pip_default_size", "VARCHAR(32) DEFAULT 'medium'"),
+            ("pip_default_size", "VARCHAR(32) DEFAULT 'extra_large'"),
             ("pip_duration_seconds", "INTEGER DEFAULT 10"),
             ("pip_position", "VARCHAR(32) DEFAULT 'TOP_RIGHT'"),
             ("stream_quality", "VARCHAR(16) DEFAULT '1080p'"),
@@ -109,6 +109,7 @@ async def init_db():
             ("recent_logs", "TEXT"),
             ("camera_pip_positions", "TEXT"),
             ("camera_pip_enabled", "TEXT"),
+            ("camera_pip_sizes", "TEXT"),
             ("last_seen", "DATETIME")
         ]
         for col_name, col_def in paired_columns:

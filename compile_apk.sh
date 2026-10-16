@@ -47,6 +47,18 @@ case "$TARGET_LOWER" in
         ;;
 esac
 
+# ── Android SDK (macOS & Linux) ──────────────────────────────
+if [ -z "${ANDROID_HOME:-}" ]; then
+    if [ -d "$HOME/Library/Android/sdk" ]; then
+        export ANDROID_HOME="$HOME/Library/Android/sdk"
+    elif [ -d "/usr/local/lib/android/sdk" ]; then
+        export ANDROID_HOME="/usr/local/lib/android/sdk"
+    fi
+fi
+if [ -n "${ANDROID_HOME:-}" ]; then
+    export PATH="$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin:$PATH"
+fi
+
 # ── JDK 17 ──────────────────────────────────────────────────
 CURRENT_JAVA_VER=$(java -version 2>&1 | head -n 1 | awk -F '"' '{print $2}' | cut -d'.' -f1 || echo "")
 
@@ -54,6 +66,9 @@ if [ "$CURRENT_JAVA_VER" != "17" ] && [ "$CURRENT_JAVA_VER" != "21" ]; then
     echo "☕ JDK compatível não encontrado (atual: '${CURRENT_JAVA_VER}'), procurando..."
     FOUND_JDK=false
     for jpath in \
+        "/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home" \
+        "/opt/homebrew/Cellar/openjdk@17/"*/libexec/openjdk.jdk/Contents/Home \
+        "/Library/Java/JavaVirtualMachines/"*/Contents/Home \
         "/usr/lib/jvm/java-17-openjdk-amd64" \
         "/usr/lib/jvm/java-17-openjdk" \
         "/usr/lib/jvm/msopenjdk-17-amd64" \

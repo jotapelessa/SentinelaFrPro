@@ -949,7 +949,7 @@ fun PhoneCapturesTab() {
 fun DeviceConfigEditDialog(
     device: com.sentinela.pro.network.RemoteDeviceItem,
     onDismiss: () -> Unit,
-    onSave: (name: String, pipSize: String, pipDuration: Int, pipPosition: String, allowPip: Boolean, status: String, streamQuality: String, cameraPipPositions: Map<String, String>, cameraPipEnabled: Map<String, Boolean>) -> Unit
+    onSave: (name: String, pipSize: String, pipDuration: Int, pipPosition: String, allowPip: Boolean, status: String, streamQuality: String, cameraPipPositions: Map<String, String>, cameraPipSizes: Map<String, String>, cameraPipEnabled: Map<String, Boolean>) -> Unit
 ) {
     var name by remember { mutableStateOf(device.friendlyName) }
     var pipSize by remember { mutableStateOf(device.pipDefaultSize) }
@@ -959,6 +959,7 @@ fun DeviceConfigEditDialog(
     var status by remember { mutableStateOf(device.permissionStatus) }
     var streamQuality by remember { mutableStateOf(device.streamQuality) }
     var camPositionsMap by remember { mutableStateOf(device.cameraPipPositions) }
+    var camSizesMap by remember { mutableStateOf(device.cameraPipSizes) }
     var camEnabledMap by remember { mutableStateOf(device.cameraPipEnabled) }
 
     val allSizes = listOf(
@@ -1183,6 +1184,9 @@ fun DeviceConfigEditDialog(
                             var camPos by remember(camName) {
                                 mutableStateOf(camPositionsMap[camName] ?: pipPosition)
                             }
+                            var camSize by remember(camName) {
+                                mutableStateOf(camSizesMap[camName] ?: pipSize)
+                            }
                             var camOn by remember(camName) {
                                 mutableStateOf(camEnabledMap[camName] ?: true)
                             }
@@ -1260,6 +1264,31 @@ fun DeviceConfigEditDialog(
                                             }
                                         }
                                     }
+
+                                    // Tamanho da câmera em 8 chips divididos em 2 linhas (4x2)
+                                    Text("Tamanho PiP da Câmera:", color = SentinelaColors.TextSecondary, fontSize = 9.sp)
+                                    allSizes.chunked(4).forEach { sizeRow ->
+                                        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                            sizeRow.forEach { (szKey, szLabel) ->
+                                                val isSel = camSize.lowercase() == szKey
+                                                Surface(
+                                                    shape = SentinelaShapes.SmallButton,
+                                                    color = if (isSel) SentinelaColors.MasterGold.copy(alpha = 0.3f) else SentinelaColors.CardBackground,
+                                                    border = BorderStroke(0.5.dp, if (isSel) SentinelaColors.MasterGold else SentinelaColors.BorderStandard),
+                                                    modifier = Modifier.weight(1f).clickable {
+                                                        camSize = szKey
+                                                        val m = camSizesMap.toMutableMap()
+                                                        m[camName] = szKey
+                                                        camSizesMap = m
+                                                    }
+                                                ) {
+                                                    Box(modifier = Modifier.padding(vertical = 4.dp), contentAlignment = Alignment.Center) {
+                                                        Text(szLabel, color = if (isSel) SentinelaColors.MasterGold else Color.White, fontSize = 8.sp, fontWeight = FontWeight.Bold)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -1269,7 +1298,7 @@ fun DeviceConfigEditDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onSave(name, pipSize, pipDuration, pipPosition, allowPip, status, streamQuality, camPositionsMap, camEnabledMap) },
+                onClick = { onSave(name, pipSize, pipDuration, pipPosition, allowPip, status, streamQuality, camPositionsMap, camSizesMap, camEnabledMap) },
                 colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan)
             ) {
                 Text("Salvar & Sincronizar", color = Color.Black, fontWeight = FontWeight.Bold)
@@ -1360,7 +1389,7 @@ fun PhoneMasterCentralTab() {
         DeviceConfigEditDialog(
             device = editingDevice!!,
             onDismiss = { editingDevice = null },
-            onSave = { updatedName, pipSize, pipDur, pipPos, allowPip, status, streamQuality, camPositions, camEnabled ->
+            onSave = { updatedName, pipSize, pipDur, pipPos, allowPip, status, streamQuality, camPositions, camSizes, camEnabled ->
                 val devId = editingDevice!!.id
                 val devName = editingDevice!!.friendlyName
                 editingDevice = null
@@ -1375,6 +1404,7 @@ fun PhoneMasterCentralTab() {
                         permissionStatus = status,
                         streamQuality = streamQuality,
                         cameraPipPositions = camPositions,
+                        cameraPipSizes = camSizes,
                         cameraPipEnabled = camEnabled
                     )
                     Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
@@ -3387,7 +3417,7 @@ fun CameraConfigEditDialog(
 ) {
     var name by remember { mutableStateOf(camera.friendlyName) }
     var resolution by remember { mutableStateOf("1080p") } // default since not in model yet
-    var streamMode by remember { mutableStateOf("mse") }
+    var streamMode by remember { mutableStateOf("webrtc") }
     var streamQuality by remember { mutableStateOf("maxima") }
     var bitrate by remember { mutableStateOf(2048) }
 

@@ -110,6 +110,19 @@ class PiPGatewayService:
                     except Exception:
                         pass
 
+                cam_sizes = {}
+                if d.camera_pip_sizes:
+                    try:
+                        cam_sizes = json.loads(d.camera_pip_sizes)
+                    except Exception:
+                        cam_sizes = {}
+                cam_positions = {}
+                if d.camera_pip_positions:
+                    try:
+                        cam_positions = json.loads(d.camera_pip_positions)
+                    except Exception:
+                        cam_positions = {}
+
                 filtered_devices.append({
                     "id": d.id,
                     "name": d.friendly_name,
@@ -118,8 +131,11 @@ class PiPGatewayService:
                     "target_ip": d.tailscale_ip if d.tailscale_ip else d.ip_address,
                     "local_ip": d.ip_address,
                     "tailscale_ip": d.tailscale_ip,
-                    "pip_default_size": d.pip_default_size or "medium",
-                    "pip_duration_seconds": d.pip_duration_seconds or 10
+                    "pip_default_size": d.pip_default_size or "extra_large",
+                    "pip_duration_seconds": d.pip_duration_seconds or 10,
+                    "pip_position": d.pip_position or "TOP_RIGHT",
+                    "camera_pip_sizes": cam_sizes,
+                    "camera_pip_positions": cam_positions
                 })
             return filtered_devices
 
@@ -176,7 +192,11 @@ class PiPGatewayService:
                 ident = dev.get("device_identifier")
                 if ident and ws_manager.is_device_connected(ident):
                     # Dispositivo está ativamente conectado ao app Sentinela (overlay nativo).
-                    # Enviamos diretamente para a conexão deste dispositivo
+                    dev_pip_sizes = dev.get("camera_pip_sizes", {})
+                    dev_pip_positions = dev.get("camera_pip_positions", {})
+                    resolved_pip_size = dev_pip_sizes.get(camera_name) or dev_pip_sizes.get(base_cam) or dev.get("pip_default_size", "extra_large")
+                    resolved_pip_position = dev_pip_positions.get(camera_name) or dev_pip_positions.get(base_cam) or dev.get("pip_position", "TOP_RIGHT")
+
                     target_ws = ws_manager.get_device_connection(ident)
                     if target_ws:
                         try:
@@ -188,7 +208,10 @@ class PiPGatewayService:
                                 "snapshot_url": snapshot_url,
                                 "stream_url": resolved_stream_url,
                                 "duration": dev.get("pip_duration_seconds", duration_seconds),
-                                "pip_size": dev.get("pip_default_size", "medium"),
+                                "pip_size": resolved_pip_size,
+                                "pip_position": resolved_pip_position,
+                                "camera_pip_sizes": dev_pip_sizes,
+                                "camera_pip_positions": dev_pip_positions,
                                 "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
                             }))
                             results.append({"device": dev["name"], "ip": target_ip, "status": "delivered", "protocol": "sentinela_app_ws"})
@@ -343,6 +366,11 @@ class PiPGatewayService:
             target_ws = ws_manager.get_device_connection(target_ident) if target_ident else None
             is_mobile_device = dev.device_type in ["smartphone", "mobile", "tablet"]
 
+            cam_sizes = json.loads(dev.camera_pip_sizes) if dev.camera_pip_sizes else {}
+            cam_positions = json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {}
+            resolved_pip_size = cam_sizes.get(camera_name) or cam_sizes.get(base_cam) or dev.pip_default_size or "extra_large"
+            resolved_pip_position = cam_positions.get(camera_name) or cam_positions.get(base_cam) or dev.pip_position or "BOTTOM_RIGHT"
+
             pip_payload = {
                 "type": "pip_alert",
                 "test_id": test_id,
@@ -351,8 +379,10 @@ class PiPGatewayService:
                 "title": f"🛡️ Sentinela Pro: {camera_name.upper()}",
                 "message": "Teste de Notificação Picture-in-Picture",
                 "duration": dev.pip_duration_seconds or 10,
-                "pip_position": dev.pip_position or "BOTTOM_RIGHT",
-                "pip_size": dev.pip_default_size or "medium_small",
+                "pip_position": resolved_pip_position,
+                "pip_size": resolved_pip_size,
+                "camera_pip_sizes": cam_sizes,
+                "camera_pip_positions": cam_positions,
                 "device_id": device_id,
                 "target_device_id": device_id,
                 "target_identifier": dev.device_identifier,

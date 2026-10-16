@@ -469,20 +469,21 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
               stallCountMs = 0;
             }
             lastTime = curTime;
-
-            if (stallCountMs >= 3500) {
-              console.warn(`[WebRTCPlayer] Watchdog detectou estagnação do stream (${(stallCountMs / 1000).toFixed(1)}s, readyState=${readyState}). Forçando reconexão.`);
-              stallCountMs = 0;
-              lastTime = -1;
-              setIsWatchdogRecovering(true);
-              setKey((k) => k + 1);
-              setTimeout(() => setIsWatchdogRecovering(false), 2500);
-            }
           } else {
-            // Se o vídeo estiver pausado inesperadamente por autoplay ou buffer
+            // Se o vídeo não está tocando quando deveria (ex: queda WebRTC/RTSP ou buffer underrun com readyState < 2)
+            stallCountMs += CHECK_INTERVAL_MS;
             if (video.paused && readyState >= 2) {
               video.play().catch(() => {});
             }
+          }
+
+          if (stallCountMs >= 3500) {
+            console.warn(`[WebRTCPlayer] Watchdog detectou estagnação do stream (${(stallCountMs / 1000).toFixed(1)}s, readyState=${readyState}, isPlaying=${isPlaying}). Forçando reconexão.`);
+            stallCountMs = 0;
+            lastTime = -1;
+            setIsWatchdogRecovering(true);
+            setKey((k) => k + 1);
+            setTimeout(() => setIsWatchdogRecovering(false), 2500);
           }
         }
       } catch {

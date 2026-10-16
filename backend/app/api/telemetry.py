@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Body
+import asyncio
 from app.services.telemetry import telemetry_service
 from app.services.telegram_vault import telegram_vault_service
 from app.core.timezone import get_brasilia_now, TZ_BRASILIA
@@ -13,7 +14,7 @@ class BenchmarkPayload(BaseModel):
 @router.get("")
 @router.get("/")
 async def get_telemetry():
-    snapshot = telemetry_service.get_telemetry_snapshot()
+    snapshot = await asyncio.to_thread(telemetry_service.get_telemetry_snapshot)
     snapshot["telegram"] = {
         "configured": telegram_vault_service.is_configured,
         "paused": telegram_vault_service.is_paused()
@@ -27,15 +28,14 @@ async def get_frigate_deep_status():
     return await frigate_bridge.check_connectivity()
 
 @router.get("/stats-detailed")
-
 async def get_detailed_stats():
     """Returns real-time hardware telemetry, per-core CPU, RAM breakdown, NVMe partitions and Top Ubuntu processes."""
-    return telemetry_service.get_detailed_stats()
+    return await asyncio.to_thread(telemetry_service.get_detailed_stats)
 
 @router.post("/benchmark")
 async def run_server_benchmark(payload: BenchmarkPayload):
     """Runs on-demand stress & performance benchmarks for 1080p, 2K, 4K, IA detection and image processing."""
-    res = telemetry_service.run_benchmark(payload.benchmark_type)
+    res = await asyncio.to_thread(telemetry_service.run_benchmark, payload.benchmark_type)
     return res
 
 
@@ -46,7 +46,7 @@ async def get_system_diagnostics():
     import httpx
     from app.core.config import settings
 
-    snapshot = telemetry_service.get_telemetry_snapshot()
+    snapshot = await asyncio.to_thread(telemetry_service.get_telemetry_snapshot)
 
     # Check GPU DRI
     dri_available = os.path.exists("/dev/dri/renderD128")
