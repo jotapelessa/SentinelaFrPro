@@ -28,6 +28,7 @@ class MQTTService:
         self.ws_broadcast_callbacks: List[Callable[[Dict[str, Any]], Any]] = []
         self._processed_events: TTLCache = TTLCache(maxsize=10000, ttl=86400)
         self._processed_videos: TTLCache = TTLCache(maxsize=1000, ttl=86400)
+        self.pip_dispatched_events: set[str] = set()
         self._cooldowns: Dict[str, float] = {}
         # BE-002: deque O(1) vs list.insert(0) O(n)
         self._mqtt_traffic: deque = deque(maxlen=200)
@@ -70,6 +71,10 @@ class MQTTService:
 
     def _mark_processed(self, event_id: str):
         self._processed_events[event_id] = True
+        if event_id:
+            if len(self.pip_dispatched_events) >= 2000:
+                self.pip_dispatched_events.clear()
+            self.pip_dispatched_events.add(event_id)
 
     async def _get_telegram_policy(self) -> Dict[str, Any]:
         """Dynamically loads live Telegram settings with 30s in-memory cache. Zero-latency updates."""
@@ -84,7 +89,7 @@ class MQTTService:
                 "snapshot_resolution": "3mp",
                 "send_document": True,
                 "allowed_events": ["person", "car", "motorcycle", "bus", "truck", "dog", "cat"],
-                "cooldown_seconds": 5.0
+                "cooldown_seconds": 15.0
             }
             try:
                 from app.db.models import SystemSetting
@@ -115,7 +120,7 @@ class MQTTService:
                             except Exception:
                                 pass
                         elif s.key == "telegram_cooldown_seconds" and s.value:
-                            policy["cooldown_seconds"] = max(1.0, float(s.value))
+                            policy["cooldown_seconds"] = max(15.0, float(s.value))
             except Exception as e:
                 logger.debug(f"Could not load live telegram policy: {e}")
 
@@ -236,7 +241,7 @@ class MQTTService:
             cooldown_key = f"{camera}:{label}"
             now_ts = asyncio.get_event_loop().time()
             last_time = self._cooldowns.get(cooldown_key, 0)
-            cooldown_duration = tg_policy.get("cooldown_seconds", 3.0)
+            cooldown_duration = max(15.0, float(tg_policy.get("cooldown_seconds", 15.0)))
 
             # 1. Instant WebSocket Broadcast (<10ms) for UI & PiP (HUD continues visible)
             await self.broadcast_event({
@@ -255,13 +260,14 @@ class MQTTService:
                 logger.debug(f"Carro estacionado detectado em {camera} ({event_id}) - Alertas invasivos suprimidos.")
                 return
 
-            if event_id not in self._processed_events and (now_ts - last_time > cooldown_duration):
+            if event_id not in self._processed_events and event_id not in self.pip_dispatched_events and (now_ts - last_time > cooldown_duration):
                 self._mark_processed(event_id)
                 self._cooldowns[cooldown_key] = now_ts
                 logger.info(f"🚨 Security event: {label} on {camera} (zone: {zone_name}, score: {score:.2f})")
 
                 snapshot_url = f"/api/events/{event_id}/snapshot.jpg"
-                stream_url = f"/go2rtc/stream.html?src={camera}&mode=mse&media=video&width=100%"
+                base_cam = camera[:-5] if camera.endswith("_720p") else (camera[:-4] if camera.endswith("_sub") else camera)
+                stream_url = f"/go2rtc/stream.html?src={base_cam}_720p&mode=mse,webrtc&media=video"
 
                 # Instant PiP Alert to Android TV & Web SOMENTE se notify_tv estiver habilitado para esta câmera
                 if cam_policy.get("notify_tv", True):
@@ -494,12 +500,7 @@ class MQTTService:
                     )
                     telegram_ok = await telegram_vault_service.send_message(caption)
 
-            pip_res = await pip_gateway_service.dispatch_pip_alert(
-                camera_name=camera,
-                label=label,
-                snapshot_url=snapshot_url,
-                stream_url=f"rtsp://{camera}"
-            )
+            pip_dispatched_flag = bool(cam_policy.get("notify_tv", True)) if cam_policy else True
 
             async with AsyncSessionLocal() as session:
                 ev_record = EventRecord(
@@ -511,7 +512,7 @@ class MQTTService:
                     has_snapshot=bool(snapshot_bytes),
                     has_clip=False,
                     telegram_notified=telegram_ok,
-                    pip_dispatched=pip_res.get("dispatched_count", 0) > 0
+                    pip_dispatched=pip_dispatched_flag
                 )
                 session.add(ev_record)
                 try:

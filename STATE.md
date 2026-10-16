@@ -1,13 +1,38 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-16 03:30 BRT
-> **Versão Corrente:** v001.000.000.183
-> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.183 consolidada com:
-1. Correção no Repositório Android (`SentinelaRepository.kt`): Reintroduzida a extração tolerante de `score` e `timestamp` no laço de `getCaptures()`, corrigindo a quebra de compilação do Gradle no GitHub Actions (Run #38767291146) por referências não resolvidas.
-2. Correção na Interface TV (`TvNetflixScreen.kt`): Corrigida a interpolação do score nos cards de captura para `sizeMb = if (event.score > 0) "IA ${event.score}%" else "IA 95%"`, eliminando a anomalia visual "IA 8500%".
-3. Sincronização Unificada de Versão 001.000.000.183 (Build 183) em todo o ecossistema (Android, Backend, Frontend, README, STATE).
-4. Cobertura de testes mantida em 100% (36/36 testes aprovados no pytest) e build de produção do Next.js sem erros.
+> **Última Atualização:** 2026-10-16 04:35 BRT
+> **Versão Corrente:** v001.000.000.184
+> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.184 consolidada com:
+1. **PiP 100% Live Stream sem fotos estáticas (`OverlayService.kt`)**: Removida a exibição de snapshots/fotos estáticas no PiP (`visibility = View.GONE`, `alpha = 1f` imediato). Travessia de Shadow DOM corrigida no `stream.html` do go2rtc (`video-stream -> shadowRoot.querySelector('video')`), permitindo que `requestVideoFrameCallback(onFrame)` registre o primeiro quadro e ative o watchdog suave de live-edge (`playbackRate = 1.08x`).
+2. **Fim do Loop Infinito de PiP (`OverlayService.kt` + `mqtt_service.py` + `pip_gateway.py`)**: PiP restrito estritamente ao evento `pip_alert` (removidos `NEW_DETECTION` e `FRIGATE_EVENT`). Implementado LRU de `processedPipEventIds` (500 eventos) evitando disparos repetidos para o mesmo `event_id`. Removido re-disparo duplicado assíncrono pós-upload do Telegram e elevado o cooldown de detecção contínua para 15s.
+3. **Aba Câmeras da TV com Mosaico Simultâneo (`TvNetflixScreen.kt`)**: Adicionado modo Mosaico Ao Vivo (Grid 2x1 / Multi-view) que exibe todas as câmeras ativas habilitadas simultaneamente com streams MSE em tempo real e foco D-Pad suave. Botão no topo permite alternar instantaneamente entre Mosaico (todas as câmeras) e Destaque (tela única).
+4. **Fim da Queda de 59 Segundos no WebRTC/MSE (`cameras.py` + `WebRTCPlayer.tsx` + `nginx/default.conf`)**: Eliminada a duplicação de URLs RTSP que causava timeout de 60s na câmera física AITEK. Eliminada a sobrescrita em memória de `_sub` no go2rtc. No player Web, corrigido o seletor para inspecionar dentro do Shadow DOM do `video-stream`, reativando o watchdog de live-edge e reconexão automática. Adicionados timeouts de 86400s no proxy do Nginx.
+5. **Alívio Térmico e de CPU no Host Ubuntu (`config.yml` + `cameras.py`)**: A role `detect` do Frigate consome o sub-stream nativo (800x448 @ 5fps) sem re-encoding em CPU, o go2rtc opera sem processos ffmpeg de loopback desnecessários e o `record` opera com preset genérico sem transcodificação contínua de áudio para AAC na CPU.
+6. **Sincronização Global da Versão `001.000.000.184` (Build 184)** e 100% dos testes aprovados (36/36 pytest e build Next.js limpo).
+
+---
+
+## 🚀 Versão v001.000.000.184 — PiP 100% Live Stream, Fim do Loop Infinito, Mosaico Multi-Câmeras na TV, Fim do Drop 59s e Alívio Térmico
+- **Data**: 2026-10-16
+- **Objetivo**: Resolver em definitivo o loop infinito e as fotos estáticas no PiP da Android TV, restabelecer exibição simultânea de todas as câmeras ativas na TV, eliminar a queda de 59s no WebRTC web e otimizar CPU/temperatura no servidor Ubuntu:
+  1. **Android TV PiP — Exclusivamente Vídeo ao Vivo em 720p e Zero Fotos Estáticas (`OverlayService.kt`)**:
+     - *Causa*: O script injetado procurava `document.querySelector('video')` fora do Shadow DOM do elemento `<video-stream>` do go2rtc. Com `v = null`, o callback de hardware `requestVideoFrameCallback` nunca disparava `SentinelaBridge.onFirstFrame()`, mantendo o snapshot estático visível até o timeout forçado.
+     - *Correção*: Implementada função `getVideoEl()` atravessando `vs.shadowRoot.querySelector('video')`. No modo MSE, `snapImageView` permanece com `visibility = GONE` e o `pipWebView` inicia diretamente com `alpha = 1f`, garantindo vídeo em tempo real instantâneo em 1280x720 (`PipSize.EXTRA_LARGE`).
+  2. **Android TV & Backend — Eliminação do Loop Infinito no PiP (`OverlayService.kt`, `mqtt_service.py`, `pip_gateway.py`)**:
+     - *Causa*: Um único evento disparava múltiplos broadcasts WebSocket (`pip_alert`, `NEW_DETECTION`, upload do Telegram atrasado com `pip_gateway_service.dispatch_pip_alert`), além de cooldowns curtos (3s-5s) durante eventos contínuos `update`.
+     - *Correção*: No `OverlayService.kt`, `isPipTrigger` aceita exclusivamente `pip_alert` e verifica deduplicação estrita via `processedPipEventIds` (LRU de 500 itens). No backend, removido o re-disparo atrasado de PiP pós-telegram e estendido o cooldown para 15s.
+  3. **Android TV — Mosaico Simultâneo de Todas as Câmeras Ativas (`TvNetflixScreen.kt`)**:
+     - *Causa*: O layout da aba Câmeras utilizava visualização Spotlight com apenas uma câmera grande e a segunda relegada a uma miniatura estática de 115.dp no rodapé.
+     - *Correção*: Implementado o **Modo Mosaico Ao Vivo (`isMosaicMode = true`)**, dividindo a tela e renderizando todas as câmeras ativas habilitadas em tempo real com `MseCameraView` (`preferSubStream = true`), com botão D-Pad para alternar entre "Mosaico" e "Tela Única".
+  4. **Sentinela Web & Servidor — Resolução Definitiva da Queda aos 59 Segundos (`cameras.py`, `WebRTCPlayer.tsx`, `nginx/default.conf`)**:
+     - *Causa*: `cameras.py` registrava no go2rtc uma segunda URL RTSP duplicada sem parâmetros, fazendo o go2rtc abrir 2 conexões TCP simultâneas contra a câmera física AITEK, que derrubava a sessão no timeout RTSP de 60s. Além disso, `WebRTCPlayer.tsx` não acessava o Shadow DOM para o watchdog de live-edge e reconexão.
+     - *Correção*: Removida a duplicação RTSP e a sobrescrita destrutiva de `_sub` em `cameras.py`; implementado `getIframeVideoElement()` com acesso a `vs.shadowRoot.querySelector('video')` e watchdog suave de live-edge (`playbackRate = 1.08x a 1.15x`) em `WebRTCPlayer.tsx`; Nginx configurado com timeouts de 86400s em `/go2rtc/` e `/ws`.
+  5. **Sincronização de Versão 001.000.000.184 (Build 184)**:
+     - Atualizados: `android/version.properties` (BUILD=184, VERSION_NAME=001.000.000.184), `backend/app/core/config.py`, `frontend/package.json`, `frontend/src/constants/version.ts`, `README.md` e `STATE.md`.
+  6. **Validação**:
+     - 36 testes automatizados 100% aprovados (`pytest backend/tests/test_backend.py -v`).
+     - Build do Next.js 14 aprovado com 14 páginas estáticas compiladas.
 
 ---
 

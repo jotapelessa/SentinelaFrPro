@@ -543,6 +543,7 @@ fun TvCamerasViewport(
     val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
     val camScope = rememberCoroutineScope()
     var isFullscreenLiveOpen by remember { mutableStateOf(false) }
+    var isMosaicMode by remember(cameras.size) { mutableStateOf(cameras.size > 1) }
     val isPipOverlayActive by com.sentinela.pro.tv.OverlayService.isPipShowing.collectAsState()
     val isAppInForeground by com.sentinela.pro.SentinelaApplication.isAppInForeground.collectAsState()
     val isHeroStreaming = isAppInForeground && !isPipOverlayActive && !isFullscreenLiveOpen
@@ -552,161 +553,55 @@ fun TvCamerasViewport(
     }
     val heroInteractionSource = remember { MutableInteractionSource() }
     val isHeroFocused by heroInteractionSource.collectIsFocusedAsState()
+    val mosaicToggleRequester = remember { FocusRequester() }
+    val mosaicToggleInteraction = remember { MutableInteractionSource() }
+    val isMosaicToggleFocused by mosaicToggleInteraction.collectIsFocusedAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
-        // HERO SPOTLIGHT COM CÂMERA SELECIONADA EM DESTAQUE (16:9)
-        Box(
+        // BARRA SUPERIOR DE CONTROLE DE VISUALIZAÇÃO (MOSAICO AO VIVO vs TELA ÚNICA)
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f)
-                .clip(TvShapes.CameraCard)
-                .background(TvColors.CardBackground)
-                .border(
-                    2.dp,
-                    if (isHeroFocused) TvColors.BorderFocused else TvColors.BorderSubtle,
-                    TvShapes.CameraCard
-                )
+                .padding(bottom = TvDimens.sm),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            selectedCamera?.let { camera ->
-                key(camera.id) {
-                    SeamlessCameraImage(
-                        cameraName = camera.id,
-                        contentDescription = camera.name,
-                        modifier = Modifier.fillMaxSize(),
-                        isStreaming = isHeroStreaming,
-                        streamMode = streamMode
-                    )
-                }
-
-                // Standby / Detection Monitoring HUD Overlay when streaming is suspended
-                if (!isHeroStreaming) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(Color.Black.copy(alpha = 0.65f)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Surface(
-                            shape = TvShapes.Badge,
-                            color = TvColors.CardBackgroundElevated,
-                            border = androidx.compose.foundation.BorderStroke(1.dp, TvColors.BorderHighlight)
-                        ) {
-                            Row(
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier
-                                        .size(10.dp)
-                                        .clip(androidx.compose.foundation.shape.CircleShape)
-                                        .background(if (isPipOverlayActive) TvColors.CyberCyan else TvColors.StandbyAmber)
-                                )
-                                Text(
-                                    text = if (isPipOverlayActive) "MODO DE ESPERA · PiP PREVIEW ATIVO NA TELA" else "MODO DE ESPERA · MONITORANDO DETECÇÃO",
-                                    color = Color.White,
-                                    fontSize = 11.sp,
-                                    fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
-                                )
-                            }
-                        }
-                    }
-                }
-
-                // Overlay Gradiente Cinematográfico
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.verticalGradient(
-                                colors = listOf(
-                                    Color.Black.copy(alpha = 0.5f),
-                                    Color.Transparent,
-                                    Color.Black.copy(alpha = 0.85f)
-                                )
-                            )
-                        )
+                        .size(8.dp)
+                        .background(TvColors.LiveGreen, CircleShape)
                 )
+                Text(
+                    text = if (isMosaicMode && cameras.size > 1) {
+                        "MOSAICO AO VIVO (${cameras.size} CÂMERAS EM TEMPO REAL)"
+                    } else {
+                        "MODO DESTAQUE (TELA ÚNICA AO VIVO)"
+                    },
+                    style = TvTypography.MenuItemFocused.copy(fontSize = 12.sp, color = TvColors.CyberCyan)
+                )
+            }
 
-                // HUD DE TELEMETRIA SUPERIOR ESQUERDO
-                Column(
-                    modifier = Modifier
-                        .align(Alignment.TopStart)
-                        .padding(TvDimens.md)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(TvDimens.sm)
-                    ) {
-                        Surface(
-                            shape = TvShapes.Badge,
-                            color = TvColors.NetflixRed
-                        ) {
-                            Text(
-                                text = "CANAL 0${camera.channel}",
-                                color = Color.White,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                            )
-                        }
-
-                        Text(
-                            text = camera.name,
-                            style = TvTypography.TabTitle.copy(fontSize = 18.sp)
-                        )
-                    }
-
-                    Text(
-                        text = "${camera.location} • ${camera.zone}",
-                        style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary),
-                        modifier = Modifier.padding(top = 4.dp)
-                    )
-                }
-
-                // HUD DE TELEMETRIA SUPERIOR DIREITO (PADRÃO H.264 MSE GO2RTC REAL)
-                Surface(
-                    shape = TvShapes.CameraCard,
-                    color = TvColors.OverlayHud,
-                    border = BorderStroke(1.dp, TvColors.BorderSubtle),
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .padding(TvDimens.md)
-                ) {
-                    Column(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                        horizontalAlignment = Alignment.End
-                    ) {
-                        Text(
-                            text = "H.264 • ${streamMode.uppercase()} • ${camera.telemetry.resolution}",
-                            style = TvTypography.Telemetry.copy(color = TvColors.CyberCyan)
-                        )
-                        Text(
-                            text = "STATUS: ${camera.status.name} • ${camera.telemetry.fps} FPS • CFR BAIXA LATÊNCIA",
-                            style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
-                        )
-                    }
-                }
-
-                // Seletor de Modo Padrão da Câmera no Hero Spotlight (D-Pad Focusable com OK para alternar)
-                val modeInteractionSource = remember { MutableInteractionSource() }
-                val isModeFocused by modeInteractionSource.collectIsFocusedAsState()
-
+            if (cameras.size > 1) {
                 Surface(
                     shape = TvShapes.Badge,
-                    color = if (isModeFocused) TvColors.CardBackgroundElevated else TvColors.OverlayHud,
-                    border = BorderStroke(if (isModeFocused) 2.dp else 1.dp, if (isModeFocused) TvColors.CyberCyan else TvColors.BorderSubtle),
+                    color = if (isMosaicToggleFocused) TvColors.CyberCyan else TvColors.CardBackgroundElevated,
+                    border = BorderStroke(
+                        if (isMosaicToggleFocused) 2.dp else 1.dp,
+                        if (isMosaicToggleFocused) Color.White else TvColors.CyberCyan
+                    ),
                     modifier = Modifier
-                        .align(Alignment.BottomStart)
-                        .padding(TvDimens.md)
-                        .focusRequester(heroModeFocusRequester)
+                        .focusRequester(mosaicToggleRequester)
                         .tvDpadFocusable(
-                            isFocused = isModeFocused,
-                            focusedBorderColor = TvColors.CyberCyan,
-                            unfocusedBorderColor = TvColors.BorderSubtle,
+                            isFocused = isMosaicToggleFocused,
+                            focusedBorderColor = Color.White,
+                            unfocusedBorderColor = TvColors.CyberCyan,
                             shape = TvShapes.Badge,
                             scaleAmount = 1.05f
                         )
@@ -714,160 +609,39 @@ fun TvCamerasViewport(
                             if (keyEvent.type == KeyEventType.KeyDown) {
                                 when (keyEvent.key) {
                                     Key.Enter, Key.DirectionCenter -> {
-                                        val modes = listOf("mse", "webrtc", "eco")
-                                        val nextIdx = (modes.indexOf(streamMode) + 1) % modes.size
-                                        val nextMode = modes[nextIdx]
-                                        streamMode = nextMode
-                                        selectedCamera.let { cam ->
-                                            prefs.setCameraDefaultStreamMode(cam.id, nextMode)
-                                            SentinelaRemoteLogger.log(
-                                                category = "PLAYER",
-                                                action = "STREAM_MODE_CHANGED",
-                                                severity = "INFO",
-                                                message = "Modo de stream alterado para ${nextMode.uppercase()} na câmera ${cam.id}",
-                                                metadata = mapOf("camera" to cam.id, "mode" to nextMode)
-                                            )
-                                        }
-                                        Toast.makeText(context, "Modo alterado para: ${nextMode.uppercase()}", Toast.LENGTH_SHORT).show()
-                                        true
-                                    }
-                                    Key.DirectionRight -> {
-                                        heroFullscreenFocusRequester.requestFocus()
-                                        true
-                                    }
-                                    Key.DirectionDown -> {
-                                        carouselFocusRequesters.getOrNull(focusedIndex)?.requestFocus()
+                                        isMosaicMode = !isMosaicMode
                                         true
                                     }
                                     Key.DirectionLeft -> {
                                         onNavigateLeftToSidebar()
                                         true
                                     }
-                                    else -> false
-                                }
-                            } else false
-                        }
-                        .clickable(interactionSource = modeInteractionSource, indication = null) {
-                            val modes = listOf("mse", "webrtc", "eco")
-                            val nextIdx = (modes.indexOf(streamMode) + 1) % modes.size
-                            val nextMode = modes[nextIdx]
-                            streamMode = nextMode
-                            selectedCamera.let { cam ->
-                                prefs.setCameraDefaultStreamMode(cam.id, nextMode)
-                                SentinelaRemoteLogger.log(
-                                    category = "PLAYER",
-                                    action = "STREAM_MODE_CHANGED",
-                                    severity = "INFO",
-                                    message = "Modo de stream alterado para ${nextMode.uppercase()} na câmera ${cam.id}",
-                                    metadata = mapOf("camera" to cam.id, "mode" to nextMode)
-                                )
-                            }
-                            Toast.makeText(context, "Modo alterado para: ${nextMode.uppercase()}", Toast.LENGTH_SHORT).show()
-                        }
-                        .focusable(interactionSource = modeInteractionSource)
-                ) {
-                    val modeLabel = when (streamMode) {
-                        "eco" -> "ECO 10 FPS"
-                        "mse" -> "MSE 24 FPS"
-                        else -> "WebRTC LIVE"
-                    }
-                    Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(6.dp)
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .size(8.dp)
-                                .background(
-                                    when (streamMode) {
-                                        "webrtc" -> TvColors.NetflixRed
-                                        "mse" -> TvColors.CyberCyan
-                                        else -> TvColors.StandbyAmber
-                                    },
-                                    CircleShape
-                                )
-                        )
-                        Text(
-                            text = "MODO: $modeLabel [OK ALTERNA]",
-                            color = if (isModeFocused) TvColors.CyberCyan else Color.White,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-                }
-
-                // Indicador de Tela Cheia [OK] (D-Pad Focusable)
-                val fsInteractionSource = remember { MutableInteractionSource() }
-                val isFsFocused by fsInteractionSource.collectIsFocusedAsState()
-
-                Surface(
-                    shape = TvShapes.Badge,
-                    color = if (isFsFocused) TvColors.NetflixRed else TvColors.OverlayHud,
-                    border = BorderStroke(if (isFsFocused) 2.dp else 1.dp, if (isFsFocused) Color.White else TvColors.BorderSubtle),
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(TvDimens.md)
-                        .focusRequester(heroFullscreenFocusRequester)
-                        .tvDpadFocusable(
-                            isFocused = isFsFocused,
-                            focusedBorderColor = TvColors.NetflixRed,
-                            unfocusedBorderColor = TvColors.BorderSubtle,
-                            shape = TvShapes.Badge,
-                            scaleAmount = 1.05f
-                        )
-                        .onKeyEvent { keyEvent ->
-                            if (keyEvent.type == KeyEventType.KeyDown) {
-                                when (keyEvent.key) {
-                                    Key.Enter, Key.DirectionCenter -> {
-                                        isFullscreenLiveOpen = true
-                                        selectedCamera.let { cam ->
-                                            SentinelaRemoteLogger.log(
-                                                category = "PLAYER",
-                                                action = "FULLSCREEN_OPENED",
-                                                severity = "INFO",
-                                                message = "Câmera ${cam.id} aberta em tela cheia na TV",
-                                                metadata = mapOf("camera" to cam.id)
-                                            )
+                                    Key.DirectionDown -> {
+                                        if (isMosaicMode) {
+                                            carouselFocusRequesters.firstOrNull()?.requestFocus()
+                                        } else {
+                                            heroModeFocusRequester.requestFocus()
                                         }
                                         true
                                     }
-                                    Key.DirectionLeft -> {
-                                        heroModeFocusRequester.requestFocus()
-                                        true
-                                    }
-                                    Key.DirectionDown -> {
-                                        carouselFocusRequesters.getOrNull(focusedIndex)?.requestFocus()
-                                        true
-                                    }
                                     else -> false
                                 }
                             } else false
                         }
-                        .clickable(interactionSource = fsInteractionSource, indication = null) {
-                            isFullscreenLiveOpen = true
-                            selectedCamera.let { cam ->
-                                SentinelaRemoteLogger.log(
-                                    category = "PLAYER",
-                                    action = "FULLSCREEN_OPENED",
-                                    severity = "INFO",
-                                    message = "Câmera ${cam.id} aberta em tela cheia na TV",
-                                    metadata = mapOf("camera" to cam.id)
-                                )
-                            }
+                        .clickable(interactionSource = mosaicToggleInteraction, indication = null) {
+                            isMosaicMode = !isMosaicMode
                         }
-                        .focusable(interactionSource = fsInteractionSource)
+                        .focusable(interactionSource = mosaicToggleInteraction)
                 ) {
                     Row(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        Icon(Icons.Default.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
                         Text(
-                            text = "PRESSIONE [OK] PARA TELA CHEIA",
-                            color = Color.White,
-                            fontSize = 10.sp,
+                            text = if (isMosaicMode) "⊡ Tela Única" else "⊞ Mosaico (Todas as Câmeras)",
+                            color = if (isMosaicToggleFocused) Color.Black else Color.White,
+                            fontSize = 11.sp,
                             fontWeight = FontWeight.Bold
                         )
                     }
@@ -875,59 +649,644 @@ fun TvCamerasViewport(
             }
         }
 
-        Spacer(modifier = Modifier.height(TvDimens.md))
+        if (isMosaicMode && cameras.size > 1) {
+            // GRADE DE MOSAICO AO VIVO (TODAS AS CÂMERAS EM TEMPO REAL SIMULTANEAMENTE)
+            val rows = remember(cameras) { cameras.chunked(2) }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                verticalArrangement = Arrangement.spacedBy(TvDimens.md)
+            ) {
+                rows.forEachIndexed { rowIndex, rowCameras ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                        horizontalArrangement = Arrangement.spacedBy(TvDimens.md)
+                    ) {
+                        rowCameras.forEachIndexed { colIndex, cam ->
+                            val globalIdx = rowIndex * 2 + colIndex
+                            val tileInteraction = remember { MutableInteractionSource() }
+                            val isTileFocused by tileInteraction.collectIsFocusedAsState()
+                            val camStreamMode = remember(cam.id) { prefs.getCameraDefaultStreamMode(cam.id) }
 
-        // CARROSSEL HORIZONTAL INFERIOR DE CÂMERAS (TvLazyRow 16:9)
-        Text(
-            text = "TODAS AS CÂMERAS (${cameras.size}) — NAVEGUE COM D-PAD ◄ ►",
-            style = TvTypography.MenuItemFocused.copy(fontSize = 12.sp, color = TvColors.TextSecondary),
-            modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
-        )
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxHeight()
+                                    .focusRequester(carouselFocusRequesters.getOrElse(globalIdx) { FocusRequester() })
+                                    .onFocusChanged { focusState ->
+                                        if (focusState.isFocused) {
+                                            onFocusCamera(globalIdx)
+                                        }
+                                    }
+                                    .onKeyEvent { keyEvent ->
+                                        if (keyEvent.type == KeyEventType.KeyDown) {
+                                            when {
+                                                keyEvent.key == Key.DirectionLeft && colIndex == 0 -> {
+                                                    onNavigateLeftToSidebar()
+                                                    true
+                                                }
+                                                keyEvent.key == Key.DirectionUp && rowIndex == 0 -> {
+                                                    mosaicToggleRequester.requestFocus()
+                                                    true
+                                                }
+                                                keyEvent.key == Key.Enter || keyEvent.key == Key.DirectionCenter -> {
+                                                    onSelectCamera(cam)
+                                                    isMosaicMode = false
+                                                    true
+                                                }
+                                                else -> false
+                                            }
+                                        } else false
+                                    }
+                                    .tvDpadFocusable(
+                                        isFocused = isTileFocused,
+                                        focusedBorderColor = TvColors.CyberCyan,
+                                        unfocusedBorderColor = TvColors.BorderSubtle,
+                                        shape = TvShapes.CameraCard,
+                                        scaleAmount = 1.02f
+                                    )
+                                    .clip(TvShapes.CameraCard)
+                                    .background(TvColors.CardBackground)
+                                    .border(
+                                        if (isTileFocused) 2.5.dp else 1.dp,
+                                        if (isTileFocused) TvColors.CyberCyan else TvColors.BorderSubtle,
+                                        TvShapes.CameraCard
+                                    )
+                                    .clickable(interactionSource = tileInteraction, indication = null) {
+                                        onFocusCamera(globalIdx)
+                                        onSelectCamera(cam)
+                                        isMosaicMode = false
+                                    }
+                                    .focusable(interactionSource = tileInteraction)
+                            ) {
+                                key(cam.id) {
+                                    SeamlessCameraImage(
+                                        cameraName = cam.id,
+                                        contentDescription = cam.name,
+                                        modifier = Modifier.fillMaxSize(),
+                                        isStreaming = isHeroStreaming,
+                                        forceSnapshotMode = false,
+                                        streamMode = camStreamMode,
+                                        preferSubStream = true
+                                    )
+                                }
 
-        LazyRow(
-            state = carouselState,
-            horizontalArrangement = Arrangement.spacedBy(TvDimens.md),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(115.dp)
-        ) {
-            itemsIndexed(cameras) { index, camera ->
-                val interactionSource = remember { MutableInteractionSource() }
-                val isFocused by interactionSource.collectIsFocusedAsState()
-                var isPipCamEnabled by remember(camera.id) {
-                    mutableStateOf(prefs.isCameraPipEnabled(camera.id))
-                }
+                                // Gradiente e HUD da Câmera no Mosaico
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            Brush.verticalGradient(
+                                                colors = listOf(
+                                                    Color.Black.copy(alpha = 0.55f),
+                                                    Color.Transparent,
+                                                    Color.Black.copy(alpha = 0.8f)
+                                                )
+                                            )
+                                        )
+                                        .padding(TvDimens.md)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.align(Alignment.TopStart),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Surface(
+                                            shape = TvShapes.Badge,
+                                            color = TvColors.NetflixRed
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                            ) {
+                                                Box(
+                                                    modifier = Modifier
+                                                        .size(6.dp)
+                                                        .background(Color.White, CircleShape)
+                                                )
+                                                Text(
+                                                    text = "AO VIVO • CH0${cam.channel}",
+                                                    color = Color.White,
+                                                    fontSize = 10.sp,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            }
+                                        }
+                                        Text(
+                                            text = cam.name,
+                                            style = TvTypography.TabTitle.copy(fontSize = 15.sp, color = Color.White),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+                                    }
 
-                Box(
-                    modifier = Modifier
-                        .width(TvDimens.GridMinCardWidth)
-                        .aspectRatio(16f / 9f)
-                        .focusRequester(carouselFocusRequesters.getOrElse(index) { FocusRequester() })
-                        .onFocusChanged { focusState ->
-                            if (focusState.isFocused) {
-                                onFocusCamera(index)
+                                    Surface(
+                                        shape = TvShapes.Badge,
+                                        color = TvColors.OverlayHud,
+                                        border = BorderStroke(0.5.dp, TvColors.CyberCyan),
+                                        modifier = Modifier.align(Alignment.TopEnd)
+                                    ) {
+                                        Text(
+                                            text = "720p • ${camStreamMode.uppercase()}",
+                                            color = TvColors.CyberCyan,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold,
+                                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
+                                        )
+                                    }
+
+                                    Row(
+                                        modifier = Modifier.align(Alignment.BottomStart).fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.Bottom
+                                    ) {
+                                        Text(
+                                            text = "${cam.location} • ${cam.zone}",
+                                            style = TvTypography.Telemetry.copy(fontSize = 10.sp, color = TvColors.TextSecondary)
+                                        )
+                                        Text(
+                                            text = "[OK] DESTACAR CÂMERA",
+                                            color = if (isTileFocused) TvColors.CyberCyan else TvColors.TextMuted,
+                                            fontSize = 9.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
                             }
                         }
-                        .onKeyEvent { keyEvent ->
-                            if (keyEvent.type == KeyEventType.KeyDown) {
-                                when {
-                                    keyEvent.key == Key.DirectionUp -> {
-                                        heroModeFocusRequester.requestFocus()
-                                        true
+                    }
+                }
+            }
+        } else {
+            // HERO SPOTLIGHT COM CÂMERA SELECIONADA EM DESTAQUE (16:9)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .clip(TvShapes.CameraCard)
+                    .background(TvColors.CardBackground)
+                    .border(
+                        2.dp,
+                        if (isHeroFocused) TvColors.BorderFocused else TvColors.BorderSubtle,
+                        TvShapes.CameraCard
+                    )
+            ) {
+                selectedCamera?.let { camera ->
+                    key(camera.id) {
+                        SeamlessCameraImage(
+                            cameraName = camera.id,
+                            contentDescription = camera.name,
+                            modifier = Modifier.fillMaxSize(),
+                            isStreaming = isHeroStreaming,
+                            streamMode = streamMode,
+                            preferSubStream = true
+                        )
+                    }
+
+                    // Standby / Detection Monitoring HUD Overlay when streaming is suspended
+                    if (!isHeroStreaming) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(Color.Black.copy(alpha = 0.65f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = TvColors.CardBackgroundElevated,
+                                border = androidx.compose.foundation.BorderStroke(1.dp, TvColors.BorderHighlight)
+                            ) {
+                                Row(
+                                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                                ) {
+                                    Box(
+                                        modifier = Modifier
+                                            .size(10.dp)
+                                            .clip(androidx.compose.foundation.shape.CircleShape)
+                                            .background(if (isPipOverlayActive) TvColors.CyberCyan else TvColors.StandbyAmber)
+                                    )
+                                    Text(
+                                        text = if (isPipOverlayActive) "MODO DE ESPERA · PiP PREVIEW ATIVO NA TELA" else "MODO DE ESPERA · MONITORANDO DETECÇÃO",
+                                        color = Color.White,
+                                        fontSize = 11.sp,
+                                        fontWeight = androidx.compose.ui.text.font.FontWeight.Bold
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    // Overlay Gradiente Cinematográfico
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                Brush.verticalGradient(
+                                    colors = listOf(
+                                        Color.Black.copy(alpha = 0.5f),
+                                        Color.Transparent,
+                                        Color.Black.copy(alpha = 0.85f)
+                                    )
+                                )
+                            )
+                    )
+
+                    // HUD DE TELEMETRIA SUPERIOR ESQUERDO
+                    Column(
+                        modifier = Modifier
+                            .align(Alignment.TopStart)
+                            .padding(TvDimens.md)
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(TvDimens.sm)
+                        ) {
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = TvColors.NetflixRed
+                            ) {
+                                Text(
+                                    text = "CANAL 0${camera.channel}",
+                                    color = Color.White,
+                                    fontSize = 11.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                                )
+                            }
+
+                            Text(
+                                text = camera.name,
+                                style = TvTypography.TabTitle.copy(fontSize = 18.sp)
+                            )
+                        }
+
+                        Text(
+                            text = "${camera.location} • ${camera.zone}",
+                            style = TvTypography.MenuItem.copy(color = TvColors.TextSecondary),
+                            modifier = Modifier.padding(top = 4.dp)
+                        )
+                    }
+
+                    // HUD DE TELEMETRIA SUPERIOR DIREITO (PADRÃO H.264 MSE GO2RTC REAL)
+                    Surface(
+                        shape = TvShapes.CameraCard,
+                        color = TvColors.OverlayHud,
+                        border = BorderStroke(1.dp, TvColors.BorderSubtle),
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .padding(TvDimens.md)
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            horizontalAlignment = Alignment.End
+                        ) {
+                            Text(
+                                text = "H.264 • ${streamMode.uppercase()} • ${camera.telemetry.resolution}",
+                                style = TvTypography.Telemetry.copy(color = TvColors.CyberCyan)
+                            )
+                            Text(
+                                text = "STATUS: ${camera.status.name} • ${camera.telemetry.fps} FPS • CFR BAIXA LATÊNCIA",
+                                style = TvTypography.Telemetry.copy(color = TvColors.TextSecondary, fontSize = 10.sp)
+                            )
+                        }
+                    }
+
+                    // Seletor de Modo Padrão da Câmera no Hero Spotlight (D-Pad Focusable com OK para alternar)
+                    val modeInteractionSource = remember { MutableInteractionSource() }
+                    val isModeFocused by modeInteractionSource.collectIsFocusedAsState()
+
+                    Surface(
+                        shape = TvShapes.Badge,
+                        color = if (isModeFocused) TvColors.CardBackgroundElevated else TvColors.OverlayHud,
+                        border = BorderStroke(if (isModeFocused) 2.dp else 1.dp, if (isModeFocused) TvColors.CyberCyan else TvColors.BorderSubtle),
+                        modifier = Modifier
+                            .align(Alignment.BottomStart)
+                            .padding(TvDimens.md)
+                            .focusRequester(heroModeFocusRequester)
+                            .tvDpadFocusable(
+                                isFocused = isModeFocused,
+                                focusedBorderColor = TvColors.CyberCyan,
+                                unfocusedBorderColor = TvColors.BorderSubtle,
+                                shape = TvShapes.Badge,
+                                scaleAmount = 1.05f
+                            )
+                            .onKeyEvent { keyEvent ->
+                                if (keyEvent.type == KeyEventType.KeyDown) {
+                                    when (keyEvent.key) {
+                                        Key.Enter, Key.DirectionCenter -> {
+                                            val modes = listOf("mse", "webrtc", "eco")
+                                            val nextIdx = (modes.indexOf(streamMode) + 1) % modes.size
+                                            val nextMode = modes[nextIdx]
+                                            streamMode = nextMode
+                                            selectedCamera.let { cam ->
+                                                prefs.setCameraDefaultStreamMode(cam.id, nextMode)
+                                                SentinelaRemoteLogger.log(
+                                                    category = "PLAYER",
+                                                    action = "STREAM_MODE_CHANGED",
+                                                    severity = "INFO",
+                                                    message = "Modo de stream alterado para ${nextMode.uppercase()} na câmera ${cam.id}",
+                                                    metadata = mapOf("camera" to cam.id, "mode" to nextMode)
+                                                )
+                                            }
+                                            Toast.makeText(context, "Modo alterado para: ${nextMode.uppercase()}", Toast.LENGTH_SHORT).show()
+                                            true
+                                        }
+                                        Key.DirectionRight -> {
+                                            heroFullscreenFocusRequester.requestFocus()
+                                            true
+                                        }
+                                        Key.DirectionUp -> {
+                                            if (cameras.size > 1) mosaicToggleRequester.requestFocus()
+                                            true
+                                        }
+                                        Key.DirectionDown -> {
+                                            carouselFocusRequesters.getOrNull(focusedIndex)?.requestFocus()
+                                            true
+                                        }
+                                        Key.DirectionLeft -> {
+                                            onNavigateLeftToSidebar()
+                                            true
+                                        }
+                                        else -> false
                                     }
-                                    keyEvent.key == Key.DirectionLeft && index == 0 -> {
-                                        onNavigateLeftToSidebar()
-                                        true
+                                } else false
+                            }
+                            .clickable(interactionSource = modeInteractionSource, indication = null) {
+                                val modes = listOf("mse", "webrtc", "eco")
+                                val nextIdx = (modes.indexOf(streamMode) + 1) % modes.size
+                                val nextMode = modes[nextIdx]
+                                streamMode = nextMode
+                                selectedCamera.let { cam ->
+                                    prefs.setCameraDefaultStreamMode(cam.id, nextMode)
+                                    SentinelaRemoteLogger.log(
+                                        category = "PLAYER",
+                                        action = "STREAM_MODE_CHANGED",
+                                        severity = "INFO",
+                                        message = "Modo de stream alterado para ${nextMode.uppercase()} na câmera ${cam.id}",
+                                        metadata = mapOf("camera" to cam.id, "mode" to nextMode)
+                                    )
+                                }
+                                Toast.makeText(context, "Modo alterado para: ${nextMode.uppercase()}", Toast.LENGTH_SHORT).show()
+                            }
+                            .focusable(interactionSource = modeInteractionSource)
+                    ) {
+                        val modeLabel = when (streamMode) {
+                            "eco" -> "ECO 10 FPS"
+                            "mse" -> "MSE 24 FPS"
+                            else -> "WebRTC LIVE"
+                        }
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .background(
+                                        when (streamMode) {
+                                            "webrtc" -> TvColors.NetflixRed
+                                            "mse" -> TvColors.CyberCyan
+                                            else -> TvColors.StandbyAmber
+                                        },
+                                        CircleShape
+                                    )
+                            )
+                            Text(
+                                text = "MODO: $modeLabel [OK ALTERNA]",
+                                color = if (isModeFocused) TvColors.CyberCyan else Color.White,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+
+                    // Indicador de Tela Cheia [OK] (D-Pad Focusable)
+                    val fsInteractionSource = remember { MutableInteractionSource() }
+                    val isFsFocused by fsInteractionSource.collectIsFocusedAsState()
+
+                    Surface(
+                        shape = TvShapes.Badge,
+                        color = if (isFsFocused) TvColors.NetflixRed else TvColors.OverlayHud,
+                        border = BorderStroke(if (isFsFocused) 2.dp else 1.dp, if (isFsFocused) Color.White else TvColors.BorderSubtle),
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(TvDimens.md)
+                            .focusRequester(heroFullscreenFocusRequester)
+                            .tvDpadFocusable(
+                                isFocused = isFsFocused,
+                                focusedBorderColor = TvColors.NetflixRed,
+                                unfocusedBorderColor = TvColors.BorderSubtle,
+                                shape = TvShapes.Badge,
+                                scaleAmount = 1.05f
+                            )
+                            .onKeyEvent { keyEvent ->
+                                if (keyEvent.type == KeyEventType.KeyDown) {
+                                    when (keyEvent.key) {
+                                        Key.Enter, Key.DirectionCenter -> {
+                                            isFullscreenLiveOpen = true
+                                            selectedCamera.let { cam ->
+                                                SentinelaRemoteLogger.log(
+                                                    category = "PLAYER",
+                                                    action = "FULLSCREEN_OPENED",
+                                                    severity = "INFO",
+                                                    message = "Câmera ${cam.id} aberta em tela cheia na TV",
+                                                    metadata = mapOf("camera" to cam.id)
+                                                )
+                                            }
+                                            true
+                                        }
+                                        Key.DirectionLeft -> {
+                                            heroModeFocusRequester.requestFocus()
+                                            true
+                                        }
+                                        Key.DirectionUp -> {
+                                            if (cameras.size > 1) mosaicToggleRequester.requestFocus()
+                                            true
+                                        }
+                                        Key.DirectionDown -> {
+                                            carouselFocusRequesters.getOrNull(focusedIndex)?.requestFocus()
+                                            true
+                                        }
+                                        else -> false
                                     }
-                                    keyEvent.key == Key.Enter || keyEvent.key == Key.DirectionCenter -> {
-                                        onSelectCamera(camera)
-                                        true
+                                } else false
+                            }
+                            .clickable(interactionSource = fsInteractionSource, indication = null) {
+                                isFullscreenLiveOpen = true
+                                selectedCamera.let { cam ->
+                                    SentinelaRemoteLogger.log(
+                                        category = "PLAYER",
+                                        action = "FULLSCREEN_OPENED",
+                                        severity = "INFO",
+                                        message = "Câmera ${cam.id} aberta em tela cheia na TV",
+                                        metadata = mapOf("camera" to cam.id)
+                                    )
+                                }
+                            }
+                            .focusable(interactionSource = fsInteractionSource)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Icon(Icons.Default.Fullscreen, contentDescription = null, tint = Color.White, modifier = Modifier.size(16.dp))
+                            Text(
+                                text = "PRESSIONE [OK] PARA TELA CHEIA",
+                                color = Color.White,
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(TvDimens.md))
+
+            // CARROSSEL HORIZONTAL INFERIOR DE CÂMERAS (TvLazyRow 16:9)
+            Text(
+                text = "TODAS AS CÂMERAS (${cameras.size}) — NAVEGUE COM D-PAD ◄ ►",
+                style = TvTypography.MenuItemFocused.copy(fontSize = 12.sp, color = TvColors.TextSecondary),
+                modifier = Modifier.padding(start = 4.dp, bottom = 6.dp)
+            )
+
+            LazyRow(
+                state = carouselState,
+                horizontalArrangement = Arrangement.spacedBy(TvDimens.md),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(115.dp)
+            ) {
+                itemsIndexed(cameras) { index, camera ->
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val isFocused by interactionSource.collectIsFocusedAsState()
+                    var isPipCamEnabled by remember(camera.id) {
+                        mutableStateOf(prefs.isCameraPipEnabled(camera.id))
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .width(TvDimens.GridMinCardWidth)
+                            .aspectRatio(16f / 9f)
+                            .focusRequester(carouselFocusRequesters.getOrElse(index) { FocusRequester() })
+                            .onFocusChanged { focusState ->
+                                if (focusState.isFocused) {
+                                    onFocusCamera(index)
+                                }
+                            }
+                            .onKeyEvent { keyEvent ->
+                                if (keyEvent.type == KeyEventType.KeyDown) {
+                                    when {
+                                        keyEvent.key == Key.DirectionUp -> {
+                                            heroModeFocusRequester.requestFocus()
+                                            true
+                                        }
+                                        keyEvent.key == Key.DirectionLeft && index == 0 -> {
+                                            onNavigateLeftToSidebar()
+                                            true
+                                        }
+                                        keyEvent.key == Key.Enter || keyEvent.key == Key.DirectionCenter -> {
+                                            onSelectCamera(camera)
+                                            true
+                                        }
+                                        keyEvent.key == Key.MediaPlayPause || keyEvent.key == Key.Menu || 
+                                        keyEvent.key == Key.ButtonY || keyEvent.key == Key.Info ||
+                                        keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_PROG_YELLOW ||
+                                        keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_INFO ||
+                                        keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_MENU -> {
+                                            val nextState = !isPipCamEnabled
+                                            isPipCamEnabled = nextState
+                                            prefs.setCameraPipEnabled(camera.id, nextState)
+                                            camScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
+                                            SentinelaRemoteLogger.log(
+                                                category = "PIP",
+                                                action = "CAMERA_PIP_TOGGLED",
+                                                severity = "INFO",
+                                                message = "PiP da câmera ${camera.id} alterado para ${if (nextState) "ATIVADO" else "DESATIVADO"} via controle remoto",
+                                                metadata = mapOf("camera" to camera.id, "enabled" to nextState)
+                                            )
+                                            Toast.makeText(context, "${camera.name}: PiP ${if (nextState) "ATIVADO" else "DESATIVADO"}", Toast.LENGTH_SHORT).show()
+                                            true
+                                        }
+                                        else -> false
                                     }
-                                    keyEvent.key == Key.MediaPlayPause || keyEvent.key == Key.Menu || 
-                                    keyEvent.key == Key.ButtonY || keyEvent.key == Key.Info ||
-                                    keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_PROG_YELLOW ||
-                                    keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_INFO ||
-                                    keyEvent.nativeKeyEvent.keyCode == android.view.KeyEvent.KEYCODE_MENU -> {
+                                } else false
+                            }
+                            .tvDpadFocusable(
+                                isFocused = isFocused,
+                                focusedBorderColor = TvColors.BorderFocused,
+                                unfocusedBorderColor = if (index == focusedIndex) TvColors.BorderHighlight else TvColors.BorderSubtle,
+                                shape = TvShapes.CameraCard,
+                                scaleAmount = 1.04f
+                            )
+                            .clip(TvShapes.CameraCard)
+                            .background(
+                                if (isFocused) TvColors.CardBackgroundElevated else TvColors.CardBackground
+                            )
+                            .clickable(interactionSource = interactionSource, indication = null) {
+                                onFocusCamera(index)
+                                onSelectCamera(camera)
+                            }
+                    ) {
+                        SeamlessCameraImage(
+                            cameraName = camera.id,
+                            contentDescription = camera.name,
+                            modifier = Modifier.fillMaxSize(),
+                            isStreaming = true,
+                            forceSnapshotMode = true,
+                            refreshIntervalMs = 1500L
+                        )
+
+                        // Overlay de Informações do Card
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(
+                                    Brush.verticalGradient(
+                                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f))
+                                    )
+                                )
+                                .padding(TvDimens.sm)
+                        ) {
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = when (camera.status) {
+                                    CameraStatus.ALERT -> TvColors.AlertCrimson
+                                    CameraStatus.RECORDING -> TvColors.AlertCrimson.copy(alpha = 0.8f)
+                                    CameraStatus.ONLINE -> TvColors.LiveGreen.copy(alpha = 0.8f)
+                                    CameraStatus.STANDBY -> TvColors.StandbyAmber
+                                },
+                                modifier = Modifier.align(Alignment.TopStart)
+                            ) {
+                                Text(
+                                    text = camera.status.name,
+                                    color = Color.White,
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                )
+                            }
+
+                            val camMode = prefs.getCameraDefaultStreamMode(camera.id)
+                            Row(
+                                modifier = Modifier.align(Alignment.TopEnd),
+                                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // Badge clicável / interativo de PiP Preview da Câmera
+                                Surface(
+                                    shape = TvShapes.Badge,
+                                    color = if (isPipCamEnabled) TvColors.CyberCyan.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.6f),
+                                    border = BorderStroke(0.6.dp, if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted),
+                                    modifier = Modifier.clickable {
                                         val nextState = !isPipCamEnabled
                                         isPipCamEnabled = nextState
                                         prefs.setCameraPipEnabled(camera.id, nextState)
@@ -936,147 +1295,63 @@ fun TvCamerasViewport(
                                             category = "PIP",
                                             action = "CAMERA_PIP_TOGGLED",
                                             severity = "INFO",
-                                            message = "PiP da câmera ${camera.id} alterado para ${if (nextState) "ATIVADO" else "DESATIVADO"} via controle remoto",
+                                            message = "PiP da câmera ${camera.id} alterado para ${if (nextState) "ATIVADO" else "DESATIVADO"}",
                                             metadata = mapOf("camera" to camera.id, "enabled" to nextState)
                                         )
                                         Toast.makeText(context, "${camera.name}: PiP ${if (nextState) "ATIVADO" else "DESATIVADO"}", Toast.LENGTH_SHORT).show()
-                                        true
                                     }
-                                    else -> false
-                                }
-                            } else false
-                        }
-                        .tvDpadFocusable(
-                            isFocused = isFocused,
-                            focusedBorderColor = TvColors.BorderFocused,
-                            unfocusedBorderColor = if (index == focusedIndex) TvColors.BorderHighlight else TvColors.BorderSubtle,
-                            shape = TvShapes.CameraCard,
-                            scaleAmount = 1.04f
-                        )
-                        .clip(TvShapes.CameraCard)
-                        .background(
-                            if (isFocused) TvColors.CardBackgroundElevated else TvColors.CardBackground
-                        )
-                        .clickable(interactionSource = interactionSource, indication = null) {
-                            onFocusCamera(index)
-                            onSelectCamera(camera)
-                        }
-                ) {
-                    SeamlessCameraImage(
-                        cameraName = camera.id,
-                        contentDescription = camera.name,
-                        modifier = Modifier.fillMaxSize(),
-                        isStreaming = true,
-                        forceSnapshotMode = true,
-                        refreshIntervalMs = 1500L
-                    )
-
-                    // Overlay de Informações do Card
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f))
-                                )
-                            )
-                            .padding(TvDimens.sm)
-                    ) {
-                        Surface(
-                            shape = TvShapes.Badge,
-                            color = when (camera.status) {
-                                CameraStatus.ALERT -> TvColors.AlertCrimson
-                                CameraStatus.RECORDING -> TvColors.AlertCrimson.copy(alpha = 0.8f)
-                                CameraStatus.ONLINE -> TvColors.LiveGreen.copy(alpha = 0.8f)
-                                CameraStatus.STANDBY -> TvColors.StandbyAmber
-                            },
-                            modifier = Modifier.align(Alignment.TopStart)
-                        ) {
-                            Text(
-                                text = camera.status.name,
-                                color = Color.White,
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
-                            )
-                        }
-
-                        val camMode = prefs.getCameraDefaultStreamMode(camera.id)
-                        Row(
-                            modifier = Modifier.align(Alignment.TopEnd),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            // Badge clicável / interativo de PiP Preview da Câmera
-                            Surface(
-                                shape = TvShapes.Badge,
-                                color = if (isPipCamEnabled) TvColors.CyberCyan.copy(alpha = 0.25f) else Color.Black.copy(alpha = 0.6f),
-                                border = BorderStroke(0.6.dp, if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted),
-                                modifier = Modifier.clickable {
-                                    val nextState = !isPipCamEnabled
-                                    isPipCamEnabled = nextState
-                                    prefs.setCameraPipEnabled(camera.id, nextState)
-                                    camScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
-                                    SentinelaRemoteLogger.log(
-                                        category = "PIP",
-                                        action = "CAMERA_PIP_TOGGLED",
-                                        severity = "INFO",
-                                        message = "PiP da câmera ${camera.id} alterado para ${if (nextState) "ATIVADO" else "DESATIVADO"}",
-                                        metadata = mapOf("camera" to camera.id, "enabled" to nextState)
-                                    )
-                                    Toast.makeText(context, "${camera.name}: PiP ${if (nextState) "ATIVADO" else "DESATIVADO"}", Toast.LENGTH_SHORT).show()
-                                }
-                            ) {
-                                Row(
-                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(2.dp)
                                 ) {
-                                    Icon(
-                                        imageVector = if (isPipCamEnabled) Icons.Default.PictureInPicture else Icons.Default.PictureInPictureAlt,
-                                        contentDescription = "PiP",
-                                        tint = if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted,
-                                        modifier = Modifier.size(10.dp)
-                                    )
+                                    Row(
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp),
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isPipCamEnabled) Icons.Default.PictureInPicture else Icons.Default.PictureInPictureAlt,
+                                            contentDescription = "PiP",
+                                            tint = if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted,
+                                            modifier = Modifier.size(10.dp)
+                                        )
+                                        Text(
+                                            text = if (isPipCamEnabled) "PiP ON" else "PiP OFF",
+                                            color = if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted,
+                                            fontSize = 8.sp,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    }
+                                }
+
+                                Surface(
+                                    shape = TvShapes.Badge,
+                                    color = TvColors.OverlayHud,
+                                    border = BorderStroke(0.5.dp, TvColors.CyberCyan)
+                                ) {
                                     Text(
-                                        text = if (isPipCamEnabled) "PiP ON" else "PiP OFF",
-                                        color = if (isPipCamEnabled) TvColors.CyberCyan else TvColors.TextMuted,
+                                        text = camMode.uppercase(),
+                                        color = TvColors.CyberCyan,
                                         fontSize = 8.sp,
-                                        fontWeight = FontWeight.Bold
+                                        fontWeight = FontWeight.Bold,
+                                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
                                     )
                                 }
                             }
 
-                            Surface(
-                                shape = TvShapes.Badge,
-                                color = TvColors.OverlayHud,
-                                border = BorderStroke(0.5.dp, TvColors.CyberCyan)
+                            Column(
+                                modifier = Modifier.align(Alignment.BottomStart)
                             ) {
                                 Text(
-                                    text = camMode.uppercase(),
-                                    color = TvColors.CyberCyan,
-                                    fontSize = 8.sp,
+                                    text = "CH0${camera.channel} • ${camera.name}",
+                                    color = Color.White,
+                                    fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
-                                    modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                                Text(
+                                    text = "${camera.telemetry.resolution} • ${camera.telemetry.fps} FPS",
+                                    style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.CyberCyan)
                                 )
                             }
-                        }
-
-                        Column(
-                            modifier = Modifier.align(Alignment.BottomStart)
-                        ) {
-                            Text(
-                                text = "CH0${camera.channel} • ${camera.name}",
-                                color = Color.White,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            Text(
-                                text = "${camera.telemetry.resolution} • ${camera.telemetry.fps} FPS",
-                                style = TvTypography.Telemetry.copy(fontSize = 9.sp, color = TvColors.CyberCyan)
-                            )
                         }
                     }
                 }
@@ -3293,48 +3568,12 @@ fun TvSettingsViewport(
     val settingsScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        // 1. Initial Policy Fetch & Sync
+        // 1. Initial Policy Fetch & Sync (preserving local TV sovereignty for pipSize and pipDuration)
         try {
             val pol = com.sentinela.pro.network.SentinelaRepository.getDevicePolicy(prefs.deviceIdentifier)
             if (pol.streamQuality.isNotBlank()) {
                 streamQuality = pol.streamQuality
                 prefs.streamQuality = pol.streamQuality
-            }
-            if (pol.pipPosition.isNotBlank()) {
-                try {
-                    val pIdx = PipPosition.valueOf(pol.pipPosition.uppercase()).ordinal
-                    posIndex = pIdx
-                    prefs.pipPositionIndex = pIdx
-                } catch (e: Exception) {}
-            }
-            if (pol.pipDefaultSize.isNotBlank()) {
-                val sIdx = when (pol.pipDefaultSize.lowercase()) {
-                    "mini", "extra_small" -> PipSize.EXTRA_SMALL.ordinal
-                    "small" -> PipSize.SMALL.ordinal
-                    "medium_small" -> PipSize.MEDIUM_SMALL.ordinal
-                    "medium" -> PipSize.MEDIUM.ordinal
-                    "medium_large" -> PipSize.MEDIUM_LARGE.ordinal
-                    "large" -> PipSize.LARGE.ordinal
-                    "extra_large" -> PipSize.EXTRA_LARGE.ordinal
-                    "cinema" -> PipSize.CINEMA.ordinal
-                    else -> prefs.pipSizeIndex
-                }
-                sizeIndex = sIdx
-                prefs.pipSizeIndex = sIdx
-            }
-            if (pol.pipDurationSeconds > 0) {
-                val dIdx = when (pol.pipDurationSeconds) {
-                    5 -> PipDuration.D_5S.ordinal
-                    10 -> PipDuration.D_10S.ordinal
-                    15 -> PipDuration.D_15S.ordinal
-                    20 -> PipDuration.D_20S.ordinal
-                    30 -> PipDuration.D_30S.ordinal
-                    45 -> PipDuration.D_45S.ordinal
-                    60 -> PipDuration.D_60S.ordinal
-                    else -> prefs.pipDurationIndex
-                }
-                durIndex = dIdx
-                prefs.pipDurationIndex = dIdx
             }
         } catch (e: Exception) {
             android.util.Log.d("TvSettingsViewport", "Policy fetch failed: ${e.message}")

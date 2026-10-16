@@ -268,10 +268,21 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   const [isMuted, setIsMuted] = useState(true);
   const [volume, setVolume] = useState(0);
 
-  const applyAudioSettings = (newMuted: boolean, newVolume: number) => {
+  const getIframeVideoElement = (): HTMLVideoElement | null => {
     try {
       const doc = iframeRef.current?.contentDocument || iframeRef.current?.contentWindow?.document;
-      const video = doc?.querySelector("video");
+      if (!doc) return null;
+      const vs = doc.querySelector("video-stream") as (HTMLElement & { shadowRoot?: ShadowRoot | null }) | null;
+      const video = (vs?.shadowRoot?.querySelector("video") || doc.querySelector("video")) as HTMLVideoElement | null;
+      return video;
+    } catch {
+      return null;
+    }
+  };
+
+  const applyAudioSettings = (newMuted: boolean, newVolume: number) => {
+    try {
+      const video = getIframeVideoElement();
       if (video) {
         video.muted = newMuted;
         video.volume = newMuted ? 0 : Math.max(0, Math.min(1, newVolume));
@@ -431,14 +442,26 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
       if (typeof document !== "undefined" && document.hidden) return;
 
       try {
-        const doc = iframeRef.current?.contentDocument || iframeRef.current?.contentWindow?.document;
-        const video = doc?.querySelector("video") as HTMLVideoElement | null;
+        const video = getIframeVideoElement();
         if (video) {
           const curTime = video.currentTime;
           const readyState = video.readyState;
           const isPlaying = !video.paused && !video.ended;
 
           if (isPlaying) {
+            // Watchdog suave de Live-Edge (Regra de Ouro #2: playbackRate 1.08x a 1.15x, sem seek forçado)
+            if (video.buffered && video.buffered.length > 0) {
+              const end = video.buffered.end(video.buffered.length - 1);
+              const drift = end - curTime;
+              if (drift > 1.5) {
+                video.playbackRate = 1.15;
+              } else if (drift > 0.35) {
+                video.playbackRate = 1.08;
+              } else if (drift < 0.12 && video.playbackRate !== 1.0) {
+                video.playbackRate = 1.0;
+              }
+            }
+
             // Se readyState < 2 (HAVE_CURRENT_DATA) ou currentTime estagnado por mais de 3.5s
             if (readyState < 2 || (lastTime >= 0 && Math.abs(curTime - lastTime) < 0.02)) {
               stallCountMs += CHECK_INTERVAL_MS;

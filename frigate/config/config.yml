@@ -14,8 +14,7 @@ logger:
 ffmpeg:
   hwaccel_args: preset-vaapi
   output_args:
-    record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps 1 -strftime
-      1 -c:v copy -bsf:v h264_redundant_pps -c:a copy
+    record: preset-record-generic
 model:
   path: /openvino-model/ssdlite_mobilenet_v2.xml
   width: 300
@@ -88,19 +87,19 @@ go2rtc:
     rtsp: warn
   streams:
     cam_192_168_1_196:
-    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#buffer=2000#timeout=60
+    - rtsp://admin:admin@192.168.1.196:554/live/0/MAIN#backchannel=0#timeout=60
     cam_192_168_1_196_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_720p:
-    - ffmpeg:cam_192_168_1_196#video=copy
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#timeout=60
     cam_192_168_1_196_sub:
     - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#timeout=60
     cam_192_168_1_47:
-    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#buffer=2000#timeout=60
+    - rtsp://admin:admin@192.168.1.47:554/live/0/MAIN#backchannel=0#timeout=60
     cam_192_168_1_47_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_720p:
-    - ffmpeg:cam_192_168_1_47#video=copy
+    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#timeout=60
     cam_192_168_1_47_sub:
     - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#timeout=60
     camera_principal:
@@ -108,7 +107,7 @@ go2rtc:
     camera_principal_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_720p:
-    - ffmpeg:cam_192_168_1_196#video=copy
+    - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0#timeout=60
     camera_principal_sub:
     - ffmpeg:cam_192_168_1_196_sub#video=copy
     camera_secundaria:
@@ -116,7 +115,7 @@ go2rtc:
     camera_secundaria_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_720p:
-    - ffmpeg:cam_192_168_1_47#video=copy
+    - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0#timeout=60
     camera_secundaria_sub:
     - ffmpeg:cam_192_168_1_47_sub#video=copy
   webrtc:
@@ -219,9 +218,7 @@ cameras:
         roles:
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
-          1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000
-          -avoid_negative_ts make_zero
+        record: preset-record-generic
     detect:
       width: 800
       height: 448
@@ -315,9 +312,7 @@ cameras:
         roles:
         - detect
       output_args:
-        record: -f segment -segment_time 10 -segment_format mp4 -reset_timestamps
-          1 -strftime 1 -c:v copy -bsf:v h264_redundant_pps -c:a aac -af aresample=async=1000
-          -avoid_negative_ts make_zero
+        record: preset-record-generic
     detect:
       width: 800
       height: 448

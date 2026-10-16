@@ -61,6 +61,8 @@ class OverlayService : Service() {
     private var cachedDevicePolicy: DevicePolicy? = null
     private var activePipCamera: String? = null
     private var lastPipTriggerTimeMs: Long = 0L
+    private val processedPipEventIds = java.util.LinkedHashSet<String>()
+    private val cameraPipCooldowns = mutableMapOf<String, Long>()
 
     // Advanced PiP Performance Telemetry (TTFF, FPS, Dropped Frames, Stalls)
     private var pipSessionStartTimeMs: Long = 0L
@@ -227,8 +229,8 @@ class OverlayService : Service() {
                     return@collect
                 }
 
-                // Somente eventos consolidados com cooldown (pip_alert ou FRIGATE_EVENT) disparam PiP
-                val isPipTrigger = evType == "pip_alert" || (evType == "FRIGATE_EVENT" && event.optBoolean("active", false))
+                // Somente eventos consolidados com cooldown (pip_alert) disparam PiP
+                val isPipTrigger = evType == "pip_alert"
                 if (!isPipTrigger) {
                     return@collect
                 }
@@ -244,9 +246,21 @@ class OverlayService : Service() {
                 }
 
                 val testId = if (event.has("test_id")) event.optString("test_id") else null
+                val eventId = event.optString("event_id", "")
                 val camera = event.optString("camera", "camera_secundaria")
                 val label = event.optString("label", "DETECÇÃO")
                 val isTestAlert = testId != null || event.optBoolean("is_test", false) || label.contains("TEST", ignoreCase = true)
+
+                if (!isTestAlert && eventId.isNotBlank()) {
+                    if (processedPipEventIds.contains(eventId)) {
+                        return@collect
+                    }
+                    if (processedPipEventIds.size >= 500) {
+                        val first = processedPipEventIds.iterator().next()
+                        processedPipEventIds.remove(first)
+                    }
+                    processedPipEventIds.add(eventId)
+                }
 
                 // 1. Verificação Estrita de Políticas Remotas (Sentinela Web / Telas)
                 val policy = cachedDevicePolicy
@@ -312,12 +326,20 @@ class OverlayService : Service() {
                     return@collect
                 }
 
-                // Debounce contra tempestades de eventos para a mesma câmera dentro de 2.5 segundos
+                // Debounce e Cooldown de 12 segundos por câmera para novas aberturas de PiP
                 val now = System.currentTimeMillis()
-                if (!isTestAlert && camera == activePipCamera && (now - lastPipTriggerTimeMs) < 2500L) {
-                    return@collect
+                val lastCamTrigger = cameraPipCooldowns[camera] ?: 0L
+                if (!isTestAlert) {
+                    if (camera == activePipCamera && overlayView != null) {
+                        if ((now - lastPipTriggerTimeMs) < 2500L) {
+                            return@collect
+                        }
+                    } else if ((now - lastCamTrigger) < 12000L) {
+                        return@collect
+                    }
                 }
                 lastPipTriggerTimeMs = now
+                cameraPipCooldowns[camera] = now
 
                 val customSnap = if (event.has("snapshot_url")) event.optString("snapshot_url") else null
                 val customStream = if (event.has("stream_url")) event.optString("stream_url") else null
@@ -666,18 +688,17 @@ class OverlayService : Service() {
 
         activePipCamera = resolvedCamera
         pipMetricsBridge?.reset()
-        val streamCamera = if (resolvedCamera.endsWith("_720p")) resolvedCamera else "${resolvedCamera}_720p"
+        val cleanCam = resolvedCamera.removeSuffix("_720p").removeSuffix("_sub").removeSuffix("_main")
+        val streamCamera = "${cleanCam}_720p"
         val streamModeParam = when (prefs.pipPlayerMode.lowercase()) {
             "eco" -> "mode=mjpeg"
             "webrtc" -> "mode=webrtc,mse&media=video&background=true"
-            else -> "mode=mse&media=video&background=true"
+            else -> "mode=mse,webrtc&media=video&background=true"
         }
-        val baseStreamUrl = normalizeUrl(customStreamUrl, "/go2rtc/stream.html?src=${streamCamera}&${streamModeParam}&width=100%")
+        val baseStreamUrl = normalizeUrl(null, "/go2rtc/stream.html?src=${streamCamera}&${streamModeParam}&width=100%")
         val streamUrl = if (baseStreamUrl.contains("stream.html")) {
-            val uri = android.net.Uri.parse(baseStreamUrl)
-            val src = uri.getQueryParameter("src") ?: streamCamera
             val baseUrlWithoutQuery = baseStreamUrl.substringBefore("?")
-            "$baseUrlWithoutQuery?src=$src&$streamModeParam&width=100%"
+            "$baseUrlWithoutQuery?src=$streamCamera&$streamModeParam&width=100%"
         } else {
             baseStreamUrl
         }
@@ -770,8 +791,7 @@ class OverlayService : Service() {
                         loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
                     }
                     else -> {
-                        // "mse" (Padrão Recomendado): Hardware-Accelerated 30 FPS Live Stream via go2rtc WebSocket WebView
-                        // 1. Instant snapshot base layer underneath (0ms black screen)
+                        // "mse" (Padrão Recomendado): 100% Live Video Stream via go2rtc WebSocket WebView (sem snapshot/foto estática)
                         val snapImageView = android.widget.ImageView(this).apply {
                             layoutParams = FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -779,18 +799,19 @@ class OverlayService : Service() {
                             )
                             scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
                             setBackgroundColor(Color.BLACK)
+                            visibility = View.GONE
+                            alpha = 0f
                         }
                         pipImageView = snapImageView
                         inner.addView(snapImageView)
-                        loadSnapshotWithFallbacks(snapImageView, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
 
-                        // 2. Hardware-Accelerated WebView on top with live-edge auto-sync watchdog
+                        // Hardware-Accelerated WebView on top with live-edge auto-sync watchdog
                         val wv = WebView(this).apply {
                             layoutParams = FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT
                             )
-                            setBackgroundColor(Color.TRANSPARENT)
+                            setBackgroundColor(Color.BLACK)
                             setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
                             settings.apply {
@@ -810,7 +831,7 @@ class OverlayService : Service() {
                             isVerticalScrollBarEnabled = false
                             isHorizontalScrollBarEnabled = false
 
-                            alpha = 0f // Oculta o WebView até o primeiro frame do vídeo ser renderizado (evita double loading flash)
+                            alpha = 1f // 100% live video immediately
 
                             val bridge = PipMetricsBridge(
                                 onMetrics = { ttff, avgFps, minFps, dropped, stalls, totalFrames ->
@@ -823,12 +844,9 @@ class OverlayService : Service() {
                                 },
                                 onFirstFrame = {
                                     serviceScope.launch(Dispatchers.Main) {
-                                        pipWebView?.animate()?.alpha(1f)?.setDuration(250)?.start()
-                                        // Oculta/desativa snapshot para exibir exclusivamente o stream de vídeo ao vivo da câmera
-                                        pipImageView?.animate()?.alpha(0f)?.setDuration(200)?.withEndAction {
-                                            pipImageView?.visibility = View.GONE
-                                            pipImageView?.alpha = 0f
-                                        }?.start()
+                                        pipWebView?.alpha = 1f
+                                        pipImageView?.visibility = View.GONE
+                                        pipImageView?.alpha = 0f
                                     }
                                 }
                             )
@@ -860,6 +878,10 @@ class OverlayService : Service() {
                                         "video-stream .info, .info, .mode, .status, .spinner { display:none !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important; } " +
                                         "* { outline:none !important; -webkit-tap-highlight-color:transparent !important; }';" +
                                         "document.head.appendChild(style);" +
+                                        "var getVideoEl = function() {" +
+                                        "  var vs = document.querySelector('video-stream');" +
+                                        "  return (vs && vs.shadowRoot) ? vs.shadowRoot.querySelector('video') : document.querySelector('video');" +
+                                        "};" +
                                         "var tStart = performance.now();" +
                                         "var firstFrameTime = 0;" +
                                         "var frameCount = 0;" +
@@ -871,7 +893,7 @@ class OverlayService : Service() {
                                         "  if (window.PipBridge && window.PipBridge.reportMetrics) {" +
                                         "    var avgFps = fpsHistory.length > 0 ? (fpsHistory.reduce(function(a,b){return a+b;},0)/fpsHistory.length) : 0;" +
                                         "    var minFps = fpsHistory.length > 0 ? Math.min.apply(null, fpsHistory) : 0;" +
-                                        "    var v = document.querySelector('video');" +
+                                        "    var v = getVideoEl();" +
                                         "    var dropped = (v && v.getVideoPlaybackQuality) ? v.getVideoPlaybackQuality().droppedVideoFrames : 0;" +
                                         "    window.PipBridge.reportMetrics(" +
                                         "      Math.round(firstFrameTime)," +
@@ -889,19 +911,24 @@ class OverlayService : Service() {
                                         "    firstFrameTime = performance.now() - tStart;" +
                                         "    reportToNative();" +
                                         "  }" +
-                                        "  var v = document.querySelector('video');" +
+                                        "  var v = getVideoEl();" +
                                         "  if (v && v.requestVideoFrameCallback) {" +
                                         "    v.requestVideoFrameCallback(onFrame);" +
                                         "  }" +
                                         "};" +
                                         "var initVideo = function() {" +
-                                        "  var v = document.querySelector('video');" +
-                                        "  if (v) {" +
+                                        "  var v = getVideoEl();" +
+                                        "  if (v && !v.__pipInitialized) {" +
+                                        "    v.__pipInitialized = true;" +
                                         "    v.controls = false;" +
                                         "    v.muted = true;" +
                                         "    v.autoplay = true;" +
                                         "    v.playsInline = true;" +
                                         "    v.removeAttribute('controls');" +
+                                        "    v.style.width = '100%';" +
+                                        "    v.style.height = '100%';" +
+                                        "    v.style.objectFit = 'contain';" +
+                                        "    v.style.background = '#000';" +
                                         "    try {" +
                                         "      var origDesc = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'playbackRate');" +
                                         "      if (origDesc && !v.__rateIntercepted) {" +
@@ -939,6 +966,7 @@ class OverlayService : Service() {
                                         "initVideo();" +
                                         "if (!window.__metricsTimer) {" +
                                         "  window.__metricsTimer = setInterval(function() {" +
+                                        "    initVideo();" +
                                         "    var now = performance.now();" +
                                         "    var dt = (now - lastFpsCheck) / 1000.0;" +
                                         "    if (dt >= 0.8) {" +
@@ -952,7 +980,7 @@ class OverlayService : Service() {
                                         "      lastFpsCheck = now;" +
                                         "      reportToNative();" +
                                         "    }" +
-                                        "    var v = document.querySelector('video');" +
+                                        "    var v = getVideoEl();" +
                                         "    if (v) {" +
                                         "      if (v.paused) { v.play().catch(function(){}); }" +
                                         "      if (v.buffered && v.buffered.length > 0) {" +
@@ -988,14 +1016,6 @@ class OverlayService : Service() {
                     pipWebView?.resumeTimers()
                     pipWebView?.loadUrl(streamUrl)
                 }
-                serviceScope.launch(Dispatchers.Main) {
-                    delay(1500L)
-                    if (isPipShowing.value && pipWebView != null) {
-                        pipWebView?.alpha = 1f
-                        pipImageView?.visibility = View.GONE
-                        pipImageView?.alpha = 0f
-                    }
-                }
             } else {
                 when (prefs.pipPlayerMode) {
                     "exoplayer" -> {
@@ -1014,24 +1034,15 @@ class OverlayService : Service() {
                     }
                     else -> {
                         pipMetricsBridge?.reset()
-                        pipImageView?.let { iv ->
-                            iv.visibility = View.VISIBLE
-                            iv.alpha = 1f
-                            loadSnapshotWithFallbacks(iv, snapshotUrl, resolvedCamera, pipSize.width, pipSize.height)
+                        pipImageView?.apply {
+                            visibility = View.GONE
+                            alpha = 0f
                         }
                         pipWebView?.apply {
-                            alpha = 0f
+                            alpha = 1f
                             onResume()
                             resumeTimers()
                             loadUrl(streamUrl)
-                        }
-                        serviceScope.launch(Dispatchers.Main) {
-                            delay(1500L)
-                            if (isPipShowing.value && pipWebView != null) {
-                                pipWebView?.alpha = 1f
-                                pipImageView?.visibility = View.GONE
-                                pipImageView?.alpha = 0f
-                            }
                         }
                     }
                 }

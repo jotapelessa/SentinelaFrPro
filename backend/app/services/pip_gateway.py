@@ -141,6 +141,9 @@ class PiPGatewayService:
             return {"status": "skipped", "reason": "dnd_active"}
 
         from app.api.ws import ws_manager
+        base_cam = camera_name[:-5] if camera_name.endswith("_720p") else (camera_name[:-4] if camera_name.endswith("_sub") else camera_name)
+        default_stream_url = f"/go2rtc/stream.html?src={base_cam}_720p&mode=mse,webrtc&media=video"
+        resolved_stream_url = stream_url if (stream_url and not stream_url.startswith("rtsp://")) else default_stream_url
 
         # 1. Transmissão imediata (<10ms) via WebSocket para navegadores Web (Web Dashboard)
         try:
@@ -150,7 +153,7 @@ class PiPGatewayService:
                 "camera": camera_name,
                 "label": label,
                 "snapshot_url": snapshot_url,
-                "stream_url": stream_url or f"/go2rtc/stream.html?src={camera_name}&mode=mse&media=video",
+                "stream_url": resolved_stream_url,
                 "duration_seconds": duration_seconds,
                 "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
             })
@@ -183,7 +186,7 @@ class PiPGatewayService:
                                 "camera": camera_name,
                                 "label": label,
                                 "snapshot_url": snapshot_url,
-                                "stream_url": stream_url or f"/go2rtc/stream.html?src={camera_name}&mode=mse&media=video",
+                                "stream_url": resolved_stream_url,
                                 "duration": dev.get("pip_duration_seconds", duration_seconds),
                                 "pip_size": dev.get("pip_default_size", "medium"),
                                 "timestamp": datetime.datetime.now(datetime.timezone.utc).isoformat()
@@ -324,8 +327,9 @@ class PiPGatewayService:
         ack_event = asyncio.Event()
         self._ack_events[test_id] = ack_event
 
+        base_cam = camera_name[:-5] if camera_name.endswith("_720p") else (camera_name[:-4] if camera_name.endswith("_sub") else camera_name)
         rel_snapshot_url = f"/go2rtc/api/frame.jpeg?src={camera_name}" if active_cams else "/icon-192.png"
-        rel_stream_url = f"/go2rtc/stream.html?src={camera_name}&mode=mse&media=video&width=100%" if active_cams else ""
+        rel_stream_url = f"/go2rtc/stream.html?src={base_cam}_720p&mode=mse,webrtc&media=video" if active_cams else ""
         snapshot_url = f"http://{server_ip}:8088{rel_snapshot_url}"
         stream_url = f"http://{server_ip}:8088{rel_stream_url}"
 

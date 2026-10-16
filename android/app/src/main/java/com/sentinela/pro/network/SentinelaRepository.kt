@@ -265,44 +265,8 @@ object SentinelaRepository {
                 val obj = JSONObject(text)
                 isMasterAdmin = obj.optBoolean("is_master_admin", false)
 
-                // Synchronize server configurations into local preferences
+                // Synchronize server configurations into local preferences (preserving local TV sovereignty for pipSize and pipDuration)
                 if (prefs != null) {
-                    val serverPipSize = obj.optString("pip_default_size", "")
-                    if (serverPipSize.isNotBlank()) {
-                        when (serverPipSize.lowercase()) {
-                            "mini", "extra_small" -> prefs.pipSizeIndex = PipSize.EXTRA_SMALL.ordinal
-                            "small" -> prefs.pipSizeIndex = PipSize.SMALL.ordinal
-                            "medium_small" -> prefs.pipSizeIndex = PipSize.MEDIUM_SMALL.ordinal
-                            "medium" -> prefs.pipSizeIndex = PipSize.MEDIUM.ordinal
-                            "medium_large" -> prefs.pipSizeIndex = PipSize.MEDIUM_LARGE.ordinal
-                            "large" -> prefs.pipSizeIndex = PipSize.LARGE.ordinal
-                            "extra_large" -> prefs.pipSizeIndex = PipSize.EXTRA_LARGE.ordinal
-                            "cinema" -> prefs.pipSizeIndex = PipSize.CINEMA.ordinal
-                        }
-                    }
-
-                    val serverPipDur = obj.optInt("pip_duration_seconds", 0)
-                    if (serverPipDur > 0) {
-                        when (serverPipDur) {
-                            5 -> prefs.pipDurationIndex = PipDuration.D_5S.ordinal
-                            10 -> prefs.pipDurationIndex = PipDuration.D_10S.ordinal
-                            15 -> prefs.pipDurationIndex = PipDuration.D_15S.ordinal
-                            20 -> prefs.pipDurationIndex = PipDuration.D_20S.ordinal
-                            30 -> prefs.pipDurationIndex = PipDuration.D_30S.ordinal
-                            45 -> prefs.pipDurationIndex = PipDuration.D_45S.ordinal
-                            60 -> prefs.pipDurationIndex = PipDuration.D_60S.ordinal
-                        }
-                    }
-                    val serverPipPos = obj.optString("pip_position", "")
-                    if (serverPipPos.isNotBlank()) {
-                        try {
-                            val pEnum = PipPosition.valueOf(serverPipPos.uppercase())
-                            prefs.pipPositionIndex = pEnum.ordinal
-                        } catch (e: Exception) {
-                            Log.w(TAG, "Unknown pip_position: $serverPipPos")
-                        }
-                    }
-
                     val serverStreamQual = obj.optString("stream_quality", "")
                     if (serverStreamQual.isNotBlank()) {
                         prefs.streamQuality = serverStreamQual.lowercase()

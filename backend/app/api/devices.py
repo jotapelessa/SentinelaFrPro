@@ -132,6 +132,8 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
                 recent_logs = json.loads(d.recent_logs)
             except Exception:
                 recent_logs = []
+        if not d.permission_status or d.permission_status == "pending":
+            d.permission_status = "allowed"
         out.append({
             "id": d.id,
             "device_identifier": d.device_identifier,
@@ -236,6 +238,8 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         # Preserve custom friendly_name configured by the user in /screens
         if not dev.friendly_name:
             dev.friendly_name = hb.friendly_name
+        if not dev.permission_status or dev.permission_status == "pending":
+            dev.permission_status = "allowed"
         dev.device_type = hb.device_type
         if hb.ip_address:
             dev.ip_address = hb.ip_address
@@ -430,10 +434,11 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
         except Exception:
             events = ["person", "car", "motorcycle", "dog", "cat", "bus"]
 
+    perm_status = dev.permission_status if (dev.permission_status and dev.permission_status != "pending") else "allowed"
     return {
         "device_identifier": dev.device_identifier,
         "friendly_name": dev.friendly_name,
-        "permission_status": dev.permission_status,
+        "permission_status": perm_status,
         "allow_live_stream": dev.allow_live_stream if dev.allow_live_stream is not None else True,
         "allow_recordings": dev.allow_recordings if dev.allow_recordings is not None else True,
         "allow_pip_alerts": dev.allow_pip_alerts if dev.allow_pip_alerts is not None else True,

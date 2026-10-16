@@ -38,21 +38,29 @@ fun MseCameraView(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     isStreaming: Boolean = true,
-    streamMode: String = "mse"
+    streamMode: String = "mse",
+    preferSubStream: Boolean = true
 ) {
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
     var isAppInForeground by remember { mutableStateOf(true) }
 
-    val streamUrl = remember(cameraName, streamMode) {
+    val cleanBaseName = remember(cameraName) {
+        cameraName.removeSuffix("_720p").removeSuffix("_sub").removeSuffix("_main")
+    }
+    val effectiveStreamSrc = remember(cleanBaseName, preferSubStream) {
+        if (preferSubStream) "${cleanBaseName}_720p" else cleanBaseName
+    }
+
+    val streamUrl = remember(effectiveStreamSrc, streamMode) {
         val modeQuery = when (streamMode.lowercase()) {
             "eco" -> "mode=mjpeg"
             "webrtc" -> "mode=webrtc,mse&media=video&background=true"
-            else -> "mode=mse&media=video&background=true"
+            else -> "mode=mse,webrtc&media=video&background=true"
         }
-        "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${cameraName}&${modeQuery}&width=100%"
+        "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${effectiveStreamSrc}&${modeQuery}&width=100%"
     }
-    val snapshotUrl = remember(cameraName) {
-        "${SentinelaConfig.BASE_URL}/frigate/api/${cameraName}/latest.jpg?h=720"
+    val snapshotUrl = remember(cleanBaseName) {
+        "${SentinelaConfig.BASE_URL}/frigate/api/${cleanBaseName}/latest.jpg?h=720"
     }
 
     var isLoading by remember(cameraName) { mutableStateOf(true) }
