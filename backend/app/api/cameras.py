@@ -341,8 +341,8 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
         cam_stat = frigate_stats.get(c.name, {})
         f_cam_cfg = frigate_cams.get(c.name, {}) if isinstance(frigate_cams, dict) else {}
         detect_cfg = f_cam_cfg.get("detect", {}) if isinstance(f_cam_cfg, dict) else {}
-        detect_w = detect_cfg.get("width", 1280) if isinstance(detect_cfg, dict) else 1280
-        detect_h = detect_cfg.get("height", 720) if isinstance(detect_cfg, dict) else 720
+        detect_w = detect_cfg.get("width", 800) if isinstance(detect_cfg, dict) else 800
+        detect_h = detect_cfg.get("height", 448) if isinstance(detect_cfg, dict) else 448
 
         cam_dict = {
             "id": c.id,
@@ -2507,8 +2507,8 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
     if "live" in cam_data:
         del cam_data["live"]
 
-    detect_w = cam_data.get("detect", {}).get("width", 1280) if isinstance(cam_data.get("detect"), dict) else 1280
-    detect_h = cam_data.get("detect", {}).get("height", 720) if isinstance(cam_data.get("detect"), dict) else 720
+    detect_w = cam_data.get("detect", {}).get("width", 800) if isinstance(cam_data.get("detect"), dict) else 800
+    detect_h = cam_data.get("detect", {}).get("height", 448) if isinstance(cam_data.get("detect"), dict) else 448
 
     # Auto-convert raw_items if sent directly from Frontend
     if payload.raw_items is not None and payload.zones is None:

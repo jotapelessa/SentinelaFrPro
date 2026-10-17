@@ -294,9 +294,9 @@
     "semantic_hash": "e9de8da563afaa98e70cb6a44f97d65a"
   },
   "android/app/src/main/java/com/sentinela/pro/tv/OverlayService.kt": {
-    "mtime": 1792248873.2527544,
-    "seen": 1792249217.955652,
-    "ast_hash": "072d4992466b4633e8700d65a25c4064",
+    "mtime": 1792250329.9012992,
+    "seen": 1792250658.1684659,
+    "ast_hash": "c854c19e274490b24c7dcff6c2cb9811",
     "semantic_hash": ""
   },
   "android/app/src/main/java/com/sentinela/pro/tv/TvLeanbackGrid.kt": {
@@ -366,9 +366,9 @@
     "semantic_hash": "666709bbee651e43270d70c7b7945c2d"
   },
   "backend/app/api/cameras.py": {
-    "mtime": 1792248463.5096502,
-    "seen": 1792249217.9557152,
-    "ast_hash": "bd93036fd62515fb9bce804ef5d73ae6",
+    "mtime": 1792250378.4716196,
+    "seen": 1792250658.168473,
+    "ast_hash": "617cba4447af15a706032a38ae60d685",
     "semantic_hash": ""
   },
   "backend/app/api/devices.py": {
@@ -486,9 +486,9 @@
     "semantic_hash": ""
   },
   "backend/tests/test_backend.py": {
-    "mtime": 1792248629.796846,
-    "seen": 1792249217.955775,
-    "ast_hash": "fe467b4c76fd64c6f4461b9f6dfd623a",
+    "mtime": 1792250413.945393,
+    "seen": 1792250658.1684852,
+    "ast_hash": "0f8b1fc89bba1e81d59e7c70e252c755",
     "semantic_hash": ""
   },
   "compile_apk.sh": {
@@ -636,9 +636,9 @@
     "semantic_hash": "c0d8a970d349c4204dfe9fd1fbc12833"
   },
   "frontend/src/components/WebRTCPlayer.tsx": {
-    "mtime": 1792248686.8012955,
-    "seen": 1792249217.9558232,
-    "ast_hash": "20461cbd49552ea7c7df877a84f17c2a",
+    "mtime": 1792250342.964889,
+    "seen": 1792250658.168499,
+    "ast_hash": "ed79ba99185520e69fb892bed29914e5",
     "semantic_hash": ""
   },
   "frontend/src/components/WebSocketProvider.tsx": {
@@ -990,9 +990,9 @@
     "semantic_hash": ""
   },
   "STATE.md": {
-    "mtime": 1792249122.732813,
-    "seen": 1792249217.955893,
-    "ast_hash": "0e5ec3166850ba55b826a6e5e8b9a8e9",
+    "mtime": 1792250629.9715772,
+    "seen": 1792250658.168521,
+    "ast_hash": "440ce9d1f861beff06920de47add416c",
     "semantic_hash": ""
   },
   "android/gradlew": {

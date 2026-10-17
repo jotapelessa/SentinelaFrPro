@@ -55,6 +55,7 @@ class OverlayService : Service() {
     
     private var webSocket: SentinelaWebSocket? = null
     private var pipJob: Job? = null
+    private var firstFrameFallbackJob: Job? = null
     private var cachedDevicePolicy: DevicePolicy? = null
     private var activePipCamera: String? = null
     private var lastPipTriggerTimeMs: Long = 0L
@@ -82,10 +83,14 @@ class OverlayService : Service() {
             firstFrameReported = false
         }
 
+        fun markFirstFrameReported() {
+            firstFrameReported = true
+        }
+
         @android.webkit.JavascriptInterface
         fun reportMetrics(ttffMs: Long, avgFps: Double, minFps: Double, dropped: Int, stalls: Int, totalFrames: Int) {
             onMetrics(ttffMs, avgFps, minFps, dropped, stalls, totalFrames)
-            if (ttffMs > 0 && !firstFrameReported) {
+            if ((ttffMs > 0 || totalFrames > 0) && !firstFrameReported) {
                 firstFrameReported = true
                 onFirstFrame()
             }
@@ -587,6 +592,8 @@ class OverlayService : Service() {
         }
 
         pipJob?.cancel()
+        firstFrameFallbackJob?.cancel()
+        firstFrameFallbackJob = null
         pipSessionStartTimeMs = System.currentTimeMillis()
         pipTtffMs = 0L
         pipAvgFps = 0.0
@@ -829,6 +836,8 @@ class OverlayService : Service() {
                                 },
                                 onFirstFrame = {
                                     serviceScope.launch(Dispatchers.Main) {
+                                        firstFrameFallbackJob?.cancel()
+                                        firstFrameFallbackJob = null
                                         pipWebView?.alpha = 1f
                                         pipImageView?.animate()?.alpha(0f)?.setDuration(120L)?.withEndAction {
                                             pipImageView?.visibility = View.GONE
@@ -881,8 +890,9 @@ class OverlayService : Service() {
                                         "    var minFps = fpsHistory.length > 0 ? Math.min.apply(null, fpsHistory) : 0;" +
                                         "    var v = getVideoEl();" +
                                         "    var dropped = (v && v.getVideoPlaybackQuality) ? v.getVideoPlaybackQuality().droppedVideoFrames : 0;" +
+                                        "    var reportedTtff = firstFrameTime > 0 ? Math.max(1, Math.round(firstFrameTime)) : 0;" +
                                         "    window.PipBridge.reportMetrics(" +
-                                        "      Math.round(firstFrameTime)," +
+                                        "      reportedTtff," +
                                         "      Math.round(avgFps * 10) / 10," +
                                         "      Math.round(minFps * 10) / 10," +
                                         "      dropped," +
@@ -894,7 +904,7 @@ class OverlayService : Service() {
                                         "var onFrame = function(now, metadata) {" +
                                         "  frameCount++;" +
                                         "  if (firstFrameTime === 0) {" +
-                                        "    firstFrameTime = performance.now() - tStart;" +
+                                        "    firstFrameTime = Math.max(1, performance.now() - tStart);" +
                                         "    reportToNative();" +
                                         "  }" +
                                         "  var v = getVideoEl();" +
@@ -937,7 +947,7 @@ class OverlayService : Service() {
                                         "    } else {" +
                                         "      v.addEventListener('timeupdate', function() {" +
                                         "        if (firstFrameTime === 0 && v.currentTime > 0.05) {" +
-                                        "          firstFrameTime = performance.now() - tStart;" +
+                                        "          firstFrameTime = Math.max(1, performance.now() - tStart);" +
                                         "          frameCount = Math.max(frameCount, 1);" +
                                         "          reportToNative();" +
                                         "        }" +
@@ -945,7 +955,7 @@ class OverlayService : Service() {
                                         "    }" +
                                         "    var checkDirectFrame = function() {" +
                                         "      if (v.readyState >= 2 && v.videoWidth > 0 && firstFrameTime === 0) {" +
-                                        "        firstFrameTime = performance.now() - tStart;" +
+                                        "        firstFrameTime = Math.max(1, performance.now() - tStart);" +
                                         "        frameCount = Math.max(frameCount, 1);" +
                                         "        reportToNative();" +
                                         "      }" +
@@ -980,7 +990,7 @@ class OverlayService : Service() {
                                         "    var v = getVideoEl();" +
                                         "    if (v) {" +
                                         "      if (v.readyState >= 2 && v.videoWidth > 0 && firstFrameTime === 0) {" +
-                                        "        firstFrameTime = performance.now() - tStart;" +
+                                        "        firstFrameTime = Math.max(1, performance.now() - tStart);" +
                                         "        frameCount = Math.max(frameCount, 1);" +
                                         "        reportToNative();" +
                                         "      }" +
@@ -1045,9 +1055,11 @@ class OverlayService : Service() {
             }
 
             // Coroutine de segurança com timeout de 1.500ms para fade-out do snapshot estático e revelação do WebView (Regra #6)
-            serviceScope.launch(Dispatchers.Main) {
+            firstFrameFallbackJob?.cancel()
+            firstFrameFallbackJob = serviceScope.launch(Dispatchers.Main) {
                 delay(1500L)
-                if (pipMetricsBridge?.firstFrameReported != true) {
+                if (overlayView != null && pipMetricsBridge?.firstFrameReported != true) {
+                    pipMetricsBridge?.markFirstFrameReported()
                     pipWebView?.alpha = 1f
                     pipImageView?.animate()?.alpha(0f)?.setDuration(120L)?.withEndAction {
                         pipImageView?.visibility = View.GONE
@@ -1128,6 +1140,8 @@ class OverlayService : Service() {
 
     private fun removePiP() {
         try {
+            firstFrameFallbackJob?.cancel()
+            firstFrameFallbackJob = null
             pipWebView?.let { wv ->
                 try {
                     wv.stopLoading()

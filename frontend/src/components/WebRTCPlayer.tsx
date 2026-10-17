@@ -489,6 +489,8 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
             lastTime = curTime;
           } else {
             // Período de graça inicial de 8s para handshake MSE/WebRTC sem loop de reload
+            freezeCountMs = 0;
+            lastTime = -1;
             if (hasPlayedOnce || Date.now() - connectStartTime > 8000) {
               stallCountMs += CHECK_INTERVAL_MS;
             }

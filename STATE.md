@@ -1,15 +1,15 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-17 11:58 BRT
+> **Última Atualização:** 2026-10-17 12:25 BRT
 > **Versão Corrente:** v001.000.000.187
 > **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.187 consolidada com:
 1. **Zero-Copy In-Memory Aliases no go2rtc (`cameras.py` + `config.yml`)**: Substituição de loopback TCP `rtsp://127.0.0.1:8554/{cam}_sub?video=copy` pela sintaxe canônica in-memory zero-copy `ffmpeg:{cam}_sub#video=copy` (Regra de Ouro #22), eliminando overhead TCP e timeout drops de 60s.
 2. **Preservação Estrita de Zonas em Operações de Câmera (`cameras.py`)**: `sync_zones: bool = False` tornado default em `sync_camera_to_frigate` e explicitamente passado em `toggle-pause`, `pause` e `resume`.
-3. **Resolução Real de Detecção 800x448 (`cameras.py`)**: Extração de dimensões reais de detecção a partir da configuração da câmera no Frigate em `parse_frigate_coordinates` e fallbacks em vez de suposição fixa de 1280x720.
-4. **Estabilidade de Watchdog e Desacoplamento de Rerender no Web (`WebRTCPlayer.tsx` + `CameraMosaic.tsx`)**: Remoção de `key` das dependências do watchdog em `WebRTCPlayer.tsx` para evitar reinicializações espúrias; tolerância de congelamento aumentada para 2500ms absorvendo jitter NVMe; isolamento de contadores HUD em `DetectionCountersHUD` (`React.memo`) evitando re-renders da grade de vídeo a cada detecção MQTT.
-5. **Acionamento Duplo de Primeiro Quadro no PiP da Android TV (`OverlayService.kt`)**: Verificação direta no JS injetado (`v.readyState >= 2 && v.videoWidth > 0 && firstFrameTime === 0`) somada à corrotina de segurança de 1500ms em Kotlin que força o desvanecimento do snapshot e revelação do WebView.
-6. **Sincronização Global da Versão `001.000.000.187` (Build 187)**: 42/42 testes aprovados no pytest sem poluição de configuração, Next.js 14 build limpo (14/14 páginas), APKs TV e Smartphone compilados e sincronizados.
+3. **Resolução Real de Detecção 800x448 (`cameras.py`)**: Extração de dimensões reais de detecção a partir da configuração da câmera no Frigate em `parse_frigate_coordinates`, `list_cameras` e `save_frigate_camera_zones` em vez de suposição fixa de 1280x720.
+4. **Estabilidade de Watchdog e Desacoplamento de Rerender no Web (`WebRTCPlayer.tsx` + `CameraMosaic.tsx`)**: Remoção de `key` das dependências do watchdog em `WebRTCPlayer.tsx` para evitar reinicializações espúrias; tolerância de congelamento aumentada para 2500ms absorvendo jitter NVMe; reset defensivo de `freezeCountMs` e `lastTime` em pausas; isolamento de contadores HUD em `DetectionCountersHUD` (`React.memo`) evitando re-renders da grade de vídeo a cada detecção MQTT.
+5. **Acionamento Duplo de Primeiro Quadro no PiP da Android TV (`OverlayService.kt`)**: Verificação direta no JS injetado com piso de 1ms (`Math.max(1, ...)`) e condição `(ttffMs > 0 || totalFrames > 0)`, eliminação da condição de corrida onde `ttffMs == 0` bloqueava o fade, e cancelamento de `firstFrameFallbackJob` com marcação estrita de `firstFrameReported = true` evitando animações duplas de snapshot.
+6. **Sincronização Global da Versão `001.000.000.187` (Build 187)**: 43/43 testes aprovados no pytest sem poluição de configuração, Next.js 14 build limpo (14/14 páginas), APKs TV e Smartphone compilados e sincronizados.
 
 ---
 
@@ -21,15 +21,15 @@
      - *Correção*: Substituído por `ffmpeg:{cam}_sub#video=copy` em `config.yml` e na função `sync_camera_to_frigate` em `cameras.py`.
   2. **Backend — Preservação de Zonas & Resolução Real de Detecção (`cameras.py`)**:
      - *Causa*: `sync_camera_to_frigate` tinha `sync_zones` com default `True`, arriscando apagar ou sobrescrever zonas customizadas durante chamadas como `toggle-pause`, `pause` e `resume`. Além disso, cálculos de coordenadas usavam 1280x720 em vez da resolução nativa de detecção (800x448).
-     - *Correção*: `sync_zones: bool = False` tornado padrão na assinatura e passado explicitamente nos endpoints de pausa/retomada. `parse_frigate_coordinates` agora aceita `cam_cfg` e utiliza a resolução configurada no bloco `detect` da câmera.
+     - *Correção*: `sync_zones: bool = False` tornado padrão na assinatura e passado explicitamente nos endpoints de pausa/retomada. `parse_frigate_coordinates`, `list_cameras` e `save_frigate_camera_zones` agora utilizam a resolução configurada no bloco `detect` da câmera (800x448 por padrão).
   3. **Frontend Web — Watchdog Resiliente & Otimização de Performance no Mosaico (`WebRTCPlayer.tsx`, `CameraMosaic.tsx`)**:
      - *Causa*: `key` nas dependências do `useEffect` de watchdog causava recriação contínua de timers. Tolerância de 1000ms a freezes era muito agressiva durante escritas em disco do Frigate. No mosaico, o hook de detecções e eventos MQTT forçava re-render da árvore inteira incluindo os players.
-     - *Correção*: `key` removido das dependências; freeze tolerance expandido para 2500ms; `DetectionCountersHUD` extraído com `React.memo` para isolar contadores de eventos sem re-renderizar players de vídeo.
+     - *Correção*: `key` removido das dependências; freeze tolerance expandido para 2500ms; reset de freeze count no pause; `DetectionCountersHUD` extraído com `React.memo` para isolar contadores de eventos sem re-renderizar players de vídeo.
   4. **Android TV — Acionamento Confiável de Primeiro Quadro no PiP (`OverlayService.kt`)**:
-     - *Causa*: Em alguns dispositivos, `requestVideoFrameCallback` podia falhar ou atrasar se o stream já estivesse rodando antes do callback ser anexado.
-     - *Correção*: Implementado `checkDirectFrame()` avaliando `v.readyState >= 2 && v.videoWidth > 0 && firstFrameTime === 0` e corrotina de segurança de 1500ms em Kotlin como fallback garantido.
+     - *Causa*: Em alguns dispositivos, `requestVideoFrameCallback` podia falhar ou atrasar se o stream já estivesse rodando antes do callback ser anexado. Adicionalmente, quando `performance.now() - tStart` resultava em <0.5ms, `Math.round(firstFrameTime)` avaliava para 0 e a condição `ttffMs > 0` em Kotlin ignorava a notificação nativa, mantendo a foto estática.
+     - *Correção*: Implementado `checkDirectFrame()` com piso mínimo de 1ms, `(ttffMs > 0 || totalFrames > 0)` em Kotlin, cancelamento atômico de `firstFrameFallbackJob` ao receber o primeiro quadro e marcação de `firstFrameReported = true` no fallback de 1500ms para eliminar fade-out duplo do snapshot.
   5. **Cobertura e Validação**:
-     - 42/42 testes unitários aprovados em `pytest backend/tests/test_backend.py`.
+     - 43/43 testes unitários aprovados em `pytest backend/tests/test_backend.py`.
      - Build Next.js 14 aprovado com 14/14 páginas estáticas.
      - APKs Android TV e Smartphone compilados com sucesso.
 

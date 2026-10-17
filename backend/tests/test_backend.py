@@ -536,6 +536,30 @@ def test_parse_frigate_coordinates_defaults_to_1280x720():
     assert pts[1]["y"] == 1.0
 
 
+def test_parse_frigate_coordinates_uses_real_cam_cfg_detect_dimensions():
+    from app.api.cameras import parse_frigate_coordinates
+
+    cam_cfg = {
+        "detect": {
+            "width": 800,
+            "height": 448
+        }
+    }
+    # Point at 400,224 should normalize to (0.5, 0.5) under 800x448
+    pts = parse_frigate_coordinates("400,224,800,448", cam_cfg=cam_cfg)
+    assert len(pts) == 2
+    assert pts[0]["x"] == 0.5
+    assert pts[0]["y"] == 0.5
+    assert pts[1]["x"] == 1.0
+    assert pts[1]["y"] == 1.0
+
+    # Also test passing cam_cfg as second positional argument
+    pts_pos = parse_frigate_coordinates("400,224", cam_cfg)
+    assert len(pts_pos) == 1
+    assert pts_pos[0]["x"] == 0.5
+    assert pts_pos[0]["y"] == 0.5
+
+
 @pytest.mark.asyncio
 async def test_sync_camera_overwrites_existing_zones_with_720p_coordinates():
     from unittest.mock import patch, AsyncMock
