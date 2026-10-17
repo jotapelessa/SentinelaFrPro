@@ -436,6 +436,8 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 
     let lastTime = -1;
     let stallCountMs = 0;
+    let hasPlayedOnce = false;
+    const connectStartTime = Date.now();
     const CHECK_INTERVAL_MS = 500; // Avalia a cada 500ms
 
     const localWatchdogTimer = setInterval(() => {
@@ -448,39 +450,48 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
           const readyState = video.readyState;
           const isPlaying = !video.paused && !video.ended;
 
+          if (isPlaying && readyState >= 2 && curTime > 0) {
+            hasPlayedOnce = true;
+          }
+
           if (isPlaying) {
             // Watchdog suave de Live-Edge (Regra de Ouro #2: playbackRate 1.08x a 1.15x, sem seek forçado)
             if (video.buffered && video.buffered.length > 0) {
               const end = video.buffered.end(video.buffered.length - 1);
               const drift = end - curTime;
-              if (drift > 1.5) {
-                video.playbackRate = 1.15;
-              } else if (drift > 0.35) {
+              if (drift > 1.2) {
+                video.playbackRate = 1.12;
+              } else if (drift > 0.5) {
                 video.playbackRate = 1.08;
-              } else if (drift < 0.12 && video.playbackRate !== 1.0) {
+              } else if (drift < 0.15 && video.playbackRate !== 1.0) {
                 video.playbackRate = 1.0;
               }
             }
 
-            // Se readyState < 2 (HAVE_CURRENT_DATA) ou currentTime estagnado por mais de 3.5s
-            if (readyState < 2 || (lastTime >= 0 && Math.abs(curTime - lastTime) < 0.02)) {
-              stallCountMs += CHECK_INTERVAL_MS;
+            // Se readyState < 2 (HAVE_CURRENT_DATA) ou currentTime estagnado
+            if (readyState < 2 || (lastTime >= 0 && Math.abs(curTime - lastTime) < 0.01)) {
+              if (hasPlayedOnce || Date.now() - connectStartTime > 8000) {
+                stallCountMs += CHECK_INTERVAL_MS;
+              }
             } else {
               stallCountMs = 0;
             }
             lastTime = curTime;
           } else {
-            // Se o vídeo não está tocando quando deveria (ex: queda WebRTC/RTSP ou buffer underrun com readyState < 2)
-            stallCountMs += CHECK_INTERVAL_MS;
+            // Período de graça inicial de 8s para handshake MSE/WebRTC sem loop de reload
+            if (hasPlayedOnce || Date.now() - connectStartTime > 8000) {
+              stallCountMs += CHECK_INTERVAL_MS;
+            }
             if (video.paused && readyState >= 2) {
               video.play().catch(() => {});
             }
           }
 
-          if (stallCountMs >= 3500) {
+          if (stallCountMs >= 5000) {
             console.warn(`[WebRTCPlayer] Watchdog detectou estagnação do stream (${(stallCountMs / 1000).toFixed(1)}s, readyState=${readyState}, isPlaying=${isPlaying}). Forçando reconexão.`);
             stallCountMs = 0;
             lastTime = -1;
+            hasPlayedOnce = false;
             setIsWatchdogRecovering(true);
             setKey((k) => k + 1);
             setTimeout(() => setIsWatchdogRecovering(false), 2500);
@@ -587,10 +598,11 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
   const getStreamUrl = (forceAudio?: boolean) => {
     const activeSrc = getEffectiveSrc();
     const withAudio = forceAudio !== undefined ? forceAudio : !isMuted;
-    const mediaParam = withAudio ? "media=video,audio" : "media=video";
-    // Regra de Ouro #3: modo padrão de streaming na Web como mse (com suporte a webrtc) via WebSocket TCP
-    return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=mse,webrtc&${mediaParam}&background=true`;
+    const mediaParam = withAudio ? "media=video+audio" : "media=video";
+    // Prioriza WebRTC baixa latência com fallback MSE transparente sobre WebSocket TCP
+    return `/go2rtc/stream.html?src=${encodeURIComponent(activeSrc)}&mode=webrtc,mse&${mediaParam}&background=true`;
   };
+
 
   const [isCapturing, setIsCapturing] = useState(false);
   const [isRecording, setIsRecording] = useState(false);

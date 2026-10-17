@@ -1493,8 +1493,8 @@ export default function ScreensPage() {
                     <div>
                       <span className="text-slate-400 block text-[10px] mb-1 font-bold">Tamanho Padrão PiP:</span>
                       <select
-                        value={managingDevice.pip_default_size || "medium"}
-                        onChange={(e) => setManagingDevice({ ...managingDevice, pip_default_size: e.target.value })}
+                        value={(managingDevice.pip_default_size || "extra_large").toLowerCase()}
+                        onChange={(e) => setManagingDevice({ ...managingDevice, pip_default_size: e.target.value.toLowerCase() })}
                         className="w-full bg-slate-900 border border-slate-700 text-slate-200 rounded-xl p-2 text-xs focus:outline-none focus:border-cyan-500"
                       >
                         <option value="extra_small">Extra Pequeno (320x180)</option>
@@ -1532,12 +1532,13 @@ export default function ScreensPage() {
                       <Layout className="w-3.5 h-3.5 text-cyan-400" />
                       Ajuste Granular por Câmera (Tamanho & Posição):
                     </span>
-                    <div className="space-y-2 max-h-48 overflow-y-auto pr-1">
-                      {cameras.map((c) => {
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      {cameras.filter((c) => c.enabled !== false).map((c) => {
                         const camSizes = managingDevice.camera_pip_sizes || {};
                         const camPositions = managingDevice.camera_pip_positions || {};
                         const camEnabled = managingDevice.camera_pip_enabled || {};
-                        const currentSize = camSizes[c.name] || "";
+                        const currentSize = (camSizes[c.name] || "").toLowerCase();
+                        const effectiveSize = currentSize || (managingDevice.pip_default_size || "extra_large").toLowerCase();
                         const currentPos = camPositions[c.name] || "";
                         const isCamPipActive = camEnabled[c.name] !== false;
 
@@ -1547,23 +1548,54 @@ export default function ScreensPage() {
                               <span className="font-mono text-[11px] font-bold text-slate-200">
                                 {c.friendly_name || c.name}
                               </span>
-                              <label className="flex items-center gap-1.5 cursor-pointer">
-                                <span className="text-[10px] text-slate-400">PiP Ativo</span>
-                                <input
-                                  type="checkbox"
-                                  checked={isCamPipActive}
-                                  onChange={(e) => {
-                                    setManagingDevice({
-                                      ...managingDevice,
-                                      camera_pip_enabled: {
-                                        ...camEnabled,
-                                        [c.name]: e.target.checked
-                                      }
-                                    });
-                                  }}
-                                  className="rounded text-cyan-500 w-3.5 h-3.5"
-                                />
-                              </label>
+                              <div className="flex items-center gap-2">
+                                <div className="flex items-center gap-1">
+                                  {[
+                                    { key: "small", label: "P" },
+                                    { key: "medium", label: "M" },
+                                    { key: "large", label: "G" },
+                                    { key: "extra_large", label: "GG (720p)" },
+                                  ].map((preset) => (
+                                    <button
+                                      key={preset.key}
+                                      type="button"
+                                      onClick={() => {
+                                        setManagingDevice({
+                                          ...managingDevice,
+                                          camera_pip_sizes: {
+                                            ...camSizes,
+                                            [c.name]: preset.key,
+                                          },
+                                        });
+                                      }}
+                                      className={`px-1.5 py-0.5 rounded text-[9px] font-mono font-bold border transition-all ${
+                                        effectiveSize === preset.key
+                                          ? "bg-cyan-500/20 text-cyan-300 border-cyan-500/50"
+                                          : "bg-slate-950 text-slate-400 border-slate-800 hover:border-slate-700"
+                                      }`}
+                                    >
+                                      {preset.label}
+                                    </button>
+                                  ))}
+                                </div>
+                                <label className="flex items-center gap-1.5 cursor-pointer">
+                                  <span className="text-[10px] text-slate-400">PiP Ativo</span>
+                                  <input
+                                    type="checkbox"
+                                    checked={isCamPipActive}
+                                    onChange={(e) => {
+                                      setManagingDevice({
+                                        ...managingDevice,
+                                        camera_pip_enabled: {
+                                          ...camEnabled,
+                                          [c.name]: e.target.checked
+                                        }
+                                      });
+                                    }}
+                                    className="rounded text-cyan-500 w-3.5 h-3.5"
+                                  />
+                                </label>
+                              </div>
                             </div>
                             <div className="grid grid-cols-2 gap-2">
                               <div>
@@ -1575,7 +1607,7 @@ export default function ScreensPage() {
                                     if (!e.target.value) {
                                       delete nextSizes[c.name];
                                     } else {
-                                      nextSizes[c.name] = e.target.value;
+                                      nextSizes[c.name] = e.target.value.toLowerCase();
                                     }
                                     setManagingDevice({
                                       ...managingDevice,
@@ -1584,7 +1616,7 @@ export default function ScreensPage() {
                                   }}
                                   className="w-full bg-slate-950 border border-slate-700 text-slate-200 rounded-lg p-1.5 text-[10px] focus:outline-none focus:border-cyan-500 font-mono"
                                 >
-                                  <option value="">Padrão ({managingDevice.pip_default_size || "medium"})</option>
+                                  <option value="">Padrão ({(managingDevice.pip_default_size || "extra_large").toLowerCase()})</option>
                                   <option value="extra_small">Extra Pequeno (320x180)</option>
                                   <option value="small">Pequeno (480x270)</option>
                                   <option value="medium_small">Médio Pequeno (640x360)</option>
@@ -1848,7 +1880,7 @@ export default function ScreensPage() {
                             allow_pip_alerts: managingDevice.allow_pip_alerts !== false,
                             allow_restart_containers: managingDevice.allow_restart_containers === true,
                             allow_reboot_server: managingDevice.allow_reboot_server === true,
-                            pip_default_size: managingDevice.pip_default_size || "medium",
+                            pip_default_size: (managingDevice.pip_default_size || "extra_large").toLowerCase(),
                             pip_duration_seconds: managingDevice.pip_duration_seconds || 10,
                             pip_position: managingDevice.pip_position || "TOP_RIGHT",
                             camera_pip_positions: managingDevice.camera_pip_positions || {},

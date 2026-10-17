@@ -205,24 +205,15 @@ class OverlayService : Service() {
                         if (event.has("camera_pip_sizes")) {
                             val camSizesObj = event.optJSONObject("camera_pip_sizes")
                             if (camSizesObj != null) {
+                                val sizeMap = mutableMapOf<String, String>()
                                 val keys = camSizesObj.keys()
                                 while (keys.hasNext()) {
                                     val cKey = keys.next()
-                                    val cSizeStr = camSizesObj.optString(cKey)
-                                    val sizeIdx = when (cSizeStr.lowercase()) {
-                                        "mini", "extra_small" -> PipSize.EXTRA_SMALL.ordinal
-                                        "small" -> PipSize.SMALL.ordinal
-                                        "medium_small" -> PipSize.MEDIUM_SMALL.ordinal
-                                        "medium" -> PipSize.MEDIUM.ordinal
-                                        "medium_large" -> PipSize.MEDIUM_LARGE.ordinal
-                                        "large" -> PipSize.LARGE.ordinal
-                                        "extra_large" -> PipSize.EXTRA_LARGE.ordinal
-                                        "cinema" -> PipSize.CINEMA.ordinal
-                                        else -> null
-                                    }
-                                    if (sizeIdx != null) {
-                                        prefs.setPipSizeIndex(cKey, sizeIdx)
-                                    }
+                                    val cSizeStr = camSizesObj.optString(cKey, "EXTRA_LARGE")
+                                    sizeMap[cKey] = cSizeStr.uppercase()
+                                }
+                                if (sizeMap.isNotEmpty()) {
+                                    prefs.setCameraPipSizesMap(sizeMap)
                                 }
                             }
                         }
@@ -236,6 +227,7 @@ class OverlayService : Service() {
                                 }
                             }
                         }
+                        resizeActivePipIfNeeded(prefs)
                         // Refresh in background and synchronize
                         serviceScope.launch {
                             try {
@@ -249,6 +241,7 @@ class OverlayService : Service() {
                     }
                     return@collect
                 }
+
 
                 // Somente eventos consolidados com cooldown (pip_alert) disparam PiP
                 val isPipTrigger = evType == "pip_alert"
@@ -402,6 +395,31 @@ class OverlayService : Service() {
         }
     }
 
+    private fun resizeActivePipIfNeeded(prefs: SentinelaPreferences) {
+        val currentCam = activePipCamera ?: return
+        val currentOverlay = overlayView ?: return
+        if (currentOverlay.parent == null) return
+        val currentParams = currentOverlay.layoutParams as? WindowManager.LayoutParams ?: return
+        val pipSize = prefs.getCurrentPipSize(currentCam)
+        val pipPos = prefs.getCurrentPipPosition(currentCam)
+        val density = resources.displayMetrics.density
+        val targetWidthPx = (pipSize.width * density).toInt()
+        val targetHeightPx = (targetWidthPx * 9) / 16
+        if (currentParams.gravity != pipPos.gravity ||
+            currentParams.width != targetWidthPx ||
+            currentParams.height != targetHeightPx
+        ) {
+            currentParams.gravity = pipPos.gravity
+            currentParams.width = targetWidthPx
+            currentParams.height = targetHeightPx
+            try {
+                windowManager.updateViewLayout(currentOverlay, currentParams)
+            } catch (e: Exception) {
+                android.util.Log.w("OverlayService", "Failed to resize active PiP layout: ${e.message}")
+            }
+        }
+    }
+
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         if (!SentinelaConfig.isTv(this)) {
             ServiceCompat.stopForeground(this, ServiceCompat.STOP_FOREGROUND_REMOVE)
@@ -409,13 +427,15 @@ class OverlayService : Service() {
             return START_NOT_STICKY
         }
         val action = intent?.action
-        if (action == "ACTION_SHOW_PIP") {
+        if (action == "ACTION_SHOW_PIP" || action == ACTION_TEST_OVERLAY) {
             val cam = intent.getStringExtra("camera") ?: "camera_secundaria"
             val label = intent.getStringExtra("label") ?: "TESTE PIP"
             val testId = intent.getStringExtra("test_id")
             val customSnap = intent.getStringExtra("snapshot_url")
             val customStream = intent.getStringExtra("stream_url")
             showPiP(cam, label, null, testId, customSnap, customStream)
+        } else if (action == ACTION_RESIZE_IF_ACTIVE) {
+            resizeActivePipIfNeeded(SentinelaPreferences(this))
         }
         return START_STICKY
     }
@@ -444,7 +464,10 @@ class OverlayService : Service() {
     }
 
     companion object {
+        const val ACTION_RESIZE_IF_ACTIVE = "ACTION_RESIZE_IF_ACTIVE"
+        const val ACTION_TEST_OVERLAY = "ACTION_TEST_OVERLAY"
         val isPipShowing = kotlinx.coroutines.flow.MutableStateFlow(false)
+
 
         fun triggerPiP(context: Context, camera: String = "camera_secundaria", label: String = "TESTE PIP", testId: String? = null, snapshotUrl: String? = null, streamUrl: String? = null) {
             if (!SentinelaConfig.isTv(context)) {
@@ -713,6 +736,7 @@ class OverlayService : Service() {
         val streamCamera = "${cleanCam}_720p"
         val streamModeParam = "mode=webrtc,mse&media=video&background=true"
         val baseStreamUrl = normalizeUrl(null, "/go2rtc/stream.html?src=${streamCamera}&${streamModeParam}&width=100%")
+
         val streamUrl = if (baseStreamUrl.contains("stream.html")) {
             val baseUrlWithoutQuery = baseStreamUrl.substringBefore("?")
             "$baseUrlWithoutQuery?src=$streamCamera&$streamModeParam&width=100%"
@@ -721,7 +745,7 @@ class OverlayService : Service() {
         }
         val marginPx = (24 * density).toInt()
 
-        val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${resolvedCamera}/latest.jpg?h=720")
+        val snapshotUrl = normalizeUrl(customSnapshotUrl, "/frigate/api/${cleanCam}/latest.jpg?h=720")
 
         try {
             // Garante que nenhum timer JS do app permaneça paralisado
@@ -752,21 +776,20 @@ class OverlayService : Service() {
                     setBackgroundColor(0xFF000000.toInt())
                 }
 
-                // 100% Live Video Stream via go2rtc WebRTC 720p hardware-accelerated WebView
+                // 100% Live Video Stream via go2rtc MSE/WebRTC 720p hardware-accelerated WebView + Instant Snapshot First-Frame Sync (Regra de Ouro #6)
                 val snapImageView = android.widget.ImageView(this).apply {
                             layoutParams = FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
                                 FrameLayout.LayoutParams.MATCH_PARENT
                             )
-                            scaleType = android.widget.ImageView.ScaleType.FIT_CENTER
+                            scaleType = android.widget.ImageView.ScaleType.CENTER_CROP
                             setBackgroundColor(Color.BLACK)
-                            visibility = View.GONE
-                            alpha = 0f
+                            visibility = View.VISIBLE
+                            alpha = 1f
                         }
                         pipImageView = snapImageView
-                        inner.addView(snapImageView)
 
-                        // Hardware-Accelerated WebView on top with live-edge auto-sync watchdog
+                        // Hardware-Accelerated WebView underneath snapshot until requestVideoFrameCallback(onFrame) fires
                         val wv = WebView(this).apply {
                             layoutParams = FrameLayout.LayoutParams(
                                 FrameLayout.LayoutParams.MATCH_PARENT,
@@ -792,7 +815,7 @@ class OverlayService : Service() {
                             isVerticalScrollBarEnabled = false
                             isHorizontalScrollBarEnabled = false
 
-                            alpha = 1f // 100% live video immediately
+                            alpha = 1f // Rendered underneath snapshot, revealed when snapshot fades on first video frame
 
                             val bridge = PipMetricsBridge(
                                 onMetrics = { ttff, avgFps, minFps, dropped, stalls, totalFrames ->
@@ -806,8 +829,9 @@ class OverlayService : Service() {
                                 onFirstFrame = {
                                     serviceScope.launch(Dispatchers.Main) {
                                         pipWebView?.alpha = 1f
-                                        pipImageView?.visibility = View.GONE
-                                        pipImageView?.alpha = 0f
+                                        pipImageView?.animate()?.alpha(0f)?.setDuration(120L)?.withEndAction {
+                                            pipImageView?.visibility = View.GONE
+                                        }?.start()
                                     }
                                 }
                             )
@@ -965,6 +989,8 @@ class OverlayService : Service() {
                         }
                         pipWebView = wv
                         inner.addView(wv)
+                        inner.addView(snapImageView)
+                        loadSnapshotWithFallbacks(snapImageView, snapshotUrl, cleanCam, targetWidthPx, targetHeightPx)
 
                 root.addView(inner)
                 overlayView = root
@@ -978,8 +1004,9 @@ class OverlayService : Service() {
             } else {
                 pipMetricsBridge?.reset()
                 pipImageView?.apply {
-                    visibility = View.GONE
-                    alpha = 0f
+                    visibility = View.VISIBLE
+                    alpha = 1f
+                    loadSnapshotWithFallbacks(this, snapshotUrl, cleanCam, targetWidthPx, targetHeightPx)
                 }
                 pipWebView?.apply {
                     alpha = 1f

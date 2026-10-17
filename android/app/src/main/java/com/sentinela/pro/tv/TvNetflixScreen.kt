@@ -1,5 +1,6 @@
 package com.sentinela.pro.tv
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -105,8 +106,9 @@ fun TvNetflixScreenCore(
 
     // Focus Requesters para navegação D-Pad fluida entre Sidebar e Conteúdo
     val sidebarFocusRequesters = remember { List(TvTab.values().size) { FocusRequester() } }
-    val carouselFocusRequesters = remember { List(cameras.size.coerceAtLeast(1)) { FocusRequester() } }
+    val carouselFocusRequesters = remember(cameras.size) { List(cameras.size.coerceAtLeast(1)) { FocusRequester() } }
     val heroFocusRequester = remember { FocusRequester() }
+
     val heroModeFocusRequester = remember { FocusRequester() }
     val heroFullscreenFocusRequester = remember { FocusRequester() }
     val recordingsFirstItemRequester = remember { FocusRequester() }
@@ -602,7 +604,7 @@ fun TvCamerasViewport(
                             contentDescription = camera.name,
                             modifier = Modifier.fillMaxSize(),
                             isStreaming = isHeroStreaming,
-                            streamMode = streamMode,
+                            streamMode = "webrtc",
                             preferSubStream = true
                         )
                     }
@@ -693,7 +695,7 @@ fun TvCamerasViewport(
                         )
                     }
 
-                    // HUD DE TELEMETRIA SUPERIOR DIREITO (PADRÃO H.264 MSE GO2RTC REAL)
+                    // HUD DE TELEMETRIA SUPERIOR DIREITO (PADRÃO H.264 WEBRTC 720p GO2RTC REAL)
                     Surface(
                         shape = TvShapes.CameraCard,
                         color = TvColors.OverlayHud,
@@ -707,7 +709,7 @@ fun TvCamerasViewport(
                             horizontalAlignment = Alignment.End
                         ) {
                             Text(
-                                text = "H.264 • WEBRTC 720p • ${camera.telemetry.resolution}",
+                                text = "H.264 • WebRTC 720p • ${camera.telemetry.resolution}",
                                 style = TvTypography.Telemetry.copy(color = TvColors.CyberCyan)
                             )
                             Text(
@@ -717,7 +719,7 @@ fun TvCamerasViewport(
                         }
                     }
 
-                    // Seletor de Modo Padrão da Câmera no Hero Spotlight (WebRTC 720p Lock)
+                    // Badge de Motor Padrão no Hero Spotlight (WebRTC 720p Baixa Latência)
                     val modeInteractionSource = remember { MutableInteractionSource() }
                     val isModeFocused by modeInteractionSource.collectIsFocusedAsState()
 
@@ -740,7 +742,7 @@ fun TvCamerasViewport(
                                 if (keyEvent.type == KeyEventType.KeyDown) {
                                     when (keyEvent.key) {
                                         Key.Enter, Key.DirectionCenter -> {
-                                            Toast.makeText(context, "Modo: WebRTC 720p (Aceleração por Hardware)", Toast.LENGTH_SHORT).show()
+                                            isFullscreenLiveOpen = true
                                             true
                                         }
                                         Key.DirectionRight -> {
@@ -760,7 +762,7 @@ fun TvCamerasViewport(
                                 } else false
                             }
                             .clickable(interactionSource = modeInteractionSource, indication = null) {
-                                Toast.makeText(context, "Modo: WebRTC 720p (Aceleração por Hardware)", Toast.LENGTH_SHORT).show()
+                                isFullscreenLiveOpen = true
                             }
                             .focusable(interactionSource = modeInteractionSource)
                     ) {
@@ -772,10 +774,10 @@ fun TvCamerasViewport(
                             Box(
                                 modifier = Modifier
                                     .size(8.dp)
-                                    .background(TvColors.NetflixRed, CircleShape)
+                                    .background(TvColors.LiveGreen, CircleShape)
                             )
                             Text(
-                                text = "MODO: WEBRTC 720p [HARDWARE]",
+                                text = "STREAM: WebRTC 720p (Baixa Latência)",
                                 color = if (isModeFocused) TvColors.CyberCyan else Color.White,
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold
@@ -863,7 +865,7 @@ fun TvCamerasViewport(
 
             Spacer(modifier = Modifier.height(TvDimens.md))
 
-            // CARROSSEL HORIZONTAL INFERIOR DE CÂMERAS (TvLazyRow 16:9)
+            // CARROSSEL HORIZONTAL INFERIOR DE CÂMERAS (TvLazyRow 16:9 - 210x118dp em container 142dp)
             Text(
                 text = "TODAS AS CÂMERAS (${activeCameras.size}) — NAVEGUE COM D-PAD ◄ ►",
                 style = TvTypography.MenuItemFocused.copy(fontSize = 12.sp, color = TvColors.TextSecondary),
@@ -875,7 +877,7 @@ fun TvCamerasViewport(
                 horizontalArrangement = Arrangement.spacedBy(TvDimens.md),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(115.dp)
+                    .height(142.dp)
             ) {
                 itemsIndexed(activeCameras) { index, camera ->
                     val interactionSource = remember { MutableInteractionSource() }
@@ -886,8 +888,8 @@ fun TvCamerasViewport(
 
                     Box(
                         modifier = Modifier
-                            .width(TvDimens.GridMinCardWidth)
-                            .aspectRatio(16f / 9f)
+                            .width(210.dp)
+                            .height(118.dp)
                             .focusRequester(carouselFocusRequesters.getOrElse(index) { FocusRequester() })
                             .onFocusChanged { focusState ->
                                 if (focusState.isFocused) {
@@ -987,7 +989,6 @@ fun TvCamerasViewport(
                                 )
                             }
 
-                            val camMode = prefs.getCameraDefaultStreamMode(camera.id)
                             Row(
                                 modifier = Modifier.align(Alignment.TopEnd),
                                 horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -1039,7 +1040,7 @@ fun TvCamerasViewport(
                                     border = BorderStroke(0.5.dp, TvColors.CyberCyan)
                                 ) {
                                     Text(
-                                        text = camMode.uppercase(),
+                                        text = "WebRTC 720p",
                                         color = TvColors.CyberCyan,
                                         fontSize = 8.sp,
                                         fontWeight = FontWeight.Bold,
@@ -1073,7 +1074,7 @@ fun TvCamerasViewport(
     if (isFullscreenLiveOpen && selectedCamera != null) {
         TvFullScreenLiveDialog(
             camera = selectedCamera,
-            initialStreamMode = streamMode,
+            initialStreamMode = "webrtc",
             onStreamModeChanged = { newMode ->
                 streamMode = newMode
                 selectedCamera?.let { prefs.setCameraDefaultStreamMode(it.id, newMode) }
@@ -1082,6 +1083,7 @@ fun TvCamerasViewport(
         )
     }
 }
+
 
 /**
  * 3. ABA 1: VIEWPORT DE CAPTURAS / GRAVAÇÕES (Grid Uniforme 16:9 D-Pad + Modal Zoom)
@@ -1208,11 +1210,11 @@ fun TvRecordingsViewport(
                 }
             }
         } else {
-            // GRID SIMÉTRICO DE GRAVAÇÕES (3 COLUNAS 16:9 COM ALTURA E LARGURA IDÊNTICAS)
+            // GRID SIMÉTRICO DE GRAVAÇÕES (4 COLUNAS x 2 LINHAS 16:9 SEM CORTE VERTICAL EM 1080p)
             LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                verticalArrangement = Arrangement.spacedBy(14.dp),
+                columns = GridCells.Fixed(4),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
                 gridItemsIndexed(clips) { index, clip ->
@@ -1227,7 +1229,7 @@ fun TvRecordingsViewport(
                             .onKeyEvent { keyEvent ->
                                 if (keyEvent.type == KeyEventType.KeyDown) {
                                     when {
-                                        keyEvent.key == Key.DirectionLeft && index % 3 == 0 -> {
+                                        keyEvent.key == Key.DirectionLeft && index % 4 == 0 -> {
                                             onNavigateLeftToSidebar()
                                             true
                                         }
@@ -3276,6 +3278,7 @@ fun TvSettingsViewport(
     var durIndex by remember { mutableIntStateOf(prefs.pipDurationIndex) }
     var playerMode by remember { mutableStateOf(prefs.pipPlayerMode) }
     var streamQuality by remember { mutableStateOf(prefs.streamQuality) }
+    var cameraPipSizes by remember { mutableStateOf(prefs.getCameraPipSizesMap()) }
     val settingsScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
@@ -3285,6 +3288,10 @@ fun TvSettingsViewport(
             if (pol.streamQuality.isNotBlank()) {
                 streamQuality = pol.streamQuality
                 prefs.streamQuality = pol.streamQuality
+            }
+            if (pol.cameraPipSizes.isNotEmpty()) {
+                prefs.setCameraPipSizesMap(pol.cameraPipSizes)
+                cameraPipSizes = prefs.getCameraPipSizesMap()
             }
         } catch (e: Exception) {
             android.util.Log.d("TvSettingsViewport", "Policy fetch failed: ${e.message}")
@@ -3333,6 +3340,20 @@ fun TvSettingsViewport(
                                 sizeIndex = sIdx
                                 prefs.pipSizeIndex = sIdx
                             }
+                            val camSizesObj = event.optJSONObject("camera_pip_sizes")
+                            if (camSizesObj != null) {
+                                val sizeMap = mutableMapOf<String, String>()
+                                val keys = camSizesObj.keys()
+                                while (keys.hasNext()) {
+                                    val camKey = keys.next()
+                                    val cSizeStr = camSizesObj.optString(camKey, "EXTRA_LARGE").uppercase()
+                                    sizeMap[camKey] = cSizeStr
+                                }
+                                if (sizeMap.isNotEmpty()) {
+                                    prefs.setCameraPipSizesMap(sizeMap)
+                                    cameraPipSizes = prefs.getCameraPipSizesMap()
+                                }
+                            }
                             val durInt = event.optInt("pip_duration_seconds", 0)
                             if (durInt > 0) {
                                 val dIdx = when (durInt) {
@@ -3348,6 +3369,12 @@ fun TvSettingsViewport(
                                 durIndex = dIdx
                                 prefs.pipDurationIndex = dIdx
                             }
+                            try {
+                                val resizeIntent = Intent(context, OverlayService::class.java).apply {
+                                    action = OverlayService.ACTION_RESIZE_IF_ACTIVE
+                                }
+                                context.startService(resizeIntent)
+                            } catch (_: Exception) {}
                         }
                     }
                 }
@@ -3404,7 +3431,7 @@ fun TvSettingsViewport(
                     }
 
                     val modes = listOf(
-                        Triple("webrtc", "⚡ Ao Vivo WebRTC 720p", "Motor ultra-rápido (<200ms) com aceleração gráfica MediaCodec na Smart TV.")
+                        Triple("webrtc", "⚡ Ao Vivo WebRTC 720p (Baixa Latência)", "Motor ultra-rápido (<200ms) com aceleração gráfica MediaCodec e fallback automático MSE.")
                     )
 
                     Row(
@@ -3414,7 +3441,7 @@ fun TvSettingsViewport(
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         modes.forEachIndexed { idx, (modeKey, modeTitle, modeDesc) ->
-                            val isSelected = playerMode == modeKey
+                            val isSelected = true
                             val interactionSource = remember { MutableInteractionSource() }
                             val isFocused by interactionSource.collectIsFocusedAsState()
 
@@ -3441,7 +3468,7 @@ fun TvSettingsViewport(
                                             category = "PIP",
                                             action = "PIP_PLAYER_MODE_CHANGED",
                                             severity = "INFO",
-                                            message = "Modo do Player PiP alterado para $modeTitle na TV",
+                                            message = "Modo do Player PiP confirmado: $modeTitle na TV",
                                             metadata = mapOf("mode" to modeKey)
                                         )
                                         Toast.makeText(context, "Modo do Player: $modeTitle", Toast.LENGTH_SHORT).show()
@@ -3480,14 +3507,14 @@ fun TvSettingsViewport(
             }
 
             // ====================================================================
-            // 2.2 TAMANHO DA TELA PIP POR CÂMERA (8 OPÇÕES - Grade 4x2 Auto-Ajustável)
+            // 2.2 TAMANHO DA TELA PIP POR CÂMERA (8 OPÇÕES + PRESETS RÁPIDOS P/M/G/GG 720p)
             // ====================================================================
             item {
                 val pipEnabledCameras = cameras.filter { prefs.isCameraPipEnabled(it.id) }
                 var selectedSizeCameraId by remember(pipEnabledCameras) {
                     mutableStateOf(pipEnabledCameras.firstOrNull()?.id ?: cameras.firstOrNull()?.id ?: "")
                 }
-                var currentCameraSizeIndex by remember(selectedSizeCameraId) {
+                var currentCameraSizeIndex by remember(selectedSizeCameraId, cameraPipSizes, sizeIndex) {
                     mutableStateOf(
                         if (selectedSizeCameraId.isNotBlank()) {
                             prefs.getPipSizeIndex(selectedSizeCameraId)
@@ -3513,10 +3540,10 @@ fun TvSettingsViewport(
                             Surface(shape = TvShapes.Badge, color = TvColors.CardBackgroundElevated) {
                                 Icon(Icons.Default.AspectRatio, contentDescription = null, tint = TvColors.CyberCyan, modifier = Modifier.padding(4.dp).size(18.dp))
                             }
-                            Text("2. TAMANHO DA TELA PIP POR CÂMERA (8 OPÇÕES)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                            Text("2. TAMANHO DA TELA PIP POR CÂMERA (P / M / G / GG 720p + 8 OPÇÕES)", color = TvColors.CyberCyan, fontSize = 13.sp, fontWeight = FontWeight.Bold)
                         }
                         Text(
-                            text = "Tamanho: ${com.sentinela.pro.data.PipSize.values().getOrElse(currentCameraSizeIndex) { com.sentinela.pro.data.PipSize.MEDIUM }.label}",
+                            text = "Tamanho: ${com.sentinela.pro.data.PipSize.values().getOrElse(currentCameraSizeIndex) { com.sentinela.pro.data.PipSize.EXTRA_LARGE }.label}",
                             color = TvColors.TextSecondary,
                             fontSize = 11.sp
                         )
@@ -3567,7 +3594,7 @@ fun TvSettingsViewport(
                                             fontSize = 10.sp,
                                             fontWeight = if (isCamSelected) FontWeight.Bold else FontWeight.Normal
                                         )
-                                        val cSize = com.sentinela.pro.data.PipSize.values().getOrElse(prefs.getPipSizeIndex(cam.id)) { com.sentinela.pro.data.PipSize.MEDIUM }.label
+                                        val cSize = com.sentinela.pro.data.PipSize.values().getOrElse(prefs.getPipSizeIndex(cam.id)) { com.sentinela.pro.data.PipSize.EXTRA_LARGE }.label
                                         Surface(
                                             shape = TvShapes.Badge,
                                             color = TvColors.CardBackgroundElevated
@@ -3580,6 +3607,62 @@ fun TvSettingsViewport(
                                             )
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+
+                    // Presets Rápidos P / M / G / GG (720p) Sincronizados com /screens
+                    val quickPresets = listOf(
+                        "P (512x288)" to com.sentinela.pro.data.PipSize.SMALL,
+                        "M (640x360)" to com.sentinela.pro.data.PipSize.MEDIUM,
+                        "G (896x504)" to com.sentinela.pro.data.PipSize.LARGE,
+                        "GG 720p (1280x720)" to com.sentinela.pro.data.PipSize.EXTRA_LARGE
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        quickPresets.forEachIndexed { qIdx, (presetLabel, presetSize) ->
+                            val isSelected = presetSize.ordinal == currentCameraSizeIndex
+                            val qInteraction = remember { MutableInteractionSource() }
+                            val isQFocused by qInteraction.collectIsFocusedAsState()
+                            Surface(
+                                shape = TvShapes.Badge,
+                                color = if (isSelected) TvColors.CyberCyan.copy(alpha = 0.25f) else if (isQFocused) TvColors.CardBackgroundElevated else Color(0xFF0A101E),
+                                border = BorderStroke(1.dp, if (isQFocused) TvColors.BorderFocused else if (isSelected) TvColors.CyberCyan else TvColors.BorderSubtle),
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(32.dp)
+                                    .onKeyEvent { keyEvent ->
+                                        if (qIdx == 0 && keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.DirectionLeft) {
+                                            onNavigateLeftToSidebar()
+                                            true
+                                        } else false
+                                    }
+                                    .tvDpadFocusable(isFocused = isQFocused, focusedBorderColor = TvColors.BorderFocused, shape = TvShapes.Badge)
+                                    .clickable(interactionSource = qInteraction, indication = null) {
+                                        sizeIndex = presetSize.ordinal
+                                        currentCameraSizeIndex = presetSize.ordinal
+                                        prefs.pipSizeIndex = presetSize.ordinal
+                                        if (selectedSizeCameraId.isNotBlank()) {
+                                            prefs.setPipSizeIndex(selectedSizeCameraId, presetSize.ordinal)
+                                        }
+                                        cameraPipSizes = prefs.getCameraPipSizesMap()
+                                        try {
+                                            context.startService(Intent(context, OverlayService::class.java).apply { action = OverlayService.ACTION_RESIZE_IF_ACTIVE })
+                                        } catch (_: Exception) {}
+                                        Toast.makeText(context, "Preset PiP: $presetLabel", Toast.LENGTH_SHORT).show()
+                                        settingsScope.launch { SentinelaRepository.pushLocalSettingsToServer(prefs) }
+                                    }
+                            ) {
+                                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text(
+                                        text = presetLabel,
+                                        color = if (isSelected) TvColors.CyberCyan else Color.White,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.Bold
+                                    )
                                 }
                             }
                         }
@@ -3621,6 +3704,10 @@ fun TvSettingsViewport(
                                                 if (selectedSizeCameraId.isNotBlank()) {
                                                     prefs.setPipSizeIndex(selectedSizeCameraId, size.ordinal)
                                                 }
+                                                cameraPipSizes = prefs.getCameraPipSizesMap()
+                                                try {
+                                                    context.startService(Intent(context, OverlayService::class.java).apply { action = OverlayService.ACTION_RESIZE_IF_ACTIVE })
+                                                } catch (_: Exception) {}
                                                 SentinelaRemoteLogger.log(
                                                     category = "PIP",
                                                     action = "PIP_SIZE_CHANGED",
@@ -3664,6 +3751,7 @@ fun TvSettingsViewport(
                     }
                 }
             }
+
 
             // ====================================================================
             // 2.3 POSIÇÃO DA TELA PIP (8 POSIÇÕES - Grade 4x2 Auto-Ajustável)
@@ -4462,20 +4550,25 @@ fun TvSettingsViewport(
 }
 
 /**
- * Modal Imersivo de Visualização em Tela Cheia (16:9 Nativo 4K/1080p)
+ * Modal Imersivo de Visualização em Tela Cheia (16:9 Nativo 4K/1080p) com Controle de Áudio e Modo D-Pad
  */
 @Composable
 fun TvFullScreenLiveDialog(
     camera: CameraEntity,
-    initialStreamMode: String = "mse",
+    initialStreamMode: String = "webrtc",
     onStreamModeChanged: (String) -> Unit = {},
     onDismiss: () -> Unit
 ) {
-    val context = LocalContext.current
-    val prefs = remember { com.sentinela.pro.data.SentinelaPreferences(context) }
-    var currentMode by remember { mutableStateOf(initialStreamMode) }
-    val modes = listOf("mse", "webrtc", "eco")
-    val modeLabels = mapOf("mse" to "MSE 24 FPS", "webrtc" to "WebRTC LIVE", "eco" to "ECO 10 FPS")
+    var isAudioEnabled by remember { mutableStateOf(false) }
+
+    val audioFocusRequester = remember { FocusRequester() }
+    val closeBtnFocusRequester = remember { FocusRequester() }
+
+    LaunchedEffect(Unit) {
+        try {
+            closeBtnFocusRequester.requestFocus()
+        } catch (_: Exception) {}
+    }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -4485,7 +4578,14 @@ fun TvFullScreenLiveDialog(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
-                .clickable { onDismiss() }
+                .onKeyEvent { keyEvent ->
+                    if (keyEvent.type == KeyEventType.KeyDown &&
+                        (keyEvent.key == Key.Back || keyEvent.key == Key.Escape)
+                    ) {
+                        onDismiss()
+                        true
+                    } else false
+                }
         ) {
             SeamlessCameraImage(
                 cameraName = camera.id,
@@ -4494,10 +4594,12 @@ fun TvFullScreenLiveDialog(
                 contentScale = ContentScale.Fit,
                 refreshIntervalMs = 42L,
                 isStreaming = true,
-                streamMode = currentMode
+                streamMode = "webrtc",
+                preferSubStream = false,
+                audioEnabled = isAudioEnabled
             )
 
-            // Header Overlay
+            // Header Overlay com Controles D-Pad (Áudio e Fechar)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -4516,7 +4618,7 @@ fun TvFullScreenLiveDialog(
                 ) {
                     Surface(shape = TvShapes.Badge, color = TvColors.NetflixRed) {
                         Text(
-                            text = "AO VIVO • 1080p H.265",
+                            text = "AO VIVO • WebRTC HD",
                             color = Color.White,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
@@ -4530,39 +4632,94 @@ fun TvFullScreenLiveDialog(
                         fontWeight = FontWeight.Black
                     )
 
-                    // Stream Mode Toggle Badge (Click / OK to cycle)
+                    // Botão de Áudio Mute/Unmute (D-Pad Focusable)
+                    val audioInteraction = remember { MutableInteractionSource() }
+                    val isAudioFocused by audioInteraction.collectIsFocusedAsState()
                     Surface(
                         shape = TvShapes.Badge,
-                        color = TvColors.OverlayHud,
-                        border = BorderStroke(1.dp, TvColors.CyberCyan),
+                        color = if (isAudioEnabled) TvColors.LiveGreen.copy(alpha = 0.25f) else TvColors.OverlayHud,
+                        border = BorderStroke(
+                            if (isAudioFocused) 2.dp else 1.dp,
+                            if (isAudioFocused) Color.White else if (isAudioEnabled) TvColors.LiveGreen else TvColors.BorderSubtle
+                        ),
                         modifier = Modifier
                             .padding(start = 8.dp)
-                            .clickable {
-                                val nextIdx = (modes.indexOf(currentMode) + 1) % modes.size
-                                val nextMode = modes[nextIdx]
-                                currentMode = nextMode
-                                prefs.setCameraDefaultStreamMode(camera.id, nextMode)
-                                onStreamModeChanged(nextMode)
+                            .focusRequester(audioFocusRequester)
+                            .tvDpadFocusable(
+                                isFocused = isAudioFocused,
+                                focusedBorderColor = TvColors.LiveGreen,
+                                unfocusedBorderColor = TvColors.BorderSubtle,
+                                shape = TvShapes.Badge
+                            )
+                            .onKeyEvent { keyEvent ->
+                                if (keyEvent.type == KeyEventType.KeyDown) {
+                                    when (keyEvent.key) {
+                                        Key.Enter, Key.DirectionCenter -> {
+                                            isAudioEnabled = !isAudioEnabled
+                                            true
+                                        }
+                                        Key.DirectionRight -> {
+                                            closeBtnFocusRequester.requestFocus()
+                                            true
+                                        }
+                                        Key.Back, Key.Escape -> {
+                                            onDismiss()
+                                            true
+                                        }
+                                        else -> false
+                                    }
+                                } else false
                             }
+                            .clickable(interactionSource = audioInteraction, indication = null) {
+                                isAudioEnabled = !isAudioEnabled
+                            }
+                            .focusable(interactionSource = audioInteraction)
                     ) {
                         Text(
-                            text = "MODO: ${modeLabels[currentMode]} [OK ALTERNAR]",
-                            color = TvColors.CyberCyan,
+                            text = if (isAudioEnabled) "🔊 ÁUDIO ATIVO [OK]" else "🔇 MUDO [OK ATIVAR ÁUDIO]",
+                            color = if (isAudioEnabled) TvColors.LiveGreen else Color.White,
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp)
                         )
                     }
                 }
 
+                val closeInteraction = remember { MutableInteractionSource() }
+                val isCloseFocused by closeInteraction.collectIsFocusedAsState()
                 Surface(
                     shape = TvShapes.Badge,
-                    color = TvColors.OverlayHud,
-                    border = BorderStroke(1.dp, TvColors.BorderSubtle)
+                    color = if (isCloseFocused) TvColors.NetflixRed else TvColors.OverlayHud,
+                    border = BorderStroke(if (isCloseFocused) 2.dp else 1.dp, if (isCloseFocused) Color.White else TvColors.BorderSubtle),
+                    modifier = Modifier
+                        .focusRequester(closeBtnFocusRequester)
+                        .tvDpadFocusable(
+                            isFocused = isCloseFocused,
+                            focusedBorderColor = TvColors.NetflixRed,
+                            unfocusedBorderColor = TvColors.BorderSubtle,
+                            shape = TvShapes.Badge
+                        )
+                        .onKeyEvent { keyEvent ->
+                            if (keyEvent.type == KeyEventType.KeyDown) {
+                                when (keyEvent.key) {
+                                    Key.Enter, Key.DirectionCenter, Key.Back, Key.Escape -> {
+                                        onDismiss()
+                                        true
+                                    }
+                                    Key.DirectionLeft -> {
+                                        audioFocusRequester.requestFocus()
+                                        true
+                                    }
+                                    else -> false
+                                }
+                            } else false
+                        }
+                        .clickable(interactionSource = closeInteraction, indication = null) { onDismiss() }
+                        .focusable(interactionSource = closeInteraction)
                 ) {
                     Text(
-                        text = "Pressione VOLTAR para sair",
-                        color = TvColors.CyberCyan,
+                        text = "✕ FECHAR [VOLTAR]",
+                        color = if (isCloseFocused) Color.White else TvColors.CyberCyan,
                         fontSize = 12.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
@@ -4573,8 +4730,9 @@ fun TvFullScreenLiveDialog(
     }
 }
 
+
 /**
- * Modal Player de Clipe / Gravação (Exibe a foto HD com zoom D-Pad e botão de voltar)
+ * Modal Player de Clipe / Gravação (Suporta Vídeo MP4 com Fallback Automático para Foto HD + Controles D-Pad)
  */
 @Composable
 fun TvClipPlayerDialog(
@@ -4587,8 +4745,17 @@ fun TvClipPlayerDialog(
     }
     val clip = clips.getOrNull(currentIndex) ?: initialClip
 
-    var zoomLevel by remember { mutableFloatStateOf(1f) } // 1x, 1.5x, 2x, 3x
+    var zoomLevel by remember(clip) { mutableFloatStateOf(1f) } // 1x, 1.5x, 2x, 3x
     val zoomOptions = listOf(1f, 1.5f, 2f, 3f)
+    var isVideoError by remember(clip) { mutableStateOf(false) }
+    var isPlaying by remember(clip) { mutableStateOf(true) }
+    var videoViewRef by remember { mutableStateOf<android.widget.VideoView?>(null) }
+
+    val videoUrl = remember(clip) {
+        if (clip.isVideo && !clip.id.startsWith("live_") && !clip.id.startsWith("rec_")) {
+            "${SentinelaConfig.BASE_URL}/api/events/${clip.id}/clip.mp4"
+        } else null
+    }
 
     val candidates = remember(clip) {
         listOfNotNull(
@@ -4606,48 +4773,54 @@ fun TvClipPlayerDialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
-        val interactionSource = remember { MutableInteractionSource() }
-        val isFocused by interactionSource.collectIsFocusedAsState()
-        val focusRequester = remember { FocusRequester() }
+        val playPauseFocusRequester = remember { FocusRequester() }
 
         LaunchedEffect(Unit) {
             try {
-                focusRequester.requestFocus()
-            } catch (e: Exception) {}
+                playPauseFocusRequester.requestFocus()
+            } catch (_: Exception) {}
         }
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.Black)
-                .focusRequester(focusRequester)
-                .focusable(interactionSource = interactionSource)
                 .onKeyEvent { keyEvent ->
-                    if (keyEvent.type == KeyEventType.KeyDown) {
-                        when (keyEvent.key) {
-                            Key.DirectionLeft -> {
-                                if (currentIndex > 0) currentIndex--
-                                true
-                            }
-                            Key.DirectionRight -> {
-                                if (currentIndex < clips.size - 1) currentIndex++
-                                true
-                            }
-                            Key.Enter, Key.DirectionCenter -> {
-                                val nextIdx = (zoomOptions.indexOf(zoomLevel) + 1) % zoomOptions.size
-                                zoomLevel = zoomOptions[nextIdx]
-                                true
-                            }
-                            else -> false
-                        }
+                    if (keyEvent.type == KeyEventType.KeyDown && keyEvent.key == Key.Back) {
+                        onDismiss()
+                        true
                     } else false
                 }
-                .clickable {
-                    val nextIdx = (zoomOptions.indexOf(zoomLevel) + 1) % zoomOptions.size
-                    zoomLevel = zoomOptions[nextIdx]
-                }
         ) {
-            if (currentUrl != null) {
+            if (videoUrl != null && !isVideoError) {
+                androidx.compose.ui.viewinterop.AndroidView(
+                    factory = { ctx ->
+                        android.widget.VideoView(ctx).apply {
+                            videoViewRef = this
+                            setOnPreparedListener { mp ->
+                                mp.isLooping = true
+                                start()
+                                isPlaying = true
+                            }
+                            // Suppress native Android "Can't play this video" popup and fallback to HD Snapshot
+                            setOnErrorListener { _, _, _ ->
+                                isVideoError = true
+                                true
+                            }
+                            setVideoURI(android.net.Uri.parse(videoUrl))
+                        }
+                    },
+                    update = { vv ->
+                        videoViewRef = vv
+                    },
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .graphicsLayer(
+                            scaleX = zoomLevel,
+                            scaleY = zoomLevel
+                        )
+                )
+            } else if (currentUrl != null) {
                 SubcomposeAsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(currentUrl)
@@ -4669,9 +4842,11 @@ fun TvClipPlayerDialog(
                 )
             }
 
+            // Header Info
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .align(Alignment.TopCenter)
                     .background(
                         Brush.verticalGradient(
                             listOf(Color.Black.copy(alpha = 0.85f), Color.Transparent)
@@ -4683,24 +4858,17 @@ fun TvClipPlayerDialog(
             ) {
                 Column {
                     Text(
-                        text = "FOTO HD: ${clip.cameraName}",
+                        text = "${if (videoUrl != null && !isVideoError) "CLIPE IA" else "FOTO HD"}: ${clip.cameraName}",
                         color = Color.White,
                         fontSize = 18.sp,
                         fontWeight = FontWeight.Black
                     )
-                    val dialogSub = "Data: ${clip.timestamp} • Captura ${currentIndex + 1} de ${clips.size} • Zoom: ${zoomLevel}x • Tamanho: ${clip.sizeMb}"
+                    val dialogSub = "Data: ${clip.timestamp} • Captura ${currentIndex + 1} de ${clips.size} • Zoom: ${zoomLevel}x • ${clip.sizeMb}"
                     Text(
                         text = dialogSub,
                         color = TvColors.CyberCyan,
                         fontSize = 12.sp,
                         fontFamily = FontFamily.Monospace
-                    )
-                    Text(
-                        text = "Use ◄ ► para navegar pelas fotos • Pressione [OK] para Zoom",
-                        color = TvColors.TextMuted,
-                        fontSize = 11.sp,
-                        fontFamily = FontFamily.Monospace,
-                        modifier = Modifier.padding(top = 4.dp)
                     )
                 }
 
@@ -4710,12 +4878,175 @@ fun TvClipPlayerDialog(
                     border = BorderStroke(1.dp, TvColors.BorderSubtle)
                 ) {
                     Text(
-                        text = "Pressione VOLTAR para sair",
+                        text = "Controles D-Pad na barra inferior • VOLTAR para sair",
                         color = TvColors.CyberCyan,
-                        fontSize = 12.sp,
+                        fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                     )
+                }
+            }
+
+            // Barra Inferior de Controles de Transporte D-Pad
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .background(
+                        Brush.verticalGradient(
+                            listOf(Color.Transparent, Color.Black.copy(alpha = 0.9f))
+                        )
+                    )
+                    .padding(horizontal = 24.dp, vertical = 18.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // 1. Anterior
+                val prevInteraction = remember { MutableInteractionSource() }
+                val isPrevFocused by prevInteraction.collectIsFocusedAsState()
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = if (isPrevFocused) TvColors.CardBackgroundElevated else TvColors.OverlayHud,
+                    border = BorderStroke(if (isPrevFocused) 2.dp else 1.dp, if (isPrevFocused) TvColors.CyberCyan else TvColors.BorderSubtle),
+                    modifier = Modifier
+                        .tvDpadFocusable(isFocused = isPrevFocused, focusedBorderColor = TvColors.CyberCyan, shape = TvShapes.Badge)
+                        .clickable(interactionSource = prevInteraction, indication = null) {
+                            if (currentIndex > 0) currentIndex--
+                        }
+                        .focusable(interactionSource = prevInteraction)
+                ) {
+                    Text("⏮ Anterior", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
+                }
+
+                // 2. -10s (se vídeo)
+                if (videoUrl != null && !isVideoError) {
+                    val rwInteraction = remember { MutableInteractionSource() }
+                    val isRwFocused by rwInteraction.collectIsFocusedAsState()
+                    Surface(
+                        shape = TvShapes.Badge,
+                        color = if (isRwFocused) TvColors.CardBackgroundElevated else TvColors.OverlayHud,
+                        border = BorderStroke(if (isRwFocused) 2.dp else 1.dp, if (isRwFocused) TvColors.CyberCyan else TvColors.BorderSubtle),
+                        modifier = Modifier
+                            .tvDpadFocusable(isFocused = isRwFocused, focusedBorderColor = TvColors.CyberCyan, shape = TvShapes.Badge)
+                            .clickable(interactionSource = rwInteraction, indication = null) {
+                                videoViewRef?.let { vv ->
+                                    vv.seekTo((vv.currentPosition - 10000).coerceAtLeast(0))
+                                }
+                            }
+                            .focusable(interactionSource = rwInteraction)
+                    ) {
+                        Text("⏪ -10s", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
+                    }
+                }
+
+                // 3. Play/Pause ou Zoom Principal
+                val ppInteraction = remember { MutableInteractionSource() }
+                val isPpFocused by ppInteraction.collectIsFocusedAsState()
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = if (isPpFocused) TvColors.NetflixRed else TvColors.OverlayHud,
+                    border = BorderStroke(if (isPpFocused) 2.dp else 1.dp, if (isPpFocused) Color.White else TvColors.CyberCyan),
+                    modifier = Modifier
+                        .focusRequester(playPauseFocusRequester)
+                        .tvDpadFocusable(isFocused = isPpFocused, focusedBorderColor = TvColors.NetflixRed, shape = TvShapes.Badge)
+                        .clickable(interactionSource = ppInteraction, indication = null) {
+                            if (videoUrl != null && !isVideoError) {
+                                videoViewRef?.let { vv ->
+                                    if (vv.isPlaying) {
+                                        vv.pause()
+                                        isPlaying = false
+                                    } else {
+                                        vv.start()
+                                        isPlaying = true
+                                    }
+                                }
+                            } else {
+                                val nextIdx = (zoomOptions.indexOf(zoomLevel) + 1) % zoomOptions.size
+                                zoomLevel = zoomOptions[nextIdx]
+                            }
+                        }
+                        .focusable(interactionSource = ppInteraction)
+                ) {
+                    Text(
+                        text = if (videoUrl != null && !isVideoError) (if (isPlaying) "⏸ Pausar" else "▶ Reproduzir") else "🔍 Zoom (${zoomLevel}x)",
+                        color = Color.White,
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp)
+                    )
+                }
+
+                // 4. +10s (se vídeo)
+                if (videoUrl != null && !isVideoError) {
+                    val ffInteraction = remember { MutableInteractionSource() }
+                    val isFfFocused by ffInteraction.collectIsFocusedAsState()
+                    Surface(
+                        shape = TvShapes.Badge,
+                        color = if (isFfFocused) TvColors.CardBackgroundElevated else TvColors.OverlayHud,
+                        border = BorderStroke(if (isFfFocused) 2.dp else 1.dp, if (isFfFocused) TvColors.CyberCyan else TvColors.BorderSubtle),
+                        modifier = Modifier
+                            .tvDpadFocusable(isFocused = isFfFocused, focusedBorderColor = TvColors.CyberCyan, shape = TvShapes.Badge)
+                            .clickable(interactionSource = ffInteraction, indication = null) {
+                                videoViewRef?.let { vv ->
+                                    vv.seekTo((vv.currentPosition + 10000).coerceAtMost(vv.duration.coerceAtLeast(0)))
+                                }
+                            }
+                            .focusable(interactionSource = ffInteraction)
+                    ) {
+                        Text("⏩ +10s", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
+                    }
+                }
+
+                // 5. Zoom (sempre disponível)
+                val zmInteraction = remember { MutableInteractionSource() }
+                val isZmFocused by zmInteraction.collectIsFocusedAsState()
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = if (isZmFocused) TvColors.CardBackgroundElevated else TvColors.OverlayHud,
+                    border = BorderStroke(if (isZmFocused) 2.dp else 1.dp, if (isZmFocused) TvColors.CyberCyan else TvColors.BorderSubtle),
+                    modifier = Modifier
+                        .tvDpadFocusable(isFocused = isZmFocused, focusedBorderColor = TvColors.CyberCyan, shape = TvShapes.Badge)
+                        .clickable(interactionSource = zmInteraction, indication = null) {
+                            val nextIdx = (zoomOptions.indexOf(zoomLevel) + 1) % zoomOptions.size
+                            zoomLevel = zoomOptions[nextIdx]
+                        }
+                        .focusable(interactionSource = zmInteraction)
+                ) {
+                    Text("🔍 Zoom ${zoomLevel}x", color = TvColors.CyberCyan, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
+                }
+
+                // 6. Próxima
+                val nextInteraction = remember { MutableInteractionSource() }
+                val isNextFocused by nextInteraction.collectIsFocusedAsState()
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = if (isNextFocused) TvColors.CardBackgroundElevated else TvColors.OverlayHud,
+                    border = BorderStroke(if (isNextFocused) 2.dp else 1.dp, if (isNextFocused) TvColors.CyberCyan else TvColors.BorderSubtle),
+                    modifier = Modifier
+                        .tvDpadFocusable(isFocused = isNextFocused, focusedBorderColor = TvColors.CyberCyan, shape = TvShapes.Badge)
+                        .clickable(interactionSource = nextInteraction, indication = null) {
+                            if (currentIndex < clips.size - 1) currentIndex++
+                        }
+                        .focusable(interactionSource = nextInteraction)
+                ) {
+                    Text("⏭ Próxima", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
+                }
+
+                // 7. Fechar
+                val closeInteraction = remember { MutableInteractionSource() }
+                val isCloseFocused by closeInteraction.collectIsFocusedAsState()
+                Surface(
+                    shape = TvShapes.Badge,
+                    color = if (isCloseFocused) TvColors.NetflixRed else TvColors.OverlayHud,
+                    border = BorderStroke(if (isCloseFocused) 2.dp else 1.dp, if (isCloseFocused) Color.White else TvColors.BorderSubtle),
+                    modifier = Modifier
+                        .tvDpadFocusable(isFocused = isCloseFocused, focusedBorderColor = TvColors.NetflixRed, shape = TvShapes.Badge)
+                        .clickable(interactionSource = closeInteraction, indication = null) {
+                            onDismiss()
+                        }
+                        .focusable(interactionSource = closeInteraction)
+                ) {
+                    Text("✕ Fechar", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp))
                 }
             }
         }

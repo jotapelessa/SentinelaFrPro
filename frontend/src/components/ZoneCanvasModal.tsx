@@ -332,17 +332,27 @@ export const ZoneCanvasModal: React.FC<ZoneCanvasModalProps> = ({ camera, onClos
         ? "#f43f5e"
         : "#f59e0b";
 
+    const maskCount = zones.filter((z) => z.type === "mask").length + 1;
+    const zoneCount = zones.filter((z) => z.type === "zone").length + 1;
     const defaultTitle =
       currentType === "zone"
-        ? `Zona ${zones.filter((z) => z.type === "zone").length + 1}`
+        ? `Zona ${zoneCount}`
         : currentType === "mask"
-        ? "Máscara de Movimento"
+        ? `Máscara ${maskCount}`
         : `Filtro ${targetObject.toUpperCase()}`;
 
+    const trimmedName = newZoneName.trim();
+    const isDefaultPlaceholder = ["Nova Zona", "Nova Máscara", "Novo Filtro", ""].includes(trimmedName);
+    const finalName = isDefaultPlaceholder ? defaultTitle : trimmedName;
+    const finalSlug =
+      currentType === "mask" && isDefaultPlaceholder
+        ? `mask_${maskCount}`
+        : finalName.toLowerCase().replace(/[^a-z0-9_]/g, "_");
+
     const newZone: ZoneItem = {
-      id: `item_${Date.now()}`,
-      name: newZoneName.trim() || defaultTitle,
-      slug: (newZoneName.trim() || defaultTitle).toLowerCase().replace(/[^a-z0-9_]/g, "_"),
+      id: currentType === "mask" ? `mask_${maskCount}_${Date.now()}` : `item_${Date.now()}`,
+      name: finalName,
+      slug: finalSlug,
       type: currentType,
       target_object: currentType === "object_mask" ? targetObject : undefined,
       color,

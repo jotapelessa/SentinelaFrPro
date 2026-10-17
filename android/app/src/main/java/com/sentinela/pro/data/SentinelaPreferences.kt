@@ -6,12 +6,42 @@ import android.content.SharedPreferences
 class SentinelaPreferences(private val context: Context) {
     private val prefs: SharedPreferences = context.getSharedPreferences("sentinela_prefs", Context.MODE_PRIVATE)
 
+    init {
+        ensureV186Migration()
+    }
+
+    private fun ensureV186Migration() {
+        if (!prefs.getBoolean("pip_size_default_v186", false)) {
+            val editor = prefs.edit()
+            editor.putInt("pip_size_index", PipSize.EXTRA_LARGE.ordinal)
+            editor.putBoolean("pip_size_default_v182", true)
+            editor.putBoolean("pip_size_default_v186", true)
+            editor.putString("pip_player_mode", "webrtc")
+            for (key in prefs.all.keys) {
+                if (key.startsWith("pip_size_index_")) {
+                    editor.putInt(key, PipSize.EXTRA_LARGE.ordinal)
+                } else if (key.startsWith("camera_stream_mode_")) {
+                    editor.putString(key, "webrtc")
+                }
+            }
+            val defaultSizesJson = org.json.JSONObject().apply {
+                put("camera_principal", "EXTRA_LARGE")
+                put("cam_192_168_1_196", "EXTRA_LARGE")
+                put("camera_secundaria", "EXTRA_LARGE")
+                put("cam_192_168_1_47", "EXTRA_LARGE")
+            }.toString()
+            editor.putString("camera_pip_sizes_json", defaultSizesJson)
+            editor.putInt("pip_size_index_camera_principal", PipSize.EXTRA_LARGE.ordinal)
+            editor.putInt("pip_size_index_cam_192_168_1_196", PipSize.EXTRA_LARGE.ordinal)
+            editor.putInt("pip_size_index_camera_secundaria", PipSize.EXTRA_LARGE.ordinal)
+            editor.putInt("pip_size_index_cam_192_168_1_47", PipSize.EXTRA_LARGE.ordinal)
+            editor.apply()
+        }
+    }
+
     var pipSizeIndex: Int
         get() {
-            if (!prefs.getBoolean("pip_size_default_v182", false)) {
-                prefs.edit().putInt("pip_size_index", PipSize.EXTRA_LARGE.ordinal).putBoolean("pip_size_default_v182", true).apply()
-                return PipSize.EXTRA_LARGE.ordinal
-            }
+            ensureV186Migration()
             return prefs.getInt("pip_size_index", PipSize.EXTRA_LARGE.ordinal)
         }
         set(value) = prefs.edit().putInt("pip_size_index", value).apply()
@@ -49,6 +79,7 @@ class SentinelaPreferences(private val context: Context) {
     }
 
     fun getPipSizeIndex(cameraName: String): Int {
+        ensureV186Migration()
         val aliases = resolveCameraAliases(cameraName)
         for (alias in aliases) {
             if (prefs.contains("pip_size_index_$alias")) {
@@ -61,9 +92,65 @@ class SentinelaPreferences(private val context: Context) {
     fun setPipSizeIndex(cameraName: String, value: Int) {
         val editor = prefs.edit()
         val aliases = resolveCameraAliases(cameraName)
+        val sizeEnum = PipSize.values().getOrElse(value) { PipSize.EXTRA_LARGE }
+        val currentMap = getCameraPipSizesMap().toMutableMap()
         for (alias in aliases) {
             editor.putInt("pip_size_index_$alias", value)
+            currentMap[alias] = sizeEnum.name
         }
+        val jsonObj = org.json.JSONObject()
+        currentMap.forEach { (k, v) -> jsonObj.put(k, v.uppercase()) }
+        editor.putString("camera_pip_sizes_json", jsonObj.toString())
+        editor.apply()
+    }
+
+    fun getCameraPipSizesMap(): Map<String, String> {
+        ensureV186Migration()
+        val result = mutableMapOf<String, String>()
+        val rawJson = prefs.getString("camera_pip_sizes_json", null)
+        if (!rawJson.isNullOrBlank()) {
+            try {
+                val obj = org.json.JSONObject(rawJson)
+                val keys = obj.keys()
+                while (keys.hasNext()) {
+                    val k = keys.next()
+                    val v = obj.optString(k, "EXTRA_LARGE").uppercase()
+                    result[k] = v
+                }
+            } catch (_: Exception) {}
+        }
+        for (cam in listOf("camera_principal", "cam_192_168_1_196", "camera_secundaria", "cam_192_168_1_47")) {
+            val idx = getPipSizeIndex(cam)
+            val sizeName = PipSize.values().getOrElse(idx) { PipSize.EXTRA_LARGE }.name
+            result[cam] = sizeName
+        }
+        return result
+    }
+
+    fun setCameraPipSizesMap(sizes: Map<String, String>) {
+        val editor = prefs.edit()
+        val currentMap = getCameraPipSizesMap().toMutableMap()
+        for ((camKey, rawSize) in sizes) {
+            val normalizedUpper = when (rawSize.trim().uppercase()) {
+                "MINI", "EXTRA_SMALL" -> PipSize.EXTRA_SMALL.name
+                "SMALL", "P" -> PipSize.SMALL.name
+                "MEDIUM_SMALL" -> PipSize.MEDIUM_SMALL.name
+                "MEDIUM", "M" -> PipSize.MEDIUM.name
+                "MEDIUM_LARGE" -> PipSize.MEDIUM_LARGE.name
+                "LARGE", "G" -> PipSize.LARGE.name
+                "EXTRA_LARGE", "GG" -> PipSize.EXTRA_LARGE.name
+                "CINEMA" -> PipSize.CINEMA.name
+                else -> PipSize.EXTRA_LARGE.name
+            }
+            val sizeEnum = try { PipSize.valueOf(normalizedUpper) } catch (_: Exception) { PipSize.EXTRA_LARGE }
+            for (alias in resolveCameraAliases(camKey)) {
+                editor.putInt("pip_size_index_$alias", sizeEnum.ordinal)
+                currentMap[alias] = sizeEnum.name
+            }
+        }
+        val jsonObj = org.json.JSONObject()
+        currentMap.forEach { (k, v) -> jsonObj.put(k, v.uppercase()) }
+        editor.putString("camera_pip_sizes_json", jsonObj.toString())
         editor.apply()
     }
 
@@ -98,14 +185,8 @@ class SentinelaPreferences(private val context: Context) {
         set(value) = prefs.edit().putBoolean("allow_pip_alerts", value).apply()
 
     var pipPlayerMode: String
-        get() {
-            val mode = prefs.getString("pip_player_mode", "webrtc") ?: "webrtc"
-            if (mode != "webrtc") {
-                prefs.edit().putString("pip_player_mode", "webrtc").apply()
-            }
-            return "webrtc"
-        }
-        set(value) = prefs.edit().putString("pip_player_mode", "webrtc").apply()
+        get() = prefs.getString("pip_player_mode", "webrtc") ?: "webrtc"
+        set(value) = prefs.edit().putString("pip_player_mode", value.lowercase()).apply()
 
     var deviceIdentifier: String
         get() {
@@ -167,6 +248,7 @@ class SentinelaPreferences(private val context: Context) {
     fun setCameraDefaultStreamMode(cameraName: String, mode: String) {
         prefs.edit().putString("camera_stream_mode_$cameraName", mode).apply()
     }
+
 
     fun recordCrash(message: String, stackTrace: String) {
         prefs.edit()

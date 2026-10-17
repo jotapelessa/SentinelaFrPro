@@ -113,7 +113,9 @@ class PiPGatewayService:
                 cam_sizes = {}
                 if d.camera_pip_sizes:
                     try:
-                        cam_sizes = json.loads(d.camera_pip_sizes)
+                        raw_sizes = json.loads(d.camera_pip_sizes)
+                        if isinstance(raw_sizes, dict):
+                            cam_sizes = {str(k): str(v).strip().lower() for k, v in raw_sizes.items() if v is not None}
                     except Exception:
                         cam_sizes = {}
                 cam_positions = {}
@@ -131,7 +133,7 @@ class PiPGatewayService:
                     "target_ip": d.tailscale_ip if d.tailscale_ip else d.ip_address,
                     "local_ip": d.ip_address,
                     "tailscale_ip": d.tailscale_ip,
-                    "pip_default_size": d.pip_default_size or "extra_large",
+                    "pip_default_size": (d.pip_default_size or "extra_large").strip().lower(),
                     "pip_duration_seconds": d.pip_duration_seconds or 10,
                     "pip_position": d.pip_position or "TOP_RIGHT",
                     "camera_pip_sizes": cam_sizes,
@@ -194,7 +196,7 @@ class PiPGatewayService:
                     # Dispositivo está ativamente conectado ao app Sentinela (overlay nativo).
                     dev_pip_sizes = dev.get("camera_pip_sizes", {})
                     dev_pip_positions = dev.get("camera_pip_positions", {})
-                    resolved_pip_size = dev_pip_sizes.get(camera_name) or dev_pip_sizes.get(base_cam) or dev.get("pip_default_size", "extra_large")
+                    resolved_pip_size = str(dev_pip_sizes.get(camera_name) or dev_pip_sizes.get(base_cam) or dev.get("pip_default_size", "extra_large")).strip().lower()
                     resolved_pip_position = dev_pip_positions.get(camera_name) or dev_pip_positions.get(base_cam) or dev.get("pip_position", "TOP_RIGHT")
 
                     target_ws = ws_manager.get_device_connection(ident)
@@ -366,9 +368,10 @@ class PiPGatewayService:
             target_ws = ws_manager.get_device_connection(target_ident) if target_ident else None
             is_mobile_device = dev.device_type in ["smartphone", "mobile", "tablet"]
 
-            cam_sizes = json.loads(dev.camera_pip_sizes) if dev.camera_pip_sizes else {}
+            raw_sizes = json.loads(dev.camera_pip_sizes) if dev.camera_pip_sizes else {}
+            cam_sizes = {str(k): str(v).strip().lower() for k, v in raw_sizes.items() if v is not None} if isinstance(raw_sizes, dict) else {}
             cam_positions = json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {}
-            resolved_pip_size = cam_sizes.get(camera_name) or cam_sizes.get(base_cam) or dev.pip_default_size or "extra_large"
+            resolved_pip_size = str(cam_sizes.get(camera_name) or cam_sizes.get(base_cam) or dev.pip_default_size or "extra_large").strip().lower()
             resolved_pip_position = cam_positions.get(camera_name) or cam_positions.get(base_cam) or dev.pip_position or "BOTTOM_RIGHT"
 
             pip_payload = {

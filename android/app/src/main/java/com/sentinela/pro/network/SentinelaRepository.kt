@@ -138,7 +138,7 @@ object SentinelaRepository {
                     val kIter = camSizesObj.keys()
                     while (kIter.hasNext()) {
                         val k = kIter.next()
-                        camSizesMap[k] = camSizesObj.optString(k)
+                        camSizesMap[k] = camSizesObj.optString(k).lowercase()
                     }
                 }
 
@@ -163,7 +163,7 @@ object SentinelaRepository {
                     allowPipAlerts = obj.optBoolean("allow_pip_alerts", true),
                     allowRestartContainers = obj.optBoolean("allow_restart_containers", false),
                     allowRebootServer = obj.optBoolean("allow_reboot_server", false),
-                    pipDefaultSize = obj.optString("pip_default_size", "medium"),
+                    pipDefaultSize = obj.optString("pip_default_size", "extra_large").lowercase(),
                     pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
                     pipPosition = obj.optString("pip_position", "TOP_RIGHT"),
                     streamQuality = obj.optString("stream_quality", "1080p"),
@@ -1270,7 +1270,7 @@ object SentinelaRepository {
                         val kIter = devSizesObj.keys()
                         while (kIter.hasNext()) {
                             val k = kIter.next()
-                            devSizesMap[k] = devSizesObj.optString(k)
+                            devSizesMap[k] = devSizesObj.optString(k).lowercase()
                         }
                     }
                     val devEnabledMap = mutableMapOf<String, Boolean>()
@@ -1298,7 +1298,7 @@ object SentinelaRepository {
                             permissionStatus = obj.optString("permission_status", "allowed"),
                             isMasterAdmin = obj.optBoolean("is_master_admin", false),
                             allowPipAlerts = obj.optBoolean("allow_pip_alerts", true),
-                            pipDefaultSize = obj.optString("pip_default_size", "medium"),
+                            pipDefaultSize = obj.optString("pip_default_size", "extra_large").lowercase(),
                             pipDurationSeconds = obj.optInt("pip_duration_seconds", 10),
                             pipPosition = obj.optString("pip_position", "TOP_RIGHT"),
                             streamQuality = obj.optString("stream_quality", "1080p"),
@@ -1358,7 +1358,7 @@ object SentinelaRepository {
     suspend fun updateDevicePermissions(
         deviceId: Int,
         friendlyName: String,
-        pipSize: String = "medium",
+        pipSize: String = "extra_large",
         pipDuration: Int = 10,
         pipPosition: String = "TOP_RIGHT",
         streamQuality: String = "1080p",
@@ -1386,7 +1386,7 @@ object SentinelaRepository {
             cameraPipPositions.forEach { (k, v) -> posObj.put(k, v) }
 
             val sizesObj = JSONObject()
-            cameraPipSizes.forEach { (k, v) -> sizesObj.put(k, v) }
+            cameraPipSizes.forEach { (k, v) -> sizesObj.put(k, v.lowercase()) }
 
             val enabledObj = JSONObject()
             cameraPipEnabled.forEach { (k, v) -> enabledObj.put(k, v) }
@@ -1394,7 +1394,7 @@ object SentinelaRepository {
             val payload = JSONObject().apply {
                 put("friendly_name", friendlyName)
                 put("permission_status", permissionStatus)
-                put("pip_default_size", pipSize)
+                put("pip_default_size", pipSize.lowercase())
                 put("pip_duration_seconds", pipDuration)
                 put("pip_position", pipPosition)
                 put("stream_quality", streamQuality)
@@ -1445,10 +1445,10 @@ object SentinelaRepository {
                 put("cam_192_168_1_47", prefs.getCurrentPipPosition("cam_192_168_1_47").name)
             }
             val camSizes = JSONObject().apply {
-                put("camera_principal", prefs.getCurrentPipSize("camera_principal").name)
-                put("camera_secundaria", prefs.getCurrentPipSize("camera_secundaria").name)
-                put("cam_192_168_1_196", prefs.getCurrentPipSize("cam_192_168_1_196").name)
-                put("cam_192_168_1_47", prefs.getCurrentPipSize("cam_192_168_1_47").name)
+                put("camera_principal", prefs.getCurrentPipSize("camera_principal").name.lowercase())
+                put("camera_secundaria", prefs.getCurrentPipSize("camera_secundaria").name.lowercase())
+                put("cam_192_168_1_196", prefs.getCurrentPipSize("cam_192_168_1_196").name.lowercase())
+                put("cam_192_168_1_47", prefs.getCurrentPipSize("cam_192_168_1_47").name.lowercase())
             }
             val camEnabled = JSONObject().apply {
                 put("camera_principal", prefs.isCameraPipEnabled("camera_principal"))

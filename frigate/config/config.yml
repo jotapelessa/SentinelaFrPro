@@ -91,7 +91,7 @@ go2rtc:
     cam_192_168_1_196_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_720p:
-    - ffmpeg:cam_192_168_1_196#video=copy
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub?video=copy
     cam_192_168_1_196_sub:
     - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
     cam_192_168_1_47:
@@ -99,7 +99,7 @@ go2rtc:
     cam_192_168_1_47_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_720p:
-    - ffmpeg:cam_192_168_1_47#video=copy
+    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub?video=copy
     cam_192_168_1_47_sub:
     - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0
     camera_principal:
@@ -107,7 +107,7 @@ go2rtc:
     camera_principal_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_720p:
-    - ffmpeg:cam_192_168_1_196#video=copy
+    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub?video=copy
     camera_principal_sub:
     - ffmpeg:cam_192_168_1_196_sub#video=copy
     camera_secundaria:
@@ -115,20 +115,21 @@ go2rtc:
     camera_secundaria_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_720p:
-    - ffmpeg:cam_192_168_1_47#video=copy
+    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub?video=copy
     camera_secundaria_sub:
     - ffmpeg:cam_192_168_1_47_sub#video=copy
   webrtc:
     listen: :8555
     candidates:
-    - 100.93.129.91:8555
     - 192.168.1.247:8555
+    - 100.93.129.91:8555
+    - stun:8555
     - stun:stun.l.google.com:19302
 cameras:
   cam_192_168_1_189:
     enabled: false
     ffmpeg:
-      hwaccel_args: preset-vaapi
+      hwaccel_args: []
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_189
         input_args: preset-rtsp-restream
@@ -205,7 +206,7 @@ cameras:
   cam_192_168_1_196:
     enabled: true
     ffmpeg:
-      hwaccel_args: preset-vaapi
+      hwaccel_args: []
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_196
         input_args: preset-rtsp-restream
@@ -240,21 +241,11 @@ cameras:
       filters:
         person:
           threshold: 0.68
-    zones:
-      cx:
-        coordinates: 80,90,240,179,400,269
-        objects:
-        - person
-        - car
-        - motorcycle
-        - dog
-        - cat
-        - bicycle
+    zones: {}
     motion:
       threshold: 25
       contour_area: 80
       improve_contrast: false
-      mask: 560,358,640,403,720,403
     record:
       enabled: true
       motion:
@@ -283,8 +274,7 @@ cameras:
         - dog
         - cat
         - bicycle
-        required_zones:
-        - cx
+        required_zones: []
       detections:
         labels:
         - person
@@ -294,12 +284,11 @@ cameras:
         - dog
         - cat
         - bicycle
-        required_zones:
-        - cx
+        required_zones: []
   cam_192_168_1_47:
     enabled: true
     ffmpeg:
-      hwaccel_args: preset-vaapi
+      hwaccel_args: []
       inputs:
       - path: rtsp://127.0.0.1:8554/cam_192_168_1_47
         input_args: preset-rtsp-restream
@@ -345,7 +334,9 @@ cameras:
       threshold: 22
       contour_area: 80
       improve_contrast: false
-      mask: 255,115,248,9,490,5,793,12,794,164,512,53,5,5,6,441,237,436,251,117,240,11
+      mask:
+      - 255,115,248,9,490,5,793,12,794,164,512,53
+      - 5,5,6,441,237,436,251,117,240,11
     record:
       enabled: true
       motion:

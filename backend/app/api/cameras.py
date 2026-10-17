@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
-from typing import List, Optional, Dict, Any
+from typing import List, Optional, Dict, Any, Union
 import logging
 import datetime
 import os
@@ -23,6 +23,16 @@ _FRIGATE_STATS_CACHE: Dict[str, Any] = {}
 _FRIGATE_STATS_TIME: float = 0.0
 _YAML_CONFIG_CACHE: Dict[str, Any] = {}
 _YAML_CONFIG_TIME: float = 0.0
+
+FRIGATE_CONFIG_PATH: str = os.environ.get("FRIGATE_CONFIG_PATH", "/config/config.yml")
+FRIGATE_RUNTIME_CONFIG_PATH: str = os.environ.get("FRIGATE_RUNTIME_CONFIG_PATH", "./frigate/config/config.yml")
+_DEFAULT_CONFIG_PATHS: List[str] = [
+    "/config/config.yml",
+    "./frigate/config/config.yml",
+    os.path.join(os.getcwd(), "frigate/config/config.yml"),
+    os.path.expanduser("~/Documents/DEV45/SentinelaFrigate/frigate/config/config.yml"),
+    "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/config.yml",
+]
 
 def infer_substream_url(main_url: str) -> Optional[str]:
     """Infers the low-bandwidth / IA detection sub-stream from the main RTSP URL to save CPU and reduce heat."""
@@ -249,13 +259,26 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
                                 })
 
                 motion_mask = cam_cfg.get("motion", {}).get("mask") if isinstance(cam_cfg.get("motion"), dict) else None
-                if motion_mask:
+                if isinstance(motion_mask, list):
+                    for m_idx, m_str in enumerate(motion_mask):
+                        if m_str:
+                            m_pts = parse_frigate_coordinates(m_str, detect_w, detect_h)
+                            if m_pts:
+                                parsed_zone_items.append({
+                                    "id": f"mask_{m_idx + 1}",
+                                    "name": f"Máscara {m_idx + 1}",
+                                    "slug": f"mask_{m_idx + 1}",
+                                    "type": "mask",
+                                    "color": "#f43f5e",
+                                    "points": m_pts
+                                })
+                elif isinstance(motion_mask, str) and motion_mask.strip():
                     m_pts = parse_frigate_coordinates(motion_mask, detect_w, detect_h)
                     if m_pts:
                         parsed_zone_items.append({
-                            "id": f"mask_{cam_name}",
-                            "name": "Máscara de Movimento",
-                            "slug": "motion_mask",
+                            "id": "mask_1",
+                            "name": "Máscara 1",
+                            "slug": "mask_1",
                             "type": "mask",
                             "color": "#f43f5e",
                             "points": m_pts
@@ -278,7 +301,7 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
                     db.add(new_c)
                     db_changed = True
                 else:
-                    if zones_json_str and not existing.zones:
+                    if (existing.zones or "") != (zones_json_str or ""):
                         existing.zones = zones_json_str
                         db_changed = True
                     if not existing.rtsp_main or existing.rtsp_main.startswith("rtsp://frigate"):
@@ -411,16 +434,19 @@ async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends
                     
                     motion_mask = cam_cfg.get("motion", {}).get("mask")
                     if motion_mask:
-                        m_pts = parse_frigate_coordinates(motion_mask, detect_w, detect_h)
-                        if m_pts:
-                            parsed_zone_items.append({
-                                "id": f"mask_{cam_name}",
-                                "name": "Máscara de Movimento",
-                                "slug": "motion_mask",
-                                "type": "mask",
-                                "color": "#f43f5e",
-                                "points": m_pts
-                            })
+                        mask_list = motion_mask if isinstance(motion_mask, list) else [motion_mask]
+                        for m_idx, m_raw in enumerate(mask_list):
+                            m_pts = parse_frigate_coordinates(m_raw, detect_w, detect_h)
+                            if m_pts:
+                                parsed_zone_items.append({
+                                    "id": f"mask_{m_idx + 1}",
+                                    "name": f"Máscara {m_idx + 1}",
+                                    "slug": f"mask_{m_idx + 1}",
+                                    "type": "mask",
+                                    "color": "#f43f5e",
+                                    "points": m_pts,
+                                    "objects": []
+                                })
 
                     import json
                     zones_json_str = json.dumps(parsed_zone_items) if parsed_zone_items else None
@@ -635,7 +661,7 @@ async def update_camera(camera_id: str, update: CameraUpdate, request: Request, 
     if real_changes.keys() & frigate_relevant_fields:
         # Sync RTSP and camera state asynchronously in background to ensure instant API return (<100ms)
         import asyncio
-        asyncio.create_task(sync_camera_to_frigate(cam))
+        asyncio.create_task(sync_camera_to_frigate(cam, sync_zones=("zones" in real_changes)))
 
     # Disparo de notificação broadcast em tempo real para todos os clientes conectados (TVs, Smartphone, Web)
     try:
@@ -1447,15 +1473,18 @@ async def _save_yaml_config_atomic(cfg: dict, config_path: Optional[str] = None)
     async with _CONFIG_WRITE_LOCK:
         cfg_sanitized = sanitize_frigate_config(cfg)
         updated_yaml = yaml.dump(cfg_sanitized, default_flow_style=False, allow_unicode=True, sort_keys=False)
-        
-        all_possible_paths = [
-            config_path,
-            "/config/config.yml",
-            "./frigate/config/config.yml",
-            os.path.join(os.getcwd(), "frigate/config/config.yml"),
-            os.path.expanduser("~/Documents/DEV45/SentinelaFrigate/frigate/config/config.yml"),
-            "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/config.yml"
-        ]
+
+        if FRIGATE_CONFIG_PATH not in _DEFAULT_CONFIG_PATHS:
+            all_possible_paths = [config_path or FRIGATE_CONFIG_PATH, FRIGATE_RUNTIME_CONFIG_PATH]
+        elif config_path and config_path not in _DEFAULT_CONFIG_PATHS:
+            all_possible_paths = [config_path]
+        else:
+            all_possible_paths = [
+                config_path,
+                FRIGATE_CONFIG_PATH,
+                FRIGATE_RUNTIME_CONFIG_PATH,
+                *_DEFAULT_CONFIG_PATHS,
+            ]
         written_any = False
         seen_paths = set()
         for cp in all_possible_paths:
@@ -1479,7 +1508,7 @@ async def _save_yaml_config_atomic(cfg: dict, config_path: Optional[str] = None)
         _YAML_CONFIG_TIME = 0.0
         return written_any
 
-async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
+async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False, sync_zones: bool = True):
     import os
     import yaml
     import json
@@ -1527,8 +1556,9 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
         cfg["go2rtc"]["webrtc"] = {}
     cfg["go2rtc"]["webrtc"]["listen"] = ":8555"
     cfg["go2rtc"]["webrtc"]["candidates"] = [
-        "100.93.129.91:8555",
         "192.168.1.247:8555",
+        "100.93.129.91:8555",
+        "stun:8555",
         "stun:stun.l.google.com:19302"
     ]
 
@@ -1547,22 +1577,22 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
         sub_source = f"{clean_sub}#backchannel=0"
 
         sub_alias_target = f"{target_cam_key}_sub"
+        prewarmed_sub_720p = f"rtsp://127.0.0.1:8554/{sub_alias_target}?video=copy"
         cfg["go2rtc"]["streams"][target_cam_key] = [main_source]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [sub_source]
-        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+        cfg["go2rtc"]["streams"][f"{target_cam_key}_720p"] = [prewarmed_sub_720p]
 
         # Aliases de compatibilidade legada (ffmpeg zero-copy restream)
-        sub_alias_target = f"{target_cam_key}_sub"
         if target_cam_key in ("cam_192_168_1_196", "camera_principal"):
             cfg["go2rtc"]["streams"]["camera_principal"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_principal_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_principal_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_principal_720p"] = [prewarmed_sub_720p]
             cfg["go2rtc"]["streams"]["camera_principal_sub"] = [f"ffmpeg:{sub_alias_target}#video=copy"]
         elif target_cam_key in ("cam_192_168_1_47", "camera_secundaria"):
             cfg["go2rtc"]["streams"]["camera_secundaria"] = [f"ffmpeg:{target_cam_key}#video=copy"]
             cfg["go2rtc"]["streams"]["camera_secundaria_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
-            cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [f"ffmpeg:{target_cam_key}#video=copy"]
+            cfg["go2rtc"]["streams"]["camera_secundaria_720p"] = [prewarmed_sub_720p]
             cfg["go2rtc"]["streams"]["camera_secundaria_sub"] = [f"ffmpeg:{sub_alias_target}#video=copy"]
 
     # Build ffmpeg inputs:
@@ -1593,13 +1623,13 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     cam_block = cfg["cameras"][target_cam_key]
     cam_block["enabled"] = bool(cam.enabled)
     
-    # 1. Configurar ffmpeg inputs com go2rtc restream e aceleração por hardware VAAPI obrigatória
+    # 1. Configurar ffmpeg inputs com go2rtc restream (software decode leve em 800x448 sub para evitar crash VAAPI surface 0x11)
     if "ffmpeg" not in cam_block or not isinstance(cam_block["ffmpeg"], dict):
         cam_block["ffmpeg"] = {}
-    cam_block["ffmpeg"]["hwaccel_args"] = "preset-vaapi"
+    cam_block["ffmpeg"]["hwaccel_args"] = [] if sub_url else "preset-vaapi"
     cam_block["ffmpeg"]["inputs"] = ffmpeg_inputs
 
-    # 2. Configurar detect desacoplado:
+    # 2. Configurar detect desacoplado ANTES de re-escalar coordenadas de zonas e máscaras:
     # Se sub_url estiver configurada, consome 800x448 nativo (alívio térmico extremo para <15% CPU)
     # Se não houver sub, utiliza 1280x720 HD nativo (Alternativa B)
     res_str = (getattr(cam, "resolution", "3mp") or "3mp").lower()
@@ -1712,7 +1742,7 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
     detect_w = cam_block.get("detect", {}).get("width", 1280) if isinstance(cam_block.get("detect"), dict) else 1280
     detect_h = cam_block.get("detect", {}).get("height", 720) if isinstance(cam_block.get("detect"), dict) else 720
 
-    if getattr(cam, "zones", None):
+    if sync_zones and getattr(cam, "zones", None):
         try:
             import json
             pz = json.loads(cam.zones)
@@ -1741,13 +1771,14 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
                                     "objects": z.get("objects", ["person", "car", "motorcycle", "dog", "cat", "bicycle"])
                                 }
 
-                # Atualiza e re-escala zonas e máscaras a partir do SQLite (fonte da verdade)
-                if converted_zones:
-                    cam_block["zones"] = converted_zones
+                # Atualiza e re-escala zonas e máscaras a partir do SQLite (preservando lista YAML para múltiplas máscaras)
+                cam_block["zones"] = converted_zones
+                if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
+                    cam_block["motion"] = {}
                 if motion_masks:
-                    if "motion" not in cam_block or not isinstance(cam_block["motion"], dict):
-                        cam_block["motion"] = {}
-                    cam_block["motion"]["mask"] = motion_masks[0] if len(motion_masks) == 1 else " ".join(motion_masks)
+                    cam_block["motion"]["mask"] = motion_masks
+                else:
+                    cam_block["motion"].pop("mask", None)
 
             elif isinstance(pz, dict):
                 for z_slug, z_val in pz.items():
@@ -1793,22 +1824,23 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False):
             raw_sub = sub_url if sub_url else (clean_url.replace("/MAIN", "/SUB") if "/MAIN" in clean_url else (infer_substream_url(clean_url) or clean_url))
             clean_sub = raw_sub.split("#")[0].strip()
             sub_stream_src = f"{clean_sub}#backchannel=0"
+            prewarmed_sub_720p = f"rtsp://127.0.0.1:8554/{target_cam_key}_sub?video=copy"
 
             async with httpx.AsyncClient(timeout=3.0) as client:
                 await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": target_cam_key, "src": main_stream_src})
                 await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
                 await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_sub", "src": sub_stream_src})
-                await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": f"{target_cam_key}_720p", "src": prewarmed_sub_720p})
 
                 if target_cam_key in ("cam_192_168_1_196", "camera_principal"):
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal", "src": f"ffmpeg:{target_cam_key}#video=copy"})
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
-                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_720p", "src": prewarmed_sub_720p})
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_principal_sub", "src": f"ffmpeg:{target_cam_key}_sub#video=copy"})
                 elif target_cam_key in ("cam_192_168_1_47", "camera_secundaria"):
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria", "src": f"ffmpeg:{target_cam_key}#video=copy"})
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_main", "src": f"ffmpeg:{target_cam_key}#video=copy"})
-                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_720p", "src": f"ffmpeg:{target_cam_key}#video=copy"})
+                    await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_720p", "src": prewarmed_sub_720p})
                     await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": "camera_secundaria_sub", "src": f"ffmpeg:{target_cam_key}_sub#video=copy"})
         except Exception as e:
             logger.debug(f"Dynamic go2rtc stream registration skipped or pending restart: {e}")
@@ -1862,6 +1894,18 @@ async def reconcile_cameras_with_frigate():
     try:
         from app.db.session import AsyncSessionLocal
         from app.db.models import Camera as DBCamera
+        import json
+
+        config_path = get_frigate_config_path()
+        file_cams = {}
+        if os.path.exists(config_path):
+            try:
+                with open(config_path, "r") as f:
+                    file_cfg = yaml.safe_load(f) or {}
+                file_cams = file_cfg.get("cameras") or {}
+            except Exception as e:
+                logger.debug(f"[RECONCILER] Falha ao ler config.yml para sincronia de zonas: {e}")
+
         async with AsyncSessionLocal() as session:
             stmt = select(DBCamera).where(DBCamera.enabled == True)
             res = await session.execute(stmt)
@@ -1871,9 +1915,56 @@ async def reconcile_cameras_with_frigate():
                 logger.info("ℹ️ [RECONCILER] Nenhuma câmera ativa encontrada no SQLite.")
                 return
 
+            db_zones_updated = False
             for c in active_cams:
                 logger.info(f"🎥 [RECONCILER] Reconciliando câmera ativa: {c.name} ({c.ip_address})")
-                await sync_camera_to_frigate(c, restart_frigate=False)
+                cam_key = re.sub(r'[^a-zA-Z0-9_]', '_', (c.name or "").strip().lower())
+                cam_cfg = file_cams.get(cam_key) if isinstance(file_cams, dict) else None
+                if isinstance(cam_cfg, dict):
+                    detect_w = cam_cfg.get("detect", {}).get("width", 1280)
+                    detect_h = cam_cfg.get("detect", {}).get("height", 720)
+                    yaml_zone_items = []
+                    f_zones = cam_cfg.get("zones") or {}
+                    if isinstance(f_zones, dict):
+                        for z_idx, (z_name, z_info) in enumerate(f_zones.items()):
+                            coords = z_info.get("coordinates") if isinstance(z_info, dict) else z_info
+                            if coords:
+                                pts = parse_frigate_coordinates(coords, detect_w, detect_h)
+                                if pts:
+                                    yaml_zone_items.append({
+                                        "id": f"zone_{z_name}",
+                                        "name": z_name.replace("_", " ").title(),
+                                        "slug": z_name,
+                                        "type": "zone",
+                                        "color": ZONE_PALETTE[z_idx % len(ZONE_PALETTE)],
+                                        "points": pts,
+                                        "objects": z_info.get("objects", ["person", "car", "motorcycle"]) if isinstance(z_info, dict) else ["person", "car", "motorcycle"]
+                                    })
+                    f_masks = (cam_cfg.get("motion") or {}).get("mask")
+                    if f_masks:
+                        mask_list = f_masks if isinstance(f_masks, list) else [f_masks]
+                        for m_idx, m_raw in enumerate(mask_list):
+                            m_pts = parse_frigate_coordinates(m_raw, detect_w, detect_h)
+                            if m_pts:
+                                yaml_zone_items.append({
+                                    "id": f"mask_{m_idx + 1}",
+                                    "name": f"Máscara {m_idx + 1}",
+                                    "slug": f"mask_{m_idx + 1}",
+                                    "type": "mask",
+                                    "color": "#f43f5e",
+                                    "points": m_pts,
+                                    "objects": []
+                                })
+                    if yaml_zone_items:
+                        yaml_zones_str = json.dumps(yaml_zone_items)
+                        if c.zones != yaml_zones_str:
+                            c.zones = yaml_zones_str
+                            db_zones_updated = True
+
+                await sync_camera_to_frigate(c, restart_frigate=False, sync_zones=False)
+
+            if db_zones_updated:
+                await session.commit()
 
         # Check if Frigate's running config is missing any active camera
         needs_restart = False
@@ -2116,23 +2207,23 @@ async def update_camera_hardware_config(camera_id: str, payload: CameraHardwareC
 
 class FrigateZonesPayload(BaseModel):
     zones: Optional[Dict[str, Any]] = None
-    motion_mask: Optional[str] = None
+    motion_mask: Optional[Union[str, List[str]]] = None
     object_masks: Optional[Dict[str, str]] = None
     raw_items: Optional[List[Dict[str, Any]]] = None
 
 def get_frigate_config_path() -> str:
     import os
+    if FRIGATE_CONFIG_PATH not in _DEFAULT_CONFIG_PATHS:
+        return FRIGATE_CONFIG_PATH
     candidates = [
-        "/config/config.yml",
-        "./frigate/config/config.yml",
-        os.path.join(os.getcwd(), "frigate/config/config.yml"),
-        os.path.expanduser("~/Documents/DEV45/SentinelaFrigate/frigate/config/config.yml"),
-        "/home/jotape/ServONVIF2/SentinelaFrPro/frigate/config/config.yml"
+        FRIGATE_CONFIG_PATH,
+        FRIGATE_RUNTIME_CONFIG_PATH,
+        *_DEFAULT_CONFIG_PATHS,
     ]
     for c in candidates:
-        if os.path.exists(c):
+        if c and os.path.exists(c):
             return c
-    return "/config/config.yml"
+    return FRIGATE_CONFIG_PATH
 
 def parse_frigate_coordinates(raw_coords: Any, width: int = 1280, height: int = 720) -> List[Dict[str, float]]:
     """
@@ -2235,15 +2326,14 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
         elif len(cameras_cfg) == 1:
             target_cam_key = list(cameras_cfg.keys())[0]
 
+    cam_in_frigate = isinstance(cameras_cfg, dict) and target_cam_key in cameras_cfg
     cam_data = cameras_cfg.get(target_cam_key, {}) if isinstance(cameras_cfg, dict) else {}
 
     detect_w = cam_data.get("detect", {}).get("width", 1280) if isinstance(cam_data.get("detect"), dict) else 1280
     detect_h = cam_data.get("detect", {}).get("height", 720) if isinstance(cam_data.get("detect"), dict) else 720
 
     raw_zones = cam_data.get("zones", {}) if isinstance(cam_data, dict) else {}
-    motion_mask = cam_data.get("motion", {}).get("mask", "") if isinstance(cam_data.get("motion"), dict) else ""
-    if isinstance(motion_mask, list):
-        motion_mask = " ".join(motion_mask)
+    motion_mask = cam_data.get("motion", {}).get("mask", None) if isinstance(cam_data.get("motion"), dict) else None
 
     object_masks = {}
     obj_filters = cam_data.get("objects", {}).get("filters", {}) if isinstance(cam_data.get("objects"), dict) else {}
@@ -2272,14 +2362,27 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
                         "objects": z_info.get("objects", ["person", "car", "motorcycle"]) if isinstance(z_info, dict) else ["person", "car", "motorcycle"]
                     })
 
-    # Parse Motion Masks
-    if motion_mask:
+    # Parse Motion Masks (preserving multiple independent polygons)
+    if isinstance(motion_mask, list):
+        for m_idx, m_str in enumerate(motion_mask):
+            if m_str:
+                m_pts = parse_frigate_coordinates(m_str, detect_w, detect_h)
+                if m_pts:
+                    parsed_items.append({
+                        "id": f"mask_{m_idx + 1}",
+                        "name": f"Máscara {m_idx + 1}",
+                        "slug": f"mask_{m_idx + 1}",
+                        "type": "mask",
+                        "color": "#f43f5e",
+                        "points": m_pts
+                    })
+    elif isinstance(motion_mask, str) and motion_mask.strip():
         m_pts = parse_frigate_coordinates(motion_mask, detect_w, detect_h)
         if m_pts:
             parsed_items.append({
-                "id": f"mask_{target_cam_key}",
-                "name": "Máscara de Movimento",
-                "slug": "motion_mask",
+                "id": "mask_1",
+                "name": "Máscara 1",
+                "slug": "mask_1",
                 "type": "mask",
                 "color": "#f43f5e",
                 "points": m_pts
@@ -2299,8 +2402,17 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
                 "points": o_pts
             })
 
-    # Fallback to Sentinela DB if Frigate had no zones defined
-    if not parsed_items:
+    # Reconcile SQLite with authoritative Frigate config when camera exists in Frigate
+    if cam_in_frigate and cam_row is not None:
+        new_zones_str = json.dumps(parsed_items) if parsed_items else None
+        if (cam_row.zones or "") != (new_zones_str or ""):
+            try:
+                cam_row.zones = new_zones_str
+                await db.commit()
+            except Exception:
+                pass
+    elif not parsed_items and not cam_in_frigate:
+        # Fallback to Sentinela DB only if camera was not present in Frigate config at all
         if cam_row and cam_row.zones:
             try:
                 db_items = json.loads(cam_row.zones)
@@ -2313,7 +2425,7 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
         "camera": target_cam_key,
         "detect_resolution": {"width": detect_w, "height": detect_h},
         "zones": raw_zones,
-        "motion_mask": motion_mask,
+        "motion_mask": motion_mask if motion_mask is not None else [],
         "object_masks": object_masks,
         "parsed_items": parsed_items
     }
@@ -2413,8 +2525,7 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
                     obj_masks_map[target_obj] = coord_str
 
         payload.zones = converted_zones
-        if motion_masks_list:
-            payload.motion_mask = motion_masks_list[0] if len(motion_masks_list) == 1 else " ".join(motion_masks_list)
+        payload.motion_mask = motion_masks_list
         if obj_masks_map:
             payload.object_masks = obj_masks_map
 
@@ -2434,14 +2545,21 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
                 if "detections" in cam_data["review"] and isinstance(cam_data["review"]["detections"], dict):
                     cam_data["review"]["detections"]["required_zones"] = []
 
-    # 2. Update Motion Mask
+    # 2. Update Motion Mask (preserving YAML list of strings for multiple masks, never joining with spaces)
     if payload.motion_mask is not None:
         if "motion" not in cam_data or not isinstance(cam_data["motion"], dict):
             cam_data["motion"] = {}
-        if payload.motion_mask.strip():
-            cam_data["motion"]["mask"] = payload.motion_mask.strip()
-        elif "mask" in cam_data["motion"]:
-            del cam_data["motion"]["mask"]
+        if isinstance(payload.motion_mask, list):
+            clean_masks = [m.strip() for m in payload.motion_mask if isinstance(m, str) and m.strip()]
+            if clean_masks:
+                cam_data["motion"]["mask"] = clean_masks
+            elif "mask" in cam_data["motion"]:
+                del cam_data["motion"]["mask"]
+        elif isinstance(payload.motion_mask, str):
+            if payload.motion_mask.strip():
+                cam_data["motion"]["mask"] = [payload.motion_mask.strip()]
+            elif "mask" in cam_data["motion"]:
+                del cam_data["motion"]["mask"]
 
     # 3. Update Object Masks
     if payload.object_masks is not None:
@@ -2470,11 +2588,10 @@ async def save_frigate_camera_zones(camera_id: str, payload: FrigateZonesPayload
         res_c = await db.execute(stmt)
         db_cam = res_c.scalar_one_or_none()
         if db_cam:
-            if payload.raw_items:
-                db_cam.zones = json.dumps(payload.raw_items)
-            elif payload.zones:
-                # Store simplified zones representation in DB
-                db_cam.zones = json.dumps(payload.zones)
+            if payload.raw_items is not None:
+                db_cam.zones = json.dumps(payload.raw_items) if payload.raw_items else None
+            elif payload.zones is not None:
+                db_cam.zones = json.dumps(payload.zones) if payload.zones else None
             await db.commit()
     except Exception as e:
         logger.error(f"Error syncing zones to SQLite DB: {e}")

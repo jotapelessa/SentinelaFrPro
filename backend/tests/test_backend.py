@@ -1,9 +1,29 @@
 import pytest
 import asyncio
+import os
+import shutil
 from app.services.telemetry import telemetry_service
 from app.services.scanner_service import scanner_service
 from app.services.pip_gateway import pip_gateway_service
 from app.services.telegram_vault import telegram_vault_service
+
+@pytest.fixture(autouse=True)
+def isolate_frigate_config_paths(tmp_path, monkeypatch):
+    import app.api.cameras as cameras_mod
+    tmp_cfg = tmp_path / "config.yml"
+    tmp_runtime = tmp_path / "runtime_config.yml"
+    real_candidates = [
+        "../frigate/config/config.yml",
+        "frigate/config/config.yml",
+        "./frigate/config/config.yml",
+    ]
+    real_src = next((p for p in real_candidates if os.path.exists(p)), None)
+    if real_src:
+        shutil.copyfile(real_src, tmp_cfg)
+    monkeypatch.setattr(cameras_mod, "FRIGATE_CONFIG_PATH", str(tmp_cfg))
+    monkeypatch.setattr(cameras_mod, "FRIGATE_RUNTIME_CONFIG_PATH", str(tmp_runtime))
+    yield
+
 
 @pytest.mark.asyncio
 async def test_telemetry_service():
@@ -1262,6 +1282,140 @@ async def test_camera_pip_sizes_schema_and_models():
         camera_pip_sizes=json.dumps(perms.camera_pip_sizes)
     )
     assert json.loads(dev.camera_pip_sizes)["camera_principal"] == "CINEMA"
+
+
+@pytest.mark.asyncio
+async def test_multi_polygon_masks_preserved_as_yaml_list():
+    import yaml
+    import json
+    from unittest.mock import patch, AsyncMock
+    import app.api.cameras as cameras_mod
+    from app.api.cameras import sync_camera_to_frigate, get_frigate_camera_zones
+    from app.db.models import Camera
+
+    cam = Camera(
+        name="cam_192_168_1_47",
+        friendly_name="Câmera Secundária",
+        rtsp_main="rtsp://admin:pass@192.168.1.47:554/cam/realmonitor?channel=1&subtype=0",
+        rtsp_sub="rtsp://admin:pass@192.168.1.47:554/cam/realmonitor?channel=1&subtype=1",
+        enabled=True,
+        zones=json.dumps([
+            {"id": "portao_garagem", "name": "Portao Garagem", "slug": "portao_garagem", "type": "zone", "points": [{"x": 0.2, "y": 0.3}, {"x": 0.8, "y": 0.3}, {"x": 0.8, "y": 0.9}, {"x": 0.2, "y": 0.9}]},
+            {"id": "mask_1", "name": "Mascara 1", "slug": "mask_1", "type": "mask", "points": [{"x": 0.01, "y": 0.01}, {"x": 0.25, "y": 0.01}, {"x": 0.25, "y": 0.12}, {"x": 0.01, "y": 0.12}]},
+            {"id": "mask_2", "name": "Mascara 2", "slug": "mask_2", "type": "mask", "points": [{"x": 0.70, "y": 0.01}, {"x": 0.99, "y": 0.01}, {"x": 0.99, "y": 0.12}, {"x": 0.70, "y": 0.12}]},
+        ])
+    )
+    with patch("httpx.AsyncClient.put", AsyncMock()):
+        await sync_camera_to_frigate(cam, sync_zones=True)
+
+    with open(cameras_mod.FRIGATE_CONFIG_PATH, "r") as f:
+        cfg = yaml.safe_load(f)
+
+    cam_cfg = cfg["cameras"]["cam_192_168_1_47"]
+    mask_val = cam_cfg["motion"]["mask"]
+    assert isinstance(mask_val, list)
+    assert len(mask_val) == 2
+
+    # Verify round-trip parsing back into 2 separate mask polygons + 1 zone
+    from unittest.mock import MagicMock
+    mock_db = AsyncMock()
+    mock_res = MagicMock()
+    mock_res.scalar_one_or_none.return_value = cam
+    mock_res.scalars.return_value.first.return_value = cam
+    mock_db.execute.return_value = mock_res
+
+    parsed = await get_frigate_camera_zones("cam_192_168_1_47", db=mock_db)
+    masks = [z for z in parsed["parsed_items"] if z["type"] == "mask"]
+    zones = [z for z in parsed["parsed_items"] if z["type"] == "zone"]
+    assert len(masks) == 2
+    assert len(zones) == 1
+    assert masks[0]["id"] == "mask_1"
+    assert masks[1]["id"] == "mask_2"
+
+
+@pytest.mark.asyncio
+async def test_pip_size_normalization_helpers():
+    from app.api.devices import _norm_pip_size, _norm_pip_sizes_map
+    assert _norm_pip_size(None) == "extra_large"
+    assert _norm_pip_size("") == "extra_large"
+    assert _norm_pip_size("LARGE") == "large"
+    assert _norm_pip_size("EXTRA_LARGE") == "extra_large"
+    assert _norm_pip_sizes_map({"cam_192_168_1_196": "LARGE", "cam_192_168_1_47": "SMALL"}) == {
+        "cam_192_168_1_196": "large",
+        "cam_192_168_1_47": "small"
+    }
+
+
+@pytest.mark.asyncio
+async def test_sync_from_frigate_and_reconciler_preserve_multiple_masks_and_deletions():
+    import yaml
+    import json
+    import httpx
+    from unittest.mock import patch, AsyncMock, MagicMock
+    import app.api.cameras as cameras_mod
+    from app.api.cameras import sync_cameras_from_frigate, sync_camera_to_frigate, reconcile_cameras_with_frigate
+    from app.db.models import Camera
+
+    # 1. Verify sync_cameras_from_frigate parses list of motion masks into separate mask_1, mask_2 items
+    fake_frigate_config = {
+        "cameras": {
+            "cam_192_168_1_196": {
+                "enabled": True,
+                "detect": {"width": 1280, "height": 720},
+                "ffmpeg": {"inputs": [{"path": "rtsp://127.0.0.1:8554/cam_192_168_1_196_sub"}]},
+                "zones": {
+                    "entrada": {"coordinates": "100,100,500,100,500,500,100,500", "objects": ["person"]}
+                },
+                "motion": {
+                    "mask": [
+                        "10,10,200,10,200,80,10,80",
+                        "900,10,1200,10,1200,80,900,80"
+                    ]
+                }
+            }
+        }
+    }
+    existing_cam = Camera(
+        name="cam_192_168_1_196",
+        friendly_name="Câmera Principal",
+        rtsp_main="rtsp://admin:pass@192.168.1.196:554/live/0/MAIN",
+        ip_address="192.168.1.196",
+        enabled=True
+    )
+    mock_db = AsyncMock()
+    mock_res = MagicMock()
+    mock_res.scalar_one_or_none.return_value = existing_cam
+    mock_db.execute.return_value = mock_res
+    mock_req = MagicMock()
+    mock_req.client.host = "127.0.0.1"
+
+    mock_http_resp = httpx.Response(200, json=fake_frigate_config)
+    with patch("httpx.AsyncClient.get", AsyncMock(return_value=mock_http_resp)), \
+         patch("app.api.cameras.audit_service.log", AsyncMock()):
+        res = await sync_cameras_from_frigate(mock_req, db=mock_db)
+        assert res["status"] == "success"
+
+    synced_items = json.loads(existing_cam.zones)
+    synced_masks = [item for item in synced_items if item["type"] == "mask"]
+    synced_zones = [item for item in synced_items if item["type"] == "zone"]
+    assert len(synced_masks) == 2
+    assert len(synced_zones) == 1
+    assert synced_masks[0]["id"] == "mask_1"
+    assert synced_masks[1]["id"] == "mask_2"
+    assert len(synced_masks[0]["points"]) == 4
+    assert len(synced_masks[1]["points"]) == 4
+
+    # 2. Verify sync_camera_to_frigate clears deleted zones and masks when sync_zones=True
+    existing_cam.zones = json.dumps([])
+    with patch("httpx.AsyncClient.put", AsyncMock()):
+        await sync_camera_to_frigate(existing_cam, sync_zones=True)
+
+    with open(cameras_mod.FRIGATE_CONFIG_PATH, "r") as f:
+        cfg_after_del = yaml.safe_load(f)
+    cam_block_after_del = cfg_after_del["cameras"]["cam_192_168_1_196"]
+    assert cam_block_after_del.get("zones") == {}
+    assert "mask" not in cam_block_after_del.get("motion", {})
+
 
 
 

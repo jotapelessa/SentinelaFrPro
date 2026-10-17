@@ -19,6 +19,22 @@ from app.services.audit_service import audit_service
 
 router = APIRouter(prefix="/devices", tags=["Devices"])
 
+def _norm_pip_size(val: Optional[str]) -> str:
+    return val.strip().lower() if (val and val.strip()) else "extra_large"
+
+def _norm_pip_sizes_map(raw: Any) -> Dict[str, str]:
+    if not raw:
+        return {}
+    if isinstance(raw, str):
+        try:
+            raw = json.loads(raw)
+        except Exception:
+            return {}
+    if isinstance(raw, dict):
+        return {str(k): str(v).strip().lower() for k, v in raw.items() if v is not None}
+    return {}
+
+
 @router.get("/discover")
 async def discover_tvs(request: Request):
     """Scans LAN subnet for Smart TVs and Chromecast devices."""
@@ -161,11 +177,11 @@ async def list_devices(db: AsyncSession = Depends(get_db)):
             "allow_pip_alerts": d.allow_pip_alerts if d.allow_pip_alerts is not None else True,
             "allow_restart_containers": d.allow_restart_containers if d.allow_restart_containers is not None else False,
             "allow_reboot_server": d.allow_reboot_server if d.allow_reboot_server is not None else False,
-            "pip_default_size": d.pip_default_size or "extra_large",
+            "pip_default_size": _norm_pip_size(d.pip_default_size),
             "pip_duration_seconds": d.pip_duration_seconds or 10,
             "pip_position": d.pip_position or "TOP_RIGHT",
             "camera_pip_positions": json.loads(d.camera_pip_positions) if d.camera_pip_positions else {},
-            "camera_pip_sizes": json.loads(d.camera_pip_sizes) if d.camera_pip_sizes else {},
+            "camera_pip_sizes": _norm_pip_sizes_map(d.camera_pip_sizes),
             "camera_pip_enabled": json.loads(d.camera_pip_enabled) if d.camera_pip_enabled else {},
             "stream_quality": d.stream_quality or "1080p",
             "is_master_admin": bool(d.is_master_admin),
@@ -321,11 +337,11 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
         "allow_pip_alerts": dev.allow_pip_alerts if dev.allow_pip_alerts is not None else True,
         "allow_restart_containers": dev.allow_restart_containers if dev.allow_restart_containers is not None else False,
         "allow_reboot_server": dev.allow_reboot_server if dev.allow_reboot_server is not None else False,
-        "pip_default_size": dev.pip_default_size or "extra_large",
+        "pip_default_size": _norm_pip_size(dev.pip_default_size),
         "pip_duration_seconds": dev.pip_duration_seconds or 10,
         "pip_position": dev.pip_position or "TOP_RIGHT",
         "camera_pip_positions": json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {},
-        "camera_pip_sizes": json.loads(dev.camera_pip_sizes) if dev.camera_pip_sizes else {},
+        "camera_pip_sizes": _norm_pip_sizes_map(dev.camera_pip_sizes),
         "camera_pip_enabled": json.loads(dev.camera_pip_enabled) if dev.camera_pip_enabled else {},
         "stream_quality": dev.stream_quality or "1080p",
         "is_master_admin": bool(dev.is_master_admin),
@@ -350,8 +366,8 @@ async def device_heartbeat(hb: DeviceHeartbeat, request: Request, db: AsyncSessi
             "online": True,
             "stream_quality": dev.stream_quality or "1080p",
             "pip_position": dev.pip_position or "TOP_RIGHT",
-            "pip_default_size": dev.pip_default_size or "extra_large",
-            "camera_pip_sizes": json.loads(dev.camera_pip_sizes) if dev.camera_pip_sizes else {},
+            "pip_default_size": _norm_pip_size(dev.pip_default_size),
+            "camera_pip_sizes": _norm_pip_sizes_map(dev.camera_pip_sizes),
             "pip_duration_seconds": dev.pip_duration_seconds or 10,
             "last_seen": dev.last_seen.isoformat() if dev.last_seen else None
         }))
@@ -456,11 +472,11 @@ async def get_device_policy(device_identifier: str, db: AsyncSession = Depends(g
         "allow_reboot_server": dev.allow_reboot_server if dev.allow_reboot_server is not None else False,
         "allowed_cameras": cams,
         "allowed_events": events,
-        "pip_default_size": dev.pip_default_size or "extra_large",
+        "pip_default_size": _norm_pip_size(dev.pip_default_size),
         "pip_duration_seconds": dev.pip_duration_seconds or 10,
         "pip_position": dev.pip_position or "TOP_RIGHT",
         "camera_pip_positions": json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {},
-        "camera_pip_sizes": json.loads(dev.camera_pip_sizes) if dev.camera_pip_sizes else {},
+        "camera_pip_sizes": _norm_pip_sizes_map(dev.camera_pip_sizes),
         "camera_pip_enabled": json.loads(dev.camera_pip_enabled) if dev.camera_pip_enabled else {},
         "stream_quality": dev.stream_quality or "1080p",
         "is_master_admin": bool(dev.is_master_admin)
@@ -550,7 +566,19 @@ async def register_device(dev: DeviceCreate, request: Request, db: AsyncSession 
         )
         return existing
 
-    new_dev = PairedDevice(**dev.model_dump())
+    dump = dev.model_dump()
+    dump["pip_default_size"] = _norm_pip_size(dump.get("pip_default_size"))
+    if dump.get("camera_pip_sizes") is not None:
+        dump["camera_pip_sizes"] = json.dumps(_norm_pip_sizes_map(dump.get("camera_pip_sizes")))
+    if dump.get("camera_pip_positions") is not None:
+        dump["camera_pip_positions"] = json.dumps(dump.get("camera_pip_positions"))
+    if dump.get("camera_pip_enabled") is not None:
+        dump["camera_pip_enabled"] = json.dumps(dump.get("camera_pip_enabled"))
+    if dump.get("allowed_cameras") is not None:
+        dump["allowed_cameras"] = json.dumps(dump.get("allowed_cameras"))
+    if dump.get("allowed_events") is not None:
+        dump["allowed_events"] = json.dumps(dump.get("allowed_events"))
+    new_dev = PairedDevice(**dump)
     if (new_dev.device_type and new_dev.device_type.lower() in ["smartphone", "mobile", "phone"]) or new_dev.is_master_admin:
         new_dev.allow_pip_alerts = False
     db.add(new_dev)
@@ -599,7 +627,7 @@ async def update_device_permissions(
     if perms.allow_reboot_server is not None:
         dev.allow_reboot_server = perms.allow_reboot_server
     if perms.pip_default_size is not None and perms.pip_default_size.strip():
-        dev.pip_default_size = perms.pip_default_size.strip()
+        dev.pip_default_size = _norm_pip_size(perms.pip_default_size)
     if perms.pip_duration_seconds is not None and perms.pip_duration_seconds > 0:
         dev.pip_duration_seconds = perms.pip_duration_seconds
     if perms.pip_position is not None and perms.pip_position.strip():
@@ -607,7 +635,7 @@ async def update_device_permissions(
     if perms.camera_pip_positions is not None:
         dev.camera_pip_positions = json.dumps(perms.camera_pip_positions)
     if perms.camera_pip_sizes is not None:
-        dev.camera_pip_sizes = json.dumps(perms.camera_pip_sizes)
+        dev.camera_pip_sizes = json.dumps(_norm_pip_sizes_map(perms.camera_pip_sizes))
     if perms.camera_pip_enabled is not None:
         dev.camera_pip_enabled = json.dumps(perms.camera_pip_enabled)
     if perms.stream_quality is not None and perms.stream_quality.strip():
@@ -620,11 +648,11 @@ async def update_device_permissions(
         "device_identifier": dev.device_identifier,
         "friendly_name": dev.friendly_name,
         "permission_status": dev.permission_status,
-        "pip_default_size": dev.pip_default_size,
+        "pip_default_size": _norm_pip_size(dev.pip_default_size),
         "pip_duration_seconds": dev.pip_duration_seconds,
         "pip_position": dev.pip_position or "TOP_RIGHT",
         "camera_pip_positions": json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {},
-        "camera_pip_sizes": json.loads(dev.camera_pip_sizes) if dev.camera_pip_sizes else {},
+        "camera_pip_sizes": _norm_pip_sizes_map(dev.camera_pip_sizes),
         "camera_pip_enabled": json.loads(dev.camera_pip_enabled) if dev.camera_pip_enabled else {},
         "stream_quality": dev.stream_quality or "1080p",
         "allow_pip_alerts": dev.allow_pip_alerts,
@@ -671,9 +699,12 @@ async def update_device_permissions(
         "allow_pip_alerts": dev.allow_pip_alerts,
         "allow_restart_containers": dev.allow_restart_containers,
         "allow_reboot_server": dev.allow_reboot_server,
-        "pip_default_size": dev.pip_default_size,
+        "pip_default_size": _norm_pip_size(dev.pip_default_size),
         "pip_duration_seconds": dev.pip_duration_seconds,
         "pip_position": dev.pip_position or "TOP_RIGHT",
+        "camera_pip_positions": json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {},
+        "camera_pip_sizes": _norm_pip_sizes_map(dev.camera_pip_sizes),
+        "camera_pip_enabled": json.loads(dev.camera_pip_enabled) if dev.camera_pip_enabled else {},
         "stream_quality": dev.stream_quality or "1080p"
     }
 
@@ -696,7 +727,7 @@ async def push_device_settings(
         dev.pip_duration_seconds = body.pip_duration_seconds
         changed = True
     if body.pip_default_size is not None and body.pip_default_size.strip():
-        dev.pip_default_size = body.pip_default_size.strip()
+        dev.pip_default_size = _norm_pip_size(body.pip_default_size)
         changed = True
     if body.pip_position is not None and body.pip_position.strip():
         dev.pip_position = body.pip_position.strip().upper()
@@ -705,7 +736,7 @@ async def push_device_settings(
         dev.camera_pip_positions = json.dumps(body.camera_pip_positions)
         changed = True
     if body.camera_pip_sizes is not None:
-        dev.camera_pip_sizes = json.dumps(body.camera_pip_sizes)
+        dev.camera_pip_sizes = json.dumps(_norm_pip_sizes_map(body.camera_pip_sizes))
         changed = True
     if body.camera_pip_enabled is not None:
         dev.camera_pip_enabled = json.dumps(body.camera_pip_enabled)
@@ -721,11 +752,11 @@ async def push_device_settings(
             "device_identifier": dev.device_identifier,
             "friendly_name": dev.friendly_name,
             "permission_status": dev.permission_status,
-            "pip_default_size": dev.pip_default_size,
+            "pip_default_size": _norm_pip_size(dev.pip_default_size),
             "pip_duration_seconds": dev.pip_duration_seconds,
             "pip_position": dev.pip_position or "TOP_RIGHT",
             "camera_pip_positions": json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {},
-            "camera_pip_sizes": json.loads(dev.camera_pip_sizes) if dev.camera_pip_sizes else {},
+            "camera_pip_sizes": _norm_pip_sizes_map(dev.camera_pip_sizes),
             "camera_pip_enabled": json.loads(dev.camera_pip_enabled) if dev.camera_pip_enabled else {},
             "stream_quality": dev.stream_quality or "1080p",
             "allow_pip_alerts": dev.allow_pip_alerts,
@@ -753,8 +784,11 @@ async def push_device_settings(
     return {
         "status": "updated" if changed else "no_change",
         "pip_duration_seconds": dev.pip_duration_seconds,
-        "pip_default_size": dev.pip_default_size,
+        "pip_default_size": _norm_pip_size(dev.pip_default_size),
         "pip_position": dev.pip_position or "TOP_RIGHT",
+        "camera_pip_positions": json.loads(dev.camera_pip_positions) if dev.camera_pip_positions else {},
+        "camera_pip_sizes": _norm_pip_sizes_map(dev.camera_pip_sizes),
+        "camera_pip_enabled": json.loads(dev.camera_pip_enabled) if dev.camera_pip_enabled else {},
         "stream_quality": dev.stream_quality or "1080p"
     }
 

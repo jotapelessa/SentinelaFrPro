@@ -10,6 +10,10 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.layout.*
@@ -508,9 +512,7 @@ fun PhoneCameraStreamCard(
 
     val context = LocalContext.current
     val prefs = remember { SentinelaPreferences(context) }
-    var streamMode by remember(camera.name) {
-        mutableStateOf(prefs.getCameraDefaultStreamMode(camera.name))
-    }
+    val streamMode = "webrtc"
 
     val animatedBorderColor by animateColorAsState(
         targetValue = if (scale > 1.05f) SentinelaColors.BorderCyan else SentinelaColors.BorderStandard,
@@ -538,28 +540,45 @@ fun PhoneCameraStreamCard(
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onDoubleTap = {
-                                scale = 1.0f
+                                scale = if (scale > 1.05f) 1.0f else 2.2f
                                 offset = Offset.Zero
                             }
                         )
                     }
                     .pointerInput(Unit) {
-                        detectTransformGestures { _, pan, zoom, _ ->
-                            scale = (scale * zoom).coerceIn(SentinelaDimens.MinZoom, SentinelaDimens.MaxZoom)
-                            if (scale > 1.0f) {
-                                val maxOffsetX = (size.width * (scale - 1f)) / 2
-                                val maxOffsetY = (size.height * (scale - 1f)) / 2
-                                offset = Offset(
-                                    x = (offset.x + pan.x).coerceIn(-maxOffsetX, maxOffsetX),
-                                    y = (offset.y + pan.y).coerceIn(-maxOffsetY, maxOffsetY)
-                                )
-                            } else {
-                                offset = Offset.Zero
-                            }
+                        awaitEachGesture {
+                            awaitFirstDown(requireUnconsumed = false)
+                            do {
+                                val event = awaitPointerEvent()
+                                val pointerCount = event.changes.count { it.pressed }
+                                if (pointerCount > 1 || scale > 1.01f) {
+                                    val zoomChange = event.calculateZoom()
+                                    val panChange = event.calculatePan()
+                                    if (zoomChange != 1f || panChange != Offset.Zero) {
+                                        scale = (scale * zoomChange).coerceIn(SentinelaDimens.MinZoom, SentinelaDimens.MaxZoom)
+                                        if (scale > 1.01f) {
+                                            val maxOffsetX = (size.width * (scale - 1f)) / 2f
+                                            val maxOffsetY = (size.height * (scale - 1f)) / 2f
+                                            offset = Offset(
+                                                x = (offset.x + panChange.x).coerceIn(-maxOffsetX, maxOffsetX),
+                                                y = (offset.y + panChange.y).coerceIn(-maxOffsetY, maxOffsetY)
+                                            )
+                                        } else {
+                                            scale = 1.0f
+                                            offset = Offset.Zero
+                                        }
+                                        event.changes.forEach { change ->
+                                            if (change.position != change.previousPosition) {
+                                                change.consume()
+                                            }
+                                        }
+                                    }
+                                }
+                            } while (event.changes.any { it.pressed })
                         }
                     }
             ) {
-                // Stream Hardware Accelerated com modo selecionável
+                // Stream Hardware Accelerated padronizado em WebRTC 720p (Baixa Latência)
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
@@ -575,9 +594,9 @@ fun PhoneCameraStreamCard(
                         contentDescription = camera.friendlyName,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
-                        refreshIntervalMs = if (streamMode == "eco") 100L else 42L,
+                        refreshIntervalMs = 42L,
                         isStreaming = isCameraStreaming,
-                        forceSnapshotMode = streamMode == "eco",
+                        forceSnapshotMode = false,
                         streamMode = streamMode
                     )
 
@@ -616,33 +635,22 @@ fun PhoneCameraStreamCard(
                     }
                 }
 
-                // Badge Topo Esquerda: Seletor de Modo de Conexão (Eco, MSE, WebRTC)
-                Row(
+                // Badge Topo Esquerda: Padronizado em WebRTC 720p (Baixa Latência)
+                Surface(
+                    shape = SentinelaShapes.PillBadge,
+                    color = SentinelaColors.BadgeBackground,
+                    border = BorderStroke(0.5.dp, SentinelaColors.PrimaryCyan.copy(alpha = 0.5f)),
                     modifier = Modifier
                         .align(Alignment.TopStart)
-                        .padding(8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        .padding(8.dp)
                 ) {
-                    listOf("eco" to "Eco 10fps", "mse" to "MSE 24fps", "webrtc" to "WebRTC").forEach { (mKey, mLabel) ->
-                        val isSel = streamMode == mKey
-                        Surface(
-                            shape = SentinelaShapes.PillBadge,
-                            color = if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BadgeBackground,
-                            modifier = Modifier.clickable {
-                                streamMode = mKey
-                                prefs.setCameraDefaultStreamMode(camera.name, mKey)
-                                Toast.makeText(context, "${camera.friendlyName}: Modo padrão ${mLabel.substringBefore(' ')} salvo!", Toast.LENGTH_SHORT).show()
-                            }
-                        ) {
-                            Text(
-                                text = mLabel,
-                                color = if (isSel) Color.Black else Color.White,
-                                fontSize = 8.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier.padding(horizontal = 6.dp, vertical = 3.dp)
-                            )
-                        }
-                    }
+                    Text(
+                        text = "WebRTC 720p",
+                        color = SentinelaColors.PrimaryCyan,
+                        fontSize = 9.sp,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                    )
                 }
 
                 // Badge Topo Direita: Ao Vivo
@@ -712,7 +720,7 @@ fun PhoneCameraStreamCard(
                             border = BorderStroke(0.5.dp, SentinelaColors.PrimaryCyan.copy(alpha = 0.4f))
                         ) {
                             Text(
-                                text = streamMode.uppercase(),
+                                text = "WEBRTC 720P",
                                 color = SentinelaColors.PrimaryCyan,
                                 fontSize = 8.sp,
                                 fontWeight = FontWeight.Bold,
@@ -773,7 +781,7 @@ fun PhoneCameraStreamCard(
 }
 
 // -------------------------------------------------------------
-// ABA 2: GALERIA DE CAPTURAS (COM FILTROS E PLAYER DE VÍDEO MP4)
+// ABA 2: GALERIA DE CAPTURAS (FOTOS HD E PLAYER DE VÍDEO MP4)
 // -------------------------------------------------------------
 @Composable
 fun PhoneCapturesTab() {
@@ -794,9 +802,8 @@ fun PhoneCapturesTab() {
         }
     }
 
-    // Filtragem estrita: apenas fotos/snapshots registrados no NVR
-    val photos = remember(captures) {
-        captures.filter { it.isPhoto || it.hasSnapshot }
+    val visibleCaptures = remember(captures) {
+        captures.filter { it.isPhoto || it.hasSnapshot || it.hasClip }
     }
 
     Column(
@@ -805,25 +812,25 @@ fun PhoneCapturesTab() {
             .padding(SentinelaDimens.screenPadding),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        // Header com contagem de fotos
+        // Header com contagem de capturas
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
-                Text("FOTOS & CAPTURAS HD", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
-                Text("${photos.size} fotos registradas no NVR NVMe", style = SentinelaTypography.Subtext)
+                Text("FOTOS HD & CLIPS MP4", style = SentinelaTypography.AppHeader.copy(fontSize = 15.sp))
+                Text("${visibleCaptures.size} capturas registradas no NVR NVMe", style = SentinelaTypography.Subtext)
             }
 
             Surface(
                 shape = SentinelaShapes.PillBadge,
-                color = SentinelaColors.MasterGold.copy(alpha = 0.15f),
-                border = BorderStroke(1.dp, SentinelaColors.MasterGold.copy(alpha = 0.4f))
+                color = SentinelaColors.PrimaryCyan.copy(alpha = 0.15f),
+                border = BorderStroke(1.dp, SentinelaColors.PrimaryCyan.copy(alpha = 0.4f))
             ) {
                 Text(
-                    text = "SOMENTE FOTOS",
-                    color = SentinelaColors.MasterGold,
+                    text = "FOTO HD + MP4",
+                    color = SentinelaColors.PrimaryCyan,
                     fontSize = 9.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
@@ -835,7 +842,7 @@ fun PhoneCapturesTab() {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator(color = SentinelaColors.PrimaryCyan)
             }
-        } else if (photos.isEmpty()) {
+        } else if (visibleCaptures.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -849,8 +856,8 @@ fun PhoneCapturesTab() {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Icon(Icons.Default.PhotoLibrary, contentDescription = null, tint = SentinelaColors.TextMuted, modifier = Modifier.size(40.dp))
                     Spacer(modifier = Modifier.height(8.dp))
-                    Text("Nenhuma foto capturada no momento.", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
-                    Text("Snapshots de eventos com detecção de IA aparecerão aqui.", style = SentinelaTypography.Subtext, color = SentinelaColors.TextMuted)
+                    Text("Nenhuma captura registrada no momento.", color = Color.White, fontSize = 13.sp, fontWeight = FontWeight.Bold)
+                    Text("Snapshots e vídeos MP4 de eventos com IA aparecerão aqui.", style = SentinelaTypography.Subtext, color = SentinelaColors.TextMuted)
                 }
             }
         } else {
@@ -860,7 +867,7 @@ fun PhoneCapturesTab() {
                 verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
-                items(photos) { ev ->
+                items(visibleCaptures) { ev ->
                     Card(
                         shape = SentinelaShapes.CameraCard,
                         colors = CardDefaults.cardColors(containerColor = SentinelaColors.CardBackground),
@@ -906,7 +913,7 @@ fun PhoneCapturesTab() {
                                     modifier = Modifier.align(Alignment.TopStart).padding(6.dp)
                                 ) {
                                     Text(
-                                        text = "FOTO HD",
+                                        text = if (ev.hasClip) "FOTO + CLIP" else "FOTO HD",
                                         color = SentinelaColors.MasterGold,
                                         fontSize = 8.sp,
                                         fontWeight = FontWeight.Black,
@@ -915,7 +922,10 @@ fun PhoneCapturesTab() {
                                 }
                             }
 
-                            Column(modifier = Modifier.padding(8.dp)) {
+                            Column(
+                                modifier = Modifier.padding(8.dp),
+                                verticalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
                                 Text(
                                     text = ev.camera.replace("_", " ").uppercase(),
                                     color = Color.White,
@@ -925,9 +935,49 @@ fun PhoneCapturesTab() {
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = "${ev.timestamp} • Foto HD",
+                                    text = "${ev.timestamp} • ${ev.displayDuration}",
                                     style = SentinelaTypography.Subtext.copy(fontSize = 9.sp)
                                 )
+
+                                if (ev.hasClip || ev.clipUrl.isNotBlank()) {
+                                    Surface(
+                                        shape = SentinelaShapes.SmallButton,
+                                        color = SentinelaColors.PrimaryCyan.copy(alpha = 0.2f),
+                                        border = BorderStroke(0.5.dp, SentinelaColors.PrimaryCyan),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .clickable {
+                                                selectedClipEvent = ev
+                                                com.sentinela.pro.logging.SentinelaRemoteLogger.log(
+                                                    category = "PLAYER",
+                                                    action = "CLIP_SELECTED",
+                                                    severity = "INFO",
+                                                    message = "Clip MP4 ${ev.id} da câmera ${ev.camera} aberto no smartphone",
+                                                    metadata = mapOf("event_id" to ev.id, "camera" to ev.camera)
+                                                )
+                                            }
+                                    ) {
+                                        Row(
+                                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 5.dp),
+                                            horizontalArrangement = Arrangement.Center,
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(
+                                                imageVector = Icons.Default.PlayArrow,
+                                                contentDescription = "Assistir Clip MP4",
+                                                tint = SentinelaColors.PrimaryCyan,
+                                                modifier = Modifier.size(14.dp)
+                                            )
+                                            Spacer(modifier = Modifier.width(4.dp))
+                                            Text(
+                                                text = "Assistir Clip MP4",
+                                                color = SentinelaColors.PrimaryCyan,
+                                                fontSize = 9.sp,
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
@@ -938,6 +988,10 @@ fun PhoneCapturesTab() {
 
     if (selectedPhoto != null) {
         PhonePhotoViewerDialog(event = selectedPhoto!!, onDismiss = { selectedPhoto = null })
+    }
+
+    if (selectedClipEvent != null) {
+        PhoneClipPlayerDialog(event = selectedClipEvent!!, onDismiss = { selectedClipEvent = null })
     }
 }
 
@@ -952,15 +1006,20 @@ fun DeviceConfigEditDialog(
     onSave: (name: String, pipSize: String, pipDuration: Int, pipPosition: String, allowPip: Boolean, status: String, streamQuality: String, cameraPipPositions: Map<String, String>, cameraPipSizes: Map<String, String>, cameraPipEnabled: Map<String, Boolean>) -> Unit
 ) {
     var name by remember { mutableStateOf(device.friendlyName) }
-    var pipSize by remember { mutableStateOf(device.pipDefaultSize) }
+    var pipSize by remember { mutableStateOf(device.pipDefaultSize.lowercase().ifBlank { "extra_large" }) }
     var pipDuration by remember { mutableStateOf(device.pipDurationSeconds) }
     var pipPosition by remember { mutableStateOf(device.pipPosition) }
     var allowPip by remember { mutableStateOf(device.allowPipAlerts) }
     var status by remember { mutableStateOf(device.permissionStatus) }
     var streamQuality by remember { mutableStateOf(device.streamQuality) }
     var camPositionsMap by remember { mutableStateOf(device.cameraPipPositions) }
-    var camSizesMap by remember { mutableStateOf(device.cameraPipSizes) }
+    var camSizesMap by remember {
+        mutableStateOf(device.cameraPipSizes.mapValues { it.value.lowercase() })
+    }
     var camEnabledMap by remember { mutableStateOf(device.cameraPipEnabled) }
+    val configurableCameras = remember(device.allowedCameras) {
+        device.allowedCameras.ifEmpty { listOf("camera_principal", "camera_secundaria") }
+    }
 
     val allSizes = listOf(
         "extra_small" to "15% (Mini)",
@@ -1173,19 +1232,19 @@ fun DeviceConfigEditDialog(
                 }
 
                 // Configurações Específicas de PiP por Câmera para esta TV
-                if (device.allowedCameras.isNotEmpty()) {
+                if (configurableCameras.isNotEmpty()) {
                     item {
                         Divider(color = SentinelaColors.BorderStandard, thickness = 0.5.dp)
-                        Text("POSIÇÃO DO PIP POR CÂMERA:", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                        Text("POSIÇÃO E TAMANHO DO PIP POR CÂMERA:", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                     }
 
-                    device.allowedCameras.forEach { camName ->
+                    configurableCameras.forEach { camName ->
                         item {
                             var camPos by remember(camName) {
                                 mutableStateOf(camPositionsMap[camName] ?: pipPosition)
                             }
                             var camSize by remember(camName) {
-                                mutableStateOf(camSizesMap[camName] ?: pipSize)
+                                mutableStateOf((camSizesMap[camName] ?: pipSize).lowercase())
                             }
                             var camOn by remember(camName) {
                                 mutableStateOf(camEnabledMap[camName] ?: true)
@@ -1276,9 +1335,9 @@ fun DeviceConfigEditDialog(
                                                     color = if (isSel) SentinelaColors.MasterGold.copy(alpha = 0.3f) else SentinelaColors.CardBackground,
                                                     border = BorderStroke(0.5.dp, if (isSel) SentinelaColors.MasterGold else SentinelaColors.BorderStandard),
                                                     modifier = Modifier.weight(1f).clickable {
-                                                        camSize = szKey
+                                                        camSize = szKey.lowercase()
                                                         val m = camSizesMap.toMutableMap()
-                                                        m[camName] = szKey
+                                                        m[camName] = szKey.lowercase()
                                                         camSizesMap = m
                                                     }
                                                 ) {
@@ -1298,7 +1357,10 @@ fun DeviceConfigEditDialog(
         },
         confirmButton = {
             Button(
-                onClick = { onSave(name, pipSize, pipDuration, pipPosition, allowPip, status, streamQuality, camPositionsMap, camSizesMap, camEnabledMap) },
+                onClick = {
+                    val normalizedSizes = camSizesMap.mapValues { it.value.lowercase() }
+                    onSave(name, pipSize.lowercase(), pipDuration, pipPosition, allowPip, status, streamQuality, camPositionsMap, normalizedSizes, camEnabledMap)
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = SentinelaColors.PrimaryCyan)
             ) {
                 Text("Salvar & Sincronizar", color = Color.Black, fontWeight = FontWeight.Bold)
@@ -2194,14 +2256,12 @@ fun PhoneToolsTab() {
             }
         }
 
-        // 2. Monitor de Estabilidade de Vídeo (4 Modos)
+        // 2. Teste Real de Rota de Streaming & Estabilidade (/api/health e /go2rtc/api/streams)
         item {
             val defaultVideoModes = remember {
                 listOf(
-                    com.sentinela.pro.data.VideoStabilityResult("eco", "Eco", 1.0, 1.0, 850, 3.2, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "1.0 FPS • Baixa Banda"),
-                    com.sentinela.pro.data.VideoStabilityResult("mse", "MSE", 24.0, 24.0, 42, 0.9, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "24 FPS • Fluidez Máxima"),
-                    com.sentinela.pro.data.VideoStabilityResult("webrtc", "WebRTC", 30.0, 29.8, 65, 0.5, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "30 FPS • Latência Zero"),
-                    com.sentinela.pro.data.VideoStabilityResult("adaptive", "Snapshot", 20.0, 21.2, 48, 1.1, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "Adaptativo • Zero GC")
+                    com.sentinela.pro.data.VideoStabilityResult("api_health", "API Backend (/api/health)", 30.0, 30.0, 0, 0.5, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "Healthcheck REST FastAPI"),
+                    com.sentinela.pro.data.VideoStabilityResult("go2rtc_streams", "Motor go2rtc (/go2rtc/api/streams)", 30.0, 30.0, 0, 0.5, 0, true, com.sentinela.pro.data.ConnectionTestState.IDLE, "WebRTC 720p + MSE Fallback")
                 )
             }
             var videoModesList by remember { mutableStateOf(defaultVideoModes) }
@@ -2219,13 +2279,14 @@ fun PhoneToolsTab() {
                     modifier = Modifier.padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Text("ESTABILIDADE DE STREAMING", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
+                    Text("ROTA DE STREAMING WEBRTC 720P", style = SentinelaTypography.CardTitle, color = SentinelaColors.TextSecondary)
 
                     videoModesList.forEachIndexed { index, mode ->
                         val isTestingThis = activeTestingVideoIndex == index
                         val color = when {
                             isTestingThis -> SentinelaColors.PrimaryCyan
                             mode.state == com.sentinela.pro.data.ConnectionTestState.SUCCESS -> SentinelaColors.SuccessGreen
+                            mode.state == com.sentinela.pro.data.ConnectionTestState.FAILED -> SentinelaColors.DestructiveRed
                             else -> Color.White
                         }
                         
@@ -2236,14 +2297,14 @@ fun PhoneToolsTab() {
                         ) {
                             Column(modifier = Modifier.weight(1f)) {
                                 Text(mode.modeName, color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
-                                Text(if (isTestingThis) "Testando decoder..." else mode.description, color = color, fontSize = 10.sp)
+                                Text(if (isTestingThis) "Medindo latência HTTP real..." else mode.description, color = color, fontSize = 10.sp)
                             }
                             Column(horizontalAlignment = Alignment.End) {
                                 if (isTestingThis) {
                                     CircularProgressIndicator(modifier = Modifier.size(14.dp), color = color, strokeWidth = 2.dp)
                                 } else {
-                                    Text("${mode.measuredFps} FPS", color = color, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                                    Text("${mode.latencyMs}ms", color = SentinelaColors.TextSecondary, fontSize = 10.sp)
+                                    Text(if (mode.latencyMs > 0) "${mode.latencyMs}ms" else "-- ms", color = color, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+                                    Text("${mode.measuredFps} FPS", color = SentinelaColors.TextSecondary, fontSize = 10.sp)
                                 }
                             }
                         }
@@ -2256,13 +2317,40 @@ fun PhoneToolsTab() {
                         onClick = {
                             isEvaluatingVideoStability = true
                             coroutineScope.launch {
+                                val endpoints = listOf(
+                                    "${SentinelaConfig.BASE_URL}/api/health",
+                                    "${SentinelaConfig.BASE_URL}/go2rtc/api/streams"
+                                )
                                 val updated = videoModesList.toMutableList()
                                 for (i in updated.indices) {
                                     activeTestingVideoIndex = i
                                     updated[i] = updated[i].copy(state = com.sentinela.pro.data.ConnectionTestState.TESTING)
                                     videoModesList = updated.toList()
-                                    delay(1000)
-                                    updated[i] = updated[i].copy(state = com.sentinela.pro.data.ConnectionTestState.SUCCESS)
+
+                                    val targetUrl = endpoints.getOrElse(i) { "${SentinelaConfig.BASE_URL}/api/health" }
+                                    val (ok, elapsedMs, statusText) = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
+                                        val t0 = System.currentTimeMillis()
+                                        try {
+                                            val conn = (java.net.URL(targetUrl).openConnection() as java.net.HttpURLConnection).apply {
+                                                requestMethod = "GET"
+                                                connectTimeout = 3500
+                                                readTimeout = 3500
+                                            }
+                                            val code = conn.responseCode
+                                            conn.disconnect()
+                                            val dt = (System.currentTimeMillis() - t0).coerceAtLeast(1L)
+                                            Triple(code in 200..399, dt, "HTTP $code • ${dt}ms")
+                                        } catch (e: Exception) {
+                                            val dt = (System.currentTimeMillis() - t0).coerceAtLeast(1L)
+                                            Triple(false, dt, "Falha (${e.javaClass.simpleName})")
+                                        }
+                                    }
+
+                                    updated[i] = updated[i].copy(
+                                        latencyMs = elapsedMs,
+                                        state = if (ok) com.sentinela.pro.data.ConnectionTestState.SUCCESS else com.sentinela.pro.data.ConnectionTestState.FAILED,
+                                        description = statusText
+                                    )
                                     videoModesList = updated.toList()
                                 }
                                 activeTestingVideoIndex = -1
@@ -2275,7 +2363,7 @@ fun PhoneToolsTab() {
                         modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
                     ) {
                         Text(
-                            if (isEvaluatingVideoStability) "Avaliando Pipelines..." else "Avaliar Estabilidade",
+                            if (isEvaluatingVideoStability) "Medindo Latência Real..." else "Testar Rota de Streaming",
                             color = Color.Black,
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Bold
@@ -2930,12 +3018,11 @@ fun PhoneZoomCameraDialog(
     camera: CameraItem,
     onDismiss: () -> Unit
 ) {
-    val context = LocalContext.current
-    val prefs = remember { SentinelaPreferences(context) }
-    val defaultMode = remember(camera.name) { prefs.getCameraDefaultStreamMode(camera.name) }
+    val defaultMode = "webrtc"
 
     var scale by remember { mutableFloatStateOf(1.0f) }
     var offset by remember { mutableStateOf(Offset.Zero) }
+    var isAudioEnabled by remember { mutableStateOf(false) }
 
     Dialog(
         onDismissRequest = onDismiss,
@@ -2952,7 +3039,7 @@ fun PhoneZoomCameraDialog(
                     .pointerInput(Unit) {
                         detectTapGestures(
                             onDoubleTap = {
-                                scale = 1.0f
+                                scale = if (scale > 1.05f) 1.0f else 2.5f
                                 offset = Offset.Zero
                             }
                         )
@@ -2988,15 +3075,17 @@ fun PhoneZoomCameraDialog(
                         contentDescription = camera.friendlyName,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit,
-                        refreshIntervalMs = if (defaultMode == "eco") 100L else 42L,
+                        refreshIntervalMs = 42L,
                         isStreaming = true,
-                        forceSnapshotMode = (defaultMode == "eco"),
-                        streamMode = defaultMode
+                        forceSnapshotMode = false,
+                        streamMode = defaultMode,
+                        preferSubStream = false,
+                        audioEnabled = isAudioEnabled
                     )
                 }
             }
 
-            // Header Overlay com Botão de Fechar
+            // Header Overlay com Botão de Áudio e Fechar
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -3006,16 +3095,29 @@ fun PhoneZoomCameraDialog(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
+                Column(modifier = Modifier.weight(1f)) {
                     Text(camera.friendlyName, color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                    Text("Pinça: zoom até 5x • Toque duplo: reseta", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
+                    Text("Pinça: zoom até 5x • Toque duplo: alterna zoom", style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan))
                 }
 
-                IconButton(
-                    onClick = onDismiss,
-                    modifier = Modifier.size(36.dp).background(SentinelaColors.CardBackgroundElevated, CircleShape)
-                ) {
-                    Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color.White)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(
+                        onClick = { isAudioEnabled = !isAudioEnabled },
+                        modifier = Modifier.size(36.dp).background(SentinelaColors.CardBackgroundElevated, CircleShape)
+                    ) {
+                        Icon(
+                            imageVector = if (isAudioEnabled) Icons.Default.VolumeUp else Icons.Default.VolumeOff,
+                            contentDescription = if (isAudioEnabled) "Desativar Áudio" else "Ativar Áudio",
+                            tint = if (isAudioEnabled) SentinelaColors.PrimaryCyan else Color.White
+                        )
+                    }
+
+                    IconButton(
+                        onClick = onDismiss,
+                        modifier = Modifier.size(36.dp).background(SentinelaColors.CardBackgroundElevated, CircleShape)
+                    ) {
+                        Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color.White)
+                    }
                 }
             }
         }
@@ -3032,9 +3134,7 @@ fun PhoneCameraConfigDialog(
 ) {
     val context = LocalContext.current
     val prefs = remember { SentinelaPreferences(context) }
-    var currentMode by remember(camera.name) {
-        mutableStateOf(prefs.getCameraDefaultStreamMode(camera.name))
-    }
+    val currentMode = "webrtc"
     var isPipActive by remember(camera.name) {
         mutableStateOf(prefs.isCameraPipEnabled(camera.name))
     }
@@ -3108,52 +3208,39 @@ fun PhoneCameraConfigDialog(
                     }
                 }
 
-                // 1. Modo Padrão de Transmissão
+                // 1. Modo Padrão de Transmissão (Unificado WebRTC 720p)
                 Text(
-                    text = "MODO DE STREAMING PREFERENCIAL",
+                    text = "MOTOR DE STREAMING PADRONIZADO",
                     style = SentinelaTypography.Subtext.copy(
                         color = SentinelaColors.PrimaryCyan,
                         fontWeight = FontWeight.Bold
                     )
                 )
 
-                val modes = listOf(
-                    Triple("mse", "🌟 MSE (WebSocket)", "24 FPS ultra fluido, sem aquecimento"),
-                    Triple("webrtc", "WebRTC Direto", "Menor latência P2P"),
-                    Triple("eco", "Modo Eco Snapshot", "Economia máxima de bateria")
-                )
-
-                modes.forEach { (mKey, mTitle, mDesc) ->
-                    val isSelected = currentMode == mKey
-                    Card(
-                        shape = SentinelaShapes.SmallButton,
-                        colors = CardDefaults.cardColors(
-                            containerColor = if (isSelected) SentinelaColors.PrimaryCyan.copy(alpha = 0.15f) else SentinelaColors.CardBackground
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                1.dp,
-                                if (isSelected) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard,
-                                SentinelaShapes.SmallButton
-                            )
-                            .clickable {
-                                currentMode = mKey
-                                prefs.setCameraDefaultStreamMode(camera.name, mKey)
-                            }
-                    ) {
-                        Column(modifier = Modifier.padding(8.dp)) {
-                            Text(
-                                text = mTitle,
-                                color = if (isSelected) SentinelaColors.PrimaryCyan else Color.White,
-                                fontSize = 11.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                            Text(
-                                text = mDesc,
-                                style = SentinelaTypography.Subtext.copy(fontSize = 9.sp)
-                            )
-                        }
+                Card(
+                    shape = SentinelaShapes.SmallButton,
+                    colors = CardDefaults.cardColors(
+                        containerColor = SentinelaColors.PrimaryCyan.copy(alpha = 0.15f)
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            1.dp,
+                            SentinelaColors.PrimaryCyan,
+                            SentinelaShapes.SmallButton
+                        )
+                ) {
+                    Column(modifier = Modifier.padding(8.dp)) {
+                        Text(
+                            text = "⚡ WebRTC 720p (Baixa Latência)",
+                            color = SentinelaColors.PrimaryCyan,
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "Padrão unificado com fallback automático MSE e áudio bidirecional",
+                            style = SentinelaTypography.Subtext.copy(fontSize = 9.sp)
+                        )
                     }
                 }
 
@@ -3248,6 +3335,20 @@ fun PhonePhotoViewerDialog(
     var isLoadingImage by remember { mutableStateOf(true) }
     var isImageError by remember { mutableStateOf(false) }
 
+    val candidates = remember(event) {
+        listOfNotNull(
+            event.snapshotCleanUrl.takeIf { it.isNotBlank() },
+            event.snapshotUrl.takeIf { it.isNotBlank() },
+            "${SentinelaConfig.BASE_URL}/api/events/${event.id}/snapshot.jpg?clean=1".takeIf { !event.id.startsWith("live_") && !event.id.startsWith("rec_") },
+            "${SentinelaConfig.BASE_URL}/frigate/api/events/${event.id}/snapshot.jpg".takeIf { !event.id.startsWith("live_") && !event.id.startsWith("rec_") },
+            "${SentinelaConfig.BASE_URL}/frigate/api/${event.camera}/latest.jpg?h=1080"
+        ).distinct()
+    }
+    var currentCandidateIndex by remember(event) { mutableIntStateOf(0) }
+    val highResUrl = candidates.getOrElse(currentCandidateIndex) {
+        "${SentinelaConfig.BASE_URL}/frigate/api/${event.camera}/latest.jpg?h=1080"
+    }
+
     Dialog(
         onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
@@ -3292,9 +3393,6 @@ fun PhonePhotoViewerDialog(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                val highResUrl = event.snapshotCleanUrl.ifBlank { event.snapshotUrl }.ifBlank {
-                    "${SentinelaConfig.BASE_URL}/api/events/${event.id}/snapshot.jpg?clean=1"
-                }
                 val context = LocalContext.current
                 val imageLoader = remember { coil.Coil.imageLoader(context) }
 
@@ -3305,7 +3403,14 @@ fun PhonePhotoViewerDialog(
                         .listener(
                             onStart = { isLoadingImage = true; isImageError = false },
                             onSuccess = { _, _ -> isLoadingImage = false; isImageError = false },
-                            onError = { _, _ -> isLoadingImage = false; isImageError = true }
+                            onError = { _, _ ->
+                                if (currentCandidateIndex < candidates.size - 1) {
+                                    currentCandidateIndex++
+                                } else {
+                                    isLoadingImage = false
+                                    isImageError = true
+                                }
+                            }
                         )
                         .build(),
                     imageLoader = imageLoader,
@@ -3387,16 +3492,140 @@ fun PhonePhotoViewerDialog(
                     Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color.White)
                 }
             }
+
+            // Barra Inferior de Presets Rápidos de Zoom (1x, 2x, 4x)
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                listOf(1.0f to "1x", 2.0f to "2x", 4.0f to "4x").forEach { (zVal, zLabel) ->
+                    val isSelected = kotlin.math.abs(scale - zVal) < 0.25f
+                    Surface(
+                        shape = SentinelaShapes.PillBadge,
+                        color = if (isSelected) SentinelaColors.PrimaryCyan.copy(alpha = 0.3f) else SentinelaColors.CardBackgroundElevated,
+                        border = BorderStroke(1.dp, if (isSelected) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
+                        modifier = Modifier.clickable {
+                            scale = zVal
+                            if (zVal == 1.0f) offset = Offset.Zero
+                        }
+                    ) {
+                        Text(
+                            text = "🔍 $zLabel",
+                            color = if (isSelected) SentinelaColors.PrimaryCyan else Color.White,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+                        )
+                    }
+                }
+            }
         }
     }
 }
 
+// -------------------------------------------------------------
+// DIÁLOGO DE REPRODUÇÃO DE VÍDEO MP4 (CLIP DE EVENTO NVR)
+// -------------------------------------------------------------
 @Composable
 fun PhoneClipPlayerDialog(
     event: CaptureEvent,
     onDismiss: () -> Unit
 ) {
-    PhonePhotoViewerDialog(event = event, onDismiss = onDismiss)
+    val clipUrl = remember(event) {
+        event.clipUrl.ifBlank {
+            "${SentinelaConfig.BASE_URL}/api/events/${event.id}/clip.mp4"
+        }
+    }
+    var webViewRef by remember { mutableStateOf<android.webkit.WebView?>(null) }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            webViewRef?.apply {
+                stopLoading()
+                loadUrl("about:blank")
+                destroy()
+            }
+            webViewRef = null
+        }
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+        ) {
+            androidx.compose.ui.viewinterop.AndroidView(
+                factory = { ctx ->
+                    android.webkit.WebView(ctx).apply {
+                        setBackgroundColor(android.graphics.Color.BLACK)
+                        settings.javaScriptEnabled = true
+                        settings.domStorageEnabled = true
+                        settings.mediaPlaybackRequiresUserGesture = false
+                        val html = """
+                            <!DOCTYPE html>
+                            <html>
+                            <head>
+                                <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+                                <style>
+                                    html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #000; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+                                    video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+                                </style>
+                            </head>
+                            <body>
+                                <video src="$clipUrl" controls autoplay playsinline></video>
+                            </body>
+                            </html>
+                        """.trimIndent()
+                        loadDataWithBaseURL(SentinelaConfig.BASE_URL, html, "text/html", "UTF-8", null)
+                        webViewRef = this
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(vertical = 56.dp)
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .statusBarsPadding()
+                    .background(Brush.verticalGradient(listOf(Color.Black.copy(alpha = 0.85f), Color.Transparent)))
+                    .padding(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column {
+                    Text(
+                        text = "CLIP MP4: ${event.label.uppercase()}",
+                        color = Color.White,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                    Text(
+                        text = "${event.camera.replace("_", " ").uppercase()} • ${event.timestamp}",
+                        style = SentinelaTypography.Subtext.copy(color = SentinelaColors.PrimaryCyan, fontSize = 11.sp)
+                    )
+                }
+
+                IconButton(
+                    onClick = onDismiss,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .background(SentinelaColors.CardBackgroundElevated, CircleShape)
+                ) {
+                    Icon(Icons.Default.Close, contentDescription = "Fechar", tint = Color.White)
+                }
+            }
+        }
+    }
 }
 
 data class TvDeviceStatus(
@@ -3416,8 +3645,8 @@ fun CameraConfigEditDialog(
     onSave: (name: String, resolution: String, streamMode: String, streamQuality: String, bitrate: Int) -> Unit
 ) {
     var name by remember { mutableStateOf(camera.friendlyName) }
-    var resolution by remember { mutableStateOf("1080p") } // default since not in model yet
-    var streamMode by remember { mutableStateOf("webrtc") }
+    var resolution by remember { mutableStateOf("1080p") }
+    val streamMode = "webrtc"
     var streamQuality by remember { mutableStateOf("maxima") }
     var bitrate by remember { mutableStateOf(2048) }
 
@@ -3483,19 +3712,14 @@ fun CameraConfigEditDialog(
                 }
                 item {
                     Text("Modo de Streaming:", color = SentinelaColors.TextSecondary, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-                    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(6.dp)) {
-                        listOf("eco" to "Eco", "mse" to "MSE", "webrtc" to "WebRTC").forEach { (modeKey, modeLabel) ->
-                            val isSel = streamMode.lowercase() == modeKey
-                            Surface(
-                                shape = SentinelaShapes.SmallButton,
-                                color = if (isSel) SentinelaColors.PrimaryCyan.copy(alpha = 0.25f) else SentinelaColors.CardBackgroundElevated,
-                                border = BorderStroke(1.dp, if (isSel) SentinelaColors.PrimaryCyan else SentinelaColors.BorderStandard),
-                                modifier = Modifier.weight(1f).clickable { streamMode = modeKey }
-                            ) {
-                                Box(modifier = Modifier.padding(vertical = 6.dp), contentAlignment = Alignment.Center) {
-                                    Text(modeLabel, color = if (isSel) SentinelaColors.PrimaryCyan else Color.White, fontSize = 10.sp, fontWeight = FontWeight.Bold)
-                                }
-                            }
+                    Surface(
+                        shape = SentinelaShapes.SmallButton,
+                        color = SentinelaColors.PrimaryCyan.copy(alpha = 0.25f),
+                        border = BorderStroke(1.dp, SentinelaColors.PrimaryCyan),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(modifier = Modifier.padding(vertical = 8.dp), contentAlignment = Alignment.Center) {
+                            Text("WebRTC 720p (Baixa Latência)", color = SentinelaColors.PrimaryCyan, fontSize = 11.sp, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

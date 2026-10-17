@@ -23,6 +23,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import kotlinx.coroutines.launch
 import com.sentinela.pro.SentinelaConfig
 
 /**
@@ -31,6 +32,25 @@ import com.sentinela.pro.SentinelaConfig
  * Delivers true 24 FPS / 30 FPS video with GPU hardware decoding (MediaCodec)
  * over a SINGLE persistent WebSocket connection, completely eliminating Tailscale connection drops.
  */
+private class MseFrameBridge(
+    private val onFirstFrame: () -> Unit
+) {
+    @Volatile
+    private var reported = false
+
+    fun reset() {
+        reported = false
+    }
+
+    @JavascriptInterface
+    fun notifyFirstFrame() {
+        if (!reported) {
+            reported = true
+            onFirstFrame()
+        }
+    }
+}
+
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun MseCameraView(
@@ -38,8 +58,9 @@ fun MseCameraView(
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     isStreaming: Boolean = true,
-    streamMode: String = "mse",
-    preferSubStream: Boolean = true
+    streamMode: String = "webrtc",
+    preferSubStream: Boolean = true,
+    audioEnabled: Boolean = false
 ) {
     val lifecycleOwner = androidx.compose.ui.platform.LocalLifecycleOwner.current
     var isAppInForeground by remember { mutableStateOf(true) }
@@ -51,11 +72,12 @@ fun MseCameraView(
         if (preferSubStream) "${cleanBaseName}_720p" else cleanBaseName
     }
 
-    val streamUrl = remember(effectiveStreamSrc, streamMode) {
+    val streamUrl = remember(effectiveStreamSrc, streamMode, audioEnabled) {
+        val mediaParam = if (audioEnabled) "media=video+audio" else "media=video"
         val modeQuery = when (streamMode.lowercase()) {
             "eco" -> "mode=mjpeg"
-            "webrtc" -> "mode=webrtc,mse&media=video&background=true"
-            else -> "mode=mse,webrtc&media=video&background=true"
+            "mse" -> "mode=mse,webrtc&${mediaParam}&background=true"
+            else -> "mode=webrtc,mse&${mediaParam}&background=true"
         }
         "${SentinelaConfig.BASE_URL}/go2rtc/stream.html?src=${effectiveStreamSrc}&${modeQuery}&width=100%"
     }
@@ -63,12 +85,14 @@ fun MseCameraView(
         "${SentinelaConfig.BASE_URL}/frigate/api/${cleanBaseName}/latest.jpg?h=720"
     }
 
-    var isLoading by remember(cameraName) { mutableStateOf(true) }
-    var hasError by remember(cameraName) { mutableStateOf(false) }
+    var isLoading by remember(cameraName, streamUrl) { mutableStateOf(true) }
+    var isVideoReady by remember(cameraName, streamUrl) { mutableStateOf(false) }
+    var hasError by remember(cameraName, streamUrl) { mutableStateOf(false) }
 
     var webViewRef by remember { mutableStateOf<WebView?>(null) }
     val context = androidx.compose.ui.platform.LocalContext.current
     val imageLoader = remember { coil.Coil.imageLoader(context) }
+    val mainScope = rememberCoroutineScope()
 
     DisposableEffect(lifecycleOwner, cameraName) {
         val observer = androidx.lifecycle.LifecycleEventObserver { _, event ->
@@ -76,6 +100,7 @@ fun MseCameraView(
                 androidx.lifecycle.Lifecycle.Event.ON_PAUSE,
                 androidx.lifecycle.Lifecycle.Event.ON_STOP -> {
                     isAppInForeground = false
+                    isVideoReady = false
                     webViewRef?.let { wv ->
                         wv.onPause()
                         wv.loadUrl("about:blank")
@@ -112,10 +137,12 @@ fun MseCameraView(
         }
     }
 
-    if (!isStreaming || !isAppInForeground) {
+    if (!isStreaming || !isAppInForeground || streamMode.lowercase() == "snapshot") {
         coil.compose.AsyncImage(
             model = coil.request.ImageRequest.Builder(context)
                 .data(snapshotUrl)
+                .memoryCachePolicy(coil.request.CachePolicy.ENABLED)
+                .diskCachePolicy(coil.request.CachePolicy.ENABLED)
                 .crossfade(true)
                 .build(),
             imageLoader = imageLoader,
@@ -128,22 +155,10 @@ fun MseCameraView(
 
     Box(
         modifier = modifier
-            .background(Color.Black)
+            .background(Color(0xFF090D16))
             .semantics { this.contentDescription = contentDescription ?: cameraName },
         contentAlignment = Alignment.Center
     ) {
-        // Instant Snapshot Base Layer (Loads in 19ms, 0 delay)
-        coil.compose.AsyncImage(
-            model = coil.request.ImageRequest.Builder(context)
-                .data(snapshotUrl)
-                .crossfade(true)
-                .build(),
-            imageLoader = imageLoader,
-            contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = androidx.compose.ui.layout.ContentScale.Crop
-        )
-
         AndroidView(
             modifier = Modifier.fillMaxSize(),
             factory = { ctx ->
@@ -153,7 +168,7 @@ fun MseCameraView(
                         ViewGroup.LayoutParams.MATCH_PARENT,
                         ViewGroup.LayoutParams.MATCH_PARENT
                     )
-                    setBackgroundColor(AndroidColor.TRANSPARENT)
+                    setBackgroundColor(AndroidColor.parseColor("#090D16"))
                     setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
                     settings.apply {
@@ -172,6 +187,14 @@ fun MseCameraView(
 
                     isVerticalScrollBarEnabled = false
                     isHorizontalScrollBarEnabled = false
+
+                    val frameBridge = MseFrameBridge {
+                        mainScope.launch(kotlinx.coroutines.Dispatchers.Main) {
+                            isVideoReady = true
+                            isLoading = false
+                        }
+                    }
+                    addJavascriptInterface(frameBridge, "MseFrameBridge")
 
                     webChromeClient = object : WebChromeClient() {
                         override fun onPermissionRequest(request: PermissionRequest?) {
@@ -192,11 +215,12 @@ fun MseCameraView(
                         override fun onPageFinished(view: WebView?, url: String?) {
                             super.onPageFinished(view, url)
                             isLoading = false
-                            // Inject CSS and intelligent WebRTC/MSE stall recovery watchdog (supporting go2rtc Shadow DOM)
+                            val mutedBool = if (audioEnabled) "false" else "true"
+                            // Inject CSS, requestVideoFrameCallback first-frame sync, and WebRTC/MSE live-edge watchdog
                             val js = "javascript:(function() {" +
                                     "var style = document.createElement('style');" +
-                                    "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:transparent !important; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
-                                    "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; pointer-events:none !important; background:transparent !important; } " +
+                                    "style.innerHTML = 'html, body { margin:0; padding:0; width:100%; height:100%; overflow:hidden; background:#090D16 !important; display:flex; justify-content:center; align-items:center; user-select:none; -webkit-user-select:none; } " +
+                                    "video-stream, video { width:100% !important; height:100% !important; object-fit:cover !important; pointer-events:none !important; background:#090D16 !important; } " +
                                     "video::-webkit-media-controls, video::-webkit-media-controls-enclosure, video::-webkit-media-controls-panel, video::-webkit-media-controls-play-button, video::-webkit-media-controls-start-playback-button, video::-webkit-media-controls-timeline, video::-webkit-media-controls-overlay-play-button, video::-webkit-media-controls-current-time-display, video::-webkit-media-controls-time-remaining-display, video::-webkit-media-controls-mute-button, video::-webkit-media-controls-toggle-closed-captions-button, video::-webkit-media-controls-volume-slider { display:none !important; -webkit-appearance:none !important; opacity:0 !important; visibility:hidden !important; } " +
                                     "video-stream .info, .info, .mode, .status, .spinner, .mode-box { display:none !important; opacity:0 !important; visibility:hidden !important; pointer-events:none !important; } " +
                                     "* { outline:none !important; -webkit-tap-highlight-color:transparent !important; }';" +
@@ -207,7 +231,7 @@ fun MseCameraView(
                                     "    if (!vs.shadowRoot.__styled) {" +
                                     "      vs.shadowRoot.__styled = true;" +
                                     "      var sStyle = document.createElement('style');" +
-                                    "      sStyle.innerHTML = 'video { width:100% !important; height:100% !important; object-fit:cover !important; background:transparent !important; } .info, .mode, .status, .spinner { display:none !important; }';" +
+                                    "      sStyle.innerHTML = 'video { width:100% !important; height:100% !important; object-fit:cover !important; background:#090D16 !important; } .info, .mode, .status, .spinner { display:none !important; }';" +
                                     "      vs.shadowRoot.appendChild(sStyle);" +
                                     "    }" +
                                     "    var sv = vs.shadowRoot.querySelector('video');" +
@@ -215,14 +239,30 @@ fun MseCameraView(
                                     "  }" +
                                     "  return document.querySelector('video');" +
                                     "};" +
+                                    "var onFirstVideoFrame = function() {" +
+                                    "  if (window.MseFrameBridge && window.MseFrameBridge.notifyFirstFrame) {" +
+                                    "    window.MseFrameBridge.notifyFirstFrame();" +
+                                    "  }" +
+                                    "};" +
                                     "var initVideo = function() {" +
                                     "  var v = getVideo();" +
                                     "  if (v) {" +
                                     "    v.controls = false;" +
-                                    "    v.muted = true;" +
+                                    "    v.muted = " + mutedBool + ";" +
+                                    "    if (!" + mutedBool + ") { v.volume = 1.0; }" +
                                     "    v.autoplay = true;" +
                                     "    v.playsInline = true;" +
                                     "    v.removeAttribute('controls');" +
+                                    "    if (!v.__frameCallbackRegistered) {" +
+                                    "      v.__frameCallbackRegistered = true;" +
+                                    "      if (v.requestVideoFrameCallback) {" +
+                                    "        v.requestVideoFrameCallback(function() { onFirstVideoFrame(); });" +
+                                    "      } else {" +
+                                    "        v.addEventListener('timeupdate', function() {" +
+                                    "          if (v.currentTime > 0.05) { onFirstVideoFrame(); }" +
+                                    "        });" +
+                                    "      }" +
+                                    "    }" +
                                     "    try {" +
                                     "      var origDesc = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'playbackRate');" +
                                     "      if (origDesc && !v.__rateIntercepted) {" +
@@ -250,14 +290,15 @@ fun MseCameraView(
                                     "    var v = getVideo();" +
                                     "    if (v) {" +
                                     "      if (v.paused) { v.play().catch(function(){}); }" +
+                                    "      if (v.readyState >= 2 && v.videoWidth > 0) { onFirstVideoFrame(); }" +
                                     "      if (v.buffered && v.buffered.length > 0) {" +
                                     "        var end = v.buffered.end(v.buffered.length - 1);" +
                                     "        var drift = end - v.currentTime;" +
-                                    "        if (drift > 2.0) {" +
-                                    "          v.playbackRate = 1.15;" +
-                                    "        } else if (drift > 0.4) {" +
+                                    "        if (drift > 1.2) {" +
+                                    "          v.playbackRate = 1.12;" +
+                                    "        } else if (drift > 0.6) {" +
                                     "          v.playbackRate = 1.08;" +
-                                    "        } else if (drift < 0.1) {" +
+                                    "        } else if (drift < 0.15) {" +
                                     "          v.playbackRate = 1.0;" +
                                     "        }" +
                                     "      }" +
@@ -288,19 +329,21 @@ fun MseCameraView(
             },
             update = { webView ->
                 if (webView.url != streamUrl) {
+                    isVideoReady = false
                     webView.loadUrl(streamUrl)
                 }
             }
         )
 
-        // Loading spinner: Only shown if no background snapshot is present, preventing double loading screens
-        if (isLoading && snapshotUrl.isNullOrBlank()) {
+        // Subtle connection indicator shown on neutral dark background until requestVideoFrameCallback confirms first real video frame
+        if (!isVideoReady && !hasError) {
             CircularProgressIndicator(
-                modifier = Modifier.size(32.dp),
+                modifier = Modifier.size(28.dp),
                 color = Color(0xFF06B6D4),
-                strokeWidth = 2.5.dp
+                strokeWidth = 2.dp
             )
         }
+
 
         // Error overlay
         if (hasError) {
