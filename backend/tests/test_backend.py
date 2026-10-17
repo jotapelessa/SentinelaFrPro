@@ -324,7 +324,7 @@ async def test_sync_camera_to_frigate_zones_mask_filtering():
     with patch("app.api.cameras.get_frigate_config_path", return_value="/fake/nonexistent/config.yml"), \
          patch("app.api.cameras._save_yaml_config_atomic", side_effect=mock_save), \
          patch("httpx.AsyncClient.put", AsyncMock()):
-        await sync_camera_to_frigate(cam)
+        await sync_camera_to_frigate(cam, sync_zones=True)
 
     cam_entry = captured_cfg["cameras"]["cam_192_168_1_196"]
     # Only "cx" must be in required_zones, NOT "motion_mask"
@@ -369,7 +369,7 @@ async def test_sync_camera_3mp_unified_inputs_and_streams():
     with patch("app.api.cameras.get_frigate_config_path", return_value="/fake/nonexistent/config.yml"), \
          patch("app.api.cameras._save_yaml_config_atomic", side_effect=mock_save), \
          patch("httpx.AsyncClient.put", AsyncMock()):
-        await sync_camera_to_frigate(cam)
+        await sync_camera_to_frigate(cam, sync_zones=True)
 
     cam_entry = captured_cfg["cameras"]["cam_192_168_1_196"]
     streams = captured_cfg["go2rtc"]["streams"]
@@ -580,17 +580,87 @@ async def test_sync_camera_overwrites_existing_zones_with_720p_coordinates():
         captured_cfg.update(cfg)
         return True
 
+    from unittest.mock import mock_open
+    import yaml
+
     with patch("app.api.cameras.get_frigate_config_path", return_value="/fake/cfg.yml"), \
          patch("os.path.exists", return_value=True), \
-         patch("builtins.open", patch("yaml.safe_load", return_value=initial_cfg)), \
+         patch("builtins.open", mock_open(read_data=yaml.dump(initial_cfg))), \
          patch("app.api.cameras._save_yaml_config_atomic", side_effect=mock_save), \
          patch("httpx.AsyncClient.put", AsyncMock()):
-        await sync_camera_to_frigate(cam)
+        await sync_camera_to_frigate(cam, sync_zones=True)
 
     # Must be updated to 1280x720 scaled coordinates: 0.1*1280=128, 0.2*720=144...
     updated_coords = captured_cfg["cameras"]["cam_192_168_1_196"]["zones"]["cx"]["coordinates"]
     assert "128,144" in updated_coords
     assert "640,432" in updated_coords
+
+
+@pytest.mark.asyncio
+async def test_sync_camera_preserves_zones_when_sync_zones_false_and_zero_copy_alias():
+    from unittest.mock import patch, AsyncMock
+    from app.api.cameras import sync_camera_to_frigate
+    from app.db.models import Camera
+    import json
+
+    initial_cfg = {
+        "cameras": {
+            "cam_192_168_1_196": {
+                "zones": {
+                    "original_zone": {
+                        "coordinates": "50,50,150,150",
+                        "objects": ["person"]
+                    }
+                }
+            }
+        },
+        "go2rtc": {"streams": {}}
+    }
+
+    cam = Camera(
+        name="cam_192_168_1_196",
+        friendly_name="Principal 3MP",
+        rtsp_main="rtsp://admin:admin@192.168.1.196:554/live/0/MAIN",
+        rtsp_sub="rtsp://admin:admin@192.168.1.196:554/live/0/SUB",
+        resolution="3mp",
+        enabled=True,
+        zones=json.dumps([
+            {
+                "id": "zone_stale_sqlite",
+                "name": "Stale",
+                "slug": "stale",
+                "type": "zone",
+                "points": [{"x": 0.9, "y": 0.9}]
+            }
+        ])
+    )
+
+    captured_cfg = {}
+    async def mock_save(cfg, path):
+        captured_cfg.update(cfg)
+        return True
+
+    from unittest.mock import mock_open
+    import yaml
+
+    with patch("app.api.cameras.get_frigate_config_path", return_value="/fake/cfg.yml"), \
+         patch("os.path.exists", return_value=True), \
+         patch("builtins.open", mock_open(read_data=yaml.dump(initial_cfg))), \
+         patch("app.api.cameras._save_yaml_config_atomic", side_effect=mock_save), \
+         patch("httpx.AsyncClient.put", AsyncMock()):
+        # Call with default sync_zones (must be False)
+        await sync_camera_to_frigate(cam)
+
+    cam_entry = captured_cfg["cameras"]["cam_192_168_1_196"]
+    # 1. Existing zones MUST be preserved, NOT overwritten with SQLite stale zone
+    assert "original_zone" in cam_entry["zones"]
+    assert "stale" not in cam_entry["zones"]
+
+    # 2. 720p stream in go2rtc MUST be zero-copy memory alias, NOT rtsp://127.0.0.1
+    streams = captured_cfg["go2rtc"]["streams"]
+    assert streams["cam_192_168_1_196_720p"] == ["ffmpeg:cam_192_168_1_196_sub#video=copy"]
+    assert "127.0.0.1:8554" not in streams["cam_192_168_1_196_720p"][0]
+
 
 @pytest.mark.asyncio
 async def test_frigate_bridge_get_live_snapshot_sources():

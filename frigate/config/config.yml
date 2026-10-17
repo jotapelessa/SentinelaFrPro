@@ -91,7 +91,7 @@ go2rtc:
     cam_192_168_1_196_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     cam_192_168_1_196_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub?video=copy
+    - ffmpeg:cam_192_168_1_196_sub#video=copy
     cam_192_168_1_196_sub:
     - rtsp://admin:admin@192.168.1.196:554/live/0/SUB#backchannel=0
     cam_192_168_1_47:
@@ -99,7 +99,7 @@ go2rtc:
     cam_192_168_1_47_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     cam_192_168_1_47_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub?video=copy
+    - ffmpeg:cam_192_168_1_47_sub#video=copy
     cam_192_168_1_47_sub:
     - rtsp://admin:admin@192.168.1.47:554/live/0/SUB#backchannel=0
     camera_principal:
@@ -107,7 +107,7 @@ go2rtc:
     camera_principal_main:
     - ffmpeg:cam_192_168_1_196#video=copy
     camera_principal_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_196_sub?video=copy
+    - ffmpeg:cam_192_168_1_196_sub#video=copy
     camera_principal_sub:
     - ffmpeg:cam_192_168_1_196_sub#video=copy
     camera_secundaria:
@@ -115,7 +115,7 @@ go2rtc:
     camera_secundaria_main:
     - ffmpeg:cam_192_168_1_47#video=copy
     camera_secundaria_720p:
-    - rtsp://127.0.0.1:8554/cam_192_168_1_47_sub?video=copy
+    - ffmpeg:cam_192_168_1_47_sub#video=copy
     camera_secundaria_sub:
     - ffmpeg:cam_192_168_1_47_sub#video=copy
   webrtc:

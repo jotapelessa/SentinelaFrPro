@@ -436,6 +436,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
 
     let lastTime = -1;
     let stallCountMs = 0;
+    let freezeCountMs = 0;
     let hasPlayedOnce = false;
     const connectStartTime = Date.now();
     const CHECK_INTERVAL_MS = 500; // Avalia a cada 500ms
@@ -468,8 +469,17 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
               }
             }
 
-            // Se readyState < 2 (HAVE_CURRENT_DATA) ou currentTime estagnado
-            if (readyState < 2 || (lastTime >= 0 && Math.abs(curTime - lastTime) < 0.01)) {
+            // Absorve micro-jitter (ex.: 300ms de escrita no NVMe durante detecções do Frigate)
+            // Requer 2500ms contínuos de estagnação comprovada antes de qualificar como stall
+            const isFrozen = lastTime >= 0 && Math.abs(curTime - lastTime) < 0.01;
+            if (isFrozen) {
+              freezeCountMs += CHECK_INTERVAL_MS;
+            } else {
+              freezeCountMs = 0;
+            }
+
+            // Se readyState < 2 (HAVE_CURRENT_DATA) ou estagnação comprovada por >= 2500ms
+            if (readyState < 2 || freezeCountMs >= 2500) {
               if (hasPlayedOnce || Date.now() - connectStartTime > 8000) {
                 stallCountMs += CHECK_INTERVAL_MS;
               }
@@ -482,7 +492,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
             if (hasPlayedOnce || Date.now() - connectStartTime > 8000) {
               stallCountMs += CHECK_INTERVAL_MS;
             }
-            if (video.paused && readyState >= 2) {
+            if (video.paused && readyState >= 1) {
               video.play().catch(() => {});
             }
           }
@@ -490,6 +500,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
           if (stallCountMs >= 5000) {
             console.warn(`[WebRTCPlayer] Watchdog detectou estagnação do stream (${(stallCountMs / 1000).toFixed(1)}s, readyState=${readyState}, isPlaying=${isPlaying}). Forçando reconexão.`);
             stallCountMs = 0;
+            freezeCountMs = 0;
             lastTime = -1;
             hasPlayedOnce = false;
             setIsWatchdogRecovering(true);
@@ -505,7 +516,7 @@ export const WebRTCPlayerBase: React.FC<WebRTCPlayerProps> = ({
     return () => {
       clearInterval(localWatchdogTimer);
     };
-  }, [cameraSrc, streamQuality, isPaused, isActivePlayer, streamMode, key]);
+  }, [cameraSrc, streamQuality, isPaused, isActivePlayer, streamMode]);
 
   // Pipeline de Frame / Snapshot HD Nativo com Failover (AC-029)
   useEffect(() => {

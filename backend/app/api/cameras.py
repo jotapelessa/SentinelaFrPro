@@ -237,8 +237,8 @@ async def list_cameras(db: AsyncSession = Depends(get_db)):
                         rtsp_url = g_stream.split("#")[0]
 
                 # Parse Zones
-                detect_w = cam_cfg.get("detect", {}).get("width", 1280) if isinstance(cam_cfg.get("detect"), dict) else 1280
-                detect_h = cam_cfg.get("detect", {}).get("height", 720) if isinstance(cam_cfg.get("detect"), dict) else 720
+                detect_w = cam_cfg.get("detect", {}).get("width", 800) if isinstance(cam_cfg.get("detect"), dict) else 800
+                detect_h = cam_cfg.get("detect", {}).get("height", 448) if isinstance(cam_cfg.get("detect"), dict) else 448
                 cam_zones = cam_cfg.get("zones", {})
                 parsed_zone_items = []
 
@@ -412,8 +412,8 @@ async def sync_cameras_from_frigate(request: Request, db: AsyncSession = Depends
 
                     # Parse zones from Frigate
                     cam_zones = cam_cfg.get("zones", {})
-                    detect_w = cam_cfg.get("detect", {}).get("width", 1280)
-                    detect_h = cam_cfg.get("detect", {}).get("height", 720)
+                    detect_w = cam_cfg.get("detect", {}).get("width", 800) if isinstance(cam_cfg.get("detect"), dict) else 800
+                    detect_h = cam_cfg.get("detect", {}).get("height", 448) if isinstance(cam_cfg.get("detect"), dict) else 448
                     
                     parsed_zone_items = []
                     if isinstance(cam_zones, dict):
@@ -1085,7 +1085,7 @@ async def toggle_camera_pause(camera_id: str, request: Request, db: AsyncSession
 
     # Sync state directly to Frigate config and restart if needed
     try:
-        await sync_camera_to_frigate(cam)
+        await sync_camera_to_frigate(cam, sync_zones=False)
     except Exception as e:
         logger.warning(f"Error syncing pause state to Frigate: {e}")
 
@@ -1124,7 +1124,7 @@ async def pause_camera(camera_id: str, request: Request, db: AsyncSession = Depe
     cam.enabled = False
     await db.commit()
     await db.refresh(cam)
-    await sync_camera_to_frigate(cam)
+    await sync_camera_to_frigate(cam, sync_zones=False)
     return {"status": "success", "camera": cam.name, "enabled": False, "is_paused": True}
 
 @router.post("/{camera_id}/resume")
@@ -1145,7 +1145,7 @@ async def resume_camera(camera_id: str, request: Request, db: AsyncSession = Dep
     cam.enabled = True
     await db.commit()
     await db.refresh(cam)
-    await sync_camera_to_frigate(cam)
+    await sync_camera_to_frigate(cam, sync_zones=False)
     return {"status": "success", "camera": cam.name, "enabled": True, "is_paused": False}
 
 def sanitize_frigate_config(cfg: dict) -> dict:
@@ -1508,7 +1508,7 @@ async def _save_yaml_config_atomic(cfg: dict, config_path: Optional[str] = None)
         _YAML_CONFIG_TIME = 0.0
         return written_any
 
-async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False, sync_zones: bool = True):
+async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False, sync_zones: bool = False):
     import os
     import yaml
     import json
@@ -1577,7 +1577,7 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False, syn
         sub_source = f"{clean_sub}#backchannel=0"
 
         sub_alias_target = f"{target_cam_key}_sub"
-        prewarmed_sub_720p = f"rtsp://127.0.0.1:8554/{sub_alias_target}?video=copy"
+        prewarmed_sub_720p = f"ffmpeg:{sub_alias_target}#video=copy"
         cfg["go2rtc"]["streams"][target_cam_key] = [main_source]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_main"] = [f"ffmpeg:{target_cam_key}#video=copy"]
         cfg["go2rtc"]["streams"][f"{target_cam_key}_sub"] = [sub_source]
@@ -1739,8 +1739,8 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False, syn
 
     # 7. Garantir review labels e sincronizar required_zones com base nas zonas configuradas
     configured_zone_names = []
-    detect_w = cam_block.get("detect", {}).get("width", 1280) if isinstance(cam_block.get("detect"), dict) else 1280
-    detect_h = cam_block.get("detect", {}).get("height", 720) if isinstance(cam_block.get("detect"), dict) else 720
+    detect_w = cam_block.get("detect", {}).get("width", 800) if isinstance(cam_block.get("detect"), dict) else 800
+    detect_h = cam_block.get("detect", {}).get("height", 448) if isinstance(cam_block.get("detect"), dict) else 448
 
     if sync_zones and getattr(cam, "zones", None):
         try:
@@ -1824,7 +1824,7 @@ async def sync_camera_to_frigate(cam: Camera, restart_frigate: bool = False, syn
             raw_sub = sub_url if sub_url else (clean_url.replace("/MAIN", "/SUB") if "/MAIN" in clean_url else (infer_substream_url(clean_url) or clean_url))
             clean_sub = raw_sub.split("#")[0].strip()
             sub_stream_src = f"{clean_sub}#backchannel=0"
-            prewarmed_sub_720p = f"rtsp://127.0.0.1:8554/{target_cam_key}_sub?video=copy"
+            prewarmed_sub_720p = f"ffmpeg:{target_cam_key}_sub#video=copy"
 
             async with httpx.AsyncClient(timeout=3.0) as client:
                 await client.put(f"{settings.GO2RTC_API_URL}/api/streams", params={"name": target_cam_key, "src": main_stream_src})
@@ -1921,8 +1921,8 @@ async def reconcile_cameras_with_frigate():
                 cam_key = re.sub(r'[^a-zA-Z0-9_]', '_', (c.name or "").strip().lower())
                 cam_cfg = file_cams.get(cam_key) if isinstance(file_cams, dict) else None
                 if isinstance(cam_cfg, dict):
-                    detect_w = cam_cfg.get("detect", {}).get("width", 1280)
-                    detect_h = cam_cfg.get("detect", {}).get("height", 720)
+                    detect_w = cam_cfg.get("detect", {}).get("width", 800) if isinstance(cam_cfg.get("detect"), dict) else 800
+                    detect_h = cam_cfg.get("detect", {}).get("height", 448) if isinstance(cam_cfg.get("detect"), dict) else 448
                     yaml_zone_items = []
                     f_zones = cam_cfg.get("zones") or {}
                     if isinstance(f_zones, dict):
@@ -2225,11 +2225,21 @@ def get_frigate_config_path() -> str:
             return c
     return FRIGATE_CONFIG_PATH
 
-def parse_frigate_coordinates(raw_coords: Any, width: int = 1280, height: int = 720) -> List[Dict[str, float]]:
+def parse_frigate_coordinates(raw_coords: Any, width: Any = 1280, height: int = 720, cam_cfg: Optional[Dict[str, Any]] = None) -> List[Dict[str, float]]:
     """
     Parses various Frigate coordinate representations into normalized {x: 0..1, y: 0..1} points.
     Supports comma-separated strings, space-separated pairs, list of ints/floats, or list of strings.
+    Captures real detect dimensions (e.g. 800x448) from cam_cfg if provided.
     """
+    if isinstance(width, dict):
+        cam_cfg = width
+        width = 1280
+    if cam_cfg and isinstance(cam_cfg, dict):
+        detect_block = cam_cfg.get("detect", {})
+        if isinstance(detect_block, dict):
+            width = detect_block.get("width", 800)
+            height = detect_block.get("height", 448)
+
     nums: List[float] = []
     if isinstance(raw_coords, str):
         clean = raw_coords.replace(" ", ",").replace("\n", ",").replace("\t", ",")
@@ -2329,8 +2339,8 @@ async def get_frigate_camera_zones(camera_id: str, db: AsyncSession = Depends(ge
     cam_in_frigate = isinstance(cameras_cfg, dict) and target_cam_key in cameras_cfg
     cam_data = cameras_cfg.get(target_cam_key, {}) if isinstance(cameras_cfg, dict) else {}
 
-    detect_w = cam_data.get("detect", {}).get("width", 1280) if isinstance(cam_data.get("detect"), dict) else 1280
-    detect_h = cam_data.get("detect", {}).get("height", 720) if isinstance(cam_data.get("detect"), dict) else 720
+    detect_w = cam_data.get("detect", {}).get("width", 800) if isinstance(cam_data.get("detect"), dict) else 800
+    detect_h = cam_data.get("detect", {}).get("height", 448) if isinstance(cam_data.get("detect"), dict) else 448
 
     raw_zones = cam_data.get("zones", {}) if isinstance(cam_data, dict) else {}
     motion_mask = cam_data.get("motion", {}).get("mask", None) if isinstance(cam_data.get("motion"), dict) else None

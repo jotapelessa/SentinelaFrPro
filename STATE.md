@@ -1,15 +1,37 @@
 # STATE.md — Memória Persistente do Projeto
 
 > **Sentinela Frigate Pro**
-> **Última Atualização:** 2026-10-17 07:38 BRT
-> **Versão Corrente:** v001.000.000.186
-> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.186 consolidada com:
-1. **Sincronização Bidirecional de Zonas & Múltiplas Máscaras Independentes (`cameras.py` + `config.yml` + `ZoneCanvasModal.tsx`)**: Corrigida a concatenação destrutiva de polígonos em `motion.mask`, preservando múltiplas máscaras como `List[str]` YAML nativa do Frigate. Adicionada auto-numeração de máscaras (`Máscara 1`, `Máscara 2` / `mask_1`, `mask_2`) no editor visual e reconciliação bidirecional entre SQLite e `config.yml` sem sobrescrever zonas quando `sync_zones=False`. Isolados os testes automatizados (`autouse=True` fixture `isolate_frigate_config_paths`) para impedir poluição de `frigate/config/config.yml` por `pytest`.
-2. **TTFF Instantâneo (<400ms), Fim do Loop de 59s & Alívio de GPU/VPU (`config.yml` + `WebRTCPlayer.tsx` + `nginx/default.conf`)**: Canais `_720p` (`cam_192_168_1_196_720p`, `cam_192_168_1_47_720p`, `camera_principal_720p`, `camera_secundaria_720p`) apontados para o restream RTSP local pré-aquecido pelo Frigate (`rtsp://127.0.0.1:8554/cam_..._sub?video=copy`), eliminando o cold-start de 2.5s na abertura do PiP e zerando conexões extras nas câmeras físicas AITEK. Removido `hwaccel_args: preset-vaapi` do sub-stream 800×448 @ 5fps para liberar contextos de GPU/VPU Intel. Adicionado candidato `stun:8555`, `proxy_cache off;` + `keepalive_timeout 86400s;` no Nginx e período de graça inicial de 8000ms no `WebRTCPlayer.tsx`.
-3. **Sincronização Bidirecional de Tamanho de PiP por Câmera (`1280x720` / `extra_large`)**: Normalização lowercase unificada (`_norm_pip_size` / `_norm_pip_sizes_map`) em `devices.py`, `pip_gateway.py`, `SentinelaRepository.kt`, `/screens` e `TvSettingsViewport`, com botões de preset rápido `P`, `M`, `G`, `GG (720p)` por câmera.
-4. **Android TV Leanback (`OverlayService.kt`, `TvNetflixScreen.kt`, `MseCameraView.kt`, `SentinelaPreferences.kt`)**: Padrão MSE sobre WebSocket (`mode=mse,webrtc`) restaurado em `SentinelaPreferences.kt` e `OverlayService.kt` (Regra de Ouro #3); sincronização estrita de primeiro quadro via `requestVideoFrameCallback` sobre snapshot em `OverlayService.kt` (Regra de Ouro #6); controle de Áudio Mute/Unmute e Modo de Stream via D-Pad em `TvFullScreenLiveDialog`; grid 4×2 sem corte vertical em `TvRecordingsViewport`; fallback automático de erro em `VideoView` + barra de transporte D-Pad em `TvClipPlayerDialog`.
-5. **Android Smartphone (`SmartphoneYouTubeScreen.kt`)**: Corrigido o bloqueio de rolagem vertical com 1 dedo na `LazyColumn` de câmeras ao substituir `detectTransformGestures` por `awaitEachGesture` que só consome eventos em pinça multi-toque (`pointerCount > 1`) ou quando `scale > 1.01f`; adicionado botão de áudio em `PhoneZoomCameraDialog` e candidatos de fallback + presets de zoom (`1x`, `2x`, `4x`) em `PhonePhotoViewerDialog`.
-6. **Sincronização Global da Versão `001.000.000.186` (Build 186)**: 100% dos 40 testes aprovados no pytest (`backend/tests/test_backend.py`) sem sujar `frigate/config/config.yml`, e build Next.js 14 limpo (14/14 páginas estáticas).
+> **Última Atualização:** 2026-10-17 11:58 BRT
+> **Versão Corrente:** v001.000.000.187
+> **Estado Geral:** Operacional, Termicamente Otimizado e Estabilizado — Versão v001.000.000.187 consolidada com:
+1. **Zero-Copy In-Memory Aliases no go2rtc (`cameras.py` + `config.yml`)**: Substituição de loopback TCP `rtsp://127.0.0.1:8554/{cam}_sub?video=copy` pela sintaxe canônica in-memory zero-copy `ffmpeg:{cam}_sub#video=copy` (Regra de Ouro #22), eliminando overhead TCP e timeout drops de 60s.
+2. **Preservação Estrita de Zonas em Operações de Câmera (`cameras.py`)**: `sync_zones: bool = False` tornado default em `sync_camera_to_frigate` e explicitamente passado em `toggle-pause`, `pause` e `resume`.
+3. **Resolução Real de Detecção 800x448 (`cameras.py`)**: Extração de dimensões reais de detecção a partir da configuração da câmera no Frigate em `parse_frigate_coordinates` e fallbacks em vez de suposição fixa de 1280x720.
+4. **Estabilidade de Watchdog e Desacoplamento de Rerender no Web (`WebRTCPlayer.tsx` + `CameraMosaic.tsx`)**: Remoção de `key` das dependências do watchdog em `WebRTCPlayer.tsx` para evitar reinicializações espúrias; tolerância de congelamento aumentada para 2500ms absorvendo jitter NVMe; isolamento de contadores HUD em `DetectionCountersHUD` (`React.memo`) evitando re-renders da grade de vídeo a cada detecção MQTT.
+5. **Acionamento Duplo de Primeiro Quadro no PiP da Android TV (`OverlayService.kt`)**: Verificação direta no JS injetado (`v.readyState >= 2 && v.videoWidth > 0 && firstFrameTime === 0`) somada à corrotina de segurança de 1500ms em Kotlin que força o desvanecimento do snapshot e revelação do WebView.
+6. **Sincronização Global da Versão `001.000.000.187` (Build 187)**: 42/42 testes aprovados no pytest sem poluição de configuração, Next.js 14 build limpo (14/14 páginas), APKs TV e Smartphone compilados e sincronizados.
+
+---
+
+## 🚀 Versão v001.000.000.187 — Zero-Copy go2rtc Aliases, Preservação de Zonas, Watchdog Web Resiliente & PiP First-Frame Dual Trigger
+- **Data**: 2026-10-17
+- **Objetivo**: Implementar a proposta técnica v187 para eliminar timeouts de 60s em loopback TCP, evitar perda acidental de zonas durante pause/resume de câmeras, corrigir coordenadas de detecção 800x448, estabilizar o player Web e assegurar exibição imediata do stream no PiP da TV:
+  1. **Backend & go2rtc — Zero-Copy In-Memory Aliases (`cameras.py`, `config.yml`)**:
+     - *Causa*: Canais `_720p` usavam loopback TCP `rtsp://127.0.0.1:8554/{cam}_sub?video=copy`, sujeitos a timeout de 60s e saturação desnecessária do stack TCP local.
+     - *Correção*: Substituído por `ffmpeg:{cam}_sub#video=copy` em `config.yml` e na função `sync_camera_to_frigate` em `cameras.py`.
+  2. **Backend — Preservação de Zonas & Resolução Real de Detecção (`cameras.py`)**:
+     - *Causa*: `sync_camera_to_frigate` tinha `sync_zones` com default `True`, arriscando apagar ou sobrescrever zonas customizadas durante chamadas como `toggle-pause`, `pause` e `resume`. Além disso, cálculos de coordenadas usavam 1280x720 em vez da resolução nativa de detecção (800x448).
+     - *Correção*: `sync_zones: bool = False` tornado padrão na assinatura e passado explicitamente nos endpoints de pausa/retomada. `parse_frigate_coordinates` agora aceita `cam_cfg` e utiliza a resolução configurada no bloco `detect` da câmera.
+  3. **Frontend Web — Watchdog Resiliente & Otimização de Performance no Mosaico (`WebRTCPlayer.tsx`, `CameraMosaic.tsx`)**:
+     - *Causa*: `key` nas dependências do `useEffect` de watchdog causava recriação contínua de timers. Tolerância de 1000ms a freezes era muito agressiva durante escritas em disco do Frigate. No mosaico, o hook de detecções e eventos MQTT forçava re-render da árvore inteira incluindo os players.
+     - *Correção*: `key` removido das dependências; freeze tolerance expandido para 2500ms; `DetectionCountersHUD` extraído com `React.memo` para isolar contadores de eventos sem re-renderizar players de vídeo.
+  4. **Android TV — Acionamento Confiável de Primeiro Quadro no PiP (`OverlayService.kt`)**:
+     - *Causa*: Em alguns dispositivos, `requestVideoFrameCallback` podia falhar ou atrasar se o stream já estivesse rodando antes do callback ser anexado.
+     - *Correção*: Implementado `checkDirectFrame()` avaliando `v.readyState >= 2 && v.videoWidth > 0 && firstFrameTime === 0` e corrotina de segurança de 1500ms em Kotlin como fallback garantido.
+  5. **Cobertura e Validação**:
+     - 42/42 testes unitários aprovados em `pytest backend/tests/test_backend.py`.
+     - Build Next.js 14 aprovado com 14/14 páginas estáticas.
+     - APKs Android TV e Smartphone compilados com sucesso.
 
 ---
 

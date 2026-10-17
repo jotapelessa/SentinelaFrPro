@@ -6,14 +6,63 @@ import { TimelinePlayback } from "./TimelinePlayback";
 import { useSentinelaStore, Camera } from "@/store/useSentinelaStore";
 import { Grid, Maximize, Video, ShieldAlert, RefreshCw, Plus, User, Car, Zap, X, Search, Check, Volume2, VolumeX } from "lucide-react";
 
+interface DetectionCountersHUDProps {
+  activeCamerasCount: number;
+}
+
+const DetectionCountersHUD: React.FC<DetectionCountersHUDProps> = React.memo(({ activeCamerasCount }) => {
+  const activeDetections = useSentinelaStore((state) => state.activeDetections);
+  const events = useSentinelaStore((state) => state.events);
+
+  const activeCount = Object.keys(activeDetections || {}).length;
+  const totalPersons = (events || []).filter((e) => e.label === "person").length;
+  const totalVehicles = (events || []).filter((e) => e.label === "car" || e.label === "motorcycle").length;
+
+  return (
+    <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex items-center gap-2">
+        <span
+          className={`w-2.5 h-2.5 rounded-full ${
+            activeCount > 0
+              ? "bg-rose-500 animate-ping shadow-lg shadow-rose-500/50"
+              : "bg-emerald-400 animate-pulse shadow-lg shadow-emerald-500/50"
+          }`}
+        />
+        <span className="text-xs font-mono font-bold text-slate-200">
+          {activeCamerasCount} {activeCamerasCount === 1 ? "Câmera Ativa" : "Câmeras Ativas"}
+        </span>
+      </div>
+
+      {/* Quick HUD Badges */}
+      <div className="flex items-center gap-1.5 border-l border-slate-800 pl-3">
+        {activeCount > 0 && (
+          <span className="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-black flex items-center gap-1 animate-pulse">
+            <ShieldAlert className="w-3 h-3 text-rose-400" />
+            <span>
+              {activeCount} {activeCount === 1 ? "Alerta IA Ativo" : "Alertas IA Ativos"}
+            </span>
+          </span>
+        )}
+        <span className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[11px] font-bold flex items-center gap-1">
+          <User className="w-3 h-3" />
+          <span>{totalPersons} Pessoas</span>
+        </span>
+        <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-bold flex items-center gap-1">
+          <Car className="w-3 h-3" />
+          <span>{totalVehicles} Veículos</span>
+        </span>
+      </div>
+    </div>
+  );
+});
+DetectionCountersHUD.displayName = "DetectionCountersHUD";
+
 export const CameraMosaic: React.FC = () => {
   const {
     cameras,
     setCameras,
     spotlightCamera,
     setSpotlightCamera,
-    events,
-    activeDetections,
     audioAlertEnabled,
     toggleAudioAlert
   } = useSentinelaStore();
@@ -121,10 +170,6 @@ export const CameraMosaic: React.FC = () => {
     }
   };
 
-  const activeCount = Object.keys(activeDetections).length;
-  const totalPersons = events.filter(e => e.label === "person").length;
-  const totalVehicles = events.filter(e => e.label === "car" || e.label === "motorcycle").length;
-
   // STRICT SINGLE PLAYER POLICY & DEDUPLICATION (Regra de Ouro #10):
   // Apenas câmeras habilitadas (enabled) e deduplicadas por nome são renderizadas
   const activeCamerasList = React.useMemo(() => {
@@ -156,32 +201,7 @@ export const CameraMosaic: React.FC = () => {
     <section className="w-full space-y-4">
       {/* Mosaic Header Bar & Live Counters HUD */}
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 px-1 w-full flex-wrap">
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="flex items-center gap-2">
-            <span className={`w-2.5 h-2.5 rounded-full ${activeCount > 0 ? "bg-rose-500 animate-ping shadow-lg shadow-rose-500/50" : "bg-emerald-400 animate-pulse shadow-lg shadow-emerald-500/50"}`} />
-            <span className="text-xs font-mono font-bold text-slate-200">
-              {activeCamerasList.length} {activeCamerasList.length === 1 ? "Câmera Ativa" : "Câmeras Ativas"}
-            </span>
-          </div>
-
-          {/* Quick HUD Badges */}
-          <div className="flex items-center gap-1.5 border-l border-slate-800 pl-3">
-            {activeCount > 0 && (
-              <span className="px-2 py-0.5 rounded-md bg-rose-500/20 text-rose-300 border border-rose-500/40 text-[11px] font-black flex items-center gap-1 animate-pulse">
-                <ShieldAlert className="w-3 h-3 text-rose-400" />
-                <span>{activeCount} {activeCount === 1 ? "Alerta IA Ativo" : "Alertas IA Ativos"}</span>
-              </span>
-            )}
-            <span className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-400 border border-purple-500/20 text-[11px] font-bold flex items-center gap-1">
-              <User className="w-3 h-3" />
-              <span>{totalPersons} Pessoas</span>
-            </span>
-            <span className="px-2 py-0.5 rounded-md bg-blue-500/10 text-blue-400 border border-blue-500/20 text-[11px] font-bold flex items-center gap-1">
-              <Car className="w-3 h-3" />
-              <span>{totalVehicles} Veículos</span>
-            </span>
-          </div>
-        </div>
+        <DetectionCountersHUD activeCamerasCount={activeCamerasList.length} />
 
         <div className="flex items-center gap-2 flex-wrap">
           {/* Audio Chime Alarm Toggle */}

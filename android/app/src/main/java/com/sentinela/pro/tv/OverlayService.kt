@@ -75,7 +75,8 @@ class OverlayService : Service() {
         private val onFirstFrame: () -> Unit
     ) {
         @Volatile
-        private var firstFrameReported = false
+        var firstFrameReported = false
+            private set
 
         fun reset() {
             firstFrameReported = false
@@ -942,6 +943,17 @@ class OverlayService : Service() {
                                         "        }" +
                                         "      });" +
                                         "    }" +
+                                        "    var checkDirectFrame = function() {" +
+                                        "      if (v.readyState >= 2 && v.videoWidth > 0 && firstFrameTime === 0) {" +
+                                        "        firstFrameTime = performance.now() - tStart;" +
+                                        "        frameCount = Math.max(frameCount, 1);" +
+                                        "        reportToNative();" +
+                                        "      }" +
+                                        "    };" +
+                                        "    checkDirectFrame();" +
+                                        "    v.addEventListener('loadeddata', checkDirectFrame);" +
+                                        "    v.addEventListener('canplay', checkDirectFrame);" +
+                                        "    v.addEventListener('playing', checkDirectFrame);" +
                                         "    v.addEventListener('error', function(err) {" +
                                         "      console.warn('Video stream error:', err);" +
                                         "    });" +
@@ -967,6 +979,11 @@ class OverlayService : Service() {
                                         "    }" +
                                         "    var v = getVideoEl();" +
                                         "    if (v) {" +
+                                        "      if (v.readyState >= 2 && v.videoWidth > 0 && firstFrameTime === 0) {" +
+                                        "        firstFrameTime = performance.now() - tStart;" +
+                                        "        frameCount = Math.max(frameCount, 1);" +
+                                        "        reportToNative();" +
+                                        "      }" +
                                         "      if (v.paused) { v.play().catch(function(){}); }" +
                                         "      if (v.buffered && v.buffered.length > 0) {" +
                                         "        var end = v.buffered.end(v.buffered.length - 1);" +
@@ -1024,6 +1041,17 @@ class OverlayService : Service() {
                         currentParams?.height != params.height) {
                         windowManager.updateViewLayout(overlayView, params)
                     }
+                }
+            }
+
+            // Coroutine de segurança com timeout de 1.500ms para fade-out do snapshot estático e revelação do WebView (Regra #6)
+            serviceScope.launch(Dispatchers.Main) {
+                delay(1500L)
+                if (pipMetricsBridge?.firstFrameReported != true) {
+                    pipWebView?.alpha = 1f
+                    pipImageView?.animate()?.alpha(0f)?.setDuration(120L)?.withEndAction {
+                        pipImageView?.visibility = View.GONE
+                    }?.start()
                 }
             }
 
